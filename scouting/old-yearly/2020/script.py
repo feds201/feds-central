@@ -78,85 +78,128 @@ for s in sheets:
 row = 0
 
 for match in range(len(r)):
-    for s in sheets:
-        s.write(row + 2, columns["record#"], match + 1)
-    row += 3
+	for s in sheets:
+		s.write(row + 2, columns["record#"], match + 1)
+	row += 3
 
 # Add labels in second row
 for l in range(len(labels2)):
-    for s in sheets:
-        s.write(1, l, labels2[l])
+	for s in sheets:
+		s.write(1, l, labels2[l])
 
 # Fill in data
 current_row = 2
 
-cargo = 0
-panels = 0
-cargo_list = []
-
 for match in range(len(r)):
-    try:
-        for team in range(2):
-            sheet = sheets[team]
+	try:
+		for team in range(2):
+			sheet = sheets[team]
 			
-            # Add team numbers
-            for team_key in range(3):
-                data = r[match]["alliances"][teams[team]]["team_keys"][team_key]
-                sheet.write(current_row + team_key, columns["teams"], int(data.replace("frc", "")))
+			# Add team numbers
+			for team_key in range(3):
+				data = r[match]["alliances"][teams[team]]["team_keys"][team_key]
+				sheet.write(current_row + team_key, columns["teams"], int(data.replace("frc", "")))
 			
-            data = r[match]["score_breakdown"][teams[team]]
+			data = r[match]["score_breakdown"][teams[team]]
+			
+			# Init line
+			sheet.write(current_row, columns["init_line"], data["initLineRobot1"])
+			sheet.write(current_row + 1, columns["init_line"], data["initLineRobot2"])
+			sheet.write(current_row + 2, columns["init_line"], data["initLineRobot3"])
+			
+			sheet.write(current_row, columns["init_line_points"], data["autoInitLinePoints"])
+			
+			# Auton
+			sheet.write(current_row, columns["auton_bottom"], data["autoCellsBottom"])
+			sheet.write(current_row, columns["auton_top"], data["autoCellsOuter"])
+			sheet.write(current_row, columns["auton_inner"], data["autoCellsInner"])
+			sheet.write(current_row, columns["auton_cell"], data["autoCellPoints"])
+			
+			sheet.write(current_row, columns["auton_total"], data["autoPoints"])
+			
+			# Teleop
+			sheet.write(current_row, columns["teleop_bottom"], data["teleopCellsBottom"])
+			sheet.write(current_row, columns["teleop_top"], data["teleopCellsOuter"])
+			sheet.write(current_row, columns["teleop_inner"], data["teleopCellsInner"])
+			sheet.write(current_row, columns["teleop_cell"], data["teleopCellPoints"])
+			
+			sheet.write(current_row, columns["control_panel_color"], data["stage3TargetColor"])
+			sheet.write(current_row, columns["control_panel"], data["controlPanelPoints"])
+			
+			sheet.write(current_row, columns["teleop_total"], data["teleopPoints"])
+			
+			if data["stage3Activated"]:
+				sheet.write(current_row, columns["stage_activated"], "3")
+			elif data["stage2Activated"]:
+				sheet.write(current_row, columns["stage_activated"], "2")
+			elif data["stage1Activated"]:
+				sheet.write(current_row, columns["stage_activated"], "1")
+			else:
+				sheet.write(current_row, columns["stage_activated"], "0")
+			
+			# Endgame
+			sheet.write(current_row, columns["endgame_state"], data["endgameRobot1"])
+			sheet.write(current_row + 1, columns["endgame_state"], data["endgameRobot2"])
+			sheet.write(current_row + 2, columns["endgame_state"], data["endgameRobot3"])
+			
+			sheet.write(current_row, columns["endgame_shield_energized"], data["shieldEnergizedRankingPoint"])
+			sheet.write(current_row, columns["endgame_shield_operational"], data["shieldOperationalRankingPoint"])
+			sheet.write(current_row, columns["endgame_shield_level"], data["endgameRungIsLevel"])
+			sheet.write(current_row, columns["endgame_shield_foul"], data["tba_shieldEnergizedRankingPointFromFoul"])
+			
+			sheet.write(current_row, columns["endgame_total"], data["endgamePoints"])
 			
 			# Fouls
-            sheet.write(current_row, columns["foul_count"], data["foulCount"])
-            sheet.write(current_row, columns["tech_foul_count"], data["techFoulCount"])
-            sheet.write(current_row, columns["foul_pts"], data["foulPoints"])
+			sheet.write(current_row, columns["foul_count"], data["foulCount"])
+			sheet.write(current_row, columns["tech_foul_count"], data["techFoulCount"])
+			sheet.write(current_row, columns["foul_pts"], data["foulPoints"])
 
-            # Total points
-            sheet.write(current_row, columns["total_pts"], data["totalPoints"])
+			# Total points
+			sheet.write(current_row, columns["total_pts"], data["totalPoints"])
 
-            # Win or lose (potential source for error due to if-else?)
-            temp = str(r[match]["winning_alliance"])
+			# Win or lose (potential source for error due to if-else?)
+			temp = str(r[match]["winning_alliance"])
 
-            if temp == teams[team]:
-                temp = "Win"
-            else:
-                temp = "Loss"
+			if temp == teams[team]:
+				temp = "Win"
+			else:
+				temp = "Loss"
 
-            sheet.write(current_row, columns["winner"], temp)
+			sheet.write(current_row, columns["winner"], temp)
 
-            # Total ranking points
-            sheet.write(current_row, columns["total_rp"], data["rp"])
+			# Total ranking points
+			sheet.write(current_row, columns["total_rp"], data["rp"])
 			
-    except TypeError as e:
-        print("Ends at Record " + str(match))
-        print(e)
+	except TypeError as e:
+		print("Ends at Record " + str(match))
+		print(e)
 	
-    current_row += 3
+	current_row += 3
 	
-    # Add video to message
-    video_message += str(match + 1) + ": "
-    temp = r[match]["videos"]
+	# Add video to message
+	video_message += str(match + 1) + ": "
+	temp = r[match]["videos"]
 	
-    for video in temp:
-        if video["type"] == "youtube":
-            video_message += ("youtube.com/watch?v=" + str(video["key"]) + ", ")
-        else:
-            video_message(str(video["key"] + "(video type is " + video["type"] + ")" + ", "))
+	for video in temp:
+		if video["type"] == "youtube":
+			video_message += ("youtube.com/watch?v=" + str(video["key"]) + ", ")
+		else:
+			video_message(str(video["key"] + "(video type is " + video["type"] + ")" + ", "))
 	
-    video_message += "\n"
+	video_message += "\n"
 
 # Write raw data to file
 try:
-    raw_data_file = open("rawdata.json", "w")
+	raw_data_file = open("rawdata.json", "w")
 
-    for entry in r:
-        raw_data_file.write(str(entry))
-        raw_data_file.write("\n \n")
+	for entry in r:
+		raw_data_file.write(str(entry))
+		raw_data_file.write("\n \n")
 
-    raw_data_file.close()
+	raw_data_file.close()
 
 except IOError as e:
-    print("WARNING: IOError in writing raw data to file")
-    print(e)
+	print("WARNING: IOError in writing raw data to file")
+	print(e)
 
 file.save(file_name + ".xls")
