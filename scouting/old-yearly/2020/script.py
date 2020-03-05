@@ -106,6 +106,27 @@ for match in range(len(r)):
 			
             data = r[match]["score_breakdown"][teams[team]]
 			
+			# Fouls
+            sheet.write(current_row, columns["foul_count"], data["foulCount"])
+            sheet.write(current_row, columns["tech_foul_count"], data["techFoulCount"])
+            sheet.write(current_row, columns["foul_pts"], data["foulPoints"])
+
+            # Total points
+            sheet.write(current_row, columns["total_pts"], data["totalPoints"])
+
+            # Win or lose (potential source for error due to if-else?)
+            temp = str(r[match]["winning_alliance"])
+
+            if temp == teams[team]:
+                temp = "Win"
+            else:
+                temp = "Loss"
+
+            sheet.write(current_row, columns["winner"], temp)
+
+            # Total ranking points
+            sheet.write(current_row, columns["total_rp"], data["rp"])
+			
     except TypeError as e:
         print("Ends at Record " + str(match))
         print(e)
