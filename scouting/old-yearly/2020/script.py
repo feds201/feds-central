@@ -8,8 +8,8 @@
 ''' Enter match key and what you want the file name to be. 
     It's not my problem if it doesn't work '''
 
-event_key = "2020miket"
-file_name = "Test_InfiniteRecharge"
+event_key = "2020mike2"
+file_name = "Week2_InfiniteRecharge"
 
 ''' READ: If using Chrome put Chrome/72.0.3626.109 instead of Mozilla/5.0 between the quotes next to user-agent.
     Not sure if this really matters but do it just in case. Now that I think about it this really shouldn't matter
