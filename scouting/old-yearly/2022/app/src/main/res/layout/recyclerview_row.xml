@@ -8,13 +8,13 @@
 
     <TextView
         android:id="@+id/tvQuals"
-        android:layout_width="150sp"
+        android:layout_width="250sp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:textAlignment="center"
         android:textColor="#1B263B"
         android:fontFamily="@font/firasansbold"
         android:background="@drawable/blue_background"
-        android:textSize="20sp"/>
+        android:textSize="30sp"/>
 
 </LinearLayout>
