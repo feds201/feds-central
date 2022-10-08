@@ -22,6 +22,6 @@
     <string name="human_scored_title">Human Scored?</string>
     <string name="played_defence_title">Played Defence?</string>
     <string name="bar_climbed_title">Bar Climbed:</string>
-    <string name="overall_rating_title">Overall Rating</string>
+    <string name="overall_rating_title">Overall Rating:</string>
     <string name="finish_title">Finish</string>
 </resources>

@@ -5,65 +5,12 @@
     android:id="@+id/scrollView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#415A77"
     tools:context=".RapidReactDashboard">
-
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="match_parent"
-        android:layout_height="150sp"
-        android:layout_marginBottom="0sp"
-        android:src="@drawable/dashboard_static"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:adjustViewBounds="true" />
-
-    <TextView
-        android:id="@+id/title_dashboard"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/faxsansbeta"
-        android:text="@string/dashboard_title"
-        android:textAlignment="center"
-        android:textColor="@color/FEDS_WHITE"
-        android:textSize="74sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/heading_dashboard_teamNum"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="80sp"
-        android:layout_marginRight="190sp"
-        android:fontFamily="@font/faxsansbeta"
-        android:text="@string/dashboard_teamNum"
-        android:textColor="@color/FEDS_WHITE"
-        android:textSize="52sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/heading_dashboard_teamColor"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="190sp"
-        android:layout_marginTop="80sp"
-        android:fontFamily="@font/faxsansbeta"
-        android:text="@string/dashboard_color"
-        android:textColor="@color/FEDS_WHITE"
-        android:textSize="52sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="150sp">
+        android:layout_marginTop="0sp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -75,7 +22,7 @@
                 android:id="@+id/section_autonomous"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10sp"
+                android:layout_marginTop="150sp"
                 android:fontFamily="@font/faxsansbeta"
                 android:text="@string/dashboard_autonomous_title"
                 android:textColor="@color/FEDS_WHITE"
@@ -785,56 +732,19 @@
                 app:layout_constraintStart_toEndOf="@+id/playedDefence"
                 app:layout_constraintTop_toBottomOf="@id/button_minus8"/>
 
-            <Chronometer
-                android:id="@+id/stopwatch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10sp"
-                android:contentDescription="Timer endgameTime time"
-                android:fontFamily="@font/faxsansbeta"
-                android:format="00:00"
-                android:textColor="@color/FEDS_WHITE"
-                android:textSize="42sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/divider7" />
-
-            <ImageButton
-                android:id="@+id/play_button"
-                android:layout_width="50sp"
-                android:layout_height="50sp"
-                android:layout_marginEnd="70sp"
-                android:background="@drawable/white_background"
-                android:contentDescription="Timer endgameTime start"
-                android:src="@drawable/play_icon"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/stopwatch"
-                tools:ignore="SpeakableTextPresentCheck" />
-
-            <ImageButton
-                android:id="@+id/reset_button"
-                android:layout_width="50sp"
-                android:layout_height="50sp"
-                android:layout_marginStart="70sp"
-                android:background="@drawable/white_background"
-                android:contentDescription="Timer endgameTime stop"
-                android:src="@drawable/refresh_icon"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/stopwatch"
-                tools:ignore="SpeakableTextPresentCheck" />
-
             <SeekBar
                 android:id="@+id/seekBar"
                 android:layout_width="200sp"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="20sp"
                 android:max="4"
+                android:scaleX="2.8"
+                android:scaleY="2.8"
+                android:thumb="@drawable/shape"
+                android:backgroundTint="@color/FEDS_WHITE"
+                android:backgroundTintMode="add"
+                android:progressTintMode="add"
                 android:progressBackgroundTint="@color/FEDS_WHITE"
-                android:scaleX="2.0"
-                android:scaleY="2.0"
-                android:secondaryProgressTint="@color/FEDS_WHITE"
-                android:thumbTint="@color/FEDS_WHITE"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tv" />
@@ -843,33 +753,106 @@
                 android:id="@+id/tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="80sp"
+                android:layout_marginTop="180sp"
                 android:fontFamily="@font/faxsansbeta"
                 android:text="@string/bar_climbed_title"
                 android:textColor="@color/FEDS_WHITE"
                 android:textSize="62sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/stopwatch" />
+                app:layout_constraintTop_toBottomOf="@+id/section_endgame" />
 
             <TextView
                 android:id="@+id/title_rating"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20sp"
+                android:layout_marginTop="50sp"
                 android:fontFamily="@font/faxsansbeta"
                 android:text="@string/overall_rating_title"
                 android:textColor="@color/FEDS_WHITE"
-                android:textSize="52sp"
+                android:textSize="62sp"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.501"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/seekBar" />
+
+            <SeekBar
+                android:id="@+id/seekBar2"
+                android:layout_width="200sp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20sp"
+                android:max="5"
+                android:scaleX="2.8"
+                android:scaleY="2.8"
+                android:thumb="@drawable/shape"
+                android:backgroundTint="@color/FEDS_WHITE"
+                android:backgroundTintMode="add"
+                android:progressTintMode="add"
+                android:progressBackgroundTint="@color/FEDS_WHITE"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/title_rating" />
+
+            <Chronometer
+                android:id="@+id/stopwatch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10sp"
+                android:fontFamily="@font/faxsansbeta"
+                android:textSize="70sp"
+                android:textColor="@color/FEDS_WHITE"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/divider7" />
+
+            <Button
+                android:id="@+id/start"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10sp"
+                android:layout_marginRight="200sp"
+                android:backgroundTint="@color/FEDS_WHITE"
+                android:textColor="@color/FEDS_BLACK"
+                android:text="Start"
+                android:fontFamily="@font/faxsansbeta"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/stopwatch" />
+
+            <Button
+                android:id="@+id/stop"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10sp"
+                android:layout_marginRight="0sp"
+                android:backgroundTint="@color/FEDS_WHITE"
+                android:textColor="@color/FEDS_BLACK"
+                android:text="Stop"
+                android:fontFamily="@font/faxsansbeta"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/stopwatch" />
+
+            <Button
+                android:id="@+id/reset"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10sp"
+                android:layout_marginLeft="200sp"
+                android:backgroundTint="@color/FEDS_WHITE"
+                android:textColor="@color/FEDS_BLACK"
+                android:text="Reset"
+                android:fontFamily="@font/faxsansbeta"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/stopwatch" />
 
             <Button
                 android:id="@+id/finish"
                 android:layout_width="170sp"
                 android:layout_height="80sp"
-                android:layout_marginTop="1900sp"
+                android:layout_marginTop="2100sp"
+                android:fontFamily="@font/faxsansbeta"
                 android:textSize="30sp"
                 android:backgroundTint="@color/FEDS_WHITE"
                 android:text="@string/finish_title"
@@ -880,5 +863,61 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="match_parent"
+            android:layout_height="150sp"
+            android:adjustViewBounds="true"
+            android:src="@drawable/dashboard_static"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/title_dashboard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/faxsansbeta"
+            android:text="@string/dashboard_title"
+            android:textAlignment="center"
+            android:textColor="@color/FEDS_WHITE"
+            android:textSize="74sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/heading_dashboard_teamNum"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="80sp"
+            android:layout_marginRight="190sp"
+            android:fontFamily="@font/faxsansbeta"
+            android:text="@string/dashboard_teamNum"
+            android:textColor="@color/FEDS_WHITE"
+            android:textSize="52sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/heading_dashboard_teamColor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="190sp"
+            android:layout_marginTop="80sp"
+            android:fontFamily="@font/faxsansbeta"
+            android:text="@string/dashboard_color"
+            android:textColor="@color/FEDS_WHITE"
+            android:textSize="52sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
