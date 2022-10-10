@@ -38,7 +38,7 @@ public class ClosedQuestion {
             int indexIntoField = 0;
 
             switch (component) {
-                case "slider":
+                case "check":
                     indexIntoField = CHECK;
                     break;
                 case "text":

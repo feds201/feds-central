@@ -70,6 +70,8 @@ ClosedQuestion
     - TYPE: CheckBox
 
 ### Timer
+    NOTE: FOR THE CHRONOMETER YOU NEED TO NAME THE ID OF THE VIEW THE SAME AS THE NAME (as chronometers change the content description)
+    So, if your field name is 'endgameTime', the chronometer (time component) needs to have an id of 'endgameTime'.
 `Timer Name time/start/stop/reset`
 #### Field Name
 Timer
@@ -77,6 +79,7 @@ Timer
 - Time
   - Name: time
   - Type: Chronometer
+  - NOTE: make id same as name as explained [above](#timer).
 - Start
   - Name: start
   - Type: Button

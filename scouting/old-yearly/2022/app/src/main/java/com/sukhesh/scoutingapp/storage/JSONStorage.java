@@ -103,6 +103,17 @@ public class JSONStorage {
         }
     }
 
+    public void add(String match, String name, long value) {
+        try {
+            JSONObject j = (JSONObject) this.jo.get(match);
+            j.put(name, value);
+            this.jo.put(match, j);
+            this.store();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
     public String makeQuickDebugString(String matchName) { //not to be used legitly :)
         JSONObject match = (JSONObject) this.jo.opt(matchName);
         Iterator<String> keys = match.keys();
