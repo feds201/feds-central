@@ -14,6 +14,7 @@ gathered from match to match, and a main computer to display all relevant inform
 ### Dependencies
 
 * Android Studio Version >= 2021.2.1
+* Device with Android 11(SDK 30) or greater
 
 ### Installing
 
@@ -34,7 +35,7 @@ Fill this in.
 Main contributors
 
 Zayn B. ([@BaizaOP](https://github.com/BaizaOP))  
-Sukhesh S. ([@sukheshCoding](https://github.com/sukheshCoding))
+Sukhesh S. ([@Sukhesh07](https://github.com/Sukhesh07))
 
 The Boys
 Adit G. ([@Adit-champ](https://github.com/Adit-champ))
