@@ -31,7 +31,7 @@ public class JSONStorage {
         JSONObject jo = new JSONObject();
         for (String value : rawMatchList) {
             String[] s = value.split(",");
-            String match = s[0] + s[1];
+            String match = s[0] + s[1] + " " + s[4];
             JSONObject j = new JSONObject();
             j.put("matchType", s[0]);
             j.put("matchNumber", Integer.parseInt(s[1]));
@@ -93,6 +93,17 @@ public class JSONStorage {
     }
 
     public void add(String match, String name, boolean value) {
+        try {
+            JSONObject j = (JSONObject) this.jo.get(match);
+            j.put(name, value);
+            this.jo.put(match, j);
+            this.store();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void add(String match, String name, long value) {
         try {
             JSONObject j = (JSONObject) this.jo.get(match);
             j.put(name, value);

@@ -797,18 +797,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/title_rating" />
 
-            <Chronometer
-                android:id="@+id/stopwatch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10sp"
-                android:fontFamily="@font/faxsansbeta"
-                android:textSize="70sp"
-                android:textColor="@color/FEDS_WHITE"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/divider7" />
-
             <Button
                 android:id="@+id/start"
                 android:layout_width="wrap_content"
@@ -816,12 +804,26 @@
                 android:layout_marginTop="10sp"
                 android:layout_marginRight="200sp"
                 android:backgroundTint="@color/FEDS_WHITE"
-                android:textColor="@color/FEDS_BLACK"
-                android:text="Start"
+                android:contentDescription="Timer endgameTime start"
                 android:fontFamily="@font/faxsansbeta"
+                android:text="Start"
+                android:textColor="@color/FEDS_BLACK"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/stopwatch" />
+                app:layout_constraintTop_toBottomOf="@+id/endgameTime" />
+
+            <Chronometer
+                android:id="@+id/endgameTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10sp"
+                android:contentDescription="Timer endgameTime time"
+                android:fontFamily="@font/faxsansbeta"
+                android:textColor="@color/FEDS_WHITE"
+                android:textSize="70sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/divider7" />
 
             <Button
                 android:id="@+id/stop"
@@ -830,26 +832,28 @@
                 android:layout_marginTop="10sp"
                 android:layout_marginRight="0sp"
                 android:backgroundTint="@color/FEDS_WHITE"
-                android:textColor="@color/FEDS_BLACK"
-                android:text="Stop"
+                android:contentDescription="Timer endgameTime stop"
                 android:fontFamily="@font/faxsansbeta"
+                android:text="Stop"
+                android:textColor="@color/FEDS_BLACK"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/stopwatch" />
+                app:layout_constraintTop_toBottomOf="@+id/endgameTime" />
 
             <Button
                 android:id="@+id/reset"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10sp"
                 android:layout_marginLeft="200sp"
+                android:layout_marginTop="10sp"
                 android:backgroundTint="@color/FEDS_WHITE"
-                android:textColor="@color/FEDS_BLACK"
-                android:text="Reset"
+                android:contentDescription="Timer endgameTime reset"
                 android:fontFamily="@font/faxsansbeta"
+                android:text="Reset"
+                android:textColor="@color/FEDS_BLACK"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/stopwatch" />
+                app:layout_constraintTop_toBottomOf="@+id/endgameTime" />
 
             <Button
                 android:id="@+id/finish"
