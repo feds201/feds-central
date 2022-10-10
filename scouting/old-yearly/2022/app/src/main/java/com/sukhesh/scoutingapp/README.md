@@ -48,6 +48,18 @@ FiniteInt
     - NAME: tally
     - TYPE: TextView
 
+### SeekBar
+`SeekBar Name slider/text`
+#### Field Name
+SeekBar
+##### Components
+- Slider
+  - NAME: slider
+  - TYPE: SeekBar
+- Text
+  - NAME: text
+  - TYPE: TextView
+
 ### ClosedQuestion
 `ClosedQuestion Name check`
 #### Field Name
@@ -58,16 +70,19 @@ ClosedQuestion
     - TYPE: CheckBox
 
 ### Timer
-`Timer Name time/start/stop`
+`Timer Name time/start/stop/reset`
 #### Field Name
 Timer
 #### Components
 - Time
-    - Name: time
-    - Type: Chronometer
+  - Name: time
+  - Type: Chronometer
 - Start
-    - Name: start
-    - Type: ImageButton
+  - Name: start
+  - Type: Button
 - Stop
-    - Name: stop
-    - Type: ImageButton
+  - Name: stop
+  - Type: Button
+- Reset
+  - Name: reset
+  - Type: Button

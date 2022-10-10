@@ -5,38 +5,28 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 
-import androidx.core.content.res.ResourcesCompat;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.fragment.app.Fragment;
 
-import android.os.Handler;
 import android.os.SystemClock;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.Chronometer;
-import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.slider.Slider;
 import com.sukhesh.scoutingapp.fields.ClosedQuestion;
 import com.sukhesh.scoutingapp.fields.FiniteInt;
+import com.sukhesh.scoutingapp.fields.SliderValue;
 import com.sukhesh.scoutingapp.storage.JSONStorage;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
-public class RapidReactDashboard extends Fragment {
-    //Scrollbar jank stuff
-    int tvInt = 0;
-    int tvInt2 = 0;
+public class RapidReactInput extends Fragment {
 
     //Stopwatch global variables
     Chronometer stopwatch;
@@ -99,14 +89,12 @@ public class RapidReactDashboard extends Fragment {
                 storage.add(matchName, f.name, f.value);
             });
             f.minus.setOnClickListener(view -> {
-                f.value--;
-                //if button press is below zero
-                if(f.value < 0) {
-                    Toast.makeText(getActivity(), "You cannot go below 0!", Toast.LENGTH_SHORT).show();
-                    f.value++;
-                } else {
+                if(f.value > 0) {
+                    f.value--;
                     f.tally.setText(String.valueOf(f.value));
                     storage.add(matchName, f.name, f.value);
+                } else {
+                    Toast.makeText(getActivity(), "You cannot go below 0!", Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -119,6 +107,32 @@ public class RapidReactDashboard extends Fragment {
             c.check.setOnClickListener(view -> {
                 c.value = c.check.isChecked();
                 storage.add(matchName, c.name, c.value);
+            });
+        }
+
+
+        rawViews.clear();
+        rootView.findViewsWithText(rawViews, "SliderValue", View.FIND_VIEWS_WITH_CONTENT_DESCRIPTION);
+        ArrayList<SliderValue> sliderValues = SliderValue.generateArrayListFromViews(rawViews);
+        for (SliderValue s: sliderValues) {
+            s.updateValue(storage, matchName);
+            s.slider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                    s.value = i;
+                    s.text.setText(s.defaultText + " " + i);
+                    storage.add(matchName, s.name, s.value);
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+
+                }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+
+                }
             });
         }
 
@@ -141,52 +155,6 @@ public class RapidReactDashboard extends Fragment {
         });
         */
 
-        //Seekbar, throw into shared preferences
-        SeekBar seekBar = rootView.findViewById(R.id.seekBar);
-        TextView tv = rootView.findViewById(R.id.tv);
-        tv.setText("Bar Climbed: " + tvInt);
-
-        SeekBar seekBar2 = rootView.findViewById(R.id.seekBar2);
-        TextView tv2 = rootView.findViewById(R.id.title_rating);
-        tv2.setText("Overall Rating: " + tvInt2);
-
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                tvInt = i;
-                tv.setText("Bar Climbed: " + i);
-
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
-
-        seekBar2.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                tvInt2 = i;
-                tv2.setText("Overall Rating: " + i);
-
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
 
         //Stopwatch
         stopwatch = rootView.findViewById(R.id.stopwatch);

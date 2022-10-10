@@ -20,5 +20,7 @@
         <item>AP,playedDefense,boolean</item>
         <!-- TODO: What is the type for a Timer field? -->
         <item>AQ,endgameTime,int</item>
+        <item>AR,barClimbed,int</item>
+        <item>AS,overallRating,int</item>
     </string-array>
 </resources>

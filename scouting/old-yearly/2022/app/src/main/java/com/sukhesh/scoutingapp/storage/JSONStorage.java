@@ -70,7 +70,6 @@ public class JSONStorage {
         return matchStorage.optBoolean(name);
     }
 
-
     public void add(String match, String name, int value) {
         try {
             JSONObject j = (JSONObject) this.jo.get(match);

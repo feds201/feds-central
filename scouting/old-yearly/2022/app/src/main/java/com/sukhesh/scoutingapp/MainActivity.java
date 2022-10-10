@@ -13,24 +13,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
 
-    /*
-     * Zayn's guide on how this probably works (8/27/22):
-     * Android Studio is pretty cool. You are able to design the layout of an app using a graphical editor.
-     * Then you are able to add functionality to those components using, well, code.
-     * You are also able to keep other data, RESOURCES, in a global variable called R (short for resources)
-     * The format for the layout and the resource data is xml, and can be found under the res folder.
-     *
-     * As many of the pages have the same format (the same bottom navigation bar, background, etc),
-     * instead of copying that for each page you want to have, you make it once, then change a section called a fragment.
-     *
-     * Kind of like those multicolor pens, where you just click the color down and you write with that color.
-     * No need for 4 different pen--pages--when you can just select which color--fragment--you want to use
-     * at any point in time.
-     *
-     * To show a fragment, you need to make a separate .java file for it, then this "main" file
-     * does the work of "inflating" (showing) the corresponding fragment when you select it from the
-     * shared bottom navigation bar.
-     */
+    // TODO: make better comments
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
                     break;
 
                 case R.id.dashboard:
-                    fragment = new RapidReactDashboard();
+                    fragment = new RapidReactInput();
                     break;
 
                 //case R.id.history:

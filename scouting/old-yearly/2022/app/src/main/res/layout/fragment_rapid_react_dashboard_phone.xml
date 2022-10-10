@@ -5,7 +5,7 @@
     android:id="@+id/scrollView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".RapidReactDashboard">
+    tools:context=".RapidReactInput">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -695,10 +695,11 @@
                 android:id="@+id/seekBar"
                 android:layout_width="200sp"
                 android:layout_height="wrap_content"
+                android:contentDescription="SliderValue barClimbed slider"
                 android:max="4"
-                android:scaleY="1.5"
-                android:scaleX="1.5"
                 android:progressBackgroundTint="@color/FEDS_WHITE"
+                android:scaleX="1.5"
+                android:scaleY="1.5"
                 android:secondaryProgressTint="@color/FEDS_WHITE"
                 android:thumbTint="@color/FEDS_WHITE"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -711,11 +712,12 @@
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/FEDS_WHITE"
                 android:backgroundTintMode="add"
-                android:scaleY="1.5"
-                android:scaleX="1.5"
+                android:contentDescription="SliderValue overallRating slider"
                 android:max="5"
                 android:progressBackgroundTint="@color/FEDS_WHITE"
                 android:progressTintMode="add"
+                android:scaleX="1.5"
+                android:scaleY="1.5"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/title_rating" />
@@ -725,6 +727,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="120sp"
+                android:contentDescription="SliderValue barClimbed text"
                 android:fontFamily="@font/faxsansbeta"
                 android:text="@string/bar_climbed_title"
                 android:textColor="@color/FEDS_WHITE"
@@ -738,6 +741,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="50sp"
+                android:contentDescription="SliderValue overallRating text"
                 android:fontFamily="@font/faxsansbeta"
                 android:text="@string/overall_rating_title"
                 android:textColor="@color/FEDS_WHITE"

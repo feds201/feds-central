@@ -76,7 +76,7 @@ public class Home extends Fragment {
             bottomNav.setSelectedItemId(R.id.dashboard);
 
             FragmentTransaction fr = getParentFragmentManager().beginTransaction();
-            fr.replace(R.id.body_container, new RapidReactDashboard());
+            fr.replace(R.id.body_container, new RapidReactInput());
             fr.commit();
         });
         return homeView;
