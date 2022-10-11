@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.view.Menu;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -47,14 +48,6 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.dashboard:
                     fragment = new RapidReactInput();
                     break;
-
-                //case R.id.history:
-                    //fragment = new History();
-                    //break;
-
-               // case R.id.settings:
-                    //fragment = new Settings();
-                   // break;
 
             }
 

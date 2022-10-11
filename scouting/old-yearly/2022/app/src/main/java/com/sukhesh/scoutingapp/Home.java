@@ -4,11 +4,19 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
 import androidx.fragment.app.FragmentTransaction;
@@ -36,6 +44,14 @@ public class Home extends Fragment {
         } else {
             homeView = inflater.inflate(R.layout.fragment_home_phone, container, false);
         }
+
+        Button btn = homeView.findViewById(R.id.buttonofgreatness);
+        btn.setOnClickListener(view -> {
+            FragmentTransaction fr = getParentFragmentManager().beginTransaction();
+            fr.replace(R.id.body_container, new BlueAlliance());
+            fr.commit();
+        });
+
         // access to the view's recycler view object
         RecyclerView qualsList = homeView.findViewById(R.id.rvQuals);
         // set the layout for the recycler
@@ -79,6 +95,8 @@ public class Home extends Fragment {
             fr.replace(R.id.body_container, new RapidReactInput());
             fr.commit();
         });
+
+
         return homeView;
 
     }
