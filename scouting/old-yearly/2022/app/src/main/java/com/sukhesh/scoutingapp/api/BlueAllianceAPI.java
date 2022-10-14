@@ -49,7 +49,23 @@ public class BlueAllianceAPI {
         return sp.getString("rawMatches", "");
     }
 
-    public static String[] returnMatchListFromRequestString(String json, String colorCode) {
+    public static void SendColorCodeToSharedPreferences(SharedPreferences sp, String colorCode) {
+        sp.edit().putString("colorCode", colorCode).apply();
+    }
+
+    public static String GetColorCodeFromSharedPreferences(SharedPreferences sp) {
+        return sp.getString("colorCode", "R1");
+    }
+
+    public static void SendEventCodeToSharedPreferences(SharedPreferences sp, String eventCode) {
+        sp.edit().putString("eventCode", eventCode).apply();
+    }
+
+    public static String GetEventCodeFromSharedPreferences(SharedPreferences sp) {
+        return sp.getString("eventCode", "2015arc");
+    }
+
+    public static String[] returnMatchListFromRequestString(String json, String colorCode, String[] qualsString) {
         String allianceColor = colorCode.charAt(0) == 'R' ? "red" : "blue";
         int allianceNumber = Integer.parseInt(colorCode.substring(1));
         String[] matches;
@@ -78,7 +94,7 @@ public class BlueAllianceAPI {
         {
             e.printStackTrace();
         }
-        return null;
+        return qualsString;
     }
 
     /**

@@ -32,36 +32,25 @@ public class Home extends Fragment {
          */
         // access to this view (see fragment_home.xml)
         // TODO: create a button / input to achieve this!
-        View homeView;
-        Configuration config = getResources().getConfiguration();
-        if (config.smallestScreenWidthDp >= 600) {
-            homeView = inflater.inflate(R.layout.fragment_home, container, false);
-        } else {
-            homeView = inflater.inflate(R.layout.fragment_home_phone, container, false);
-        }
 
         SharedPreferences sp = requireContext().getSharedPreferences("matches", Context.MODE_PRIVATE);
         new Thread(() -> {
-            String eventCode = sp.getString("eventCode", "2021mibg");
+            String eventCode = BlueAllianceAPI.GetEventCodeFromSharedPreferences(sp);
             String rawMatches = BlueAllianceAPI.RequestMatchesByEventCode(eventCode, "5ED1uRm7sTzNCXRwuSyPUnFt3uFuDVpO0lZKFQplA2EjCOsqwSWNzQpqwTTRM2ba");
-            Log.d("rawMatches", rawMatches);
             BlueAllianceAPI.SendRawMatchesToSharedPreferences(sp, rawMatches); // TODO: possibly error prone based on how long the request takes....
         }).start();
-
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         String rawMatches = BlueAllianceAPI.GetRawMatchesFromSharedPreferences(sp);
         // TODO: ideally the color code would come from a LIST or a DROPDOWN so no one messes it up
-        String colorCode = sp.getString("colorCode", "R1");
-        Log.d("raw", String.valueOf(rawMatches.length()));
-        Log.d("raw", colorCode);
-        String[] matches = BlueAllianceAPI.returnMatchListFromRequestString(rawMatches, colorCode);
+        String colorCode = BlueAllianceAPI.GetColorCodeFromSharedPreferences(sp);
+        String[] matches = BlueAllianceAPI.returnMatchListFromRequestString(rawMatches, colorCode, getResources().getStringArray(R.array.quals));
 //        for(String s: matches) {
 //            Log.d("matches", s);
 //        }
-
-        // access to the view's recycler view object
-        RecyclerView qualsList = homeView.findViewById(R.id.rvQuals);
-        // set the layout for the recycler
-        qualsList.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         /*
          * Instantiate Match list from quals.xml using Matches object
@@ -77,6 +66,20 @@ public class Home extends Fragment {
                 e.printStackTrace();
             }
         }
+
+        View homeView;
+        Configuration config = getResources().getConfiguration();
+        if (config.smallestScreenWidthDp >= 600) {
+            homeView = inflater.inflate(R.layout.fragment_home, container, false);
+        } else {
+            homeView = inflater.inflate(R.layout.fragment_home_phone, container, false);
+        }
+
+        // access to the view's recycler view object
+        RecyclerView qualsList = homeView.findViewById(R.id.rvQuals);
+        // set the layout for the recycler
+        qualsList.setLayoutManager(new LinearLayoutManager(getActivity()));
+
 
         /*
          * Set up what happens when a Qual is pressed

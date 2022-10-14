@@ -143,30 +143,10 @@ public class RapidReactInput extends Fragment {
             });
         }
 
-        //clever way to make clicking on the text check the checkbox (We can use it if we find problems trying to click the checkbox)
-        /*
-        TextView leavesTarmacTitle = rootView.findViewById(R.id.leavesTarmacTitle);
-        CheckBox checkBox = rootView.findViewById(R.id.leavesTarmac);
-        leavesTarmacTitle.setOnClickListener(new View.OnClickListener() {
-            int i = 0;
-            @Override
-            public void onClick(View view) {
-                if(i == 1) {
-                    checkBox.setChecked(true);
-                    i--;
-                } else if(i == 0) {
-                    checkBox.setChecked(false);
-                    i++;
-                }
-            }
-        });
-        */
-
 
         //Stopwatch
         rawViews.clear();
         rootView.findViewsWithText(rawViews, "Timer", View.FIND_VIEWS_WITH_CONTENT_DESCRIPTION);
-        Log.d("heyo", String.valueOf(rawViews.size()));
         ArrayList<Timer> timers = Timer.generateArrayListFromViews(rawViews);
         for(Timer t: timers) {
             t.start.setOnClickListener(view -> {
@@ -189,48 +169,10 @@ public class RapidReactInput extends Fragment {
                 t.value = 0;
             });
         }
-//        stopwatch = rootView.findViewById(R.id.stopwatch);
-//        Button start = rootView.findViewById(R.id.start);
-//        Button stop = rootView.findViewById(R.id.stop);
-//        Button reset = rootView.findViewById(R.id.reset);
-//        //Zayn the long variable at the top declared globally is the number to add to shared pref (its called stop, feel free to change it to something else)
-////        //Even if the actual stopwatch displays in seconds the long variable contains the milliseconds
-////        //If you wanna see declare a new global variable of a textview title like endgame title or something and then make it equal the stop variable. It shows the exact time when you press the stop button.
-////            start.setOnClickListener(view -> {
-////                startStopwatch();
-////            });
-////            stop.setOnClickListener(view -> {
-////                stopStopwatch();
-//            });
-//            reset.setOnClickListener(view -> {
-//                resetStopwatch();
-//            });
 
         //Finish Button
         Button finish = rootView.findViewById(R.id.finish);
         finish.setOnClickListener(view -> getParentFragmentManager().beginTransaction().replace(R.id.body_container, new QRPage()).commit());
         return rootView;
     }
-//
-//    //Stopwatch methods
-//    public void startStopwatch() {
-//        if(!running) {
-//            stopwatch.setBase(SystemClock.elapsedRealtime() - stop);
-//            stopwatch.start();
-//            running = true;
-//        }
-//    }
-//
-//    public void stopStopwatch() {
-//        if(running) {
-//            stopwatch.stop();
-//            stop = SystemClock.elapsedRealtime() - stopwatch.getBase();
-//            running = false;
-//        }
-//    }
-//
-//    public void resetStopwatch() {
-//        stopwatch.setBase(SystemClock.elapsedRealtime());
-//        stop = 0;
-//    }
 }
