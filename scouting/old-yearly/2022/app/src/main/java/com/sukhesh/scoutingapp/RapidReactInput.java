@@ -14,12 +14,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Chronometer;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.material.slider.Slider;
 import com.sukhesh.scoutingapp.fields.ClosedQuestion;
 import com.sukhesh.scoutingapp.fields.FiniteInt;
 import com.sukhesh.scoutingapp.fields.SliderValue;
@@ -35,7 +33,7 @@ public class RapidReactInput extends Fragment {
         View rootView;
         Configuration config = getResources().getConfiguration();
         if (config.smallestScreenWidthDp >= 600) {
-            rootView = inflater.inflate(R.layout.fragment_rapid_react_dashboard, container, false);
+            rootView = inflater.inflate(R.layout.fragment_rapid_react_dashboard_tablet, container, false);
         } else {
             rootView = inflater.inflate(R.layout.fragment_rapid_react_dashboard_phone, container, false);
         }

@@ -4,8 +4,8 @@
     tools:ignore="HardcodedText">
 
     <item
-        android:id="@+id/nav_help"
-        android:title="Help"
+        android:id="@+id/nav_manual"
+        android:title="Manual Entry"
         android:icon="@drawable/help_icon"/>
 
 </menu>

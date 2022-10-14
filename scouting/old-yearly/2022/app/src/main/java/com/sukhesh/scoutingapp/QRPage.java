@@ -23,7 +23,7 @@ public class QRPage extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        View rootView = inflater.inflate(R.layout.fragment_qr, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_qr_tablet, container, false);
         SharedPreferences sp = requireContext().getSharedPreferences("matches", Context.MODE_PRIVATE);
         JSONStorage storage = new JSONStorage(sp);
         String keyValueString = storage.makeCitrusCircuitsStyleString(sp.getString("currentMatch", "Q1"), getResources().getStringArray(R.array.codes));

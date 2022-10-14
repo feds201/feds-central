@@ -4,11 +4,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import androidx.fragment.app.Fragment;
 
@@ -17,7 +15,6 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.sukhesh.scoutingapp.api.BlueAllianceAPI;
 import com.sukhesh.scoutingapp.storage.JSONStorage;
 
@@ -54,7 +51,7 @@ public class Home extends Fragment {
         View homeView;
         Configuration config = getResources().getConfiguration();
         if (config.smallestScreenWidthDp >= 600) {
-            homeView = inflater.inflate(R.layout.fragment_home, container, false);
+            homeView = inflater.inflate(R.layout.fragment_home_tablet, container, false);
         } else {
             homeView = inflater.inflate(R.layout.fragment_home_phone, container, false);
         }
@@ -62,7 +59,9 @@ public class Home extends Fragment {
         RecyclerView qualsList = homeView.findViewById(R.id.rvQuals);
         qualsList.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        QualsRecyclerViewAdapter qualsAdapter = new QualsRecyclerViewAdapter(getActivity(), JSONStorage.GetListOfMatches(sp));
+        ManualEntry manualEntry = new ManualEntry();
+        QualsRecyclerViewAdapter qualsAdapter = new QualsRecyclerViewAdapter(getActivity(), manualEntry.getList());
+        //QualsRecyclerViewAdapter qualsAdapter = new QualsRecyclerViewAdapter(getActivity(), JSONStorage.GetListOfMatches(sp));
         qualsList.setAdapter(qualsAdapter);
         qualsList.setItemAnimator(new DefaultItemAnimator());
 

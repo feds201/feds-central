@@ -298,7 +298,7 @@
                 android:id="@+id/button_plus"
                 android:layout_width="50sp"
                 android:layout_height="50sp"
-                android:layout_marginStart="20sp"
+                android:layout_marginStart="135sp"
                 android:layout_marginTop="20sp"
                 android:backgroundTint="@color/FEDS_WHITE"
                 android:contentDescription="FiniteInt autonHighMakes plus"
@@ -314,7 +314,7 @@
                 android:id="@+id/button_plus2"
                 android:layout_width="50sp"
                 android:layout_height="50sp"
-                android:layout_marginStart="20sp"
+                android:layout_marginStart="135sp"
                 android:layout_marginTop="10sp"
                 android:backgroundTint="@color/FEDS_WHITE"
                 android:contentDescription="FiniteInt autonHighMisses plus"
@@ -329,7 +329,7 @@
                 android:id="@+id/button_plus3"
                 android:layout_width="50sp"
                 android:layout_height="50sp"
-                android:layout_marginStart="20sp"
+                android:layout_marginStart="135sp"
                 android:layout_marginTop="30sp"
                 android:backgroundTint="@color/FEDS_WHITE"
                 android:contentDescription="FiniteInt autonLowMakes plus"
@@ -344,7 +344,7 @@
                 android:id="@+id/button_plus4"
                 android:layout_width="50sp"
                 android:layout_height="50sp"
-                android:layout_marginStart="20sp"
+                android:layout_marginStart="135sp"
                 android:layout_marginTop="10sp"
                 android:backgroundTint="@color/FEDS_WHITE"
                 android:contentDescription="FiniteInt autonLowMisses plus"
@@ -359,7 +359,7 @@
                 android:id="@+id/button_plus5"
                 android:layout_width="50sp"
                 android:layout_height="50sp"
-                android:layout_marginStart="20sp"
+                android:layout_marginStart="135sp"
                 android:layout_marginTop="20sp"
                 android:backgroundTint="@color/FEDS_WHITE"
                 android:contentDescription="FiniteInt teleopHighMakes plus"
@@ -374,7 +374,7 @@
                 android:id="@+id/button_plus6"
                 android:layout_width="50sp"
                 android:layout_height="50sp"
-                android:layout_marginStart="20sp"
+                android:layout_marginStart="135sp"
                 android:layout_marginTop="10sp"
                 android:backgroundTint="@color/FEDS_WHITE"
                 android:contentDescription="FiniteInt teleopHighMisses plus"
@@ -389,7 +389,7 @@
                 android:id="@+id/button_plus7"
                 android:layout_width="50sp"
                 android:layout_height="50sp"
-                android:layout_marginStart="20sp"
+                android:layout_marginStart="135sp"
                 android:layout_marginTop="30sp"
                 android:backgroundTint="@color/FEDS_WHITE"
                 android:contentDescription="FiniteInt teleopLowMakes plus"
@@ -404,7 +404,7 @@
                 android:id="@+id/button_plus8"
                 android:layout_width="50sp"
                 android:layout_height="50sp"
-                android:layout_marginStart="20sp"
+                android:layout_marginStart="135sp"
                 android:layout_marginTop="10sp"
                 android:backgroundTint="@color/FEDS_WHITE"
                 android:contentDescription="FiniteInt teleopLowMisses plus"
@@ -419,7 +419,7 @@
                 android:id="@+id/button_minus"
                 android:layout_width="50sp"
                 android:layout_height="50sp"
-                android:layout_marginStart="135sp"
+                android:layout_marginStart="20sp"
                 android:layout_marginTop="20sp"
                 android:backgroundTint="@color/FEDS_WHITE"
                 android:contentDescription="FiniteInt autonHighMakes minus"
@@ -434,7 +434,7 @@
                 android:id="@+id/button_minus2"
                 android:layout_width="50sp"
                 android:layout_height="50sp"
-                android:layout_marginStart="135sp"
+                android:layout_marginStart="20sp"
                 android:layout_marginTop="10sp"
                 android:backgroundTint="@color/FEDS_WHITE"
                 android:contentDescription="FiniteInt autonHighMisses minus"
@@ -449,7 +449,7 @@
                 android:id="@+id/button_minus3"
                 android:layout_width="50sp"
                 android:layout_height="50sp"
-                android:layout_marginStart="135sp"
+                android:layout_marginStart="20sp"
                 android:layout_marginTop="30sp"
                 android:backgroundTint="@color/FEDS_WHITE"
                 android:contentDescription="FiniteInt autonLowMakes minus"
@@ -464,7 +464,7 @@
                 android:id="@+id/button_minus4"
                 android:layout_width="50sp"
                 android:layout_height="50sp"
-                android:layout_marginStart="135sp"
+                android:layout_marginStart="20sp"
                 android:layout_marginTop="10sp"
                 android:backgroundTint="@color/FEDS_WHITE"
                 android:contentDescription="FiniteInt autonLowMisses minus"
@@ -479,7 +479,7 @@
                 android:id="@+id/button_minus5"
                 android:layout_width="50sp"
                 android:layout_height="50sp"
-                android:layout_marginStart="135sp"
+                android:layout_marginStart="20sp"
                 android:layout_marginTop="20sp"
                 android:backgroundTint="@color/FEDS_WHITE"
                 android:contentDescription="FiniteInt teleopHighMakes minus"
@@ -494,7 +494,7 @@
                 android:id="@+id/button_minus6"
                 android:layout_width="50sp"
                 android:layout_height="50sp"
-                android:layout_marginStart="135sp"
+                android:layout_marginStart="20sp"
                 android:layout_marginTop="10sp"
                 android:backgroundTint="@color/FEDS_WHITE"
                 android:contentDescription="FiniteInt teleopHighMisses minus"
@@ -509,7 +509,7 @@
                 android:id="@+id/button_minus7"
                 android:layout_width="50sp"
                 android:layout_height="50sp"
-                android:layout_marginStart="135sp"
+                android:layout_marginStart="20sp"
                 android:layout_marginTop="30sp"
                 android:backgroundTint="@color/FEDS_WHITE"
                 android:contentDescription="FiniteInt teleopLowMakes minus"
@@ -524,7 +524,7 @@
                 android:id="@+id/button_minus8"
                 android:layout_width="50sp"
                 android:layout_height="50sp"
-                android:layout_marginStart="135sp"
+                android:layout_marginStart="20sp"
                 android:layout_marginTop="10sp"
                 android:backgroundTint="@color/FEDS_WHITE"
                 android:contentDescription="FiniteInt teleopLowMisses minus"
@@ -545,8 +545,8 @@
                 android:text="@string/zero"
                 android:textColor="@color/FEDS_WHITE"
                 android:textSize="40sp"
-                app:layout_constraintEnd_toStartOf="@+id/button_minus"
-                app:layout_constraintStart_toEndOf="@+id/button_plus"
+                app:layout_constraintEnd_toStartOf="@+id/button_plus"
+                app:layout_constraintStart_toEndOf="@+id/button_minus"
                 app:layout_constraintTop_toBottomOf="@+id/divider" />
 
             <TextView
@@ -559,8 +559,8 @@
                 android:text="@string/zero"
                 android:textColor="@color/FEDS_WHITE"
                 android:textSize="40sp"
-                app:layout_constraintEnd_toStartOf="@+id/button_minus2"
-                app:layout_constraintStart_toEndOf="@+id/button_plus2"
+                app:layout_constraintEnd_toStartOf="@+id/button_plus2"
+                app:layout_constraintStart_toEndOf="@+id/button_minus2"
                 app:layout_constraintTop_toBottomOf="@+id/tally" />
 
             <TextView
@@ -573,8 +573,8 @@
                 android:text="@string/zero"
                 android:textColor="@color/FEDS_WHITE"
                 android:textSize="40sp"
-                app:layout_constraintEnd_toStartOf="@+id/button_minus3"
-                app:layout_constraintStart_toEndOf="@+id/button_plus3"
+                app:layout_constraintEnd_toStartOf="@+id/button_plus3"
+                app:layout_constraintStart_toEndOf="@+id/button_minus3"
                 app:layout_constraintTop_toBottomOf="@+id/tally2" />
 
             <TextView
@@ -587,8 +587,8 @@
                 android:text="@string/zero"
                 android:textColor="@color/FEDS_WHITE"
                 android:textSize="40sp"
-                app:layout_constraintEnd_toStartOf="@+id/button_minus4"
-                app:layout_constraintStart_toEndOf="@+id/button_plus4"
+                app:layout_constraintEnd_toStartOf="@+id/button_plus4"
+                app:layout_constraintStart_toEndOf="@+id/button_minus4"
                 app:layout_constraintTop_toBottomOf="@+id/tally3" />
 
             <TextView
@@ -601,8 +601,8 @@
                 android:text="@string/zero"
                 android:textColor="@color/FEDS_WHITE"
                 android:textSize="40sp"
-                app:layout_constraintEnd_toStartOf="@+id/button_minus5"
-                app:layout_constraintStart_toEndOf="@+id/button_plus5"
+                app:layout_constraintEnd_toStartOf="@+id/button_plus5"
+                app:layout_constraintStart_toEndOf="@+id/button_minus5"
                 app:layout_constraintTop_toBottomOf="@+id/divider4" />
 
             <TextView
@@ -615,8 +615,8 @@
                 android:text="@string/zero"
                 android:textColor="@color/FEDS_WHITE"
                 android:textSize="40sp"
-                app:layout_constraintEnd_toStartOf="@+id/button_minus6"
-                app:layout_constraintStart_toEndOf="@+id/button_plus6"
+                app:layout_constraintEnd_toStartOf="@+id/button_plus6"
+                app:layout_constraintStart_toEndOf="@+id/button_minus6"
                 app:layout_constraintTop_toBottomOf="@+id/tally5" />
 
             <TextView
@@ -629,8 +629,8 @@
                 android:text="@string/zero"
                 android:textColor="@color/FEDS_WHITE"
                 android:textSize="40sp"
-                app:layout_constraintEnd_toStartOf="@+id/button_minus7"
-                app:layout_constraintStart_toEndOf="@+id/button_plus7"
+                app:layout_constraintEnd_toStartOf="@+id/button_plus7"
+                app:layout_constraintStart_toEndOf="@+id/button_minus7"
                 app:layout_constraintTop_toBottomOf="@+id/tally6" />
 
             <TextView
@@ -643,8 +643,8 @@
                 android:text="@string/zero"
                 android:textColor="@color/FEDS_WHITE"
                 android:textSize="40sp"
-                app:layout_constraintEnd_toStartOf="@+id/button_minus8"
-                app:layout_constraintStart_toEndOf="@+id/button_plus8"
+                app:layout_constraintEnd_toStartOf="@+id/button_plus8"
+                app:layout_constraintStart_toEndOf="@+id/button_minus8"
                 app:layout_constraintTop_toBottomOf="@+id/tally7" />
 
             <CheckBox
@@ -781,7 +781,7 @@
                 android:id="@+id/tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="120sp"
+                android:layout_marginTop="140sp"
                 android:contentDescription="SliderValue barClimbed text"
                 android:fontFamily="@font/faxsansbeta"
                 android:text="@string/bar_climbed_title"
@@ -829,7 +829,7 @@
                 android:contentDescription="Timer endgameTime time"
                 android:fontFamily="@font/faxsansbeta"
                 android:textColor="@color/FEDS_WHITE"
-                android:textSize="30sp"
+                android:textSize="42sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/divider7" />
@@ -909,28 +909,28 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="180sp"
-                    android:layout_marginTop="-40sp"
+                    android:layout_marginTop="80sp"
                     android:fontFamily="@font/faxsansbeta"
                     android:text="@string/dashboard_color"
                     android:textColor="@color/FEDS_WHITE"
                     android:textSize="32sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/title_dashboard" />
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
                     android:id="@+id/heading_dashboard_teamNum"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="-40sp"
                     android:layout_marginRight="180sp"
                     android:fontFamily="@font/faxsansbeta"
                     android:text="@string/dashboard_teamNum"
                     android:textColor="@color/FEDS_WHITE"
+                    android:layout_marginTop="80sp"
                     android:textSize="32sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/title_dashboard" />
+                    app:layout_constraintTop_toTopOf="parent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

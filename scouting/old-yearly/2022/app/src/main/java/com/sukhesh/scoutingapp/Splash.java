@@ -15,7 +15,7 @@
         super.onCreate(savedInstanceState);
         Configuration config = getResources().getConfiguration();
         if (config.smallestScreenWidthDp >= 600) {
-            setContentView(R.layout.activity_splash);
+            setContentView(R.layout.activity_splash_tablet);
         } else {
             setContentView(R.layout.activity_splash_phone);
         }

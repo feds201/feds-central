@@ -1,8 +1,6 @@
 package com.sukhesh.scoutingapp;
 
 import android.content.Context;
-import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +25,7 @@ public class QualsRecyclerViewAdapter extends RecyclerView.Adapter<QualsRecycler
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = mInflater.inflate(R.layout.recyclerview_row, parent, false);
+        View view = mInflater.inflate(R.layout.recyclerview_row_tablet, parent, false);
         return new ViewHolder(view);
     }
 
