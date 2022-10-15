@@ -57,25 +57,59 @@ public class JSONStorage {
         JSONObject jo = new JSONObject(jsonString);
 
         for (String value : rawMatchList) {
-            try {
-                String[] s = value.split(",");
-                String match = s[0] + s[1] + " " + s[3];
-                JSONObject j = new JSONObject();
-                j.put("matchType", s[0]);
-                j.put("matchNumber", Integer.parseInt(s[1]));
-                j.put("teamNumber", Integer.parseInt(s[2]));
-                j.put("robotAllianceInfo", s[3]);
-                jo.put(match, j);
-            }
-            catch (Error error) {
-                return; // don't do it if its buggy!!!!!
-            }
-
+            String[] s = value.split(",");
+            String match = s[0] + s[1] + " " + s[3];
+            JSONObject j = new JSONObject();
+            j.put("matchType", s[0]);
+            j.put("matchNumber", Integer.parseInt(s[1]));
+            j.put("teamNumber", Integer.parseInt(s[2]));
+            j.put("robotAllianceInfo", s[3]);
+            jo.put(match, j);
         }
-        Log.d("appendJson", jo.toString(4));
+
         SharedPreferences.Editor spEditor = sp.edit();
         spEditor.putString("json", jo.toString());
         spEditor.apply();
+    }
+
+    public static boolean validateJSONStrings(String[] strs) {
+        for(String s: strs) {
+           if(!validateJSONString(s)) {
+               return false;
+           }
+        }
+        return true;
+    }
+
+    public static boolean validateJSONString(String s) {
+        if(s.indexOf(',') == -1) {
+            return false;
+        }
+
+        String[] fields = s.split(",");
+
+        if(fields.length != 4) {
+            return false;
+        }
+
+        String matchType = fields[0];
+        String matchNumber = fields[1];
+        String teamNumber = fields[2];
+        String colorCode = fields[3];
+
+        if (matchType.length() < 1 || !(matchType.equals("Q") || matchType.equals("QF") || matchType.equals("SF") || matchType.equals("EF") || matchType.equals("F"))) {
+            return false;
+        }
+        if (matchNumber.length() < 1 || !matchNumber.matches("[0-9]+")) {
+            return false;
+        }
+        if (teamNumber.length() < 1 || !matchNumber.matches("[0-9]+")) {
+            return false;
+        }
+        if(colorCode.length() != 2 || !(colorCode.equals("R1") || colorCode.equals("R2") || colorCode.equals("R3") || colorCode.equals("B1") || colorCode.equals("B2") || colorCode.equals("B3"))) {
+            return false;
+        }
+        return true;
     }
 
 

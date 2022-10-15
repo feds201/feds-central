@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:ems="10"
         android:layout_height="wrap_content"
-        android:minLines="3"
+        android:minLines="1"
         android:maxLines="6"
         android:hint="matchType,matchNumber,teamNumber,colorCode"
         android:gravity="top"

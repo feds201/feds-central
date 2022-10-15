@@ -19,6 +19,7 @@ import com.sukhesh.scoutingapp.storage.JSONStorage;
 import org.json.JSONException;
 
 import java.util.ArrayList;
+import java.util.regex.PatternSyntaxException;
 
 public class ManualEntry extends Fragment {
     @Override
@@ -30,21 +31,77 @@ public class ManualEntry extends Fragment {
 
         create.setOnClickListener(view -> {
             String rawString = input.getText().toString();
-            String[] strs = rawString.split("\n");
-            try {
-                JSONStorage.addMatches(requireContext().getSharedPreferences("matches", Context.MODE_PRIVATE), strs);
-            } catch (JSONException e) {
-                Toast.makeText(getActivity(), "There was an error: please fix the order/syntax of your line.", Toast.LENGTH_SHORT).show();
+            if(rawString.length() > 0) {
+                try
+                {
+                    String[] strs = rawString.split("\n");
+                    if (JSONStorage.validateJSONStrings(strs)) {
+                        try {
+                            JSONStorage.addMatches(requireContext().getSharedPreferences("matches", Context.MODE_PRIVATE), strs);
+                        } catch (JSONException e) {
+                            Toast.makeText(getActivity(), "BRUHHHHHH", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                    else
+                    {
+                        Toast.makeText(getActivity(), "There was an error: please fix the order/syntax of your line.", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                catch (PatternSyntaxException e) {
+                    String strs[] = new String[1];
+                    strs[0] = rawString;
+                    if (JSONStorage.validateJSONStrings(strs)) {
+                        try {
+                            JSONStorage.addMatches(requireContext().getSharedPreferences("matches", Context.MODE_PRIVATE), strs);
+                        } catch (JSONException err) {
+                            Toast.makeText(getActivity(), "BRUHHHHHH", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                    else
+                    {
+                        Toast.makeText(getActivity(), "There was an error: please fix the order/syntax of your line.", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+            } else {
+                Toast.makeText(getActivity(), "Please input something in the right format!", Toast.LENGTH_SHORT).show();
             }
         });
         append.setOnClickListener(view -> {
             String rawString = input.getText().toString();
-            String[] strs = rawString.split("\n");
-            boolean b = false;
-            try {
-                JSONStorage.appendMatches(requireContext().getSharedPreferences("matches", Context.MODE_PRIVATE), strs);
-            } catch (JSONException e) {
-                Toast.makeText(getActivity(), "There was a JSON exception!", Toast.LENGTH_SHORT).show();
+            if(rawString.length() > 0) {
+                try
+                {
+                    String[] strs = rawString.split("\n");
+                    if (JSONStorage.validateJSONStrings(strs)) {
+                        try {
+                            JSONStorage.appendMatches(requireContext().getSharedPreferences("matches", Context.MODE_PRIVATE), strs);
+                        } catch (JSONException e) {
+                            Toast.makeText(getActivity(), "BRUHHHHHH", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                    else
+                    {
+                        Toast.makeText(getActivity(), "There was an error: please fix the order/syntax of your line.", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                catch (PatternSyntaxException e) {
+                    String strs[] = new String[1];
+                    strs[0] = rawString;
+                    if (JSONStorage.validateJSONStrings(strs)) {
+                        try {
+                            JSONStorage.appendMatches(requireContext().getSharedPreferences("matches", Context.MODE_PRIVATE), strs);
+                        } catch (JSONException err) {
+                            Toast.makeText(getActivity(), "BRUHHHHHH", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                    else
+                    {
+                        Toast.makeText(getActivity(), "There was an error: please fix the order/syntax of your line.", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            } else {
+                Toast.makeText(getActivity(), "Please input something in the right format!", Toast.LENGTH_SHORT).show();
             }
         });
         return rootView;
