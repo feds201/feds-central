@@ -55,10 +55,10 @@ public class Robot extends TimedRobot {
 
   public static final int SWERVE_PIGEON = 0;
 
-  public static final double BACK_RIGHT_ENCODER_OFFSET = -0.83740234375;
-  public static final double FRONT_RIGHT_ENCODER_OFFSET = 0.755126953125;
-  public static final double BACK_LEFT_ENCODER_OFFSET = 0.000244140625;
-  public static final double FRONT_LEFT_ENCODER_OFFSET = -0.3359375;
+  public static final double FRONT_LEFT_ENCODER_OFFSET = 0.6586990356445312;
+  public static final double FRONT_RIGHT_ENCODER_OFFSET = 0.745635986328125;
+  public static final double BACK_LEFT_ENCODER_OFFSET = 0.01123046875;
+  public static final double BACK_RIGHT_ENCODER_OFFSET = 0.16309356689453125;
 
   public static final double DEADZONE_THRESHOLD = 0.1;
 
@@ -98,6 +98,8 @@ public class Robot extends TimedRobot {
         swerveDriveConfig.moduleConfig);
     swerveDrive = new FourCornerSwerveDrive(frontLeft, frontRight, backLeft, backRight,
         SWERVE_PIGEON, pose, swerveDriveConfig);
+
+    
   }
 
   private static void configEncoderTalon(TalonSRX talon) {
@@ -161,6 +163,17 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testInit() {
+    swerveDrive.align();
+
+    double [] alignments = new double[4];
+    swerveDrive.getAlignments(alignments);
+
+    System.out.println("Front Left: " + alignments[0]);
+    System.out.println("Front Right: " + alignments[1]);
+    System.out.println("Back Left: " + alignments[2]);
+    System.out.println("Back Right: " + alignments[3]);
+
+
   }
 
   @Override
