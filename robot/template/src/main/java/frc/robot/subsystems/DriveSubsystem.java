@@ -75,4 +75,8 @@ public class DriveSubsystem extends SubsystemBase {
     public void setTargetVelocity(double linearAngle, double linearSpeed, double rotate) {
         this.swerveDrive.setTargetVelocity(linearAngle, linearSpeed, rotate);
     } 
+
+    public double getPoseAngle() {
+        return pose.angle;
+    }
 }
