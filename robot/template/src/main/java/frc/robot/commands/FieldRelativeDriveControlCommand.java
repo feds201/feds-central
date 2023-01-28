@@ -4,7 +4,7 @@ import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
-import frc.robot.Constants.Controller;
+import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.utils.DriveFunctions;
 
@@ -35,8 +35,8 @@ public class FieldRelativeDriveControlCommand extends CommandBase {
         double linearAngle = -Math.atan2(forwardValue, strafeValue) / Math.PI / 2 + 0.25;
         linearAngle = (linearAngle % 1 + 1) % 1;
         linearAngle -= poseAngleValue;
-        double linearSpeed = DriveFunctions.deadzone(Math.sqrt(forwardValue * forwardValue + strafeValue * strafeValue), Controller.DEADZONE_THRESHOLD);
-        double rotate = DriveFunctions.deadzone(rotateXValue, Controller.DEADZONE_THRESHOLD) / 2;
+        double linearSpeed = DriveFunctions.deadzone(Math.sqrt(forwardValue * forwardValue + strafeValue * strafeValue), OIConstants.DEADZONE_THRESHOLD);
+        double rotate = DriveFunctions.deadzone(rotateXValue, OIConstants.DEADZONE_THRESHOLD) / 2;
 
         this.m_drive.setTargetVelocity(linearAngle, linearSpeed, rotate);
     }
