@@ -38,7 +38,7 @@ public class DriveSubsystem extends SubsystemBase {
 
         pose = new RobotPose();
 
-        ISwerveModule frontLeft = new SDSMk4FXModule(ModuleConstants.SWERVE_FRONT_LEFT_STEER, ModuleConstants.SWERVE_FRONT_LEFT_DRIVE,
+        ISwerveModule frontLeft = new SDSMk4FXModule(ModuleConstants.SWERVE_FRONT_LEFT_STEER, ModuleConstants.kSwerveFrontLeftDrive,
             ModuleConstants.SWERVE_FRONT_LEFT_ENCODER, ModuleConstants.FRONT_LEFT_ENCODER_OFFSET,
             swerveDriveConfig.moduleConfig);
         ISwerveModule frontRight = new SDSMk4FXModule(ModuleConstants.SWERVE_FRONT_RIGHT_STEER, ModuleConstants.SWERVE_FRONT_RIGHT_DRIVE,

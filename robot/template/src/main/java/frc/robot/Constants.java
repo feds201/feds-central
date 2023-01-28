@@ -2,7 +2,7 @@ package frc.robot;
 
 public class Constants {
   public static final class ModuleConstants {
-    public static final int SWERVE_FRONT_LEFT_DRIVE = 42;
+    public static final int kSwerveFrontLeftDrive = 42;
     public static final int SWERVE_FRONT_RIGHT_DRIVE = 22;
     public static final int SWERVE_BACK_LEFT_DRIVE = 32;
     public static final int SWERVE_BACK_RIGHT_DRIVE = 12;
