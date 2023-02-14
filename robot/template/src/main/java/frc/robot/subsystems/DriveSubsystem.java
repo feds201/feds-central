@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.ModuleConstants;
 import frc.robot.config.SwerveDriveConfig;
+import frc.robot.sensors.Pigeon;
 import frc.robot.swerve.FourCornerSwerveDrive;
 import frc.robot.swerve.ISwerveModule;
 import frc.robot.swerve.RobotPose;
@@ -24,7 +25,11 @@ public class DriveSubsystem extends SubsystemBase {
 
     private RobotPose pose;
 
+    private Pigeon m_pigeon;
+
     public DriveSubsystem() {
+        this.m_pigeon = Pigeon.getInstance();
+
         TalonSRX talon1 = new TalonSRX(ModuleConstants.kSwerveFrontLeftEncoder);
         TalonSRX talon2 = new TalonSRX(ModuleConstants.kSwerveFrontRightEncoder);
         TalonSRX talon3 = new TalonSRX(ModuleConstants.kSwerveBackLeftEncoder);
@@ -51,7 +56,7 @@ public class DriveSubsystem extends SubsystemBase {
             ModuleConstants.kSwerveBackRightEncoder, ModuleConstants.kBackRightEncoderOffset,
             swerveDriveConfig.moduleConfig);
         this.swerveDrive = new FourCornerSwerveDrive(frontLeft, frontRight, backLeft, backRight,
-            ModuleConstants.kSwervePigeon, pose, swerveDriveConfig);
+            m_pigeon, pose, swerveDriveConfig);
     }
 
     private static void configEncoderTalon(TalonSRX talon) {

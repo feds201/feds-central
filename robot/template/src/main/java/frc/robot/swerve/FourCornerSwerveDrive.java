@@ -4,6 +4,7 @@ import com.ctre.phoenix.sensors.Pigeon2;
 
 import frc.robot.ArrayPool;
 import frc.robot.config.SwerveDriveConfig;
+import frc.robot.sensors.Pigeon;
 
 public class FourCornerSwerveDrive implements ISwerveDrive {
 
@@ -12,7 +13,7 @@ public class FourCornerSwerveDrive implements ISwerveDrive {
 	private final ISwerveModule backLeft;
 	private final ISwerveModule backRight;
 
-	private final Pigeon2 pigeon;
+	private final Pigeon pigeon;
 	private double lastYaw;
 	private double gyroFactor;
 
@@ -39,7 +40,7 @@ public class FourCornerSwerveDrive implements ISwerveDrive {
 
 	public FourCornerSwerveDrive(ISwerveModule frontLeft, ISwerveModule frontRight,
 									ISwerveModule backLeft, ISwerveModule backRight,
-									int pigeonChannel, RobotPose pose,
+									Pigeon pigeon, RobotPose pose,
 									SwerveDriveConfig config) {
 		if (frontLeft == null)
 			throw new IllegalArgumentException("frontLeft is null");
@@ -56,7 +57,7 @@ public class FourCornerSwerveDrive implements ISwerveDrive {
 		this.frontRight = frontRight;
 		this.backLeft = backLeft;
 		this.backRight = backRight;
-		pigeon = new Pigeon2(pigeonChannel);
+		this.pigeon = pigeon;
 
 		this.pose = pose;
 
@@ -532,4 +533,5 @@ public class FourCornerSwerveDrive implements ISwerveDrive {
 		output[4] = angle3;
 		output[5] = ccw ? 1 : 0;
 	}
+
 }

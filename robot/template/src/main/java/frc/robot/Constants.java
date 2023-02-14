@@ -1,6 +1,11 @@
 package frc.robot;
 
 public class Constants {
+
+  public static final class SensorConstants {
+    public static final int kPigeon = 0;
+  }
+
   public static final class ModuleConstants {
     public static final int kSwerveFrontLeftDrive = 42;
     public static final int kSwerveFrontRightDrive = 22;
@@ -21,7 +26,6 @@ public class Constants {
     public static final int kSwerveFrontRightEncoder = 2;
     public static final int kSwerveBackLeftEncoder = 3;
     public static final int kSwerveBackRightEncoder = 1;
-    public static final int kSwervePigeon = 0;
   }
 
   public static final class PowerConstants {
