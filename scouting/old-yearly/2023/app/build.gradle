@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace 'com.example.scoutingapp2023'
+    namespace 'com.feds201.scoutingapp2023'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.example.scoutingapp2023"
+        applicationId "com.feds201.scoutingapp2023"
         minSdk 30
         targetSdk 33
         versionCode 1
