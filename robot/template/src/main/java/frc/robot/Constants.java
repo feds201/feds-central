@@ -35,10 +35,12 @@ public class Constants {
   }
 
   public static final class IntakeConstants {
-    public static final int kIntakeMotor1 = 0;
-    public static final int kIntakeMotor2 = 0;
-    public static final int kIntakeMotor3 = 0;
-    public static final int kIntakeMotor4 = 0;
+    public static final int kIntakeRightDeployMotor = 52;
+    public static final int kIntakeRightWheelMotor = 62;
+    public static final int KrightIntakeControllerChannel = 3232;
+    public static final double kIntakeDeploySpeed = 0.15;
+    public static final double kIntakeWheelSpeed = 0.30;
+    public static final double kIntakeEncoderOffset = 1000;
   }
 
   public static final class ArmConstants {
