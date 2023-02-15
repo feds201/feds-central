@@ -43,9 +43,10 @@ public class Constants {
     // Pheonix IDs
     public static final int kIntakeRightDeployMotor = 52;
     public static final int kIntakeRightWheelMotor = 62;
+    public static final int kIntakeTriggerID = 2;
 
     // Speeds
-    public static final double kIntakeDeploySpeed = 0.15;
+    public static final double kIntakeDeploySpeed = -0.15;
     public static final double kIntakeWheelSpeed = 0.30;
 
     // Encoder Counts
@@ -54,8 +55,15 @@ public class Constants {
   }
 
   public static final class ArmConstants {
-    public static final int kArmMotor1 = 0;
-    public static final int kArmMotor2 = 0;
+
+    //Phoenix ID's
+    public static final int kArmMotor1 = 57;
+    public static final int kArmMotor2 = 58;
+    public static final int kArmPulley = 12;
+
+    //speeds
+    //public static final double kArmMotorSpeed = 0.06;
+    public static final double kArmPulleySpeed = 0.1;
   }
 
   public static final class TelescopeConstants {
