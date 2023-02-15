@@ -3,13 +3,13 @@ package frc.robot.commands.auton.singleCommands;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveSubsystem;
 
-public class Drive extends CommandBase {
+public class FieldCentricDriveAuton extends CommandBase {
     private final DriveSubsystem m_drive;
     private final double m_fieldAngle;
     private final double m_linearSpeed;
     private final double m_rotationalSpeed;
 
-    public Drive(DriveSubsystem drive, double fieldAngle, double linearSpeed, double rotationalSpeed) {
+    public FieldCentricDriveAuton(DriveSubsystem drive, double fieldAngle, double linearSpeed, double rotationalSpeed) {
         m_drive = drive;
         m_fieldAngle = fieldAngle;
         m_linearSpeed = linearSpeed;
