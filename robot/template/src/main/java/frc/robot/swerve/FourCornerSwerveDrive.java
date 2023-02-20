@@ -3,7 +3,6 @@ package frc.robot.swerve;
 import com.ctre.phoenix.sensors.Pigeon2;
 
 import frc.robot.config.SwerveDriveConfig;
-import frc.robot.sensors.Pigeon;
 import frc.robot.utils.ArrayPool;
 
 public class FourCornerSwerveDrive implements ISwerveDrive {
@@ -13,7 +12,7 @@ public class FourCornerSwerveDrive implements ISwerveDrive {
 	private final ISwerveModule backLeft;
 	private final ISwerveModule backRight;
 
-	private final Pigeon pigeon;
+	private final Pigeon2 pigeon;
 	private double lastYaw;
 	private double gyroFactor;
 
@@ -40,7 +39,7 @@ public class FourCornerSwerveDrive implements ISwerveDrive {
 
 	public FourCornerSwerveDrive(ISwerveModule frontLeft, ISwerveModule frontRight,
 									ISwerveModule backLeft, ISwerveModule backRight,
-									Pigeon pigeon, RobotPose pose,
+									Pigeon2 pigeon, RobotPose pose,
 									SwerveDriveConfig config) {
 		if (frontLeft == null)
 			throw new IllegalArgumentException("frontLeft is null");

@@ -1,37 +1,27 @@
 package frc.robot;
 
-import edu.wpi.first.util.sendable.Sendable;
-import edu.wpi.first.wpilibj.XboxController;
+import com.ctre.phoenix.sensors.Pigeon2;
+
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants.IntakeConstants;
-import frc.robot.Constants.OIConstants;
 import frc.robot.commands.auton.BasicAuton;
 import frc.robot.commands.auton.BasicDeadlineAuton;
-import frc.robot.commands.singleCommands.DeployIntake;
-import frc.robot.commands.singleCommands.DriveDuration;
-import frc.robot.commands.singleCommands.RetractIntake;
 import frc.robot.commands.singleCommands.RotateArmToEncoderPosition;
-
-import frc.robot.commands.singleCommands.RunIntakeWheels;
-
 import frc.robot.commands.teleop.FieldRelativeDriveControlCommand;
-import frc.robot.commands.teleop.SwerveDriveControlCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClawSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 
 public class RobotContainer {
-        private final DriveSubsystem m_robotDrive = new DriveSubsystem();
+        private final Pigeon2 m_pigeon = new Pigeon2(Constants.SensorConstants.kPigeon); // TODO: something about this irks me...
+
+        private final DriveSubsystem m_robotDrive = new DriveSubsystem(m_pigeon);
         private final ClawSubsystem m_claw = new ClawSubsystem();
         private final IntakeSubsystem m_intake = new IntakeSubsystem();
         private final ArmSubsystem m_arm = new ArmSubsystem();
@@ -46,6 +36,7 @@ public class RobotContainer {
         SendableChooser<Command> m_autonChooser = new SendableChooser<>();
 
         public RobotContainer() {
+                
                 m_robotDrive.setDefaultCommand(
                                 new FieldRelativeDriveControlCommand(m_robotDrive, () -> -m_driveController.getLeftY(),
                                                 () -> -m_driveController.getLeftX(),

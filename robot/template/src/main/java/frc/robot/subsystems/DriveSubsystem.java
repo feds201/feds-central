@@ -3,13 +3,13 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.sensors.Pigeon2;
 
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.ModuleConstants;
 import frc.robot.config.SwerveDriveConfig;
-import frc.robot.sensors.Pigeon;
 import frc.robot.swerve.FourCornerSwerveDrive;
 import frc.robot.swerve.ISwerveModule;
 import frc.robot.swerve.RobotPose;
@@ -25,10 +25,10 @@ public class DriveSubsystem extends SubsystemBase {
 
     private RobotPose pose;
 
-    private Pigeon m_pigeon;
+    private Pigeon2 m_pigeon;
 
-    public DriveSubsystem() {
-        this.m_pigeon = Pigeon.getInstance();
+    public DriveSubsystem(Pigeon2 pigeon) {
+        this.m_pigeon = pigeon;
 
         TalonSRX talon1 = new TalonSRX(ModuleConstants.kSwerveFrontLeftEncoder);
         TalonSRX talon2 = new TalonSRX(ModuleConstants.kSwerveFrontRightEncoder);
