@@ -1,5 +1,7 @@
 package frc.robot;
 
+import java.util.function.DoubleSupplier;
+
 import com.ctre.phoenix.sensors.Pigeon2;
 
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -9,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.arm.RotateArmRange;
 import frc.robot.commands.arm.RotateArmToEncoderPosition;
 import frc.robot.commands.auton.BasicAuton;
 import frc.robot.commands.auton.BasicDeadlineAuton;
@@ -42,6 +45,10 @@ public class RobotContainer {
                                                 () -> -m_driveController.getLeftX(),
                                                 () -> m_driveController.getRightX(),
                                                 () -> m_robotDrive.getPoseAngle()));
+
+               
+
+                m_arm.setDefaultCommand(new RotateArmRange(m_arm, () -> -m_operatorController.getLeftY(), () -> m_arm.getDangerMode(), -5000, 5000)); // TODO: make constants
 
                 m_autonChooser.setDefaultOption("basicAuton", m_basicAuton);
                 m_autonChooser.addOption("basicDeadlineAuton", m_deadlineAuton);
@@ -89,7 +96,10 @@ public class RobotContainer {
                 // r-stick: precise rotation of arm
 
                 // l-stick press: activate DANGER MODE
+
+                m_operatorController.leftStick().onTrue(new InstantCommand(() -> m_arm.toggleDangerMode()));
                 // l-stick: nothing normally. DANGER MODE: control telescoping arm
+
 
                 // d-pad: control presents for the telescoping arm
                 // l-bumper: reverse intake

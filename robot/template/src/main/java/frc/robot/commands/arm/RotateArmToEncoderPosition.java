@@ -25,4 +25,9 @@ public class RotateArmToEncoderPosition extends CommandBase{
     public void execute(){
         m_arm.rotateArmTo(m_encoderPosition);
     }  
+
+    @Override
+    public boolean isFinished() {
+        return m_encoderPosition == 0 && m_arm.getArmRotationPosition() <= 20 && m_arm.getArmRotationPosition() >= -20;
+    }
 }
