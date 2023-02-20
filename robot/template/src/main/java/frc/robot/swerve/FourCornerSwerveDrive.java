@@ -2,9 +2,9 @@ package frc.robot.swerve;
 
 import com.ctre.phoenix.sensors.Pigeon2;
 
-import frc.robot.ArrayPool;
 import frc.robot.config.SwerveDriveConfig;
 import frc.robot.sensors.Pigeon;
+import frc.robot.utils.ArrayPool;
 
 public class FourCornerSwerveDrive implements ISwerveDrive {
 
