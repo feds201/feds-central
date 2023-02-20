@@ -85,7 +85,7 @@ public class Constants {
   }
 
   public static final class ClawConstants {
-    public static final int kClawMotor = 0;
+    public static final int kClawMotor = 56;
   }
 
 }

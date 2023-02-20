@@ -15,6 +15,10 @@ import frc.robot.commands.arm.RotateArmRange;
 import frc.robot.commands.arm.RotateArmToEncoderPosition;
 import frc.robot.commands.auton.BasicAuton;
 import frc.robot.commands.auton.BasicDeadlineAuton;
+import frc.robot.commands.claw.CloseClaw;
+import frc.robot.commands.claw.HoldBall;
+import frc.robot.commands.claw.HoldCone;
+import frc.robot.commands.claw.OpenClaw;
 import frc.robot.commands.drive.FieldRelativeDriveControlCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClawSubsystem;
@@ -93,6 +97,11 @@ public class RobotContainer {
 
                 // operator
                 // r-bumper: claw open close
+                m_operatorController.b().onTrue(new OpenClaw(m_claw));
+                m_operatorController.a().onTrue(new CloseClaw(m_claw));
+                m_operatorController.x().onTrue(new OpenClaw(m_claw));
+                m_operatorController.y().onTrue(new OpenClaw(m_claw));
+                
                 // r-stick: precise rotation of arm
 
                 // l-stick press: activate DANGER MODE
