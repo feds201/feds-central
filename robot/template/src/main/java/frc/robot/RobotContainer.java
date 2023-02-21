@@ -25,6 +25,7 @@ import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClawSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.TelescopeSubsystem;
 
 public class RobotContainer {
         private final Pigeon2 m_pigeon = new Pigeon2(Constants.SensorConstants.kPigeon); // TODO: something about this irks me...
@@ -33,6 +34,7 @@ public class RobotContainer {
         private final ClawSubsystem m_claw = new ClawSubsystem();
         private final IntakeSubsystem m_intake = new IntakeSubsystem();
         private final ArmSubsystem m_arm = new ArmSubsystem();
+        private final TelescopeSubsystem m_TelescopeSubsystem = new TelescopeSubsystem();
 
         CommandXboxController m_driveController = new CommandXboxController(Constants.OIConstants.kDriveControllerPort);
         CommandXboxController m_operatorController = new CommandXboxController(

@@ -10,13 +10,8 @@ import frc.robot.Constants.TelescopeConstants;
 public class TelescopeSubsystem extends SubsystemBase{
 
     private final TalonFX armTelescopeMotor;
-    private boolean extendArm = false;
-    private extendDirection EXTEND_DIRECTION;
     
-    private enum extendDirection{
-        OUT,
-        IN
-    } 
+     
     
     public TelescopeSubsystem(){
         armTelescopeMotor = new TalonFX(TelescopeConstants.kTelescopeMotor);        
@@ -26,22 +21,20 @@ public class TelescopeSubsystem extends SubsystemBase{
         return armTelescopeMotor.getSelectedSensorPosition();
     }
 
-    public void telescopePreset1(){
-        extendArm = true;
-        EXTEND_DIRECTION = extendDirection.OUT;
+    public void extendTelescope(){
+        armTelescopeMotor.set(ControlMode.PercentOutput,TelescopeConstants.kTelescopeSpeed);
     }
 
     public void stop(){
-        extendArm = false;
+        armTelescopeMotor.set(ControlMode.PercentOutput,0);
+        armTelescopeMotor.setNeutralMode(NeutralMode.Brake);
+    }
+
+    public void retractTelescope(){
+        armTelescopeMotor.set(ControlMode.PercentOutput, -TelescopeConstants.kTelescopeSpeed);
     }
 
     public void periodic(){
-        if(extendArm){
-            armTelescopeMotor.set(ControlMode.PercentOutput,
-            EXTEND_DIRECTION == extendDirection.OUT ? TelescopeConstants.kTelescopeSpeed : -TelescopeConstants.kTelescopeOffset);
-        }
-        else{
-            armTelescopeMotor.setNeutralMode(NeutralMode.Brake);
-        }
+        
     }
 }

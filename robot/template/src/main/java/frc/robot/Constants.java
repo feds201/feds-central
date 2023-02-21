@@ -78,7 +78,7 @@ public class Constants {
     public static final double kTelescopeSpeed = 0.05;
 
     public static final double kTelescopeOffset = 0;
-    public static final double kTelescopePreset1 = 0;
+    public static final double kTelescopeExtended = 6000;
   }
 
   public static final class OrientatorConstants {
