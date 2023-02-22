@@ -6,6 +6,7 @@ import javax.xml.transform.Result;
 
 import org.photonvision.*;
 import org.photonvision.PhotonCamera;
+import org.photonvision.targeting.PhotonPipelineResult;
 
 
 public class Vision extends SubsystemBase{
@@ -13,12 +14,23 @@ public class Vision extends SubsystemBase{
     private PhotonCamera camera;
     private double cameraYaw;
     private double cameraPitch;
+    private double [] target = new double[2];
+    private PhotonPipelineResult result;
     private double cameraRoll;
+    private double distance;
     public Vision(){
         camera = new PhotonCamera("limelightCamera");
+        result = new PhotonPipelineResult(100, null);
     }
 
 
+    public boolean hastarget(){
+        return result.hasTargets();
+    }
+
+    public double [] getTarget(){
+        return target;
+    }
 
     public double getYaw(){
         return cameraYaw;
@@ -28,8 +40,8 @@ public class Vision extends SubsystemBase{
         return cameraPitch;
     }
 
-    public double getCameraRoll(){
-        return cameraRoll;
+    public double getDistance(){
+        return distance;
     }
 
     
