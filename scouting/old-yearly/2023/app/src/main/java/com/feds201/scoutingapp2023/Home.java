@@ -20,7 +20,7 @@ public class Home extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Configuration config = getResources().getConfiguration();
-        View homeView = inflater.inflate(R.layout.fragment_home_phone, container, false);
+        View homeView = inflater.inflate(R.layout.fragment_home_tablet, container, false);
 
         RecyclerView qualsList = homeView.findViewById(R.id.rvQuals);
         qualsList.setLayoutManager(new LinearLayoutManager(getActivity()));

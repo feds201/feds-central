@@ -17,7 +17,7 @@ import androidx.fragment.app.Fragment;
 public class Setup extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View setupView = inflater.inflate(R.layout.fragment_setup_phone, container, false);
+        View setupView = inflater.inflate(R.layout.fragment_setup_tablet, container, false);
         SharedPreferences sp = requireContext().getSharedPreferences("matches", Context.MODE_PRIVATE);
         EditText competitionCodeInput = setupView.findViewById(R.id.compcodeinput);
         EditText colorCodeInput = setupView.findViewById(R.id.alliancecolor);

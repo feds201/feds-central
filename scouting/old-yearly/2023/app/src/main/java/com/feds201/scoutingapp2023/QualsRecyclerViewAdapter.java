@@ -25,7 +25,7 @@ public class QualsRecyclerViewAdapter extends RecyclerView.Adapter<QualsRecycler
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = mInflater.inflate(R.layout.recyclerview_row_phone, parent, false);
+        View view = mInflater.inflate(R.layout.recyclerview_row_tablet, parent, false);
         return new ViewHolder(view);
     }
 
