@@ -70,6 +70,7 @@ public class Constants {
     public static final double kArmRotatePreset1 = 5000;
     public static final double kArmRotateMin = -5000;
     public static final double kArmRotateMax = 5000;
+    public static final double multiplier = 1;
   }
 
   public static final class TelescopeConstants {
