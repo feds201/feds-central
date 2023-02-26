@@ -14,7 +14,17 @@ public class Constants {
 
   public static final double stickDeadband = 0.1;
 
-  public static final class Swerve {
+  public static final class VisionConstants {
+    public static final double limelightOffset = .13;
+    public static final double limelightheight = 1.2;
+    public static final double lowTargetHeight = 1.5;
+    public static final double highTargetHeight = 2.6;
+    public static final double limelightPitchRadians = .67;
+
+    public static final double degreesToEncoderCounts = 175;
+  }
+
+  public static final class SwerveConstants {
     public static final int pigeonID = 0;
     public static final boolean invertGyro = false; // TODO: Always ensure Gyro is CCW+ CW-
 

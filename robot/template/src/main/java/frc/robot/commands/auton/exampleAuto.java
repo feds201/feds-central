@@ -23,7 +23,7 @@ public class exampleAuto extends SequentialCommandGroup {
             new TrajectoryConfig(
                     Constants.AutoConstants.kMaxSpeedMetersPerSecond,
                     Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared)
-                .setKinematics(Constants.Swerve.swerveKinematics);
+                .setKinematics(Constants.SwerveConstants.swerveKinematics);
 
         // An example trajectory to follow.  All units in meters.
         Trajectory exampleTrajectory =
@@ -45,7 +45,7 @@ public class exampleAuto extends SequentialCommandGroup {
             new SwerveControllerCommand(
                 exampleTrajectory,
                 s_Swerve::getPose,
-                Constants.Swerve.swerveKinematics,
+                Constants.SwerveConstants.swerveKinematics,
                 new PIDController(Constants.AutoConstants.kPXController, 0, 0),
                 new PIDController(Constants.AutoConstants.kPYController, 0, 0),
                 thetaController,
