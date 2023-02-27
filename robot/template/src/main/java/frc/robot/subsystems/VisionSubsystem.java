@@ -4,7 +4,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.SensorConstants;
+import frc.robot.Constants.VisionConstants;
 
 import java.util.List;
 
@@ -84,15 +84,15 @@ public class VisionSubsystem extends SubsystemBase{
 
     public double getTargetDistance(){
         if(isTargetLow){
-            distance = PhotonUtils.calculateDistanceToTargetMeters(SensorConstants.limelightheight, 
-                                                                SensorConstants.lowTargetHeight, 
-                                                                SensorConstants.limelightPitchRadians,
+            distance = PhotonUtils.calculateDistanceToTargetMeters(VisionConstants.limelightheight, 
+                                                                VisionConstants.lowTargetHeight, 
+                                                                VisionConstants.limelightPitchRadians,
                                                                 getTargetPitch()); 
         }
         else{
-            distance = PhotonUtils.calculateDistanceToTargetMeters(SensorConstants.limelightheight, 
-                                                                SensorConstants.highTargetHeight, 
-                                                                SensorConstants.limelightPitchRadians,
+            distance = PhotonUtils.calculateDistanceToTargetMeters(VisionConstants.limelightheight, 
+                                                                VisionConstants.highTargetHeight, 
+                                                                VisionConstants.limelightPitchRadians,
                                                                 getTargetPitch());    
         }       
         return distance; 
@@ -113,10 +113,10 @@ public class VisionSubsystem extends SubsystemBase{
     public void strafeAlign(){
         double driveDistance;
         if(getTargetYaw()>=0){
-           driveDistance = (Math.cos(90-getTargetYaw()) * getHorizontalDistanceToTarget()) - SensorConstants.limelightOffset;
+           driveDistance = (Math.cos(90-getTargetYaw()) * getHorizontalDistanceToTarget()) - VisionConstants.limelightOffset;
         }
         else{
-            driveDistance = (Math.cos(90-getTargetYaw()) * getHorizontalDistanceToTarget()) + SensorConstants.limelightOffset;            
+            driveDistance = (Math.cos(90-getTargetYaw()) * getHorizontalDistanceToTarget()) + VisionConstants.limelightOffset;            
         }
     }
     
@@ -125,7 +125,7 @@ public class VisionSubsystem extends SubsystemBase{
     }
 
     public boolean strafeFinished(){
-        return (Math.cos(90-getTargetYaw()) * getHorizontalDistanceToTarget()) == SensorConstants.limelightOffset;
+        return (Math.cos(90-getTargetYaw()) * getHorizontalDistanceToTarget()) == VisionConstants.limelightOffset;
     }
 
     public boolean rotateFinished(){
@@ -133,6 +133,6 @@ public class VisionSubsystem extends SubsystemBase{
     }
 
     public double rotateArmValue(){
-        return SensorConstants.degreesToEncoderCounts * (getTargetPitch() + SensorConstants.limelightPitchRadians + 90);
+        return VisionConstants.degreesToEncoderCounts * (getTargetPitch() + VisionConstants.limelightPitchRadians + 90);
     }
 }
