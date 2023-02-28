@@ -24,13 +24,14 @@ public class SwerveSubsystem extends SubsystemBase {
     public SwerveDriveOdometry swerveOdometry;
     public SwerveModule[] mSwerveMods;
     public Pigeon2 gyro;
+
     public VisionSubsystem limelight;
 
-    public SwerveSubsystem() {
+    public SwerveSubsystem(VisionSubsystem limelight) {
         gyro = new Pigeon2(Constants.SwerveConstants.pigeonID);
         gyro.configFactoryDefault();
         zeroGyro();
-        limelight = new VisionSubsystem();
+        this.limelight = limelight;
 
         mSwerveMods = new SwerveModule[] {
             new SwerveModule(0, Constants.SwerveConstants.Mod0.constants),
@@ -117,9 +118,9 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public void strafeToTarget(boolean isTargetLow){
-        if(limelight.hasTarget()){
+        if(limelight.getHasTarget()){
             limelight.setTargets();
-            limelight.setTargetHeight(isTargetLow);
+            limelight.setTargetLow(isTargetLow);
             limelight.getTargetYaw();
             double strafeTargetDistance = limelight.strafeAlign();
             Translation2d strafeTranslation2d = new Translation2d(strafeTargetDistance, Math.PI / 2);
