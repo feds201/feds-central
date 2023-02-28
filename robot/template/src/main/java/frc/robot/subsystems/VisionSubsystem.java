@@ -23,7 +23,7 @@ public class VisionSubsystem extends SubsystemBase{
     private double cameraPitch;
     private boolean isTargetLow;
     private PhotonPipelineResult result;
-    private double distance;
+    private double cameraToTargetDistance;
     private double horizontalDistance;
     private PhotonTrackedTarget target;
     List<PhotonTrackedTarget> targets;
@@ -93,24 +93,26 @@ public class VisionSubsystem extends SubsystemBase{
     }
 
     public double getTargetDistance(){
+        //This first part sets distace equal to the
         if(isTargetLow){
-            distance = PhotonUtils.calculateDistanceToTargetMeters(VisionConstants.limelightheight, 
+            cameraToTargetDistance = PhotonUtils.calculateDistanceToTargetMeters(VisionConstants.limelightheight, 
                                                                 VisionConstants.lowTargetHeight, 
                                                                 VisionConstants.limelightPitchRadians,
                                                                 getTargetPitch()); 
         }
         else{
-            distance = PhotonUtils.calculateDistanceToTargetMeters(VisionConstants.limelightheight, 
+            cameraToTargetDistance = PhotonUtils.calculateDistanceToTargetMeters(VisionConstants.limelightheight, 
                                                                 VisionConstants.highTargetHeight, 
                                                                 VisionConstants.limelightPitchRadians,
                                                                 getTargetPitch());    
-        }       
-        return Math.sqrt(Math.pow(distance,2) + Math.pow(VisionConstants.limelightToTopArmOffset, 2) - 
-        (2 * distance * VisionConstants.limelightToTopArmOffset * Math.cos((Math.PI / 2) - (getTargetPitch() + VisionConstants.limelightPitchRadians))));
+        }  
+        //Uses law of Cosines to get the distance from arm rotation point to the target     
+        return Math.sqrt(Math.pow(cameraToTargetDistance,2) + Math.pow(VisionConstants.limelightToTopArmOffset, 2) - 
+        (2 * cameraToTargetDistance * VisionConstants.limelightToTopArmOffset * Math.cos((Math.PI / 2) - (getTargetPitch() + VisionConstants.limelightPitchRadians))));
     }
 
     public double getHorizontalDistanceToTarget(){
-        horizontalDistance = Math.cos(cameraPitch + getTargetPitch()) * distance;
+        horizontalDistance = Math.cos(cameraPitch + getTargetPitch()) * cameraToTargetDistance;
         return horizontalDistance;
     }
 
