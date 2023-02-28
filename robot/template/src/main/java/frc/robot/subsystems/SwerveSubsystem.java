@@ -2,8 +2,6 @@ package frc.robot.subsystems;
 
 import frc.robot.swerve.SwerveModule;
 import frc.robot.Constants;
-import frc.robot.subsystems.VisionSubsystem;
-
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -17,7 +15,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class SwerveSubsystem extends SubsystemBase {
@@ -119,7 +116,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     public void strafeToTarget(boolean isTargetLow){
         if(limelight.getHasTarget()){
-            limelight.setTargets();
+            limelight.updateTargetsToLatest();
             limelight.setTargetLow(isTargetLow);
             limelight.getTargetYaw();
             double strafeTargetDistance = limelight.strafeAlign();
