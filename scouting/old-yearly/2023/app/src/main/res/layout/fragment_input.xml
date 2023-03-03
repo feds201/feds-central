@@ -916,16 +916,277 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/teleop_grid" />
 
+            <SeekBar
+                android:id="@+id/teleop_strategybar"
+                android:layout_width="200sp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18sp"
+                android:layout_marginEnd="350sp"
+                android:max="3"
+                android:scaleX="2"
+                android:scaleY="2"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/teleop_strategytitle"
+                app:layout_constraintTop_toTopOf="@+id/teleop_strategytitle" />
+
+            <TextView
+                android:id="@+id/teleop_strategytitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-20sp"
+                android:layout_marginEnd="780sp"
+                android:fontFamily="@font/faxsansbeta"
+                android:text="Strategy?"
+                android:textColor="@color/FEDS_WHITE"
+                android:textSize="40sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/teleop_grid" />
+
+            <CheckBox
+                android:id="@+id/teleop_coopertition"
+                android:layout_width="90sp"
+                android:layout_height="90sp"
+                android:layout_marginTop="-42sp"
+                android:layout_marginStart="300sp"
+                android:button="@null"
+                android:backgroundTint="@color/FEDS_WHITE"
+                android:background="?android:attr/listChoiceIndicatorMultiple"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/teleop_grid" />
+
+            <TextView
+                android:id="@+id/teleop_coopertitiontitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/faxsansbeta"
+                android:text="Coopertition?"
+                android:textColor="@color/FEDS_WHITE"
+                android:layout_marginTop="-20sp"
+                android:layout_marginStart="620sp"
+                android:textSize="40sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/teleop_grid" />
+
+            <TextView
+                android:id="@+id/teleop_strategyviewtext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="150sp"
+                android:layout_marginTop="-30sp"
+                android:textSize="20sp"
+                android:textColor="@color/FEDS_WHITE"
+                android:fontFamily="@font/faxsansbeta"
+                android:text="Please Select An Option!"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/teleop_grid"/>
+
+            <TextView
+                android:id="@+id/teleop_defensetitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40sp"
+                android:layout_marginEnd="450sp"
+                android:text="Played Defense?"
+                android:textSize="40sp"
+                android:textColor="@color/FEDS_WHITE"
+                android:fontFamily="@font/faxsansbeta"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/teleop_grid"/>
+
+            <RadioGroup
+                android:id="@+id/teleop_radiogroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="45sp"
+                android:layout_marginEnd="100sp"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/teleop_defensetitle"
+                app:layout_constraintTop_toBottomOf="@+id/teleop_grid" >
+                <RadioButton
+                    android:id="@+id/radioButton1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="20sp"
+                    android:textColor="@color/FEDS_WHITE"
+                    android:fontFamily="@font/faxsansbeta"
+                    android:text="Team 1" />
+                <RadioButton
+                    android:id="@+id/radioButton2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="20sp"
+                    android:textColor="@color/FEDS_WHITE"
+                    android:fontFamily="@font/faxsansbeta"
+                    android:text="Team 2" />
+                <RadioButton
+                    android:id="@+id/radioButton3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="20sp"
+                    android:textColor="@color/FEDS_WHITE"
+                    android:fontFamily="@font/faxsansbeta"
+                    android:text="Team 3" />
+                <RadioButton
+                    android:id="@+id/radioButton4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="20sp"
+                    android:textColor="@color/FEDS_WHITE"
+                    android:fontFamily="@font/faxsansbeta"
+                    android:text="No Defense" />
+
+            </RadioGroup>
+
+            <ImageButton
+                android:id="@+id/endgame_green"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="60sp"
+                android:layout_marginTop="50sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/green_trans"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/endgame_changestationtitle"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/endgame_yellow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="-90sp"
+                android:layout_marginTop="50sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/yellow_trans"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/endgame_changestationtitle"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/endgame_red"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="-240sp"
+                android:layout_marginTop="50sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/red_trans"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/endgame_changestationtitle"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/endgame_changestationtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="55sp"
+                android:layout_marginEnd="530sp"
+                android:fontFamily="@font/faxsansbeta"
+                android:text="Charge Station?"
+                android:textColor="@color/FEDS_WHITE"
+                android:textSize="40sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/endgame_disabledtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/FEDS_WHITE"
+                android:fontFamily="@font/faxsansbeta"
+                android:layout_marginTop="55sp"
+                android:layout_marginStart="650sp"
+                android:textSize="40sp"
+                android:text="Disabled?"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <CheckBox
+                android:id="@+id/endgame_disabled"
+                android:layout_width="90sp"
+                android:layout_height="90sp"
+                android:layout_marginTop="35sp"
+                android:layout_marginStart="400sp"
+                android:button="@null"
+                android:backgroundTint="@color/FEDS_WHITE"
+                android:background="?android:attr/listChoiceIndicatorMultiple"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/endgame_button_minus"
+                android:layout_width="60sp"
+                android:layout_height="60sp"
+                android:layout_marginTop="142sp"
+                android:layout_marginEnd="430sp"
+                android:backgroundTint="@color/FEDS_WHITE"
+                android:text="@string/minus"
+                android:textAlignment="gravity"
+                android:textColor="@color/FEDS_BLACK"
+                android:textSize="30sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/endgame_linkstitle"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/endgame_tally"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="410sp"
+                android:fontFamily="@font/faxsansbeta"
+                android:text="@string/zero"
+                android:textColor="@color/FEDS_WHITE"
+                android:textSize="50sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/endgame_button_minus"
+                app:layout_constraintTop_toTopOf="@+id/endgame_button_minus" />
+
+            <Button
+                android:id="@+id/endgame_button_plus"
+                android:layout_width="60sp"
+                android:layout_height="60sp"
+                android:layout_marginEnd="350sp"
+                android:backgroundTint="@color/FEDS_WHITE"
+                android:text="@string/plus"
+                android:textAlignment="gravity"
+                android:textColor="@color/FEDS_BLACK"
+                android:textSize="30sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/endgame_tally"
+                app:layout_constraintTop_toTopOf="@+id/endgame_tally"
+                tools:ignore="HardcodedText" />
+
+            <TextView
+                android:id="@+id/endgame_linkstitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="150sp"
+                android:textColor="@color/FEDS_WHITE"
+                android:fontFamily="@font/faxsansbeta"
+                android:textSize="40sp"
+                android:layout_marginEnd="180sp"
+                android:text="Links?"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
+
             <Button
                 android:id="@+id/endgame_finish"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/FEDS_BLACK"
+                android:layout_marginTop="220sp"
                 android:text="Finish"
-                android:layout_marginTop="120sp"
+                android:textColor="@color/FEDS_BLACK"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/auton_grid" />
+                app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
