@@ -217,6 +217,7 @@ public class Constants {
     public static final int kArmPutMiddle = 10_000; // TODO: tune these
     public static final int kArmPutLow = 10_000;
 
+    public static final double kSetRobotToTarget = 0.4;
   }
 
   public static final class TelescopeConstants {

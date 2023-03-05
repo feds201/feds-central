@@ -2,7 +2,7 @@ package frc.robot.subsystems;
 
 import frc.robot.swerve.SwerveModule;
 import frc.robot.Constants;
-
+import frc.robot.Constants.ArmConstants;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -135,6 +135,39 @@ public class SwerveSubsystem extends SubsystemBase {
     public boolean finishedStrafeTarget() {
         return limelight.strafeFinished();
     }
+
+    public void driveToTarget(boolean isTargetLow){
+        limelight.updateResultToLatest();
+        if (limelight.getHasTarget()) {
+            limelight.updateTargetsToLatest();
+            limelight.setTarget(isTargetLow);
+
+            double moveToTargetDistance = limelight.getHorizontalDistanceToTarget() - ArmConstants.kSetRobotToTarget;
+            Translation2d targetTranslation2d = new Translation2d(moveToTargetDistance, 0);
+            drive(targetTranslation2d, 0, false, false);
+        }
+    }
+
+    public boolean finishedMoveToTarget(boolean isTargetLow){
+        limelight.updateResultToLatest();
+        if (limelight.getHasTarget()) {
+            limelight.updateTargetsToLatest();
+            limelight.setTarget(isTargetLow);            
+        }
+        return limelight.getHorizontalDistanceToTarget() == ArmConstants.kSetRobotToTarget;
+    }
+
+    /*public void rotateToTarget(boolean isTargetLow){
+        limelight.updateResultToLatest();
+        if (limelight.getHasTarget()) {
+            limelight.updateTargetsToLatest();
+            limelight.setTarget(isTargetLow);
+            limelight.getTargetYaw();
+            
+            double rotateAngle = limelight.rotateAlign();
+
+        }
+    }*/
 
 
     public double getGyroPitch() {

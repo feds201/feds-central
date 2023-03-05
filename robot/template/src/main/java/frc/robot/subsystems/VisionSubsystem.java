@@ -53,6 +53,9 @@ public class VisionSubsystem extends SubsystemBase {
         }
     }
 
+    public void setTarget(){
+        target = result.getBestTarget();
+    }
     public void setTarget(boolean isTargetLow) {
         
         this.isTargetLow = isTargetLow;
@@ -91,7 +94,7 @@ public class VisionSubsystem extends SubsystemBase {
         return cameraPitch;
     }
 
-    public double getTargetDistance(){
+    public double getTargetDistance(boolean isTargetLow){
         if(isTargetLow){
             cameraDistanceToTarget = PhotonUtils.calculateDistanceToTargetMeters(VisionConstants.limelightheight, 
                                                                 VisionConstants.lowTargetHeight, 
@@ -107,19 +110,47 @@ public class VisionSubsystem extends SubsystemBase {
         
         // This is the law of cosines
         // C^2 = A^2 + B^2 - 2*A*Bcos(theta)
-        double cameraDistanceToTargetSquared = Math.pow(cameraDistanceToTarget, 2); // this is A^2
-        double limelightToArmRotateAxisSquared = Math.pow(VisionConstants.limelightToTopArmOffset, 2); // this is B^2
-        double theta = Math.PI / 2 - getTargetPitch() - VisionConstants.limelightPitchRadians;
+        //double cameraDistanceToTargetSquared = Math.pow(cameraDistanceToTarget, 2); // this is A^2
+        //double limelightToArmRotateAxisSquared = Math.pow(VisionConstants.limelightToTopArmOffset, 2); // this is B^2
+        //double theta = Math.PI / 2 - getTargetPitch() - VisionConstants.limelightPitchRadians;
     
         //                        A^2                        +              B^2                - 2 *             A          *                        B                *     cos(theta)                      
-        double rightHandSide = cameraDistanceToTargetSquared + limelightToArmRotateAxisSquared - 2 * cameraDistanceToTarget * VisionConstants.limelightToTopArmOffset * Math.cos(theta);
+        //double rightHandSide = cameraDistanceToTargetSquared + limelightToArmRotateAxisSquared - 2 * cameraDistanceToTarget * VisionConstants.limelightToTopArmOffset * Math.cos(theta);
 
         // C = sqrt(rightHandSize)
-        return Math.sqrt(rightHandSide);
+        //return Math.sqrt(rightHandSide);
+        return cameraDistanceToTarget;
+    }
+    
+    public double getTargetDistance(){
+        if(targets.size() == 1){
+            cameraDistanceToTarget = PhotonUtils.calculateDistanceToTargetMeters(VisionConstants.limelightheight, 
+                                                                VisionConstants.lowTargetHeight, 
+                                                                VisionConstants.limelightPitchRadians,
+                                                                getTargetPitch());
+        }
+        else{
+            cameraDistanceToTarget = PhotonUtils.calculateDistanceToTargetMeters(VisionConstants.limelightheight, 
+                                                                VisionConstants.highTargetHeight, 
+                                                                VisionConstants.limelightPitchRadians,
+                                                                getTargetPitch());   
+        }
+        // This is the law of cosines
+        // C^2 = A^2 + B^2 - 2*A*Bcos(theta)
+        //double cameraDistanceToTargetSquared = Math.pow(cameraDistanceToTarget, 2); // this is A^2
+        //double limelightToArmRotateAxisSquared = Math.pow(VisionConstants.limelightToTopArmOffset, 2); // this is B^2
+        //double theta = Math.PI / 2 - getTargetPitch() - VisionConstants.limelightPitchRadians;
+    
+        //                        A^2                        +              B^2                - 2 *             A          *                        B                *     cos(theta)                      
+        //double rightHandSide = cameraDistanceToTargetSquared + limelightToArmRotateAxisSquared - 2 * cameraDistanceToTarget * VisionConstants.limelightToTopArmOffset * Math.cos(theta);
+
+        // C = sqrt(rightHandSize)
+        //return Math.sqrt(rightHandSide);
+        return cameraDistanceToTarget;
     }
 
     public double getHorizontalDistanceToTarget(){
-        horizontalDistance = Math.cos(cameraPitch + getTargetPitch()) * cameraDistanceToTarget;
+        horizontalDistance = Math.cos(cameraPitch + getTargetPitch()) * getTargetDistance();
         return horizontalDistance;
     }
 
@@ -150,8 +181,7 @@ public class VisionSubsystem extends SubsystemBase {
         return false;
     }
 
-    public double rotateArmValue() {
-        double sinRotateAngle = Math.sin((Math.PI / 2) - (getTargetPitch() + VisionConstants.limelightPitchRadians));
-        return Math.asin(sinRotateAngle);
+    public double rotateAlign() {
+        return getTargetYaw();
     }
 }
