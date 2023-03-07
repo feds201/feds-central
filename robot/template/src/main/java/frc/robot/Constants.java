@@ -195,12 +195,12 @@ public class Constants {
     public static final int kIntakeTriggerID = 2;
 
     // Speeds
-    public static final double kIntakeDeploySpeed = 0.1;
-    public static final double kIntakeRetractSpeed = -0.3;
-    public static final double kIntakeWheelSpeed = 0.15;
+    public static final double kIntakeDeploySpeed = 0.30;
+    public static final double kIntakeRetractSpeed = -0.2;
+    public static final double kIntakeWheelSpeed = -0.30;
 
-    public static final double kDeployTime = 0.7;
-    public static final double kRetractTime = 2;
+    public static final double kDeployTime = 1;
+    public static final double kRetractTime = 0.5;
 
     // Encoder Counts
     public static final double kIntakeEncoderOffsetDeployed = 2640;

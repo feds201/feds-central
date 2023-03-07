@@ -12,15 +12,16 @@ public class IntakeSubsystem extends SubsystemBase {
 
     private final TalonFX intakeDeployMotor;
     private final TalonFX intakeWheelMotor;
+    private final boolean invert;
 
-
-    public IntakeSubsystem(int intakeDeployID, int intakeWheelID) {
+    public IntakeSubsystem(int intakeDeployID, int intakeWheelID, boolean invert) {
         intakeDeployMotor = new TalonFX(intakeDeployID);
         intakeWheelMotor = new TalonFX(intakeWheelID);
         intakeDeployMotor.enableVoltageCompensation(true);
         intakeWheelMotor.enableVoltageCompensation(true);
 
         intakeDeployMotor.setNeutralMode(NeutralMode.Brake);
+        this.invert = invert;
     }
 
     public double getPositionEncoderCounts() {
@@ -28,11 +29,19 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void rotateIntakeForwards() {
-        intakeDeployMotor.set(TalonFXControlMode.PercentOutput, Constants.IntakeConstants.kIntakeDeploySpeed);
+        if(invert) {
+            intakeDeployMotor.set(TalonFXControlMode.PercentOutput, -Constants.IntakeConstants.kIntakeDeploySpeed);
+        } else {
+            intakeDeployMotor.set(TalonFXControlMode.PercentOutput, Constants.IntakeConstants.kIntakeDeploySpeed);
+        }
     }
 
     public void rotateIntakeBackwards() {
-        intakeDeployMotor.set(TalonFXControlMode.PercentOutput, Constants.IntakeConstants.kIntakeRetractSpeed);
+        if(invert) {
+            intakeDeployMotor.set(TalonFXControlMode.PercentOutput, -Constants.IntakeConstants.kIntakeRetractSpeed);
+        } else {
+            intakeDeployMotor.set(TalonFXControlMode.PercentOutput, Constants.IntakeConstants.kIntakeRetractSpeed);
+        }
     }
 
     public void stopIntakeRotation() {

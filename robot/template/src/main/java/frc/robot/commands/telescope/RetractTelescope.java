@@ -1,6 +1,5 @@
 package frc.robot.commands.telescope;
 
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.TelescopeConstants;
 import frc.robot.subsystems.TelescopeSubsystem;

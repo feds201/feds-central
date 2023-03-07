@@ -16,7 +16,9 @@ import frc.robot.commands.auton.exampleAuto;
 import frc.robot.commands.drive.LockWheels;
 import frc.robot.commands.drive.TeleopSwerve;
 import frc.robot.commands.intake.DeployIntake;
+import frc.robot.commands.intake.DeployIntakeGroup;
 import frc.robot.commands.intake.RetractIntake;
+import frc.robot.commands.intake.RetractIntakeGroup;
 import frc.robot.commands.intake.RunIntakeWheels;
 import frc.robot.commands.intake.StopIntakeWheels;
 import frc.robot.commands.orientator.RunOrientator;
@@ -41,7 +43,7 @@ public class RobotContainer {
     private final OrientatorSubsystem s_orientator;
     private final TelescopeSubsystem s_telescope;
     private final IntakeSubsystem s_intakeRed;
-    private final IntakeSubsystem s_intakeBlue;
+    // private final IntakeSubsystem s_intakeBlue;
     private final ClawSubsystem s_claw;
 
     CommandXboxController m_driveController = new CommandXboxController(Constants.OIConstants.kDriveControllerPort);
@@ -53,9 +55,10 @@ public class RobotContainer {
     public RobotContainer() {
         s_vision = new VisionSubsystem();
         s_intakeRed = new IntakeSubsystem(IntakeConstants.kIntakeRedRightDeployMotor,
-                IntakeConstants.kIntakeRedRightDeployMotor);
-        s_intakeBlue = new IntakeSubsystem(IntakeConstants.kIntakeBlueLeftDeployMotor,
-                IntakeConstants.kIntakeBlueLeftWheelMotor);
+                IntakeConstants.kIntakeRedRightDeployMotor, true);
+        // s_intakeBlue = new
+        // IntakeSubsystem(IntakeConstants.kIntakeBlueLeftDeployMotor,
+        // IntakeConstants.kIntakeBlueLeftWheelMotor, false);
         s_telescope = new TelescopeSubsystem();
         s_orientator = new OrientatorSubsystem();
         s_swerve = new SwerveSubsystem(s_vision);
@@ -82,23 +85,15 @@ public class RobotContainer {
     private void configureButtonBindings() {
         // driver
         // right bumper: claw open close
-        // l-trigger: left intake open
-        // r-trigger: right intake open TODO: ask if this should be based on field
-        // orientation?
+        // r-trigger: intake open
         m_driveController.y().onTrue(new InstantCommand(() -> s_swerve.zeroGyro()));
 
         m_driveController.start().onTrue(new LockWheels(s_swerve));
 
-        // m_driveController.rightBumper().onTrue(
-        // new SequentialCommandGroup(
-        // new DeployIntake(s_intakeRed),
-        // new ParallelCommandGroup(
-        // new RunIntakeWheels(s_intakeRed),
-        // new RunOrientator(s_orientator))));
-
-        // m_driveController.rightTrigger().onTrue(
-        // new SequentialCommandGroup(
-        // new StopIntakeWheels(s_intakeRed),
+        m_driveController.rightTrigger().onTrue(new DeployIntakeGroup(s_intakeRed, s_orientator));
+        m_driveController.rightBumper().onTrue(new RetractIntakeGroup(s_intakeRed, s_orientator));
+        
+        // new StopIntakeWheels(s_intakeRed)));
         // new ParallelCommandGroup(
         // new RetractIntake(s_intakeRed),
         // new RunOrientator(s_orientator))));
@@ -106,6 +101,7 @@ public class RobotContainer {
         // m_driveController.leftBumper().onTrue(
         // new SequentialCommandGroup(
         // new DeployIntake(s_intakeBlue),
+        // new RunIntakeWheels(s_intakeBlue)));
         // new ParallelCommandGroup(
         // new RunIntakeWheels(s_intakeBlue),
         // new RunOrientator(s_orientator))));
@@ -113,8 +109,8 @@ public class RobotContainer {
         // m_driveController.leftTrigger().onTrue(
         // new SequentialCommandGroup(
         // new StopIntakeWheels(s_intakeBlue),
-        // new ParallelCommandGroup(
-        // new RetractIntake(s_intakeBlue),
+        // // new ParallelCommandGroup(
+        // new RetractIntake(s_intakeBlue)));
         // new RunOrientator(s_orientator))));
 
         // operator
@@ -160,7 +156,7 @@ public class RobotContainer {
         // m_operatorController.leftBumper().onTrue(new ClawCube(s_claw)); //Create new
         // Commands
 
-        m_operatorController.b().onTrue(new OpenClaw(s_claw));
+        // m_operatorController.b().onTrue(new OpenClaw(s_claw));
 
     }
 
