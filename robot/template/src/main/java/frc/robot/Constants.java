@@ -254,10 +254,18 @@ public class Constants {
   public static final class TelescopeConstants {
     public static final int kTelescopeMotor = 60;
 
-    public static final double kTelescopeSpeed = 0.5;
+    public static final double kP = 0.05; // FIXME: CONFIG THIS
+    public static final double kI = 0;
+    public static final double kD = 0;
 
+    public static final int    peakVelocity        = 13360; // What could this be?
+    public static final double percentOfPeak       = .15;
+    public static final double cruiseVelocityAccel = peakVelocity * percentOfPeak;
+    
+    // Setpoints
     public static final double kTelescopeOffset = 0;
-    public static final double kTelescopeExtended = 6000;
+    public static final double kTelescopeExtended = 6000; // FIXME: CONFIG THIS
+    public static final double kTelescopeThreshold = 100;
   }
 
   public static final class OrientatorConstants {

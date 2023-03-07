@@ -8,33 +8,29 @@ import frc.robot.subsystems.TelescopeSubsystem;
 public class ExtendTelescope extends CommandBase{
 
     private final TelescopeSubsystem s_telescope;
-    private final Timer m_timer;
 
     public ExtendTelescope(TelescopeSubsystem s_telescope){
         this.s_telescope = s_telescope;
-        m_timer = new Timer();
 
         addRequirements(this.s_telescope);
     }
     
     @Override
     public void initialize(){
-        m_timer.reset();
-        m_timer.start();
     }
 
     @Override
     public void execute(){
-        s_telescope.extendTelescope();
+        s_telescope.setTelescopePosition(TelescopeConstants.kTelescopeExtended);
     }
 
     @Override
     public boolean isFinished(){
-        return m_timer.hasElapsed(2);
+        return Math.abs(s_telescope.getTelescopePosition() - TelescopeConstants.kTelescopeExtended) < TelescopeConstants.kTelescopeThreshold;
     }
 
     @Override
     public void end(boolean interrupted){
-        s_telescope.stop();
+        s_telescope.stopTelescopeMotion();
     }
 }

@@ -8,33 +8,29 @@ import frc.robot.subsystems.TelescopeSubsystem;
 public class RetractTelescope extends CommandBase{
 
     private final TelescopeSubsystem s_telescope;
-    private final Timer m_timer;
-    
+
     public RetractTelescope(TelescopeSubsystem s_telescope){
         this.s_telescope = s_telescope;
-        m_timer = new Timer();
 
         addRequirements(this.s_telescope);
     }
+    
     @Override
     public void initialize(){
-        m_timer.reset();
-        m_timer.start();
     }
 
     @Override
     public void execute(){
-        s_telescope.retractTelescope();
+        s_telescope.setTelescopePosition(0);
     }
 
     @Override
     public boolean isFinished(){
-        return m_timer.hasElapsed(2);
+        return Math.abs(s_telescope.getTelescopePosition() - 0) < TelescopeConstants.kTelescopeThreshold;
     }
 
     @Override
     public void end(boolean interrupted){
-        s_telescope.stop();
+        s_telescope.stopTelescopeMotion();
     }
-    
 }
