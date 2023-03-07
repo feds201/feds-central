@@ -16,7 +16,9 @@ import frc.robot.commands.auton.exampleAuto;
 import frc.robot.commands.drive.LockWheels;
 import frc.robot.commands.drive.TeleopSwerve;
 import frc.robot.commands.intake.DeployIntake;
+import frc.robot.commands.intake.DeployIntakeGroup;
 import frc.robot.commands.intake.RetractIntake;
+import frc.robot.commands.intake.RetractIntakeGroup;
 import frc.robot.commands.intake.RunIntakeWheels;
 import frc.robot.commands.intake.StopIntakeWheels;
 import frc.robot.commands.orientator.RunOrientator;
@@ -83,16 +85,14 @@ public class RobotContainer {
     private void configureButtonBindings() {
         // driver
         // right bumper: claw open close
-        // l-trigger: left intake open
-        // r-trigger: right intake open TODO: ask if this should be based on field
-        // orientation?
+        // r-trigger: intake open
         m_driveController.y().onTrue(new InstantCommand(() -> s_swerve.zeroGyro()));
 
         m_driveController.start().onTrue(new LockWheels(s_swerve));
 
-        m_driveController.rightBumper().onTrue(new DeployIntakeGroup(s_intakeRed, s_orientator));
+        m_driveController.rightTrigger().onTrue(new DeployIntakeGroup(s_intakeRed, s_orientator));
+        m_driveController.rightBumper().onTrue(new RetractIntakeGroup(s_intakeRed, s_orientator));
         
-        m_driveController.rightTrigger().onTrue(new RetractIntakeGroup(s_intakeRed, s_orientator));
         // new StopIntakeWheels(s_intakeRed)));
         // new ParallelCommandGroup(
         // new RetractIntake(s_intakeRed),
