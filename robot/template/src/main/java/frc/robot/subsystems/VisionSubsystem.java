@@ -30,7 +30,7 @@ public class VisionSubsystem extends SubsystemBase {
     public VisionSubsystem() {
         m_camera = new PhotonCamera("limelightCamera");
         target = new PhotonTrackedTarget();
-        isTargetLow = true;
+        //isTargetLow = true;
     }
 
     public void updateResultToLatest() {
@@ -178,7 +178,7 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     public boolean rotateFinished() {
-        return false;
+        return getTargetYaw() == 0;
     }
 
     public double rotateAlign() {

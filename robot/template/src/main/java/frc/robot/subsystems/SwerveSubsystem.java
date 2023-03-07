@@ -157,6 +157,17 @@ public class SwerveSubsystem extends SubsystemBase {
         return limelight.getHorizontalDistanceToTarget() == ArmConstants.kSetRobotToTarget;
     }
 
+    public void rotateToTarget(boolean isTargetLow){
+        limelight.updateResultToLatest();
+        if(limelight.getHasTarget()){
+            limelight.updateTargetsToLatest();
+            limelight.setTarget(isTargetLow);
+
+            double rotateAmount = limelight.rotateAlign();
+            
+        }
+    }
+
     /*public void rotateToTarget(boolean isTargetLow){
         limelight.updateResultToLatest();
         if (limelight.getHasTarget()) {
