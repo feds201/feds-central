@@ -8,13 +8,12 @@ public class MoveToTarget extends CommandBase{
     private final SwerveSubsystem s_swerve;
     private final boolean isTargetLow;
 
-    public MoveToTarget(SwerveSubsystem Swerve_S, boolean isTargetLow){
-        this.s_swerve = Swerve_S;
+    public MoveToTarget(SwerveSubsystem swerve, boolean isTargetLow){
+        this.s_swerve = swerve;
         this.isTargetLow = isTargetLow;
 
 
         addRequirements(this.s_swerve);
-
     }
 
     @Override
