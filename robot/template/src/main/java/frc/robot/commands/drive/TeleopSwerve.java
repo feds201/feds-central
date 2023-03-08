@@ -7,6 +7,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
@@ -31,6 +32,10 @@ public class TeleopSwerve extends CommandBase {
     @Override
     public void execute() {
         /* Get Values, Deadband*/
+
+        //SlewRateLimiter translationLimiter = new SlewRateLimiter(0.5);
+        //SlewRateLimiter strafeLimiter = new SlewRateLimiter(0.5);
+        
         double translationVal = MathUtil.applyDeadband(translationSup.getAsDouble(), Constants.stickDeadbandDrive);
         double strafeVal = MathUtil.applyDeadband(strafeSup.getAsDouble(), Constants.stickDeadbandDrive);
         double rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.stickDeadbandTurn);

@@ -242,9 +242,9 @@ public class Constants {
     
     // setpoints
     public static final double kArmHome = -500;
-    public static final double kArmPutHigh = Conversions.degreesToFalcon(-110.0, ArmConstants.kArmGearRatio);
+    public static final double kArmPutHigh = Conversions.degreesToFalcon(-95.0, ArmConstants.kArmGearRatio);
     public static final double kArmPutMiddle = Conversions.degreesToFalcon(-60.0, ArmConstants.kArmGearRatio); // TODO: tune these
-    public static final double kArmPutLow = Conversions.degreesToFalcon(-40, kArmGearRatio);
+    public static final double kArmPutLow = Conversions.degreesToFalcon(-50, kArmGearRatio);
     public static final double kArmGoalThreshold = Conversions.degreesToCANcoder(5, ArmConstants.kArmGearRatio);
     public static final double kArmPickConeLeft = Conversions.degreesToFalcon(-20, ArmConstants.kArmGearRatio);
     public static final double kArmPickConeRight = Conversions.degreesToFalcon(-25, ArmConstants.kArmGearRatio);
@@ -258,14 +258,14 @@ public class Constants {
     public static final double kI = 0;
     public static final double kD = 0;
 
-    public static final int    peakVelocity        = 13360; // What could this be?
-    public static final double percentOfPeak       = .15;
+    public static final int    peakVelocity        = 100_000; // What could this be?
+    public static final double percentOfPeak       = .25;
     public static final double cruiseVelocityAccel = peakVelocity * percentOfPeak;
     
     // Setpoints
     public static final double kTelescopeOffset = 0;
-    public static final double kTelescopeExtended = 6000; // FIXME: CONFIG THIS
-    public static final double kTelescopeThreshold = 100;
+    public static final double kTelescopeExtended = 900_000; // FIXME: CONFIG THIS
+    public static final double kTelescopeThreshold = 10_000;
   }
 
   public static final class OrientatorConstants {

@@ -201,5 +201,9 @@ public class ArmSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Sensor Position degrees",
                 Conversions.CANcoderToDegrees(rotateArmMain.getSelectedSensorPosition(), ArmConstants.kArmGearRatio));
         SmartDashboard.putNumber("Sensor Voltage main", rotateArmMain.getMotorOutputVoltage());
+    
+        SmartDashboard.putBoolean("Arm Done ROtating", armDoneRotating);
+        SmartDashboard.putNumber("Targ3et Arm Position", targetArmPosition);
+        SmartDashboard.putBoolean("Setting Arm Pos UP?", settingArmPositionUp);
     }
 }
