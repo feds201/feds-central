@@ -17,6 +17,8 @@ public class IntakeSubsystem extends SubsystemBase {
     public IntakeSubsystem(int intakeDeployID, int intakeWheelID, boolean invert) {
         intakeDeployMotor = new TalonFX(intakeDeployID);
         intakeWheelMotor = new TalonFX(intakeWheelID);
+        intakeDeployMotor.configVoltageCompSaturation(12);
+        intakeWheelMotor.configVoltageCompSaturation(12);
         intakeDeployMotor.enableVoltageCompensation(true);
         intakeWheelMotor.enableVoltageCompensation(true);
 

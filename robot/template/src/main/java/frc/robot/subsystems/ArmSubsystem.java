@@ -4,6 +4,7 @@ import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.utils.ConeDetection;
 
 import com.ctre.phoenix.motorcontrol.DemandType;
+import com.ctre.phoenix.motorcontrol.FollowerType;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
@@ -18,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants.ArmConstants;
+import frc.robot.Constants.coneOrientation;
 import frc.lib.math.Conversions;
 import frc.robot.subsystems.VisionSubsystem;
 
@@ -50,15 +52,20 @@ public class ArmSubsystem extends SubsystemBase {
         rotateArmMain.config_kI(1, ArmConstants.kIDown, 0);
         rotateArmMain.config_kD(1, ArmConstants.kDDown, 0);
 
+        rotateArmFollower.follow(rotateArmMain);
+        rotateArmFollower.setInverted(TalonFXInvertType.FollowMaster);
+
         rotateArmMain.setInverted(TalonFXInvertType.CounterClockwise);
         rotateArmMain.setNeutralMode(NeutralMode.Brake);
         rotateArmFollower.setNeutralMode(NeutralMode.Brake);
+        rotateArmMain.configVoltageCompSaturation(12);
+        rotateArmFollower.configVoltageCompSaturation(12);
         rotateArmMain.enableVoltageCompensation(true);
         rotateArmFollower.enableVoltageCompensation(true);
         coneDetector = new ConeDetection();
     }
 
-    public String getGripResult(){ 
+    public coneOrientation getGripResult(){ 
         coneDetector.startVisionThread();
         return coneDetector.getResult();
     }
@@ -67,7 +74,6 @@ public class ArmSubsystem extends SubsystemBase {
         return runOnce(
                 () -> {
                     rotateArmMain.set(TalonFXControlMode.Position, 0);
-                    // rotateArmFollower.set(TalonFXControlMode.Position, 0);
                 });
     }
 
@@ -75,8 +81,6 @@ public class ArmSubsystem extends SubsystemBase {
         return runOnce(
                 () -> {
                     rotateArmMain.set(TalonFXControlMode.PercentOutput, -.1);
-                    rotateArmFollower.follow(rotateArmMain);
-                    // rotateArmFollower.setInverted(InvertType.OpposeMaster);
                 });
     }
 
@@ -84,15 +88,12 @@ public class ArmSubsystem extends SubsystemBase {
         return runOnce(
                 () -> {
                     rotateArmMain.set(TalonFXControlMode.PercentOutput, .1);
-                    rotateArmFollower.follow(rotateArmMain);
-                    // rotateArmFollower.setInverted(InvertType.OpposeMaster);
                 });
     }
 
     public Command stop() {
         return runOnce(() -> {
             rotateArmMain.set(TalonFXControlMode.PercentOutput, 0);
-            // rotateArmFollower.set(TalonFXControlMode.PercentOutput, 0);
         });
     }
 
@@ -134,18 +135,16 @@ public class ArmSubsystem extends SubsystemBase {
 
                     rotateArmMain.set(TalonFXControlMode.MotionMagic, position, DemandType.ArbitraryFeedForward, aff);
 
-                    rotateArmFollower.follow(rotateArmMain);
-                    // rotateArmFollower.setInverted(InvertType.OpposeMaster);
 
                 });
     }
 
     public Command grabCone(){
         double targetArmPosition;
-        if(getGripResult().equals("left")){
+        if(getGripResult().equals(coneOrientation.LEFT)){
             targetArmPosition = ArmConstants.kArmPickConeLeft;
         }
-        else if(getGripResult().equals("right")){
+        else if(getGripResult().equals(coneOrientation.RIGHT)){
             targetArmPosition = ArmConstants.kArmPickConeRight;
         }
         else{
@@ -159,9 +158,6 @@ public class ArmSubsystem extends SubsystemBase {
                                     - 90,
                             0);
                             rotateArmMain.set(TalonFXControlMode.MotionMagic, targetArmPosition, DemandType.ArbitraryFeedForward, aff);
-
-                            rotateArmFollower.follow(rotateArmMain);
-                            // rotateArmFollower.setInverted(InvertType.OpposeMaster);
         
                         });        
     }

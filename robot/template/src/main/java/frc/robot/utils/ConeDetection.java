@@ -14,6 +14,7 @@ import edu.wpi.first.cscore.CvSink;
 import edu.wpi.first.cscore.CvSource;
 import edu.wpi.first.cscore.UsbCamera;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.Constants.coneOrientation;
 
 public class ConeDetection{
     private GripPipeline findTotePipeline;
@@ -23,13 +24,13 @@ public class ConeDetection{
     private CvSource outputStream2;
     private Mat mat;
     private Thread visionThread;
-    private String result;
+    private coneOrientation result;
 
     public ConeDetection(){
         findTotePipeline = new GripPipeline();
         camera = CameraServer.startAutomaticCapture(1);
         mat = new Mat();
-        result = "";
+        result = null;
     }
     public void setVisionThread(){
         visionThread = new Thread(
@@ -89,13 +90,13 @@ public class ConeDetection{
             
             for(int h=1;h<4;h++){
               if(pointsHeight[h]>pointsHeight[h-1]){
-                result="Facing left";
+                result=coneOrientation.LEFT;
               }else{
-                result="Facing right";
+                result=coneOrientation.RIGHT;
               }
             }
             if(Math.abs(pointsHeight[0]-pointsHeight[3])<rect.height/8){
-              result="Rect";
+              result=null;
             }
 
             System.out.println(result);
@@ -110,7 +111,7 @@ public class ConeDetection{
       });
     }
     
-    public String getResult(){
+    public coneOrientation getResult(){
         return result;
     }
 

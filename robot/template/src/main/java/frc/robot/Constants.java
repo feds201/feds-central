@@ -277,4 +277,9 @@ public class Constants {
   public static final class ClawConstants {
     public static final int kClawMotor = 56;
   }
+
+  public enum coneOrientation{
+    LEFT,
+    RIGHT
+  }
 }

@@ -50,6 +50,7 @@ public class ClawSubsystem extends SubsystemBase{
         motor.config_kP(kPIDLoopIdx, kP, kTimeoutMs);
         motor.config_kI(kPIDLoopIdx, kI, kTimeoutMs);
         motor.config_kD(kPIDLoopIdx, kD, kTimeoutMs);
+        motor.configVoltageCompSaturation(12);
         motor.enableVoltageCompensation(true);
     }
 

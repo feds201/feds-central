@@ -104,26 +104,6 @@ public class RobotContainer {
         m_driveController.rightTrigger().onTrue(new DeployIntakeGroup(s_intakeBlue, s_orientator));
         m_driveController.rightBumper().onTrue(new RetractIntakeGroup(s_intakeBlue, s_orientator));
 
-        // new StopIntakeWheels(s_intakeRed)));
-        // new ParallelCommandGroup(
-        // new RetractIntake(s_intakeRed),
-        // new RunOrientator(s_orientator))));
-
-        // m_driveController.leftBumper().onTrue(
-        // new SequentialCommandGroup(
-        // new DeployIntake(s_intakeBlue),
-        // new RunIntakeWheels(s_intakeBlue)));
-        // new ParallelCommandGroup(
-        // new RunIntakeWheels(s_intakeBlue),
-        // new RunOrientator(s_orientator))));
-
-        // m_driveController.leftTrigger().onTrue(
-        // new SequentialCommandGroup(
-        // new StopIntakeWheels(s_intakeBlue),
-        // // new ParallelCommandGroup(
-        // new RetractIntake(s_intakeBlue)));
-        // new RunOrientator(s_orientator))));
-
         // operator
         // r-bumper: claw open close
         // r-stick: precise rotation of arm

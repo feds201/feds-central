@@ -121,7 +121,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     public void strafeToTarget(boolean isTargetLow) {
         limelight.updateResultToLatest();
-        if (limelight.getHasTarget()) {
+        if (limelight.hasTarget()) {
             limelight.updateTargetsToLatest();
             limelight.setTarget(isTargetLow);
             limelight.getTargetYaw();
@@ -138,7 +138,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     public void driveToTarget(boolean isTargetLow){
         limelight.updateResultToLatest();
-        if (limelight.getHasTarget()) {
+        if (limelight.hasTarget()) {
             limelight.updateTargetsToLatest();
             limelight.setTarget(isTargetLow);
 
@@ -150,7 +150,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     public boolean finishedMoveToTarget(boolean isTargetLow){
         limelight.updateResultToLatest();
-        if (limelight.getHasTarget()) {
+        if (limelight.hasTarget()) {
             limelight.updateTargetsToLatest();
             limelight.setTarget(isTargetLow);            
         }
@@ -159,7 +159,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     public void rotateToTarget(boolean isTargetLow){
         limelight.updateResultToLatest();
-        if(limelight.getHasTarget()){
+        if(limelight.hasTarget()){
             limelight.updateTargetsToLatest();
             limelight.setTarget(isTargetLow);
 
@@ -196,7 +196,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     public void refreshVision() {
         limelight.updateResultToLatest();
-        if (limelight.getHasTarget()) {
+        if (limelight.hasTarget()) {
             limelight.updateTargetsToLatest();
             // limelight.setTargetLow(isTargetLow);
             limelight.setTarget(true);

@@ -35,6 +35,7 @@ public class TelescopeSubsystem extends SubsystemBase{
 
         armTelescopeMotor.setInverted(TalonFXInvertType.CounterClockwise);
         armTelescopeMotor.setNeutralMode(NeutralMode.Brake);
+        armTelescopeMotor.configVoltageCompSaturation(12);
         armTelescopeMotor.enableVoltageCompensation(true);
     }
 

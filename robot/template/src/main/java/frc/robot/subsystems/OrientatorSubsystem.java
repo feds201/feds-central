@@ -9,11 +9,10 @@ import frc.robot.utils.ConeDetection;
 
 public class OrientatorSubsystem extends SubsystemBase {
     private final TalonFX orientatorMotor;
-    private final ConeDetection coneDetector;
     
     public OrientatorSubsystem(){
         orientatorMotor = new TalonFX(OrientatorConstants.kOrientatorMotorID);
-        coneDetector = new ConeDetection();
+        orientatorMotor.configVoltageCompSaturation(12);
         orientatorMotor.enableVoltageCompensation(true);
     }
 

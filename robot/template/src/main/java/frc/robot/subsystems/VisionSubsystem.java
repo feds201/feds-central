@@ -37,18 +37,15 @@ public class VisionSubsystem extends SubsystemBase {
         result = m_camera.getLatestResult();
     }
 
-    public boolean getHasTarget() {
+    public boolean hasTarget() {
         if (result != null) {
             return result.hasTargets();
         }
         return false;
     }
 
-    /**
-     * Precondition: {@link #getHasTarget()} is true
-     */
     public void updateTargetsToLatest() {
-        if(getHasTarget()){
+        if(hasTarget()){
             targets = result.getTargets();
         }
     }
@@ -57,19 +54,18 @@ public class VisionSubsystem extends SubsystemBase {
         target = result.getBestTarget();
     }
     public void setTarget(boolean isTargetLow) {
-        
+        if(!hasTarget()){
+            return;
+        }
         this.isTargetLow = isTargetLow;
-        double maxArea = 0;
-        double minArea = 100;
+        double pitch = targets.get(0).getPitch();
         for (int i = 1; i < targets.size(); i++) {
             if (this.isTargetLow) {
-                target = targets.get(0);
-                if (targets.get(i).getArea() > maxArea) {
+                if (targets.get(i).getPitch() < pitch) {
                     target = targets.get(i);
                 }
             } else {
-                target = targets.get(0);
-                if (targets.get(i).getArea() < minArea) {
+                if (targets.get(i).getPitch() > pitch) {
                     target = targets.get(i);
                 }
             }
@@ -108,17 +104,7 @@ public class VisionSubsystem extends SubsystemBase {
                                                                 getTargetPitch());    
         }
         
-        // This is the law of cosines
-        // C^2 = A^2 + B^2 - 2*A*Bcos(theta)
-        //double cameraDistanceToTargetSquared = Math.pow(cameraDistanceToTarget, 2); // this is A^2
-        //double limelightToArmRotateAxisSquared = Math.pow(VisionConstants.limelightToTopArmOffset, 2); // this is B^2
-        //double theta = Math.PI / 2 - getTargetPitch() - VisionConstants.limelightPitchRadians;
-    
-        //                        A^2                        +              B^2                - 2 *             A          *                        B                *     cos(theta)                      
-        //double rightHandSide = cameraDistanceToTargetSquared + limelightToArmRotateAxisSquared - 2 * cameraDistanceToTarget * VisionConstants.limelightToTopArmOffset * Math.cos(theta);
-
-        // C = sqrt(rightHandSize)
-        //return Math.sqrt(rightHandSide);
+        
         return cameraDistanceToTarget;
     }
     
@@ -135,17 +121,7 @@ public class VisionSubsystem extends SubsystemBase {
                                                                 VisionConstants.limelightPitchRadians,
                                                                 getTargetPitch());   
         }
-        // This is the law of cosines
-        // C^2 = A^2 + B^2 - 2*A*Bcos(theta)
-        //double cameraDistanceToTargetSquared = Math.pow(cameraDistanceToTarget, 2); // this is A^2
-        //double limelightToArmRotateAxisSquared = Math.pow(VisionConstants.limelightToTopArmOffset, 2); // this is B^2
-        //double theta = Math.PI / 2 - getTargetPitch() - VisionConstants.limelightPitchRadians;
-    
-        //                        A^2                        +              B^2                - 2 *             A          *                        B                *     cos(theta)                      
-        //double rightHandSide = cameraDistanceToTargetSquared + limelightToArmRotateAxisSquared - 2 * cameraDistanceToTarget * VisionConstants.limelightToTopArmOffset * Math.cos(theta);
-
-        // C = sqrt(rightHandSize)
-        //return Math.sqrt(rightHandSide);
+        
         return cameraDistanceToTarget;
     }
 
