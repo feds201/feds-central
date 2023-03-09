@@ -5,6 +5,7 @@ import frc.robot.Constants;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.*;
 
@@ -22,7 +23,31 @@ public class IntakeSubsystem extends SubsystemBase {
         intakeDeployMotor.enableVoltageCompensation(true);
         intakeWheelMotor.enableVoltageCompensation(true);
 
-        intakeDeployMotor.setNeutralMode(NeutralMode.Brake);
+
+        intakeDeployMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 255);
+		intakeDeployMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 10);
+		intakeDeployMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 255);
+		intakeDeployMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 255);
+		intakeDeployMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 255);
+		intakeDeployMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_Targets, 255);
+		intakeDeployMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 255);
+		intakeDeployMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 255);
+		intakeDeployMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 255);
+		intakeDeployMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_Brushless_Current, 255);
+
+        intakeWheelMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 255);
+		intakeWheelMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 10);
+		intakeWheelMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 255);
+		intakeWheelMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 255);
+		intakeWheelMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 255);
+		intakeWheelMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_Targets, 255);
+		intakeWheelMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 255);
+		intakeWheelMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 255);
+		intakeWheelMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 255);
+		intakeWheelMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_Brushless_Current, 255);
+        
+        intakeWheelMotor.setNeutralMode(NeutralMode.Brake);
+        
         this.invert = invert;
     }
 

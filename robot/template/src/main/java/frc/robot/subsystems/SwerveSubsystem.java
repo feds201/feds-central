@@ -217,20 +217,22 @@ public class SwerveSubsystem extends SubsystemBase {
         swerveOdometry.update(getYaw(), getModulePositions());
         refreshVision();
 
-        // if(previousGyroPitch != getGyroPitch()) {
-        //     gyroPitchChanged = true;
-        // } else {
-        //     gyroPitchChanged = false;
-        // }
+        if(previousGyroPitch != getGyroPitch()) {
+            gyroPitchChanged = true;
+        } else {
+            gyroPitchChanged = false;
+        }
 
-        // previousGyroPitch = getGyroPitch();
+        previousGyroPitch = getGyroPitch();
         
 
-        for (SwerveModule mod : mSwerveMods) {
-            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Cancoder", mod.getCanCoderAngle().getDegrees());
-            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Integrated",
-                    mod.getPosition().angle.getDegrees());
-            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Velocity", mod.getState().speedMetersPerSecond);
-        }
+        // for (SwerveModule mod : mSwerveMods) {
+        //     SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Cancoder", mod.getCanCoderAngle().getDegrees());
+        //     SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Integrated",
+        //             mod.getPosition().angle.getDegrees());
+        //     SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Velocity", mod.getState().speedMetersPerSecond);
+        // }
+
+        SmartDashboard.putNumber("Gyro Pitch", getGyroPitch());
     }
 }

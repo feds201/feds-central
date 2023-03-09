@@ -21,8 +21,8 @@ public class VisionUtils {
 
                     System.out.println("------------UsbCamera on-----------");
                     CvSink cvSink = CameraServer.getVideo(camera);
-                    CvSource outputStream = CameraServer.putVideo("Output", 640, 480);
-                    CvSource outputStream2 = CameraServer.putVideo("Output2", 640, 480);
+                    CvSource outputStream = CameraServer.putVideo("Output", 192, 144);
+                    CvSource outputStream2 = CameraServer.putVideo("Output2", 192, 144);
                     Mat mat = new Mat();
 
                     while (!Thread.interrupted()) {

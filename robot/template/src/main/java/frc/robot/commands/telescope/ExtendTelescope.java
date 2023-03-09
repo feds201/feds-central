@@ -7,9 +7,11 @@ import frc.robot.subsystems.TelescopeSubsystem;
 public class ExtendTelescope extends CommandBase{
 
     private final TelescopeSubsystem s_telescope;
+    private double m_target;
 
-    public ExtendTelescope(TelescopeSubsystem s_telescope){
+    public ExtendTelescope(TelescopeSubsystem s_telescope, double target){
         this.s_telescope = s_telescope;
+        this.m_target = target;
 
         addRequirements(this.s_telescope);
     }
@@ -20,12 +22,12 @@ public class ExtendTelescope extends CommandBase{
 
     @Override
     public void execute(){
-        s_telescope.setTelescopePosition(TelescopeConstants.kTelescopeExtended);
+        s_telescope.setTelescopePosition(this.m_target);
     }
 
     @Override
     public boolean isFinished(){
-        return Math.abs(s_telescope.getTelescopePosition() - TelescopeConstants.kTelescopeExtended) < TelescopeConstants.kTelescopeThreshold;
+        return Math.abs(s_telescope.getTelescopePosition() - this.m_target) < TelescopeConstants.kTelescopeThreshold;
     }
 
     @Override

@@ -32,6 +32,9 @@ public class Robot extends TimedRobot {
    * initialization code.
    */
 
+  public Robot() {
+    super(0.05);
+  }
 
 
   @Override

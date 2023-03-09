@@ -29,7 +29,6 @@ public class Constants {
 
     public static final int kIMG_HEIGHT = 640;
     public static final int kIMG_WIDTH = 480;
-
   }
   
 
@@ -115,7 +114,9 @@ public class Constants {
 
     /* Neutral Modes */
     public static final NeutralMode angleNeutralMode = NeutralMode.Coast;
-    public static final NeutralMode driveNeutralMode = NeutralMode.Coast;
+    public static final NeutralMode driveNeutralMode = NeutralMode.Brake;
+
+    public static final double kChargingStationTime = 2; // seconds
 
     /* Module Specific Constants */
     /* Front Left Module - Module 0 */
@@ -199,7 +200,7 @@ public class Constants {
     public static final double kIntakeRetractSpeed = -0.2;
     public static final double kIntakeWheelSpeed = -0.30;
 
-    public static final double kDeployTime = 1;
+    public static final double kDeployTime = 0.5;
     public static final double kRetractTime = 0.5;
 
     // Encoder Counts
@@ -218,7 +219,8 @@ public class Constants {
    
     // Feedforward
     public static final double kS = 0;
-    public static final double kG = 0.044835;
+    public static final double kG = 0.1;
+    // public static final double kG = 0.044835;
     public static final double kV = 0.5;
     public static final double kA = 0;
     public static final ArmFeedforward armFeedforward = new ArmFeedforward(kS, kG, kV, kA);
@@ -264,9 +266,13 @@ public class Constants {
     
     // Setpoints
     public static final double kTelescopeOffset = 0;
-    public static final double kTelescopeExtended = 900_000; // FIXME: CONFIG THIS
-    public static final double kTelescopeThreshold = 10_000;
+    public static final double kTelescopeExtendedMax = 900_000; // FIXME: CONFIG THIS
+    public static final double kTelescopeExtendedMiddle = 400_000; // FIXME: CONFIG THIS
+    public static final double kTelescopeThreshold = 2_000;
+
+    public static final double kManualSpeed = 0.40;
   }
+
 
   public static final class OrientatorConstants {
     public static final int kOrientatorMotorID = 29;
@@ -276,6 +282,15 @@ public class Constants {
 
   public static final class ClawConstants {
     public static final int kClawMotor = 56;
+
+    // set points
+    public static final double kOpenClawPosition = 480;
+    public static final double kBallClawPosition = 254;
+    public static final double kConeClawPosition = 100;
+
+    public static final double kHoldBallSpeed = -0.1; // tune these
+    public static final double kHoldConeSpeed = -0.1;
+    public static final double kExtendSpeed = 0.1;
   }
 
   public enum coneOrientation{

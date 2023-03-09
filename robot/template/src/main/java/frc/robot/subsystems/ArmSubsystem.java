@@ -7,6 +7,8 @@ import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.FollowerType;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
@@ -62,6 +64,35 @@ public class ArmSubsystem extends SubsystemBase {
         rotateArmFollower.configVoltageCompSaturation(12);
         rotateArmMain.enableVoltageCompensation(true);
         rotateArmFollower.enableVoltageCompensation(true);
+
+
+        rotateArmMain.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 10);
+		rotateArmMain.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 10);
+		rotateArmMain.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 255);
+		rotateArmMain.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 255);
+		rotateArmMain.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 255);
+		rotateArmMain.setStatusFramePeriod(StatusFrameEnhanced.Status_10_Targets, 255);
+		rotateArmMain.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 255);
+		rotateArmMain.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 255);
+		rotateArmMain.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 255);
+		rotateArmMain.setStatusFramePeriod(StatusFrameEnhanced.Status_Brushless_Current, 255);
+
+        rotateArmFollower.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 10);
+		rotateArmFollower.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 10);
+		rotateArmFollower.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 255);
+		rotateArmFollower.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 255);
+		rotateArmFollower.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 255);
+		rotateArmFollower.setStatusFramePeriod(StatusFrameEnhanced.Status_10_Targets, 255);
+		rotateArmFollower.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 255);
+		rotateArmFollower.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 255);
+		rotateArmFollower.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 255);
+		rotateArmFollower.setStatusFramePeriod(StatusFrameEnhanced.Status_Brushless_Current, 255);
+        
+        SupplyCurrentLimitConfiguration rotateArmMainCurrentLimit = new SupplyCurrentLimitConfiguration();
+        rotateArmMainCurrentLimit.currentLimit = 40;
+
+        rotateArmMain.configSupplyCurrentLimit(rotateArmMainCurrentLimit);
+
         coneDetector = new ConeDetection();
     }
 
@@ -123,15 +154,15 @@ public class ArmSubsystem extends SubsystemBase {
                     double aff = ArmConstants.armFeedforward.calculate(
                             Units.degreesToRadians(Conversions.falconToDegrees(position, ArmConstants.kArmGearRatio))
                                     - 90,
-                            0);
+                            Units.degreesToRadians(Conversions.falconToRPM(position, position)));
 
-                    SmartDashboard.putNumber("Target Position Encoder Counts", position);
-                    SmartDashboard.putNumber("Target Degrees for motor",
-                            Conversions.falconToDegrees(position, ArmConstants.kArmGearRatio));
-                    SmartDashboard.putNumber("Target Degrees for feedforward",
-                            Conversions.falconToDegrees(position, ArmConstants.kArmGearRatio) - 90);
-                    SmartDashboard.putNumber("Feedfoward with that amount",
-                            aff);
+                    // SmartDashboard.putNumber("Target Position Encoder Counts", position);
+                    // SmartDashboard.putNumber("Target Degrees for motor",
+                    //         Conversions.falconToDegrees(position, ArmConstants.kArmGearRatio));
+                    // SmartDashboard.putNumber("Target Degrees for feedforward",
+                    //         Conversions.falconToDegrees(position, ArmConstants.kArmGearRatio) - 90);
+                    // SmartDashboard.putNumber("Feedfoward with that amount",
+                    //         aff);
 
                     rotateArmMain.set(TalonFXControlMode.MotionMagic, position, DemandType.ArbitraryFeedForward, aff);
 
@@ -197,13 +228,13 @@ public class ArmSubsystem extends SubsystemBase {
             }
         }
 
-        SmartDashboard.putNumber("Sensor Position main", rotateArmMain.getSelectedSensorPosition());
-        SmartDashboard.putNumber("Sensor Position degrees",
-                Conversions.CANcoderToDegrees(rotateArmMain.getSelectedSensorPosition(), ArmConstants.kArmGearRatio));
-        SmartDashboard.putNumber("Sensor Voltage main", rotateArmMain.getMotorOutputVoltage());
+        // SmartDashboard.putNumber("Sensor Position main", rotateArmMain.getSelectedSensorPosition());
+        // SmartDashboard.putNumber("Sensor Position degrees",
+                // Conversions.CANcoderToDegrees(rotateArmMain.getSelectedSensorPosition(), ArmConstants.kArmGearRatio));
+        // SmartDashboard.putNumber("Sensor Voltage main", rotateArmMain.getMotorOutputVoltage());
     
-        SmartDashboard.putBoolean("Arm Done ROtating", armDoneRotating);
-        SmartDashboard.putNumber("Targ3et Arm Position", targetArmPosition);
-        SmartDashboard.putBoolean("Setting Arm Pos UP?", settingArmPositionUp);
+        // SmartDashboard.putBoolean("Arm Done ROtating", armDoneRotating);
+        // SmartDashboard.putNumber("Targ3et Arm Position", targetArmPosition);
+        // SmartDashboard.putBoolean("Setting Arm Pos UP?", settingArmPositionUp);
     }
 }

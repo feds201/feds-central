@@ -1,20 +1,20 @@
 package frc.robot.swerve;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.DemandType;
+import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.sensors.CANCoder;
+
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-
 import frc.lib.math.Conversions;
 import frc.lib.util.CTREModuleState;
 import frc.lib.util.SwerveModuleConstants;
 import frc.robot.Constants;
-import frc.robot.Robot;
-
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.DemandType;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.ctre.phoenix.sensors.CANCoder; 
+import frc.robot.Robot; 
 
 public class SwerveModule {
     public int moduleNumber;
@@ -95,6 +95,17 @@ public class SwerveModule {
         mAngleMotor.configAllSettings(Robot.ctreConfigs.swerveAngleFXConfig);
         mAngleMotor.setInverted(Constants.SwerveConstants.angleMotorInvert);
         mAngleMotor.setNeutralMode(Constants.SwerveConstants.angleNeutralMode);
+
+        mAngleMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 20);
+		mAngleMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 10);
+		mAngleMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 255);
+		mAngleMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 255);
+		mAngleMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 255);
+		mAngleMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_Targets, 255);
+		mAngleMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 255);
+		mAngleMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 20);
+		mAngleMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 255);
+		mAngleMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_Brushless_Current, 255);
         resetToAbsolute();
     }
 
@@ -104,6 +115,18 @@ public class SwerveModule {
         mDriveMotor.setInverted(Constants.SwerveConstants.driveMotorInvert);
         mDriveMotor.setNeutralMode(Constants.SwerveConstants.driveNeutralMode);
         mDriveMotor.setSelectedSensorPosition(0);
+
+
+        mDriveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 20);
+		mDriveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 10);
+		mDriveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 255);
+		mDriveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 255);
+		mDriveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 255);
+		mDriveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_Targets, 255);
+		mDriveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 255);
+		mDriveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 20);
+		mDriveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 255);
+		mDriveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_Brushless_Current, 255);
     }
 
     public SwerveModuleState getState(){
