@@ -7,6 +7,7 @@ import frc.robot.commands.claw.OpenClaw;
 import frc.robot.commands.telescope.ExtendTelescope;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClawSubsystem;
+import frc.robot.subsystems.ClawSubsystemWithPID;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.TelescopeSubsystem;
 
@@ -27,7 +28,7 @@ import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 public class placeConeAuton extends SequentialCommandGroup {
-    public placeConeAuton(SwerveSubsystem s_Swerve, ClawSubsystem s_claw, TelescopeSubsystem s_telescope, ArmSubsystem s_arm){
+    public placeConeAuton(SwerveSubsystem s_Swerve, ClawSubsystemWithPID s_claw, TelescopeSubsystem s_telescope, ArmSubsystem s_arm){
         // TrajectoryConfig config =
         //     new TrajectoryConfig(
         //             Constants.AutoConstants.kMaxSpeedMetersPerSecond,

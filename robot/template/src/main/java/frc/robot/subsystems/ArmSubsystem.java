@@ -1,7 +1,7 @@
 package frc.robot.subsystems;
 
 import frc.robot.subsystems.VisionSubsystem;
-import frc.robot.utils.ConeDetection;
+// import frc.robot.utils.ConeDetection;
 
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.FollowerType;
@@ -28,7 +28,7 @@ import frc.robot.subsystems.VisionSubsystem;
 public class ArmSubsystem extends SubsystemBase {
     private final TalonFX rotateArmMain = new TalonFX(ArmConstants.kArmMotor1);
     private final TalonFX rotateArmFollower = new TalonFX(ArmConstants.kArmMotor2);
-    private final ConeDetection coneDetector;
+    // private final ConeDetection coneDetector;
 
     private boolean settingArmPositionUp = false;
     private boolean armDoneRotating = false;
@@ -94,13 +94,13 @@ public class ArmSubsystem extends SubsystemBase {
 
         rotateArmMain.configSupplyCurrentLimit(rotateArmMainCurrentLimit);
 
-        coneDetector = new ConeDetection();
+        // coneDetector = new ConeDetection();
     }
 
-    public coneOrientation getGripResult(){ 
-        coneDetector.startVisionThread();
-        return coneDetector.getResult();
-    }
+    // public coneOrientation getGripResult(){ 
+    //     coneDetector.startVisionThread();
+    //     return coneDetector.getResult();
+    // }
 
     public Command goToHome() {
         return runOnce(
@@ -166,28 +166,28 @@ public class ArmSubsystem extends SubsystemBase {
                 });
     }
 
-    public Command grabCone(){
-        double targetArmPosition;
-        if(getGripResult().equals(coneOrientation.LEFT)){
-            targetArmPosition = ArmConstants.kArmPickConeLeft;
-        }
-        else if(getGripResult().equals(coneOrientation.RIGHT)){
-            targetArmPosition = ArmConstants.kArmPickConeRight;
-        }
-        else{
-            targetArmPosition = ArmConstants.kArmPickCube;
-        }
-        return runOnce(
-                () -> {
-                    manageMotion(targetArmPosition);
-                    double aff = ArmConstants.armFeedforward.calculate(
-                            Units.degreesToRadians(Conversions.falconToDegrees(targetArmPosition, ArmConstants.kArmGearRatio))
-                                    - 90,
-                            0);
-                            rotateArmMain.set(TalonFXControlMode.MotionMagic, targetArmPosition, DemandType.ArbitraryFeedForward, aff);
+    // public Command grabCone(){
+    //     double targetArmPosition;
+    //     if(getGripResult().equals(coneOrientation.LEFT)){
+    //         targetArmPosition = ArmConstants.kArmPickConeLeft;
+    //     }
+    //     else if(getGripResult().equals(coneOrientation.RIGHT)){
+    //         targetArmPosition = ArmConstants.kArmPickConeRight;
+    //     }
+    //     else{
+    //         targetArmPosition = ArmConstants.kArmPickCube;
+    //     }
+    //     return runOnce(
+    //             () -> {
+    //                 manageMotion(targetArmPosition);
+    //                 double aff = ArmConstants.armFeedforward.calculate(
+    //                         Units.degreesToRadians(Conversions.falconToDegrees(targetArmPosition, ArmConstants.kArmGearRatio))
+    //                                 - 90,
+    //                         0);
+    //                         rotateArmMain.set(TalonFXControlMode.MotionMagic, targetArmPosition, DemandType.ArbitraryFeedForward, aff);
         
-                        });        
-    }
+    //                     });        
+    // }
 
     public void manageMotion(double targetPosition) {
         // double currentPosition = rotateArmMain.getSelectedSensorPosition();

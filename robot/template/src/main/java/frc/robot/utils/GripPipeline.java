@@ -1,4 +1,5 @@
 package frc.robot.utils;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -10,7 +11,6 @@ import java.util.HashMap;
 
 import org.opencv.core.*;
 import org.opencv.core.Core.*;
-import org.opencv.features2d.Feature2D;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.*;
 import org.opencv.objdetect.*;
@@ -25,12 +25,15 @@ import org.opencv.objdetect.*;
 public class GripPipeline {
 
 	//Outputs
+	private Mat hslThreshold0Output = new Mat();
+	private ArrayList<MatOfPoint> findContours0Output = new ArrayList<MatOfPoint>();
+	private ArrayList<MatOfPoint> filterContours0Output = new ArrayList<MatOfPoint>();
 	private Mat blurOutput = new Mat();
-	private Mat hslThresholdOutput = new Mat();
+	private Mat hslThreshold1Output = new Mat();
 	private Mat maskOutput = new Mat();
 	private Mat rgbThresholdOutput = new Mat();
-	private ArrayList<MatOfPoint> findContoursOutput = new ArrayList<MatOfPoint>();
-	private ArrayList<MatOfPoint> filterContoursOutput = new ArrayList<MatOfPoint>();
+	private ArrayList<MatOfPoint> findContours1Output = new ArrayList<MatOfPoint>();
+	private ArrayList<MatOfPoint> filterContours1Output = new ArrayList<MatOfPoint>();
 
 	static {
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
@@ -40,22 +43,49 @@ public class GripPipeline {
 	 * This is the primary method that runs the entire pipeline and updates the outputs.
 	 */
 	public void process(Mat source0) {
+		// Step HSL_Threshold0:
+		Mat hslThreshold0Input = source0;
+		double[] hslThreshold0Hue = {108.47457627118641, 153.11072056239016};
+		double[] hslThreshold0Saturation = {69.63276836158192, 255.0};
+		double[] hslThreshold0Luminance = {93.64406779661017, 212.42530755711775};
+		hslThreshold(hslThreshold0Input, hslThreshold0Hue, hslThreshold0Saturation, hslThreshold0Luminance, hslThreshold0Output);
+
+		// Step Find_Contours0:
+		Mat findContours0Input = hslThreshold0Output;
+		boolean findContours0ExternalOnly = false;
+		findContours(findContours0Input, findContours0ExternalOnly, findContours0Output);
+
+		// Step Filter_Contours0:
+		ArrayList<MatOfPoint> filterContours0Contours = findContours0Output;
+		double filterContours0MinArea = 100.0;
+		double filterContours0MinPerimeter = 0;
+		double filterContours0MinWidth = 0;
+		double filterContours0MaxWidth = 1000;
+		double filterContours0MinHeight = 0;
+		double filterContours0MaxHeight = 1000;
+		double[] filterContours0Solidity = {0, 100};
+		double filterContours0MaxVertices = 1000000;
+		double filterContours0MinVertices = 0;
+		double filterContours0MinRatio = 0;
+		double filterContours0MaxRatio = 1000;
+		filterContours(filterContours0Contours, filterContours0MinArea, filterContours0MinPerimeter, filterContours0MinWidth, filterContours0MaxWidth, filterContours0MinHeight, filterContours0MaxHeight, filterContours0Solidity, filterContours0MaxVertices, filterContours0MinVertices, filterContours0MinRatio, filterContours0MaxRatio, filterContours0Output);
+
 		// Step Blur0:
 		Mat blurInput = source0;
 		BlurType blurType = BlurType.get("Median Filter");
 		double blurRadius = 9.90990990990991;
 		blur(blurInput, blurType, blurRadius, blurOutput);
 
-		// Step HSL_Threshold0:
-		Mat hslThresholdInput = blurOutput;
-		double[] hslThresholdHue = {0.0, 87.57575757575759};
-		double[] hslThresholdSaturation = {139.88309352517985, 255.0};
-		double[] hslThresholdLuminance = {0.0, 216.36363636363637};
-		hslThreshold(hslThresholdInput, hslThresholdHue, hslThresholdSaturation, hslThresholdLuminance, hslThresholdOutput);
+		// Step HSL_Threshold1:
+		Mat hslThreshold1Input = blurOutput;
+		double[] hslThreshold1Hue = {0.0, 87.57575757575759};
+		double[] hslThreshold1Saturation = {139.88309352517985, 255.0};
+		double[] hslThreshold1Luminance = {0.0, 216.36363636363637};
+		hslThreshold(hslThreshold1Input, hslThreshold1Hue, hslThreshold1Saturation, hslThreshold1Luminance, hslThreshold1Output);
 
 		// Step Mask0:
 		Mat maskInput = source0;
-		Mat maskMask = hslThresholdOutput;
+		Mat maskMask = hslThreshold1Output;
 		mask(maskInput, maskMask, maskOutput);
 
 		// Step RGB_Threshold0:
@@ -65,26 +95,50 @@ public class GripPipeline {
 		double[] rgbThresholdBlue = {0.0, 235.68181818181816};
 		rgbThreshold(rgbThresholdInput, rgbThresholdRed, rgbThresholdGreen, rgbThresholdBlue, rgbThresholdOutput);
 
-		// Step Find_Contours0:
-		Mat findContoursInput = rgbThresholdOutput;
-		boolean findContoursExternalOnly = false;
-		findContours(findContoursInput, findContoursExternalOnly, findContoursOutput);
+		// Step Find_Contours1:
+		Mat findContours1Input = rgbThresholdOutput;
+		boolean findContours1ExternalOnly = false;
+		findContours(findContours1Input, findContours1ExternalOnly, findContours1Output);
 
-		// Step Filter_Contours0:
-		ArrayList<MatOfPoint> filterContoursContours = findContoursOutput;
-		double filterContoursMinArea = 1200.0;
-		double filterContoursMinPerimeter = 20.0;
-		double filterContoursMinWidth = 32.0;
-		double filterContoursMaxWidth = 1000000.0;
-		double filterContoursMinHeight = 0.0;
-		double filterContoursMaxHeight = 1000.0;
-		double[] filterContoursSolidity = {0.0, 100.0};
-		double filterContoursMaxVertices = 1000000.0;
-		double filterContoursMinVertices = 0.0;
-		double filterContoursMinRatio = 0.0;
-		double filterContoursMaxRatio = 100.0;
-		filterContours(filterContoursContours, filterContoursMinArea, filterContoursMinPerimeter, filterContoursMinWidth, filterContoursMaxWidth, filterContoursMinHeight, filterContoursMaxHeight, filterContoursSolidity, filterContoursMaxVertices, filterContoursMinVertices, filterContoursMinRatio, filterContoursMaxRatio, filterContoursOutput);
+		// Step Filter_Contours1:
+		ArrayList<MatOfPoint> filterContours1Contours = findContours1Output;
+		double filterContours1MinArea = 1200.0;
+		double filterContours1MinPerimeter = 20.0;
+		double filterContours1MinWidth = 32.0;
+		double filterContours1MaxWidth = 1000000.0;
+		double filterContours1MinHeight = 0.0;
+		double filterContours1MaxHeight = 1000.0;
+		double[] filterContours1Solidity = {0.0, 100.0};
+		double filterContours1MaxVertices = 1000000.0;
+		double filterContours1MinVertices = 0.0;
+		double filterContours1MinRatio = 0.0;
+		double filterContours1MaxRatio = 100.0;
+		filterContours(filterContours1Contours, filterContours1MinArea, filterContours1MinPerimeter, filterContours1MinWidth, filterContours1MaxWidth, filterContours1MinHeight, filterContours1MaxHeight, filterContours1Solidity, filterContours1MaxVertices, filterContours1MinVertices, filterContours1MinRatio, filterContours1MaxRatio, filterContours1Output);
 
+	}
+
+	/**
+	 * This method is a generated getter for the output of a HSL_Threshold.
+	 * @return Mat output from HSL_Threshold.
+	 */
+	public Mat hslThreshold0Output() {
+		return hslThreshold0Output;
+	}
+
+	/**
+	 * This method is a generated getter for the output of a Find_Contours.
+	 * @return ArrayList<MatOfPoint> output from Find_Contours.
+	 */
+	public ArrayList<MatOfPoint> findContours0Output() {
+		return findContours0Output;
+	}
+
+	/**
+	 * This method is a generated getter for the output of a Filter_Contours.
+	 * @return ArrayList<MatOfPoint> output from Filter_Contours.
+	 */
+	public ArrayList<MatOfPoint> filterContours0Output() {
+		return filterContours0Output;
 	}
 
 	/**
@@ -99,8 +153,8 @@ public class GripPipeline {
 	 * This method is a generated getter for the output of a HSL_Threshold.
 	 * @return Mat output from HSL_Threshold.
 	 */
-	public Mat hslThresholdOutput() {
-		return hslThresholdOutput;
+	public Mat hslThreshold1Output() {
+		return hslThreshold1Output;
 	}
 
 	/**
@@ -123,16 +177,16 @@ public class GripPipeline {
 	 * This method is a generated getter for the output of a Find_Contours.
 	 * @return ArrayList<MatOfPoint> output from Find_Contours.
 	 */
-	public ArrayList<MatOfPoint> findContoursOutput() {
-		return findContoursOutput;
+	public ArrayList<MatOfPoint> findContours1Output() {
+		return findContours1Output;
 	}
 
 	/**
 	 * This method is a generated getter for the output of a Filter_Contours.
 	 * @return ArrayList<MatOfPoint> output from Filter_Contours.
 	 */
-	public ArrayList<MatOfPoint> filterContoursOutput() {
-		return filterContoursOutput;
+	public ArrayList<MatOfPoint> filterContours1Output() {
+		return filterContours1Output;
 	}
 
 
