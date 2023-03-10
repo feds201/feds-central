@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.cscore.VideoSource.ConnectionStrategy;
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -17,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.math.Conversions;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.IntakeConstants;
+import frc.robot.Constants.PowerConstants;
 import frc.robot.Constants.TelescopeConstants;
 import frc.robot.commands.arm.WaitUntilFullyRotate;
 import frc.robot.commands.auton.placeConeAuton;
@@ -37,8 +40,6 @@ import frc.robot.commands.telescope.TelescopeManualArm;
 import frc.robot.commands.utilityCommands.TimerDeadline;
 import frc.robot.commands.auton.examplePPAuto;
 import frc.robot.commands.claw.CloseClaw;
-import frc.robot.commands.claw.HoldBall;
-import frc.robot.commands.claw.HoldCone;
 import frc.robot.commands.claw.OpenClaw;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClawSubsystem;
@@ -59,11 +60,11 @@ public class RobotContainer {
         private final TelescopeSubsystem s_telescope;
         // private final IntakeSubsystem s_intakeRed;
         private final IntakeSubsystem s_intakeBlue;
-        private final ClawSubsystem s_claw;
+        private final ClawSubsystemWithPID s_claw;
 
         private final SlewRateLimiter slewRateLimiterX = new SlewRateLimiter(15);
         private final SlewRateLimiter slewRateLimiterY = new SlewRateLimiter(15);
-
+        public final static PowerDistribution m_PowerDistribution = new PowerDistribution(PowerConstants.kPCMChannel, ModuleType.kRev);
         // private final Thread gripThread;
 
         CommandXboxController m_driveController = new CommandXboxController(Constants.OIConstants.kDriveControllerPort);
@@ -86,7 +87,7 @@ public class RobotContainer {
                 s_orientator = new OrientatorSubsystem();
                 s_swerve = new SwerveSubsystem(s_vision);
                 s_arm = new ArmSubsystem();
-                s_claw = new ClawSubsystem();
+                s_claw = new ClawSubsystemWithPID();
 
                 m_autonChooser.setDefaultOption("Example PP Swerve", examplePPAuto.TopPath2Ball());
                 m_autonChooser.addOption("Place Cone Auto", new placeConeAuton(s_swerve,s_claw,s_telescope,s_arm));
@@ -97,6 +98,8 @@ public class RobotContainer {
                 s_swerve.setDefaultCommand(
                                 new TeleopSwerve(
                                                 s_swerve,
+                                                // () -> -m_driveController.getLeftY(),
+                                                // () -> -m_driveController.getLeftX(),
                                                 () -> -slewRateLimiterY.calculate(m_driveController.getLeftY()),
                                                 () -> -slewRateLimiterX.calculate(m_driveController.getLeftX()),
                                                 () -> -m_driveController.getRightX(),
@@ -158,11 +161,9 @@ public class RobotContainer {
                 m_operatorController.povLeft()
                                 .onTrue(new ParallelCommandGroup(
                                                 new RetractTelescope(s_telescope),
-                                                new SequentialCommandGroup(new WaitCommand(3),
+                                                new SequentialCommandGroup(new WaitCommand(3.3),
                                                                 s_arm.setPosition(ArmConstants.kArmHome))));
 
-                m_operatorController.b().onTrue(new HoldBall(s_claw));
-                m_operatorController.a().onTrue(new HoldCone(s_claw));
                 m_operatorController.x().onTrue(new OpenClaw(s_claw));
                 m_operatorController.y().onTrue(new CloseClaw(s_claw));
         }

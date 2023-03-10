@@ -17,6 +17,8 @@ public class Constants {
   public static final double stickDeadbandTurn = 0.05;
   public static final double stickDeadbandDrive = 0.025;
 
+
+
   public static final class VisionConstants {
     public static final double limelightOffset = .13;
     public static final double limelightheight = 1.2;
@@ -111,6 +113,10 @@ public class Constants {
     public static final double maxSpeed = 3; // TODO: This must be tuned to specific robot
     /** Radians per Second */
     public static final double maxAngularVelocity = 3; // TODO: This must be tuned to specific robot
+
+
+    public static final double kMaxLinearAccel = 2;
+    public static final double kDeltaSecs = 0.2;
 
     /* Neutral Modes */
     public static final NeutralMode angleNeutralMode = NeutralMode.Coast;
@@ -219,9 +225,10 @@ public class Constants {
    
     // Feedforward
     public static final double kS = 0;
-    public static final double kG = 0.1;
+    public static final double kG = 0.08;
+    public static final double kGPercent = kG/12;
     // public static final double kG = 0.044835;
-    public static final double kV = 0.5;
+    public static final double kV = 0;
     public static final double kA = 0;
     public static final ArmFeedforward armFeedforward = new ArmFeedforward(kS, kG, kV, kA);
     
@@ -243,14 +250,14 @@ public class Constants {
     public static final double kDDown = 0;
     
     // setpoints
-    public static final double kArmHome = -500;
-    public static final double kArmPutHigh = Conversions.degreesToFalcon(-95.0, ArmConstants.kArmGearRatio);
-    public static final double kArmPutMiddle = Conversions.degreesToFalcon(-60.0, ArmConstants.kArmGearRatio); // TODO: tune these
-    public static final double kArmPutLow = Conversions.degreesToFalcon(-50, kArmGearRatio);
+    public static final double kArmHome = 0;
+    public static final double kArmPutHigh = Conversions.degreesToFalcon(95.0, ArmConstants.kArmGearRatio);
+    public static final double kArmPutMiddle = Conversions.degreesToFalcon(60.0, ArmConstants.kArmGearRatio); // TODO: tune these
+    public static final double kArmPutLow = Conversions.degreesToFalcon(50, kArmGearRatio);
     public static final double kArmGoalThreshold = Conversions.degreesToCANcoder(5, ArmConstants.kArmGearRatio);
-    public static final double kArmPickConeLeft = Conversions.degreesToFalcon(-20, ArmConstants.kArmGearRatio);
-    public static final double kArmPickConeRight = Conversions.degreesToFalcon(-25, ArmConstants.kArmGearRatio);
-    public static final double kArmPickCube = Conversions.degreesToFalcon(-22.5, ArmConstants.kArmGearRatio);
+    public static final double kArmPickConeLeft = Conversions.degreesToFalcon(20, ArmConstants.kArmGearRatio);
+    public static final double kArmPickConeRight = Conversions.degreesToFalcon(25, ArmConstants.kArmGearRatio);
+    public static final double kArmPickCube = Conversions.degreesToFalcon(22.5, ArmConstants.kArmGearRatio);
   }
 
   public static final class TelescopeConstants {
@@ -261,23 +268,25 @@ public class Constants {
     public static final double kD = 0;
 
     public static final int    peakVelocity        = 100_000; // What could this be?
-    public static final double percentOfPeak       = .25;
+    public static final double percentOfPeak       = .35;
     public static final double cruiseVelocityAccel = peakVelocity * percentOfPeak;
     
     // Setpoints
     public static final double kTelescopeOffset = 0;
     public static final double kTelescopeExtendedMax = 900_000; // FIXME: CONFIG THIS
     public static final double kTelescopeExtendedMiddle = 400_000; // FIXME: CONFIG THIS
-    public static final double kTelescopeThreshold = 2_000;
+    public static final double kTelescopeThreshold = 1000;
 
     public static final double kManualSpeed = 0.40;
+
+    public static final Rotation2d kThreshold = Rotation2d.fromDegrees(3);
   }
 
 
   public static final class OrientatorConstants {
     public static final int kOrientatorMotorID = 29;
     public static final double kOrientatorSpeed = 0.10;
-    public static final double KOrientatorTime =2.5;
+    public static final double KOrientatorTime = 2.5;
   }
 
   public static final class ClawConstants {
@@ -290,7 +299,7 @@ public class Constants {
 
     public static final double kHoldBallSpeed = -0.1; // tune these
     public static final double kHoldConeSpeed = -0.1;
-    public static final double kExtendSpeed = 0.1;
+    public static final double kExtendSpeed = 0.35;
   }
 
   public enum coneOrientation{

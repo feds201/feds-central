@@ -38,9 +38,9 @@ public class ArmSubsystem extends SubsystemBase {
         rotateArmMain.configFactoryDefault();
         rotateArmFollower.configFactoryDefault();
 
-        rotateArmMain.configForwardSoftLimitThreshold(Conversions.degreesToFalcon(130, ArmConstants.kArmGearRatio),
+        rotateArmMain.configForwardSoftLimitThreshold(Conversions.degreesToFalcon(100, ArmConstants.kArmGearRatio),
                 0);
-        rotateArmMain.configReverseSoftLimitThreshold(Conversions.degreesToFalcon(-130, ArmConstants.kArmGearRatio), 0);
+        rotateArmMain.configReverseSoftLimitThreshold(Conversions.degreesToFalcon(0, ArmConstants.kArmGearRatio), 0);
         rotateArmMain.configForwardSoftLimitEnable(true, 0);
         rotateArmMain.configReverseSoftLimitEnable(true, 0);
 
@@ -54,10 +54,11 @@ public class ArmSubsystem extends SubsystemBase {
         rotateArmMain.config_kI(1, ArmConstants.kIDown, 0);
         rotateArmMain.config_kD(1, ArmConstants.kDDown, 0);
 
+
         rotateArmFollower.follow(rotateArmMain);
         rotateArmFollower.setInverted(TalonFXInvertType.FollowMaster);
 
-        rotateArmMain.setInverted(TalonFXInvertType.CounterClockwise);
+        rotateArmMain.setInverted(TalonFXInvertType.Clockwise);
         rotateArmMain.setNeutralMode(NeutralMode.Brake);
         rotateArmFollower.setNeutralMode(NeutralMode.Brake);
         rotateArmMain.configVoltageCompSaturation(12);
@@ -153,20 +154,15 @@ public class ArmSubsystem extends SubsystemBase {
                     manageMotion(position);
                     double aff = ArmConstants.armFeedforward.calculate(
                             Units.degreesToRadians(Conversions.falconToDegrees(position, ArmConstants.kArmGearRatio))
-                                    - 90,
-                            Units.degreesToRadians(Conversions.falconToRPM(position, position)));
-
+                                    - 90, 0);
                     // SmartDashboard.putNumber("Target Position Encoder Counts", position);
                     // SmartDashboard.putNumber("Target Degrees for motor",
                     //         Conversions.falconToDegrees(position, ArmConstants.kArmGearRatio));
                     // SmartDashboard.putNumber("Target Degrees for feedforward",
                     //         Conversions.falconToDegrees(position, ArmConstants.kArmGearRatio) - 90);
-                    // SmartDashboard.putNumber("Feedfoward with that amount",
-                    //         aff);
-
-                    rotateArmMain.set(TalonFXControlMode.MotionMagic, position, DemandType.ArbitraryFeedForward, aff);
-
-
+                    SmartDashboard.putNumber("Feedfoward with that amount",
+                            aff);
+                    rotateArmMain.set(TalonFXControlMode.MotionMagic, position, DemandType.ArbitraryFeedForward, -aff);
                 });
     }
 

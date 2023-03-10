@@ -5,20 +5,26 @@ import frc.robot.subsystems.ClawSubsystem;
 import frc.robot.subsystems.ClawSubsystemWithPID;
 
 public class OpenClaw extends CommandBase {
-    private final ClawSubsystem m_claw;
+    // private final ClawSubsystem m_claw;
+    private final ClawSubsystemWithPID m_clawPID;
 
 
-    public OpenClaw(ClawSubsystem claw) {
-        m_claw = claw;
+    // public OpenClaw(ClawSubsystem claw) {
+    //     m_claw = claw;
 
-        addRequirements(m_claw);
+    //     addRequirements(m_claw);
+    // }
+
+    public OpenClaw(ClawSubsystemWithPID claw) {
+        m_clawPID = claw;
+
+        addRequirements(m_clawPID);
     }
-
 
     @Override
     public void execute() {
         // TODO Auto-generated method stub
-        m_claw.openClaw();
+        m_clawPID.openClaw();
     }
 
 }

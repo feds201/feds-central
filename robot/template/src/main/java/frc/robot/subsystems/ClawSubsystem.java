@@ -35,32 +35,32 @@ public class ClawSubsystem extends SubsystemBase{
 
         m_clawMotor.configVoltageCompSaturation(12);
         m_clawMotor.enableVoltageCompensation(true);
-        m_clawMotor.configForwardSoftLimitThreshold(2000);
-        m_clawMotor.configReverseSoftLimitThreshold(0);
+        m_clawMotor.configForwardSoftLimitThreshold(1000);
+        m_clawMotor.configReverseSoftLimitThreshold(-1000);
         m_clawMotor.configForwardSoftLimitEnable(true, 0);
         m_clawMotor.configReverseSoftLimitEnable(true, 0);
     }
 
 
     public void openClaw() {
-        m_clawMotor.set(ControlMode.PercentOutput, ClawConstants.kExtendSpeed);
+        m_clawMotor.set(ControlMode.PercentOutput, -ClawConstants.kExtendSpeed);
     }
 
-    public void holdBall() {
-        m_clawMotor.set(ControlMode.PercentOutput, ClawConstants.kHoldBallSpeed);
-    }
+    // public void holdBall() {
+    //     m_clawMotor.set(ControlMode.PercentOutput, ClawConstants.kHoldBallSpeed);
+    // }
 
-    public void holdCone() {
-        m_clawMotor.set(ControlMode.PercentOutput, ClawConstants.kHoldConeSpeed);
-    }
+    // public void holdCone() {
+    //     m_clawMotor.set(ControlMode.PercentOutput, ClawConstants.kHoldConeSpeed);
+    // }
 
     public void stopClaw() {
         m_clawMotor.set(TalonFXControlMode.PercentOutput, 0);
     }
 
-    public double getClawPosition() {
-        return m_clawMotor.getSelectedSensorPosition();
-    }
+    // public double getClawPosition() {
+    //     return m_clawMotor.getSelectedSensorPosition();
+    // }
 
     @Override
     public void periodic() {

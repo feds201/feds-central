@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import frc.robot.swerve.SwerveModule;
+import frc.robot.utils.DriveFunctions;
 import frc.robot.Constants;
 import frc.robot.Constants.ArmConstants;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -54,10 +55,20 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
+        double x = translation.getX();
+        double y = translation.getY();
+        // Pose2d currentPose = getPose();
+        // double poseX = currentPose.getX();
+        // double poseY = currentPose.getY();
+
+        // Pose2d acceleratedControlOutput = DriveFunctions.accelerationControls(x, y, poseX, poseY);
+
         SwerveModuleState[] swerveModuleStates = Constants.SwerveConstants.swerveKinematics.toSwerveModuleStates(
                 fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(
-                        translation.getX(),
-                        translation.getY(),
+                        // acceleratedControlOutput.getX(),
+                        // acceleratedControlOutput.getY(),
+                        x,
+                        y,
                         rotation,
                         getYaw())
                         : new ChassisSpeeds(
