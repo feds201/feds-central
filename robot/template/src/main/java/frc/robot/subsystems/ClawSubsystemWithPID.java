@@ -12,7 +12,7 @@ import frc.robot.Constants.ClawConstants;
 public class ClawSubsystemWithPID extends SubsystemBase{
     private final int kPIDLoopIdx = 0;
     private final boolean kSensorPhase = true;
-    private final double kP = 0.2;
+    private final double kP = 0.0;
     private final double kI = 0;
     private final double kD = 0.0;
     private final double kF = 0.5;

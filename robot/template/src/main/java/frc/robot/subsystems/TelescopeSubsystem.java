@@ -19,8 +19,8 @@ public class TelescopeSubsystem extends SubsystemBase{
         armTelescopeMotor.configFactoryDefault();
         armTelescopeMotor.setSelectedSensorPosition(0);
 
-        armTelescopeMotor.configForwardSoftLimitThreshold(1_000_000);
-        armTelescopeMotor.configReverseSoftLimitThreshold(-1);
+        armTelescopeMotor.configForwardSoftLimitThreshold(TelescopeConstants.kForwardTelescopeSoftLimit);
+        armTelescopeMotor.configReverseSoftLimitThreshold(TelescopeConstants.kReverseTelescopeSoftLimit);
         armTelescopeMotor.configForwardSoftLimitEnable(true, 0);
         armTelescopeMotor.configReverseSoftLimitEnable(true, 0);
 

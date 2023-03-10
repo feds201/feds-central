@@ -251,13 +251,17 @@ public class Constants {
     
     // setpoints
     public static final double kArmHome = 0;
-    public static final double kArmPutHigh = Conversions.degreesToFalcon(95.0, ArmConstants.kArmGearRatio);
-    public static final double kArmPutMiddle = Conversions.degreesToFalcon(60.0, ArmConstants.kArmGearRatio); // TODO: tune these
-    public static final double kArmPutLow = Conversions.degreesToFalcon(50, kArmGearRatio);
-    public static final double kArmGoalThreshold = Conversions.degreesToCANcoder(5, ArmConstants.kArmGearRatio);
+    public static final double kArmPutHigh = Conversions.degreesToFalcon(90.0, ArmConstants.kArmGearRatio);
+    public static final double kArmPutMiddle = Conversions.degreesToFalcon(73.0, ArmConstants.kArmGearRatio); // TODO: tune these
+    public static final double kArmPutLow = Conversions.degreesToFalcon(40, kArmGearRatio);
+
+    public static final double kArmGoalThreshold = Conversions.degreesToFalcon(5, ArmConstants.kArmGearRatio);
     public static final double kArmPickConeLeft = Conversions.degreesToFalcon(20, ArmConstants.kArmGearRatio);
     public static final double kArmPickConeRight = Conversions.degreesToFalcon(25, ArmConstants.kArmGearRatio);
     public static final double kArmPickCube = Conversions.degreesToFalcon(22.5, ArmConstants.kArmGearRatio);
+
+    public static final double kForwardSoftLimit = Conversions.degreesToFalcon(100, ArmConstants.kArmGearRatio);
+    public static final double kReverseSoftLimit = 0;
   }
 
   public static final class TelescopeConstants {
@@ -276,6 +280,8 @@ public class Constants {
     public static final double kTelescopeExtendedMax = 900_000; // FIXME: CONFIG THIS
     public static final double kTelescopeExtendedMiddle = 400_000; // FIXME: CONFIG THIS
     public static final double kTelescopeThreshold = 1000;
+    public static final double kForwardTelescopeSoftLimit = 1_000_000;
+    public static final double kReverseTelescopeSoftLimit = -1;
 
     public static final double kManualSpeed = 0.40;
 

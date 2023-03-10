@@ -69,7 +69,9 @@ public class placeConeAuton extends SequentialCommandGroup {
                 new SequentialCommandGroup(
                                 new WaitCommand(1),
                                 new ExtendTelescope(s_telescope,
-                                                TelescopeConstants.kTelescopeExtendedMax))
+                                                TelescopeConstants.kTelescopeExtendedMax)),
+                                // wait time for opening claw
+                                new OpenClaw(s_claw)
 
         ));
     }

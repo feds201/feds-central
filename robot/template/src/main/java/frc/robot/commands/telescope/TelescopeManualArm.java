@@ -22,6 +22,6 @@ public class TelescopeManualArm extends CommandBase {
 
     @Override
     public void execute() {
-        m_telescopingSubsystem.manuallyMove(m_input.getAsDouble()); 
+        m_telescopingSubsystem.manuallyMove(-m_input.getAsDouble());  // negative makes up go out and down go in for the left stick y value
     }
 }

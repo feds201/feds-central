@@ -38,9 +38,8 @@ public class ArmSubsystem extends SubsystemBase {
         rotateArmMain.configFactoryDefault();
         rotateArmFollower.configFactoryDefault();
 
-        rotateArmMain.configForwardSoftLimitThreshold(Conversions.degreesToFalcon(100, ArmConstants.kArmGearRatio),
-                0);
-        rotateArmMain.configReverseSoftLimitThreshold(Conversions.degreesToFalcon(0, ArmConstants.kArmGearRatio), 0);
+        rotateArmMain.configForwardSoftLimitThreshold(ArmConstants.kForwardSoftLimit, 0);
+        rotateArmMain.configReverseSoftLimitThreshold(ArmConstants.kReverseSoftLimit, 0);
         rotateArmMain.configForwardSoftLimitEnable(true, 0);
         rotateArmMain.configReverseSoftLimitEnable(true, 0);
 
