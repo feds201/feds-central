@@ -19,7 +19,7 @@ import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.TelescopeConstants;
 import frc.robot.commands.arm.WaitUntilFullyRotate;
-import frc.robot.commands.auton.exampleAuto;
+import frc.robot.commands.auton.placeConeAuton;
 import frc.robot.commands.drive.GetOnBridge;
 import frc.robot.commands.drive.LockWheels;
 import frc.robot.commands.drive.TeleopSwerve;
@@ -88,8 +88,8 @@ public class RobotContainer {
                 s_arm = new ArmSubsystem();
                 s_claw = new ClawSubsystem();
 
-                m_autonChooser.setDefaultOption("Example PP Swerve", new examplePPAuto(s_swerve));
-                m_autonChooser.addOption("Example Swerve", new exampleAuto(s_swerve));
+                m_autonChooser.setDefaultOption("Example PP Swerve", examplePPAuto.TopPath2Ball());
+                m_autonChooser.addOption("Place Cone Auto", new placeConeAuton(s_swerve,s_claw,s_telescope,s_arm));
                 m_autonChooser.addOption("GetOnBridge", new GetOnBridge(s_swerve));
 
                 Shuffleboard.getTab("Autons").add(m_autonChooser);
