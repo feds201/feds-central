@@ -79,8 +79,8 @@ public class MainActivity extends AppCompatActivity {
         if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         } else {
-            //Fragment fragment = new ManualEntry();
-            //transitionToFragment(fragment);
+            Fragment fragment = new ManualEntry();
+            transitionToFragment(fragment);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        //getMenuInflater().inflate(R.menu.options_menu, menu);
+        getMenuInflater().inflate(R.menu.options_menu, menu);
         return true;
     }
 }
