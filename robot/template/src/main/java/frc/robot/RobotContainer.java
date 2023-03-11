@@ -40,6 +40,7 @@ import frc.robot.commands.telescope.RetractTelescope;
 import frc.robot.commands.telescope.TelescopeManualArm;
 import frc.robot.commands.utilityCommands.TimerDeadline;
 import frc.robot.commands.auton.examplePPAuto;
+import frc.robot.commands.auton.placeConeAndCharge;
 import frc.robot.commands.auton.placeConeAuton;
 import frc.robot.commands.claw.CloseClaw;
 import frc.robot.commands.claw.OpenClaw;
@@ -58,7 +59,7 @@ public class RobotContainer {
     private final SwerveSubsystem s_swerve;
     private final VisionSubsystem s_vision;
     private final ArmSubsystem s_arm;
-    private final OrientatorSubsystem s_orientator;
+    //private final OrientatorSubsystem s_orientator;
     private final TelescopeSubsystem s_telescope;
     private final IntakeSubsystem s_intakeBlue;
     private final ClawSubsystemWithPID s_claw;
@@ -77,14 +78,14 @@ public class RobotContainer {
     public RobotContainer() {
         s_vision = new VisionSubsystem();
         s_intakeBlue = new IntakeSubsystem(IntakeConstants.kIntakeBlueLeftDeployMotor,
-                IntakeConstants.kIntakeBlueLeftWheelMotor, false);
+                          IntakeConstants.kIntakeBlueLeftWheelMotor, false);
         s_telescope = new TelescopeSubsystem();
-        s_orientator = new OrientatorSubsystem();
+        //s_orientator = new OrientatorSubsystem();
         s_swerve = new SwerveSubsystem(s_vision);
         s_arm = new ArmSubsystem();
         s_claw = new ClawSubsystemWithPID();
 
-        m_autonChooser.setDefaultOption("Example PP Swerve", new examplePPAuto(s_swerve));
+        m_autonChooser.setDefaultOption("Example PP Swerve", new placeConeAndCharge(s_swerve, s_claw, s_telescope, s_arm));
         m_autonChooser.addOption("Example Swerve", new placeConeAuton(s_swerve, s_claw, s_telescope, s_arm));
         // m_autonChooser.addOption("GetOnBridge", new GetOnBridge(s_swerve));
 
@@ -117,8 +118,9 @@ public class RobotContainer {
 
         m_driveController.start().onTrue(new LockWheels(s_swerve));
 
-        m_driveController.leftTrigger().onTrue(new DeployIntakeGroup(s_intakeBlue, s_orientator));
-        m_driveController.leftBumper().onTrue(new RetractIntakeGroup(s_intakeBlue, s_orientator));
+        //m_driveController.leftTrigger().onTrue(new DeployIntakeGroup(s_intakeBlue, s_orientator));
+        //m_driveController.leftBumper().onTrue(new RetractIntake(s_intakeBlue));
+
 
         // operator
         // r-bumper: claw open close
@@ -128,6 +130,15 @@ public class RobotContainer {
         // d-pad: control presents for the telescoping arm
         // l-bumper: reverse intake
 
+        m_operatorController.a()
+            .onTrue(new ParallelCommandGroup(
+                s_arm.setPosition(ArmConstants.kArmGrabCone),
+                new SequentialCommandGroup(
+                    // new WaitUntilFullyRotate(s_arm),
+                    new WaitCommand(1),
+                    new ExtendTelescope(s_telescope,
+                        TelescopeConstants.kTelescopeGrabCone))));
+        
         m_operatorController.povUp()
             .onTrue(new ParallelCommandGroup(
                 s_arm.setPosition(ArmConstants.kArmPutHigh),
@@ -161,7 +172,7 @@ public class RobotContainer {
         m_operatorController.rightTrigger().onTrue(new OpenClaw(s_claw));
         m_operatorController.rightBumper().onTrue(new CloseClaw(s_claw));
 
-        m_operatorController.leftTrigger().onTrue(
+        /*m_operatorController.leftTrigger().onTrue(
             new RunOrientator(s_orientator)
             .withTimeout(3)
             .andThen(new StopOrientator(s_orientator)));
@@ -169,7 +180,7 @@ public class RobotContainer {
         m_operatorController.leftBumper().onTrue(
             new ReverseOrientator(s_orientator)
             .withTimeout(3)
-            .andThen(new StopOrientator(s_orientator)));
+            .andThen(new StopOrientator(s_orientator)));*/
 
 
         m_operatorController.a().onTrue(s_arm.slowlyGoUp());

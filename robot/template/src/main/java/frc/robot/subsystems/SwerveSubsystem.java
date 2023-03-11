@@ -29,6 +29,8 @@ public class SwerveSubsystem extends SubsystemBase {
     private boolean gyroPitchChanged = false;
     private double previousGyroPitch = 0;
 
+    private Pose2d currentTargetVelocity;
+
     public SwerveSubsystem(VisionSubsystem limelight) {
         gyro = new Pigeon2(Constants.SwerveConstants.pigeonID);
         gyro.configFactoryDefault();
@@ -55,18 +57,17 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
+        //Pose2d pose = getPose();
+
         double x = translation.getX();
         double y = translation.getY();
-        // Pose2d currentPose = getPose();
-        // double poseX = currentPose.getX();
-        // double poseY = currentPose.getY();
 
-        // Pose2d acceleratedControlOutput = DriveFunctions.accelerationControls(x, y, poseX, poseY);
+        //currentTargetVelocity = DriveFunctions.accelerationControls(x, y, currentTargetVelocity.getX(), currentTargetVelocity.getY());
 
         SwerveModuleState[] swerveModuleStates = Constants.SwerveConstants.swerveKinematics.toSwerveModuleStates(
                 fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(
-                        // acceleratedControlOutput.getX(),
-                        // acceleratedControlOutput.getY(),
+                        //currentTargetVelocity.getX(),
+                        //currentTargetVelocity.getY(),
                         x,
                         y,
                         rotation,

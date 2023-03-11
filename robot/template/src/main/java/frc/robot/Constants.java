@@ -116,7 +116,7 @@ public class Constants {
 
 
     public static final double kMaxLinearAccel = 2;
-    public static final double kDeltaSecs = 0.2;
+    public static final double kDeltaSecs = 0.05;
 
     /* Neutral Modes */
     public static final NeutralMode angleNeutralMode = NeutralMode.Coast;
@@ -254,6 +254,8 @@ public class Constants {
     public static final double kArmPutHigh = Conversions.degreesToFalcon(90.0, ArmConstants.kArmGearRatio);
     public static final double kArmPutMiddle = Conversions.degreesToFalcon(73.0, ArmConstants.kArmGearRatio); // TODO: tune these
     public static final double kArmPutLow = Conversions.degreesToFalcon(40, kArmGearRatio);
+    public static final double kArmGrabCone = Conversions.degreesToFalcon(15, kArmGearRatio);
+
 
     public static final double kArmGoalThreshold = Conversions.degreesToFalcon(5, ArmConstants.kArmGearRatio);
     public static final double kArmPickConeLeft = Conversions.degreesToFalcon(20, ArmConstants.kArmGearRatio);
@@ -279,6 +281,7 @@ public class Constants {
     public static final double kTelescopeOffset = 0;
     public static final double kTelescopeExtendedMax = 900_000; // FIXME: CONFIG THIS
     public static final double kTelescopeExtendedMiddle = 400_000; // FIXME: CONFIG THIS
+    public static final double kTelescopeGrabCone = 200_000;
     public static final double kTelescopeThreshold = 1000;
     public static final double kForwardTelescopeSoftLimit = 1_000_000;
     public static final double kReverseTelescopeSoftLimit = -1;

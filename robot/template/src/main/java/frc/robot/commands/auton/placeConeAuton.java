@@ -3,8 +3,10 @@ package frc.robot.commands.auton;
 import frc.robot.Constants;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.TelescopeConstants;
+import frc.robot.commands.claw.CloseClaw;
 import frc.robot.commands.claw.OpenClaw;
 import frc.robot.commands.telescope.ExtendTelescope;
+import frc.robot.commands.telescope.RetractTelescope;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClawSubsystem;
 import frc.robot.subsystems.ClawSubsystemWithPID;
@@ -63,15 +65,21 @@ public class placeConeAuton extends SequentialCommandGroup {
         //         s_Swerve);
 
 
-        addCommands(
-            new ParallelCommandGroup(
-                s_arm.setPosition(ArmConstants.kArmPutHigh),
-                new SequentialCommandGroup(
-                                new WaitCommand(1),
-                                new ExtendTelescope(s_telescope,
-                                                TelescopeConstants.kTelescopeExtendedMax)),
-                                // wait time for opening claw
-                                new OpenClaw(s_claw)
+        addCommands(new ParallelCommandGroup(new ParallelCommandGroup(
+            s_arm.setPosition(ArmConstants.kArmPutHigh),
+            new SequentialCommandGroup(
+                            new WaitCommand(1),
+                            new ExtendTelescope(s_telescope,
+                                            TelescopeConstants.kTelescopeExtendedMax)),
+                            // wait time for opening claw
+                            new OpenClaw(s_claw)), new SequentialCommandGroup(new WaitCommand(6),new SequentialCommandGroup(
+                                new RetractTelescope(s_telescope),
+                                new ParallelCommandGroup(
+                                                new WaitCommand(1),s_arm.setPosition(ArmConstants.kArmHome)
+                                                ),
+                                                // wait time for opening claw
+                                                new CloseClaw(s_claw)))
+
 
         ));
     }
