@@ -7,7 +7,6 @@ import frc.robot.constants.ArmConstants;
 import frc.robot.commands.telescope.RetractTelescope;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClawSubsystemWithPID;
-import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.TelescopeSubsystem;
 
 public class retractArmAuton extends SequentialCommandGroup{

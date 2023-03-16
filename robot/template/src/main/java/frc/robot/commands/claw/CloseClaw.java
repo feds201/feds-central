@@ -3,7 +3,6 @@ package frc.robot.commands.claw;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.constants.ClawConstants;
-import frc.robot.subsystems.ClawSubsystem;
 import frc.robot.subsystems.ClawSubsystemWithPID;
 
 public class CloseClaw extends CommandBase {
