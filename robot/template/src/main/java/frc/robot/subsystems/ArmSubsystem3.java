@@ -31,7 +31,7 @@ public class ArmSubsystem3 extends SubsystemBase {
             ArmConstants.kA);
 
     private double angleSetpointRadians;
-    private boolean isOpenLoopRotation = true;
+    private boolean isOpenLoopRotation;
 
     public ArmSubsystem3() {
         m_armMain.configFactoryDefault();
