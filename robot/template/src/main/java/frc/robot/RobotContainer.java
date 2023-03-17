@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -29,7 +30,6 @@ import frc.robot.commands.arm.WaitUntilFullyRotate;
 
 import frc.robot.commands.drive.LockWheels;
 import frc.robot.commands.drive.TeleopSwerve;
-import frc.robot.commands.drive.PreciseSwerve;
 import frc.robot.commands.intake.DeployIntake;
 import frc.robot.commands.intake.DeployIntakeGroup;
 import frc.robot.commands.intake.RetractIntake;
@@ -68,14 +68,16 @@ public class RobotContainer {
     // private final ArmSubsystem s_arm;
     private final ArmSubsystem3 s_arm;
     //private final OrientatorSubsystem s_orientator;
-    private final TelescopeSubsystem s_telescope;
-    private final IntakeSubsystem s_intakeBlue;
+    // private final TelescopeSubsystem s_telescope;
+    // private final IntakeSubsystem s_intakeBlue;
     private final ClawSubsystemWithPID s_claw;
 
     private final SlewRateLimiter slewRateLimiterX = new SlewRateLimiter(15);
     private final SlewRateLimiter slewRateLimiterY = new SlewRateLimiter(15);
     public final static PowerDistribution m_PowerDistribution = new PowerDistribution(PowerConstants.kPCMChannel,
             ModuleType.kRev);
+
+    private double controllerMultiplier = 1;
 
     CommandXboxController m_driveController = new CommandXboxController(OIConstants.kDriveControllerPort);
     CommandXboxController m_operatorController = new CommandXboxController(OIConstants.kOperatorControllerPort);
@@ -86,9 +88,9 @@ public class RobotContainer {
         CameraServer.startAutomaticCapture();
 
         s_vision = new VisionSubsystem();
-        s_intakeBlue = new IntakeSubsystem(IntakeConstants.kIntakeBlueLeftDeployMotor,
-                          IntakeConstants.kIntakeBlueLeftWheelMotor, false);
-        s_telescope = new TelescopeSubsystem();
+        // s_intakeBlue = new IntakeSubsystem(IntakeConstants.kIntakeBlueLeftDeployMotor,
+        //                   IntakeConstants.kIntakeBlueLeftWheelMotor, false);
+        // s_telescope = new TelescopeSubsystem();
         //s_orientator = new OrientatorSubsystem();
         s_swerve = new SwerveSubsystem(s_vision);
         // s_arm = new ArmSubsystem();
@@ -106,8 +108,8 @@ public class RobotContainer {
                 s_swerve,
                 // () -> -m_driveController.getLeftY(),
                 // () -> -m_driveController.getLeftX(),
-                () -> -slewRateLimiterY.calculate(m_driveController.getLeftY()),
-                () -> -slewRateLimiterX.calculate(m_driveController.getLeftX()),
+                () -> -slewRateLimiterY.calculate(m_driveController.getLeftY() * getPercentDriveSpeed()), //FIXME: DOES THIS CRAP WORK?
+                () -> -slewRateLimiterX.calculate(m_driveController.getLeftX() * getPercentDriveSpeed()),
                 () -> -m_driveController.getRightX(),
                 () -> m_driveController.rightTrigger().getAsBoolean()));
 
@@ -120,6 +122,7 @@ public class RobotContainer {
 
         configureDriverButtonBindings();
         configureOperatorButtonBindings();
+        configureTriggerBindings();
     }
 
     private void configureDriverButtonBindings() {
@@ -131,10 +134,12 @@ public class RobotContainer {
 
         m_driveController.start().onTrue(new LockWheels(s_swerve));
 
-        m_driveController.povUp().whileTrue(new TeleopSwerve(s_swerve, () -> SwerveConstants.kpreciseSwerveSpeed, () -> 0, () -> 0, () -> true));
-        m_driveController.povDown().whileTrue(new TeleopSwerve(s_swerve, () -> -SwerveConstants.kpreciseSwerveSpeed, () -> 0, () -> 0, () -> true));
-        m_driveController.povLeft().whileTrue(new TeleopSwerve(s_swerve, () -> 0, () -> SwerveConstants.kpreciseSwerveSpeed, () -> 0, () -> true));
-        m_driveController.povRight().whileTrue(new TeleopSwerve(s_swerve, () -> 0, () -> -SwerveConstants.kpreciseSwerveSpeed, () -> 0, () -> true));
+        m_driveController.povUp().whileTrue(new TeleopSwerve(s_swerve, () -> SwerveConstants.kPreciseSwerveSpeed, () -> 0, () -> 0, () -> true));
+        m_driveController.povDown().whileTrue(new TeleopSwerve(s_swerve, () -> -SwerveConstants.kPreciseSwerveSpeed, () -> 0, () -> 0, () -> true));
+        m_driveController.povLeft().whileTrue(new TeleopSwerve(s_swerve, () -> 0, () -> SwerveConstants.kPreciseSwerveSpeed, () -> 0, () -> true));
+        m_driveController.povRight().whileTrue(new TeleopSwerve(s_swerve, () -> 0, () -> -SwerveConstants.kPreciseSwerveSpeed, () -> 0, () -> true));
+
+        m_driveController.x().onTrue(new InstantCommand(() -> togglePercentDriveSpeed()));
 
         //m_driveController.leftTrigger().onTrue(new DeployIntakeGroup(s_intakeBlue, s_orientator));
         //m_driveController.leftBumper().onTrue(new RetractIntake(s_intakeBlue));
@@ -211,9 +216,25 @@ public class RobotContainer {
 
     }
 
+    private void configureTriggerBindings() {
+        new Trigger(s_swerve::gyroNotZero)
+                .onTrue(new InstantCommand(() -> SmartDashboard.putBoolean("GyroZero", false)))
+                .onFalse(new InstantCommand(() -> SmartDashboard.putBoolean("GyroNotZero", true)));
+    }
+
 
     public Command getAutonomousCommand() {
         return m_autonChooser.getSelected();
     }
+
+    private void togglePercentDriveSpeed() {
+        if(controllerMultiplier == SwerveConstants.kPreciseSwerveSpeed) {
+            controllerMultiplier = 1;
+        } else {
+            controllerMultiplier = SwerveConstants.kPreciseSwerveSpeed;
+        }
+    }
+
+    public double getPercentDriveSpeed() { return controllerMultiplier; }
 
 }

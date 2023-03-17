@@ -99,7 +99,7 @@ public final class SwerveConstants {
 
     public static final double kChargingStationTime = 3.05; // seconds
 
-    public static final double kpreciseSwerveSpeed = 0.2;
+    public static final double kPreciseSwerveSpeed = 0.2;
 
     /* Module Specific Constants */
     /* Front Left Module - Module 0 */
