@@ -1,6 +1,7 @@
 package frc.robot.constants;
 
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj2.command.PIDCommand;
 
 public final class AutoConstants {
     // TODO: The below constants are used in the example auto, and must be tuned
@@ -20,4 +21,15 @@ public final class AutoConstants {
     public static final TrapezoidProfile.Constraints kThetaControllerConstraints = new TrapezoidProfile.Constraints(
         kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
 
+    public static class Balance {
+        public static final double kPitchP = 0;
+        public static final double kPitchI = 0;
+        public static final double kPitchD = 0;
+        public static final double kPitchDeadband = 0;
+
+        public static final double kRollP = 0;
+        public static final double kRollI = 0;
+        public static final double kRollD = 0;
+        public static final double kRollDeadband = 0;
+    }
 }
