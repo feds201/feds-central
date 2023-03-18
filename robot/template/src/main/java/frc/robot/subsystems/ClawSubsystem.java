@@ -16,33 +16,22 @@ public class ClawSubsystem extends SubsystemBase{
 
     public ClawSubsystem(){
         m_clawMotor = new TalonFX(ClawConstants.kClawMotor);
-
-        ClawConstants.configMotor(m_clawMotor);
+        ClawConstants.configMotor(m_clawMotor); 
     }
 
-
-    public void openClaw() {
-        m_clawMotor.set(ControlMode.PercentOutput, -ClawConstants.kExtendSpeed);
+    public void intakeCone() {
+        m_clawMotor.set(ControlMode.PercentOutput, ClawConstants.kIntakeConePercent);
     }
 
-    // public void holdBall() {
-    //     m_clawMotor.set(ControlMode.PercentOutput, ClawConstants.kHoldBallSpeed);
-    // }
-
-    // public void holdCone() {
-    //     m_clawMotor.set(ControlMode.PercentOutput, ClawConstants.kHoldConeSpeed);
-    // }
+    public void outtakeCone() {
+        m_clawMotor.set(ControlMode.PercentOutput, ClawConstants.kOuttakeConePercent);
+    }
 
     public void stopClaw() {
-        m_clawMotor.set(TalonFXControlMode.PercentOutput, 0);
+        m_clawMotor.set(ControlMode.PercentOutput, 0);
     }
 
-    // public double getClawPosition() {
-    //     return m_clawMotor.getSelectedSensorPosition();
+    // @Override
+    // public void periodic() {
     // }
-
-    @Override
-    public void periodic() {
-        // SmartDashboard.putNumber("Claw Encoder Count", getClawPosition());
-    }
 }

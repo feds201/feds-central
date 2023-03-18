@@ -9,6 +9,9 @@ import frc.lib.math.Conversions;
 public class ClawConstants {
     public static final int kClawMotor = 56;
 
+    public static final double kIntakeConePercent = 0.2;
+    public static final double kOuttakeConePercent = -0.2;
+
     // set points
     public static final double kOpenClawPosition = -Conversions.degreesToFalcon(40, 25);
     public static final double kKickClawPosition = -Conversions.degreesToFalcon(5, 25);
@@ -30,12 +33,11 @@ public class ClawConstants {
     public static final double kPeakOutput = 0.40;
     public static final int kTimeoutMs = 30;
 
-
     public static void configMotor(TalonFX motor) {
         motor.configFactoryDefault();
-        motor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 30);
+        // motor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 30);
 
-        motor.setSelectedSensorPosition(0);
+        // motor.setSelectedSensorPosition(0);
 
         motor.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 255);
 		motor.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 10);
@@ -50,10 +52,10 @@ public class ClawConstants {
 
         motor.configVoltageCompSaturation(12);
         motor.enableVoltageCompensation(true);
-        motor.configForwardSoftLimitThreshold(1000);
-        motor.configReverseSoftLimitThreshold(-1000);
-        motor.configForwardSoftLimitEnable(true, 0);
-        motor.configReverseSoftLimitEnable(true, 0);
+        // motor.configForwardSoftLimitThreshold(1000);
+        // motor.configReverseSoftLimitThreshold(-1000);
+        // motor.configForwardSoftLimitEnable(true, 0);
+        // motor.configReverseSoftLimitEnable(true, 0);
     }
 
     public static void configPIDMotor(TalonFX motor) {

@@ -1,9 +1,9 @@
-package frc.robot.commands.claw;
+package frc.robot.commands.clawpid;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ClawSubsystemWithPID;
 
-public class OpenClaw extends CommandBase {
+public class kickOutPiece extends CommandBase {
     // private final ClawSubsystem m_claw;
     private final ClawSubsystemWithPID m_clawPID;
 
@@ -14,7 +14,7 @@ public class OpenClaw extends CommandBase {
     //     addRequirements(m_claw);
     // }
 
-    public OpenClaw(ClawSubsystemWithPID claw) {
+    public kickOutPiece(ClawSubsystemWithPID claw) {
         m_clawPID = claw;
 
         addRequirements(m_clawPID);
@@ -23,7 +23,7 @@ public class OpenClaw extends CommandBase {
     @Override
     public void execute() {
         // TODO Auto-generated method stub
-        m_clawPID.openClaw();
+        m_clawPID.kickOutClaw();
     }
 
 }

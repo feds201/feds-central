@@ -42,9 +42,17 @@ import frc.robot.commands.telescope.RetractTelescope;
 import frc.robot.commands.telescope.TelescopeManualArm;
 import frc.robot.commands.utilityCommands.TimerDeadline;
 import frc.robot.commands.auton.examplePPAuto;
+<<<<<<< HEAD
 import frc.robot.commands.claw.CloseClaw;
 import frc.robot.commands.claw.OpenClaw;
 import frc.robot.commands.claw.kickOutPiece;
+=======
+import frc.robot.commands.auton.placeConeAndCharge;
+import frc.robot.commands.auton.placeConeAuton;
+import frc.robot.commands.clawpid.CloseClaw;
+import frc.robot.commands.clawpid.OpenClaw;
+import frc.robot.commands.clawpid.kickOutPiece;
+>>>>>>> d614783d150ad61a5bd97466027c0c8ea5acbbaf
 // import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ArmSubsystem4;
 import frc.robot.subsystems.ClawSubsystem;
