@@ -2,6 +2,7 @@ package frc.robot.commands.intake;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.constants.IntakeConstants;
 import frc.robot.subsystems.IntakeSubsystem;
 
 public class ReverseIntakeWheels extends CommandBase{
@@ -24,12 +25,12 @@ public class ReverseIntakeWheels extends CommandBase{
 
     @Override
     public void execute(){
-        m_intake.stopIntakeWheels();
+        m_intake.runIntakeWheelsOut();
     }
 
     @Override
     public boolean isFinished(){
-        return timer.hasElapsed(1);
+        return timer.hasElapsed(IntakeConstants.kIntakeWheelEjectTime);
     }
 
     @Override

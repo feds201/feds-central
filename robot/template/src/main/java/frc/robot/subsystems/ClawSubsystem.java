@@ -12,10 +12,12 @@ import frc.robot.constants.ClawConstants;
 
 public class ClawSubsystem extends SubsystemBase{
     private final TalonFX m_clawMotor;
+    private final TalonFX m_clawMotor2;
 
 
     public ClawSubsystem(){
-        m_clawMotor = new TalonFX(ClawConstants.kClawMotor);
+        m_clawMotor = new TalonFX(ClawConstants.kClawMotorMain);
+        m_clawMotor2 = new TalonFX(ClawConstants.kClawMotorFollow);
         ClawConstants.configMotor(m_clawMotor); 
     }
 
