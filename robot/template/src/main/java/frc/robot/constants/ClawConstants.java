@@ -7,7 +7,8 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import frc.lib.math.Conversions;
 
 public class ClawConstants {
-    public static final int kClawMotor = 56;
+    public static final int kClawMotorMain = 56;
+    public static final int kClawMotorFollow = 60;
 
     public static final double kIntakeConePercent = 0.2;
     public static final double kOuttakeConePercent = -0.2;

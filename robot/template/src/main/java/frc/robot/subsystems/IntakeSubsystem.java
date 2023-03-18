@@ -18,33 +18,7 @@ public class IntakeSubsystem extends SubsystemBase {
     public IntakeSubsystem(int intakeDeployID, int intakeWheelID, boolean invert) {
         intakeDeployMotor = new TalonFX(intakeDeployID);
         intakeWheelMotor = new TalonFX(intakeWheelID);
-        intakeDeployMotor.configVoltageCompSaturation(12);
-        intakeWheelMotor.configVoltageCompSaturation(12);
-        intakeDeployMotor.enableVoltageCompensation(true);
-        intakeWheelMotor.enableVoltageCompensation(true);
-
-
-        intakeDeployMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 255);
-		intakeDeployMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 10);
-		intakeDeployMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 255);
-		intakeDeployMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 255);
-		intakeDeployMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 255);
-		intakeDeployMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_Targets, 255);
-		intakeDeployMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 255);
-		intakeDeployMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 255);
-		intakeDeployMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 255);
-		intakeDeployMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_Brushless_Current, 255);
-
-        intakeWheelMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 255);
-		intakeWheelMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 10);
-		intakeWheelMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 255);
-		intakeWheelMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 255);
-		intakeWheelMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 255);
-		intakeWheelMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_Targets, 255);
-		intakeWheelMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 255);
-		intakeWheelMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 255);
-		intakeWheelMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 255);
-		intakeWheelMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_Brushless_Current, 255);
+        IntakeConstants.configIntakeMotor(intakeDeployMotor);
         
         intakeWheelMotor.setNeutralMode(NeutralMode.Brake);
         
@@ -85,6 +59,10 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public void stopIntakeWheels() {
         intakeWheelMotor.set(TalonFXControlMode.PercentOutput, 0);
+    }
+
+    public void setIntakePosition(double position){
+        intakeDeployMotor.set(ControlMode.MotionMagic, position);
     }
 
     public boolean hitSoftLimit(){
