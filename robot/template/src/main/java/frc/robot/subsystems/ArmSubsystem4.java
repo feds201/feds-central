@@ -94,6 +94,10 @@ public class ArmSubsystem4 extends SubsystemBase {
         rotateClosedLoop(0);
     }
 
+    public void manualArmRotate(double rotateSpeed){
+        m_armMain.set(ControlMode.PercentOutput, rotateSpeed * ArmConstants.kRotateArmMultiplier);
+    }
+
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Arm Angle", Units.radiansToDegrees(getArmAngleRadians()));

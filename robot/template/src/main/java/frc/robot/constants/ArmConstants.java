@@ -9,15 +9,17 @@ public class ArmConstants {
 
     public static final double kArmGearRatio = 250;
     public static final double kSetRobotToTarget = .56;
+
+    public static final double kRotateArmMultiplier = 0.5;
    
     // Feedforward
-    public static final double kS = 0;
-    public static final double kG = 0.08;
-    public static final double kGPercent = kG/12;
+    //public static final double kS = 0;
+    //public static final double kG = 0.08;
+    //public static final double kGPercent = kG/12;
     // public static final double kG = 0.044835;
-    public static final double kV = 0;
-    public static final double kA = 0;
-    public static final ArmFeedforward armFeedforward = new ArmFeedforward(kS, kG, kV, kA);
+    //public static final double kV = 0;
+    //public static final double kA = 0;
+    //public static final ArmFeedforward armFeedforward = new ArmFeedforward(kS, kG, kV, kA);
     
     public static final int    peakVelocityUp        = 13360;
     public static final double percentOfPeakUp       = .15;

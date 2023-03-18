@@ -8,13 +8,13 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.ArmSubsystem4;
 
 
-public class RotateArm extends CommandBase {
+public class RotateArmManual extends CommandBase {
     private final ArmSubsystem4 s_arm;
-    private final DoubleSupplier rotateDegrees;
+    private final DoubleSupplier rotateSpeed;
     
-    public RotateArm(ArmSubsystem4 s_arm, DoubleSupplier rotateDegrees) {
+    public RotateArmManual(ArmSubsystem4 s_arm, DoubleSupplier rotateSpeed) {
      this.s_arm = s_arm;
-     this.rotateDegrees = rotateDegrees;
+     this.rotateSpeed = rotateSpeed;
      addRequirements(s_arm);
     }
 
@@ -24,17 +24,7 @@ public class RotateArm extends CommandBase {
     }
     @Override
     public void execute() {
-
-    }
-
-    @Override
-    public boolean isFinished() {
-        return false;
-    }
-
-    @Override
-    public void end(boolean interrupted) {
-        
+        s_arm.manualArmRotate(rotateSpeed.getAsDouble());
     }
 
 }
