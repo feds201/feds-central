@@ -58,11 +58,7 @@ public final class IntakeConstants {
         motor.selectProfileSlot(0, 0);
         
         /* THRESHOLDS */
-        motor.configForwardSoftLimitThreshold(Conversions.degreesToFalcon(110, IntakeConstants.kIntakeGearRatio),
-                0);
-        motor.configReverseSoftLimitThreshold(Conversions.degreesToFalcon(-30, IntakeConstants.kIntakeGearRatio), 0);
-        motor.configForwardSoftLimitEnable(true, 0);
-        motor.configReverseSoftLimitEnable(true, 0);
+        
         /* MOTOR TYPES */
         motor.setNeutralMode(NeutralMode.Brake);
         

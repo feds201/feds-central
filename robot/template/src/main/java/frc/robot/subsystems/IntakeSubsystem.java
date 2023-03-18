@@ -19,6 +19,8 @@ public class IntakeSubsystem extends SubsystemBase {
         intakeDeployMotor = new TalonFX(intakeDeployID);
         intakeWheelMotor = new TalonFX(intakeWheelID);
         IntakeConstants.configIntakeMotor(intakeDeployMotor);
+        IntakeConstants.configIntakeMotor(intakeWheelMotor);
+        
         
         intakeWheelMotor.setNeutralMode(NeutralMode.Brake);
         
