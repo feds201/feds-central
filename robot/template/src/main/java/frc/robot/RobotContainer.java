@@ -34,7 +34,6 @@ import frc.robot.commands.sensor.StrafeAlign;
 import frc.robot.commands.utilityCommands.TimerDeadline;
 import frc.robot.commands.auton.examplePPAuto;
 
-
 // import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ArmSubsystem4;
 import frc.robot.subsystems.ClawSubsystem;
@@ -46,11 +45,8 @@ import frc.robot.subsystems.LimelightSubsystem;
 
 public class RobotContainer {
     private final SwerveSubsystem s_swerve;
-    // private final ArmSubsystem s_arm;
     private final ArmSubsystem4 s_arm;
     private final LimelightSubsystem s_limelight;
-    //private final OrientatorSubsystem s_orientator;
-    // private final TelescopeSubsystem s_telescope;
     private final IntakeSubsystem s_intake;
 
     private final SlewRateLimiter slewRateLimiterX = new SlewRateLimiter(15);
@@ -76,14 +72,19 @@ public class RobotContainer {
         Shuffleboard.getTab("Autons").add(m_autonChooser);
 
         s_swerve.setDefaultCommand(
-            new TeleopSwerve(
-                s_swerve,
-                () -> -slewRateLimiterY.calculate(m_driveController.getLeftY() * getPercentDriveSpeed()), //FIXME: DOES THIS CRAP WORK?
-                () -> -slewRateLimiterX.calculate(m_driveController.getLeftX() * getPercentDriveSpeed()),
-                () -> -m_driveController.getRightX(),
-                () -> m_driveController.rightTrigger().getAsBoolean()));
+                new TeleopSwerve(
+                        s_swerve,
+                        () -> -slewRateLimiterY.calculate(m_driveController.getLeftY() * getPercentDriveSpeed()), // FIXME:
+                                                                                                                  // DOES
+                                                                                                                  // THIS
+                                                                                                                  // CRAP
+                                                                                                                  // WORK?
+                        () -> -slewRateLimiterX.calculate(m_driveController.getLeftX() * getPercentDriveSpeed()),
+                        () -> -m_driveController.getRightX(),
+                        () -> m_driveController.rightTrigger().getAsBoolean()));
 
-        //s_arm.setDefaultCommand(new ArmRotationCommandManual(s_arm, () -> m_operatorController.getLeftY()));
+        // s_arm.setDefaultCommand(new ArmRotationCommandManual(s_arm, () ->
+        // m_operatorController.getLeftY()));
 
         configureDriverButtonBindings();
         configureOperatorButtonBindings();
@@ -95,26 +96,28 @@ public class RobotContainer {
         // right bumper: claw open close
         // r-trigger: intake open
         m_driveController.y().onTrue(
-            new InstantCommand(() -> s_swerve.zeroGyro()));
+                new InstantCommand(() -> s_swerve.zeroGyro()));
 
         m_driveController.start().onTrue(new LockWheels(s_swerve));
 
-        m_driveController.povUp().whileTrue(new TeleopSwerve(s_swerve, () -> SwerveConstants.kPreciseSwerveSpeed, () -> 0, () -> 0, () -> true));
-        m_driveController.povDown().whileTrue(new TeleopSwerve(s_swerve, () -> -SwerveConstants.kPreciseSwerveSpeed, () -> 0, () -> 0, () -> true));
-        m_driveController.povLeft().whileTrue(new TeleopSwerve(s_swerve, () -> 0, () -> SwerveConstants.kPreciseSwerveSpeed, () -> 0, () -> true));
-        m_driveController.povRight().whileTrue(new TeleopSwerve(s_swerve, () -> 0, () -> -SwerveConstants.kPreciseSwerveSpeed, () -> 0, () -> true));
+        m_driveController.povUp().whileTrue(
+                new TeleopSwerve(s_swerve, () -> SwerveConstants.kPreciseSwerveSpeed, () -> 0, () -> 0, () -> true));
+        m_driveController.povDown().whileTrue(
+                new TeleopSwerve(s_swerve, () -> -SwerveConstants.kPreciseSwerveSpeed, () -> 0, () -> 0, () -> true));
+        m_driveController.povLeft().whileTrue(
+                new TeleopSwerve(s_swerve, () -> 0, () -> SwerveConstants.kPreciseSwerveSpeed, () -> 0, () -> true));
+        m_driveController.povRight().whileTrue(
+                new TeleopSwerve(s_swerve, () -> 0, () -> -SwerveConstants.kPreciseSwerveSpeed, () -> 0, () -> true));
 
-        m_driveController.x().onTrue(new InstantCommand(() -> togglePercentDriveSpeed()));
+        m_driveController.leftBumper().onTrue(new InstantCommand(() -> togglePercentDriveSpeed()));
+        m_driveController.rightTrigger()
+                .onTrue(new ParallelCommandGroup(new DeployIntake(s_intake), new RunIntakeWheels(s_intake)));
+        m_driveController.rightBumper().onTrue(new RetractIntake(s_intake));
+        m_driveController.b().onTrue(new ReverseIntakeWheels(s_intake));
     }
-    
+
     private void configureOperatorButtonBindings() {
-        // operator
-        // r-bumper: claw open close
-        // r-stick: precise rotation of arm
-        // l-stick press: activate DANGER MODE
-        // l-stick: nothing normally. DANGER MODE: control telescoping arm
-        // d-pad: control presents for the telescoping arm
-        // l-bumper: reverse intake
+        
     }
 
     // private void configureTriggerBindings() {
@@ -129,13 +132,15 @@ public class RobotContainer {
     }
 
     private void togglePercentDriveSpeed() {
-        if(controllerMultiplier == SwerveConstants.kPreciseSwerveSpeed) {
+        if (controllerMultiplier == SwerveConstants.kPreciseSwerveSpeed) {
             controllerMultiplier = 1;
         } else {
             controllerMultiplier = SwerveConstants.kPreciseSwerveSpeed;
         }
     }
 
-    public double getPercentDriveSpeed() { return controllerMultiplier; }
+    public double getPercentDriveSpeed() {
+        return controllerMultiplier;
+    }
 
 }
