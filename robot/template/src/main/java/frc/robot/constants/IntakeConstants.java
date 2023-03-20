@@ -2,7 +2,6 @@ package frc.robot.constants;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
-import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 import frc.lib.math.Conversions;
@@ -58,7 +57,34 @@ public final class IntakeConstants {
         motor.selectProfileSlot(0, 0);
         
         /* THRESHOLDS */
+        motor.configForwardSoftLimitThreshold(kIntakeForwardSoftLimit);
+        motor.configReverseSoftLimitThreshold(kIntakeRetractSoftLimit);
+        motor.configForwardSoftLimitEnable(true);
+        motor.configReverseSoftLimitEnable(true);
+
+        /* MOTOR TYPES */
+        motor.setNeutralMode(NeutralMode.Brake);
         
+        //VOLTAGE COMPENSATION
+        motor.configVoltageCompSaturation(12);
+        motor.enableVoltageCompensation(true);
+        
+        //SET STATUS FRAME PERIODS
+        motor.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 10);
+		motor.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 255);
+        motor.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 255);
+		motor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 255);
+		motor.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 255);
+		motor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_Targets, 255);
+		motor.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 255);
+		motor.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 255);
+		motor.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 255);
+		motor.setStatusFramePeriod(StatusFrameEnhanced.Status_Brushless_Current, 255);
+    }
+    
+    public static void configWheelMotor(TalonFX motor){
+        motor.configFactoryDefault();
+       
         /* MOTOR TYPES */
         motor.setNeutralMode(NeutralMode.Brake);
         
