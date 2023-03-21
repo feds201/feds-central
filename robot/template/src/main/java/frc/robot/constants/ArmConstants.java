@@ -26,17 +26,17 @@ public class ArmConstants {
     public static final double cruiseVelocityAccelDown = peakVelocityDown * percentOfPeakDown;
 
     // PID (Feedback)
-    public static final double kPUp   = 0.1;
+    public static final double kPUp   = 0;
     public static final double kIUp   = 0;
     public static final double kDUp   = 0;
 
-    public static final double kPDown = 0.1;
+    public static final double kPDown = 0;
     public static final double kIDown = 0;
     public static final double kDDown = 0;
    
     // FEEDFORWARD GAINS
     public static final double kS = 0;
-    public static final double kG = 0;
+    public static final double kG = 0.1;
     public static final double kV = 0;
     public static final double kA = 0;
     

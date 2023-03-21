@@ -6,6 +6,7 @@ import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.cscore.VideoSource.ConnectionStrategy;
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -32,6 +33,8 @@ import frc.robot.commands.intake.RunIntakeWheels;
 import frc.robot.commands.intake.ReverseIntakeWheels;
 import frc.robot.commands.sensor.StrafeAlign;
 import frc.robot.commands.utilityCommands.TimerDeadline;
+import frc.robot.commands.arm.RotateArmManual;
+import frc.robot.commands.arm.RotateArmPosition;
 import frc.robot.commands.auton.examplePPAuto;
 
 // import frc.robot.subsystems.ArmSubsystem;
@@ -83,8 +86,9 @@ public class RobotContainer {
                         () -> -m_driveController.getRightX(),
                         () -> m_driveController.rightTrigger().getAsBoolean()));
 
-        // s_arm.setDefaultCommand(new ArmRotationCommandManual(s_arm, () ->
-        // m_operatorController.getLeftY()));
+        s_arm.setDefaultCommand(new RotateArmManual(s_arm, () ->
+        m_operatorController.getLeftY()));
+
 
         configureDriverButtonBindings();
         configureOperatorButtonBindings();
@@ -106,18 +110,24 @@ public class RobotContainer {
                 new TeleopSwerve(s_swerve, () -> -SwerveConstants.kPreciseSwerveSpeed, () -> 0, () -> 0, () -> true));
         m_driveController.povLeft().whileTrue(
                 new TeleopSwerve(s_swerve, () -> 0, () -> SwerveConstants.kPreciseSwerveSpeed, () -> 0, () -> true));
-        m_driveController.povRight().whileTrue(
-                new TeleopSwerve(s_swerve, () -> 0, () -> -SwerveConstants.kPreciseSwerveSpeed, () -> 0, () -> true));
+        m_driveController.povRight().whileTrue(new TeleopSwerve(s_swerve, () -> 0, () -> -SwerveConstants.kPreciseSwerveSpeed, () -> 0, () -> true));
 
-        m_driveController.leftBumper().onTrue(new InstantCommand(() -> togglePercentDriveSpeed()));
-        m_driveController.rightTrigger()
-                .onTrue(new ParallelCommandGroup(new DeployIntake(s_intake), new RunIntakeWheels(s_intake)));
-        m_driveController.rightBumper().onTrue(new RetractIntake(s_intake));
-        m_driveController.b().onTrue(new ReverseIntakeWheels(s_intake));
+        m_driveController.x().onTrue(new InstantCommand(() -> togglePercentDriveSpeed()));
+
+
     }
-
+    
     private void configureOperatorButtonBindings() {
-        
+        // operator
+        // r-bumper: claw open close
+        // r-stick: precise rotation of arm
+        // l-stick press: activate DANGER MODE
+        // l-stick: nothing normally. DANGER MODE: control telescoping arm
+        // d-pad: control presents for the telescoping arm
+        // l-bumper: reverse intake
+
+
+        m_operatorController.a().onTrue(new RotateArmPosition(s_arm, Units.degreesToRadians(Conversions.degreesToFalcon(90, ArmConstants.kArmGearRatio))));
     }
 
     // private void configureTriggerBindings() {
@@ -132,15 +142,13 @@ public class RobotContainer {
     }
 
     private void togglePercentDriveSpeed() {
-        if (controllerMultiplier == SwerveConstants.kPreciseSwerveSpeed) {
+        if(controllerMultiplier == SwerveConstants.kPreciseSwerveSpeed) {
             controllerMultiplier = 1;
         } else {
             controllerMultiplier = SwerveConstants.kPreciseSwerveSpeed;
         }
     }
 
-    public double getPercentDriveSpeed() {
-        return controllerMultiplier;
-    }
+    public double getPercentDriveSpeed() { return controllerMultiplier; }
 
 }

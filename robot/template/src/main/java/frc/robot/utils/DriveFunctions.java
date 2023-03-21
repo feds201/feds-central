@@ -16,7 +16,8 @@ public class DriveFunctions {
 	}
 
 	public static double voltageToPercentOutput(double voltage) {
-		return MathUtil.clamp(voltage / Math.min(12, RobotContainer.m_PowerDistribution.getVoltage()), -1, 1);
+		return voltage;
+		// return MathUtil.clamp(voltage / Math.min(12, RobotContainer.m_PowerDistribution.getVoltage()), -1, 1);
 	}
 
 	public static Pose2d accelerationControls(double targetX, double targetY, double currentX, double currentY) {
