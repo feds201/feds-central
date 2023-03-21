@@ -14,4 +14,8 @@ public class IntakeCone extends CommandBase{
     public void execute() {
         this.s_claw.intakeCone();
     }
+    @Override
+    public void end(boolean interrupted) {
+        this.s_claw.stopClaw();
+    }
 }

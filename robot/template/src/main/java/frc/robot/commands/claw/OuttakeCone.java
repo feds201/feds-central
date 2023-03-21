@@ -14,4 +14,9 @@ public class OuttakeCone extends CommandBase {
     public void execute() {
         this.s_claw.outtakeCone();
     }
+
+    @Override
+    public void end(boolean interrupted) {
+        this.s_claw.stopClaw();
+    }
 }

@@ -24,9 +24,7 @@ public class ClawSubsystem extends SubsystemBase{
         ClawConstants.configMotor(m_clawMotor2);
 
         m_clawMotor2.follow(m_clawMotor);
-        m_clawMotor2.setInverted(TalonFXInvertType.FollowMaster);
-
-        m_clawMotor.setInverted(TalonFXInvertType.CounterClockwise);
+        m_clawMotor2.setInverted(InvertType.OpposeMaster);
     }
 
     public void intakeCone() {

@@ -22,7 +22,7 @@ public class BalanceWhileOn extends CommandBase {
     @Override
     public void execute() {
         double rollCommand = rollController.calculate(s_swerve.getGyroRoll(), 0);
-        double pitchCommand = rollController.calculate(s_swerve.getGyroPitch(), 0);
+        double pitchCommand = pitchController.calculate(s_swerve.getGyroPitch(), 0);
         
         if (Math.abs(s_swerve.getGyroRoll()) < AutoConstants.Balance.kRollDeadband) {
             rollCommand = 0.0;

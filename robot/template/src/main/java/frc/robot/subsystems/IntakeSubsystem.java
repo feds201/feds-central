@@ -52,6 +52,6 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public boolean hitSoftLimit(){
-        return (getPositionEncoderCounts() > IntakeConstants.kIntakeForwardSoftLimit || getPositionEncoderCounts() < IntakeConstants.kIntakeRetractSoftLimit);
+        return (getPositionEncoderCounts() >= IntakeConstants.kIntakeForwardSoftLimit || getPositionEncoderCounts() <= IntakeConstants.kIntakeRetractSoftLimit);
     }
 }

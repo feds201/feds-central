@@ -1,6 +1,8 @@
 package frc.robot.commands.arm;
 
+
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ArmSubsystem4;
 
@@ -19,13 +21,22 @@ public class RotateArmPosition extends CommandBase {
     @Override
     public void initialize() {
         s_arm.getRotationPIDController().reset();
+        SmartDashboard.putNumber("Angle set to PID (RADIANS)", m_angleRadians);
+        s_arm.getRotationPIDController().setSetpoint(m_angleRadians);
     }
 
     @Override
     public void execute() {
         PIDController rotationController = s_arm.getRotationPIDController();
-        rotationController.setSetpoint(m_angleRadians);
-        s_arm.rotateClosedLoop(rotationController.calculate(s_arm.getArmAngleRadians()));
+    
+        // SmartDashboard.putNumber("Angle set to PID (RADIANS)", m_angleRadians);
+        // rotationController.setSetpoint(m_angleRadians); // TODO: Why is this called continuously?
+
+        double PIDCalculatedValue = rotationController.calculate(s_arm.getArmAngleRadians());
+
+        SmartDashboard.putNumber("PIDController Calculate", PIDCalculatedValue);
+
+        s_arm.rotateClosedLoop(PIDCalculatedValue);
     }
 
     @Override

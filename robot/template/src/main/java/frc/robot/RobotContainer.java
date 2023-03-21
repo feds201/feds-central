@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.math.Conversions;
 import frc.robot.constants.ArmConstants;
+import frc.robot.constants.ClawConstants;
 import frc.robot.constants.IntakeConstants;
 import frc.robot.constants.PowerConstants;
 import frc.robot.constants.SwerveConstants;
@@ -36,7 +37,9 @@ import frc.robot.commands.utilityCommands.TimerDeadline;
 import frc.robot.commands.arm.RotateArmManual;
 import frc.robot.commands.arm.RotateArmPosition;
 import frc.robot.commands.auton.examplePPAuto;
-
+import frc.robot.commands.claw.IntakeCone;
+import frc.robot.commands.claw.OuttakeCone;
+import frc.robot.commands.claw.StopClaw;
 // import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ArmSubsystem4;
 import frc.robot.subsystems.ClawSubsystem;
@@ -51,6 +54,7 @@ public class RobotContainer {
     private final ArmSubsystem4 s_arm;
     private final LimelightSubsystem s_limelight;
     private final IntakeSubsystem s_intake;
+    private final ClawSubsystem s_claw;
 
     private final SlewRateLimiter slewRateLimiterX = new SlewRateLimiter(15);
     private final SlewRateLimiter slewRateLimiterY = new SlewRateLimiter(15);
@@ -70,6 +74,7 @@ public class RobotContainer {
         s_swerve = new SwerveSubsystem();
         s_arm = new ArmSubsystem4();
         s_intake = new IntakeSubsystem();
+        s_claw = new ClawSubsystem();
 
 
         Shuffleboard.getTab("Autons").add(m_autonChooser);
@@ -87,7 +92,7 @@ public class RobotContainer {
                         () -> m_driveController.rightTrigger().getAsBoolean()));
 
         s_arm.setDefaultCommand(new RotateArmManual(s_arm, () ->
-        m_operatorController.getLeftY()));
+        -m_operatorController.getLeftY())); // damn inverted controls
 
 
         configureDriverButtonBindings();
@@ -127,7 +132,18 @@ public class RobotContainer {
         // l-bumper: reverse intake
 
 
-        m_operatorController.a().onTrue(new RotateArmPosition(s_arm, Units.degreesToRadians(Conversions.degreesToFalcon(90, ArmConstants.kArmGearRatio))));
+        m_operatorController.povUp().onTrue(new RotateArmPosition(s_arm, Units.degreesToRadians(ArmConstants.kArmPutHigh)).until(() -> m_operatorController.getLeftY() > OIConstants.kArmDeadzone));
+        m_operatorController.povRight().onTrue(new RotateArmPosition(s_arm, Units.degreesToRadians(ArmConstants.kArmPutMiddle)).until(() -> m_operatorController.getLeftY() > OIConstants.kArmDeadzone));
+        m_operatorController.povDown().onTrue(new RotateArmPosition(s_arm, Units.degreesToRadians(ArmConstants.kArmHome)).until(() -> m_operatorController.getLeftY() > OIConstants.kArmDeadzone));
+
+        m_operatorController.a().whileTrue(new IntakeCone(s_claw));
+        m_operatorController.b().whileTrue(new OuttakeCone(s_claw));
+        m_operatorController.x().whileTrue(new StopClaw(s_claw));
+
+        m_operatorController.leftTrigger().onTrue(new DeployIntake(s_intake));
+        m_operatorController.leftBumper().onTrue(new RetractIntake(s_intake));
+
+        
     }
 
     // private void configureTriggerBindings() {

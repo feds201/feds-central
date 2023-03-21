@@ -7,8 +7,8 @@ public class ClawConstants {
     public static final int kClawMotorMain = 56;
     public static final int kClawMotorFollow = 60;
 
-    public static final double kIntakeConePercent = 0.2;
-    public static final double kOuttakeConePercent = -0.2;
+    public static final double kIntakeConePercent = -0.5;
+    public static final double kOuttakeConePercent = 0.5;
 
     public static void configMotor(TalonFX motor) {
         motor.configFactoryDefault();

@@ -7,6 +7,7 @@ import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.util.Units;
 import frc.lib.math.Conversions;
 
 public class ArmConstants {
@@ -26,7 +27,7 @@ public class ArmConstants {
     public static final double cruiseVelocityAccelDown = peakVelocityDown * percentOfPeakDown;
 
     // PID (Feedback)
-    public static final double kPUp   = 0;
+    public static final double kPUp   = 0.05;
     public static final double kIUp   = 0;
     public static final double kDUp   = 0;
 
@@ -36,18 +37,16 @@ public class ArmConstants {
    
     // FEEDFORWARD GAINS
     public static final double kS = 0;
-    public static final double kG = 0.1;
-    public static final double kV = 0;
+    public static final double kG = 0.06;
+    public static final double kV = 0.06;
     public static final double kA = 0;
+    public static final double kFeedforwardOffset = Math.PI;
     
     // setpoints
-    public static final double kArmHome = 0;
-    public static final double kArmPutHigh =       Conversions.degreesToFalcon(0, kArmGearRatio);
-    public static final double kArmPutMiddle =     Conversions.degreesToFalcon(0, kArmGearRatio); // FIXME: tune these
-    public static final double kArmPutLow =        Conversions.degreesToFalcon(0, kArmGearRatio);
-    public static final double kArmGrabCone =      Conversions.degreesToFalcon(0, kArmGearRatio);
-    public static final double kArmAutonPosition = Conversions.degreesToFalcon(0, kArmGearRatio);
-    public static final double kArmTolerance =     100;
+    public static final double kArmHome =          Units.degreesToRadians(0);
+    public static final double kArmPutHigh =       Units.degreesToRadians(90);
+    public static final double kArmPutMiddle =     Units.degreesToRadians(60); // FIXME: tune these
+    public static final double kArmTolerance =     Units.degreesToRadians(5);
 
     public static final double kForwardSoftLimit = Conversions.degreesToFalcon(100, kArmGearRatio);
     public static final double kReverseSoftLimit = Conversions.degreesToFalcon(-1, kArmGearRatio);
@@ -64,9 +63,9 @@ public class ArmConstants {
         motor.selectProfileSlot(0, 0);
         
         /* THRESHOLDS */
-        motor.configForwardSoftLimitThreshold(Conversions.degreesToFalcon(130, ArmConstants.kArmGearRatio),
+        motor.configForwardSoftLimitThreshold(Conversions.degreesToFalcon(95, ArmConstants.kArmGearRatio),
                 0);
-        motor.configReverseSoftLimitThreshold(Conversions.degreesToFalcon(-130, ArmConstants.kArmGearRatio), 0);
+        motor.configReverseSoftLimitThreshold(Conversions.degreesToFalcon(-1, ArmConstants.kArmGearRatio), 0);
         motor.configForwardSoftLimitEnable(true, 0);
         motor.configReverseSoftLimitEnable(true, 0);
 
