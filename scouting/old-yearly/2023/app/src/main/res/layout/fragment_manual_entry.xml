@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ManualEntry">
+
+    <EditText
+        android:id="@+id/input"
+        android:layout_width="match_parent"
+        android:ems="10"
+        android:layout_height="wrap_content"
+        android:minLines="1"
+        android:maxLines="6"
+        android:hint="matchType,matchNumber,teamNumber,colorCode"
+        android:gravity="top"
+        android:inputType="textNoSuggestions|textMultiLine"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/newButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="60sp"
+        android:text="New"
+        android:backgroundTint="#778DA9"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/input" />
+
+    <Button
+        android:id="@+id/appendButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#778DA9"
+        android:text="Append"
+        android:layout_marginRight="60sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/input" />
+</androidx.constraintlayout.widget.ConstraintLayout>
