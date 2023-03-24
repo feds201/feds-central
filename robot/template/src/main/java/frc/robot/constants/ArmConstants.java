@@ -6,32 +6,21 @@ import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
-import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.util.Units;
 import frc.lib.math.Conversions;
 
 public class ArmConstants {
     // Phoenix ID's
     public static final int kArmMotor1 = 52;
-
     public static final double kArmGearRatio = 250;
-
-    public static final double kRotateInputSensitivity = 0.5;
-   
-    public static final int    peakVelocityUp        = 13360;
-    public static final double percentOfPeakUp       = .15;
-    public static final double cruiseVelocityAccelUp = peakVelocityUp * percentOfPeakUp;
-
-    public static final int    peakVelocityDown        = 8090;
-    public static final double percentOfPeakDown       = .65;
-    public static final double cruiseVelocityAccelDown = peakVelocityDown * percentOfPeakDown;
-
+    public static final double kArmManualLimiter = 0.5;
+    
     // PID (Feedback)
     public static final double kPUp   = 0.5;
     public static final double kIUp   = 0;
     public static final double kDUp   = 0;
 
-    public static final double kPDown = 0;
+    public static final double kPDown = 0; // FIXME: no need to differentiate between up and down
     public static final double kIDown = 0;
     public static final double kDDown = 0;
    
@@ -52,7 +41,21 @@ public class ArmConstants {
     public static final double kForwardSoftLimit = Conversions.degreesToFalcon(125, kArmGearRatio);
     public static final double kReverseSoftLimit = Conversions.degreesToFalcon(-1, kArmGearRatio);
 
-    public static final double kArmManualLimiter = 0.5;
+    // ARM SUBSYSTEM 4 SPECIFIC
+    public static final double kActivatePIDThreshold = Units.degreesToRadians(7);
+    public static final double kArmCruisingPower = 0.2;
+
+
+    // ARM SUBSYSTEM 5 SPECIFIC
+    public static final double kArm2Tolerance = Conversions.degreesToFalcon(3, kArmGearRatio);
+    public static final int    peakVelocityUp        = 13360;
+    public static final double percentOfPeakUp       = .15;
+    public static final double cruiseVelocityAccelUp = peakVelocityUp * percentOfPeakUp;
+
+    public static final int    peakVelocityDown        = 8090;
+    public static final double percentOfPeakDown       = .65;
+    public static final double cruiseVelocityAccelDown = peakVelocityDown * percentOfPeakDown;
+
     
     public static void configArmMotor(TalonFX motor) {
         motor.configFactoryDefault();

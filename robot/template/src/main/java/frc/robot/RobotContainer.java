@@ -38,12 +38,15 @@ import frc.robot.commands.sensor.StrafeAlign;
 import frc.robot.commands.utilityCommands.TimerDeadline;
 import frc.robot.commands.arm.RotateArmManual;
 import frc.robot.commands.arm.RotateArmPosition;
+import frc.robot.commands.arm2.RotateArm2Manual;
+import frc.robot.commands.arm2.RotateArm2Position;
 import frc.robot.commands.auton.examplePPAuto;
 import frc.robot.commands.claw.IntakeCone;
 import frc.robot.commands.claw.OuttakeCone;
 import frc.robot.commands.claw.StopClaw;
 // import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ArmSubsystem4;
+import frc.robot.subsystems.ArmSubsystem5;
 import frc.robot.subsystems.ClawSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.utils.GripPipeline;
@@ -55,6 +58,7 @@ import frc.robot.subsystems.LimelightSubsystem;
 public class RobotContainer {
     private final SwerveSubsystem s_swerve;
     private final ArmSubsystem4 s_arm;
+    private final ArmSubsystem5 s_arm2;
     private final LimelightSubsystem s_limelight;
     private final IntakeSubsystem s_intake;
     private final ClawSubsystem s_claw;
@@ -72,11 +76,12 @@ public class RobotContainer {
 
     SendableChooser<Command> m_autonChooser = new SendableChooser<>();
 
+    private boolean use_wpi_pid_arm = true;
+
     public RobotContainer() {
         CameraServer.startAutomaticCapture();
         s_limelight = new LimelightSubsystem();
         s_swerve = new SwerveSubsystem();
-        s_arm = new ArmSubsystem4();
         s_intake = new IntakeSubsystem();
         s_claw = new ClawSubsystem();
         s_wheels = new WheelSubsystem();
@@ -95,9 +100,18 @@ public class RobotContainer {
                         () -> -m_driveController.getRightX(),
                         () -> m_driveController.rightTrigger().getAsBoolean()));
 
-        s_arm.setDefaultCommand(new RotateArmManual(s_arm, () -> -m_operatorController.getLeftY())); // damn inverted
-                                                                                                     // controls
-
+        if (use_wpi_pid_arm) {
+            s_arm = new ArmSubsystem4();
+            s_arm.setDefaultCommand(new RotateArmManual(s_arm, () -> -m_operatorController.getLeftY())); // damn inverted
+                                                                                                         // controls
+            
+                                                                                                         s_arm2 = null;
+        } else {
+            s_arm2 = new ArmSubsystem5();
+            s_arm2.setDefaultCommand(new RotateArm2Manual(s_arm2, () -> -m_operatorController.getLeftY())); // damn inverted
+            
+            s_arm = null;
+        }                          
         configureDriverButtonBindings();
         configureOperatorButtonBindings();
         // configureTriggerBindings();
@@ -137,14 +151,26 @@ public class RobotContainer {
         // l-bumper: reverse intake
 
         // arm
-        m_operatorController.povUp().onTrue(new RotateArmPosition(s_arm, ArmConstants.kArmPutHigh)
-                .until(() -> m_operatorController.getLeftY() > OIConstants.kArmDeadzone));
-        m_operatorController.povRight().onTrue(new RotateArmPosition(s_arm, ArmConstants.kArmPutHumanPlayer)
-                .until(() -> m_operatorController.getLeftY() > OIConstants.kArmDeadzone));
-        m_operatorController.povLeft().onTrue(new RotateArmPosition(s_arm, ArmConstants.kArmHome)
-                .until(() -> m_operatorController.getLeftY() > OIConstants.kArmDeadzone));
-        m_operatorController.povDown().onTrue(new RotateArmPosition(s_arm, ArmConstants.kArmPutMiddle)
-                .until(() -> m_operatorController.getLeftY() > OIConstants.kArmDeadzone));
+
+        if (use_wpi_pid_arm) {
+            m_operatorController.povUp().onTrue(new RotateArmPosition(s_arm, ArmConstants.kArmPutHigh)
+                    .until(() -> m_operatorController.getLeftY() > OIConstants.kArmDeadzone));
+            m_operatorController.povRight().onTrue(new RotateArmPosition(s_arm, ArmConstants.kArmPutHumanPlayer)
+                    .until(() -> m_operatorController.getLeftY() > OIConstants.kArmDeadzone));
+            m_operatorController.povLeft().onTrue(new RotateArmPosition(s_arm, ArmConstants.kArmHome)
+                    .until(() -> m_operatorController.getLeftY() > OIConstants.kArmDeadzone));
+            m_operatorController.povDown().onTrue(new RotateArmPosition(s_arm, ArmConstants.kArmPutMiddle)
+                    .until(() -> m_operatorController.getLeftY() > OIConstants.kArmDeadzone));
+        } else {
+            m_operatorController.povUp().onTrue(new RotateArm2Position(s_arm2, ArmConstants.kArmPutHigh)
+                    .until(() -> m_operatorController.getLeftY() > OIConstants.kArmDeadzone));
+            m_operatorController.povRight().onTrue(new RotateArm2Position(s_arm2, ArmConstants.kArmPutHumanPlayer)
+                    .until(() -> m_operatorController.getLeftY() > OIConstants.kArmDeadzone));
+            m_operatorController.povLeft().onTrue(new RotateArm2Position(s_arm2, ArmConstants.kArmHome)
+                    .until(() -> m_operatorController.getLeftY() > OIConstants.kArmDeadzone));
+            m_operatorController.povDown().onTrue(new RotateArm2Position(s_arm2, ArmConstants.kArmPutMiddle)
+                    .until(() -> m_operatorController.getLeftY() > OIConstants.kArmDeadzone));
+        }
 
         // claw
         m_operatorController.a().whileTrue(new IntakeCone(s_claw));
