@@ -4,6 +4,7 @@ package com.feds201.scoutingapp2023.sql;
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import org.json.JSONObject;
@@ -19,6 +20,13 @@ import org.json.JSONObject;
 
 @Entity(tableName = "matches")
 public class Match {
+    public enum GamePiece {
+        NONE,
+        CUBE,
+        CONE
+    }
+
+
     @PrimaryKey
     public int uid;
 
@@ -95,7 +103,6 @@ public class Match {
     public String toQRCodeString() {
         return  teamNumber + "," +
                 matchNumber+ "," +
-                matchType  + "," +
                 autonHigh + "," +
                 autonMiddle + "," +
                 autonLow + "," +
@@ -105,8 +112,12 @@ public class Match {
                 teleopMiddle + "," +
                 teleopLow + "," +
                 teleopCharge + "," +
+                teleopPark + "," +
                 feedPlaceBoth + "," +
                 coop + "," +
                 links;
     }
+
+    @Ignore
+    public GamePiece[][] grid = new GamePiece[3][9];
 }

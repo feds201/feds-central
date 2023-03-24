@@ -102,7 +102,14 @@ public class GamePieceButton implements Component {
     public static boolean checkIfCanCycleAll(String fieldName) {
         String lastChar = fieldName.substring(fieldName.length()-1);
         int lastNum = Integer.parseInt(lastChar);
-        return fieldName.contains("low") || lastNum % 2 == 1;
+        if (fieldName.contains("low"))
+            return true;
+        else{
+            switch (lastNum) {
+                case 1: case 3: case 4: case 6: case 7: case 9: return true;
+                default: return false;
+            }
+        }
     }
 
 

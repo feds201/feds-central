@@ -5,8 +5,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.DefaultItemAnimator;
@@ -23,6 +25,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 
@@ -37,6 +41,16 @@ public class Home extends Fragment {
             Thread.sleep(1 * 1000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
+        }
+
+        if(matchesStrings.size() != 1) {
+            matchesStrings.sort(new SortNumerically());
+        }
+
+        StringBuilder printStr = new StringBuilder();
+        for(String s : matchesStrings) {
+            printStr.append(s).append(",");
+            Log.d("matches", printStr.toString());
         }
 
         RecyclerView qualsList = homeView.findViewById(R.id.rvQuals);
@@ -60,5 +74,15 @@ public class Home extends Fragment {
         });
 
         return homeView;
+    }
+
+
+    static class SortNumerically implements Comparator<String> {
+        public int compare (String a, String b) {
+            int aInt = Integer.parseInt(a.substring(a.indexOf(" ") + 1));
+            int bInt = Integer.parseInt(b.substring(b.indexOf(" ") + 1));
+
+            return aInt - bInt;
+        }
     }
 }

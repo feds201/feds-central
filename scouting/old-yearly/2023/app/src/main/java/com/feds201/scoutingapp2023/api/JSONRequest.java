@@ -21,6 +21,7 @@ public class JSONRequest {
 
         try (Response response = client.newCall(request).execute()) {
             Log.d("json", "In request OK!");
+            Log.d("json", url);
             return response.body().string();
         } catch (IOException e) {
             e.printStackTrace();
