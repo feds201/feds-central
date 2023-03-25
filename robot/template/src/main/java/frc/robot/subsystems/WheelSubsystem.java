@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
@@ -25,5 +26,6 @@ public class WheelSubsystem extends SubsystemBase{
 
     public void stopIntakeWheels() {
         intakeWheelMotor.set(TalonFXControlMode.PercentOutput, 0);
+        intakeWheelMotor.setNeutralMode(NeutralMode.Brake);
     }
 }

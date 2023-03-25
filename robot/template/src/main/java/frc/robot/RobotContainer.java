@@ -40,6 +40,9 @@ import frc.robot.commands.arm.RotateArmManual;
 import frc.robot.commands.arm.RotateArmPosition;
 import frc.robot.commands.arm2.RotateArm2Manual;
 import frc.robot.commands.arm2.RotateArm2Position;
+import frc.robot.commands.auton.BalancePath;
+import frc.robot.commands.auton.BlueAllianceScoreOnlyAuton;
+import frc.robot.commands.auton.RedAllianceScoreOnlyAuton;
 import frc.robot.commands.auton.examplePPAuto;
 import frc.robot.commands.claw.IntakeCone;
 import frc.robot.commands.claw.OuttakeCone;
@@ -76,7 +79,7 @@ public class RobotContainer {
 
     SendableChooser<Command> m_autonChooser = new SendableChooser<>();
 
-    private boolean use_wpi_pid_arm = true;
+    private boolean use_wpi_pid_arm = false;
 
     public RobotContainer() {
         CameraServer.startAutomaticCapture();
@@ -85,6 +88,10 @@ public class RobotContainer {
         s_intake = new IntakeSubsystem();
         s_claw = new ClawSubsystem();
         s_wheels = new WheelSubsystem();
+
+        m_autonChooser.addOption("Cone and Charge", new BalancePath(s_swerve));
+        m_autonChooser.addOption("Red Cone and Cube", new RedAllianceScoreOnlyAuton(s_swerve));
+        m_autonChooser.addOption("Blue Cone and Cube", new BlueAllianceScoreOnlyAuton(s_swerve));
 
         Shuffleboard.getTab("Autons").add(m_autonChooser);
 
@@ -135,7 +142,7 @@ public class RobotContainer {
         m_driveController.povRight().whileTrue(
                 new TeleopSwerve(s_swerve, () -> 0, () -> -SwerveConstants.kPreciseSwerveSpeed, () -> 0, () -> true));
 
-        m_driveController.x().onTrue(new InstantCommand(() -> togglePercentDriveSpeed()));
+        m_driveController.b().onTrue(new InstantCommand(() -> togglePercentDriveSpeed()));
 
         m_driveController.a().onTrue(new StrafeAlign(s_swerve));
 

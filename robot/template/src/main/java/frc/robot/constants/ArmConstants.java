@@ -33,12 +33,12 @@ public class ArmConstants {
     
     // setpoints
     public static final double kArmHome =          Units.degreesToRadians(0);
-    public static final double kArmPutHigh =       Units.degreesToRadians(110);
+    public static final double kArmPutHigh =       Units.degreesToRadians(135);
     public static final double kArmPutMiddle =     Units.degreesToRadians(85); // FIXME: tune these
     public static final double kArmPutHumanPlayer =     Units.degreesToRadians(90); // FIXME: tune these
     public static final double kArmTolerance =     Units.degreesToRadians(5);
 
-    public static final double kForwardSoftLimit = Conversions.degreesToFalcon(125, kArmGearRatio);
+    public static final double kForwardSoftLimit = Conversions.degreesToFalcon(150, kArmGearRatio);
     public static final double kReverseSoftLimit = Conversions.degreesToFalcon(-1, kArmGearRatio);
 
     // ARM SUBSYSTEM 4 SPECIFIC
@@ -48,8 +48,8 @@ public class ArmConstants {
 
     // ARM SUBSYSTEM 5 SPECIFIC
     public static final double kArm2Tolerance = Conversions.degreesToFalcon(3, kArmGearRatio);
-    public static final int    peakVelocityUp        = 13360;
-    public static final double percentOfPeakUp       = .15;
+    public static final int    peakVelocityUp        = 10_000;
+    public static final double percentOfPeakUp       = 1;
     public static final double cruiseVelocityAccelUp = peakVelocityUp * percentOfPeakUp;
 
     public static final int    peakVelocityDown        = 8090;

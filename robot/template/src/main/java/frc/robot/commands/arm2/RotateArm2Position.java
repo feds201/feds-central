@@ -22,6 +22,6 @@ public class RotateArm2Position extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return Math.abs(s_arm.getArmAngleRadians() - m_angleRadians) < ArmConstants.kArm2Tolerance;
+        return false;
     }
 }
