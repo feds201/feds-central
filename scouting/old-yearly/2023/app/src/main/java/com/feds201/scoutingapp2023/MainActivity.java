@@ -63,9 +63,9 @@ public class MainActivity extends AppCompatActivity {
                     fragment = new Setup();
                     break;
 
-                case R.id.nav_settings:
+                //case R.id.nav_settings:
                     //fragment = new Settings();
-                    break;
+                    //break;
             }
             transitionToFragment(fragment);
             drawerLayout.closeDrawer(Gravity.LEFT);

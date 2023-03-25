@@ -18,9 +18,4 @@
         android:title="Setup"
         android:icon="@drawable/setup_icon"/>
 
-    <item
-        android:id="@+id/nav_settings"
-        android:title="Settings"
-        android:icon="@drawable/settings_icon"/>
-
 </menu>
