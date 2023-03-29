@@ -3,6 +3,7 @@ package frc.robot.commands.drive;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.RobotContainer;
 import frc.robot.constants.AutoConstants;
 import frc.robot.subsystems.SwerveSubsystem;
 
@@ -21,14 +22,14 @@ public class BalanceWhileOn extends CommandBase {
 
     @Override
     public void execute() {
-        double pitchCommand = rollController.calculate(s_swerve.getGyroRoll(), 0);
-        double rollCommand = pitchController.calculate(s_swerve.getGyroPitch(), 0);
+        double pitchCommand = rollController.calculate(RobotContainer.s_pigeon2.getRoll(), 0);
+        double rollCommand = pitchController.calculate(RobotContainer.s_pigeon2.getPitch(), 0);
         
-        if (Math.abs(s_swerve.getGyroRoll()) < AutoConstants.Balance.kRollDeadband) {
+        if (Math.abs(RobotContainer.s_pigeon2.getRoll()) < AutoConstants.Balance.kRollDeadband) {
             rollCommand = 0.0;
         }
 
-        if (Math.abs(s_swerve.getGyroPitch()) < AutoConstants.Balance.kPitchDeadband) {
+        if (Math.abs(RobotContainer.s_pigeon2.getPitch()) < AutoConstants.Balance.kPitchDeadband) {
             pitchCommand = 0.0;
         }
 
