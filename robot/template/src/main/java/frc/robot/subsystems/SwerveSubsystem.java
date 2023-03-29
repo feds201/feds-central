@@ -3,7 +3,12 @@ package frc.robot.subsystems;
 import frc.robot.swerve.SwerveModule;
 import frc.robot.utils.DriveFunctions;
 import frc.robot.constants.SwerveConstants;
+<<<<<<< HEAD
 import frc.robot.constants.VisionConstants;
+=======
+import frc.robot.subsystems.pigeon.Pigeon2Subsystem;
+import frc.robot.RobotContainer;
+>>>>>>> origin/main
 import frc.robot.constants.ArmConstants;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -24,13 +29,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class SwerveSubsystem extends SubsystemBase {
     public SwerveDriveOdometry swerveOdometry;
     public SwerveModule[] mSwerveMods;
-    public Pigeon2 gyro;
+    public static Pigeon2Subsystem gyro;
 
     public LimelightSubsystem limelight;
 
     public SwerveSubsystem() {
-        gyro = new Pigeon2(SwerveConstants.pigeonID);
-        gyro.configFactoryDefault();
+        gyro = RobotContainer.s_pigeon2;
         zeroGyro();
         this.limelight = limelight;
         limelight = new LimelightSubsystem();
@@ -151,71 +155,10 @@ public class SwerveSubsystem extends SubsystemBase {
         }*/
     }
 
-    //public boolean finishedMoveToTarget(boolean isTargetLow){
-        /*limelight.updateResultToLatest();
-        if (limelight.hasTarget()) {
-            limelight.updateTargetsToLatest();
-            limelight.setTarget(isTargetLow);            
-        }
-        return limelight.getHorizontalDistanceToTarget() == ArmConstants.kSetRobotToTarget;*/
-    //}
-
-    /*public void rotateToTarget(boolean isTargetLow){
-        limelight.updateResultToLatest();
-        if(limelight.hasTarget()){
-            limelight.updateTargetsToLatest();
-            limelight.setTarget(isTargetLow);
-
-            double rotateAmount = limelight.rotateAlign();
-            
-        }
-    }*/
-
-    /*public void rotateToTarget(boolean isTargetLow){
-        limelight.updateResultToLatest();
-        if (limelight.getHasTarget()) {
-            limelight.updateTargetsToLatest();
-            limelight.setTarget(isTargetLow);
-            limelight.getTargetYaw();
-            
-            double rotateAngle = limelight.rotateAlign();
-
-        }
-    }*/
-    /*public void refreshVision() {
-        limelight.updateResultToLatest();
-        if (limelight.hasTarget()) {
-            limelight.updateTargetsToLatest();
-            // limelight.setTargetLow(isTargetLow);
-            limelight.setTarget(true);
-            limelight.getTargetYaw();
-            SmartDashboard.putNumber("The Camera Yaw", limelight.getTargetYaw());
-            SmartDashboard.putNumber("The Camera Pitch", limelight.getTargetPitch());
-        }
-        
-    }*/
-
-
-    public double getGyroPitch() {
-        return gyro.getPitch();
-    }
-
-    public double getGyroRoll() {
-        return gyro.getRoll();
-    }
-
-    public double getGyroYaw() {
-        return gyro.getYaw();
-    }
-   
-    public boolean gyroNotZero() {
-        return getGyroPitch() != 0;
-    }
 
     @Override
     public void periodic() {
         swerveOdometry.update(getYaw(), getModulePositions());
-        //refreshVision();
 
         // for (SwerveModule mod : mSwerveMods) {
         //     SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Cancoder", mod.getCanCoderAngle().getDegrees());
@@ -223,7 +166,5 @@ public class SwerveSubsystem extends SubsystemBase {
         //             mod.getPosition().angle.getDegrees());
         //     SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Velocity", mod.getState().speedMetersPerSecond);
         // }
-
-        SmartDashboard.putNumber("Gyro Pitch", getGyroPitch());
     }
 }

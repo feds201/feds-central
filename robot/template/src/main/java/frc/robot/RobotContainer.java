@@ -37,20 +37,14 @@ import frc.robot.commands.intake.RetractIntake;
 import frc.robot.commands.intake.RunIntakeWheels;
 import frc.robot.commands.intake.RunIntakeWheelsInfinite;
 import frc.robot.commands.intake.ReverseIntakeWheels;
-import frc.robot.commands.intake.ReverseIntakeWheelsFast;
 import frc.robot.commands.intake.RotateIntakeToPosition;
+import frc.robot.commands.sensor.ReportingCommand;
 import frc.robot.commands.sensor.StrafeAlign;
 import frc.robot.commands.arm.RotateArmManual;
 import frc.robot.commands.arm.RotateArmPosition;
 import frc.robot.commands.arm2.RotateArm2Manual;
-import frc.robot.commands.arm2.RotateArm2Position;
+import frc.robot.commands.arm2.RotateArm2Position; 
 import frc.robot.commands.auton.BalancePath;
-import frc.robot.commands.auton.BlueAllianceScoreOnlyAuton;
-import frc.robot.commands.auton.PlaceConeHigh;
-import frc.robot.commands.auton.PlaceConeHighOnly;
-import frc.robot.commands.auton.RedAllianceScoreOnlyAuton;
-import frc.robot.commands.auton.cubeBalance;
-import frc.robot.commands.auton.cubeOnly;
 import frc.robot.commands.auton.examplePPAuto;
 import frc.robot.commands.claw.IntakeCone;
 import frc.robot.commands.claw.OuttakeCone;
@@ -64,6 +58,8 @@ import frc.robot.utils.GripPipeline;
 import frc.robot.utils.VisionUtils;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.WheelSubsystem;
+import frc.robot.subsystems.pigeon.Pigeon2Subsystem;
+import frc.robot.subsystems.pigeon.ReportingSubsystem;
 import frc.robot.subsystems.LimelightSubsystem;
 
 public class RobotContainer {
@@ -73,6 +69,9 @@ public class RobotContainer {
     private final IntakeSubsystem s_intake;
     private final ClawSubsystem s_claw;
     private final WheelSubsystem s_wheels;
+
+    public static final Pigeon2Subsystem s_pigeon2 = new Pigeon2Subsystem(SwerveConstants.pigeonID);
+    private final ReportingSubsystem s_reportingSubsystem;
 
     private final SlewRateLimiter slewRateLimiterX = new SlewRateLimiter(15);
     private final SlewRateLimiter slewRateLimiterY = new SlewRateLimiter(15);
@@ -94,12 +93,15 @@ public class RobotContainer {
         s_claw = new ClawSubsystem();
         s_wheels = new WheelSubsystem();
         s_arm2 = new ArmSubsystem5();
+        s_reportingSubsystem = new ReportingSubsystem();
+
+        
 
         //m_autonChooser.addOption("Cone and Charge", new BalancePath(s_swerve));
         //m_autonChooser.addOption("Red Cone and Cube", new RedAllianceScoreOnlyAuton(s_swerve, s_claw, s_arm2, s_intake, s_wheels));
         //m_autonChooser.addOption("Blue Cone and Cube", new BlueAllianceScoreOnlyAuton(s_swerve, s_claw, s_arm2, s_intake, s_wheels));
         //m_autonChooser.addOption("Place cone only", new PlaceConeHighOnly(s_arm2, s_claw, s_swerve));
-        m_autonChooser.addOption("CubeOnly", new cubeOnly(s_wheels, s_swerve, s_intake));
+        // m_autonChooser.addOption("CubeOnly", new cubeOnly(s_wheels, s_swerve, s_intake));
         m_autonChooser.addOption("BalanceOnly", new BalanceWhileOn(s_swerve));
 
         Shuffleboard.getTab("Autons").add(m_autonChooser);
@@ -120,6 +122,7 @@ public class RobotContainer {
         s_arm2.setDefaultCommand(new RotateArm2Manual(s_arm2, () -> -m_operatorController.getLeftY())); // damn inverted
         s_wheels.setDefaultCommand(new RunIntakeWheelsInfinite(s_wheels, -0.05));
         s_intake.setDefaultCommand(new RotateIntakeToPosition(s_intake, 0));
+        s_reportingSubsystem.setDefaultCommand(new ReportingCommand(s_reportingSubsystem, s_pigeon2));
 
         configureDriverButtonBindings();
         configureOperatorButtonBindings();
@@ -184,7 +187,7 @@ public class RobotContainer {
         m_operatorController.a().whileTrue(new IntakeCone(s_claw));
         m_operatorController.b().whileTrue(new OuttakeCone(s_claw));                
 
-        m_operatorController.rightTrigger().onTrue(new ReverseIntakeWheelsFast(s_wheels, IntakeConstants.kIntakeWheelEjectTime, 0.5));
+        // m_operatorController.rightTrigger().onTrue(new ReverseIntakeWheelsFast(s_wheels, IntakeConstants.kIntakeWheelEjectTime, 0.5));
     }
 
     
@@ -206,59 +209,3 @@ public class RobotContainer {
     }
 
 }
-
-/**
-        //if (use_wpi_pid_arm) {
-                // s_arm = new ArmSubsystem4();
-                // s_arm.setDefaultCommand(new RotateArmManual(s_arm, () -> -m_operatorController.getLeftY())); // damn inverted
-                //                                                                                                 // controls
-                
-                //                                                                                                 s_arm2 = null;
-                // } else {
-
-                // configureTriggerBindings();
-        // private void configureTriggerBindings() {
-        // new Trigger(s_swerve::gyroNotZero)
-        // .onTrue(new InstantCommand(() -> SmartDashboard.putBoolean("GyroZero",
-        // false)))
-        // .onFalse(new InstantCommand(() -> SmartDashboard.putBoolean("GyroNotZero",
-        // true)));
-        // }
-
-
-
-
-        // m_driveController.povUp().whileTrue(
-                //         new TeleopSwerve(s_swerve, () -> SwerveConstants.kPreciseSwerveSpeed, () -> 0, () -> 0, () -> true));
-                // m_driveController.povDown().whileTrue(
-                //         new TeleopSwerve(s_swerve, () -> -SwerveConstants.kPreciseSwerveSpeed, () -> 0, () -> 0, () -> true));
-                // m_driveController.povLeft().whileTrue(
-                //         new TeleopSwerve(s_swerve, () -> 0, () -> SwerveConstants.kPreciseSwerveSpeed, () -> 0, () -> true));
-                // m_driveController.povRight().whileTrue(
-                //         new TeleopSwerve(s_swerve, () -> 0, () -> -SwerveConstants.kPreciseSwerveSpeed, () -> 0, () -> true));
-
-        // if (use_wpi_pid_arm) {
-        //     m_operatorController.povUp().onTrue(new RotateArmPosition(s_arm, ArmConstants.kArmPutHigh)
-        //             .until(() -> m_operatorController.getLeftY() > OIConstants.kArmDeadzone));
-        //     m_operatorController.povRight().onTrue(new RotateArmPosition(s_arm, ArmConstants.kArmPutHumanPlayer)
-        //             .until(() -> m_operatorController.getLeftY() > OIConstants.kArmDeadzone));
-        //     m_operatorController.povLeft().onTrue(new RotateArmPosition(s_arm, ArmConstants.kArmHome)
-        //             .until(() -> m_operatorController.getLeftY() > OIConstants.kArmDeadzone));
-        //     m_operatorController.povDown().onTrue(new RotateArmPosition(s_arm, ArmConstants.kArmPutMiddle)
-        //             .until(() -> m_operatorController.getLeftY() > OIConstants.kArmDeadzone));
-        // } else {
-                
-        // }
-
-
-        // m_driveController.leftTrigger()
-        // .onTrue(new ParallelCommandGroup(
-        //                 new RotateIntakeToPosition(s_intake, IntakeConstants.kIntakeForwardSetpoint), 
-        //                 new SequentialCommandGroup(new WaitCommand(1),
-        //                 new ReverseIntakeWheels(s_wheels, IntakeConstants.kIntakeWheelEjectTime))));
-
-        // private boolean use_wpi_pid_arm = false;
-
-
-        //     private final ArmSubsystem4 s_arm;
-*/
