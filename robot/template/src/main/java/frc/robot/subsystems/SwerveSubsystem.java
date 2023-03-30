@@ -3,12 +3,9 @@ package frc.robot.subsystems;
 import frc.robot.swerve.SwerveModule;
 import frc.robot.utils.DriveFunctions;
 import frc.robot.constants.SwerveConstants;
-<<<<<<< HEAD
-import frc.robot.constants.VisionConstants;
-=======
+
 import frc.robot.subsystems.pigeon.Pigeon2Subsystem;
 import frc.robot.RobotContainer;
->>>>>>> origin/main
 import frc.robot.constants.ArmConstants;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -127,19 +124,6 @@ public class SwerveSubsystem extends SubsystemBase {
     public void resetModulesToAbsolute() {
         for (SwerveModule mod : mSwerveMods) {
             mod.resetToAbsolute();
-        }
-    }
-
-    public void strafeToTarget() {
-        limelight.setResult();
-        if(limelight.getHorizontalDistanceToTarget() > VisionConstants.kAlignmentThreshold){
-            if(limelight.strafeDirection()){
-                
-            } else{
-
-            }
-        } else{
-
         }
     }
 
