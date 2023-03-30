@@ -144,7 +144,7 @@ public class RobotContainer {
                 new WaitCommand(0.5),
                 new InstantCommand(() -> m_driveController.getHID().setRumble(RumbleType.kBothRumble, 0))));
 
-        m_driveController.a().onTrue(new StrafeAlign(s_swerve));        
+        m_driveController.a().onTrue(new StrafeAlign(s_swerve, s_limelight));        
 
         // intake
         m_driveController.rightTrigger()

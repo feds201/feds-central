@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import frc.robot.swerve.SwerveModule;
 import frc.robot.utils.DriveFunctions;
 import frc.robot.constants.SwerveConstants;
+
 import frc.robot.subsystems.pigeon.Pigeon2Subsystem;
 import frc.robot.RobotContainer;
 import frc.robot.constants.ArmConstants;
@@ -13,6 +14,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 
 import com.ctre.phoenix.sensors.Pigeon2;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -110,6 +112,10 @@ public class SwerveSubsystem extends SubsystemBase {
         gyro.setYaw(0);
     }
 
+    public void rotateRobotToZero(){
+        
+    }
+
     public Rotation2d getYaw() {
         return (SwerveConstants.invertGyro) ? Rotation2d.fromDegrees(360 - gyro.getYaw())
                 : Rotation2d.fromDegrees(gyro.getYaw());
@@ -119,19 +125,6 @@ public class SwerveSubsystem extends SubsystemBase {
         for (SwerveModule mod : mSwerveMods) {
             mod.resetToAbsolute();
         }
-    }
-
-    public void strafeToTarget() {
-        Translation2d translation;
-        limelight.setResult();
-        limelight.getHorizontalDistanceToTarget();
-        if(limelight.strafeDirection()){
-            translation = new Translation2d(limelight.strafeAlignDistance(), 0);
-        }
-        else{
-            translation = new Translation2d(-limelight.strafeAlignDistance(), 0);
-        }
-        drive(translation, 0, true, true);
     }
 
     public void driveToTarget(boolean isTargetLow){
