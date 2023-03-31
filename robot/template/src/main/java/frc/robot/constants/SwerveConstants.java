@@ -57,7 +57,7 @@ public final class SwerveConstants {
 
     /* Swerve Offsets */
 
-    public static final double kRollOffset = 0;
+    public static double kRollOffset = 0;
 
     /*
      * These values are used by the drive falcon to ramp in open loop and closed

@@ -126,6 +126,8 @@ public class RobotContainer {
         configureDriverButtonBindings();
         configureOperatorButtonBindings();
 
+        SwerveSubsystem.refreshRollOffset();
+
     }
 
     private void configureDriverButtonBindings() {

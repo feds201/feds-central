@@ -149,4 +149,9 @@ public class SwerveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Target Strafe", limelight.getStrafeAlignDistance());
 
     }
+
+
+    public static void refreshRollOffset() {
+        SwerveConstants.kRollOffset = -RobotContainer.s_pigeon2.getRoll();
+    }
 }
