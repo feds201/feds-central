@@ -15,6 +15,7 @@ public final class AutoConstants {
     public static final double kPThetaController = 1;
 
     public static final double kArmAutonPos = 79;
+    public static final double kMarker1 = 0.1;
 
     /* Constraint for the motion profilied robot angle controller */
     public static final TrapezoidProfile.Constraints kThetaControllerConstraints = new TrapezoidProfile.Constraints(

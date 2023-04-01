@@ -10,4 +10,5 @@ public final class VisionConstants {
     public static final double kAlignmentThreshold = 0.04;
     public static final double kDepthThreshold = 0.03;
     public static final double kDepthAlignmentDistance = 1.21;
+    public static final double kRetreatDistance = 1.75;
 }

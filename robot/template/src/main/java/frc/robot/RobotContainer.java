@@ -28,6 +28,7 @@ import frc.robot.constants.ClawConstants;
 import frc.robot.constants.IntakeConstants;
 import frc.robot.constants.PowerConstants;
 import frc.robot.constants.SwerveConstants;
+import frc.robot.constants.VisionConstants;
 import frc.robot.constants.OIConstants;
 import frc.robot.commands.drive.BalanceWhileOn;
 import frc.robot.commands.drive.LockWheels;
@@ -44,6 +45,8 @@ import frc.robot.commands.arm.RotateArmPosition;
 import frc.robot.commands.arm2.RotateArm2Manual;
 import frc.robot.commands.arm2.RotateArm2Position; 
 import frc.robot.commands.auton.BalancePath;
+import frc.robot.commands.auton.ExampleCurveAuto;
+import frc.robot.commands.auton.TestAuton;
 import frc.robot.commands.auton.examplePPAuto;
 import frc.robot.commands.claw.IntakeCone;
 import frc.robot.commands.claw.OuttakeCone;
@@ -101,8 +104,14 @@ public class RobotContainer {
         //m_autonChooser.addOption("Blue Cone and Cube", new BlueAllianceScoreOnlyAuton(s_swerve, s_claw, s_arm2, s_intake, s_wheels));
         //m_autonChooser.addOption("Place cone only", new PlaceConeHighOnly(s_arm2, s_claw, s_swerve));
         // m_autonChooser.addOption("CubeOnly", new cubeOnly(s_wheels, s_swerve, s_intake));
-        m_autonChooser.addOption("BalanceOnly", new BalanceWhileOn(s_swerve));
+        m_autonChooser.addOption("placing arm test", new TestAuton(s_swerve, s_limelight, s_arm2, s_intake, s_wheels, s_claw));
         m_autonChooser.addOption("Test Path", new examplePPAuto(s_swerve));
+        m_autonChooser.addOption("Test Curve Path", new ExampleCurveAuto(s_swerve));
+
+        m_autonChooser.addOption("Placing Arm + Curve", 
+                                        new SequentialCommandGroup(new TestAuton(s_swerve, s_limelight, s_arm2, s_intake, s_wheels, s_claw), 
+                                                                   new ExampleCurveAuto(s_swerve)));
+
 
         Shuffleboard.getTab("Autons").add(m_autonChooser);
 
@@ -143,7 +152,7 @@ public class RobotContainer {
                 new WaitCommand(0.5),
                 new InstantCommand(() -> m_driveController.getHID().setRumble(RumbleType.kBothRumble, 0))));
 
-        m_driveController.a().onTrue(new StrafeAlign(s_swerve, s_limelight));        
+        m_driveController.a().onTrue(new StrafeAlign(s_swerve, s_limelight, 0));        
 
         // intake
         m_driveController.rightTrigger()
@@ -156,8 +165,13 @@ public class RobotContainer {
 
         m_driveController.leftTrigger().onTrue(new ReverseIntakeWheels(s_wheels, IntakeConstants.kIntakeWheelEjectTime, -IntakeConstants.kIntakeWheelLowSpeed));
 
-        m_driveController.povDown().onTrue(new StrafeAlign(s_swerve, s_limelight));
-        m_driveController.povUp().onTrue(new DepthAlign(s_swerve, s_limelight));
+        // DEBUGGING KEY BINDINGS
+        m_driveController.povDown().onTrue(new StrafeAlign(s_swerve, s_limelight, 0));
+        m_driveController.povUp().onTrue(new DepthAlign(s_swerve, s_limelight, VisionConstants.kDepthAlignmentDistance));
+        m_driveController.povLeft().onTrue(new DepthAlign(s_swerve, s_limelight, VisionConstants.kRetreatDistance));
+
+        m_driveController.povRight().onTrue(new BalanceWhileOn(s_swerve));
+
     }
 
     private void configureOperatorButtonBindings() {

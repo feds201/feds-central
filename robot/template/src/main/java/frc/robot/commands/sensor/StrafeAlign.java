@@ -14,11 +14,13 @@ public class StrafeAlign extends CommandBase{
     private final SwerveSubsystem s_swerve;
     private final LimelightSubsystem s_limelight;
     private final PIDController strafeController;
+    private final double finalPos;
 
-    public StrafeAlign(SwerveSubsystem s_swerve, LimelightSubsystem s_limelight){
+    public StrafeAlign(SwerveSubsystem s_swerve, LimelightSubsystem s_limelight, double finalPos){
         this.s_swerve = s_swerve;
         this.s_limelight = s_limelight;
         strafeController = new PIDController(1, 0.4, 0);
+        this.finalPos = finalPos;
 
         addRequirements(this.s_swerve);
         addRequirements(this.s_limelight);
@@ -31,7 +33,7 @@ public class StrafeAlign extends CommandBase{
 
     @Override
     public void execute(){
-        double strafeCommand = strafeController.calculate(s_limelight.getStrafeAlignDistance(), 0);
+        double strafeCommand = strafeController.calculate(s_limelight.getStrafeAlignDistance(), finalPos);
 
         SmartDashboard.putNumber("STRAFE COMMAND", strafeCommand);
         Translation2d strafe = new Translation2d(strafeCommand, new Rotation2d(Math.PI/2)).times(-2.5);

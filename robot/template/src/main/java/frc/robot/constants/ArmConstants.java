@@ -97,6 +97,8 @@ public class ArmConstants {
         motor.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 255);
         motor.setStatusFramePeriod(StatusFrameEnhanced.Status_Brushless_Current, 255);
 
+
+        
         /* CURRENT LIMITING */
         SupplyCurrentLimitConfiguration rotateArmMainCurrentLimit = new SupplyCurrentLimitConfiguration();
         rotateArmMainCurrentLimit.currentLimit = 40;

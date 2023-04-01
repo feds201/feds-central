@@ -38,7 +38,7 @@ public class BalanceWhileOn extends CommandBase {
 
         Translation2d commandedToRobot = new Translation2d(
                 rollCommand,
-                Rotation2d.fromDegrees(0)).times(0.22);
+                Rotation2d.fromDegrees(0)).times(0.2);
 
         SmartDashboard.putNumber("COMMANDED X", commandedToRobot.getX());
         SmartDashboard.putNumber("COMMANDED Y", commandedToRobot.getY());
