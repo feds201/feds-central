@@ -1,6 +1,7 @@
 package frc.robot.commands.auton;
 
 import frc.robot.constants.SwerveConstants;
+import frc.robot.commands.drive.BalanceWhileOn;
 import frc.robot.commands.drive.LockWheels;
 import frc.robot.subsystems.SwerveSubsystem;
 
@@ -24,7 +25,7 @@ public class examplePPAuto extends SequentialCommandGroup {
         // of 4 m/s and a max acceleration of 3 m/s^2
         // for every path in the group
         ArrayList<PathPlannerTrajectory> pathGroup = (ArrayList<PathPlannerTrajectory>) PathPlanner
-                .loadPathGroup("Test Path", new PathConstraints(2, 2));
+                .loadPathGroup("Mid Score + Balance", new PathConstraints(2, 1.5));
 
         // This is just an example event map. It would be better to have a constant,
         // global event map
@@ -56,6 +57,7 @@ public class examplePPAuto extends SequentialCommandGroup {
         addCommands(
                 new InstantCommand(() -> s_Swerve.resetOdometry(pathGroup.get(0).getInitialHolonomicPose())),
                 fullAuto,
+                new BalanceWhileOn(s_Swerve),
                 new LockWheels(s_Swerve),
                 new WaitCommand(15));
     }

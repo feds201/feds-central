@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -177,8 +178,33 @@ public class RobotContainer {
     private void configureOperatorButtonBindings() {
 
         // arm
-        m_operatorController.povUp().onTrue(new RotateArm2Position(s_arm2, ArmConstants.kArmPutHigh)           // UP     = HIGH PLACE
-                .until(() -> m_operatorController.getLeftY() > OIConstants.kArmDeadzone));
+        m_operatorController.povUp().onTrue(
+            new SequentialCommandGroup (
+                new ParallelRaceGroup(
+                    new StrafeAlign(s_swerve, s_limelight, 0), 
+                    new WaitCommand(0.6)), 
+                new ParallelCommandGroup(
+                    new RotateArm2Position(s_arm2, ArmConstants.kArmPutHigh).until(() -> m_operatorController.getLeftY() > OIConstants.kArmDeadzone),
+                    new SequentialCommandGroup(
+                        new WaitCommand(2.5),
+                        new ParallelRaceGroup(
+                            new WaitCommand(0.6),
+                            new DepthAlign(s_swerve, s_limelight, VisionConstants.kDepthAlignmentDistance)))),
+                new RotateArm2Position(s_arm2, ArmConstants.kArmPutHumanPlayer),
+                new ParallelDeadlineGroup(
+                    new WaitCommand(1.3),
+                    new OuttakeCone(s_claw),
+                    new SequentialCommandGroup(
+                        new WaitCommand(0.3)),
+                        new RotateArm2Position(s_arm2, ArmConstants.kArmPutHigh)),
+                new ParallelRaceGroup(
+                    new WaitCommand(0.6),
+                    new DepthAlign(s_swerve, s_limelight, VisionConstants.kRetreatDistance)),
+                new ParallelDeadlineGroup(
+                    new WaitCommand(2), 
+                    new RotateArm2Position(s_arm2, controllerMultiplier))
+            
+                ));
         m_operatorController.povRight().onTrue(new RotateArm2Position(s_arm2, ArmConstants.kArmPutHumanPlayer) // RIGHT  = HUMAN PLAYER PLACE
                 .until(() -> m_operatorController.getLeftY() > OIConstants.kArmDeadzone));
         m_operatorController.povLeft().onTrue(new RotateArm2Position(s_arm2, ArmConstants.kArmHome)            // LEFT   = HOME

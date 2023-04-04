@@ -24,7 +24,7 @@ public class ExampleCurveAuto extends SequentialCommandGroup {
         // of 4 m/s and a max acceleration of 3 m/s^2
         // for every path in the group
         ArrayList<PathPlannerTrajectory> pathGroup = (ArrayList<PathPlannerTrajectory>) PathPlanner
-                .loadPathGroup("Curve Path", new PathConstraints(3, 1.75));
+                .loadPathGroup("Tripple cube (Red)", new PathConstraints(4, 3));
 
         // This is just an example event map. It would be better to have a constant,
         // global event map
