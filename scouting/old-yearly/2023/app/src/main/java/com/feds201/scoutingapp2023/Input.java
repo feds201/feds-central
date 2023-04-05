@@ -71,6 +71,10 @@ public class Input extends Fragment {
             currentMatch.color = "NONE";
         }
 
+        currentMatch.generateAutonGridFromString();
+        currentMatch.generateTeleopGridFromString();
+
+
         TextView colorText = inputView.findViewById(R.id.Team_color_title);
         TextView matchText = inputView.findViewById(R.id.Match_title);
         TextView teamNumberText = inputView.findViewById(R.id.Team_number_title);
@@ -87,19 +91,19 @@ public class Input extends Fragment {
 
         // 1b. auton page objects
         ArrayList<GamePieceButton> autonButtons = GamePieceButton.generateCyclingButtonsFromPrefix(R.id.class, "auton_button", inputView);
-        ImageButton autonGreen = inputView.findViewById(R.id.auton_green);
+        ImageButton autonGreen  = inputView.findViewById(R.id.auton_green);
         ImageButton autonYellow = inputView.findViewById(R.id.auton_yellow);
-        ImageButton autonRed = inputView.findViewById(R.id.auton_red);
+        ImageButton autonRed    = inputView.findViewById(R.id.auton_red);
 
-        Button autonplus = inputView.findViewById(R.id.auton_plus);
-        Button autonminus = inputView.findViewById(R.id.auton_minus);
-        TextView tally = inputView.findViewById(R.id.auton_tally);
-        Tally droppedTally = new Tally(autonplus, autonminus, tally);
+        Button autonplus        = inputView.findViewById(R.id.auton_plus);
+        Button autonminus       = inputView.findViewById(R.id.auton_minus);
+        TextView tally          = inputView.findViewById(R.id.auton_tally);
+        Tally droppedTally      = new Tally(autonplus, autonminus, tally);
 
-        Button autonplus2 = inputView.findViewById(R.id.auton_plus2);
-        Button autonminus2 = inputView.findViewById(R.id.auton_minus2);
-        TextView tally2 = inputView.findViewById(R.id.auton_tally2);
-        Tally acquiredTally = new Tally(autonplus2, autonminus2, tally2);
+        Button autonplus2       = inputView.findViewById(R.id.auton_plus2);
+        Button autonminus2      = inputView.findViewById(R.id.auton_minus2);
+        TextView tally2         = inputView.findViewById(R.id.auton_tally2);
+        Tally acquiredTally     = new Tally(autonplus2, autonminus2, tally2);
 
         // 1c. teleop page objects
         ArrayList<GamePieceButton> teleopButtons = GamePieceButton.generateCyclingButtonsFromPrefix(R.id.class, "teleop_button", inputView);
@@ -112,9 +116,9 @@ public class Input extends Fragment {
 
         // 1d. endgame page objects
         Button finish = inputView.findViewById(R.id.endgame_finish);
-        ImageButton endgameGreen = inputView.findViewById(R.id.endgame_green);
+        ImageButton endgameGreen  = inputView.findViewById(R.id.endgame_green);
         ImageButton endgameYellow = inputView.findViewById(R.id.endgame_yellow);
-        ImageButton endgameRed = inputView.findViewById(R.id.endgame_red);
+        ImageButton endgameRed    = inputView.findViewById(R.id.endgame_red);
 
         Button endgameminus = inputView.findViewById(R.id.endgame_minus);
         Button endgameplus = inputView.findViewById(R.id.endgame_plus);
@@ -163,13 +167,112 @@ public class Input extends Fragment {
         }
 
         // SET UP ALL VIEWS
+        for (GamePieceButton gpb : autonButtons) {
+            int row = gpb.getRowFromScoreType(gpb.getScoreType());
+            int col = gpb.getColNum()-1;
 
 
+            Match.GamePiece type = currentMatch.autonGrid[row][col];
+
+            switch(type) {
+                case CONE:
+                    gpb.button.setImageResource(R.drawable.cone);
+                    gpb.imageState = 1;
+                    break;
+
+                case CUBE:
+                    gpb.button.setImageResource(R.drawable.cube);
+                    gpb.imageState = 2;
+                    break;
+
+                case NONE:
+                    gpb.button.setImageResource(R.drawable.nothing);
+                    gpb.imageState = 0;
+                    break;
+            }
+        }
+
+        for (GamePieceButton gpb : teleopButtons) {
+            int row = gpb.getRowFromScoreType(gpb.getScoreType());
+            int col = gpb.getColNum()-1;
+
+            Log.d("gamepiece", "" + row + ", " + col + " " + gpb.getScoreType().toString() + " " + gpb.toString());
+            Match.GamePiece type = currentMatch.teleopGrid[row][col];
+            Log.d("gamepiece", type.toString());
+
+            switch(type) {
+                case CONE:
+                    gpb.button.setImageResource(R.drawable.cone);
+                    gpb.imageState = 1;
+                    break;
+
+                case CUBE:
+                    gpb.button.setImageResource(R.drawable.cube);
+                    gpb.imageState = 2;
+                    break;
+
+                case NONE:
+                    gpb.button.setImageResource(R.drawable.nothing);
+                    gpb.imageState = 0;
+                    break;
+            }
+        }
+
+        linksTally.text.setText(String.valueOf(currentMatch.links));
+        droppedTally.text.setText(String.valueOf(currentMatch.autonDropped));
+
+        coopertitioncheckbox.setChecked(currentMatch.coop == 1);
+        parkedcheckbox.setChecked(currentMatch.teleopPark == 1);
 
 
+        switch(currentMatch.autonCharge) {
+            case 0:
+                autonRed.setImageResource(R.drawable.red);
+                autonYellow.setImageResource(R.drawable.yellow_trans);
+                autonGreen.setImageResource(R.drawable.green_trans);
+                break;
+            case 1:
+                autonRed.setImageResource(R.drawable.red_trans);
+                autonYellow.setImageResource(R.drawable.yellow);
+                autonGreen.setImageResource(R.drawable.green_trans);
+                break;
+            case 2:
+                autonRed.setImageResource(R.drawable.red_trans);
+                autonYellow.setImageResource(R.drawable.yellow_trans);
+                autonGreen.setImageResource(R.drawable.green);
+                break;
+        }
 
+        switch(currentMatch.teleopCharge) {
+            case 0:
+                endgameRed.setImageResource(R.drawable.red);
+                endgameYellow.setImageResource(R.drawable.yellow_trans);
+                endgameGreen.setImageResource(R.drawable.green_trans);
+                break;
+            case 1:
+                endgameRed.setImageResource(R.drawable.red_trans);
+                endgameYellow.setImageResource(R.drawable.yellow);
+                endgameGreen.setImageResource(R.drawable.green_trans);
+                break;
+            case 2:
+                endgameRed.setImageResource(R.drawable.red_trans);
+                endgameYellow.setImageResource(R.drawable.yellow_trans);
+                endgameGreen.setImageResource(R.drawable.green);
+                break;
+        }
 
-
+        teleopstrategyseekbar.setProgress(currentMatch.feedPlaceBoth);
+        switch (currentMatch.feedPlaceBoth) {
+            case 0:
+                strategyTitle.setText("Feeding");
+                break;
+            case 1:
+                strategyTitle.setText("Placing");
+                break;
+            case 2:
+                strategyTitle.setText("Both");
+                break;
+        }
 
 
         // 3. Hiding objects on tab switch
@@ -245,14 +348,14 @@ public class Input extends Fragment {
                     Log.d("score", "auton: " + currentMatch.autonLow + " " + currentMatch.autonMiddle + " " + currentMatch.autonHigh);
 
                     int row = gamePieceButton.getRowFromScoreType(gamePieceButton.getScoreType());
-                    int col = gamePieceButton.getButtonId()-1;
+                    int col = gamePieceButton.getColNum()-1;
 
                     if(gamePieceButton.getCycleAll()) {
                         gamePieceButton.imageState++;
                         switch(gamePieceButton.imageState) {
                             case 1:
                                 gamePieceButton.button.setImageResource(R.drawable.cone);
-                                currentMatch.autonGrid[row][col] = Match.GamePiece.CONE;
+                                currentMatch.setAutonGrid(row, col, Match.GamePiece.CONE);
                                 Log.d("score", gamePieceButton.getScoreType().toString());
                                 switch(gamePieceButton.getScoreType()) {
                                     case AUTON_LOW:
@@ -261,22 +364,22 @@ public class Input extends Fragment {
                                         break;
                                     case AUTON_MIDDLE:
                                         currentMatch.autonMiddle++;
-                                        currentMatch.autonGrid[1][gamePieceButton.getButtonId()-1] = Match.GamePiece.CONE;
+//                                        currentMatch.autonGrid[1][gamePieceButton.getButtonId()-1] = Match.GamePiece.CONE;
                                         matchDao.update(currentMatch);
                                         break;
                                     case AUTON_HIGH:
                                         currentMatch.autonHigh++;
-                                        currentMatch.autonGrid[0][gamePieceButton.getButtonId()-1] = Match.GamePiece.CONE;
+//                                        currentMatch.autonGrid[0][gamePieceButton.getButtonId()-1] = Match.GamePiece.CONE;
                                         matchDao.update(currentMatch);
                                         break;
                                 }
                                 break;
                             case 2:
-                                currentMatch.autonGrid[row][col] = Match.GamePiece.CUBE;
+                                currentMatch.setAutonGrid(row, col, Match.GamePiece.CUBE);
                                 gamePieceButton.button.setImageResource(R.drawable.cube);
                                 break;
                             case 3:
-                                currentMatch.autonGrid[row][col] = Match.GamePiece.NONE;
+                                currentMatch.setAutonGrid(row, col, Match.GamePiece.NONE);
                                 gamePieceButton.button.setImageResource(R.drawable.nothing);
                                 gamePieceButton.imageState = 0;
                                 switch(gamePieceButton.getScoreType()) {
@@ -294,13 +397,16 @@ public class Input extends Fragment {
                                         break;
                                 }
                                 break;
+                            default:
+                                gamePieceButton.imageState = 0;
+                                break;
                         }
                     } else {
                         gamePieceButton.imageState++;
                         switch(gamePieceButton.imageState) {
                             case 1:
                                 gamePieceButton.button.setImageResource(R.drawable.cube);
-                                currentMatch.autonGrid[row][col] = Match.GamePiece.CUBE;
+                                currentMatch.setAutonGrid(row, col, Match.GamePiece.CUBE);
                                 switch(gamePieceButton.getScoreType()) {
                                     case AUTON_LOW:
                                         currentMatch.autonLow++;
@@ -317,7 +423,7 @@ public class Input extends Fragment {
                                 }
                                 break;
                             case 2:
-                                currentMatch.autonGrid[row][col] = Match.GamePiece.NONE;
+                                currentMatch.setAutonGrid(row, col, Match.GamePiece.NONE);
                                 gamePieceButton.button.setImageResource(R.drawable.nothing);
                                 gamePieceButton.imageState = 0;
                                 switch(gamePieceButton.getScoreType()) {
@@ -335,8 +441,13 @@ public class Input extends Fragment {
                                         break;
                                 }
                                 break;
+                            default:
+                                gamePieceButton.imageState = 0;
+                                break;
                         }
+
                     }
+                    Log.d("score", "" + gamePieceButton.imageState);
                });
         }
 
@@ -344,13 +455,14 @@ public class Input extends Fragment {
         for(GamePieceButton gamePieceButton : teleopButtons) {
             gamePieceButton.button.setOnClickListener(view -> {
                 int row = gamePieceButton.getRowFromScoreType(gamePieceButton.getScoreType());
-                int col = gamePieceButton.getButtonId()-1;
+                int col = gamePieceButton.getColNum()-1;
                 Log.d("score", "teleop: " + currentMatch.teleopLow + " " + currentMatch.teleopMiddle + " " + currentMatch.teleopHigh);
+                Log.d("score", currentMatch.teleopGridString);
                 if (gamePieceButton.getCycleAll()) {
                     gamePieceButton.imageState++;
                     switch(gamePieceButton.imageState) {
                         case 1:
-                            currentMatch.teleopGrid[row][col] = Match.GamePiece.CONE;
+                            currentMatch.setTeleopGrid(row, col, Match.GamePiece.CONE);
                             gamePieceButton.button.setImageResource(R.drawable.cone);
                             switch(gamePieceButton.getScoreType()) {
                                 case TELEOP_LOW:
@@ -368,11 +480,11 @@ public class Input extends Fragment {
                             }
                             break;
                         case 2:
-                            currentMatch.teleopGrid[row][col] = Match.GamePiece.CUBE;
+                            currentMatch.setTeleopGrid(row, col, Match.GamePiece.CUBE);
                             gamePieceButton.button.setImageResource(R.drawable.cube);
                             break;
                         case 3:
-                            currentMatch.teleopGrid[row][col] = Match.GamePiece.NONE;
+                            currentMatch.setTeleopGrid(row, col, Match.GamePiece.NONE);
                             gamePieceButton.button.setImageResource(R.drawable.nothing);
                             gamePieceButton.imageState = 0;
                             switch(gamePieceButton.getScoreType()) {
@@ -390,12 +502,15 @@ public class Input extends Fragment {
                                     break;
                             }
                             break;
+                        default:
+                            gamePieceButton.imageState = 0;
+                            break;
                     }
                 } else {
                     gamePieceButton.imageState++;
                     switch (gamePieceButton.imageState) {
                         case 1:
-                            currentMatch.teleopGrid[row][col] = Match.GamePiece.CUBE;
+                            currentMatch.setTeleopGrid(row, col, Match.GamePiece.CUBE);
                             gamePieceButton.button.setImageResource(R.drawable.cube);
                             switch(gamePieceButton.getScoreType()) {
                                 case TELEOP_LOW:
@@ -413,7 +528,7 @@ public class Input extends Fragment {
                             }
                             break;
                         case 2:
-                            currentMatch.teleopGrid[row][col] = Match.GamePiece.NONE;
+                            currentMatch.setTeleopGrid(row, col, Match.GamePiece.NONE);
                             gamePieceButton.button.setImageResource(R.drawable.nothing);
                             gamePieceButton.imageState = 0;
                             switch(gamePieceButton.getScoreType()) {
@@ -430,6 +545,9 @@ public class Input extends Fragment {
                                     matchDao.update(currentMatch);
                                     break;
                             }
+                            break;
+                        default:
+                            gamePieceButton.imageState = 0;
                             break;
                     }
                 }

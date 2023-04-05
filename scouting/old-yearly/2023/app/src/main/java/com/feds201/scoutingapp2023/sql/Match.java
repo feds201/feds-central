@@ -1,6 +1,8 @@
 package com.feds201.scoutingapp2023.sql;
 
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
@@ -101,6 +103,7 @@ public class Match {
     public String toQRCodeString() {
         return  teamNumber + "," +
                 matchNumber+ "," +
+                matchType + "," +
                 autonHigh + "," +
                 autonMiddle + "," +
                 autonLow + "," +
@@ -116,9 +119,130 @@ public class Match {
                 links;
     }
 
-    @Ignore
-    public GamePiece[][] autonGrid = new GamePiece[3][9];
+    @ColumnInfo(name = "auton_grid_string")
+    public String autonGridString;
 
+    @ColumnInfo(name = "teleop_grid_string")
+    public String teleopGridString;
     @Ignore
-    public GamePiece[][] teleopGrid = new GamePiece[3][9];
+    public GamePiece[][] autonGrid;
+    @Ignore
+    public GamePiece[][] teleopGrid;
+
+    public void setTeleopGrid(int i, int j, GamePiece gp) {
+        this.teleopGrid[i][j] = gp;
+        updateGridStrings();
+    }
+
+    public void setAutonGrid(int i, int j, GamePiece gp) {
+        this.autonGrid[i][j] = gp;
+        updateGridStrings();
+    }
+
+    public Match() {
+        if(autonGridString == null) {
+            autonGrid = new GamePiece[3][9];
+            nullAutonGrid();
+        } else {
+            this.generateAutonGridFromString();
+        }
+
+        if(teleopGridString == null) {
+            teleopGrid = new GamePiece[3][9];
+            nullTeleopGrid();
+        } else {
+            this.generateTeleopGridFromString();
+        }
+        updateGridStrings();
+    }
+
+    public void generateTeleopGridFromString() {
+        String[] strs = teleopGridString.split(",");
+        for(int i = 0; i < teleopGrid.length; i++) {
+            for(int j = 0; j < teleopGrid[0].length; j++) {
+                Log.d("gamepiece", "i: " + i + "j: " + j + " == " + strs[i * teleopGrid[0].length + j]);
+                teleopGrid[i][j] = Match.gamePieceFromString(strs[i * teleopGrid[0].length + j]);
+            }
+        }
+    }
+    public void generateAutonGridFromString() {
+        String[] strs = autonGridString.split(",");
+        for(int i = 0; i < autonGrid.length; i++) {
+            for(int j = 0; j < autonGrid[0].length; j++) {
+                Log.d("gamepiece", "i: " + i + "j: " + j + " == " + strs[i * autonGrid[0].length + j]);
+                autonGrid[i][j] = Match.gamePieceFromString(strs[i * autonGrid[0].length + j]);
+            }
+        }
+    }
+
+    public void nullAutonGrid() {
+        for(int i = 0; i < autonGrid.length; i++) {
+            for (int j = 0; j < autonGrid[0].length; j++) {
+                if(autonGrid[i][j] == null) {
+                    autonGrid[i][j] = GamePiece.NONE;
+                    Log.d("AutonGrid", autonGrid[i][j].toString());
+                }
+            }
+        }
+    }
+
+    public void nullTeleopGrid() {
+        for(int i = 0; i < teleopGrid.length; i++) {
+            for (int j = 0; j < teleopGrid[0].length; j++) {
+                if(teleopGrid[i][j] == null) {
+                    teleopGrid[i][j] = GamePiece.NONE;
+                    Log.d("TeleopGrid", teleopGrid[i][j].toString());
+                }
+            }
+        }
+    }
+
+
+    public void updateGridStrings() {
+        autonGridString = "";
+        for(GamePiece[] array : autonGrid) {
+            for (GamePiece gp : array) {
+                switch(gp) {
+                    case NONE:
+                        autonGridString += "NONE,";
+                        break;
+                    case CONE:
+                        autonGridString += "CONE,";
+                        break;
+                    case CUBE:
+                        autonGridString += "CUBE,";
+                        break;
+                }
+            }
+        }
+        teleopGridString = "";
+        for(GamePiece[] array : teleopGrid) {
+            for (GamePiece gp : array) {
+                switch(gp) {
+                    case NONE:
+                        teleopGridString += "NONE,";
+                        break;
+                    case CONE:
+                        teleopGridString += "CONE,";
+                        break;
+                    case CUBE:
+                        teleopGridString += "CUBE,";
+                        break;
+                }
+            }
+        }
+    }
+
+
+    public static GamePiece gamePieceFromString(String s) {
+        if (s.equals("CONE")) {
+            return GamePiece.CONE;
+        }
+        else if (s.equals("CUBE")) {
+            return GamePiece.CUBE;
+        }
+        else {
+            return GamePiece.NONE;
+        }
+    }
 }

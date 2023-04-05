@@ -6,7 +6,6 @@ import android.widget.ImageButton;
 import androidx.annotation.NonNull;
 
 import com.feds201.scoutingapp2023.R;
-import com.google.android.material.color.utilities.Score;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -78,9 +77,13 @@ public class GamePieceButton implements Component {
         return buttons;
     }
 
-    public int getButtonId() {
-        return buttonId;
+    public int getColNum() {
+        String lastChar = buttonIdString.substring( buttonIdString.length() - 1);
+        int lastCharNum = Integer.parseInt(lastChar);
+        return lastCharNum;
     }
+
+    public int getButtonId() { return buttonId; }
 
 //    public void cycleImageAll() {
 //        this.imageState++;

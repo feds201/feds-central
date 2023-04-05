@@ -67,8 +67,9 @@ public class Home extends Fragment {
 
         qualsAdapter.setClickListener(position -> {
             MatchDao matchDao = MainActivity.app_db.matchDao();
+
             int[] positions = new int[1];
-            positions[0] = position;
+            positions[0] = position+1;
 
             List<Match> matches = matchDao.loadAllByIds(positions);
 
@@ -83,7 +84,7 @@ public class Home extends Fragment {
     }
 
 
-    static class SortNumerically implements Comparator<String> {
+    public static class SortNumerically implements Comparator<String> {
         public int compare (String a, String b) {
             int aInt = Integer.parseInt(a.substring(a.indexOf(" ") + 1));
             int bInt = Integer.parseInt(b.substring(b.indexOf(" ") + 1));
