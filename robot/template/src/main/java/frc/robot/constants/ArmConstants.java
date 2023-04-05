@@ -40,7 +40,7 @@ public class ArmConstants {
     public static final double kLowerOverCone =    Units.degreesToRadians(98);
 
 
-    public static final double kForwardSoftLimit = Conversions.degreesToFalcon(115, kArmGearRatio);
+    public static final double kForwardSoftLimit = Conversions.degreesToFalcon(106, kArmGearRatio); // don't go higher than high setpoint
     public static final double kReverseSoftLimit = Conversions.degreesToFalcon(-1, kArmGearRatio);
 
     // ARM SUBSYSTEM 4 SPECIFIC
@@ -50,7 +50,7 @@ public class ArmConstants {
 
     // ARM SUBSYSTEM 5 SPECIFIC
     public static final double kArm2Tolerance = Conversions.degreesToFalcon(3, kArmGearRatio);
-    public static final int    peakVelocityUp        = 8_000;
+    public static final int    peakVelocityUp        = 9_000;
     public static final double percentOfPeakUp       = 1;
     public static final double cruiseVelocityAccelUp = peakVelocityUp * percentOfPeakUp;
 
