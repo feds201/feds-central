@@ -33,14 +33,14 @@ public class ArmConstants {
     
     // setpoints
     public static final double kArmHome =          Units.degreesToRadians(0);
-    public static final double kArmPutHigh =       Units.degreesToRadians(105);
+    public static final double kArmPutHigh =       Units.degreesToRadians(108);
     public static final double kArmPutMiddle =     Units.degreesToRadians(85); // FIXME: tune these
     public static final double kArmPutHumanPlayer =     Units.degreesToRadians(90); // FIXME: tune these
     public static final double kArmTolerance =     Units.degreesToRadians(3);
     public static final double kLowerOverCone =    Units.degreesToRadians(98);
 
 
-    public static final double kForwardSoftLimit = Conversions.degreesToFalcon(106, kArmGearRatio); // don't go higher than high setpoint
+    public static final double kForwardSoftLimit = Conversions.degreesToFalcon(109, kArmGearRatio); // don't go higher than high setpoint
     public static final double kReverseSoftLimit = Conversions.degreesToFalcon(-1, kArmGearRatio);
 
     // ARM SUBSYSTEM 4 SPECIFIC

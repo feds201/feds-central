@@ -27,7 +27,6 @@ public class DepthAlign extends CommandBase{
     
     @Override
     public void initialize(){
-        s_limelight.setScoringMode();
     }
 
     @Override

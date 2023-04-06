@@ -1,11 +1,15 @@
 package frc.robot.commands.auton;
 
 import frc.robot.constants.ArmConstants;
+import frc.robot.constants.IntakeConstants;
 import frc.robot.constants.SwerveConstants;
 import frc.robot.commands.arm2.RotateArm2Position;
 import frc.robot.commands.claw.OuttakeCone;
 import frc.robot.commands.drive.BalanceWhileOn;
 import frc.robot.commands.drive.LockWheels;
+import frc.robot.commands.intake.ReverseIntakeWheels;
+import frc.robot.commands.intake.RotateIntakeToPosition;
+import frc.robot.commands.intake.RunIntakeWheelsInfinite;
 import frc.robot.commands.sensor.DepthAlign;
 import frc.robot.subsystems.ArmSubsystem5;
 import frc.robot.subsystems.ClawSubsystem;
@@ -27,7 +31,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -68,11 +74,16 @@ public class CenterFieldAuton extends SequentialCommandGroup {
 
 
         addCommands(
-                new PlaceHighCone(s_Swerve, s_limelight, s_arm, s_intake, s_wheels, s_claw),
+                new PlaceHighCone(s_Swerve, s_limelight, s_arm, s_claw),
                 new InstantCommand(() -> s_Swerve.resetOdometry(pathGroup.get(0).getInitialHolonomicPose())),
-                fullAuto,
+                new ParallelDeadlineGroup(
+                        fullAuto,
+                        new SequentialCommandGroup(
+                                new WaitCommand(2.5),
+                                new CubeIntakeSequence(s_intake, s_wheels))),
                 new BalanceWhileOn(s_Swerve),
                 new LockWheels(s_Swerve),
-                new WaitCommand(15));
+                new WaitCommand(15)
+        );      
     }
 }

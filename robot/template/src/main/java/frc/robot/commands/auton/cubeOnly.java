@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.drive.LockWheels;
 import frc.robot.commands.intake.ReverseIntakeWheels;
+import frc.robot.constants.IntakeConstants;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.WheelSubsystem;
@@ -26,7 +27,7 @@ public class cubeOnly extends SequentialCommandGroup{
         addRequirements(this.s_swerve);
 
         addCommands(
-            new ReverseIntakeWheels(s_wheels, 0.6, 0.1), 
+            new ReverseIntakeWheels(s_wheels, 0.6, IntakeConstants.kIntakeWheelMiddleSpeed), 
             new ParallelDeadlineGroup(
                 new WaitCommand(3.10), 
                 new RunCommand(

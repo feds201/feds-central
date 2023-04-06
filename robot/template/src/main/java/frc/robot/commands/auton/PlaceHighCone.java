@@ -26,42 +26,45 @@ import frc.robot.subsystems.WheelSubsystem;
 
 public class PlaceHighCone extends SequentialCommandGroup{
     
-    public PlaceHighCone(SwerveSubsystem s_swerve, LimelightSubsystem s_limelight, ArmSubsystem5 s_arm, IntakeSubsystem s_intake, WheelSubsystem s_wheels, ClawSubsystem s_claw){
+    public PlaceHighCone(SwerveSubsystem s_swerve, LimelightSubsystem s_limelight, ArmSubsystem5 s_arm, ClawSubsystem s_claw){
 
         addRequirements(s_swerve);
         addRequirements(s_limelight);
 
+
         addCommands(
-            new ParallelDeadlineGroup(
+                new ParallelRaceGroup(
+                        new WaitCommand(0.5),
+                        new StrafeAlign(s_swerve, s_limelight, 0)),
+                new ParallelDeadlineGroup(
                         new WaitCommand(2.5), 
                         new RotateArm2Position(s_arm, ArmConstants.kArmPutHigh),
                         new SequentialCommandGroup(
                                 new WaitCommand(2.0),
-                                new DepthAlign(s_swerve, s_limelight, 0) 
-                        )),
-            new ParallelDeadlineGroup(
-                    new WaitCommand(1), 
-                    new RotateArm2Position(s_arm, ArmConstants.kArmPutHumanPlayer)),
-            new ParallelDeadlineGroup(
-                    new WaitCommand(1), 
-                    new OuttakeCone(s_claw),
-                    new RotateArm2Position(s_arm, ArmConstants.kArmPutHigh)),
-            new ParallelDeadlineGroup(
-                    new WaitCommand(0.5), 
-                    new RunCommand(
-                    () -> {
-                      // Robot.motionMode = MotionMode.NULL;
-                      s_swerve.setModuleStates(
-                            new SwerveModuleState[] {
-                              new SwerveModuleState(.8, Rotation2d.fromDegrees(0)),
-                              new SwerveModuleState(.8, Rotation2d.fromDegrees(0)),
-                              new SwerveModuleState(.8, Rotation2d.fromDegrees(0)),
-                              new SwerveModuleState(.8, Rotation2d.fromDegrees(0))
+                                new DepthAlign(s_swerve, s_limelight, VisionConstants.kDepthAlignmentDistance))),
+                new ParallelDeadlineGroup(
+                        new WaitCommand(1), 
+                        new RotateArm2Position(s_arm, ArmConstants.kLowerOverCone)),
+                new ParallelDeadlineGroup(
+                        new WaitCommand(1), 
+                        new OuttakeCone(s_claw),
+                        new RotateArm2Position(s_arm, ArmConstants.kArmPutHigh)),
+                new ParallelDeadlineGroup(
+                        new WaitCommand(0.5), 
+                        new RunCommand(
+                        () -> {
+                        // Robot.motionMode = MotionMode.NULL;
+                        s_swerve.setModuleStates(
+                        new SwerveModuleState[] {
+                              new SwerveModuleState(.5, Rotation2d.fromDegrees(0)),
+                              new SwerveModuleState(.5, Rotation2d.fromDegrees(0)),
+                              new SwerveModuleState(.5, Rotation2d.fromDegrees(0)),
+                              new SwerveModuleState(.5, Rotation2d.fromDegrees(0))
                             });
                         })),
-            new ParallelDeadlineGroup(
-                    new WaitCommand(2.0),
-                    new RotateArm2Position(s_arm, ArmConstants.kArmHome))
+                new ParallelDeadlineGroup(
+                        new WaitCommand(2.0),
+                        new RotateArm2Position(s_arm, ArmConstants.kArmHome))
         );
     }
 }

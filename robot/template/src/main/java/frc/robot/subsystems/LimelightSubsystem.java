@@ -23,22 +23,11 @@ public class LimelightSubsystem extends SubsystemBase{
     }
 
     public void setResult(){
-        setScoringMode();
         if(table.getEntry("tv").getDouble(0) == 1){
             cameraYaw = table.getEntry("tx").getDouble(0);
             cameraPitch = table.getEntry("ty").getDouble(0);
             cameraArea = table.getEntry("ta").getDouble(0);
         }
-    }
-
-    public void setFieldMode(){
-        table.getEntry("pipeline").setNumber(4);
-        table.getEntry("ledMode").setNumber(3);
-    }
-
-    public void setScoringMode(){
-        table.getEntry("pipeline").setNumber(0);
-        table.getEntry("ledMode").setNumber(0);
     }
 
     public double getTargetYaw(){
