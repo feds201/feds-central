@@ -122,7 +122,7 @@ public class RobotContainer {
                                                                                                                   // WORK?
                         () -> -slewRateLimiterX.calculate(m_driveController.getLeftX() * getPercentDriveSpeed()),
                         () -> -m_driveController.getRightX() * getPercentDriveSpeed(),
-                        () -> false)); // always field for now!
+                        () -> robotCentric)); // always field for now!
 
         
         s_arm2.setDefaultCommand(new RotateArm2Manual(s_arm2, () -> -m_operatorController.getLeftY())); // damn inverted
@@ -232,6 +232,16 @@ public class RobotContainer {
         } else {
             controllerMultiplier = SwerveConstants.kPreciseSwerveSpeed;
         }
+    }
+
+    // Its made Nihar! Just attach to an Instant method for a toggle. See togglePercentDriveSpeed for examples.
+    private void toggleRobotCentric() {
+        if (robotCentric) {
+            robotCentric = false;
+        } else {
+            robotCentric = true;
+        }
+        
     }
 
     public double getPercentDriveSpeed() {
