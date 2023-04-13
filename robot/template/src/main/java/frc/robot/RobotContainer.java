@@ -43,6 +43,7 @@ import frc.robot.commands.sensor.DepthAlign;
 import frc.robot.commands.sensor.ReportingCommand;
 import frc.robot.commands.sensor.StrafeAlign;
 import frc.robot.commands.sensor.TeleopVision;
+import frc.robot.commands.utilityCommands.ToggleRumble;
 import frc.robot.commands.arm2.RotateArm2Manual;
 import frc.robot.commands.arm2.RotateArm2Position; 
 import frc.robot.commands.auton.LeftFieldAuton;
@@ -84,6 +85,8 @@ public class RobotContainer {
 
     public static double controllerMultiplier = 1;
 
+    public static boolean robotCentric = false;
+
     CommandXboxController m_driveController = new CommandXboxController(OIConstants.kDriveControllerPort);
     CommandXboxController m_operatorController = new CommandXboxController(OIConstants.kOperatorControllerPort);
 
@@ -119,7 +122,7 @@ public class RobotContainer {
                                                                                                                   // WORK?
                         () -> -slewRateLimiterX.calculate(m_driveController.getLeftX() * getPercentDriveSpeed()),
                         () -> -m_driveController.getRightX() * getPercentDriveSpeed(),
-                        () -> m_driveController.rightTrigger().getAsBoolean()));
+                        () -> false)); // always field for now!
 
         
         s_arm2.setDefaultCommand(new RotateArm2Manual(s_arm2, () -> -m_operatorController.getLeftY())); // damn inverted
@@ -149,10 +152,10 @@ public class RobotContainer {
 
         //Slow  Mode
         m_driveController.x().onTrue(new SequentialCommandGroup(
-                new InstantCommand(() -> togglePercentDriveSpeed()),
-                new InstantCommand(() -> m_driveController.getHID().setRumble(RumbleType.kBothRumble, 1)),
-                new WaitCommand(0.5),
-                new InstantCommand(() -> m_driveController.getHID().setRumble(RumbleType.kBothRumble, 0))));
+                    new InstantCommand(() -> togglePercentDriveSpeed()),
+                    new ToggleRumble(m_driveController, 0.5),
+                    new ToggleRumble(m_operatorController, 0.5)
+                ));
 
 
         //StrafeAlign
@@ -201,13 +204,13 @@ public class RobotContainer {
         // arm
 
         m_operatorController.povUp().onTrue(new RotateArm2Position(s_arm2, ArmConstants.kArmPutHigh)
-                .until(() -> m_operatorController.getLeftY() > OIConstants.kArmDeadzone));
+                .until(() -> Math.abs(m_operatorController.getLeftY()) > OIConstants.kArmDeadzone));
         m_operatorController.povRight().onTrue(new RotateArm2Position(s_arm2, ArmConstants.kArmPutHumanPlayer) // RIGHT  = HUMAN PLAYER PLACE
-                .until(() -> m_operatorController.getLeftY() > OIConstants.kArmDeadzone));
+                .until(() -> Math.abs(m_operatorController.getLeftY()) > OIConstants.kArmDeadzone));
         m_operatorController.povLeft().onTrue(new RotateArm2Position(s_arm2, ArmConstants.kArmHome)            // LEFT   = HOME
-                .until(() -> m_operatorController.getLeftY() > OIConstants.kArmDeadzone));
+                .until(() -> Math.abs(m_operatorController.getLeftY()) > OIConstants.kArmDeadzone));
         m_operatorController.povDown().onTrue(new RotateArm2Position(s_arm2, ArmConstants.kArmPutMiddle)       // DOWN   = MIDDLE PLACE
-                .until(() -> m_operatorController.getLeftY() > OIConstants.kArmDeadzone));
+                .until(() -> Math.abs(m_operatorController.getLeftY()) > OIConstants.kArmDeadzone));
         
 
 
