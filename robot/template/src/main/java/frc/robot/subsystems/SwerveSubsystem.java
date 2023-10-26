@@ -33,8 +33,7 @@ public class SwerveSubsystem extends SubsystemBase {
     public SwerveSubsystem() {
         gyro = RobotContainer.s_pigeon2;
         zeroGyro();
-        this.limelight = limelight;
-        limelight = new LimelightSubsystem();
+        this.limelight = new LimelightSubsystem();
 
         mSwerveMods = new SwerveModule[] {
                 new SwerveModule(0, SwerveConstants.Mod0.constants),

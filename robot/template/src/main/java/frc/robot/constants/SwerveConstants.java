@@ -10,6 +10,37 @@ import frc.lib.util.COTSFalconSwerveConstants;
 import frc.lib.util.SwerveModuleConstants;
 
 public final class SwerveConstants {
+    public static final boolean robotCentric = false;
+    public static final boolean fieldCentric = true;
+   
+    public static final class DPadSpeeds {
+        public static final double dPadMasterSpeed = 0.2;
+
+        public static final double upX = 0;
+        public static final double upY = dPadMasterSpeed * 1;
+
+        public static final double upRightX = dPadMasterSpeed * 0.5 * Math.sqrt(2);
+        public static final double upRightY = dPadMasterSpeed * 0.5 * Math.sqrt(2);
+
+        public static final double rightX = dPadMasterSpeed * 1;
+        public static final double rightY = 0;
+
+        public static final double downRightX = dPadMasterSpeed * 0.5 * Math.sqrt(2);
+        public static final double downRightY = -dPadMasterSpeed * 0.5 * Math.sqrt(2);
+
+        public static final double downX = 0;
+        public static final double downY = -dPadMasterSpeed * 1;
+
+        public static final double downLeftX = -dPadMasterSpeed * 0.5 * Math.sqrt(2);
+        public static final double downLeftY = -dPadMasterSpeed * 0.5 * Math.sqrt(2);
+
+        public static final double leftX = -dPadMasterSpeed * 1;
+        public static final double leftY = 0;
+
+        public static final double upLeftX = -dPadMasterSpeed * 0.5 * Math.sqrt(2);
+        public static final double upLeftY = dPadMasterSpeed * 0.5 * Math.sqrt(2);
+    }    
+
     public static final int pigeonID = 0;
     public static final boolean invertGyro = false; // TODO: Always ensure Gyro is CCW+ CW-
 
