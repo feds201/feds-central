@@ -6,7 +6,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
-import frc.robot.constants.AutoConstants;
+import frc.robot.constants.AutonConstants;
 import frc.robot.constants.SwerveConstants;
 import frc.robot.subsystems.SwerveSubsystem;
 
@@ -19,8 +19,8 @@ public class BalanceWhileOn extends CommandBase {
         this.s_swerve = s_swerve;
         addRequirements(s_swerve);
 
-        rollController = new PIDController(AutoConstants.Balance.kRollP, AutoConstants.Balance.kRollI,
-                AutoConstants.Balance.kRollD);
+        rollController = new PIDController(AutonConstants.Balance.kRollP, AutonConstants.Balance.kRollI,
+                AutonConstants.Balance.kRollD);
     }
 
     @Override
@@ -32,12 +32,12 @@ public class BalanceWhileOn extends CommandBase {
 
         SmartDashboard.putNumber("ROLL COMMAND", rollCommand);
 
-        if (Math.abs(RobotContainer.s_pigeon2.getRoll()) < AutoConstants.Balance.kRollDeadband) {
+        if (Math.abs(RobotContainer.s_pigeon2.getRoll()) < AutonConstants.Balance.kRollDeadband) {
             rollCommand = 0.0;
         }
 
         Translation2d commandedToRobot = new Translation2d(
-                rollCommand * AutoConstants.Balance.kRollPIDOutputScalar,
+                rollCommand * AutonConstants.Balance.kRollPIDOutputScalar,
                 Rotation2d.fromDegrees(0));
 
         SmartDashboard.putNumber("COMMANDED X", commandedToRobot.getX());

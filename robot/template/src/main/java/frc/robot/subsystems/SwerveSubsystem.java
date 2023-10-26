@@ -1,7 +1,6 @@
 package frc.robot.subsystems;
 
 import frc.robot.swerve.SwerveModule;
-import frc.robot.utils.DriveFunctions;
 import frc.robot.constants.SwerveConstants;
 
 import frc.robot.subsystems.pigeon.Pigeon2Subsystem;

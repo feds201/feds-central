@@ -79,11 +79,7 @@ public class RobotContainer {
         s_swerve.setDefaultCommand(
                 new TeleopSwerve(
                         s_swerve,
-                        () -> -slewRateLimiterY.calculate(m_driveController.getLeftY() * getPercentDriveSpeed()), // FIXME:
-                                                                                                                  // DOES
-                                                                                                                  // THIS
-                                                                                                                  // CRAP
-                                                                                                                  // WORK?
+                        () -> -slewRateLimiterY.calculate(m_driveController.getLeftY() * getPercentDriveSpeed()), 
                         () -> -slewRateLimiterX.calculate(m_driveController.getLeftX() * getPercentDriveSpeed()),
                         () -> -m_driveController.getRightX() * getPercentDriveSpeed(),
                         () -> SwerveConstants.fieldCentric)); // always field for now!
@@ -149,10 +145,6 @@ public class RobotContainer {
                 new RunIntakeWheels(s_wheels, 0.15),
                 new ReverseIntakeWheels(s_wheels, IntakeConstants.kIntakeWheelEjectTime, IntakeConstants.kIntakeWheelHighSpeed)));
 
-        // m_driveController.povLeft().onTrue(new ParallelDeadlineGroup(
-        //     new WaitCommand(0.5), 
-        //     new RunIntakeWheelsInfinite(s_wheels)));
-
         m_driveController.povUp().whileTrue(new TeleopSwerve(s_swerve, 
                         () -> -slewRateLimiterY.calculate(SwerveConstants.DPadSpeeds.upY * getPercentDriveSpeed()), 
                         () -> 0,
@@ -200,17 +192,10 @@ public class RobotContainer {
                         () -> -slewRateLimiterX.calculate(SwerveConstants.DPadSpeeds.upLeftX  * getPercentDriveSpeed()),
                         () -> -m_driveController.getRightX() * getPercentDriveSpeed(),
                         () -> SwerveConstants.robotCentric)); // always field for now!
-        
-        // DEBUGGING KEY BINDINGS
-        // m_driveController.povRight().onTrue(new BalanceWhileOn(s_swerve));
-
     }
 
     private void configureOperatorButtonBindings() {
     }
-
-
-
 
     public Command getAutonomousCommand() {
         return m_autonChooser.getSelected();
@@ -224,18 +209,7 @@ public class RobotContainer {
         }
     }
 
-    // Its made Nihar! Just attach to an Instant method for a toggle. See togglePercentDriveSpeed for examples.
-    // private void toggleRobotCentric() {
-    //     if (robotCentric) {
-    //         robotCentric = false;
-    //     } else {
-    //         robotCentric = true;
-    //     }
-        
-    // }
-
     public double getPercentDriveSpeed() {
         return controllerMultiplier;
     }
-
 }
