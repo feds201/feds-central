@@ -1,4 +1,4 @@
-package frc.robot.commands.drive;
+package frc.robot.commands.exampleCommands;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -10,7 +10,6 @@ public class LockWheels extends CommandBase {
 
     public LockWheels(SwerveSubsystem s_Swerve) {
         this.s_Swerve = s_Swerve;
-
         addRequirements(s_Swerve);
     }
 

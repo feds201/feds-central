@@ -1,8 +1,7 @@
-package frc.robot.utils;
+package frc.robot.subsystems.pigeon;
 
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
-import frc.robot.subsystems.pigeon.PigeonSubsystem;
 
 public class PigeonStateSendable implements Sendable {
     private PigeonSubsystem m_pigeon;

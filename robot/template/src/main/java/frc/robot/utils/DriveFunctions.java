@@ -6,8 +6,4 @@ public class DriveFunctions {
 			return 0;
 		return Math.signum(input) * (Math.abs(input) - threshold) / (1 - threshold);
 	}
-
-	public static double voltageToPercentOutput(double voltage) {
-		return voltage;
-	}
 }

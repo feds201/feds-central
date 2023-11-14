@@ -10,28 +10,22 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 
-import com.ctre.phoenix.sensors.Pigeon2;
-
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class SwerveSubsystem extends SubsystemBase {
     public SwerveDriveOdometry swerveOdometry;
     public SwerveModule[] mSwerveMods;
     public static Pigeon2Subsystem gyro;
 
-    public LimelightSubsystem limelight;
 
     public SwerveSubsystem() {
         gyro = RobotContainer.s_pigeon2;
         zeroGyro();
-        this.limelight = new LimelightSubsystem();
 
         mSwerveMods = new SwerveModule[] {
                 new SwerveModule(0, SwerveConstants.Mod0.constants),
@@ -105,17 +99,18 @@ public class SwerveSubsystem extends SubsystemBase {
         return positions;
     }
 
+    public void setYaw(double yaw) {
+        gyro.setYaw(yaw);
+    }
+
     public void zeroGyro() {
-        gyro.setYaw(0);
+        this.setYaw(0);
     }
 
     public void zeroGyro180(){
-        gyro.setYaw(180);
+        this.setYaw(180);
     }
 
-    public void rotateRobotToZero(){
-        
-    }
 
     public Rotation2d getYaw() {
         return (SwerveConstants.invertGyro) ? Rotation2d.fromDegrees(360 - gyro.getYaw())
@@ -128,15 +123,9 @@ public class SwerveSubsystem extends SubsystemBase {
         }
     }
 
-
     @Override
     public void periodic() {
         swerveOdometry.update(getYaw(), getModulePositions());
-        limelight.setResult();
-
-        SmartDashboard.putNumber("Target Distance", limelight.getHorizontalDistanceToTarget());
-        SmartDashboard.putNumber("Target Strafe", limelight.getStrafeAlignDistance());
-
     }
 
 

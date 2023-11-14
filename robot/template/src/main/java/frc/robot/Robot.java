@@ -77,7 +77,6 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledInit() {
-    RobotContainer.controllerMultiplier = 1;
   }
 
   @Override
@@ -87,6 +86,7 @@ public class Robot extends TimedRobot {
   @Override
   public void testInit() {
     CommandScheduler.getInstance().cancelAll();
+    // TODO: alignment code?
     // swerveDrive.align();
 
     // double [] alignments = new double[4];
@@ -96,8 +96,6 @@ public class Robot extends TimedRobot {
     // System.out.println("Front Right: " + alignments[1]);
     // System.out.println("Back Left: " + alignments[2]);
     // System.out.println("Back Right: " + alignments[3]);
-
-
   }
 
   @Override

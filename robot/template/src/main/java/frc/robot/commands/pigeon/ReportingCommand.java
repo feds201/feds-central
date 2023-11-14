@@ -1,6 +1,6 @@
-package frc.robot.commands.sensor;
+package frc.robot.commands.pigeon;
 
-import frc.robot.utils.PigeonStateSendable;
+import frc.robot.subsystems.pigeon.PigeonStateSendable;
 import frc.robot.subsystems.pigeon.PigeonSubsystem;
 import frc.robot.subsystems.pigeon.ReportingSubsystem;
 
