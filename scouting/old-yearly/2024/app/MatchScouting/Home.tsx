@@ -4,6 +4,10 @@ import {Button, Text} from "@rneui/themed";
 
 export default function Match_Home() {
     const arr: any[] = getEventDatabase();
+
+    //MAP FEATURE IS SO LAGGYYYYYYYYYY
+    //Have to save its state in database so it dosent keep doing this each time we load the page
+
     return(
         <View style={{alignItems: "center"}}>
             <Text h3 style={{alignItems: "center"}}>Matches</Text>
