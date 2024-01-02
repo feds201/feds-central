@@ -13,19 +13,13 @@ export default function TemplateHome() {
             <View style={{alignItems: "center", paddingTop: 20}}>
                 <Button title={"Create New Template"} buttonStyle={{borderRadius: 30}} containerStyle={{width: 200}} onPress={() => setModalVisible(true)}/>
             </View>
-            <Modal
-                animationType={"fade"}
-                transparent={true}
-                visible={modalVisible}
-                onRequestClose={() => {
-                    setModalVisible(!modalVisible);
-                }}>
+            <Modal animationType={"fade"} transparent={true} visible={modalVisible}>
                 <View style={styles.centeredView}>
                     <View style={styles.modalView}>
                         <Text style={{marginBottom: 15}}>Template Name</Text>
                         <TextInput placeholder={"Enter Template Name"} textAlign={"center"} onChangeText={(text) => setName(text)} style={{paddingTop: 10}}/>
                         <Link href={"/MatchScouting/TemplateEditor"} asChild>
-                            <Pressable style={{paddingTop: 30}} onPress={() => console.log("Pass in params")}>
+                            <Pressable style={{paddingTop: 30}} onPress={() => setModalVisible(false)}>
                                 <View style={{backgroundColor: "#429ef5", width: 200, height: 40, alignItems: "center", justifyContent: "center", borderRadius: 30}}>
                                     <Text style={{color: '#FFF', fontWeight: 'bold'}}>Create</Text>
                                 </View>

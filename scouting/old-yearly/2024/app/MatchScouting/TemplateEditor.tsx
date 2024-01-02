@@ -1,15 +1,11 @@
 import React, { useState } from "react";
-import { Text, StyleSheet, TouchableOpacity } from "react-native";
-import DraggableFlatList, {
-    ScaleDecorator,
-    RenderItemParams,
-} from "react-native-draggable-flatlist";
-
+import {Text, StyleSheet, TouchableOpacity, View, Animated, ScrollView} from "react-native";
+import DraggableFlatList, {ScaleDecorator, RenderItemParams} from "react-native-draggable-flatlist";
 import { mapIndexToData, Item } from "./util"
+import Icon from "react-native-vector-icons/FontAwesome";
+import FloatingButton from "../../components/FloatingButton";
 
-const NUM_ITEMS = 10;
-
-const initialData: Item[] = [...Array(NUM_ITEMS)].map(mapIndexToData);
+const initialData: Item[] = [...Array(20)].map(mapIndexToData);
 
 export default function Basic() {
     const [data, setData] = useState(initialData);
@@ -17,28 +13,25 @@ export default function Basic() {
     const renderItem = ({ item, drag, isActive }: RenderItemParams<Item>) => {
         return (
             <ScaleDecorator>
-                <TouchableOpacity
-                    activeOpacity={1}
-                    onLongPress={drag}
-                    disabled={isActive}
-                    style={[
-                        styles.rowItem,
-                        { backgroundColor: isActive ? "red" : item.backgroundColor },
-                    ]}
-                >
-                    <Text style={styles.text}>{item.text}</Text>
+                <TouchableOpacity activeOpacity={1} onLongPress={drag} disabled={isActive} style={{backgroundColor: "#000", height: 60, justifyContent: "center"}}>
+                    <Text style={styles.text}>{item.key}</Text>
                 </TouchableOpacity>
             </ScaleDecorator>
         );
     };
 
     return (
-        <DraggableFlatList
-            data={data}
-            onDragEnd={({ data }) => setData(data)}
-            keyExtractor={(item) => item.key}
-            renderItem={renderItem}
-        />
+        <View style={{backgroundColor: "#000"}}>
+                    <DraggableFlatList
+                        data={data}
+                        onDragEnd={({ data }) => setData(data)}
+                        keyExtractor={(item) => item.key}
+                        renderItem={renderItem}
+                    />
+                <View>
+                    <FloatingButton/>
+                </View>
+        </View>
     );
 }
 
@@ -53,5 +46,6 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: "bold",
         textAlign: "center",
+        justifyContent: "center"
     },
 });
