@@ -1,6 +1,7 @@
 import { Drawer } from 'expo-router/drawer';
 import {DrawerContentComponentProps} from "@react-navigation/drawer";
 import CustomDrawer from "../components/CustomDrawer";
+import 'react-native-gesture-handler';
 
 export default function Layout() {
     return (
@@ -13,7 +14,7 @@ export default function Layout() {
                 }}
             />
             <Drawer.Screen
-                name="MatchScouting/Template"
+                name="MatchScouting/TemplateHome"
                 options={{
                     drawerLabel: 'Templates',
                     title: 'Templates',
@@ -37,7 +38,21 @@ export default function Layout() {
                 name="index"
                 options={{
                     drawerItemStyle: { height: 0 },
-                    title: 'Home'
+                    title: "uhhh ur not supposed to be here"
+                }}
+            />
+            <Drawer.Screen
+                name="MatchScouting/MatchScout"
+                options={{
+                    drawerItemStyle: { height: 0 },
+                    title: "Match Scout"
+                }}
+            />
+            <Drawer.Screen
+                name="MatchScouting/TemplateEditor"
+                options={{
+                    drawerItemStyle: { height: 0 },
+                    title: "Template Editor"
                 }}
             />
         </Drawer>
