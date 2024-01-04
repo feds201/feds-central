@@ -15,6 +15,7 @@
   "dependencies": {
     "@expo/vector-icons": "^13.0.0",
     "@expo/websql": "^1.0.1",
+    "@gorhom/bottom-sheet": "^4.6.0",
     "@react-navigation/drawer": "^6.6.6",
     "@react-navigation/native": "^6.0.2",
     "@rneui/base": "^4.0.0-rc.7",
@@ -41,7 +42,9 @@
     "react-native-reanimated": "3.3.0",
     "react-native-safe-area-context": "4.8.2",
     "react-native-screens": "~3.29.0",
-    "react-native-web": "~0.19.6"
+    "react-native-web": "~0.19.6",
+    "reanimated-bottom-sheet": "^1.0.0-alpha.22",
+    "rn-sliding-up-panel": "^2.4.6"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
