@@ -62,6 +62,13 @@ export default function Layout() {
                     title: "QR"
                 }}
             />
+            <Drawer.Screen
+                name="PitScouting/Home"
+                options={{
+                    drawerItemStyle: { height: 0 },
+                    title: "Home"
+                }}
+            />
         </Drawer>
     );
 }
