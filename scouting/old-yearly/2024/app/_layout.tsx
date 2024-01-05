@@ -5,7 +5,7 @@ import 'react-native-gesture-handler';
 
 export default function Layout() {
     return (
-        <Drawer drawerContent={(props: DrawerContentComponentProps) => <CustomDrawer{...props}/>}>
+        <Drawer defaultStatus={"closed"} drawerContent={(props: DrawerContentComponentProps) => <CustomDrawer{...props}/>}>
             <Drawer.Screen
                 name="MatchScouting/Home"
                 options={{
