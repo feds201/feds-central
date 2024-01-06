@@ -34,7 +34,7 @@ This Project utilizes [Expo](https://docs.expo.dev/), a React Native framework, 
 ### Android Run Instructions
 
 Android Studio is required to create development builds in react native. 
-- Install Android Studio
+- Install [Android Studio](https://developer.android.com/studio)
 - Run `choco install -y microsoft-openjdk11` in the terminal (This app utilizes Expo SDK 49, which uses JDK 11)
 - You will also need to install [Android SDK](https://docs.expo.dev/guides/local-app-development/)
 - Ensure your Windows [Environment Variables](https://developer.android.com/tools/variables#envar) has a [path called ANDROID_HOME](https://developer.android.com/tools/variables) directed to the SDK folder 
@@ -45,12 +45,11 @@ Android Studio is required to create development builds in react native.
 1. Run `npx expo install expo-dev-client` (Converts react native code to native android code) [learn more](https://docs.expo.dev/develop/development-builds/introduction/#what-is-expo-dev-client)
 2. Create a [development build](https://docs.expo.dev/develop/development-builds/create-a-build/).
 3. Run `npx expo start` in terminal
-4. In the letter options, type `s` to switch to development build
-5. Type `a` to run android
+4. Switch to Development Build, and run Android
 
 - **Build Project Locally (Native Files)**
 1. Run `npx expo run:android` (This will start installing gradle and native android dependencies)
-2. Type `a` to run android
+2. Switch to Development Build, and run Android
 
 ### IOS Run Instructions
 
