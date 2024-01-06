@@ -5,13 +5,13 @@ out of Rochester High School.
 
 ## Description
 
-
+A feature-packed FRC Scouting App for all your Scouting needs. 
 
 ## Getting Started
 
 1. Clone our project using your preferred IDE
 2. Ensure the latest [Node.js](https://nodejs.org/en) LTS version is installed by running `node -v` in any terminal
-3. run `choco install -y nodejs` to install Node.
+3. Run `choco install -y nodejs` to install Node.
 4. Run `npm install` in the project directory via terminal to install dependencies
 
 ### Dependencies
@@ -35,8 +35,8 @@ This Project utilizes [Expo](https://docs.expo.dev/), a React Native framework, 
 
 Android Studio is required to create development builds in react native. 
 - Install Android Studio
-- run `choco install -y microsoft-openjdk11` in the terminal (This app utilizes Expo SDK 49, which uses JDK 11)
-- you will also need to install [Android SDK](https://docs.expo.dev/guides/local-app-development/)
+- Run `choco install -y microsoft-openjdk11` in the terminal (This app utilizes Expo SDK 49, which uses JDK 11)
+- You will also need to install [Android SDK](https://docs.expo.dev/guides/local-app-development/)
 - Ensure your Windows [Environment Variables](https://developer.android.com/tools/variables#envar) has a [path called ANDROID_HOME](https://developer.android.com/tools/variables) directed to the SDK folder 
 - To set up an Emulator visit [Expo's Guide](https://docs.expo.dev/workflow/android-studio-emulator/).
 - To use a local Android device, ensure the device is plugged in with [USB debugging](https://developer.android.com/studio/debug/dev-options) enabled.
