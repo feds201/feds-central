@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import 'react-native-gesture-handler'; //Required for app to work
 import { Redirect, useRootNavigationState } from "expo-router";
 
