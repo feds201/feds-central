@@ -11,26 +11,26 @@ import Feather from "react-native-vector-icons/Feather"
 import { Button } from "@rneui/base";
 import { setTemplate } from "./MatchScout";
 
+export interface Item {
+  text: string,
+  key: string
+}
+
 const initialData: Item[] = [{ text: "", key: "" }];
 
 export default function templateEditor() {
   const [index, setIndex] = useState(0);
   const [data, setData] = useState(initialData);
+
   const bottomSheetRef = useRef<BottomSheet>(null);
   const snapPoints = useMemo(() => ['3.5%', '38%'], []);
   const handleSheetChanges = useCallback((index: number) => {
-    //console.log('handleSheetChanges', index);
+    console.log('handleSheetChanges', index);
   }, []);
 
   function pushComponent(text: string) {
     setIndex(index + 1);
     setData([...data, { text: text, key: index.toString() }]);
-  }
-
-  function exportData() {
-    console.log("Export data");
-    console.log(data);
-    setTemplate(data);
   }
 
   return (
@@ -39,11 +39,11 @@ export default function templateEditor() {
         <Button
           title={"Finish"}
           buttonStyle={styles.button}
-          onPress={() => exportData()}
+          onPress={() => console.log("this is where we should commit the data that we have")}
         />
         <DraggableFlatList
           data={(data)}
-          onDragEnd={({ data }) => setData(data)}
+          onDragEnd={({ data }) => { setData(data); console.log("onDragEnd" + data) }}
           keyExtractor={(item) => item.key}
           renderItem={componentsView}
         />
@@ -145,4 +145,4 @@ export const mapData = (d: any, index: number, arr: any[]) => {
   };
 }
 
-export type Item = ReturnType<typeof mapData>;
+// export type Item = ReturnType<typeof mapData>;
