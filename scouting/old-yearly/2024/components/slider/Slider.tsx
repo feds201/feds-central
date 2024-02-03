@@ -5,54 +5,46 @@ import { Item } from "../../types/Item";
 import { useState } from "react";
 
 interface SliderProps {
-  item: Item
-  drag: () => void;
-  isActive: boolean;
+  item: Item;
+  saveItem: (item: Item) => Promise<void>;
 }
 
-const Slider = ({ item, drag, isActive }: SliderProps) => {
-  const [value, setValue] = useState<number>(0);
+const Slider = ({ item, saveItem }: SliderProps) => {
+  const [value, setValue] = useState<number>(JSON.parse(item.data).value ? JSON.parse(item.data).value : 0);
   const [dialog, setDialog] = useState<boolean>(false);
   const [minValue, setMinValue] = useState<number>(0);
   const [step, setStep] = useState<number>(0);
   const [maxValue, setMaxValue] = useState<number>(0);
 
+  const handleValueChange = async (newValue: number) => {
+    setValue(newValue);
+
+    const newData = JSON.parse(item.data);
+    newData.value = newValue;
+    
+    const newItem = item;
+    newItem.data = JSON.stringify(newData);
+    await saveItem(newItem);
+  }
+
   return (
-    <ScaleDecorator>
-
-      <TouchableOpacity
-        activeOpacity={1}
-        disabled={isActive}
-        style={styles.touchableOpacity}>
-        <TextInput placeholder={"Title"} textAlign={"center"} style={styles.titleTextInput} />
-        <View style={styles.sliderView}>
-          <RNEUISlider
-            minimumValue={minValue}
-            step={step}
-            maximumValue={maxValue}
-            thumbTintColor={"#4287f5"}
-            style={styles.slider}
-            value={value}
-            onValueChange={(value) => setValue(value)} />
-          <Text>Value: {value}</Text>
-        </View>
-        <Button title={"Options"} onPress={() => setDialog(true)} />
-      </TouchableOpacity>
-
-      <Dialog
-        overlayStyle={styles.dialog}
-        isVisible={dialog}
-        onBackdropPress={() => setDialog(!dialog)}>
-        <Dialog.Title title="Options" />
-        <Dialog.Actions>
-          <TextInput placeholder={"MIN VALUE"} onChangeText={(value) => setMinValue(parseInt(value))} />
-          <TextInput placeholder={"STEP VALUE"} onChangeText={(value) => setStep(parseInt(value))} />
-          <TextInput placeholder={"MAX VALUE"} onChangeText={(value) => setMaxValue(parseInt(value))} />
-          <Button title={"Submit"} onPress={() => setDialog(false)} />
-        </Dialog.Actions>
-      </Dialog>
-
-    </ScaleDecorator>
+    <TouchableOpacity
+      activeOpacity={1}
+      style={styles.touchableOpacity}
+    >
+      <Text style={styles.titleTextInput}> {item.name} </Text>
+      <View style={styles.sliderView}>
+        <RNEUISlider
+          minimumValue={minValue}
+          step={step}
+          maximumValue={maxValue}
+          thumbTintColor={"#4287f5"}
+          style={styles.slider}
+          value={value}
+          onValueChange={(value) => handleValueChange(value)} />
+        <Text>Value: {value}</Text>
+      </View>
+    </TouchableOpacity>
   );
 }
 
@@ -68,7 +60,8 @@ const styles = StyleSheet.create({
   },
   titleTextInput: {
     marginLeft: 5,
-    width: 100
+    width: 100,
+    textAlign: "center"
   },
   sliderView: {
     flex: 1,

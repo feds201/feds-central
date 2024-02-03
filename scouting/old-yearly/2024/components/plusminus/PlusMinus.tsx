@@ -1,30 +1,39 @@
-import { TouchableOpacity, TextInput, Text } from "react-native";
+import { TouchableOpacity, TextInput, Text, View } from "react-native";
 import { Button } from "@rneui/base";
 import { ScaleDecorator } from "react-native-draggable-flatlist";
 import { StyleSheet } from "react-native";
 import { Item } from "../../types/Item";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface PlusMinusProps {
   item: Item;
-  drag: () => void;
-  isActive: boolean;
+  saveItem: (item: Item) => Promise<void>;
 }
 
-const PlusMinus = ({ item, drag, isActive }: PlusMinusProps) => {
-  const [value, setValue] = useState<number>(0);
+const PlusMinus = ({ item, saveItem }: PlusMinusProps) => {
+  const [value, setValue] = useState<number>(JSON.parse(item.data).value ? JSON.parse(item.data).value : 0);
+
+  const handleValueChange = async (newValue: number) => {
+    setValue(newValue);
+
+    const newData = JSON.parse(item.data);
+    newData.value = newValue;
+
+    const newItem = item;
+    newItem.data = JSON.stringify(newData);
+    await saveItem(newItem);
+  }
+
   return (
-    <ScaleDecorator>
-      <TouchableOpacity
-        activeOpacity={1}
-        disabled={isActive}
-        style={styles.touchableOpacity}>
-        <TextInput placeholder={"Title"} textAlign={"center"} style={styles.textInput} />
-        <Button title={"+"} buttonStyle={styles.buttonStyle} containerStyle={styles.plusContainerStyle} onPress={() => setValue(value + 1)} />
-        <Text id={item.key} style={styles.text}>{value}</Text>
-        <Button title={"-"} buttonStyle={styles.buttonStyle} containerStyle={styles.minusContainerStyle} onPress={() => setValue(value - 1)} />
-      </TouchableOpacity>
-    </ScaleDecorator>
+    <TouchableOpacity
+      activeOpacity={1}
+      style={styles.touchableOpacity}
+    >
+      <Text style={styles.textInput}>{item.name}</Text>
+      <Button title={"+"} buttonStyle={styles.buttonStyle} containerStyle={styles.plusContainerStyle} onPress={() => handleValueChange(value + 1)} />
+      <Text id={item.key} style={styles.text}>{value}</Text>
+      <Button title={"-"} buttonStyle={styles.buttonStyle} containerStyle={styles.minusContainerStyle} onPress={() => handleValueChange(value - 1)} />
+    </TouchableOpacity>
   )
 }
 
@@ -41,7 +50,8 @@ const styles = StyleSheet.create({
   },
   textInput: {
     marginLeft: 5,
-    width: 100
+    width: 100,
+    textAlign: "center"
   },
   buttonStyle: {
     borderRadius: 30,

@@ -6,6 +6,7 @@ import { TemplateEntity } from '../../database/entity/Template.entity';
 import { dataSource } from '../../database/data-source';
 import { useIsFocused } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { MatchEntity } from '../../database/entity/Match.entity';
 
 export default function TemplateHome() {
   const [templates, setTemplates] = useState<TemplateEntity[]>(null);
@@ -16,17 +17,36 @@ export default function TemplateHome() {
   const isFocused = useIsFocused();
 
   useEffect(() => {
-    console.log("refreshed")
     if (!isFocused) return;
     const getTemplates = async () => {
       const TemplateRepository = dataSource.getRepository(TemplateEntity);
       const returnedTemplates = await TemplateRepository.find();
       setTemplates(returnedTemplates);
-      console.log("refred")
-      console.log(returnedTemplates);
+      // console.log(returnedTemplates);
     }
     getTemplates();
   }, [isFocused]);
+
+  const handlePressed = async (template: TemplateEntity) => {
+
+    await AsyncStorage.setItem("template", template.name);
+    Alert.alert('Template Selected', `The '${template.name}' template is now selected`, [
+      {
+        text: 'Cancel',
+        onPress: () => console.log('Cancel Pressed'),
+        style: 'cancel',
+      },
+      { text: 'OK', onPress: () => console.log('OK Pressed') },
+    ])
+
+    const MatchRepository = dataSource.getRepository(MatchEntity);
+
+    const matches: MatchEntity[] = await MatchRepository.find();
+
+    matches.forEach((match) => {
+      MatchRepository.update(match.id, { data: template.data });
+    });
+  }
 
   return (
     <View>
@@ -45,18 +65,7 @@ export default function TemplateHome() {
                   <View key={template.id} style={styles.topLevelTemplatesView}>
                     <Pressable
                       style={styles.pressableForTemplates}
-                      onPress={async () => {
-                        await AsyncStorage.setItem("template", template.name);
-                        console.log(await AsyncStorage.getItem("template"));
-                        Alert.alert('Template Selected', `The '${template.name}' template is now selected`, [
-                          {
-                            text: 'Cancel',
-                            onPress: () => console.log('Cancel Pressed'),
-                            style: 'cancel',
-                          },
-                          { text: 'OK', onPress: () => console.log('OK Pressed') },
-                        ])
-                      }}
+                      onPress={() => handlePressed(template)}
                     >
                       <View style={styles.templateView}>
                         <Text style={styles.templateViewText}>

@@ -1,39 +1,45 @@
 import { CheckBox } from "@rneui/base";
-import { TouchableOpacity, TextInput, StyleSheet } from "react-native";
+import { TouchableOpacity, TextInput, StyleSheet, Text, View } from "react-native";
 import { ScaleDecorator } from "react-native-draggable-flatlist";
 import { useState } from "react";
 import { Item } from "../../types/Item";
 
 interface CheckboxProps {
   item: Item;
-  drag: () => void;
-  isActive: boolean;
+  saveItem: (item: Item) => Promise<void>;
 }
 
-const Checkbox = ({ item, drag, isActive }: CheckboxProps) => {
-  const [checked, setChecked] = useState<boolean>(false);
+const Checkbox = ({ item, saveItem }: CheckboxProps) => {
+  const [checked, setChecked] = useState<boolean>(JSON.parse(item.data).checked ? true : false);
+
+  const handlePress = async () => {
+    setChecked(!checked);
+
+    const newData = JSON.parse(item.data);
+    newData.checked = checked;
+
+    const newItem = item;
+    newItem.data = JSON.stringify(newData);
+    await saveItem(newItem);
+  }
+
+
   return (
-    <ScaleDecorator>
-      <TouchableOpacity
-        activeOpacity={1}
-        disabled={isActive}
-        style={styles.touchableOpacity}
-      >
-        <CheckBox checked={checked} onPress={() => setChecked(!checked)} />
-        <TextInput
-          placeholder={"Title"}
-          textAlign={"center"}
-          style={styles.checkbox}
-        />
-      </TouchableOpacity>
-    </ScaleDecorator>
+    <TouchableOpacity
+      activeOpacity={1}
+      style={styles.touchableOpacity}
+    >
+      <CheckBox checked={checked} onPress={handlePress} />
+      <Text
+        style={styles.checkbox}
+      > {item.name} </Text>
+    </TouchableOpacity>
   )
 }
 
 const styles = StyleSheet.create({
   touchableOpacity: {
     backgroundColor: "#FFFAFA",
-    height: 100,
     alignItems: "flex-start",
     flex: 1,
     flexDirection: "row",

@@ -13,6 +13,7 @@ import { Item } from "../../../types/Item";
 import { dataSource } from "../../../database/data-source";
 import { TemplateEntity } from "../../../database/entity/Template.entity";
 import { useLocalSearchParams } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Template() {
   const { name } = useLocalSearchParams();
@@ -44,6 +45,8 @@ export default function Template() {
     console.log(newTemplate);
 
     TemplateRepository.save(newTemplate);
+
+    await AsyncStorage.setItem("template", newTemplate.name);
   }
 
   return (

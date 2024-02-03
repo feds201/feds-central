@@ -14,6 +14,7 @@ import Checkbox from "./checkbox/Checkbox";
 import Stopwatch from "./stopwatch/Stopwatch";
 import Notes from "./notes/Notes";
 import Slider from "./slider/Slider";
+import { ListRenderItem } from "react-native";
 
 export const templateViewGenerator = ({ item, drag, isActive }: RenderItemParams<Item>) => {
   switch (item.type) {
@@ -34,24 +35,24 @@ export const templateViewGenerator = ({ item, drag, isActive }: RenderItemParams
   }
 };
 
-export const matchViewGenerator = ({ item, drag, isActive }: RenderItemParams<Item>) => {
-  switch (item.type) {
-    case "header":
-      return <Header item={item} drag={drag} isActive={isActive} />;
-    case "plusminus":
-      return <PlusMinus item={item} drag={drag} isActive={isActive} />
-    case "checkbox":
-      return <Checkbox item={item} drag={drag} isActive={isActive} />;
-    case "stopwatch":
-      return <Stopwatch item={item} drag={drag} isActive={isActive} />;
-    case "notes":
-      return <Notes item={item} drag={drag} isActive={isActive} />;
-    case "slider":
-      return <Slider item={item} drag={drag} isActive={isActive} />;
-    default:
-      return <Debug item={item} drag={drag} isActive={isActive} />;
-  }
-}
+// export const matchViewGenerator = (item: Item, saveItem: (item: Item) => Promise<void>) => {
+//   switch (item.type) {
+//     case "header":
+//       return <Header item={item} saveItem={saveItem} />;
+//     case "plusminus":
+//       return <PlusMinus item={item} saveItem={saveItem} />
+//     case "checkbox":
+//       return <Checkbox item={item} saveItem={saveItem} />;
+//     case "stopwatch":
+//       return <Stopwatch item={item} saveItem={saveItem} />;
+//     case "notes":
+//       return <Notes item={item} saveItem={saveItem} />;
+//     case "slider":
+//       return <Slider item={item} saveItem={saveItem} />;
+//     default:
+//       return <Debug item={item} drag={null} isActive={false} />;
+//   }
+// }
 
 
 // export const flatComponentsView = ({ item, drag, isActive }: RenderItemParams<Item>) => {

@@ -5,9 +5,11 @@ import React, { useEffect, useState } from "react";
 import { MatchEntity } from "../../database/entity/Match.entity";
 import { dataSource } from "../../database/data-source";
 import { useIsFocused } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Home({ }) {
   const [matches, setMatches] = useState<MatchEntity[]>([]);
+  const [eventCode, setEventCode] = useState<string>("");
 
   const isFocused = useIsFocused();
 
@@ -50,16 +52,22 @@ export default function Home({ }) {
         .getMany()
 
       let allMatches = [...qmMatches, ...qfMatches, ...sfMatches, ...fMatches];
-      console.log(allMatches);
+      // console.log(allMatches);
       setMatches(allMatches);
     }
 
     retrieveMatches();
+
+    const getEventCode = async () => {
+      const returnedEventCode = await AsyncStorage.getItem("Event Code");
+      setEventCode(returnedEventCode);
+    }
+    getEventCode();
   }, [isFocused]);
 
   return (
     <View style={styles.topLevelView}>
-      <Text h3 style={styles.matchHeadingText}>Matches</Text>
+      <Text h3 style={styles.matchHeadingText}>Matches {eventCode ? eventCode : ""}</Text>
 
       <ScrollView style={styles.topLevelScrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.scrollViewArea}>

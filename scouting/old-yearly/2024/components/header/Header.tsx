@@ -1,24 +1,20 @@
-import { TouchableOpacity, StyleSheet, Text } from "react-native"
+import { TouchableOpacity, StyleSheet, Text, View } from "react-native"
 import { ScaleDecorator } from "react-native-draggable-flatlist"
 import { Item } from "../../types/Item";
 
 interface HeaderProps {
-  item: Item
-  drag: () => void;
-  isActive: boolean;
+  item: Item;
+  saveItem: (item: Item) => Promise<void>;
 }
 
-const Header = ({ item, drag, isActive }: HeaderProps) => {
+const Header = ({ item, saveItem }: HeaderProps) => {
   return (
-    <ScaleDecorator>
-      <TouchableOpacity
-        activeOpacity={1}
-        disabled={isActive}
-        style={styles.touchableOpacity}
-      >
-        <Text>{item.name}</Text>
-      </TouchableOpacity>
-    </ScaleDecorator>
+    <TouchableOpacity
+      activeOpacity={1}
+      style={styles.touchableOpacity}
+    >
+      <Text>{item.name}</Text>
+    </TouchableOpacity>
   )
 }
 

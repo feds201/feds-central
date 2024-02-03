@@ -4,6 +4,8 @@ import { Button } from "@rneui/base";
 import { useState } from "react";
 import { MatchEntity } from '../../database/entity/Match.entity';
 import { dataSource } from '../../database/data-source';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { TemplateEntity } from '../../database/entity/Template.entity';
 
 export default function Setup() {
 
@@ -30,6 +32,7 @@ export default function Setup() {
       <Button title={"Submit"} onPress={async () => {
         dataSource.getRepository(MatchEntity).clear();
         await getEventDetailsFromBlueAlliance(requestURL, robotCode.at(0), robotCode.at(1));
+        await AsyncStorage.setItem("Event Code", eventCode + " " + robotCode);
       }} />
 
       <Text h3 style={styles.debugText}>Debug Options</Text>
@@ -61,6 +64,14 @@ const styles = StyleSheet.create({
 });
 
 const getEventDetailsFromBlueAlliance = async (requestURL: string, teamColor: string, orderNumber: string) => {
+  const TemplateRepository = dataSource.getRepository(TemplateEntity);
+
+  const currentTemplateString = await AsyncStorage.getItem("template");
+
+  const currentTemplate = await TemplateRepository 
+                            .createQueryBuilder("template")
+                            .where("template.name = :name", {name: currentTemplateString})
+                            .getOne();
 
   const MatchRepository = dataSource.getRepository(MatchEntity);
 
@@ -86,9 +97,9 @@ const getEventDetailsFromBlueAlliance = async (requestURL: string, teamColor: st
       newMatch.matchNumber = match["match_number"];
       newMatch.matchType = match["comp_level"];
       newMatch.teamNumber = match.alliances[newMatch.allianceColor.toLowerCase()]["team_keys"][Number(orderNumber) - 1];
-      newMatch.data = "";
+      newMatch.data = currentTemplate.data;
 
-      console.log(newMatch);
+      // console.log(newMatch);
 
       MatchRepository.save(newMatch);
     }
