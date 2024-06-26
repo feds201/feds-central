@@ -61,10 +61,13 @@ class _MatchState extends State<Match> {
 
   List<Widget> auto(BuildContext context) {
     return [
-        Text("Event Key: ${widget.eventKey}"),
-        Text("Match Key: ${widget.matchKey}"),
-        Text("Alliance Color: ${widget.allianceColor}"),
-        Text("Station: ${widget.station}"),
+        Text("Event Key: ${widget.eventKey} \n"),
+        const SizedBox(height: 10,),
+        Text("Match Key: ${widget.matchKey} \n"),
+        const SizedBox(height: 10,),
+        Text("Alliance Color: ${widget.allianceColor} \n"),
+        const SizedBox(height: 10,),
+        Text("Station: ${widget.station} \n "),
     ];
   }
 
