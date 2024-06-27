@@ -158,7 +158,7 @@ class MatchState extends State<Match> {
           const SizedBox(width: 10),
         ],
       ),
-      body: match(context, _selectedIndex),
+      body: _match(context, _selectedIndex),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -176,7 +176,7 @@ class MatchState extends State<Match> {
         ],
         currentIndex: _selectedIndex,
         selectedItemColor:
-        widget.allianceColor == "Red" ? Colors.red : Colors.blue,
+            widget.allianceColor == "Red" ? Colors.red : Colors.blue,
         onTap: (int index) {
           setState(() {
             _selectedIndex = index;
@@ -186,30 +186,30 @@ class MatchState extends State<Match> {
     );
   }
 
-  match(BuildContext context, int selectedIndex) {
+  _match(BuildContext context, int selectedIndex) {
     switch (selectedIndex) {
       case 0:
-        return Center(child: auto(context));
+        return Center(child: _auto(context));
       case 1:
-        return SingleChildScrollView(child: Row(children: teleop(context)));
+        return SingleChildScrollView(child: Row(children: _teleop(context)));
       case 2:
-        return Row(children: endGame(context));
+        return Row(children: _endGame(context));
     }
   }
 
-  Widget auto(BuildContext context) {
+  Widget _auto(BuildContext context) {
     switch (widget.allianceColor) {
       case "Red":
         return SingleChildScrollView(
           child: Column(
-            children: autoBuilder(context, widget.allianceColor,
+            children: _autoBuilder(context, widget.allianceColor,
                 widget.matchData, widget.station),
           ),
         );
       case "Blue":
         return SingleChildScrollView(
           child: Column(
-            children: autoBuilder(context, widget.allianceColor,
+            children: _autoBuilder(context, widget.allianceColor,
                 widget.matchData, widget.station),
           ),
         );
@@ -218,12 +218,11 @@ class MatchState extends State<Match> {
     }
   }
 
-
-  List<Widget> endGame(BuildContext context) {
+  List<Widget> _endGame(BuildContext context) {
     return [];
   }
 
-  List<Widget> autoBuilder(BuildContext context, String? alliancecolor,
+  List<Widget> _autoBuilder(BuildContext context, String? alliancecolor,
       Map<String, dynamic> matchData, String? station) {
     return [
       Container(
@@ -236,9 +235,7 @@ class MatchState extends State<Match> {
         child: Center(
           child: Column(children: [
             Text(
-                "Assigned Team: ${(matchData["alliances"][alliancecolor
-                    ?.toLowerCase()]["team_keys"][int.parse(station![1]) - 1])
-                    .substring(3)}",
+                "Assigned Team: ${(matchData["alliances"][alliancecolor?.toLowerCase()]["team_keys"][int.parse(station![1]) - 1]).substring(3)}",
                 style: const TextStyle(fontSize: 30, color: Colors.black45)),
           ]),
         ),
@@ -362,41 +359,11 @@ class MatchState extends State<Match> {
     ];
   }
 
-  List<Widget> teleop(BuildContext context) {
+  List<Widget> _teleop(BuildContext context) {
     return [
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          _SwitchBuilder('allianceWing', 'Alliance Wing', allianceWing),
-          const SizedBox(height: 10),
-          _SwitchBuilder('centerField', 'Center Field', centerField),
-          const SizedBox(height: 10),
-          _SwitchBuilder('farWing', 'Far Wing', farWing),
-        ],
-      ),
-      const SizedBox(width: 10),
-      Expanded(
-        child: Container(
-          color: Colors.grey[300],
-          child: GridView.count(
-            crossAxisCount: 2,
-            childAspectRatio: MediaQuery.of(context).size.width / (MediaQuery.of(context).size.height / 2),
-            padding: const EdgeInsets.all(10),
-            children: [
-              _SwitchBuilder('unamplified', 'Unamplified', unamplified),
-              _SwitchBuilder('amplified', 'Amplified', amplified),
-              _SwitchBuilder('amp', 'Amp', amp),
-              _SwitchBuilder('trap', 'Trap', trap),
-              _SwitchBuilder('passed', 'Passed', passed),
-              _SwitchBuilder('missed', 'Missed', missed),
-            ],
-          ),
-        ),
-      ),
+      Text("data")
     ];
   }
-
-
 
   Widget _SwitchBuilder(String type, String title, int value) {
     return Column(
@@ -428,11 +395,9 @@ class MatchState extends State<Match> {
         Text(
           '$title: $value',
         ),
-
       ],
     );
   }
-
 }
 
 class Results {
