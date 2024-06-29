@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:scouting_app/pages/home_page.dart';
-import 'package:scouting_app/pages/match.dart';
 import 'package:scouting_app/pages/about_page.dart';
 import 'package:scouting_app/pages/match_page.dart';
 import 'package:scouting_app/pages/settings_page.dart';
@@ -11,7 +11,12 @@ const bool material3 = true;
 
 
 
-void main() {
+void main() async {
+  await Hive.initFlutter();
+  await Hive.openBox('userData');
+  await Hive.openBox('matchData');
+  await Hive.openBox('scoutData');
+  await Hive.openBox('settings');
   runApp(const MyApp());
 }
 

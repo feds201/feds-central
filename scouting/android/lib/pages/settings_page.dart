@@ -1,7 +1,10 @@
-import 'package:flutter/material.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:scouting_app/main.dart'; // Import this if `thumbIcon` is defined in `main.dart`
 
+
+import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:permission_handler/permission_handler.dart';
+
+import 'components/localmatchLoader.dart';
 import 'components/nav.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -34,7 +37,8 @@ class SettingsPageState extends State<SettingsPage> {
     });
   }
 
-  Future<void> _requestPermission(Permission permission, bool currentValue, Function(bool) onChanged) async {
+  Future<void> _requestPermission(Permission permission, bool currentValue,
+      Function(bool) onChanged) async {
     if (currentValue) {
       if (await permission.request().isGranted) {
         onChanged(true);
@@ -59,17 +63,27 @@ class SettingsPageState extends State<SettingsPage> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TextField(
-              decoration: InputDecoration(
-                labelText: 'Scout Name',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(color: Colors.black),
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: TextField(
+                controller: TextEditingController()
+                  ..text =
+                      Hive.box('userData').get('scouterName', defaultValue: ''),
+                decoration: InputDecoration(
+                  labelText: 'Scouter Name',
+                  hintText: 'Enter your name',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: const BorderSide(color: Colors.black),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: const BorderSide(color: Colors.black),
+                  ),
                 ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(color: Colors.black),
-                ),
+                onSubmitted: (String value) {
+                  Hive.box('userData').put('scouterName', value);
+                },
               ),
             ),
             Container(
@@ -79,8 +93,8 @@ class SettingsPageState extends State<SettingsPage> {
                 right: 10,
               ),
               width: double.infinity,
-              decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 241, 255, 241),
+              decoration: const BoxDecoration(
+                color: Color.fromARGB(255, 241, 255, 241),
               ),
               child: Column(
                 children: [
@@ -94,7 +108,8 @@ class SettingsPageState extends State<SettingsPage> {
                     thumbIcon: thumbIcon,
                     value: isLocationGranted,
                     onChanged: (bool value) {
-                      _requestPermission(Permission.location, value, (newValue) {
+                      _requestPermission(Permission.location, value,
+                          (newValue) {
                         setState(() {
                           isLocationGranted = newValue;
                         });
@@ -113,7 +128,8 @@ class SettingsPageState extends State<SettingsPage> {
                     title: const Text("Bluetooth"),
                     value: isBluetoothGranted,
                     onChanged: (bool value) {
-                      _requestPermission(Permission.bluetooth, value, (newValue) {
+                      _requestPermission(Permission.bluetooth, value,
+                          (newValue) {
                         setState(() {
                           isBluetoothGranted = newValue;
                         });
@@ -132,7 +148,8 @@ class SettingsPageState extends State<SettingsPage> {
                     thumbIcon: thumbIcon,
                     value: isNearbyDevicesGranted,
                     onChanged: (bool value) {
-                      _requestPermission(Permission.bluetoothAdvertise, value, (newValue) {
+                      _requestPermission(Permission.bluetoothAdvertise, value,
+                          (newValue) {
                         setState(() {
                           isNearbyDevicesGranted = newValue;
                         });
@@ -144,6 +161,111 @@ class SettingsPageState extends State<SettingsPage> {
                 ],
               ),
             ),
+            const SizedBox(height: 10),
+            Container(
+              padding: const EdgeInsets.all(10),
+              margin: const EdgeInsets.only(
+                left: 10,
+                right: 10,
+              ),
+              width: double.infinity,
+              decoration: const BoxDecoration(
+                color: Color.fromARGB(205, 241, 255, 241),
+              ),
+              child: Column(
+                children: [
+                  ShaderMask(
+                    shaderCallback: (bounds) => const LinearGradient(
+                      colors: [Colors.purple, Colors.blue],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    ).createShader(bounds),
+                    child: const Align(
+                      alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Coming soon!!',
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  ),
+                  const SizedBox(height: 10),
+                  const Text(
+                    'This feature is not yet available. Please check back later.',
+                    style: TextStyle(
+                      fontSize: 15,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  const Text(
+                    'This feature will allow you to connect to other devices and share match data, via Bluetooth or LoRa.',
+                    style: TextStyle(
+                      fontSize: 15,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            ButtonBar(
+              alignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromARGB(255, 11, 243, 11),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                              builder: (context) => const localmatchLoader())
+                          as Route<Object?>,
+                    );
+                  },
+                  child: const Text('Load Match',
+                      style: TextStyle(fontSize: 15, color: Colors.white),
+                      textAlign: TextAlign.center),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromARGB(255, 11, 243, 11),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  onPressed: () {
+                    Hive.box('matchData').delete('matches');
+                  },
+                  child: const Text('Reset Match',
+                      style: TextStyle(fontSize: 15, color: Colors.white),
+                      textAlign: TextAlign.center),
+                ),
+              ],
+            ),
+            ButtonBar(
+              alignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromARGB(255, 255, 0, 0),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                  ),
+                  onPressed: () {
+                    Hive.box('userData').deleteAll;
+                    Hive.box('matchData').deleteAll;
+                    Hive.box('settings').deleteAll;
+                  },
+                  child: const Text('Delete Learnt Data',
+                      style: TextStyle(fontSize: 15, color: Colors.white),
+                      textAlign: TextAlign.center),
+                ),
+              ],
+            )
           ],
         ),
       ),
@@ -152,8 +274,8 @@ class SettingsPageState extends State<SettingsPage> {
 }
 
 final WidgetStateProperty<Icon?> thumbIcon =
-WidgetStateProperty.resolveWith<Icon?>(
-      (Set<WidgetState> states) {
+    WidgetStateProperty.resolveWith<Icon?>(
+  (Set<WidgetState> states) {
     if (states.contains(WidgetState.selected)) {
       return const Icon(Icons.check);
     }
