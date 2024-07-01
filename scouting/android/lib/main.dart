@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:scouting_app/pages/actions/offset_adapter.dart';
 import 'package:scouting_app/pages/home_page.dart';
 import 'package:scouting_app/pages/about_page.dart';
 import 'package:scouting_app/pages/match_page.dart';
@@ -22,7 +21,6 @@ void main() async {
   await Hive.openBox('endData');
   await Hive.openBox('pitData');
   await Hive.openBox('settings');
-  Hive.registerAdapter(OffsetAdapter());
   runApp(const MyApp());
 }
 

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:scouting_app/pages/components/DataBase.dart';
 
 
 class EndGame extends StatefulWidget {
@@ -13,7 +14,6 @@ class EndGame extends StatefulWidget {
 }
 
 class _EndGameState extends State<EndGame> {
-  DataMaster dataMaster = DataMaster();
   Offset? _circlePosition;
 
   @override
@@ -26,7 +26,7 @@ class _EndGameState extends State<EndGame> {
   void _incrementCounter(MatchType type, dynamic subType, int incrementBy) {
     // Construct the key as a combination of the match type and the specific subtype
     String key = '${type.toString()}_${subType.toString()}';
-    dataMaster.incrementCounter(key, incrementBy);
+    LocalDataBase.incrementCounter(key, incrementBy);
   }
 
   void _updatePosition(TapUpDetails details) {
@@ -420,45 +420,3 @@ enum Types {
   matchFile,
 }
 
-
-class DataMaster {
-  final storageAgent = Hive.box('ScoutData');
-  final matchData = Hive.box('matchData');
-  DataMaster();
-
-  putScoutData(dynamic key, dynamic value) {
-    if (kDebugMode) {
-      print("DataMaster: ${key.toString()}: $value");
-    }
-    storageAgent.put(key.toString(), value);
-
-  }
-
-  String getScoutData(dynamic key) {
-    if (kDebugMode) {
-      print("DataMaster: ${key.toString()}");
-    }
-    return storageAgent.get(key.toString()).toString();
-  }
-
-
-
-  constructScoutData() {
-    if (kDebugMode) {
-      print("DataMaster: Constructing Data");
-    }
-  }
-
-  void incrementCounter(String key, int incrementBy) {
-    int currentCount = storageAgent.get(key) ?? 0;
-    putScoutData(key, currentCount + incrementBy);
-  }
-
-  readMatchData(dynamic key) {
-    if (kDebugMode) {
-      print("DataMaster: ${key.toString()}");
-    }
-    return matchData.get(key.toString());
-
-  }
-}

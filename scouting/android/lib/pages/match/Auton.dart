@@ -1,6 +1,5 @@
-import 'dart:io';
+import 'dart:ffi';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:scouting_app/pages/components/DataBase.dart';
@@ -15,15 +14,22 @@ class Auton extends StatefulWidget {
 
 class AutonState extends State<Auton> {
   final LocalDataBase dataMaster = LocalDataBase();
-  Offset? _circlePosition;
-  int ampPlacementValue = 0;
-  int speakerValue = 0;
-  int autonRating = 0;
+  late Offset? _circlePosition =
+      LocalDataBase.getData(AutoType.StartPosition) ??
+          const Offset(10, 10); // Default value;
+  late int ampPlacementValue;
+  late int speakerValue;
+  late int autonRating;
+  late List<String> comments;
 
   late String assignedTeam;
   late String assignedStation;
   late String matchKey;
   late String allianceColor;
+
+  bool isChip1Clicked = false;
+  bool isChip2Clicked = false;
+  bool isChip3Clicked = false;
 
   // Match Variables
   @override
@@ -32,18 +38,29 @@ class AutonState extends State<Auton> {
     assignedTeam = LocalDataBase.getData(Types.team) ?? "Null";
     assignedStation = LocalDataBase.getData(Types.selectedStation) ?? "Null";
     autonRating = LocalDataBase.getData(AutoType.AutonRating) ?? 0;
+
+    ampPlacementValue = LocalDataBase.getData(AutoType.AmpPlacement) ?? 0;
+    speakerValue = LocalDataBase.getData(AutoType.Speaker) ?? 0;
+    autonRating = LocalDataBase.getData(AutoType.AutonRating) ?? 0;
+    String comment = LocalDataBase.getData(AutoType.Comments) ?? ["No Comments"];
+    comments = [comment];
+
+    isChip1Clicked = comments.contains('Encountered issues');
+    isChip2Clicked = comments.contains('Fast and efficient');
+    isChip3Clicked = comments.contains('No issues');
   }
 
-  void UpdateData( ampPlacementValue, speakerValue, _circlePosition, autonRating) {
+  void UpdateData(
+      ampPlacementValue, speakerValue, _circlePosition, autonRating, comments) {
     LocalDataBase.putData(AutoType.AmpPlacement, ampPlacementValue);
     LocalDataBase.putData(AutoType.Speaker, speakerValue);
     LocalDataBase.putData(AutoType.StartPosition, _circlePosition);
     LocalDataBase.putData(AutoType.AutonRating, autonRating);
+    LocalDataBase.putData(AutoType.Comments, comments);
   }
 
   @override
   Widget build(BuildContext context) {
-
     setState(() {
       assignedTeam = LocalDataBase.getData(Types.team) ?? "Null";
       assignedStation = LocalDataBase.getData(Types.selectedStation) ?? "Null";
@@ -56,10 +73,16 @@ class AutonState extends State<Auton> {
   Widget _buildAuto(BuildContext context) {
     return SingleChildScrollView(
       child: Column(
-        children: [_buildTeamInfo(), _buildBotField(), _buildActions(), _buildComments()],
+        children: [
+          _buildTeamInfo(),
+          _buildBotField(),
+          _buildActions(),
+          _buildComments()
+        ],
       ),
     );
   }
+
   Widget _buildTeamInfo() {
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -138,7 +161,60 @@ class AutonState extends State<Auton> {
       ),
     );
   }
+
   Widget _buildBotField() {
+    return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.2),
+                spreadRadius: 2,
+                blurRadius: 5,
+                offset: const Offset(0, 3), // changes position of shadow
+              ),
+            ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(7.0),
+            child: Stack(
+              children: [
+                GestureDetector(
+                  onTapUp: _updatePosition,
+                  child: ClipRRect(
+                    borderRadius:
+                        BorderRadius.circular(10.0), // Add border radius here
+                    child: Image.asset(
+                      'assets/${LocalDataBase.getData(Types.allianceColor)}Alliance_StartPosition.png',
+                    ),
+                  ),
+                ),
+                if (_circlePosition != null)
+                  Positioned(
+                    left: _circlePosition!.dx - 10, // Center the circle
+                    top: _circlePosition!.dy - 10, // Center the circle
+                    child: SizedBox(
+                      width: 30,
+                      height: 30,
+                      child: ClipRRect(
+                        borderRadius:
+                            BorderRadius.circular(0), // Add border radius here
+                        child: Image.asset(
+                          'assets/Swerve.png',
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ));
+  }
+
+  Widget _buildActions() {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(
@@ -155,153 +231,107 @@ class AutonState extends State<Auton> {
           ],
         ),
         child: Padding(
-          padding: const EdgeInsets.all(7.0),
-          child: Stack(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
             children: [
-              GestureDetector(
-                onTapUp: _updatePosition,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10.0), // Add border radius here
-                  child: Image.asset(
-                    'assets/${LocalDataBase.getData(Types.allianceColor)}Alliance_StartPosition.png',
+              Row(
+                children: [
+                  const Icon(Icons.auto_awesome),
+                  const SizedBox(width: 16),
+                  const Text(
+                    'Amp Placement',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-              ),
-              if (_circlePosition != null)
-                Positioned(
-                  left: _circlePosition!.dx - 10, // Center the circle
-                  top: _circlePosition!.dy - 10, // Center the circle
-                  child: SizedBox(
-                    width: 30,
-                    height: 30,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(0), // Add border radius here
-                      child: Image.asset(
-                        'assets/Swerve.png',
+                  const Spacer(),
+                  Row(
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          setState(() {
+                            ampPlacementValue = ampPlacementValue - 1;
+                            UpdateData(ampPlacementValue, speakerValue,
+                                _circlePosition, autonRating, comments);
+                          });
+                        },
+                        icon: const Icon(Icons.remove),
                       ),
-                    ),
+                      Text(
+                        '$ampPlacementValue',
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          setState(() {
+                            ampPlacementValue = ampPlacementValue + 1;
+                            UpdateData(ampPlacementValue, speakerValue,
+                                _circlePosition, autonRating, comments);
+                          });
+                        },
+                        icon: const Icon(Icons.add),
+                      ),
+                    ],
                   ),
-                ),
-            ],
-          ),
-        ),
-
-      )
-    );
-  }
-  Widget _buildActions() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Container(
-      decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(12),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.grey.withOpacity(0.2),
-          spreadRadius: 2,
-          blurRadius: 5,
-          offset: const Offset(0, 3), // changes position of shadow
-        ),
-      ],
-    ),
-    child: Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              const Icon(Icons.auto_awesome),
-              const SizedBox(width: 16),
-              const Text(
-                'Amp Placement',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+                ],
               ),
-              const Spacer(),
+              const SizedBox(height: 16),
               Row(
                 children: [
-                  IconButton(
-                    onPressed: () {
-                      setState(() {
-                        ampPlacementValue = ampPlacementValue - 1;
-                        UpdateData(ampPlacementValue, speakerValue, _circlePosition, autonRating);
-                      });
-                    },
-                    icon: const Icon(Icons.remove),
-                  ),
-                  Text(
-                    '$ampPlacementValue',
-                    style: const TextStyle(
+                  const Icon(Icons.speaker),
+                  const SizedBox(width: 16),
+                  const Text(
+                    'Speaker',
+                    style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  IconButton(
-                    onPressed: () {
-                      setState(() {
-                        ampPlacementValue = ampPlacementValue + 1;
-                        UpdateData(ampPlacementValue, speakerValue, _circlePosition, autonRating);
-                      });
-                    },
-                    icon: const Icon(Icons.add),
+                  const Spacer(),
+                  Row(
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          setState(() {
+                            speakerValue = speakerValue - 1;
+                            UpdateData(ampPlacementValue, speakerValue,
+                                _circlePosition, autonRating, comments);
+                          });
+                        },
+                        icon: const Icon(Icons.remove),
+                      ),
+                      Text(
+                        '$speakerValue',
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          setState(() {
+                            speakerValue = speakerValue + 1;
+                            UpdateData(ampPlacementValue, speakerValue,
+                                _circlePosition, autonRating, comments);
+                          });
+                        },
+                        icon: const Icon(Icons.add),
+                      ),
+                    ],
                   ),
                 ],
               ),
             ],
           ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              const Icon(Icons.speaker),
-              const SizedBox(width: 16),
-              const Text(
-                'Speaker',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const Spacer(),
-              Row(
-                children: [
-                  IconButton(
-                    onPressed: () {
-                      setState(() {
-                        speakerValue = speakerValue - 1;
-                        UpdateData(ampPlacementValue, speakerValue, _circlePosition, autonRating );
-                      });
-                    },
-                    icon: const Icon(Icons.remove),
-                  ),
-                  Text(
-                    '$speakerValue',
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      setState(() {
-                        speakerValue = speakerValue + 1;
-                        UpdateData(ampPlacementValue, speakerValue, _circlePosition, autonRating);
-                      });
-                    },
-                    icon: const Icon(Icons.add),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ],
+        ),
       ),
-    ),
-    ),
     );
   }
+
   Widget _buildComments() {
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -340,7 +370,7 @@ class AutonState extends State<Auton> {
               const SizedBox(height: 8),
               Center(
                 child: RatingBar.builder(
-                  initialRating: 0,
+                  initialRating: autonRating.toDouble(),
                   minRating: 0,
                   direction: Axis.horizontal,
                   allowHalfRating: true,
@@ -352,7 +382,11 @@ class AutonState extends State<Auton> {
                     color: Colors.amber,
                   ),
                   onRatingUpdate: (rating) {
-                    print(rating);
+                    setState(() {
+                      autonRating = rating.toInt();
+                      UpdateData(ampPlacementValue, speakerValue,
+                          _circlePosition, autonRating, comments);
+                    });
                   },
                 ),
               ),
@@ -372,34 +406,83 @@ class AutonState extends State<Auton> {
                 ],
               ),
               const SizedBox(height: 8),
-              const Row(
-                children: [
-                  Chip(
-                    label: Text('Chip 1'),
-                    backgroundColor: Colors.red,
-                    labelStyle: TextStyle(color: Colors.white),
-                  ),
-                  SizedBox(width: 8),
-                  Chip(
-                    label: Text('Chip 2'),
-                    backgroundColor: Colors.green,
-                    labelStyle: TextStyle(color: Colors.white),
-                  ),
-                  SizedBox(width: 8),
-                  Chip(
-                    label: Text('Chip 3'),
-                    backgroundColor: Colors.blue,
-                    labelStyle: TextStyle(color: Colors.white),
-                  ),
-                ],
-              ),
+              SingleChildScrollView(
+                child: Column(
+                  children: [
+                    SizedBox(
+                      width: double.infinity,
+                      child: GestureDetector(
+                        onTap: () {
+                          UpdateData(ampPlacementValue, speakerValue,
+                              _circlePosition, autonRating, "Encountered issues");
+                          setState(() {
+                            isChip1Clicked = !isChip1Clicked;
+                            isChip2Clicked = false;
+                            isChip3Clicked = false;
+                          });
+                        },
+                        child: Chip(
+                          label: const Text('Encountered issues'),
+                          backgroundColor:
+                              isChip1Clicked ? Colors.red : Colors.white,
+                          labelStyle: TextStyle(
+                              color:
+                                  isChip1Clicked ? Colors.white : Colors.black),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: double.infinity,
+                      child: GestureDetector(
+                        onTap: () {
+                          UpdateData(ampPlacementValue, speakerValue,
+                              _circlePosition, autonRating, "Fast and efficient");
+                          setState(() {
+                            isChip2Clicked = !isChip2Clicked;
+                            isChip1Clicked = false;
+                            isChip3Clicked = false;
+                          });
+                        },
+                        child: Chip(
+                          label: const Text('Fast and efficient'),
+                          backgroundColor:
+                              isChip2Clicked ? Colors.green : Colors.white,
+                          labelStyle: TextStyle(
+                              color:
+                                  isChip2Clicked ? Colors.white : Colors.black),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: double.infinity,
+                      child: GestureDetector(
+                        onTap: () {
+                          UpdateData(ampPlacementValue, speakerValue, _circlePosition, autonRating, "No issues");
+                          setState(() {
+                            isChip3Clicked = !isChip3Clicked;
+                            isChip1Clicked = false;
+                            isChip2Clicked = false;
+                          });
+                        },
+                        child: Chip(
+                          label: const Text('No issues'),
+                          backgroundColor:
+                              isChip3Clicked ? Colors.blue : Colors.white,
+                          labelStyle: TextStyle(
+                              color:
+                                  isChip3Clicked ? Colors.white : Colors.black),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              )
             ],
           ),
         ),
       ),
     );
   }
-
 
   void _updatePosition(TapUpDetails details) {
     setState(() {
