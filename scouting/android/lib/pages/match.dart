@@ -1,12 +1,12 @@
-import 'dart:convert';
+
+
 
 import 'package:flutter/material.dart';
 import 'package:scouting_app/pages/components/DataBase.dart';
 import 'package:scouting_app/pages/match/EndGame.dart';
 import 'package:scouting_app/pages/match/TeleOperated.dart';
 import 'actions/QrGenerator.dart';
-import 'Match/Auton.dart';
-import 'components/DataBase.dart';
+import 'match/Auton.dart';
 class Match extends StatefulWidget {
   const Match({super.key});
 

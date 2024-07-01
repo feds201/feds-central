@@ -1,9 +1,7 @@
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
-import '../match.dart';
 
 class Qrgenerator extends StatefulWidget {
   final Map<String, dynamic> ScoutData;

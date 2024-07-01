@@ -1,14 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
-import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:scouting_app/pages/home_page.dart';
 
-import '../match_page.dart';
 
 class localmatchLoader extends StatefulWidget {
   const localmatchLoader({Key? key}) : super(key: key);
@@ -21,8 +18,6 @@ class _localmatchLoaderState extends State<localmatchLoader> {
   final TextEditingController eventKeyController = TextEditingController();
   Future<List<dynamic>>? matches;
   bool isLoading = false;
-  int _selectedIndex = 0;
-  int _selectedMatchType = 0;
 
   @override
   Widget build(BuildContext context) {

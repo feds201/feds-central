@@ -1,8 +1,6 @@
-import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 import 'package:scouting_app/pages/components/DataBase.dart';
 
 
@@ -14,7 +12,6 @@ class EndGame extends StatefulWidget {
 }
 
 class _EndGameState extends State<EndGame> {
-  Offset? _circlePosition;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +28,6 @@ class _EndGameState extends State<EndGame> {
 
   void _updatePosition(TapUpDetails details) {
     setState(() {
-      _circlePosition = details.localPosition;
     });
   }
 
