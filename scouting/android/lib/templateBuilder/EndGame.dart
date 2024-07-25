@@ -18,24 +18,7 @@ class EndGameState extends State<EndGameBuilder> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const Text('EndGame Components'),
-        RatingBar.builder(
-          initialRating: _rating,
-          minRating: 1,
-          direction: Axis.horizontal,
-          allowHalfRating: true,
-          itemCount: 5,
-          itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
-          itemBuilder: (context, _) => const Icon(
-            Icons.star,
-            color: Colors.amber,
-          ),
-          onRatingUpdate: (rating) {
-            setState(() {
-              _rating = rating;
-            });
-          },
-        ),
+
       ],
     );
   }

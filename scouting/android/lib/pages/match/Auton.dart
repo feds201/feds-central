@@ -18,6 +18,8 @@ class AutonState extends State<Auton> {
           const Offset(10, 10); // Default value;
   late int ampPlacementValue;
   late int speakerValue;
+  late int trapValue;
+
   late int autonRating;
   late List<String> comments;
 
@@ -40,23 +42,29 @@ class AutonState extends State<Auton> {
 
     ampPlacementValue = LocalDataBase.getData(AutoType.AmpPlacement) ?? 0;
     speakerValue = LocalDataBase.getData(AutoType.Speaker) ?? 0;
+    trapValue = LocalDataBase.getData(AutoType.Trap) ?? 0;
     autonRating = LocalDataBase.getData(AutoType.AutonRating) ?? 0;
-    String comment = LocalDataBase.getData(AutoType.Comments) ?? ["No Comments"];
-    comments = [comment];
 
-    isChip1Clicked = comments.contains('Encountered issues');
-    isChip2Clicked = comments.contains('Fast and efficient');
-    isChip3Clicked = comments.contains('No issues');
+    isChip1Clicked = LocalDataBase.getData(AutoType.Chip1) ?? false;
+    isChip2Clicked = LocalDataBase.getData(AutoType.Chip2) ?? false;
+    isChip3Clicked = LocalDataBase.getData(AutoType.Chip3) ?? false;
+
   }
+
+
 
   void UpdateData(
-      ampPlacementValue, speakerValue, _circlePosition, autonRating, comments) {
+      ampPlacementValue, speakerValue, TrapValue, _circlePosition, autonRating, bool isChip1Clicked, bool isChip2Clicked, bool isChip3Clicked) {
     LocalDataBase.putData(AutoType.AmpPlacement, ampPlacementValue);
     LocalDataBase.putData(AutoType.Speaker, speakerValue);
+    LocalDataBase.putData(AutoType.Trap, TrapValue);
     LocalDataBase.putData(AutoType.StartPosition, _circlePosition);
     LocalDataBase.putData(AutoType.AutonRating, autonRating);
-    LocalDataBase.putData(AutoType.Comments, comments);
+    LocalDataBase.putData(AutoType.Chip1, isChip1Clicked);
+    LocalDataBase.putData(AutoType.Chip2, isChip2Clicked);
+    LocalDataBase.putData(AutoType.Chip3, isChip3Clicked);
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -251,8 +259,7 @@ class AutonState extends State<Auton> {
                         onPressed: () {
                           setState(() {
                             ampPlacementValue = ampPlacementValue - 1;
-                            UpdateData(ampPlacementValue, speakerValue,
-                                _circlePosition, autonRating, comments);
+                            UpdateData(ampPlacementValue, speakerValue, trapValue,_circlePosition, autonRating, isChip1Clicked, isChip2Clicked, isChip3Clicked);
                           });
                         },
                         icon: const Icon(Icons.remove),
@@ -268,8 +275,7 @@ class AutonState extends State<Auton> {
                         onPressed: () {
                           setState(() {
                             ampPlacementValue = ampPlacementValue + 1;
-                            UpdateData(ampPlacementValue, speakerValue,
-                                _circlePosition, autonRating, comments);
+                            UpdateData(ampPlacementValue, speakerValue, trapValue,_circlePosition, autonRating, isChip1Clicked, isChip2Clicked, isChip3Clicked);
                           });
                         },
                         icon: const Icon(Icons.add),
@@ -297,8 +303,7 @@ class AutonState extends State<Auton> {
                         onPressed: () {
                           setState(() {
                             speakerValue = speakerValue - 1;
-                            UpdateData(ampPlacementValue, speakerValue,
-                                _circlePosition, autonRating, comments);
+                            UpdateData(ampPlacementValue, speakerValue, trapValue,_circlePosition, autonRating, isChip1Clicked, isChip2Clicked, isChip3Clicked);
                           });
                         },
                         icon: const Icon(Icons.remove),
@@ -314,8 +319,51 @@ class AutonState extends State<Auton> {
                         onPressed: () {
                           setState(() {
                             speakerValue = speakerValue + 1;
-                            UpdateData(ampPlacementValue, speakerValue,
-                                _circlePosition, autonRating, comments);
+                            UpdateData(ampPlacementValue, speakerValue, trapValue,_circlePosition, autonRating, isChip1Clicked, isChip2Clicked, isChip3Clicked);
+                          });
+                        },
+                        icon: const Icon(Icons.add),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  const Icon(Icons.hub_outlined),
+                  const SizedBox(width: 16),
+                  const Text(
+                    'Trap',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const Spacer(),
+                  Row(
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          setState(() {
+                            trapValue = trapValue - 1;
+                            UpdateData(ampPlacementValue, speakerValue, trapValue,_circlePosition, autonRating, isChip1Clicked, isChip2Clicked, isChip3Clicked);
+                          });
+                        },
+                        icon: const Icon(Icons.remove),
+                      ),
+                      Text(
+                        '$trapValue',
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          setState(() {
+                            trapValue = trapValue + 1;
+                            UpdateData(ampPlacementValue, speakerValue, trapValue,_circlePosition, autonRating, isChip1Clicked, isChip2Clicked, isChip3Clicked);
                           });
                         },
                         icon: const Icon(Icons.add),
@@ -383,8 +431,7 @@ class AutonState extends State<Auton> {
                   onRatingUpdate: (rating) {
                     setState(() {
                       autonRating = rating.toInt();
-                      UpdateData(ampPlacementValue, speakerValue,
-                          _circlePosition, autonRating, comments);
+                      UpdateData(ampPlacementValue, speakerValue, trapValue,_circlePosition, autonRating, isChip1Clicked, isChip2Clicked, isChip3Clicked);
                     });
                   },
                 ),
@@ -412,13 +459,13 @@ class AutonState extends State<Auton> {
                       width: double.infinity,
                       child: GestureDetector(
                         onTap: () {
-                          UpdateData(ampPlacementValue, speakerValue,
-                              _circlePosition, autonRating, "Encountered issues");
+
                           setState(() {
                             isChip1Clicked = !isChip1Clicked;
-                            isChip2Clicked = false;
+                            isChip2Clicked = isChip2Clicked;
                             isChip3Clicked = false;
                           });
+                          UpdateData(ampPlacementValue, speakerValue, trapValue,_circlePosition, autonRating, isChip1Clicked, isChip2Clicked, isChip3Clicked);
                         },
                         child: Chip(
                           label: const Text('Encountered issues'),
@@ -434,13 +481,13 @@ class AutonState extends State<Auton> {
                       width: double.infinity,
                       child: GestureDetector(
                         onTap: () {
-                          UpdateData(ampPlacementValue, speakerValue,
-                              _circlePosition, autonRating, "Fast and efficient");
+
                           setState(() {
+                            isChip1Clicked = isChip1Clicked;
                             isChip2Clicked = !isChip2Clicked;
-                            isChip1Clicked = false;
-                            isChip3Clicked = false;
+                            isChip3Clicked = isChip3Clicked;
                           });
+                          UpdateData(ampPlacementValue, speakerValue, trapValue,_circlePosition, autonRating, isChip1Clicked, isChip2Clicked, isChip3Clicked);
                         },
                         child: Chip(
                           label: const Text('Fast and efficient'),
@@ -456,12 +503,13 @@ class AutonState extends State<Auton> {
                       width: double.infinity,
                       child: GestureDetector(
                         onTap: () {
-                          UpdateData(ampPlacementValue, speakerValue, _circlePosition, autonRating, "No issues");
+                          
                           setState(() {
-                            isChip3Clicked = !isChip3Clicked;
                             isChip1Clicked = false;
-                            isChip2Clicked = false;
+                            isChip2Clicked = isChip2Clicked;
+                            isChip3Clicked = !isChip3Clicked;
                           });
+                          UpdateData(ampPlacementValue, speakerValue, trapValue,_circlePosition, autonRating, isChip1Clicked, isChip2Clicked, isChip3Clicked);
                         },
                         child: Chip(
                           label: const Text('No issues'),
@@ -491,4 +539,5 @@ class AutonState extends State<Auton> {
   }
 }
 
-enum AutoType { AmpPlacement, Speaker, StartPosition, AutonRating, Comments }
+enum AutoType { AmpPlacement, Speaker, Trap, StartPosition, AutonRating, Chip1, Chip2, Chip3 }
+

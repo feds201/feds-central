@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-Widget buildTeamInfo(assignedTeam, assignedStation, allianceColor) {
+Widget buildTeamInfo(String assignedTeam, String assignedStation,String allianceColor) {
   return Padding(
     padding: const EdgeInsets.all(8.0),
     child: Container(
