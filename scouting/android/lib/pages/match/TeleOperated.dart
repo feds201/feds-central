@@ -1,5 +1,8 @@
-
 import 'package:flutter/material.dart';
+import 'package:scouting_app/components/CommentBox.dart';
+import 'package:scouting_app/components/RatingsBox.dart';
+
+import '../../components/ratings.dart';
 
 class TeleOperated extends StatefulWidget {
   const TeleOperated({Key? key}) : super(key: key);
@@ -9,22 +12,28 @@ class TeleOperated extends StatefulWidget {
 }
 
 class _TeleOperatedState extends State<TeleOperated> {
-
-
   @override
   Widget build(BuildContext context) {
-    return const Column(
+    return Column(
       children: [
-          Text("TeleOperated"),
-
+        buildComments(
+            "Pick Up",
+            [
+              buildComments(
+                  "Pick Up",
+                  [
+                    buildRating(
+                        "Pick Up", Icons.ice_skating, 1, 3, Colors.cyan),
+                  ],
+                  const Icon(Icons.precision_manufacturing_outlined)),
+            ],
+            const Icon(Icons.precision_manufacturing_outlined)),
       ],
     );
   }
 }
 
 enum MatchType { Auto, Teleop, EndGame }
-
-
 
 enum TeleopType {
   AllianceWing,
@@ -48,5 +57,3 @@ enum Types {
   eventFile,
   matchFile,
 }
-
-
