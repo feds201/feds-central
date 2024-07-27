@@ -29,8 +29,7 @@ class AutonState extends State<AutonBuilder> {
     super.initState();
     // Initialize with some default widgets
     currentWidgets = [
-      buildTeamInfo("201", "R0", "Test"),
-      buildCounterShelf(1),
+
     ];
   }
 
@@ -81,9 +80,13 @@ class AutonState extends State<AutonBuilder> {
                     },
                   ),
                   ListTile(
-                    title: buildCounterShelf(1),
+                    title: buildCounterShelf([
+
+                      CounterSettings(icon: Icons.star, startingNumber: 0, counterText: 'Counter 1', color: Colors.yellowAccent),
+
+                    ]),
                     onTap: () {
-                      replaceWidget(index, buildCounterShelf(1));
+                      replaceWidget(index, buildCounterShelf([CounterSettings(icon: Icons.star, startingNumber: 0, counterText: 'Counter 1', color: Colors.yellowAccent)]));
                       Navigator.pop(context);
                     },
                   ),
@@ -97,6 +100,7 @@ class AutonState extends State<AutonBuilder> {
                   ListTile(
                     title: buildComments(
                       "Auton Comments",
+
                       [
                         buildChips(
                             ["Moved", "Did Not Move"],

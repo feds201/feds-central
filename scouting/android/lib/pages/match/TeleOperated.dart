@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:scouting_app/components/CommentBox.dart';
+import 'package:scouting_app/components/CounterShelf.dart';
 
 class TeleOperated extends StatefulWidget {
   const TeleOperated({Key? key}) : super(key: key);
@@ -11,45 +12,59 @@ class TeleOperated extends StatefulWidget {
 class _TeleOperatedState extends State<TeleOperated> {
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        buildComments(
-            "Pick Up",
-            [
-              buildComments(
-                  "Pick Up", [
-                    C
-                  ], const Icon(Icons.sports_soccer_outlined)),
-              buildComments(
-                  "Pick Up", [], const Icon(Icons.sports_basketball_outlined)),
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          buildComments(
+              "Pick Up",
+              [
+                CounterSettings(
+                    icon: Icons.grass_outlined,
+                    startingNumber: 0,
+                    counterText: "Ground",
+                    color: Colors.green),
+                CounterSettings(
+                    icon: Icons.shopping_basket_outlined,
+                    startingNumber: 0,
+                    counterText: "Source",
+                    color: Colors.blue),
+              ],
+              const Icon(Icons.add_comment)),
+          buildComments(
+              "Scoring",
+              [
+                CounterSettings(
+                    icon: Icons.grass_outlined,
+                    startingNumber: 0,
+                    counterText: "Speaker Notes",
+                    color: Colors.green),
+                CounterSettings(
+                    icon: Icons.shopping_basket_outlined,
+                    startingNumber: 0,
+                    counterText: "Amp Placement",
+                    color: Colors.blue),
+                CounterSettings(
+                    icon: Icons.shopping_basket_outlined,
+                    startingNumber: 0,
+                    counterText: "Trap Placement",
+                    color: Colors.red),
+              ],
+              const Icon(Icons.add_comment)),
+          buildCounterShelf([
+            CounterSettings(
+                icon: Icons.grass_outlined,
+                startingNumber: 0,
+                counterText: "Amplified Speaker Notes",
+                color: Colors.green),
+          ]),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+
             ],
-            const Icon(Icons.precision_manufacturing_outlined)),
-      ],
+          )
+        ],
+      ),
     );
   }
-}
-
-enum MatchType { Auto, Teleop, EndGame }
-
-enum TeleopType {
-  AllianceWing,
-  CenterField,
-  FarWing,
-  Unamplified,
-  Amplified,
-  Amp,
-  Trap,
-  Passed,
-  Missed
-}
-
-enum AutoType { AmpPlacement, Speaker, StartPosition, AutonRating, Comments }
-
-enum Types {
-  eventKey,
-  matchKey,
-  allianceColor,
-  selectedStation,
-  eventFile,
-  matchFile,
 }
