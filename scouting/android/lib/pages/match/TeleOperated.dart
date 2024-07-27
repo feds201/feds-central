@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:scouting_app/components/CommentBox.dart';
-import 'package:scouting_app/components/RatingsBox.dart';
-
-import '../../components/ratings.dart';
 
 class TeleOperated extends StatefulWidget {
   const TeleOperated({Key? key}) : super(key: key);
@@ -20,12 +17,11 @@ class _TeleOperatedState extends State<TeleOperated> {
             "Pick Up",
             [
               buildComments(
-                  "Pick Up",
-                  [
-                    buildRating(
-                        "Pick Up", Icons.ice_skating, 1, 3, Colors.cyan),
-                  ],
-                  const Icon(Icons.precision_manufacturing_outlined)),
+                  "Pick Up", [
+                    C
+                  ], const Icon(Icons.sports_soccer_outlined)),
+              buildComments(
+                  "Pick Up", [], const Icon(Icons.sports_basketball_outlined)),
             ],
             const Icon(Icons.precision_manufacturing_outlined)),
       ],
