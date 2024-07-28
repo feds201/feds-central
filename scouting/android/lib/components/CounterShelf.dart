@@ -1,5 +1,6 @@
 // lib/components/CounterShelf.dart
 
+import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 
 class CounterSettings {
@@ -74,5 +75,88 @@ Widget buildCounterShelf(List<CounterSettings> counterSettings) {
         }).toList(),
       ),
     ),
+  );
+}
+
+Widget buildCounter(String title, int value, Function(int) onChanged) {
+  return LayoutBuilder(
+    builder: (context, constraints) {
+      double screenWidth = MediaQuery.of(context).size.width - 25;
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Container(
+          width: screenWidth / 2,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                DottedBorder(
+                  borderType: BorderType.RRect,
+                  radius: const Radius.circular(12),
+                  padding: const EdgeInsets.all(6),
+                  color: Colors.black,
+                  dashPattern: const [8, 4],
+                  strokeWidth: 2,
+                  child: Container(
+                    width: double.infinity,
+                    height: 100,
+                    decoration: BoxDecoration(
+                      color: Colors.transparent,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            onChanged(value - 1);
+                          },
+                          child: const Icon(
+                            Icons.remove,
+                            color: Colors.black,
+                            size: 40,
+                          ),
+                        ),
+                        Text(
+                          '$value',
+                          style: const TextStyle(
+                            fontSize: 40,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            onChanged(value + 1);
+                          },
+                          child: const Icon(
+                            Icons.add,
+                            color: Colors.black,
+                            size: 40,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontStyle: FontStyle.italic,
+                    color: Colors.black,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    },
   );
 }

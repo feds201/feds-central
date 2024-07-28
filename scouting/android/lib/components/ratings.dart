@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
-Widget buildRating(String title, IconData icon, double rating, int maxRating, Color internaryColor) {
+void DefaultonRatingUpdate(double rating) {
+  print(rating);
+}
+
+Widget buildRating(String title, IconData icon, double rating, int maxRating, Color internaryColor, {Function(double)? onRatingUpdate = DefaultonRatingUpdate}) {
   return Column(
     children: [
       Row(
@@ -33,7 +37,7 @@ Widget buildRating(String title, IconData icon, double rating, int maxRating, Co
             color: internaryColor,
           ),
           onRatingUpdate: (rating) {
-            // Handle rating update
+            onRatingUpdate!(rating);
           },
         ),
       ),

@@ -73,9 +73,9 @@ class AutonState extends State<AutonBuilder> {
                   ),
                   const SizedBox(width: double.infinity),
                   ListTile(
-                    title: buildTeamInfo("201", "R0", "Test"),
+                    title: buildTeamInfo("201", "R0", "Test", () {}),
                     onTap: () {
-                      replaceWidget(index, buildTeamInfo("201", "R0", "Test"));
+                      replaceWidget(index, buildTeamInfo("201", "R0", "Test", () {} ));
                       Navigator.pop(context);
                     },
                   ),
@@ -91,9 +91,9 @@ class AutonState extends State<AutonBuilder> {
                     },
                   ),
                   ListTile(
-                    title: buildMap(context, _circlePosition, size, onTap, "Blue"),
+                    title: buildMap(context, _circlePosition, size,  "Blue"),
                     onTap: () {
-                      replaceWidget(index, buildMap(context, _circlePosition, size, onTap, "Blue"));
+                      replaceWidget(index, buildMap(context, _circlePosition, size,  "Blue"));
                       Navigator.pop(context);
                     },
                   ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-Widget buildMap(BuildContext context, Offset? _circlePosition, Size size, Function(Offset) onTap, String AllianceColor) {
+void _defaultOnTap(TapUpDetails details) {}
+Widget buildMap(BuildContext context, Offset? circlePosition, Size size, String AllianceColor, {Function(TapUpDetails) onTap = _defaultOnTap}) {
   return Padding(
     padding: const EdgeInsets.all(8.0),
     child: Container(
@@ -21,8 +22,9 @@ Widget buildMap(BuildContext context, Offset? _circlePosition, Size size, Functi
         child: Stack(
           children: [
             GestureDetector(
-              onTapDown: (details) {
-                onTap(details.localPosition);
+              onTapUp: (details) {
+                onTap(details);
+
               },
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10.0), // Add border radius here
@@ -31,10 +33,10 @@ Widget buildMap(BuildContext context, Offset? _circlePosition, Size size, Functi
                 ),
               ),
             ),
-            if (_circlePosition != null)
+            if (circlePosition != null)
               Positioned(
-                left: _circlePosition.dx - 15, // Center the circle
-                top: _circlePosition.dy - 15, // Center the circle
+                left: circlePosition.dx - 15, // Center the circle
+                top: circlePosition.dy - 15, // Center the circle
                 child: SizedBox(
                   width: size.width,
                   height: size.height,

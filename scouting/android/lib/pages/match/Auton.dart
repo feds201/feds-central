@@ -1,7 +1,13 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:scouting_app/components/CommentBox.dart';
+import 'package:scouting_app/components/CounterShelf.dart';
+import 'package:scouting_app/components/Map.dart';
 import 'package:scouting_app/pages/components/DataBase.dart';
+import '../../components/Chips.dart';
+import '../../components/RatingsBox.dart';
+import '../../components/TeamInfo.dart';
+import '../../components/ratings.dart';
 import '../match.dart';
 
 class Auton extends StatefulWidget {
@@ -48,13 +54,17 @@ class AutonState extends State<Auton> {
     isChip1Clicked = LocalDataBase.getData(AutoType.Chip1) ?? false;
     isChip2Clicked = LocalDataBase.getData(AutoType.Chip2) ?? false;
     isChip3Clicked = LocalDataBase.getData(AutoType.Chip3) ?? false;
-
   }
 
-
-
   void UpdateData(
-      ampPlacementValue, speakerValue, TrapValue, _circlePosition, autonRating, bool isChip1Clicked, bool isChip2Clicked, bool isChip3Clicked) {
+      ampPlacementValue,
+      speakerValue,
+      TrapValue,
+      _circlePosition,
+      autonRating,
+      bool isChip1Clicked,
+      bool isChip2Clicked,
+      bool isChip3Clicked) {
     LocalDataBase.putData(AutoType.AmpPlacement, ampPlacementValue);
     LocalDataBase.putData(AutoType.Speaker, speakerValue);
     LocalDataBase.putData(AutoType.Trap, TrapValue);
@@ -64,7 +74,6 @@ class AutonState extends State<Auton> {
     LocalDataBase.putData(AutoType.Chip2, isChip2Clicked);
     LocalDataBase.putData(AutoType.Chip3, isChip3Clicked);
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -81,455 +90,96 @@ class AutonState extends State<Auton> {
     return SingleChildScrollView(
       child: Column(
         children: [
-          _buildTeamInfo(),
-          _buildBotField(),
-          _buildActions(),
-          _buildComments()
+          buildTeamInfo(assignedTeam, assignedStation, allianceColor, () {
+            print("object");
+          }),
+          buildMap(context, _circlePosition, const Size(30, 30), allianceColor,
+              onTap: (TapUpDetails details) {
+            _updatePosition(details);
+          }),
+          buildComments(
+            "Counters",
+            [
+              CounterSettings(
+                icon: Icons.sledding,
+                startingNumber: ampPlacementValue,
+                counterText: "Amp Placement",
+                color: Colors.blue,
+              ),
+              CounterSettings(
+                icon: Icons.speaker,
+                startingNumber: speakerValue,
+                counterText: "Speaker Placement",
+                color: Colors.green,
+              ),
+              CounterSettings(
+                icon: Icons.hub_outlined,
+                startingNumber: trapValue,
+                counterText: "Trap Placement",
+                color: Colors.red,
+              ),
+            ],
+            const Icon(Icons.comment),
+          ),
+          buildComments(
+            "React",
+            [
+              buildRatings([
+                buildRating("Auton Rating", Icons.access_alarm_outlined, 0, 5,
+                    Colors.yellow.shade600),
+              ]),
+              buildComments(
+                "Auton Comments",
+                [
+                  buildChips([
+                    "Encountered issues",
+                    "Fast and efficient",
+                    "No issues"
+                  ], [
+                    [Colors.red, Colors.white],
+                    [Colors.green, Colors.white],
+                    [Colors.blue, Colors.white]
+                  ], [
+                    isChip1Clicked,
+                    isChip2Clicked,
+                    isChip3Clicked,
+                  ], onTapList: [
+                    (String label) {
+                      setState(() {
+                        isChip1Clicked = !isChip1Clicked;
+                        isChip2Clicked = isChip2Clicked;
+                        isChip3Clicked = false;
+                      });
+                    },
+                    (String label) {
+                      setState(() {
+                        isChip1Clicked = isChip1Clicked;
+                        isChip2Clicked = !isChip2Clicked;
+                        isChip3Clicked = isChip3Clicked;
+                      });
+                    },
+                    (String label) {
+                      setState(() {
+                        isChip1Clicked = false;
+                        isChip2Clicked = isChip2Clicked;
+                        isChip3Clicked = !isChip3Clicked;
+                      });
+                    },
+                  ]),
+                ],
+                const Icon(Icons.comment_bank),
+              ),
+            ],
+            const Icon(Icons.comment_bank),
+          ),
+
         ],
       ),
     );
   }
 
-  Widget _buildTeamInfo() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.2),
-              spreadRadius: 2,
-              blurRadius: 5,
-              offset: const Offset(0, 3), // changes position of shadow
-            ),
-          ],
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Row(
-            children: [
-              Container(
-                width: 60,
-                height: 60,
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: const Icon(
-                  Icons.category,
-                  color: Colors.grey,
-                  size: 40,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    assignedTeam,
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    '$allianceColor Alliance, Station $assignedStation',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      color: Colors.black45,
-                    ),
-                  ),
-                ],
-              ),
-              const Spacer(),
-              ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.deepPurple,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30.0),
-                  ),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                ),
-                child: const Text(
-                  'START',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 
-  Widget _buildBotField() {
-    return Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.2),
-                spreadRadius: 2,
-                blurRadius: 5,
-                offset: const Offset(0, 3), // changes position of shadow
-              ),
-            ],
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(7.0),
-            child: Stack(
-              children: [
-                GestureDetector(
-                  onTapUp: _updatePosition,
-                  child: ClipRRect(
-                    borderRadius:
-                        BorderRadius.circular(10.0), // Add border radius here
-                    child: Image.asset(
-                      'assets/${LocalDataBase.getData(Types.allianceColor)}Alliance_StartPosition.png',
-                    ),
-                  ),
-                ),
-                if (_circlePosition != null)
-                  Positioned(
-                    left: _circlePosition!.dx - 10, // Center the circle
-                    top: _circlePosition!.dy - 10, // Center the circle
-                    child: SizedBox(
-                      width: 30,
-                      height: 30,
-                      child: ClipRRect(
-                        borderRadius:
-                            BorderRadius.circular(0), // Add border radius here
-                        child: Image.asset(
-                          'assets/Swerve.png',
-                        ),
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        ));
-  }
 
-  Widget _buildActions() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.2),
-              spreadRadius: 2,
-              blurRadius: 5,
-              offset: const Offset(0, 3), // changes position of shadow
-            ),
-          ],
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  const Icon(Icons.auto_awesome),
-                  const SizedBox(width: 16),
-                  const Text(
-                    'Amp Placement',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const Spacer(),
-                  Row(
-                    children: [
-                      IconButton(
-                        onPressed: () {
-                          setState(() {
-                            ampPlacementValue = ampPlacementValue - 1;
-                            UpdateData(ampPlacementValue, speakerValue, trapValue,_circlePosition, autonRating, isChip1Clicked, isChip2Clicked, isChip3Clicked);
-                          });
-                        },
-                        icon: const Icon(Icons.remove),
-                      ),
-                      Text(
-                        '$ampPlacementValue',
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      IconButton(
-                        onPressed: () {
-                          setState(() {
-                            ampPlacementValue = ampPlacementValue + 1;
-                            UpdateData(ampPlacementValue, speakerValue, trapValue,_circlePosition, autonRating, isChip1Clicked, isChip2Clicked, isChip3Clicked);
-                          });
-                        },
-                        icon: const Icon(Icons.add),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  const Icon(Icons.speaker),
-                  const SizedBox(width: 16),
-                  const Text(
-                    'Speaker',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const Spacer(),
-                  Row(
-                    children: [
-                      IconButton(
-                        onPressed: () {
-                          setState(() {
-                            speakerValue = speakerValue - 1;
-                            UpdateData(ampPlacementValue, speakerValue, trapValue,_circlePosition, autonRating, isChip1Clicked, isChip2Clicked, isChip3Clicked);
-                          });
-                        },
-                        icon: const Icon(Icons.remove),
-                      ),
-                      Text(
-                        '$speakerValue',
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      IconButton(
-                        onPressed: () {
-                          setState(() {
-                            speakerValue = speakerValue + 1;
-                            UpdateData(ampPlacementValue, speakerValue, trapValue,_circlePosition, autonRating, isChip1Clicked, isChip2Clicked, isChip3Clicked);
-                          });
-                        },
-                        icon: const Icon(Icons.add),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  const Icon(Icons.hub_outlined),
-                  const SizedBox(width: 16),
-                  const Text(
-                    'Trap',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const Spacer(),
-                  Row(
-                    children: [
-                      IconButton(
-                        onPressed: () {
-                          setState(() {
-                            trapValue = trapValue - 1;
-                            UpdateData(ampPlacementValue, speakerValue, trapValue,_circlePosition, autonRating, isChip1Clicked, isChip2Clicked, isChip3Clicked);
-                          });
-                        },
-                        icon: const Icon(Icons.remove),
-                      ),
-                      Text(
-                        '$trapValue',
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      IconButton(
-                        onPressed: () {
-                          setState(() {
-                            trapValue = trapValue + 1;
-                            UpdateData(ampPlacementValue, speakerValue, trapValue,_circlePosition, autonRating, isChip1Clicked, isChip2Clicked, isChip3Clicked);
-                          });
-                        },
-                        icon: const Icon(Icons.add),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildComments() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.2),
-              spreadRadius: 2,
-              blurRadius: 5,
-              offset: const Offset(0, 3), // changes position of shadow
-            ),
-          ],
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Row(
-                children: [
-                  Icon(Icons.sports_soccer_rounded),
-                  SizedBox(width: 16),
-                  Text(
-                    'Auton Rating',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Spacer(),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Center(
-                child: RatingBar.builder(
-                  initialRating: autonRating.toDouble(),
-                  minRating: 0,
-                  direction: Axis.horizontal,
-                  allowHalfRating: true,
-                  itemCount: 5,
-                  glow: false,
-                  itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
-                  itemBuilder: (context, _) => const Icon(
-                    Icons.star,
-                    color: Colors.amber,
-                  ),
-                  onRatingUpdate: (rating) {
-                    setState(() {
-                      autonRating = rating.toInt();
-                      UpdateData(ampPlacementValue, speakerValue, trapValue,_circlePosition, autonRating, isChip1Clicked, isChip2Clicked, isChip3Clicked);
-                    });
-                  },
-                ),
-              ),
-              const SizedBox(height: 22),
-              const Row(
-                children: [
-                  Icon(Icons.comment),
-                  SizedBox(width: 16),
-                  Text(
-                    'Your Comments',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Spacer(),
-                ],
-              ),
-              const SizedBox(height: 8),
-              SingleChildScrollView(
-                child: Column(
-                  children: [
-                    SizedBox(
-                      width: double.infinity,
-                      child: GestureDetector(
-                        onTap: () {
-
-                          setState(() {
-                            isChip1Clicked = !isChip1Clicked;
-                            isChip2Clicked = isChip2Clicked;
-                            isChip3Clicked = false;
-                          });
-                          UpdateData(ampPlacementValue, speakerValue, trapValue,_circlePosition, autonRating, isChip1Clicked, isChip2Clicked, isChip3Clicked);
-                        },
-                        child: Chip(
-                          label: const Text('Encountered issues'),
-                          backgroundColor:
-                              isChip1Clicked ? Colors.red : Colors.white,
-                          labelStyle: TextStyle(
-                              color:
-                                  isChip1Clicked ? Colors.white : Colors.black),
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      width: double.infinity,
-                      child: GestureDetector(
-                        onTap: () {
-
-                          setState(() {
-                            isChip1Clicked = isChip1Clicked;
-                            isChip2Clicked = !isChip2Clicked;
-                            isChip3Clicked = isChip3Clicked;
-                          });
-                          UpdateData(ampPlacementValue, speakerValue, trapValue,_circlePosition, autonRating, isChip1Clicked, isChip2Clicked, isChip3Clicked);
-                        },
-                        child: Chip(
-                          label: const Text('Fast and efficient'),
-                          backgroundColor:
-                              isChip2Clicked ? Colors.green : Colors.white,
-                          labelStyle: TextStyle(
-                              color:
-                                  isChip2Clicked ? Colors.white : Colors.black),
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      width: double.infinity,
-                      child: GestureDetector(
-                        onTap: () {
-                          
-                          setState(() {
-                            isChip1Clicked = false;
-                            isChip2Clicked = isChip2Clicked;
-                            isChip3Clicked = !isChip3Clicked;
-                          });
-                          UpdateData(ampPlacementValue, speakerValue, trapValue,_circlePosition, autonRating, isChip1Clicked, isChip2Clicked, isChip3Clicked);
-                        },
-                        child: Chip(
-                          label: const Text('No issues'),
-                          backgroundColor:
-                              isChip3Clicked ? Colors.blue : Colors.white,
-                          labelStyle: TextStyle(
-                              color:
-                                  isChip3Clicked ? Colors.white : Colors.black),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              )
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 
   void _updatePosition(TapUpDetails details) {
     setState(() {
@@ -539,5 +189,13 @@ class AutonState extends State<Auton> {
   }
 }
 
-enum AutoType { AmpPlacement, Speaker, Trap, StartPosition, AutonRating, Chip1, Chip2, Chip3 }
-
+enum AutoType {
+  AmpPlacement,
+  Speaker,
+  Trap,
+  StartPosition,
+  AutonRating,
+  Chip1,
+  Chip2,
+  Chip3
+}

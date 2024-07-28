@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-Widget buildTeamInfo(String assignedTeam, String assignedStation, String allianceColor) {
+Widget buildTeamInfo(String assignedTeam, String assignedStation, String allianceColor, Function() onPressed) {
   return Padding(
     padding: const EdgeInsets.all(8.0),
     child: Container(
@@ -60,7 +60,7 @@ Widget buildTeamInfo(String assignedTeam, String assignedStation, String allianc
             ),
             const Spacer(),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () {onPressed();},
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.deepPurple,
                 shape: RoundedRectangleBorder(

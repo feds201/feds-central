@@ -1,6 +1,9 @@
+import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:scouting_app/components/CommentBox.dart';
 import 'package:scouting_app/components/CounterShelf.dart';
+
+import '../../components/CheckBox.dart';
 
 class TeleOperated extends StatefulWidget {
   const TeleOperated({Key? key}) : super(key: key);
@@ -10,6 +13,8 @@ class TeleOperated extends StatefulWidget {
 }
 
 class _TeleOperatedState extends State<TeleOperated> {
+  bool hi = false;
+  int hi3 = 2;
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -57,14 +62,26 @@ class _TeleOperatedState extends State<TeleOperated> {
                 counterText: "Amplified Speaker Notes",
                 color: Colors.green),
           ]),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-
-            ],
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+              buildCheckBox("Co-Op Bonus", hi, (bool value) {
+                setState(() {
+                  print(value);
+                  hi = value;
+                });
+              }),
+              buildCounter("Assists", hi3, (int value) {
+                setState(() {
+                  hi3 = value;
+                  print(hi3);
+                });
+              }),
+            ]),
           )
         ],
       ),
     );
   }
 }
+
