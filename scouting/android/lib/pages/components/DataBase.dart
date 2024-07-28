@@ -66,5 +66,6 @@ class LocalDataBase {
 }
 
 
+
 enum AutoType { AmpPlacement, Speaker, StartPosition, AutonRating, Comments }
 

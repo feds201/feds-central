@@ -82,11 +82,11 @@ class EndGameState extends State<EndGameBuilder> {
                   ListTile(
                     title: buildCounterShelf([
 
-                      CounterSettings(icon: Icons.star, startingNumber: 0, counterText: 'Counter 1', color: Colors.yellowAccent),
+                      CounterSettings((int value) {print(value);}, (int value) {}, icon: Icons.star, number: 0, counterText: 'Counter 1', color: Colors.yellowAccent),
 
                     ]),
                     onTap: () {
-                      replaceWidget(index, buildCounterShelf([CounterSettings(icon: Icons.star, startingNumber: 0, counterText: 'Counter 1', color: Colors.yellowAccent)]));
+                      replaceWidget(index, buildCounterShelf([CounterSettings((int value) {print(value);}, (int value) {}, icon: Icons.star, number: 0, counterText: 'Counter 1', color: Colors.yellowAccent)]));
                       Navigator.pop(context);
                     },
                   ),

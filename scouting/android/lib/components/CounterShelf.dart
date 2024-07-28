@@ -5,16 +5,26 @@ import 'package:flutter/material.dart';
 
 class CounterSettings {
   final IconData icon;
-  final int startingNumber;
+  final int number;
   final String counterText;
   final Color color;
+  final Function(int) onIncrement;
+  final Function(int) onDecrement;
 
-  CounterSettings({
+  CounterSettings(this.onIncrement, this.onDecrement, {
     required this.icon,
-    required this.startingNumber,
+    required this.number,
     required this.counterText,
     required this.color,
   });
+}
+
+void defaultIncrement(int) {
+  print('Incremented');
+}
+
+void defaultDecrement(int) {
+  print('Decremented');
 }
 
 Widget buildCounterShelf(List<CounterSettings> counterSettings) {
@@ -29,7 +39,7 @@ Widget buildCounterShelf(List<CounterSettings> counterSettings) {
             color: Colors.grey.withOpacity(0.2),
             spreadRadius: 2,
             blurRadius: 5,
-            offset: const Offset(0, 3),
+            offset: const Offset(1, 3),
           ),
         ],
       ),
@@ -52,12 +62,12 @@ Widget buildCounterShelf(List<CounterSettings> counterSettings) {
                 ),
                 IconButton(
                   onPressed: () {
-                    // Decrement counter value logic here
+                    settings.onDecrement(settings.number);
                   },
                   icon: const Icon(Icons.remove),
                 ),
                 Text(
-                  '${settings.startingNumber}', // Display starting number
+                  '${settings.number}', // Display starting number
                   style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -65,7 +75,7 @@ Widget buildCounterShelf(List<CounterSettings> counterSettings) {
                 ),
                 IconButton(
                   onPressed: () {
-                    // Increment counter value logic here
+                    settings.onIncrement(settings.number);
                   },
                   icon: const Icon(Icons.add),
                 ),

@@ -28,9 +28,7 @@ class TeleOPState extends State<TeleOPBuilder> {
   void initState() {
     super.initState();
     // Initialize with some default widgets
-    currentWidgets = [
-
-    ];
+    currentWidgets = [];
   }
 
   void onTap(Offset position) {
@@ -75,70 +73,99 @@ class TeleOPState extends State<TeleOPBuilder> {
                   ListTile(
                     title: buildTeamInfo("201", "R0", "Test", () {}),
                     onTap: () {
-                      replaceWidget(index, buildTeamInfo("201", "R0", "Test", () {}));
+                      replaceWidget(
+                          index, buildTeamInfo("201", "R0", "Test", () {}));
                       Navigator.pop(context);
                     },
                   ),
                   ListTile(
                     title: buildCounterShelf([
-
-                      CounterSettings(icon: Icons.star, startingNumber: 0, counterText: 'Counter 1', color: Colors.yellowAccent),
-
+                      CounterSettings((int value) {
+                        print(value);
+                      }, (int value) {},
+                          icon: Icons.star,
+                          number: 0,
+                          counterText: 'Counter 1',
+                          color: Colors.yellowAccent),
                     ]),
                     onTap: () {
-                      replaceWidget(index, buildCounterShelf([CounterSettings(icon: Icons.star, startingNumber: 0, counterText: 'Counter 1', color: Colors.yellowAccent)]));
+                      replaceWidget(
+                          index,
+                          buildCounterShelf([
+                            CounterSettings((int value) {
+                              print(value);
+                            }, (int value) {},
+                                icon: Icons.star,
+                                number: 0,
+                                counterText: 'Counter 1',
+                                color: Colors.yellowAccent)
+                          ]));
                       Navigator.pop(context);
                     },
                   ),
                   ListTile(
                     title: buildMap(context, _circlePosition, size, "Blue"),
                     onTap: () {
-                      replaceWidget(index, buildMap(context, _circlePosition, size,"Blue"));
+                      replaceWidget(index,
+                          buildMap(context, _circlePosition, size, "Blue"));
                       Navigator.pop(context);
                     },
                   ),
                   ListTile(
                     title: buildComments(
                       "TeleOP Comments",
-
                       [
-                        buildChips(
-                            ["Moved", "Did Not Move"],
-                            [
-                              [Colors.green, Colors.red],
-                              [Colors.green, Colors.red]
-                            ],
-                            [true, false]
-                        ),
+                        buildChips([
+                          "Moved",
+                          "Did Not Move"
+                        ], [
+                          [Colors.green, Colors.red],
+                          [Colors.green, Colors.red]
+                        ], [
+                          true,
+                          false
+                        ]),
                       ],
                       const Icon(Icons.comment_bank),
                     ),
                     onTap: () {
-                      replaceWidget(index, buildComments(
-                        "TeleOP Comments",
-                        [
-                          buildChips(
-                              ["Moved", "Did Not Move"],
-                              [
+                      replaceWidget(
+                          index,
+                          buildComments(
+                            "TeleOP Comments",
+                            [
+                              buildChips([
+                                "Moved",
+                                "Did Not Move"
+                              ], [
                                 [Colors.green, Colors.red],
                                 [Colors.green, Colors.red]
-                              ],
-                              [true, false]
-                          ),
-                        ],
-                        const Icon(Icons.comment_bank),
-                      ));
+                              ], [
+                                true,
+                                false
+                              ]),
+                            ],
+                            const Icon(Icons.comment_bank),
+                          ));
                       Navigator.pop(context);
                     },
                   ),
                   ListTile(
-                    title:  buildRatings([
-                      buildRating("RatingBar", Icons.access_alarm_outlined, 1.5, 7, Colors.blue),
+                    title: buildRatings([
+                      buildRating("RatingBar", Icons.access_alarm_outlined, 1.5,
+                          7, Colors.blue),
                     ]),
                     onTap: () {
-                      replaceWidget(index, buildRatings([
-                        buildRating("RatingBar", Icons.access_alarm_outlined, 1.5, 7, Colors.blue),
-                      ]));
+                      replaceWidget(
+                          index,
+                          buildRatings([
+                            buildRating(
+                                "RatingBar",
+                                Icons.access_alarm_outlined,
+                                1.5,
+                                7,
+                                Colors.blue),
+                          ]));
                       Navigator.pop(context);
                     },
                   ),
@@ -166,7 +193,6 @@ class TeleOPState extends State<TeleOPBuilder> {
               );
             }).toList(),
           ),
-
           InkWell(
             onTap: () {
               setState(() {

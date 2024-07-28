@@ -56,18 +56,10 @@ class AutonState extends State<Auton> {
     isChip3Clicked = LocalDataBase.getData(AutoType.Chip3) ?? false;
   }
 
-  void UpdateData(
-      ampPlacementValue,
-      speakerValue,
-      TrapValue,
-      _circlePosition,
-      autonRating,
-      bool isChip1Clicked,
-      bool isChip2Clicked,
-      bool isChip3Clicked) {
+  void UpdateData() {
     LocalDataBase.putData(AutoType.AmpPlacement, ampPlacementValue);
     LocalDataBase.putData(AutoType.Speaker, speakerValue);
-    LocalDataBase.putData(AutoType.Trap, TrapValue);
+    LocalDataBase.putData(AutoType.Trap, trapValue);
     LocalDataBase.putData(AutoType.StartPosition, _circlePosition);
     LocalDataBase.putData(AutoType.AutonRating, autonRating);
     LocalDataBase.putData(AutoType.Chip1, isChip1Clicked);
@@ -90,31 +82,69 @@ class AutonState extends State<Auton> {
     return SingleChildScrollView(
       child: Column(
         children: [
-          buildTeamInfo(assignedTeam, assignedStation, allianceColor, () {
-            print("object");
-          }),
-          buildMap(context, _circlePosition, const Size(30, 30), allianceColor,
-              onTap: (TapUpDetails details) {
-            _updatePosition(details);
-          }),
+          buildTeamInfo(assignedTeam, assignedStation, allianceColor, () {}),
+          buildMap(context, _circlePosition, const Size(35, 35), allianceColor,
+              onTap: (TapUpDetails details) {_updatePosition(details);}),
           buildComments(
-            "Counters",
+            "Scoring",
             [
               CounterSettings(
+                (int value) {
+                  value++;
+                  setState(() {
+                    ampPlacementValue = value;
+                  });
+                },
+                (int value) {
+                  value--;
+                  setState(() {
+                    ampPlacementValue = value;
+
+                  });
+                },
                 icon: Icons.sledding,
-                startingNumber: ampPlacementValue,
+                number: ampPlacementValue,
                 counterText: "Amp Placement",
                 color: Colors.blue,
+
               ),
               CounterSettings(
+                (int value) {
+                  value++;
+                  setState(() {
+                    speakerValue = value;
+
+                  });
+                },
+                (int value) {
+                  value--;
+                  setState(() {
+                    speakerValue = value;
+
+                  });
+                },
                 icon: Icons.speaker,
-                startingNumber: speakerValue,
+                number: speakerValue,
                 counterText: "Speaker Placement",
                 color: Colors.green,
               ),
               CounterSettings(
+                (int value) {
+                  value++;
+                  setState(() {
+                    trapValue = value;
+                    UpdateData();
+                  });
+                },
+                (int value) {
+                  value--;
+                  setState(() {
+                    trapValue = value;
+                    UpdateData();
+                  });
+                },
                 icon: Icons.hub_outlined,
-                startingNumber: trapValue,
+                number: trapValue,
                 counterText: "Trap Placement",
                 color: Colors.red,
               ),
@@ -125,8 +155,13 @@ class AutonState extends State<Auton> {
             "React",
             [
               buildRatings([
-                buildRating("Auton Rating", Icons.access_alarm_outlined, 0, 5,
-                    Colors.yellow.shade600),
+                buildRating("Auton Rating", Icons.access_alarm_outlined, autonRating.toDouble(), 5,
+                    Colors.yellow.shade600, onRatingUpdate: (double rating) {
+                      setState(() {
+                        autonRating = rating.toInt();
+                        UpdateData();
+                      });
+                    }),
               ]),
               buildComments(
                 "Auton Comments",
@@ -150,6 +185,7 @@ class AutonState extends State<Auton> {
                         isChip2Clicked = isChip2Clicked;
                         isChip3Clicked = false;
                       });
+                      UpdateData();
                     },
                     (String label) {
                       setState(() {
@@ -157,6 +193,7 @@ class AutonState extends State<Auton> {
                         isChip2Clicked = !isChip2Clicked;
                         isChip3Clicked = isChip3Clicked;
                       });
+                      UpdateData();
                     },
                     (String label) {
                       setState(() {
@@ -164,6 +201,7 @@ class AutonState extends State<Auton> {
                         isChip2Clicked = isChip2Clicked;
                         isChip3Clicked = !isChip3Clicked;
                       });
+                      UpdateData();
                     },
                   ]),
                 ],
@@ -186,6 +224,7 @@ class AutonState extends State<Auton> {
       _circlePosition = details.localPosition;
       LocalDataBase.putData(AutoType.StartPosition, _circlePosition);
     });
+    UpdateData();
   }
 }
 
