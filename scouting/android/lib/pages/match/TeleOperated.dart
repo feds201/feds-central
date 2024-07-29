@@ -43,7 +43,8 @@ class _TeleOperatedState extends State<TeleOperated> {
     LocalDataBase.putData(TeleType.SpeakerNotes, speakerNotes);
     LocalDataBase.putData(TeleType.AmpPlacement, ampPlacement);
     LocalDataBase.putData(TeleType.TrapPlacement, trapPlacement);
-    LocalDataBase.putData(TeleType.AmplifiedSpeakerNotes, amplifiedSpeakerNotes);
+    LocalDataBase.putData(
+        TeleType.AmplifiedSpeakerNotes, amplifiedSpeakerNotes);
     LocalDataBase.putData(TeleType.CoOpBonus, coOpBonus);
     LocalDataBase.putData(TeleType.Assists, assists);
   }

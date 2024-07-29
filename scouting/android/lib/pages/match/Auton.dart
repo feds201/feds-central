@@ -84,7 +84,7 @@ class AutonState extends State<Auton> {
         children: [
           buildTeamInfo(assignedTeam, assignedStation, allianceColor, () {}),
           buildMap(context, _circlePosition, const Size(35, 35), allianceColor,
-              onTap: (TapUpDetails details) {_updatePosition(details);}),
+              onTap: (TapUpDetails details) {_updatePosition(details);},),
           buildComments(
             "Scoring",
             [

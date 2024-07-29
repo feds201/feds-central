@@ -52,7 +52,7 @@ class MatchState extends State<Match> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const Qrgenerator(ScoutData: {}),
+                        builder: (context) => const Qrgenerator(),
                       ),
                     ).then((value) => print('Returned to Match Page'))
                   },

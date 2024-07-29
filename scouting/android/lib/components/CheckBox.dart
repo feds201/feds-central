@@ -1,7 +1,7 @@
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 
-Widget buildCheckBox(String title, bool value, Function(bool) onChanged) {
+Widget buildCheckBox(String title, bool value, Function(bool) onChanged, {bool IconOveride = false}) {
   return LayoutBuilder(
     builder: (context, constraints) {
       double screenWidth = MediaQuery.of(context).size.width - 25;
@@ -42,7 +42,11 @@ Widget buildCheckBox(String title, bool value, Function(bool) onChanged) {
                               color: Colors.green,
                               size: 50,
                             )
-                          : const SizedBox.shrink(),
+                          : IconOveride? const Icon(
+                              Icons.close,
+                              color: Colors.red,
+                              size: 50,
+                        ) : const SizedBox.shrink()
                       ),
                     ),
                   ),

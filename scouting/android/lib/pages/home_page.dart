@@ -120,22 +120,21 @@ class HomePage extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 20),
-
       ],
     );
   }
 
   Widget buildButton({
-    required BuildContext context, // Add BuildContext as a parameter
+    required BuildContext context,
     required String text,
     required Color color,
-    Color? borderColor, // Optional borderColor parameter
+    Color? borderColor,
     required IconData icon,
     required VoidCallback onPressed,
   }) {
     return SizedBox(
       width: MediaQuery.of(context).size.width - 60,
-    height: 70,
+      height: 70,
       child: ElevatedButton.icon(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
@@ -156,4 +155,3 @@ class HomePage extends StatelessWidget {
     );
   }
 }
-

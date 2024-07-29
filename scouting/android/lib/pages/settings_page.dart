@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:scouting_app/pages/components/DataBase.dart';
 
 import 'components/localmatchLoader.dart';
 import 'components/nav.dart';
@@ -259,6 +260,7 @@ class SettingsPageState extends State<SettingsPage> {
                     Hive.box('userData').deleteAll;
                     Hive.box('matchData').deleteAll;
                     Hive.box('settings').deleteAll;
+                    LocalDataBase.clearData();
                   },
                   child: const Text('Delete Learnt Data',
                       style: TextStyle(fontSize: 15, color: Colors.white),
