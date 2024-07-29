@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../about_page.dart';
 import '../home_page.dart';
+import '../logs.dart';
 import '../match_page.dart';
 import '../settings_page.dart';
 
@@ -78,7 +79,21 @@ class NavBar extends StatelessWidget {
               );
             },
             shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          ),
+          const SizedBox(height: 5),
+          ListTile(
+            title: const Text('Logs'),
+            tileColor: const Color.fromARGB(255, 185, 206, 252),
+            minVerticalPadding: 20,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const LogsPage()),
+              );
+            },
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           ),
           const SizedBox(height: 5),
           ListTile(
@@ -92,7 +107,7 @@ class NavBar extends StatelessWidget {
               );
             },
             shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           ),
           const SizedBox(height: 5),
           ListTile(
@@ -106,7 +121,7 @@ class NavBar extends StatelessWidget {
               );
             },
             shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           ),
         ],
       ),

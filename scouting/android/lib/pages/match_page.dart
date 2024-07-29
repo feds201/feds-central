@@ -1,14 +1,15 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'components/DataBase.dart';
-import 'components/nav.dart';
-import 'dart:convert';
-import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
+
+import 'components/DataBase.dart';
+import 'components/nav.dart';
 import 'match.dart';
 
 class MatchPage extends StatefulWidget {
@@ -623,22 +624,15 @@ class MatchPageState extends State<MatchPage> {
             var allianceColor = LocalDataBase.getData(Types.allianceColor);
             var selectedStation = LocalDataBase.getData(Types.selectedStation);
             var matchFile = LocalDataBase.getData(Types.matchFile);
-            print("Sending Data Packs Before Transfering to Match Page");
             LocalDataBase.putData(Types.matchKey, matchKey);
-            print("Setting ${Types.matchKey} to $matchKey");
             LocalDataBase.putData(Types.eventKey, eventKey);
-            print("Setting ${Types.eventKey} to $eventKey");
             LocalDataBase.putData(Types.allianceColor, allianceColor);
-            print("Setting ${Types.allianceColor} to $allianceColor");
             LocalDataBase.putData(Types.selectedStation, selectedStation);
-            print("Setting ${Types.selectedStation} to $selectedStation");
             LocalDataBase.putData(Types.matchFile, matchFile);
-            print("Setting ${Types.matchFile} to $matchFile");
-            print("Data Packs Sent");
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => Match(),
+                builder: (context) => const Match(),
               ),
 
             );

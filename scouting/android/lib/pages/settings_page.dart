@@ -261,6 +261,7 @@ class SettingsPageState extends State<SettingsPage> {
                     Hive.box('matchData').deleteAll;
                     Hive.box('settings').deleteAll;
                     LocalDataBase.clearData();
+                    MatchLogs.clearLogs();
                   },
                   child: const Text('Delete Learnt Data',
                       style: TextStyle(fontSize: 15, color: Colors.white),

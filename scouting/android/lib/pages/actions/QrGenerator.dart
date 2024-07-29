@@ -17,6 +17,7 @@ class QrCoder extends State<Qrgenerator> {
 
   @override
   Widget build(BuildContext context) {
+    String qrData = LocalDataBase.getMatchData();
     return Scaffold(
       appBar: AppBar(
         title: const Text('QR Code'),
@@ -26,7 +27,7 @@ class QrCoder extends State<Qrgenerator> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             QrImageView(
-              data: LocalDataBase.getMatchData(),
+              data: qrData,
               version: QrVersions.auto,
               size: 350,
               semanticsLabel: 'QR code',
@@ -47,7 +48,7 @@ class QrCoder extends State<Qrgenerator> {
               'Scan the QR code to submit the data',
               style: TextStyle(fontSize: 20.0),
             ),
-            Spacer(),
+            const Spacer(),
             Padding(
               padding: const EdgeInsets.only(bottom: 40, left: 8, right: 8),
               child: Container(
@@ -81,6 +82,7 @@ class QrCoder extends State<Qrgenerator> {
                         builder: (context) => const HomePage(),
                       ),
                     );
+                    return null;
                   },
                   label: const Text(
                     "Slide to Scout Next Match",
@@ -105,4 +107,3 @@ class QrCoder extends State<Qrgenerator> {
     );
   }
 }
-

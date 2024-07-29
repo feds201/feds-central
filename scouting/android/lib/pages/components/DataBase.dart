@@ -1,5 +1,9 @@
-import '../match.dart';
 import 'dart:developer' as developer;
+import 'dart:ui';
+
+import 'package:flutter/material.dart';
+
+import '../actions/compactifier.dart';
 
 class LocalDataBase {
   static Map<String, dynamic> _storage = {};
@@ -10,7 +14,7 @@ class LocalDataBase {
     }
     if (key == AutoType.Comments) {
       print(' Storing $key as $value');
-      // Make a array of comments
+      // Make an array of comments
       if (_storage.containsKey(key.toString())) {
         _storage[key.toString()].add(value);
       } else {
@@ -54,24 +58,27 @@ class LocalDataBase {
   }
 
   static String getMatchData() {
-    String data = '';
+    Map<String, dynamic> dataMap = {};
     _storage.forEach((key, value) {
-      if (key != Types.eventFile.toString() &&
-          key != Types.matchFile.toString()) {
-        data += '$key: $value\n';
+      if (value is Offset) {
+        dataMap[key] = {'dx': value.dx, 'dy': value.dy};
+      } else {
+        dataMap[key] = value;
       }
     });
-    return String.fromCharCodes(data.runes.toList());
+    return convertToCompactFormat(dataMap);
   }
 }
+
 class MatchLogs {
   static List<String> _logs = [];
   static void addLog(String log) {
     _logs.add(log);
     developer.log('Added log: $log');
+    developer.log('Logs: $_logs');
   }
 
-   static List<String> getLogs() {
+  static List<String> getLogs() {
     return _logs;
   }
 

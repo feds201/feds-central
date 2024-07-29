@@ -1,8 +1,8 @@
-import 'package:slider_button/slider_button.dart';
 import 'package:flutter/material.dart';
+import 'package:scouting_app/components/CheckBox.dart';
 import 'package:scouting_app/components/Map.dart';
 import 'package:scouting_app/pages/components/DataBase.dart';
-import 'package:scouting_app/components/CheckBox.dart';
+import 'package:slider_button/slider_button.dart';
 
 import '../actions/QrGenerator.dart';
 import '../match.dart';
@@ -123,7 +123,7 @@ class _EndGameState extends State<EndGame> {
                         context,
                         MaterialPageRoute(
                             builder: (context) => const Qrgenerator()));
-
+                    return null;
                   },
                   label: const Text("Slide to Complete Event",
                       style: TextStyle(

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:scouting_app/components/CommentBox.dart';
 import 'package:scouting_app/components/CounterShelf.dart';
 import 'package:scouting_app/components/Map.dart';
 import 'package:scouting_app/pages/components/DataBase.dart';
+
 import '../../components/Chips.dart';
 import '../../components/RatingsBox.dart';
 import '../../components/TeamInfo.dart';

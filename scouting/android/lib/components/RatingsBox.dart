@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 
-import 'dart:ffi';
 
 
 Widget buildRatings(List<Widget> WidgetChildren ) {

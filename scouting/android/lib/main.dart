@@ -2,8 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:scouting_app/pages/home_page.dart';
 import 'package:scouting_app/pages/about_page.dart';
+import 'package:scouting_app/pages/home_page.dart';
 import 'package:scouting_app/pages/match_page.dart';
 import 'package:scouting_app/pages/settings_page.dart';
 
@@ -41,7 +41,6 @@ class MyApp extends StatelessWidget {
         '/settings': (context) => const SettingsPage(),
         '/about': (context) => const AboutPage(),
         '/match_page': (context) => const MatchPage(),
-
       },
       home: const HomePage(),
     );
