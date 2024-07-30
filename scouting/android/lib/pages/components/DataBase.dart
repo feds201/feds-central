@@ -74,8 +74,6 @@ class MatchLogs {
   static List<String> _logs = [];
   static void addLog(String log) {
     _logs.add(log);
-    developer.log('Added log: $log');
-    developer.log('Logs: $_logs');
   }
 
   static List<String> getLogs() {

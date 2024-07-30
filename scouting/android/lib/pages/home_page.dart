@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:scouting_app/pages/plugins.dart';
 import '../templateBuilder/builder.dart';
 import 'components/nav.dart';
 import 'match_page.dart';
@@ -17,7 +18,9 @@ class HomePage extends StatelessWidget {
             IconButton(
               icon: const Icon(Icons.extension),
               onPressed: () {
-                // Navigate to the search page
+                Route route = MaterialPageRoute(
+                    builder: (context) => Plugins());
+                Navigator.push(context, route);
               },
             ),
           ],

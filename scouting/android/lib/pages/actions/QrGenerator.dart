@@ -1,8 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:scouting_app/pages/home_page.dart';
 import 'package:slider_button/slider_button.dart';
-
+import 'package:http/http.dart' as http;
+import 'dart:developer' as developer;
 import '../components/DataBase.dart';
 
 class Qrgenerator extends StatefulWidget {
@@ -74,15 +78,17 @@ class QrCoder extends State<Qrgenerator> {
                   vibrationFlag: true,
                   width: MediaQuery.of(context).size.width - 40,
                   action: () async {
-                    //save the QRImage locally
-                    MatchLogs.addLog(LocalDataBase.getMatchData());
+                    await InititiateTransactions(qrData);
+                    MatchLogs.addLog(qrData);
+                    LocalDataBase.clearData();
+                    print("Data Cleared");
+                    developer.log(qrData);
                     await Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => const HomePage(),
                       ),
                     );
-                    return null;
                   },
                   label: const Text(
                     "Slide to Scout Next Match",
@@ -105,5 +111,86 @@ class QrCoder extends State<Qrgenerator> {
         ),
       ),
     );
+  }
+
+  Future<void> InititiateTransactions(String qrData) async {
+    var box = Hive.box('settings');
+    String? ipAddress = box.get('ipAddress');
+    String? deviceName = box.get('deviceName');
+
+    if (ipAddress != null) {
+      String url = 'http://$ipAddress:5000/send_data';
+      try {
+        final response = await http.post(
+          Uri.parse(url),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: jsonEncode({'device_name': deviceName, 'data': qrData}),
+        );
+
+        if (response.statusCode == 200) {
+          final responseBody = jsonDecode(response.body);
+          if (responseBody['message'] != null &&
+              responseBody['message'].contains('already registered')) {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text('Device Already Registered'),
+                  content: Text(responseBody['message']),
+                  actions: <Widget>[
+                    TextButton(
+                      child: Text('OK'),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                );
+              },
+            );
+          }
+        }
+      } catch (e) {
+        print('Error: $e');
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Error'),
+              content: Text('Failed to communicate with the server.'),
+              actions: <Widget>[
+                TextButton(
+                  child: Text('OK'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      }
+    } else {
+      print('IP address not found in Hive.');
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Error'),
+            content: Text('IP address not configured.'),
+            actions: <Widget>[
+              TextButton(
+                child: Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 }
