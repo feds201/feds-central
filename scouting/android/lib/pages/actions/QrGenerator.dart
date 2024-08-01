@@ -2,12 +2,13 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:http/http.dart' as http;
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:scouting_app/pages/home_page.dart';
 import 'package:slider_button/slider_button.dart';
-import 'package:http/http.dart' as http;
-import 'dart:developer' as developer;
+
 import '../components/DataBase.dart';
+import '../plugins.dart';
 
 class Qrgenerator extends StatefulWidget {
   const Qrgenerator({Key? key}) : super(key: key);
@@ -21,7 +22,6 @@ class QrCoder extends State<Qrgenerator> {
 
   @override
   Widget build(BuildContext context) {
-    String qrData = LocalDataBase.getMatchData();
     return Scaffold(
       appBar: AppBar(
         title: const Text('QR Code'),
@@ -31,7 +31,7 @@ class QrCoder extends State<Qrgenerator> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             QrImageView(
-              data: qrData,
+              data: LocalDataBase.getMatchData().toString(),
               version: QrVersions.auto,
               size: 350,
               semanticsLabel: 'QR code',
@@ -78,17 +78,9 @@ class QrCoder extends State<Qrgenerator> {
                   vibrationFlag: true,
                   width: MediaQuery.of(context).size.width - 40,
                   action: () async {
-                    await InititiateTransactions(qrData);
-                    MatchLogs.addLog(qrData);
-                    LocalDataBase.clearData();
-                    print("Data Cleared");
-                    developer.log(qrData);
-                    await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const HomePage(),
-                      ),
-                    );
+                    MatchLogs.addLog(LocalDataBase.getMatchData().toString());
+                    await InititiateTransactions(
+                        LocalDataBase.getMatchData().toString());
                   },
                   label: const Text(
                     "Slide to Scout Next Match",
@@ -118,27 +110,53 @@ class QrCoder extends State<Qrgenerator> {
     String? ipAddress = box.get('ipAddress');
     String? deviceName = box.get('deviceName');
 
-    if (ipAddress != null) {
-      String url = 'http://$ipAddress:5000/send_data';
-      try {
-        final response = await http.post(
-          Uri.parse(url),
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: jsonEncode({'device_name': deviceName, 'data': qrData}),
-        );
+    print('IP Address: $ipAddress');
+    print('Device Name: $deviceName');
 
-        if (response.statusCode == 200) {
-          final responseBody = jsonDecode(response.body);
-          if (responseBody['message'] != null &&
-              responseBody['message'].contains('already registered')) {
+    if (ipAddress != null && deviceName != null) {
+      bool serverStatus = await fetchPyintelScoutzServerStatus();
+      if (serverStatus) {
+        String url = 'http://$ipAddress:5000/send_data';
+        try {
+          print('Attempting to send data...');
+          final response = await http.post(
+            Uri.parse(url),
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: jsonEncode({'device_name': deviceName, 'data': qrData}),
+          );
+
+          print('Response status: ${response.statusCode}');
+          if (response.statusCode == 200) {
+            final responseBody = jsonDecode(response.body);
+            print('Response body: $responseBody');
+
+            // Confirm function completion
+            print('Data sent successfully.');
+
+            // Example: Confirm whether data clearing and navigation are happening
+            LocalDataBase.clearData();
+            print("Data Cleared");
+
+            await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const HomePage(),
+              ),
+            );
+
+            // Confirm navigation completion
+            print('Navigation to HomePage completed.');
+          } else {
+            // Handle non-200 responses
             showDialog(
               context: context,
               builder: (BuildContext context) {
                 return AlertDialog(
-                  title: Text('Device Already Registered'),
-                  content: Text(responseBody['message']),
+                  title: Text('Error'),
+                  content:
+                      Text('Server returned an error: ${response.statusCode}'),
                   actions: <Widget>[
                     TextButton(
                       child: Text('OK'),
@@ -151,38 +169,50 @@ class QrCoder extends State<Qrgenerator> {
               },
             );
           }
+        } catch (e) {
+          print('Error: $e');
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('Error'),
+                content: Text('Failed to communicate with the server.'),
+                actions: <Widget>[
+                  TextButton(
+                    child: Text('OK'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            },
+          );
         }
-      } catch (e) {
-        print('Error: $e');
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text('Error'),
-              content: Text('Failed to communicate with the server.'),
-              actions: <Widget>[
-                TextButton(
-                  child: Text('OK'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            );
-          },
+      } else {
+        print('Server is not running.');
+        LocalDataBase.clearData();
+        print("Data Cleared");
+
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const HomePage(),
+          ),
         );
       }
     } else {
-      print('IP address not found in Hive.');
+      // IP address or device name not found in Hive
+      print('IP address or device name not found in Hive.');
       showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Error'),
-            content: Text('IP address not configured.'),
+            title: const Text('Error'),
+            content: const Text('IP address or device name not configured.'),
             actions: <Widget>[
               TextButton(
-                child: Text('OK'),
+                child: const Text('OK'),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },

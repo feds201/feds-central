@@ -148,11 +148,3 @@ class _EndGameState extends State<EndGame> {
     UpdateData();
   }
 }
-
-enum EndgameType {
-  endLocation,
-  climbed,
-  harmony,
-  attempted,
-  spotlight
-}

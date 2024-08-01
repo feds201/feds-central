@@ -1,9 +1,6 @@
-import 'dart:developer' as developer;
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-
-import '../actions/compactifier.dart';
 
 class LocalDataBase {
   static Map<String, dynamic> _storage = {};
@@ -12,18 +9,9 @@ class LocalDataBase {
     if (key == null) {
       throw Exception('Key cannot be null');
     }
-    if (key == AutoType.Comments) {
-      print(' Storing $key as $value');
-      // Make an array of comments
-      if (_storage.containsKey(key.toString())) {
-        _storage[key.toString()].add(value);
-      } else {
-        _storage[key.toString()] = [value];
-      }
-    } else {
-      print(' Storing $key as $value');
+
+    print(' Storing $key as $value');
       _storage[key.toString()] = value;
-    }
   }
 
   static dynamic getData(dynamic key) {
@@ -57,7 +45,7 @@ class LocalDataBase {
     }
   }
 
-  static String getMatchData() {
+  static Map<String, dynamic> getMatchData() {
     Map<String, dynamic> dataMap = {};
     _storage.forEach((key, value) {
       if (value is Offset) {
@@ -66,23 +54,50 @@ class LocalDataBase {
         dataMap[key] = value;
       }
     });
-    return convertToCompactFormat(dataMap);
+    // Avoid Types.eventFile
+    dataMap.remove('Types.eventFile');
+    dataMap.remove('Types.matchFile');
+    return dataMap;
   }
 }
 
 class MatchLogs {
   static List<String> _logs = [];
   static void addLog(String log) {
+    print(_logs);
     _logs.add(log);
   }
 
   static List<String> getLogs() {
+    print(_logs);
     return _logs;
   }
 
   static void clearLogs() {
     _logs.clear();
+    print('Logs Cleared');
   }
 }
 
-enum AutoType { AmpPlacement, Speaker, StartPosition, AutonRating, Comments }
+enum AutoType {
+  AmpPlacement,
+  Speaker,
+  Trap,
+  StartPosition,
+  AutonRating,
+  Chip1,
+  Chip2,
+  Chip3
+}
+enum EndgameType { endLocation, climbed, harmony, attempted, spotlight }
+
+enum TeleType {
+  GroundPickUp,
+  SourcePickUp,
+  SpeakerNotes,
+  AmpPlacement,
+  TrapPlacement,
+  AmplifiedSpeakerNotes,
+  CoOpBonus,
+  Assists
+}

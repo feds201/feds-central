@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
@@ -15,6 +16,10 @@ class _PluginsState extends State<Plugins> {
   final TextEditingController _controllerIp = TextEditingController();
   final TextEditingController _controllerDeviceName = TextEditingController();
   Color _testButtonColor = Colors.blue;
+  Map<String, bool> _pluginSwitchStates = {
+    'Pyintel Scoutz': false,
+    'Gemini Nano': false,
+  };
 
   @override
   void initState() {
@@ -28,12 +33,22 @@ class _PluginsState extends State<Plugins> {
     String deviceName = box.get('deviceName', defaultValue: '');
     _controllerIp.text = ipAddress;
     _controllerDeviceName.text = deviceName;
+
+    // Load switch states
+    _pluginSwitchStates['Pyintel Scoutz'] =
+        box.get('Pyintel Scoutz', defaultValue: false);
+    _pluginSwitchStates['Gemini Nano'] =
+        box.get('Gemini Nano', defaultValue: false);
   }
 
   void _saveSettings() {
     var box = Hive.box('settings');
     box.put('ipAddress', _controllerIp.text);
     box.put('deviceName', _controllerDeviceName.text);
+
+    // Save switch states
+    box.put('Pyintel Scoutz', _pluginSwitchStates['Pyintel Scoutz']);
+    box.put('Gemini Nano', _pluginSwitchStates['Gemini Nano']);
   }
 
   @override
@@ -48,12 +63,7 @@ class _PluginsState extends State<Plugins> {
             context,
             title: 'Integrate with Pyintel Scoutz',
             icon: Icons.integration_instructions,
-            onTap: () {
-              setState(() {
-                _isExpanded = !_isExpanded;
-              });
-            },
-            isExpanded: _isExpanded,
+            pluginKey: 'Pyintel Scoutz',
             controllerIp: _controllerIp,
             controllerDeviceName: _controllerDeviceName,
             testButtonColor: _testButtonColor,
@@ -62,10 +72,7 @@ class _PluginsState extends State<Plugins> {
             context,
             title: 'Use Gemini Nano (Coming Soon)',
             icon: Icons.new_releases,
-            onTap: () {
-              // Your onTap functionality here
-            },
-            isExpanded: false,
+            pluginKey: 'Gemini Nano',
             controllerIp: null,
             controllerDeviceName: null,
             testButtonColor: _testButtonColor,
@@ -77,22 +84,19 @@ class _PluginsState extends State<Plugins> {
 
   Widget _buildPluginTile(BuildContext context,
       {required String title,
-        required IconData icon,
-        required VoidCallback onTap,
-        required bool isExpanded,
-        TextEditingController? controllerIp,
-        TextEditingController? controllerDeviceName,
-        required Color testButtonColor}) {
+      required IconData icon,
+      required String pluginKey,
+      TextEditingController? controllerIp,
+      TextEditingController? controllerDeviceName,
+      required Color testButtonColor}) {
     return InkWell(
-      onTap: onTap,
-      splashColor: Theme
-          .of(context)
-          .primaryColor
-          .withOpacity(0.3),
-      highlightColor: Theme
-          .of(context)
-          .primaryColor
-          .withOpacity(0.1),
+      onTap: () {
+        setState(() {
+          _isExpanded = !_isExpanded;
+        });
+      },
+      splashColor: Theme.of(context).primaryColor.withOpacity(0.3),
+      highlightColor: Theme.of(context).primaryColor.withOpacity(0.1),
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
@@ -110,9 +114,7 @@ class _PluginsState extends State<Plugins> {
         child: Column(
           children: [
             ListTile(
-              leading: Icon(icon, color: Theme
-                  .of(context)
-                  .primaryColor),
+              leading: Icon(icon, color: Theme.of(context).primaryColor),
               title: Text(
                 title,
                 style: const TextStyle(
@@ -120,30 +122,40 @@ class _PluginsState extends State<Plugins> {
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              trailing: Icon(isExpanded ? Icons.expand_less : Icons.expand_more,
-                  color: Colors.grey),
+              trailing: Switch(
+                value: _pluginSwitchStates[pluginKey]!,
+                onChanged: (bool value) {
+                  setState(() {
+                    _pluginSwitchStates[pluginKey] = value;
+                    _saveSettings(); // Save state when changed
+                  });
+                },
+              ),
             ),
-            if (isExpanded)
+            if (_isExpanded && _pluginSwitchStates[pluginKey]!)
               Padding(
                 padding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Column(
                   children: [
-                    TextField(
-                      controller: controllerIp,
-                      decoration: const InputDecoration(
-                        labelText: 'Enter Pyintel Scoutz Server IP Address',
-                        border: OutlineInputBorder(),
+                    if (controllerIp != null)
+                      TextField(
+                        controller: controllerIp,
+                        decoration: const InputDecoration(
+                          labelText: 'Enter Pyintel Scoutz Server IP Address',
+                          border: OutlineInputBorder(),
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 8),
-                    TextField(
-                      controller: controllerDeviceName,
-                      decoration: const InputDecoration(
-                        labelText: 'Enter a Unique Device Name',
-                        border: OutlineInputBorder(),
+                    if (controllerDeviceName != null) ...[
+                      SizedBox(height: 8),
+                      TextField(
+                        controller: controllerDeviceName,
+                        decoration: const InputDecoration(
+                          labelText: 'Enter a Unique Device Name',
+                          border: OutlineInputBorder(),
+                        ),
                       ),
-                    ),
+                    ],
                     SizedBox(height: 16),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -173,14 +185,16 @@ class _PluginsState extends State<Plugins> {
                             }
                           },
                           icon: const Icon(Icons.wifi),
-                          label: const Text('Test Connection',),
+                          label: const Text(
+                            'Test Connection',
+                          ),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: testButtonColor,
                             // Dynamically set the color
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 16, vertical: 12),
-                            textStyle: TextStyle(fontSize: 16,
-                                color: _testButtonColor),
+                            textStyle: TextStyle(
+                                fontSize: 16, color: _testButtonColor),
                           ),
                         ),
                         ElevatedButton.icon(
@@ -213,7 +227,7 @@ class _PluginsState extends State<Plugins> {
                                     builder: (BuildContext context) {
                                       return AlertDialog(
                                         title:
-                                        Text('Device Already Registered'),
+                                            Text('Device Already Registered'),
                                         content: Text(responseBody['message']),
                                         actions: <Widget>[
                                           TextButton(
@@ -250,4 +264,10 @@ class _PluginsState extends State<Plugins> {
       ),
     );
   }
+}
+
+Future<bool> fetchPyintelScoutzServerStatus() async {
+  var box = Hive.box('settings');
+  bool pyintelScoutzState = box.get('Pyintel Scoutz', defaultValue: false);
+  return pyintelScoutzState;
 }

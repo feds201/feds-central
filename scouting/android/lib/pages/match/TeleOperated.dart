@@ -189,14 +189,3 @@ class _TeleOperatedState extends State<TeleOperated> {
     );
   }
 }
-
-enum TeleType {
-  GroundPickUp,
-  SourcePickUp,
-  SpeakerNotes,
-  AmpPlacement,
-  TrapPlacement,
-  AmplifiedSpeakerNotes,
-  CoOpBonus,
-  Assists
-}

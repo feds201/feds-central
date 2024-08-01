@@ -227,14 +227,3 @@ class AutonState extends State<Auton> {
     UpdateData();
   }
 }
-
-enum AutoType {
-  AmpPlacement,
-  Speaker,
-  Trap,
-  StartPosition,
-  AutonRating,
-  Chip1,
-  Chip2,
-  Chip3
-}
