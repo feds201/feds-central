@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:scouting_app/components/CheckBox.dart';
 import 'package:scouting_app/components/Map.dart';
-import 'package:scouting_app/pages/components/DataBase.dart';
 import 'package:slider_button/slider_button.dart';
 
+import '../../components/DataBase.dart';
 import '../actions/QrGenerator.dart';
 import '../match.dart';
 

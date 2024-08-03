@@ -8,8 +8,8 @@ import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 
-import 'components/DataBase.dart';
-import 'components/nav.dart';
+import '../components/DataBase.dart';
+import '../components/nav.dart';
 import 'match.dart';
 
 class MatchPage extends StatefulWidget {

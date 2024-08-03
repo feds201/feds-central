@@ -1,4 +1,4 @@
-package com.example.myapp
+package com.pyintel.scoutingApp
 
 import io.flutter.embedding.android.FlutterActivity
 

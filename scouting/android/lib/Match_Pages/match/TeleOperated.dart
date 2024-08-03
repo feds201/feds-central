@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:scouting_app/components/CheckBox.dart';
 import 'package:scouting_app/components/CommentBox.dart';
 import 'package:scouting_app/components/CounterShelf.dart';
-import 'package:scouting_app/pages/components/DataBase.dart';
+
+import '../../components/DataBase.dart';
 
 class TeleOperated extends StatefulWidget {
   const TeleOperated({super.key});

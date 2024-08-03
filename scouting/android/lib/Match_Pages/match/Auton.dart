@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:scouting_app/components/CommentBox.dart';
 import 'package:scouting_app/components/CounterShelf.dart';
 import 'package:scouting_app/components/Map.dart';
-import 'package:scouting_app/pages/components/DataBase.dart';
 
 import '../../components/Chips.dart';
+import '../../components/DataBase.dart';
 import '../../components/RatingsBox.dart';
 import '../../components/TeamInfo.dart';
 import '../../components/ratings.dart';
@@ -82,7 +82,14 @@ class AutonState extends State<Auton> {
     return SingleChildScrollView(
       child: Column(
         children: [
-          buildTeamInfo(assignedTeam, assignedStation, allianceColor, () {}),
+          TeamInfo(
+            assignedTeam: assignedTeam,
+            assignedStation: assignedStation,
+            allianceColor: allianceColor,
+            onPressed: () {
+              print('Team Info START button pressed');
+            },
+          ),
           buildMap(context, _circlePosition, const Size(35, 35), allianceColor,
               onTap: (TapUpDetails details) {_updatePosition(details);},),
           buildComments(

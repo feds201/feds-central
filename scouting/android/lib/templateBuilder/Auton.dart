@@ -73,9 +73,21 @@ class AutonState extends State<AutonBuilder> {
                   ),
                   const SizedBox(width: double.infinity),
                   ListTile(
-                    title: buildTeamInfo("201", "R0", "Test", () {}),
+                    title: TeamInfo(
+                      assignedTeam: "201",
+                      assignedStation: "R1",
+                      allianceColor: "Red",
+                      onPressed: () {},
+                    ),
                     onTap: () {
-                      replaceWidget(index, buildTeamInfo("201", "R0", "Test", () {} ));
+                      replaceWidget(
+                          index,
+                          TeamInfo(
+                            assignedTeam: "201",
+                            assignedStation: "R1",
+                            allianceColor: "Red",
+                            onPressed: () {},
+                          ));
                       Navigator.pop(context);
                     },
                   ),

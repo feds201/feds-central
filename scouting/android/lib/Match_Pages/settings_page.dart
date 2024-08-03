@@ -3,10 +3,10 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:scouting_app/pages/components/DataBase.dart';
 
-import 'components/localmatchLoader.dart';
-import 'components/nav.dart';
+import '../components/DataBase.dart';
+import '../components/localmatchLoader.dart';
+import '../components/nav.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});

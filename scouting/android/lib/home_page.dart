@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:scouting_app/pages/plugins.dart';
-import '../templateBuilder/builder.dart';
+import 'package:scouting_app/Match_Pages/plugins.dart';
+
+import 'Match_Pages/match_page.dart';
 import 'components/nav.dart';
-import 'match_page.dart';
+import 'templateBuilder/builder.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -18,8 +19,8 @@ class HomePage extends StatelessWidget {
             IconButton(
               icon: const Icon(Icons.extension),
               onPressed: () {
-                Route route = MaterialPageRoute(
-                    builder: (context) => Plugins());
+                Route route =
+                    MaterialPageRoute(builder: (context) => const Plugins());
                 Navigator.push(context, route);
               },
             ),
@@ -69,8 +70,8 @@ class HomePage extends StatelessWidget {
                         borderColor: Colors.blueAccent,
                         icon: Icons.bookmark_add_outlined,
                         onPressed: () {
-                          // Navigator.push(context, MaterialPageRoute(builder: (context) => const Te()));
-                          },
+                          // Navigator.push(context, MaterialPageRoute(builder: (context) => const Pit_Recorder()));
+                        },
                       ),
                       const SizedBox(height: 10),
                       buildButton(

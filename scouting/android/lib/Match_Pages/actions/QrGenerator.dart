@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:scouting_app/pages/home_page.dart';
 import 'package:slider_button/slider_button.dart';
 
-import '../components/DataBase.dart';
+import '../../components/DataBase.dart';
+import '../../home_page.dart';
 import '../plugins.dart';
 
 class Qrgenerator extends StatefulWidget {
@@ -81,6 +81,7 @@ class QrCoder extends State<Qrgenerator> {
                     MatchLogs.addLog(LocalDataBase.getMatchData().toString());
                     await InititiateTransactions(
                         LocalDataBase.getMatchData().toString());
+                    return true;
                   },
                   label: const Text(
                     "Slide to Scout Next Match",

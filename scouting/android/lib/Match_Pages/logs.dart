@@ -3,15 +3,19 @@ import 'dart:convert';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 
+import '../components/DataBase.dart';
 import '../components/SwipeCards.dart';
-import 'components/DataBase.dart';
+import 'actions/compactifier.dart';
 
 class LogsPage extends StatelessWidget {
-  const LogsPage({super.key});
+  const LogsPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     List<String> matchData = MatchLogs.getLogs();
+    for (int i = 0; i < matchData.length; i++) {
+      print(parseAndLogJson(matchData[i]));
+    }
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -23,7 +27,11 @@ class LogsPage extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.restore_from_trash_rounded),
             onPressed: () {
-              print(MatchLogs.getLogs());
+              MatchLogs.clearLogs();
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const LogsPage()),
+              );
             },
           )
         ],
@@ -33,22 +41,14 @@ class LogsPage extends StatelessWidget {
         child: CarouselSlider(
           items: [
             for (int i = 0; i < matchData.length; i++)
-              Builder(
-                builder: (BuildContext context) {
-                  String correctedJsonString = correctJsonFormat(matchData[i]);
-                  Map<String, dynamic> jsonObject =
-                      jsonDecode(correctedJsonString);
-                  return MatchCard(
-                    matchData: matchData[i],
-                    // pass individual match data
-                    eventName: jsonObject['TypeseventKey'],
-                    teamNumber: jsonObject['Typesteam'],
-                    matchKey: jsonObject['TypesmatchKey'],
-                    allianceColor: jsonObject['TypesallianceColor'],
-                    selectedStation: jsonObject['TypesselectedStation'],
-                  );
-                },
-              ),
+              MatchCard(
+                matchData: matchData[i],
+                teamNumber: parseAndLogJson(matchData[i])[4],
+                eventName: parseAndLogJson(matchData[i])[0],
+                allianceColor: parseAndLogJson(matchData[i])[1],
+                selectedStation: parseAndLogJson(matchData[i])[2],
+                matchKey: parseAndLogJson(matchData[i])[3],
+              )
           ],
           options: CarouselOptions(
             height: 750,
@@ -70,28 +70,20 @@ class LogsPage extends StatelessWidget {
     );
   }
 
-  void parseAndLogJson(String jsonString) {
+  List<String> parseAndLogJson(String jsonString) {
     try {
       String correctedJsonString = correctJsonFormat(jsonString);
       Map<String, dynamic> jsonObject = jsonDecode(correctedJsonString);
-
-      print("Event Key: ${jsonObject['TypeseventKey']}");
-      print("Alliance Color: ${jsonObject['TypesallianceColor']}");
-      print("Selected Station: ${jsonObject['TypesselectedStation']}");
-      print("Match Key: ${jsonObject['TypesmatchKey']}");
-      print("Team: ${jsonObject['Typesteam']}");
       // Add more fields as needed
+      return [
+        jsonObject['TypeseventKey'],
+        jsonObject['TypesallianceColor'],
+        jsonObject['TypesselectedStation'],
+        jsonObject['TypesmatchKey'],
+        jsonObject['Typesteam']
+      ];
     } catch (e) {
-      print('Error: $e');
+      return [('Error: $e')];
     }
-  }
-
-  String correctJsonFormat(String jsonString) {
-    // Adjusting the regex to correctly format the jsonString
-    return jsonString
-        .replaceAllMapped(RegExp(r'(\w+)\.'), (match) => '${match[1]}')
-        .replaceAllMapped(RegExp(r'(\w+):'), (match) => '"${match[1]}":')
-        .replaceAllMapped(RegExp(r': (\w+)'), (match) => ': "${match[1]}"')
-        .replaceAll("'", '"');
   }
 }

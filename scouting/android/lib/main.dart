@@ -2,10 +2,11 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:scouting_app/pages/about_page.dart';
-import 'package:scouting_app/pages/home_page.dart';
-import 'package:scouting_app/pages/match_page.dart';
-import 'package:scouting_app/pages/settings_page.dart';
+
+import 'Match_Pages/about_page.dart';
+import 'Match_Pages/match_page.dart';
+import 'Match_Pages/settings_page.dart';
+import 'home_page.dart';
 
 const Color themeColor = Color.fromARGB(255, 255, 255, 255);
 const bool material3 = true;

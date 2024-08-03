@@ -5,7 +5,7 @@ import 'package:scouting_app/components/CommentBox.dart';
 class MatchCard extends StatelessWidget {
   final String matchData;
   final String eventName;
-  final int teamNumber;
+  final String teamNumber;
   final String matchKey;
   final String allianceColor;
   final String selectedStation;
@@ -29,13 +29,15 @@ class MatchCard extends StatelessWidget {
         shape: BoxShape.rectangle,
       ),
       padding: const EdgeInsets.all(10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        child: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
           buildComments(
-              "Qualification Match : ${teamNumber}", // Use team number here
-              [
-                buildCommentsBox("Event Key", eventName,
+                  "Qualification Match", // Use team number here
+                  [
+                    buildCommentsBox("Event Key", eventName,
                     const Icon(Icons.location_on_outlined), (String value) {}),
                 buildCommentsBox("Team Number", teamNumber.toString(),
                     const Icon(Icons.people), (String value) {}),
@@ -73,6 +75,6 @@ class MatchCard extends StatelessWidget {
               const Icon(Icons.qr_code_2_sharp)),
         ],
       ),
-    );
+        ));
   }
 }

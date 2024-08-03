@@ -3,7 +3,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'components/nav.dart';
+
+import '../components/nav.dart';
 
 class AboutPage extends StatelessWidget {
   const AboutPage({super.key});

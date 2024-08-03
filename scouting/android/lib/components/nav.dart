@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../about_page.dart';
+import '../Match_Pages/about_page.dart';
+import '../Match_Pages/logs.dart';
+import '../Match_Pages/match_page.dart';
+import '../Match_Pages/settings_page.dart';
 import '../home_page.dart';
-import '../logs.dart';
-import '../match_page.dart';
-import '../settings_page.dart';
 
 class NavBar extends StatelessWidget {
   const NavBar({super.key});

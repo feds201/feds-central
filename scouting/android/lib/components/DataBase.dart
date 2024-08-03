@@ -1,6 +1,9 @@
+import 'dart:convert';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+
+import '../Match_Pages/actions/compactifier.dart';
 
 class LocalDataBase {
   static Map<String, dynamic> _storage = {};
@@ -57,7 +60,7 @@ class LocalDataBase {
     // Avoid Types.eventFile
     dataMap.remove('Types.eventFile');
     dataMap.remove('Types.matchFile');
-    return dataMap;
+    return jsonDecode(correctJsonFormat(dataMap.toString()));
   }
 }
 
