@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:scouting_app/Match_Pages/plugins.dart';
+import 'package:scouting_app/Plugins/plugins.dart';
 
 import 'Match_Pages/match_page.dart';
 import 'components/nav.dart';

@@ -4,7 +4,7 @@
 import 'package:flutter/material.dart';
 
 import '../components/DataBase.dart';
-import 'actions/QrGenerator.dart';
+import '../components/QrGenerator.dart';
 import 'match/Auton.dart';
 import 'match/EndGame.dart';
 import 'match/TeleOperated.dart';

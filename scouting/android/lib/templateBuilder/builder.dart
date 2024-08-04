@@ -1,20 +1,18 @@
 
 import 'package:flutter/material.dart';
 
-import 'EndGame.dart';
 import 'Auton.dart';
-import 'TeleOperated.dart';
-
-
+import 'EndGame.dart';
+import 'tele_operated.dart';
 
 class TemplateEditor extends StatefulWidget {
   const TemplateEditor({super.key});
 
   @override
-  _TemplateEditorState createState() => _TemplateEditorState();
+  TemplateEditorState createState() => TemplateEditorState();
 }
 
-class _TemplateEditorState extends State<TemplateEditor> {
+class TemplateEditorState extends State<TemplateEditor> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(

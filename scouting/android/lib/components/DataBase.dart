@@ -3,7 +3,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
-import '../Match_Pages/actions/compactifier.dart';
+import 'compactifier.dart';
 
 class LocalDataBase {
   static Map<String, dynamic> _storage = {};

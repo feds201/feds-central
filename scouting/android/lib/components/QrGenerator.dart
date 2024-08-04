@@ -6,9 +6,9 @@ import 'package:http/http.dart' as http;
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:slider_button/slider_button.dart';
 
-import '../../components/DataBase.dart';
-import '../../home_page.dart';
-import '../plugins.dart';
+import '../Plugins/plugin_state_manager.dart';
+import '../home_page.dart';
+import 'DataBase.dart';
 
 class Qrgenerator extends StatefulWidget {
   const Qrgenerator({Key? key}) : super(key: key);
@@ -19,7 +19,7 @@ class Qrgenerator extends StatefulWidget {
 
 class QrCoder extends State<Qrgenerator> {
   final LocalDataBase dataMaster = LocalDataBase();
-
+  final PluginStateManager pluginStateManager = PluginStateManager();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -115,7 +115,8 @@ class QrCoder extends State<Qrgenerator> {
     print('Device Name: $deviceName');
 
     if (ipAddress != null && deviceName != null) {
-      bool serverStatus = await fetchPyintelScoutzServerStatus();
+      bool serverStatus = await pluginStateManager
+          .getPluginState("intergrateWithPyintelScoutz");
       if (serverStatus) {
         String url = 'http://$ipAddress:5000/send_data';
         try {
@@ -161,8 +162,13 @@ class QrCoder extends State<Qrgenerator> {
                   actions: <Widget>[
                     TextButton(
                       child: Text('OK'),
-                      onPressed: () {
-                        Navigator.of(context).pop();
+                      onPressed: () async {
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const HomePage(),
+                          ),
+                        );
                       },
                     ),
                   ],
@@ -182,7 +188,14 @@ class QrCoder extends State<Qrgenerator> {
                   TextButton(
                     child: Text('OK'),
                     onPressed: () {
-                      Navigator.of(context).pop();
+                      LocalDataBase.clearData();
+                      print("Data Cleared");
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const HomePage(),
+                        ),
+                      );
                     },
                   ),
                 ],
@@ -214,8 +227,13 @@ class QrCoder extends State<Qrgenerator> {
             actions: <Widget>[
               TextButton(
                 child: const Text('OK'),
-                onPressed: () {
-                  Navigator.of(context).pop();
+                onPressed: () async {
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const HomePage(),
+                    ),
+                  );
                 },
               ),
             ],

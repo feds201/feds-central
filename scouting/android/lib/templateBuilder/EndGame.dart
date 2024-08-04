@@ -1,4 +1,5 @@
 import 'package:dotted_border/dotted_border.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 // Assuming these imports exist and are correctly implemented
 import 'package:scouting_app/components/Map.dart';
@@ -28,15 +29,15 @@ class EndGameState extends State<EndGameBuilder> {
   void initState() {
     super.initState();
     // Initialize with some default widgets
-    currentWidgets = [
-
-    ];
+    currentWidgets = [];
   }
 
   void onTap(Offset position) {
     setState(() {
       _circlePosition = position;
-      print(_circlePosition);
+      if (kDebugMode) {
+        print(_circlePosition);
+      }
     });
   }
 
@@ -93,64 +94,96 @@ class EndGameState extends State<EndGameBuilder> {
                   ),
                   ListTile(
                     title: buildCounterShelf([
-
-                      CounterSettings((int value) {print(value);}, (int value) {}, icon: Icons.star, number: 0, counterText: 'Counter 1', color: Colors.yellowAccent),
-
+                      CounterSettings((int value) {
+                        if (kDebugMode) {
+                          print(value);
+                        }
+                      }, (int value) {},
+                          icon: Icons.star,
+                          number: 0,
+                          counterText: 'Counter 1',
+                          color: Colors.yellowAccent),
                     ]),
                     onTap: () {
-                      replaceWidget(index, buildCounterShelf([CounterSettings((int value) {print(value);}, (int value) {}, icon: Icons.star, number: 0, counterText: 'Counter 1', color: Colors.yellowAccent)]));
+                      replaceWidget(
+                          index,
+                          buildCounterShelf([
+                            CounterSettings((int value) {
+                              if (kDebugMode) {
+                                print(value);
+                              }
+                            }, (int value) {},
+                                icon: Icons.star,
+                                number: 0,
+                                counterText: 'Counter 1',
+                                color: Colors.yellowAccent)
+                          ]));
                       Navigator.pop(context);
                     },
                   ),
                   ListTile(
                     title: buildMap(context, _circlePosition, size, "Blue"),
                     onTap: () {
-                      replaceWidget(index, buildMap(context, _circlePosition, size,  "Blue"));
+                      replaceWidget(index,
+                          buildMap(context, _circlePosition, size, "Blue"));
                       Navigator.pop(context);
                     },
                   ),
                   ListTile(
                     title: buildComments(
                       "EndGame Comments",
-
                       [
-                        buildChips(
-                            ["Moved", "Did Not Move"],
-                            [
-                              [Colors.green, Colors.red],
-                              [Colors.green, Colors.red]
-                            ],
-                            [true, false]
-                        ),
+                        buildChips([
+                          "Moved",
+                          "Did Not Move"
+                        ], [
+                          [Colors.green, Colors.red],
+                          [Colors.green, Colors.red]
+                        ], [
+                          true,
+                          false
+                        ]),
                       ],
                       const Icon(Icons.comment_bank),
                     ),
                     onTap: () {
-                      replaceWidget(index, buildComments(
-                        "EndGame Comments",
-                        [
-                          buildChips(
-                              ["Moved", "Did Not Move"],
-                              [
+                      replaceWidget(
+                          index,
+                          buildComments(
+                            "EndGame Comments",
+                            [
+                              buildChips([
+                                "Moved",
+                                "Did Not Move"
+                              ], [
                                 [Colors.green, Colors.red],
                                 [Colors.green, Colors.red]
-                              ],
-                              [true, false]
-                          ),
-                        ],
-                        const Icon(Icons.comment_bank),
-                      ));
+                              ], [
+                                true,
+                                false
+                              ]),
+                            ],
+                            const Icon(Icons.comment_bank),
+                          ));
                       Navigator.pop(context);
                     },
                   ),
                   ListTile(
-                    title:  buildRatings([
-                      buildRating("RatingBar", Icons.access_alarm_outlined, 1.5, 7, Colors.blue),
+                    title: buildRatings([
+                      buildRating("RatingBar", Icons.access_alarm_outlined, 1.5,
+                          7, Colors.blue),
                     ]),
                     onTap: () {
-                      replaceWidget(index, buildRatings([
-                        buildRating("RatingBar", Icons.access_alarm_outlined, 1.5, 7, Colors.blue),
-                      ]));
+                      replaceWidget(
+                          index,
+                          buildRatings([
+                            buildRating(
+                                "RatingBar",
+                                Icons.access_alarm_outlined,
+                                1.5,
+                                7,
+                                Colors.blue),
+                          ]));
                       Navigator.pop(context);
                     },
                   ),
@@ -178,7 +211,6 @@ class EndGameState extends State<EndGameBuilder> {
               );
             }).toList(),
           ),
-
           InkWell(
             onTap: () {
               setState(() {

@@ -1,4 +1,5 @@
 import 'package:dotted_border/dotted_border.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 // Assuming these imports exist and are correctly implemented
 import 'package:scouting_app/components/Map.dart';
@@ -36,7 +37,9 @@ class AutonState extends State<AutonBuilder> {
   void onTap(Offset position) {
     setState(() {
       _circlePosition = position;
-      print(_circlePosition);
+      if (kDebugMode) {
+        print(_circlePosition);
+      }
     });
   }
 
@@ -93,12 +96,34 @@ class AutonState extends State<AutonBuilder> {
                   ),
                   ListTile(
                     title: buildCounterShelf([
-
-                      CounterSettings((int value) {print(value);}, (int value) {}, icon: Icons.star, number: 0, counterText: 'Counter 1', color: Colors.yellowAccent),
-
+                      CounterSettings((int value) {
+                        if (kDebugMode) {
+                          if (kDebugMode) {
+                            print(value);
+                          }
+                        }
+                      }, (int value) {},
+                          icon: Icons.star,
+                          number: 0,
+                          counterText: 'Counter 1',
+                          color: Colors.yellowAccent),
                     ]),
                     onTap: () {
-                      replaceWidget(index, buildCounterShelf([CounterSettings((int value) {print(value);}, (int value) {}, icon: Icons.star, number: 0, counterText: 'Counter 1', color: Colors.yellowAccent)]));
+                      replaceWidget(
+                          index,
+                          buildCounterShelf([
+                            CounterSettings((int value) {
+                              if (kDebugMode) {
+                                if (kDebugMode) {
+                                  print(value);
+                                }
+                              }
+                            }, (int value) {},
+                                icon: Icons.star,
+                                number: 0,
+                                counterText: 'Counter 1',
+                                color: Colors.yellowAccent)
+                          ]));
                       Navigator.pop(context);
                     },
                   ),

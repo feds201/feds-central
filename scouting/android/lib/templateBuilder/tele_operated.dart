@@ -1,4 +1,5 @@
 import 'package:dotted_border/dotted_border.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 // Assuming these imports exist and are correctly implemented
 import 'package:scouting_app/components/Map.dart';
@@ -34,7 +35,9 @@ class TeleOPState extends State<TeleOPBuilder> {
   void onTap(Offset position) {
     setState(() {
       _circlePosition = position;
-      print(_circlePosition);
+      if (kDebugMode) {
+        print(_circlePosition);
+      }
     });
   }
 
@@ -92,7 +95,9 @@ class TeleOPState extends State<TeleOPBuilder> {
                   ListTile(
                     title: buildCounterShelf([
                       CounterSettings((int value) {
-                        print(value);
+                        if (kDebugMode) {
+                          print(value);
+                        }
                       }, (int value) {},
                           icon: Icons.star,
                           number: 0,
@@ -104,7 +109,9 @@ class TeleOPState extends State<TeleOPBuilder> {
                           index,
                           buildCounterShelf([
                             CounterSettings((int value) {
-                              print(value);
+                              if (kDebugMode) {
+                                print(value);
+                              }
                             }, (int value) {},
                                 icon: Icons.star,
                                 number: 0,

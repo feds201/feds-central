@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../components/DataBase.dart';
 import '../components/SwipeCards.dart';
-import 'actions/compactifier.dart';
+import '../components/compactifier.dart';
 
 class LogsPage extends StatelessWidget {
   const LogsPage({Key? key}) : super(key: key);

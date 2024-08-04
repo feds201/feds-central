@@ -4,7 +4,7 @@ import 'package:scouting_app/components/Map.dart';
 import 'package:slider_button/slider_button.dart';
 
 import '../../components/DataBase.dart';
-import '../actions/QrGenerator.dart';
+import '../../components/QrGenerator.dart';
 import '../match.dart';
 
 class EndGame extends StatefulWidget {
