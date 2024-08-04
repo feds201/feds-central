@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+    <link rel="stylesheet" href="home.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
+</head>
+
+<body>
+<nav class="navbar">
+    <div class="navbar-container">
+        <a href="#" class="navbar-logo">
+            <img src="../../assets/logo.bmp" alt="ScoutOps Icon">
+            <span>SCOUT-OPS</span>
+        </a>
+        <div class="navbar-links">
+            <a href="../home/home.html" class="nav-link">Home</a>
+            <a href="../serversHeath/serverZHeath.html" class="nav-link">Servers Heath</a>
+            <a href="../../pages/settings/settings.html" class="nav-link">Settings</a>
+        </div>
+    </div>
+</nav>
+
+<div class="body">
+
+<form class="container w-full h-full" onsubmit="connect(event)">
+    <div class="input-container">
+        <div class="input-content">
+            <div class="input-dist">
+                <div class="input-type">
+                    <label>
+                        <input class="input-is" id="serveraddress" required placeholder="Server's IP Address" />
+                    </label>
+                    <label>
+                        <input class="input-is" id="port" type="number" required placeholder="Port" />
+                    </label>
+                    <button class="submit" type="submit">Connect</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+</div>
+<script src="home.js"></script>
+</body>
+</html>

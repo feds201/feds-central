@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Server Health Dashboard</title>
+    <link rel="stylesheet" href="serverZHeath.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
+    <style>
+        .container {
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        .header {
+            border-bottom: 2px solid #e2e8f0;
+            margin-bottom: 16px;
+        }
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+        .actions {
+            margin-top: 16px;
+        }
+        .actions h2 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .actions button {
+            background-color: #4299e1;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            margin-right: 8px;
+        }
+        .actions button:hover {
+            background-color: #3182ce;
+        }
+        .match-section {
+            margin-top: 16px;
+        }
+        .match-section h2 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .match-section input {
+            border: 1px solid #e2e8f0;
+            padding: 8px;
+            border-radius: 4px;
+            margin-top: 8px;
+        }
+        .match-section button {
+            background-color: #4299e1;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+        .match-section button:hover {
+            background-color: #3182ce;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="navbar-container">
+        <a href="#" class="navbar-logo">
+            <img src="../../assets/logo.bmp" alt="ScoutOps Icon">
+            <span>SCOUT-OPS</span>
+        </a>
+        <div class="navbar-links">
+            <a href="../home/home.html" class="hover:text-orange-400">Home</a>
+            <a href="../../pages/serversHeath/serverZHeath.html" class="hover:text-orange-400">Servers Health</a>
+            <a href="../../pages/settings/settings.html" class="hover:text-orange-400">Settings</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container mx-auto p-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="bg-white shadow-md rounded-lg p-4">
+            <div class="border-b-2 border-gray-200 mb-4">
+                <h1 class="text-2xl font-semibold">Server 1</h1>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <h2 class="text-lg font-semibold">Server Info</h2>
+                    <div class="bg-gray-100 p-3 rounded-md">
+                        <p class="font-medium">Server IP: <span id="server1-ip" class="font-normal"></span></p>
+                    </div>
+                    <div class="bg-gray-100 p-3 rounded-md">
+                        <p class="font-medium">Server Status: <span id="server1-status" class="font-normal"></span></p>
+                    </div>
+                    <div class="bg-gray-100 p-3 rounded-md">
+                        <p class="font-medium">Server Health: <span id="server1-health" class="font-normal"></span></p>
+                    </div>
+                    <div class="bg-gray-100 p-3 rounded-md">
+                        <p class="font-medium">Server CPU Usage: <span id="server1-cpu" class="font-normal"></span></p>
+                    </div>
+                    <div class="bg-gray-100 p-3 rounded-md">
+                        <p class="font-medium">Server Memory Usage: <span id="server1-memory" class="font-normal"></span></p>
+                    </div>
+                    <div class="bg-gray-100 p-3 rounded-md">
+                        <p class="font-medium">Server Storage Usage: <span id="server1-storage" class="font-normal"></span></p>
+                    </div>
+                </div>
+                <div>
+                    <h2 class="text-lg font-semibold">Server Actions</h2>
+                    <div class="flex space-x-2">
+                        <button id="server1-restart" class="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600">Restart</button>
+                        <button id="server1-shutdown" class="bg-red-500 text-white p-2 rounded-md hover:bg-red-600">Shutdown</button>
+                        <button id="server1-delete" class="bg-gray-500 text-white p-2 rounded-md hover:bg-gray-600">Delete</button>
+                        <button id="server1-logs" class="bg-green-500 text-white p-2 rounded-md hover:bg-green-600">Logs</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white shadow-md rounded-lg p-4 flex flex-col h-full">
+            <div class="border-b-2 border-gray-200 mb-4">
+                <h1 class="text-2xl font-semibold">Connected Devices</h1>
+            </div>
+            <div id="device-lists-container" class="space-y-4 flex-1 overflow-y-auto">
+                <!-- Device lists will be populated here -->
+            </div>
+            <div class="mt-4">
+                <h2 class="text-lg font-semibold">Server Actions</h2>
+                <div class="flex space-x-2">
+                    <button onclick="fetchAndUpdateDevices()" class="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600">Refresh</button>
+                    <button onclick="deleteAllDevices()" class="bg-gray-500 text-white p-2 rounded-md hover:bg-gray-600">Delete All</button>
+                   <button onclick="window.open('http://10.0.0.250:5000/devices', '_blank')" class="bg-green-500 text-white p-2 rounded-md hover:bg-green-600">Logs</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white shadow-md rounded-lg p-4 flex flex-col h-full">
+            <div class="border-b-2 border-gray-200 mb-4">
+                <h1 class="text-2xl font-semibold">Data Collected</h1>
+            </div>
+            <div id="data-lists-container" class="space-y-4 flex-1 overflow-y-auto">
+                <!-- Device lists will be populated here -->
+            </div>
+            <div class="mt-4">
+                <h2 class="text-lg font-semibold">Server Actions</h2>
+                <div class="flex space-x-2">
+                    <button onclick="fetchAndUpdateData()" class="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600">Refresh</button>
+                    <button onclick="window.open('http://10.0.0.250:5000/get_data', '_blank')" class="bg-green-500 text-white p-2 rounded-md hover:bg-green-600">Logs</button>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="match-section">
+                <h2>Current Match</h2>
+                <p id="current-match"></p>
+                <input type="text" id="new-match-file" placeholder="Enter new match key">
+                <button class="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600" onclick="uploadMatch()">Upload Match</button>
+                <button class="bg-red-500 text-white p-2 rounded-md hover:bg-red-600" onclick="ClearMatch()">Clear MatchFile</button>
+                
+                
+            </div>
+        </div>
+    </div>
+   
+</div>
+<script src="serverZHeath.js"></script>
+</body>
+</html>

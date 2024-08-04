@@ -1,0 +1,107 @@
+/* serverZHeath.css */
+
+/* Custom styles if needed */
+body {
+    background-color: #f4f4f4;
+}
+
+.navbar-logo img {
+    width: 40px;
+    height: 40px;
+}
+
+.navbar-links a {
+    color: #fff;
+    text-decoration: none;
+    margin-left: 20px;
+}
+
+.navbar-links a:hover {
+    color: #ff9800;
+}
+
+.server-container {
+    display: flex;
+    flex-direction: column;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.server-header {
+    border-bottom: 2px solid #e5e5e5;
+    padding-bottom: 10px;
+}
+
+.info-item {
+    background-color: #f7f7f7;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.server-action {
+    transition: background-color 0.3s ease;
+}
+
+.navbar {
+    background-color: #000;
+    color: #fff;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-container {
+    display: flex;
+    align-items: center;
+}
+
+.navbar-logo {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: #fff;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.navbar-logo img {
+    height: 40px;
+    width: 40px;
+    margin-right: 10px;
+}
+
+.navbar-links {
+    display: flex;
+    align-items: center;
+}
+
+.nav-link {
+    color: #fff;
+    text-decoration: none;
+    margin-left: 20px;
+    font-size: 18px;
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+    color: #ff9800;
+}
+
+.nav-link::after {
+    content: '';
+    display: block;
+    width: 0;
+    height: 2px;
+    background: #ff9800;
+    transition: width 0.3s;
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+}
+
+.nav-link:hover::after {
+    width: 100%;
+}

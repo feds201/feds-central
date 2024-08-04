@@ -1,0 +1,103 @@
+@font-face {
+    font-family: 'Montserrat';
+    src: url('fonts/Montserrat/Montserrat-VariableFont_wght.ttf') format('truetype');
+}
+
+body {
+    margin: 0;
+    font-family: 'Montserrat', sans-serif;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: #000000;
+    color: #ffffff;
+}
+
+nav img {
+    width: 70px;
+    height: 70px;
+}
+
+nav .title {
+    font-size: 30px;
+    color: #fff;
+    letter-spacing: 4px;
+}
+
+nav .links a {
+    color: #fff;
+    margin: 0 10px;
+    text-decoration: none;
+}
+
+/* styles.css */
+.banner-container {
+    position: relative;
+    width: 100%;
+}
+
+.main {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #fff;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.5); /* Optional: Add background for better readability */
+    padding: 20px;
+    border-radius: 10px;
+}
+
+/* After */
+.banner {
+    display: block;
+    justify-content: center;
+    align-items: center;
+    height: 700px;
+    width: 100%;
+    background-size: cover;
+    background-position: center;
+    color: #fff;
+    text-align: center;
+    object-fit: cover; /* Crop the image */
+    object-position: center; /* Center the cropped image */
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+.banner-container {
+    position: relative;
+    width: 100%;
+    height: calc(100vh - 60px); /* Adjust height to fill the space between header and footer */
+}
+
+.banner {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensure the image covers the entire container */
+    object-position: center;
+}
+
+.footer {
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 20px 0;
+    font-size: 14px;
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+    left: 0;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.footer p {
+    margin: 0;
+}
