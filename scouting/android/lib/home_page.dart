@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:scouting_app/Plugins/plugins.dart';
+import 'package:scouting_app/References.dart';
 
 import 'Match_Pages/match_page.dart';
+import 'Pit_Recorder/Pit_Recorder.dart';
 import 'components/nav.dart';
 import 'templateBuilder/builder.dart';
 
@@ -16,6 +18,14 @@ class HomePage extends StatelessWidget {
         drawer: const NavBar(),
         appBar: AppBar(
           actions: [
+            IconButton(
+              icon: const Icon(Icons.attach_file_rounded),
+              onPressed: () {
+                Route route =
+                MaterialPageRoute(builder: (context) => InfiniteZoomImage());
+                Navigator.push(context, route);
+              },
+            ),
             IconButton(
               icon: const Icon(Icons.extension),
               onPressed: () {
@@ -70,7 +80,7 @@ class HomePage extends StatelessWidget {
                         borderColor: Colors.blueAccent,
                         icon: Icons.bookmark_add_outlined,
                         onPressed: () {
-                          // Navigator.push(context, MaterialPageRoute(builder: (context) => const Pit_Recorder()));
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => const Pit_Recorder()));
                         },
                       ),
                       const SizedBox(height: 10),
@@ -106,7 +116,7 @@ class HomePage extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.only(top: 10.0, left: 30.0),
           child: Text(
-            'Scouting',
+            'Scout-Ops',
             style: GoogleFonts.chivoMono(
               fontSize: 60,
               fontWeight: FontWeight.w100,
@@ -116,7 +126,7 @@ class HomePage extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.only(left: 30.0),
           child: Text(
-            'CREATED BY PYINTEL',
+            'CREATED BY FEDS201',
             style: GoogleFonts.chivoMono(
               fontSize: 20,
               fontWeight: FontWeight.w100,

@@ -20,7 +20,7 @@ void main() async {
   await Hive.openBox('autoData');
   await Hive.openBox('teleData');
   await Hive.openBox('endData');
-  await Hive.openBox('pitData');
+  await Hive.openBox<String>('checklists');
   await Hive.openBox('settings');
   runApp(const MyApp());
 }
@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Scouting App 2024',
+      title: 'Scout Ops',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: themeColor),
         useMaterial3: material3,
