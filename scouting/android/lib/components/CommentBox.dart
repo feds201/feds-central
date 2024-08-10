@@ -100,3 +100,4 @@ Widget buildCommentsBox(String title, String comment, Icon titleIcon, Function(S
     ),
   );
 }
+

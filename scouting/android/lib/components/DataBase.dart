@@ -13,22 +13,22 @@ class LocalDataBase {
       throw Exception('Key cannot be null');
     }
 
-    print(' Storing $key as $value');
-      _storage[key.toString()] = value;
+    // print(' Storing $key as $value');
+    _storage[key.toString()] = value;
   }
 
   static dynamic getData(dynamic key) {
-    print('Retrieving $key as ${_storage[key.toString()]}');
+    // print('Retrieving $key as ${_storage[key.toString()]}');
     return _storage[key.toString()];
   }
 
   static void deleteData(String key) {
-    print('Deleting $key');
+    // print('Deleting $key');
     _storage.remove(key);
   }
 
   static void clearData() {
-    print('Clearing all data');
+    // print('Clearing all data');
     _storage.clear();
   }
 
@@ -62,17 +62,43 @@ class LocalDataBase {
     dataMap.remove('Types.matchFile');
     return jsonDecode(correctJsonFormat(dataMap.toString()));
   }
+
+  static void setPitMatchKey(String key) {
+    _storage['PitData.EventKey'] = key;
+  }
+
+  static getPitMatchKey() {
+    return _storage['PitData.EventKey'];
+  }
+
+  static List<String> getPitScoutedTeam() {
+    if (_storage['PitData.ScoutedTeam'] == null) {
+      _storage['PitData.ScoutedTeam'] = [];
+    }
+    return List<String>.from(_storage['PitData.ScoutedTeam']);
+  }
+
+  static void setPitScoutedTeam(String team) {
+    if (_storage['PitData.ScoutedTeam'] == null) {
+      _storage['PitData.ScoutedTeam'] = [];
+    }
+    List<String> scoutedTeams =
+        List<String>.from(_storage['PitData.ScoutedTeam']);
+    scoutedTeams.add(team);
+    _storage['PitData.ScoutedTeam'] = scoutedTeams;
+  }
+
 }
 
 class MatchLogs {
   static List<String> _logs = [];
   static void addLog(String log) {
-    print(_logs);
+    // print(_logs);
     _logs.add(log);
   }
 
   static List<String> getLogs() {
-    print(_logs);
+    // print(_logs);
     return _logs;
   }
 
@@ -92,6 +118,7 @@ enum AutoType {
   Chip2,
   Chip3
 }
+
 enum EndgameType { endLocation, climbed, harmony, attempted, spotlight }
 
 enum TeleType {
@@ -103,4 +130,9 @@ enum TeleType {
   AmplifiedSpeakerNotes,
   CoOpBonus,
   Assists
+}
+
+enum PitData {
+  EventKey,
+  ScoutedTeam,
 }

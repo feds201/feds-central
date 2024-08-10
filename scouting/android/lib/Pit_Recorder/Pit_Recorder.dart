@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:hive/hive.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 
 import 'CheckLists.dart';
@@ -43,18 +42,17 @@ class _Pit_RecorderState extends State<Pit_Recorder> {
       _searchQuery = query;
       _filteredTeams = _teams
           .where((team) =>
-      team.nickname.toLowerCase().contains(query.toLowerCase()) ||
-          team.teamNumber.toString().contains(query))
+              team.nickname.toLowerCase().contains(query.toLowerCase()) ||
+              team.teamNumber.toString().contains(query))
           .toList();
     });
   }
 
-  void _selectTeam(Team team) {
+  void _selectTeam(BuildContext context, Team team) {
+    print("Selected team is : ${team.teamNumber}");
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => ChecklistPage(team: team),
-      ),
+      MaterialPageRoute(builder: (context) => Checklists(team: team)),
     );
   }
 
@@ -91,7 +89,7 @@ class _Pit_RecorderState extends State<Pit_Recorder> {
                 final team = _filteredTeams[index];
                 return ListTile(
                   title: Text('Team ${team.teamNumber}: ${team.nickname}'),
-                  onTap: () => _selectTeam(team),
+                  onTap: () => _selectTeam(context, team),
                 );
               },
             ),
@@ -108,18 +106,26 @@ class _Pit_RecorderState extends State<Pit_Recorder> {
 }
 
 Future<List<Team>> fetchTeams() async {
-  final response = await http.get(
-    Uri.parse('https://www.thebluealliance.com/api/v3/event/2024miket/teams'),
-    headers: {'X-TBA-Auth-Key': '2ujRBcLLwzp008e9TxIrLYKG6PCt2maIpmyiWtfWGl2bT6ddpqGLoLM79o56mx3W'},
-  );
-
-  if (response.statusCode == 200) {
-    List<dynamic> teamsJson = json.decode(response.body);
-    return teamsJson.map((json) => Team.fromJson(json)).toList();
-  } else {
-    throw Exception('Failed to load teams');
-  }
+  var dd =
+      '[{"team_number": 201, "nickname": "Team 1", "city": "City 1", "state_prov": "State 1", "country": "Country 1", "website": "Website 1"}, {"team_number": 2, "nickname": "Team 2", "city": "City 2", "state_prov": "State 2", "country": "Country 2", "website": "Website 2"}]';
+  dd = await Hive.box('pitData').get('teams');
+  List<dynamic> teamsJson = json.decode(dd);
+  return teamsJson.map((json) => Team.fromJson(json)).toList();
 }
+// Future<List<Team>> fetchTeams() async {
+//   final response = await http.get(
+//     Uri.parse('https://www.thebluealliance.com/api/v3/event/2022miroc/teams'),
+//     headers: {'X-TBA-Auth-Key': '2ujRBcLLwzp008e9TxIrLYKG6PCt2maIpmyiWtfWGl2bT6ddpqGLoLM79o56mx3W'},
+//   );
+//
+//
+//   if (response.statusCode == 200) {
+//     List<dynamic> teamsJson = json.decode(response.body);
+//     return teamsJson.map((json) => Team.fromJson(json)).toList();
+//   } else {
+//     throw Exception('Failed to load teams');
+//   }
+// }
 
 class Team {
   final int teamNumber;
@@ -146,89 +152,6 @@ class Team {
       stateProv: json['state_prov'],
       country: json['country'],
       website: json['website'],
-    );
-  }
-}
-
-class ChecklistPage extends StatefulWidget {
-  final Team team;
-
-  const ChecklistPage({super.key, required this.team});
-
-  @override
-  _ChecklistPageState createState() => _ChecklistPageState();
-}
-
-class _ChecklistPageState extends State<ChecklistPage> {
-  late Box<String> _generalTasksBox;
-  late Box<String> _teamStatesBox;
-  List<TaskState> _taskStates = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _generalTasksBox = Hive.box<String>('generalTasks');
-    _openTeamBox();
-    _loadChecklist();
-  }
-
-  Future<void> _openTeamBox() async {
-    String boxName = 'team_${widget.team.teamNumber}_states';
-    if (!Hive.isBoxOpen(boxName)) {
-      _teamStatesBox = await Hive.openBox<String>(boxName);
-    } else {
-      _teamStatesBox = Hive.box<String>(boxName);
-    }
-  }
-
-  void _loadChecklist() {
-    final generalTasksJson = _generalTasksBox.get('tasks');
-    if (generalTasksJson != null) {
-      final checklist = Checklist.fromJson(generalTasksJson);
-      _taskStates = checklist.tasks.map((task) {
-        final taskJson = _teamStatesBox.get(task);
-        if (taskJson != null) {
-          return TaskState.fromJson(json.decode(taskJson));
-        }
-        return TaskState(task: task);
-      }).toList();
-      setState(() {});
-    }
-  }
-
-  void _toggleTaskState(int index) {
-    setState(() {
-      _taskStates[index].isCompleted = !_taskStates[index].isCompleted;
-      _teamStatesBox.put(_taskStates[index].task, json.encode(_taskStates[index].toJson()));
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Checklist for Team ${widget.team.teamNumber}'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: () {
-              // Add task editing logic here
-            },
-          ),
-        ],
-      ),
-      body: ListView.builder(
-        itemCount: _taskStates.length,
-        itemBuilder: (context, index) {
-          return CheckboxListTile(
-            title: Text(_taskStates[index].task),
-            value: _taskStates[index].isCompleted,
-            onChanged: (bool? value) {
-              _toggleTaskState(index);
-            },
-          );
-        },
-      ),
     );
   }
 }

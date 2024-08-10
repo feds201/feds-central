@@ -17,11 +17,8 @@ void main() async {
   await Hive.initFlutter();
   await Hive.openBox('userData');
   await Hive.openBox('matchData');
-  await Hive.openBox('autoData');
-  await Hive.openBox('teleData');
-  await Hive.openBox('endData');
-  await Hive.openBox<String>('checklists');
   await Hive.openBox('settings');
+  await Hive.openBox('pitData');
   runApp(const MyApp());
 }
 

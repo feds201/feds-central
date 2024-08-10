@@ -76,7 +76,7 @@ class AutonState extends State<AutonBuilder> {
                   ),
                   const SizedBox(width: double.infinity),
                   ListTile(
-                    title: TeamInfo(
+                    title: MatchInfo(
                       assignedTeam: "201",
                       assignedStation: "R1",
                       allianceColor: "Red",
@@ -85,7 +85,7 @@ class AutonState extends State<AutonBuilder> {
                     onTap: () {
                       replaceWidget(
                           index,
-                          TeamInfo(
+                          MatchInfo(
                             assignedTeam: "201",
                             assignedStation: "R1",
                             allianceColor: "Red",

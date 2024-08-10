@@ -82,7 +82,7 @@ class AutonState extends State<Auton> {
     return SingleChildScrollView(
       child: Column(
         children: [
-          TeamInfo(
+          MatchInfo(
             assignedTeam: assignedTeam,
             assignedStation: assignedStation,
             allianceColor: allianceColor,

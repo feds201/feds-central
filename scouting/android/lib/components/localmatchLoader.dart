@@ -114,19 +114,33 @@ class _localmatchLoaderState extends State<localmatchLoader> {
       'X-TBA-Auth-Key':
           '2ujRBcLLwzp008e9TxIrLYKG6PCt2maIpmyiWtfWGl2bT6ddpqGLoLM79o56mx3W'
     };
-    var response = await http.get(
+    var responseForMatchData = await http.get(
         Uri.parse(
             'https://www.thebluealliance.com/api/v3/event/$eventKey/matches'),
         headers: headers);
 
-    if (response.statusCode == 200) {
+    if (responseForMatchData.statusCode == 200) {
       if (kDebugMode) {
         print('Success');
       }
       setState(() {
         isLoading = true;
       });
-      Hive.box('matchData').put('matches', jsonDecode(response.body));
+      Hive.box('matchData').put('matches', jsonDecode(responseForMatchData.body));
+    }
+    var responseForPitData = await http.get(
+        Uri.parse(
+            'https://www.thebluealliance.com/api/v3/event/$eventKey/teams'),
+        headers: headers);
+
+    if (responseForPitData.statusCode == 200) {
+      if (kDebugMode) {
+        print('Success');
+      }
+      setState(() {
+        isLoading = true;
+      });
+      Hive.box('pitData').put('teams', (responseForPitData.body));
     }
   }
 }

@@ -75,7 +75,7 @@ class HomePage extends StatelessWidget {
                       const SizedBox(height: 10),
                       buildButton(
                         context: context,
-                        text: 'Record pit data',
+                        text: 'Record Pit',
                         color: Colors.blue.shade100,
                         borderColor: Colors.blueAccent,
                         icon: Icons.bookmark_add_outlined,
@@ -86,7 +86,7 @@ class HomePage extends StatelessWidget {
                       const SizedBox(height: 10),
                       buildButton(
                         context: context,
-                        text: 'Create a template',
+                        text: 'Create a Template',
                         color: Colors.red.shade100,
                         borderColor: Colors.redAccent,
                         icon: Icons.style_outlined,

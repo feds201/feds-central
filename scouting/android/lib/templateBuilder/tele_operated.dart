@@ -74,7 +74,7 @@ class TeleOPState extends State<TeleOPBuilder> {
                   ),
                   const SizedBox(width: double.infinity),
                   ListTile(
-                    title: TeamInfo(
+                    title: MatchInfo(
                       assignedTeam: "201",
                       assignedStation: "R1",
                       allianceColor: "Red",
@@ -83,7 +83,7 @@ class TeleOPState extends State<TeleOPBuilder> {
                     onTap: () {
                       replaceWidget(
                           index,
-                          TeamInfo(
+                          MatchInfo(
                             assignedTeam: "201",
                             assignedStation: "R1",
                             allianceColor: "Red",

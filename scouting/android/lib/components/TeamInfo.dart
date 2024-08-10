@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-class TeamInfo extends StatelessWidget {
+class MatchInfo extends StatelessWidget {
   final String assignedTeam;
   final String assignedStation;
   final String allianceColor;
   final VoidCallback onPressed;
 
-  TeamInfo({
+  MatchInfo({
     required this.assignedTeam,
     required this.assignedStation,
     required this.allianceColor,
@@ -23,8 +23,8 @@ class TeamInfo extends StatelessWidget {
   }
 
   // Create a widget from a map
-  factory TeamInfo.fromJson(Map<String, dynamic> json, VoidCallback onPressed) {
-    return TeamInfo(
+  factory MatchInfo.fromJson(Map<String, dynamic> json, VoidCallback onPressed) {
+    return MatchInfo(
       assignedTeam: json['assignedTeam'],
       assignedStation: json['assignedStation'],
       allianceColor: json['allianceColor'],
@@ -109,6 +109,101 @@ class TeamInfo extends StatelessWidget {
                   ),
                 ),
               ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+class TeamInfo extends StatelessWidget {
+  final int teamNumber;
+  final String nickname;
+  final String? city;
+  final String? stateProv;
+  final String? country;
+  final String? website;
+
+  const TeamInfo({
+    Key? key,
+    required this.teamNumber,
+    required this.nickname,
+    this.city,
+    this.stateProv,
+    this.country,
+    this.website,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Card(
+        color: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20.0),
+        ),
+        elevation: 8,
+        shadowColor: Colors.white,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Icon(Icons.engineering, size: 32, color: Colors.blueAccent),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      'Team $teamNumber: $nickname',
+                      style: const TextStyle(
+                        fontSize: 26,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              Divider(height: 20, thickness: 2),
+              if (city != null || stateProv != null || country != null)
+                Row(
+                  children: [
+                    Icon(Icons.location_on, size: 20, color: Colors.redAccent),
+                    SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        '${city ?? ''}${city != null && stateProv != null ? ', ' : ''}${stateProv ?? ''}${(city != null || stateProv != null) && country != null ? ', ' : ''}${country ?? ''}',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ],
+                ),
+              if (website != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 12.0),
+                  child: Row(
+                    children: [
+                      Icon(Icons.link, size: 20, color: Colors.green),
+                      SizedBox(width: 6),
+                      Expanded(
+                        child: InkWell(
+                          onTap: () {
+                            // Launch website
+                          },
+                          child: Text(
+                            website!,
+                            style: TextStyle(
+                              color: Colors.blue,
+                              fontSize: 16,
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
             ],
           ),
         ),

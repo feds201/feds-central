@@ -74,7 +74,7 @@ class EndGameState extends State<EndGameBuilder> {
                   ),
                   const SizedBox(width: double.infinity),
                   ListTile(
-                    title: TeamInfo(
+                    title: MatchInfo(
                       assignedTeam: "201",
                       assignedStation: "R1",
                       allianceColor: "Red",
@@ -83,7 +83,7 @@ class EndGameState extends State<EndGameBuilder> {
                     onTap: () {
                       replaceWidget(
                           index,
-                          TeamInfo(
+                          MatchInfo(
                             assignedTeam: "201",
                             assignedStation: "R1",
                             allianceColor: "Red",

@@ -163,52 +163,7 @@ class SettingsPageState extends State<SettingsPage> {
               ),
             ),
             const SizedBox(height: 10),
-            Container(
-              padding: const EdgeInsets.all(10),
-              margin: const EdgeInsets.only(
-                left: 10,
-                right: 10,
-              ),
-              width: double.infinity,
-              decoration: const BoxDecoration(
-                color: Color.fromARGB(205, 241, 255, 241),
-              ),
-              child: Column(
-                children: [
-                  ShaderMask(
-                    shaderCallback: (bounds) => const LinearGradient(
-                      colors: [Colors.purple, Colors.blue],
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                    ).createShader(bounds),
-                    child: const Align(
-                      alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Coming soon!!',
-                      style: TextStyle(
-                        fontSize: 20,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                  ),
-                  const SizedBox(height: 10),
-                  const Text(
-                    'This feature is not yet available. Please check back later.',
-                    style: TextStyle(
-                      fontSize: 15,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  const Text(
-                    'This feature will allow you to connect to other devices and share match data, via Bluetooth or LoRa.',
-                    style: TextStyle(
-                      fontSize: 15,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+
             ButtonBar(
               alignment: MainAxisAlignment.center,
               children: [
