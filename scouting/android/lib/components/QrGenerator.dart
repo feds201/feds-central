@@ -228,11 +228,9 @@ class QrCoder extends State<Qrgenerator> {
               TextButton(
                 child: const Text('OK'),
                 onPressed: () async {
-                  await Navigator.push(
+                  await Navigator.pushNamed(
                     context,
-                    MaterialPageRoute(
-                      builder: (context) => const HomePage(),
-                    ),
+                    '/home',
                   );
                 },
               ),

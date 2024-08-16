@@ -126,7 +126,7 @@ class HomePage extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.only(left: 30.0),
           child: Text(
-            'CREATED BY FEDS201',
+            'FABRICATED BY FEDS201',
             style: GoogleFonts.chivoMono(
               fontSize: 20,
               fontWeight: FontWeight.w100,

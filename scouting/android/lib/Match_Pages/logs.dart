@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 
@@ -74,7 +73,6 @@ class LogsPage extends StatelessWidget {
     try {
       String correctedJsonString = correctJsonFormat(jsonString);
       Map<String, dynamic> jsonObject = jsonDecode(correctedJsonString);
-      // Add more fields as needed
       return [
         jsonObject['TypeseventKey'],
         jsonObject['TypesallianceColor'],

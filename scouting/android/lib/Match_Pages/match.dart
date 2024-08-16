@@ -1,6 +1,3 @@
-
-
-
 import 'package:flutter/material.dart';
 
 import '../components/DataBase.dart';
@@ -22,8 +19,6 @@ class MatchState extends State<Match> {
   String _selectedStation = "";
   String _team = "";
 
-
-
   @override
   void initState() {
     super.initState();
@@ -31,14 +26,16 @@ class MatchState extends State<Match> {
     // _allianceColor = "red";
     _selectedStation = LocalDataBase.getData(Types.selectedStation);
     // _selectedStation = "R1";
-    _team = (LocalDataBase.getData(Types.matchFile))['alliances'][_allianceColor.toLowerCase()]['team_keys'][int.parse(_selectedStation.substring(1)) - 1].substring(3).toString();
+    _team = (LocalDataBase.getData(Types.matchFile))['alliances']
+                [_allianceColor.toLowerCase()]['team_keys']
+            [int.parse(_selectedStation.substring(1)) - 1]
+        .substring(3)
+        .toString();
   }
-
 
   @override
   Widget build(BuildContext context) {
     LocalDataBase.putData(Types.team, _team);
-
 
     return Scaffold(
       appBar: AppBar(
@@ -81,8 +78,7 @@ class MatchState extends State<Match> {
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor:
-            _allianceColor == "Red" ? Colors.red : Colors.blue,
+        selectedItemColor: _allianceColor == "Red" ? Colors.red : Colors.blue,
         onTap: (int index) {
           setState(() {
             _selectedIndex = index;
@@ -91,6 +87,7 @@ class MatchState extends State<Match> {
       ),
     );
   }
+
   _match(BuildContext context, int selectedIndex) {
     switch (selectedIndex) {
       case 0:
@@ -103,10 +100,6 @@ class MatchState extends State<Match> {
   }
 }
 
-
-
-
-
 enum Types {
   eventKey,
   matchKey,
@@ -116,4 +109,3 @@ enum Types {
   matchFile,
   team
 }
-
