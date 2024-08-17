@@ -4,167 +4,279 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Device Data</title>
-    <style>
-        /* Global Styles */
-        :root {
-            --primary-color: rgba(255, 255, 255, 0.2);
-            --dark-primary-color: rgba(0, 0, 0, 0.6);
-            --background-color: rgba(255, 255, 255, 0.1);
-            --dark-background-color: rgba(0, 0, 0, 0.5);
-            --text-color: #fff;
-            --dark-text-color: #333;
-            --glass-color: rgba(255, 255, 255, 0.2);
-            --dark-glass-color: rgba(0, 0, 0, 0.2);
-        }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-image: linear-gradient(to bottom right, #4CAF50, #3e8e41);
-            background-size: cover;
-            color: var(--text-color);
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            overflow: hidden;
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        header {
-            background-color: var(--primary-color);
-            backdrop-filter: blur(10px);
-            color: var(--text-color);
-            padding: 1.5em;
-            text-align: center;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            margin-bottom: 2em;
-            width: 80%;
-            max-width: 600px;
-            transition: background-color 0.3s;
-        }
-
-        nav ul {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            gap: 1.5em;
-        }
-
-        nav li {
-            margin: 0;
-        }
-
-        nav a {
-            display: inline-block;
-            padding: 0.7em 1.5em;
-            text-decoration: none;
-            color: var(--text-color);
-            background-color: var(--glass-color);
-            border-radius: 8px;
-            transition: background-color 0.3s, transform 0.3s;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-        }
-
-        nav a:hover {
-            background-color: var(--dark-glass-color);
-            transform: translateY(-5px);
-        }
-
-        .dark-mode {
-            background-image: linear-gradient(to bottom right, #333, #444);
-            color: var(--dark-text-color);
-        }
-
-        .dark-mode header {
-            background-color: var(--dark-primary-color);
-        }
-
-        .dark-mode nav a {
-            background-color: var(--dark-glass-color);
-        }
-
-        .dark-mode nav a:hover {
-            background-color: var(--glass-color);
-        }
-
-        .toggle-switch {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 100;
-        }
-
-        .toggle-switch input[type="checkbox"] {
-            display: none;
-        }
-
-        .toggle-switch label {
-            cursor: pointer;
-            width: 52px;
-            height: 27px;
-            background: var(--glass-color);
-            display: block;
-            border-radius: 100px;
-            position: relative;
-            backdrop-filter: blur(10px);
-            transition: background-color 0.3s;
-        }
-
-        .toggle-switch label span {
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            width: 23px;
-            height: 23px;
-            background: var(--text-color);
-            border-radius: 90px;
-            transition: left 0.3s;
-        }
-
-        .toggle-switch input[type="checkbox"]:checked + label {
-            background: var(--primary-color);
-        }
-        .toggle-switch input[type="checkbox"]:checked + label span {
-            left: calc(100% - 2px);
-            transform: translateX(-100%);
-        }
-    </style>
 </head>
 <body>
     <div class="toggle-switch">
         <input type="checkbox" id="darkModeToggle">
-        <label for="darkModeToggle">Toggle Dark Mode</label>
     </div>
     <header>
         <h1>Device Data</h1>
     </header>
     <main>
-        <ul>
+        <center>
+        <ul class="data-list">
             {% for entry in data %}
-                <li>{{ entry[0] }}: {{ entry[1] }}
-                    <form action="/clear_data/{{ entry[2] }}" method="post" style="display:inline;">
-                        <button type="submit">Clear Data</button>
+            <li class="data-item">
+                <span class="data-info">{{ entry[0] }}: {{ entry[1] }}</span>
+                <div class="action-buttons">
+                    <form action="/clear_data/{{ entry[2] }}" method="post" class="clear-form">
+                        <button type="submit" class="clear-button">Clear Data</button>
                     </form>
-                </li>
+                    <form action="/generate_qrcode/{{ entry[2] }}" method="post" class="qrcode-form">
+                        <button type="submit" class="qrcode-button">QRCODE</button>
+                    </form>
+                </div>
+            </li>
             {% endfor %}
         </ul>
-        <form action="/clear_data" method="post">
-            <button type="submit">Clear All Data</button>
-        </form>
-        <a href="/">Home</a>
+        <nav>
+            <ul class="navigation-list">
+                <li><a href="/clear_data" class="nav-link">Clear All Data</a></li>
+                <li><a href="/" class="nav-link">Home</a></li>
+            </ul>
+        </nav>
+        </center>
     </main>
-    <script>
-        const toggleSwitch = document.getElementById('darkModeToggle');
-        toggleSwitch.addEventListener('change', () => {
-            document.body.classList.toggle('dark-mode');
-        });
-    </script>
+
+
 </body>
+<style>
+    /* Data List Styles */
+.data-list {
+    list-style: none;
+    padding: 0;
+    margin: 1.5em 0;
+    max-width: 80%
+}
+
+.data-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 1em 1.5em;
+    margin-bottom: 1em;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.data-info {
+    font-size: 1.2em;
+    color: #fff;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 0.5em;
+}
+
+.clear-form, .qrcode-form {
+    margin: 0;
+}
+
+.clear-button, .qrcode-button {
+    background-color: rgba(255, 0, 0, 0.7);
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 0.5em 1em;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.clear-button:hover, .qrcode-button:hover {
+    background-color: rgba(255, 0, 0, 0.9);
+    transform: translateY(-2px);
+}
+
+/* Navigation Styles */
+.navigation-list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    gap: 1.5em;
+}
+
+.nav-link {
+    display: inline-block;
+    padding: 0.7em 1.5em;
+    text-decoration: none;
+    color: var(--text-color);
+    background-color: var(--glass-color);
+    border-radius: 8px;
+    transition: background-color 0.3s, transform 0.3s;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.nav-link:hover {
+    background-color: var(--dark-glass-color);
+    transform: translateY(-5px);
+}
+
+    :root {
+           --primary-color: rgba(255, 255, 255, 0.2);
+           --dark-primary-color: rgba(0, 0, 0, 0.7);
+           --background-color: rgba(255, 255, 255, 0.1);
+           --dark-background-color: rgba(0, 0, 0, 0.6);
+           --text-color: #fff;
+           --dark-text-color: #ccc;
+           --glass-color: rgba(255, 255, 255, 0.3);
+           --dark-glass-color: rgba(0, 0, 0, 0.3);
+       }
+
+       body {
+           font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+           background-image: linear-gradient(to bottom right, #4CAF50, #3e8e41);
+           background-size: cover;
+           color: var(--text-color);
+           margin: 0;
+           padding: 0;
+           display: flex;
+           flex-direction: column;
+           align-items: center;
+           justify-content: center;
+           height: 100vh;
+           transition: background-color 0.3s, color 0.3s;
+           overflow: hidden;
+       }
+
+       header {
+           background-color: var(--primary-color);
+           backdrop-filter: blur(15px);
+           color: var(--text-color);
+           padding: 2em;
+           text-align: center;
+           border-radius: 15px;
+           box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+           margin-bottom: 2.5em;
+           width: 90%;
+           max-width: 700px;
+           transition: background-color 0.3s;
+       }
+
+       header h1 {
+           font-size: 2.5em;
+           font-weight: bold;
+           margin: 0;
+       }
+
+       nav ul {
+           list-style: none;
+           margin: 0;
+           padding: 0;
+           display: flex;
+           justify-content: space-around;
+           gap: 2em;
+           width: 100%;
+           max-width: 700px;
+       }
+
+       nav li {
+           margin: 0;
+       }
+
+       nav a {
+           display: block;
+           padding: 0.75em 2em;
+           text-decoration: none;
+           color: var(--text-color);
+           background-color: var(--glass-color);
+           border-radius: 10px;
+           transition: background-color 0.3s, transform 0.3s;
+           backdrop-filter: blur(10px);
+           box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+       }
+
+       nav a:hover {
+           background-color: var(--dark-glass-color);
+           transform: translateY(-3px);
+       }
+
+       .dark-mode {
+           background-image: linear-gradient(to bottom right, #2e2e2e, #444);
+           color: var(--dark-text-color);
+       }
+
+       .dark-mode header {
+           background-color: var(--dark-primary-color);
+       }
+
+       .dark-mode nav a {
+           background-color: var(--dark-glass-color);
+       }
+
+       .dark-mode nav a:hover {
+           background-color: var(--glass-color);
+       }
+
+       .toggle-switch {
+           position: fixed;
+           top: 20px;
+           right: 20px;
+           z-index: 100;
+       }
+
+       .toggle-switch input[type="checkbox"] {
+           display: none;
+       }
+
+       .toggle-switch label {
+           cursor: pointer;
+           width: 52px;
+           height: 27px;
+           background: var(--glass-color);
+           display: block;
+           border-radius: 100px;
+           position: relative;
+           backdrop-filter: blur(10px);
+           transition: background-color 0.3s;
+       }
+
+       .toggle-switch label span {
+           position: absolute;
+           top: 2px;
+           left: 2px;
+           width: 23px;
+           height: 23px;
+           background: var(--text-color);
+           border-radius: 90px;
+           transition: left 0.3s;
+       }
+
+       .toggle-switch input[type="checkbox"]:checked+label {
+           background: var(--primary-color);
+       }
+
+       .toggle-switch input[type="checkbox"]:checked+label span {
+           left: calc(100% - 2px);
+           transform: translateX(-100%);
+       }
+
+       @media (max-width: 600px) {
+           header {
+               width: 90%;
+               padding: 1.5em;
+           }
+
+           nav ul {
+               flex-direction: column;
+               gap: 1em;
+           }
+
+           nav a {
+               width: 100%;
+               text-align: center;
+           }
+       }
+</style>
+<script>
+    const toggleSwitch = document.getElementById('darkModeToggle');
+    toggleSwitch.addEventListener('change', () => {
+        document.body.classList.toggle('dark-mode');
+    });
+</script>
 </html>

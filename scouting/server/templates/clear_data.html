@@ -138,21 +138,30 @@
     </style>
 </head>
 <body>
-    <div class="toggle-switch">
-        <input type="checkbox" id="darkModeToggle">
-        <label for="darkModeToggle">Toggle Dark Mode</label>
-    </div>
-    <header>
-        <h1>{{ message }}</h1>
-    </header>
-    <main>
-        <a href="/">Home</a>
-    </main>
-    <script>
-        const toggleSwitch = document.getElementById('darkModeToggle');
-        toggleSwitch.addEventListener('change', () => {
-            document.body.classList.toggle('dark-mode');
-        });
-    </script>
+<div class="toggle-switch">
+    <input type="checkbox" id="darkModeToggle">
+    <label for="darkModeToggle">Toggle Dark Mode</label>
+</div>
+
+<header>
+
+    <nav>
+        <ul>
+            <h1>{{ message }}</h1>
+        </ul>
+    </nav>
+    <nav>
+        <ul>
+            <li><a href="/get_data">Clear All Data</a></li>
+            <li><a href="/">Home</a></li>
+        </ul>
+    </nav>
+</header>
+<script>
+    const toggleSwitch = document.getElementById('darkModeToggle');
+    toggleSwitch.addEventListener('change', () => {
+        document.body.classList.toggle('dark-mode');
+    });
+</script>
 </body>
 </html>
