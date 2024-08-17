@@ -24,7 +24,7 @@ pyinstaller --noconfirm --onefile --console ^
 --add-data ".\templates\devices.html;." ^
 --add-data ".\templates\index.html;." ^
 --add-data ".\templates\info.html;." ^
---add-data ".\App\android.apk;." ^
+--add-data ".\App\app-release.apk;." ^
 --distpath ".\Output" ^
 ".\server.py"
 
