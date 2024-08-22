@@ -4,18 +4,38 @@
   "main": "main.js",
   "scripts": {
     "test": "npm run dev",
-    "start": "electron ."
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
   },
-  "author": "Ritesh Rajh AS",
+  "author": "Ritesh Raj AS",
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "electron": "^31.3.1"
-  },
-  "proxy": "http://10.0.0.250:5000",
-  "dependencies": {
     "electron": "^31.3.1",
+    "electron-builder": "^24.5.2",
+    "prettier": "^3.3.3"
+  },
+  "dependencies": {
     "electron-store": "^10.0.0",
     "node": "^20.16.0"
+  },
+  "build": {
+    "appId": "com.pyintel.scoutops",
+    "productName": "ScoutOps",
+    "files": [
+      "main.js",
+      "dist/**/*",
+      "node_modules/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": true,
+      "allowToChangeInstallationDirectory": true
+    }
   }
 }

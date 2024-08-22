@@ -6,6 +6,22 @@
     <link rel="stylesheet" href="serverZHeath.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
     <style>
+        #notification {
+
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        #notification.show {
+            opacity: 1;
+        }
         .container {
             background-color: white;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -49,28 +65,87 @@
             font-size: 18px;
             font-weight: 600;
         }
-        .match-section input {
+        .match-section input[type="file"] {
             border: 1px solid #e2e8f0;
             padding: 8px;
             border-radius: 4px;
             margin-top: 8px;
+            display: block;
+            width: 100%;
+            cursor: pointer;
+        }
+        .match-section input[type="text"] {
+            border: 1px solid #e2e8f0;
+            padding: 8px;
+            border-radius: 4px;
+            margin-top: 8px;
+            display: block;
+            width: 100%;
         }
         .match-section button {
+            color: white;
+            padding: 8px 16px;
+            display: inline-block;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+        .match-section input[type="file"] {
+            /*// Give a Materal Ui theme*/
+            background-color: #fff;
+            border-radius: 4px;
+            border: 1px solid #ced4da;
+            color: #495057;
+            cursor: pointer;
+            display: inline-block;
+            font-size: 1rem;
+            line-height: 1.5;
+            padding: .375rem .75rem;
+            text-align: center;
+            vertical-align: middle;
+            white-space: nowrap;
+            width: 100%;
+        }
+        .match-section input[type="file"]  {
             background-color: #4299e1;
             color: white;
             padding: 8px 16px;
             border-radius: 4px;
             border: none;
             cursor: pointer;
-            margin-top: 8px;
+            margin-right: 8px;
         }
-        .match-section button:hover {
+        .file-upload-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+        .file-upload-input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+        .file-upload-button {
+            background-color: #3e9508;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+        }
+        .file-upload-button:hover {
             background-color: #3182ce;
         }
     </style>
 </head>
 <body>
-
+<div id="notification">Notification message</div>
 <nav class="navbar">
     <div class="navbar-container">
         <a href="#" class="navbar-logo">
@@ -124,7 +199,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="bg-white shadow-md rounded-lg p-4 flex flex-col h-full">
             <div class="border-b-2 border-gray-200 mb-4">
                 <h1 class="text-2xl font-semibold">Connected Devices</h1>
@@ -137,11 +212,11 @@
                 <div class="flex space-x-2">
                     <button onclick="fetchAndUpdateDevices()" class="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600">Refresh</button>
                     <button onclick="deleteAllDevices()" class="bg-gray-500 text-white p-2 rounded-md hover:bg-gray-600">Delete All</button>
-                   <button onclick="window.open('http://10.0.0.250:5000/devices', '_blank')" class="bg-green-500 text-white p-2 rounded-md hover:bg-green-600">Logs</button>
+                   <button onclick="openLogs()" class="bg-green-500 text-white p-2 rounded-md hover:bg-green-600">Logs</button>
                 </div>
             </div>
         </div>
-        
+
         <div class="bg-white shadow-md rounded-lg p-4 flex flex-col h-full">
             <div class="border-b-2 border-gray-200 mb-4">
                 <h1 class="text-2xl font-semibold">Data Collected</h1>
@@ -153,24 +228,38 @@
                 <h2 class="text-lg font-semibold">Server Actions</h2>
                 <div class="flex space-x-2">
                     <button onclick="fetchAndUpdateData()" class="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600">Refresh</button>
-                    <button onclick="window.open('http://10.0.0.250:5000/get_data', '_blank')" class="bg-green-500 text-white p-2 rounded-md hover:bg-green-600">Logs</button>
+                    <button onclick="openLogs()" class="bg-green-500 text-white p-2 rounded-md hover:bg-green-600">Logs</button>
                 </div>
             </div>
         </div>
         <div class="container">
-            <div class="match-section">
-                <h2>Current Match</h2>
-                <p id="current-match"></p>
-                <input type="text" id="new-match-file" placeholder="Enter new match key">
-                <button class="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600" onclick="uploadMatch()">Upload Match</button>
-                <button class="bg-red-500 text-white p-2 rounded-md hover:bg-red-600" onclick="ClearMatch()">Clear MatchFile</button>
-                
-                
-            </div>
+    <div class="match-section">
+        <h2>Current Match</h2>
+        <p id="current-match"></p>
+
+        <input type="text" id="new-match-file" placeholder="Enter new match key">
+        <button class="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600" onclick="uploadEvent()">Send Event</button>
+        <button class="bg-red-500 text-white p-2 rounded-md hover:bg-red-600" onclick="clearEvent()">Clear MatchFile</button>
+        <div class="file-upload-wrapper">
+            <button class="file-upload-button" id="customFileButton">Choose File</button>
+            <input type="file" class="file-upload-input" id="event-file" accept=".json" onchange="updateFileName()">
         </div>
     </div>
-   
+</div>
+    </div>
+
 </div>
 <script src="serverZHeath.js"></script>
+<script>
+    function updateFileName() {
+        const fileInput = document.getElementById('event-file');
+        const fileButton = document.getElementById('customFileButton');
+        if (fileInput.files.length > 0) {
+            fileButton.textContent = fileInput.files[0].name;
+        } else {
+            fileButton.textContent = 'Choose File';
+        }
+    }
+</script>
 </body>
 </html>
