@@ -1,45 +1,86 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:scouting_app/Plugins/plugins.dart';
-import 'package:scouting_app/References.dart';
+import 'dart:math';
 
 import 'Match_Pages/match_page.dart';
 import 'Pit_Recorder/Pit_Recorder.dart';
+import 'Plugins/plugins.dart';
+import 'References.dart';
+import 'components/Animator/GridPainter.dart';
 import 'components/Button.dart';
 import 'components/nav.dart';
-import 'templateBuilder/builder.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 5),
+      vsync: this,
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        drawer: const NavBar(),
-        appBar: AppBar(
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.attach_file_rounded),
-              onPressed: () {
-                Route route = MaterialPageRoute(
-                    builder: (context) => InfiniteZoomImage());
-                Navigator.push(context, route);
-              },
+        drawer: const NavBar(), // Drawer navigation
+        body: Stack(
+          children: [
+            const Positioned.fill(
+              child: WaveGrid(), // Animated Background
             ),
-            IconButton(
-              icon: const Icon(Icons.extension),
-              onPressed: () {
-                Route route =
-                    MaterialPageRoute(builder: (context) => const Plugins());
-                Navigator.push(context, route);
-              },
+            Column(
+              children: [
+                _buildCustomAppBar(context), // Custom AppBar with animation
+                Expanded(child: homePage()), // Main content area
+              ],
             ),
           ],
         ),
-        body: homePage(),
         bottomSheet: _buildPersistentBottomSheet(),
       ),
+    );
+  }
+
+  Widget _buildCustomAppBar(BuildContext context) {
+    return AppBar(
+      backgroundColor: Colors.transparent, // Transparent to show the animation
+      elevation: 0, // Remove shadow for a cleaner look
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.attach_file_rounded),
+          onPressed: () {
+            Route route =
+                MaterialPageRoute(builder: (context) => InfiniteZoomImage());
+            Navigator.push(context, route);
+          },
+        ),
+        IconButton(
+          icon: const Icon(Icons.extension),
+          onPressed: () {
+            Route route =
+                MaterialPageRoute(builder: (context) => const Plugins());
+            Navigator.push(context, route);
+          },
+        ),
+      ],
     );
   }
 
@@ -48,7 +89,7 @@ class HomePage extends StatelessWidget {
       onClosing: () {},
       builder: (BuildContext context) {
         return Container(
-          height: 300,
+          height: 200,
           decoration: const BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.only(
@@ -60,52 +101,33 @@ class HomePage extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
-                Center(
-                  child: Column(
-                    children: [
-                      buildButton(
-                        context: context,
-                        text: 'Start a match',
-                        color: Colors.green.shade100,
-                        borderColor: Colors.green.shade800,
-                        icon: Icons.play_arrow_outlined,
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const MatchPage()));
-                        },
-                      ),
-                      const SizedBox(height: 10),
-                      buildButton(
-                        context: context,
-                        text: 'Record Pit',
-                        color: Colors.blue.shade100,
-                        borderColor: Colors.blueAccent,
-                        icon: Icons.bookmark_add_outlined,
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const Pit_Recorder()));
-                        },
-                      ),
-                      const SizedBox(height: 10),
-                      buildButton(
-                        context: context,
-                        text: 'Create a Template -- Not Implemented',
-                        color: Colors.red.shade100,
-                        borderColor: Colors.redAccent,
-                        icon: Icons.style_outlined,
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => TemplateEditor()));
-                        },
-                      ),
-                    ],
-                  ),
+                const SizedBox(height: 5),
+                buildButton(
+                  context: context,
+                  text: 'Start a match',
+                  color: Colors.green.shade100,
+                  borderColor: Colors.green.shade800,
+                  icon: Icons.play_arrow_outlined,
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const MatchPage()));
+                  },
+                ),
+                const SizedBox(height: 5),
+                buildButton(
+                  context: context,
+                  text: 'Record Pit',
+                  color: Colors.blue.shade100,
+                  borderColor: Colors.blueAccent,
+                  icon: Icons.bookmark_add_outlined,
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const Pit_Recorder()));
+                  },
                 ),
               ],
             ),
@@ -135,9 +157,8 @@ class HomePage extends StatelessWidget {
               'Scout-Ops',
               style: GoogleFonts.chivoMono(
                 fontSize: 70,
-                fontWeight: FontWeight.w100,
-                color: Colors
-                    .white, // This color is required but will be overridden by the gradient
+                fontWeight: FontWeight.w300,
+                color: Colors.white,
               ),
             ),
           ),
@@ -150,14 +171,25 @@ class HomePage extends StatelessWidget {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ).createShader(bounds),
-            child: Text(
-              'DEVELOPED BY FEDS201',
-              style: GoogleFonts.chivoMono(
-                fontSize: 20,
-                fontWeight: FontWeight.w100,
-                color: Colors
-                    .white, // This color is required but will be overridden by the gradient
-              ),
+            child: Row(
+              children: [
+                Text(
+                  'DEVELOPED BY ',
+                  style: GoogleFonts.chivoMono(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w100,
+                    color: Colors.white,
+                  ),
+                ),
+                Text(
+                  'FEDS201',
+                  style: GoogleFonts.chivoMono(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
             ),
           ),
         ),

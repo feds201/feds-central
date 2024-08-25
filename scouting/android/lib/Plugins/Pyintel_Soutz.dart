@@ -21,7 +21,7 @@ class _PyintelScoutzWidgetState extends State<PyintelScoutzWidget> {
 
   void _testConnection() async {
     String ipAddress = _controllerIp.text;
-    String url = 'http://$ipAddress:5000/alive';
+    String url = 'http://$ipAddress/alive';
     try {
       final response = await http.get(Uri.parse(url));
       print('Response status: ${response.statusCode}');
@@ -46,10 +46,15 @@ class _PyintelScoutzWidgetState extends State<PyintelScoutzWidget> {
   void _registerDevice() async {
     _saveSettings();
     String ipAddress = _controllerIp.text;
+    RegExp websitePattern = RegExp(r'^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+    if (!websitePattern.hasMatch(ipAddress)) {
+      ipAddress = '$ipAddress';
+    }
+
     String deviceName = _controllerDeviceName.text;
     print('IP Address: $ipAddress');
     print('Device Name: $deviceName');
-    String url = 'http://$ipAddress:5000/register';
+    String url = 'http://$ipAddress/register';
 
     try {
       final response = await http.post(
@@ -70,11 +75,32 @@ class _PyintelScoutzWidgetState extends State<PyintelScoutzWidget> {
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
-                title: Text('Device Already Registered'),
+                title: const Text('Device Already Registered'),
                 content: Text(responseBody['message']),
                 actions: <Widget>[
                   TextButton(
                     child: Text('OK'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+        }
+        if (responseBody['status'].contains('success')) {
+          String message =
+              responseBody['message'] ?? 'Device registered successfully';
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text('Device Registered'),
+                content: Text(message),
+                actions: <Widget>[
+                  TextButton(
+                    child: const Text('OK'),
                     onPressed: () {
                       Navigator.of(context).pop();
                     },

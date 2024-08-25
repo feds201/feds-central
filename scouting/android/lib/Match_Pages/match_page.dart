@@ -176,12 +176,21 @@ class MatchPageState extends State<MatchPage> {
   Future<void> prepopulateDataServer() async {
     var box = Hive.box('settings');
     String ipAddress = box.get('ipAddress', defaultValue: '');
-    String url = 'http://$ipAddress:5000/get_event_file';
+    String url = 'http://$ipAddress/get_event_file';
     try {
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
-        developer.log(data[1]['event_key']);
+        developer.log(data[0]['event_key']);
+        Hive.box('matchData').put('matches', (data));
+        LocalDataBase.putData(Types.eventFile, data.toString());
+        LocalDataBase.putData(Types.eventKey, data[0]['event_key']);
+        eventKeyController.text = LocalDataBase.getData(Types.eventKey);
+        writeJson(data);
+        setState(() {
+          matches = readJson();
+          isLoading = false;
+        });
       }
     } catch (e) {
       if (kDebugMode) {

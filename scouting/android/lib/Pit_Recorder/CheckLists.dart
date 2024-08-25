@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
-import 'package:scouting_app/components/CounterShelf.dart';
-import '../components/RatingsBox.dart';
 import '../components/TeamInfo.dart';
 import 'Pit_Recorder.dart';
 

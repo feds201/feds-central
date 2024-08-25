@@ -99,7 +99,7 @@ class _PluginsState extends State<Plugins> {
                 intergrateWithPyintelScoutz_expanded = false;
               });
             },
-            Expanded_Widget: PyintelScoutzWidget(),
+            Expanded_Widget: Container(),
           ),
           PluginTile(
             title: "Integrate with Gemini (Soon)",
@@ -120,7 +120,7 @@ class _PluginsState extends State<Plugins> {
                 intergrateWithPyintelScoutz_expanded = false;
               });
             },
-            Expanded_Widget: PyintelScoutzWidget(),
+            Expanded_Widget: Container(),
           ),
         ],
       ),

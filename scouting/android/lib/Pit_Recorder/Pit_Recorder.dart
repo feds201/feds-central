@@ -14,7 +14,6 @@ class Pit_Recorder extends StatefulWidget {
 class _Pit_RecorderState extends State<Pit_Recorder> {
   List<Team> _teams = [];
   List<Team> _filteredTeams = [];
-  String _searchQuery = '';
   int _visibleCount = 7;
 
   @override
@@ -39,7 +38,6 @@ class _Pit_RecorderState extends State<Pit_Recorder> {
 
   void _filterTeams(String query) {
     setState(() {
-      _searchQuery = query;
       _filteredTeams = _teams
           .where((team) =>
               team.nickname.toLowerCase().contains(query.toLowerCase()) ||

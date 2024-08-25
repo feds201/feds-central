@@ -118,7 +118,7 @@ class QrCoder extends State<Qrgenerator> {
         await pluginStateManager.getPluginState("intergrateWithPyintelScoutz");
     if (serverStatus) {
       if (ipAddress != null && deviceName != null) {
-        String url = 'http://$ipAddress:5000/send_data';
+        String url = 'http://$ipAddress/send_data';
         try {
           print('Attempting to send data...');
           final response = await http.post(
@@ -202,31 +202,31 @@ class QrCoder extends State<Qrgenerator> {
               );
             },
           );
+        }
+      } else {
+        // IP address or device name not found in Hive
+        print('IP address or device name not found in Hive.');
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Error'),
+              content: const Text('IP address or device name not configured.'),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text('OK'),
+                  onPressed: () async {
+                    await Navigator.pushNamed(
+                      context,
+                      '/home',
+                    );
+                  },
+                ),
+              ],
+            );
+          },
+        );
       }
-    } else {
-      // IP address or device name not found in Hive
-      print('IP address or device name not found in Hive.');
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('Error'),
-            content: const Text('IP address or device name not configured.'),
-            actions: <Widget>[
-              TextButton(
-                child: const Text('OK'),
-                onPressed: () async {
-                  await Navigator.pushNamed(
-                    context,
-                    '/home',
-                  );
-                },
-              ),
-            ],
-          );
-        },
-      );
-    }
     } else {
       print('Server is not running.');
       LocalDataBase.clearData();
