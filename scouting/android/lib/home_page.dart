@@ -8,6 +8,7 @@ import 'Plugins/plugins.dart';
 import 'References.dart';
 import 'components/Animator/GridPainter.dart';
 import 'components/Button.dart';
+import 'components/TeamInfo.dart';
 import 'components/nav.dart';
 
 class HomePage extends StatefulWidget {

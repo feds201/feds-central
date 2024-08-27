@@ -4,10 +4,15 @@ import 'dart:io';
 import 'dart:developer' as developer;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
+import 'package:scouting_app/components/TeamInfo.dart';
 
+import '../Plugins/plugins.dart';
+import '../References.dart';
+import '../components/Animator/GridPainter.dart';
 import '../components/DataBase.dart';
 import '../components/nav.dart';
 import 'match.dart';
@@ -49,30 +54,8 @@ class MatchPageState extends State<MatchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: const NavBar(),
-      appBar: AppBar(
-        title: const Text('Match'),
-        backgroundColor: Colors.white,
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.delete),
-            tooltip: 'Refresh',
-            onPressed: () {
-              isLoading = true;
-              setState(() {
-                matches = null;
-                LocalDataBase.putData(Types.eventFile, null);
-                LocalDataBase.putData(Types.eventKey, null);
-                eventKeyController.text = '';
-                LocalDataBase.putData(Types.allianceColor, null);
-                LocalDataBase.putData(Types.selectedStation, null);
-                LocalDataBase.putData(Types.matchFile, null);
-                LocalDataBase.putData(Types.matchKey, null);
-              });
-            },
-          ),
-        ],
-      ),
-      body: matchPage(context, _selectedIndex),
+      appBar: _buildCustomAppBar(context),
+      body: matchPage(context, _selectedIndex), // Main content area
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -93,6 +76,56 @@ class MatchPageState extends State<MatchPage> {
           });
         },
       ),
+    );
+  }
+
+  AppBar _buildCustomAppBar(BuildContext context) {
+    return AppBar(
+      backgroundColor: Colors.transparent, // Transparent to show the animation
+      title: Center(
+        child: ShaderMask(
+            shaderCallback: (bounds) => const LinearGradient(
+                  colors: [Colors.red, Colors.blue, Colors.lightBlueAccent],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ).createShader(bounds),
+            child: Text(
+              'Match Page',
+              style: GoogleFonts.chivoMono(
+                fontSize: 25,
+                fontWeight: FontWeight.w500,
+                color: Colors.white,
+              ),
+            )),
+      ),
+      elevation: 0, // Remove shadow for a cleaner look
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.delete),
+          tooltip: 'Refresh',
+          onPressed: () {
+            isLoading = true;
+            setState(() {
+              matches = null;
+              LocalDataBase.putData(Types.eventFile, null);
+              LocalDataBase.putData(Types.eventKey, null);
+              eventKeyController.text = '';
+              LocalDataBase.putData(Types.allianceColor, null);
+              LocalDataBase.putData(Types.selectedStation, null);
+              LocalDataBase.putData(Types.matchFile, null);
+              LocalDataBase.putData(Types.matchKey, null);
+            });
+          },
+        ),
+        IconButton(
+          icon: const Icon(Icons.extension),
+          onPressed: () {
+            Route route =
+                MaterialPageRoute(builder: (context) => const Plugins());
+            Navigator.push(context, route);
+          },
+        ),
+      ],
     );
   }
 

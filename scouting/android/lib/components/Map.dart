@@ -10,13 +10,13 @@ Widget buildMap(BuildContext context, Offset? circlePosition, Size size, String 
     child: Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12.0),
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.2),
-            spreadRadius: 2,
-            blurRadius: 5,
-            offset: const Offset(0, 3), // changes position of shadow
+            spreadRadius: 2.0,
+            blurRadius: 5.0,
+            offset: const Offset(0.0, 3.0), // changes position of shadow
           ),
         ],
       ),
@@ -35,13 +35,14 @@ Widget buildMap(BuildContext context, Offset? circlePosition, Size size, String 
             ),
             if (circlePosition != null)
               Positioned(
-                left: circlePosition.dx - 15, // Center the circle
-                top: circlePosition.dy - 15, // Center the circle
+                left: circlePosition.dx - 15.0, // Center the circle
+                top: circlePosition.dy - 15.0, // Center the circle
                 child: SizedBox(
                   width: size.width,
                   height: size.height,
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(15), // Add border radius here
+                    borderRadius: BorderRadius.circular(15.0),
+                    // Add border radius here
                     child: Image.asset(
                       'assets/Swerve.png',
                     ),

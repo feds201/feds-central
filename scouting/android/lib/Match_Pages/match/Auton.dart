@@ -90,8 +90,15 @@ class AutonState extends State<Auton> {
               print('Team Info START button pressed');
             },
           ),
-          buildMap(context, _circlePosition, const Size(35, 35), allianceColor,
-              onTap: (TapUpDetails details) {_updatePosition(details);},),
+          buildMap(
+            context,
+            _circlePosition,
+            const Size(35, 35),
+            allianceColor,
+            onTap: (TapUpDetails details) {
+              _updatePosition(details);
+            },
+          ),
           buildComments(
             "Scoring",
             [
@@ -106,28 +113,24 @@ class AutonState extends State<Auton> {
                   value--;
                   setState(() {
                     ampPlacementValue = value;
-
                   });
                 },
                 icon: Icons.sledding,
                 number: ampPlacementValue,
                 counterText: "Amp Placement",
                 color: Colors.blue,
-
               ),
               CounterSettings(
                 (int value) {
                   value++;
                   setState(() {
                     speakerValue = value;
-
                   });
                 },
                 (int value) {
                   value--;
                   setState(() {
                     speakerValue = value;
-
                   });
                 },
                 icon: Icons.speaker,
@@ -162,13 +165,17 @@ class AutonState extends State<Auton> {
             "React",
             [
               buildRatings([
-                buildRating("Auton Rating", Icons.access_alarm_outlined, autonRating.toDouble(), 5,
+                buildRating(
+                    "Auton Rating",
+                    Icons.access_alarm_outlined,
+                    autonRating.toDouble(),
+                    5,
                     Colors.yellow.shade600, onRatingUpdate: (double rating) {
-                      setState(() {
-                        autonRating = rating.toInt();
-                        UpdateData();
-                      });
-                    }),
+                  setState(() {
+                    autonRating = rating.toInt();
+                    UpdateData();
+                  });
+                }),
               ]),
               buildComments(
                 "Auton Comments",
@@ -217,18 +224,15 @@ class AutonState extends State<Auton> {
             ],
             const Icon(Icons.comment_bank),
           ),
-
         ],
       ),
     );
   }
 
-
-
-
   void _updatePosition(TapUpDetails details) {
     setState(() {
-      _circlePosition = details.localPosition;
+      _circlePosition = Offset(details.localPosition.dx.roundToDouble(),
+          details.localPosition.dy.roundToDouble());
       LocalDataBase.putData(AutoType.StartPosition, _circlePosition);
     });
     UpdateData();

@@ -52,7 +52,7 @@ class LocalDataBase {
     Map<String, dynamic> dataMap = {};
     _storage.forEach((key, value) {
       if (value is Offset) {
-        dataMap[key] = {'dx': value.dx, 'dy': value.dy};
+        dataMap[key] = {'dx': value.dx.floor(), 'dy': value.dy.floor()};
       } else {
         dataMap[key] = value;
       }
