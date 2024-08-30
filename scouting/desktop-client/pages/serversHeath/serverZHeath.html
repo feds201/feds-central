@@ -6,6 +6,40 @@
     <link rel="stylesheet" href="serverZHeath.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
     <style>
+        .device-circle {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: #4caf50;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            margin: 10px;
+        }
+
+        .popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+
+        .popup-content {
+            background-color: white;
+            padding: 20px;
+            width: 70%;
+            border-radius: 5px;
+            text-align: center;
+        }
+
         #notification {
 
             position: fixed;
@@ -173,10 +207,13 @@
                         <p class="font-medium">Server IP: <span id="server1-ip" class="font-normal"></span></p>
                     </div>
                     <div class="bg-gray-100 p-3 rounded-md">
+                        <p class="font-medium">Server PORT: <span id="server1-port" class="font-normal"></span></p>
+                    </div>
+                    <div class="bg-gray-100 p-3 rounded-md">
                         <p class="font-medium">Server Status: <span id="server1-status" class="font-normal"></span></p>
                     </div>
                     <div class="bg-gray-100 p-3 rounded-md">
-                        <p class="font-medium">Server Health: <span id="server1-health" class="font-normal"></span></p>
+                        <p class="font-medium">Server Battery: <span id="server1-battery" class="font-normal"></span></p>
                     </div>
                     <div class="bg-gray-100 p-3 rounded-md">
                         <p class="font-medium">Server CPU Usage: <span id="server1-cpu" class="font-normal"></span></p>
@@ -184,17 +221,14 @@
                     <div class="bg-gray-100 p-3 rounded-md">
                         <p class="font-medium">Server Memory Usage: <span id="server1-memory" class="font-normal"></span></p>
                     </div>
-                    <div class="bg-gray-100 p-3 rounded-md">
-                        <p class="font-medium">Server Storage Usage: <span id="server1-storage" class="font-normal"></span></p>
-                    </div>
                 </div>
                 <div>
                     <h2 class="text-lg font-semibold">Server Actions</h2>
                     <div class="flex space-x-2">
                         <button id="server1-restart" class="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600">Restart</button>
                         <button id="server1-shutdown" class="bg-red-500 text-white p-2 rounded-md hover:bg-red-600">Shutdown</button>
-                        <button id="server1-delete" class="bg-gray-500 text-white p-2 rounded-md hover:bg-gray-600">Delete</button>
-                        <button id="server1-logs" class="bg-green-500 text-white p-2 rounded-md hover:bg-green-600">Logs</button>
+                        <button id="server1-delete" class="bg-gray-500 text-white p-2 rounded-md hover:bg-gray-600" onclick="fetchServerInfo()">Refresh</button>
+                        <button id="server1-logs" class="bg-green-500 text-white p-2 rounded-md hover:bg-green-600" onclick="openLogs()">Logs</button>
                     </div>
                 </div>
             </div>
@@ -251,6 +285,12 @@
 </div>
 <script src="serverZHeath.js"></script>
 <script>
+    function closePopup() {
+        const popup = document.querySelector(".popup");
+        if (popup) {
+            popup.remove();
+        }
+    }
     function updateFileName() {
         const fileInput = document.getElementById('event-file');
         const fileButton = document.getElementById('customFileButton');

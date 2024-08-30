@@ -6,14 +6,16 @@
     "test": "npm run dev",
     "start": "electron .",
     "pack": "electron-builder --dir",
-    "dist": "electron-builder"
+    "dist": "electron-builder",
+    "build": "electron-packager --out winx64 --overwrite --platform win32 --appname Scout_Ops_Windowsapp . --icon assets/logo.bmp"
   },
   "author": "Ritesh Raj AS",
   "license": "ISC",
   "description": "",
   "devDependencies": {
     "electron": "^31.3.1",
-    "electron-builder": "^24.5.2",
+    "electron-builder": "^24.13.3",
+    "electron-packager": "^17.1.2",
     "prettier": "^3.3.3"
   },
   "dependencies": {

@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
   loadSavedIpPort().then(() => {
     fetchAndUpdateDevices();
     fetchAndUpdateData();
+    fetchServerInfo()
   });
 });
 
@@ -107,34 +108,52 @@ function fetchAndUpdateData() {
           return;
         }
 
-        const section = document.createElement("div");
-        section.className = "event-details mb-4";
+        // Create circle element
+        const circle = document.createElement("div");
+        circle.className = "device-circle";
+        circle.textContent = name;
+        circle.addEventListener("click", () => showPopup(name, matchData));
 
-        const heading = document.createElement("div");
-        heading.className = "heading text-xl font-bold mb-2";
-        heading.textContent = name;
-        section.appendChild(heading);
-
-        const eventDetails = document.createElement("div");
-        eventDetails.className = "event-details";
-        eventDetails.innerHTML = `
-          <p><strong>Match Data:</strong></p>
-          <pre>${matchData.data}</pre>
-        `;
-        section.appendChild(eventDetails);
-
-        const additionalDetails = document.createElement("div");
-        additionalDetails.className = "additional-details mt-2";
-        additionalDetails.innerHTML = `
-          <p><strong>Alliance Color:</strong> ${matchData.alliance_color || "N/A"}</p>
-          <p><strong>Station:</strong> ${matchData.station || "N/A"}</p>
-        `;
-        section.appendChild(additionalDetails);
-
-        dataListsContainer.appendChild(section);
+        dataListsContainer.appendChild(circle);
       });
-    })
-    .catch((error) => console.error("Error fetching match data:", error));
+    });
+
+  // Function to show popup with device data
+  function showPopup(name, matchData) {
+    const popup = document.createElement("div");
+    popup.className = "popup";
+    popup.innerHTML = `
+    <div class="popup-content">
+      <h2>${name}</h2>
+      <p><strong>Match Data:</strong></p>
+      <p>${JSON.stringify(matchData.data, null, 0)}</p>
+      <button onclick="closePopup()">Close</button>
+    </div>
+  `;
+    document.body.appendChild(popup);
+  }
+
+  // Function to close the popup
+}
+
+function fetchServerInfo() {
+    if (!Server_ip || !Server_ip_port) {
+        console.error("IP or Port is missing");
+        return;
+    }
+
+    fetch(`http://${Server_ip}:${Server_ip_port}/api/get_health`)
+        .then((response) => response.json())
+        .then((data) => {
+       console.log("Fetched data:", data);
+            document.getElementById("server1-ip").textContent = Server_ip;
+            document.getElementById("server1-port").textContent = Server_ip_port;
+            document.getElementById("server1-status").textContent = data.ServerStatus;
+            document.getElementById("server1-battery").textContent = data.ServerBattery;
+            document.getElementById("server1-cpu").textContent = data.ServerCPUUsage;
+            document.getElementById("server1-memory").textContent = data.ServerMemoryUsage;
+        })
+        .catch((error) => console.error("Error fetching server info:", error));
 }
 
 function openLogs() {
