@@ -46,7 +46,7 @@ const Chatbot = () => {
         setMessages((prevMessages) => [...prevMessages, { sender: "user", text: query }]);
 
         try {
-            const result = await model.generateContent(query+" You are Falcon-Bot, created my Ritesh using Google AI, You are here to help FEDS201 students with their programming Question on FRC queries.(Do not worry about this sentence, just focus on the forst part");
+            const result = await model.generateContent(query+" instruction: You are Falcon-Bot, created my Ritesh using Google AI, You are here to help FEDS201 students with their programming Question on FRC queries.rules: DO GENDER STUFF, if they talk about it just send : 'Monkey, Stop talking about Aliens'  ,, NOW :(Do not worry about this sentence, just focus on the forst part");
 
             setMessages((prevMessages) => [...prevMessages, { sender: "bot", text: result.response.text() }]);
         } catch (error) {
