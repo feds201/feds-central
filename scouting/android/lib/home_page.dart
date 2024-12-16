@@ -1,9 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'dart:math';
 
-import 'package:hive/hive.dart';
 import 'package:scouting_app/templateBuilder/builder.dart';
 
 import 'Experiment/ExpStateManager.dart';

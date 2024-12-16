@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../Plugins/plugins.dart';
-import '../References.dart';
 
 class MatchInfo extends StatelessWidget {
   final String assignedTeam;

@@ -8,11 +8,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
-import 'package:scouting_app/components/TeamInfo.dart';
 
 import '../Plugins/plugins.dart';
-import '../References.dart';
-import '../components/Animator/GridPainter.dart';
 import '../components/DataBase.dart';
 import '../components/nav.dart';
 import 'match.dart';

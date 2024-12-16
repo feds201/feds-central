@@ -1,8 +1,4 @@
 import 'package:flutter/material.dart';
-import 'builder.dart';
-import 'Auton.dart';
-import 'tele_operated.dart';
-import 'Endgame.dart';
 
 class TemplateBuilder extends StatefulWidget {
   const TemplateBuilder({super.key});

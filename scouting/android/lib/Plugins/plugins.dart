@@ -16,10 +16,12 @@ class _PluginsState extends State<Plugins> {
   bool intergrateWithPyintelScoutz = false;
   bool geminiIntergerations = false;
   bool auth0Intergerations = false;
+  bool intergrateWithRitesh = false;
 
   bool intergrateWithPyintelScoutz_expanded = false;
   bool geminiIntergerations_expanded = false;
   bool auth0Intergerations_expanded = false;
+  bool intergrateWithRitesh_expanded = false;
 
   @override
   void initState() {
@@ -32,11 +34,13 @@ class _PluginsState extends State<Plugins> {
       'intergrateWithPyintelScoutz',
       'geminiIntergerations',
       'auth0Intergerations',
+      'intergrateWithRitesh',
     ]);
     setState(() {
       intergrateWithPyintelScoutz = states['intergrateWithPyintelScoutz']!;
       geminiIntergerations = states['geminiIntergerations']!;
       auth0Intergerations = states['auth0Intergerations']!;
+      intergrateWithRitesh = states['intergrateWithRitesh']!;
     });
   }
 
@@ -45,6 +49,7 @@ class _PluginsState extends State<Plugins> {
       'intergrateWithPyintelScoutz': intergrateWithPyintelScoutz,
       'geminiIntergerations': geminiIntergerations,
       'auth0Intergerations': auth0Intergerations,
+      'intergrateWithRitesh': intergrateWithRitesh,
     });
   }
 
@@ -118,6 +123,27 @@ class _PluginsState extends State<Plugins> {
                 geminiIntergerations_expanded = !geminiIntergerations_expanded;
                 auth0Intergerations_expanded = false;
                 intergrateWithPyintelScoutz_expanded = false;
+              });
+            },
+            Expanded_Widget: Container(),
+          ),
+          PluginTile(
+            title: "Integrate with Ritesh",
+            description: "description",
+            icon_Widget: Icons.integration_instructions,
+            expanded_Widget: intergrateWithRitesh_expanded,
+            value_trailing: intergrateWithRitesh,
+            enabled_trailing: false,
+            onToggle_Trailing: (bool value) {
+              setState(() {
+                intergrateWithRitesh = value;
+              });
+            },
+            onTap_Widget: () {
+              setState(() {
+                intergrateWithRitesh_expanded = !intergrateWithRitesh_expanded;
+                auth0Intergerations_expanded = false;
+                geminiIntergerations_expanded = false;
               });
             },
             Expanded_Widget: Container(),

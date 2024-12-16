@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import '../components/TeamInfo.dart';
 import 'Pit_Recorder.dart';
 
 class Checklists extends StatefulWidget {
