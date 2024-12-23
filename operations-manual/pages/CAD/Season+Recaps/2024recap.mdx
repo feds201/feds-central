@@ -1,0 +1,202 @@
+# Crescendo (2023 - 2024)
+
+*Leads: Sukhesh, Arya & Michael | Students: Charlie, Alex, Otto, Jason | Mentors: Mentors: Mr.McEntire, Mr.Lawrence, Mr.Davis*
+
+The gods must've understood my anger after the joke of a design last season. It was truly a failure. CAD was blessed with 2 new mentors, Mr.Lawrence & Mr.Davis, who joined the cause of making CAD better. Thanks to Boss's investment in developing my understanding of design from last year, I had a clear vision of what we needed to do this season.
+
+This was the rough outline I had for this season:
+
+* **Everything**, down to the very last screw & nut, MUST ABSOLUTELY, WITHOUT EXCEPTION, be cad-ded in.
+* Keep the model simple, the mechanical subgroup is fairly inexperienced
+* Tasks for the model will be split by sub-assembly, rather than by skill
+* Active input from mentors during CAD process
+* Regular design reviews with mechanical subgroup
+* Robot must look cool!
+
+## Off-season
+
+Following strictly to the outline, we had to create some drastic changes to CAD. To actively receive input from mentors while we were doing the CAD (Instead of waiting till the next meeting to discuss), and to actively work on the model with other students, we needed to leave Autodesk Inventor. During our trip to states last season, Zayn and I researched what other teams used as their primary CAD softwares, and a good majority of teams either used Onshape, or Solidworks. After going back and forth with the comparison (Our needs and what we valued most), **Onshape was selected as the primary CAD software for the team.**
+
+Onshape is a cloud based platform that suited all our needs for collaboration. Of course, there was a learning curve that Myself, Arya, & Michael needed to push through.
+
+![early learning](https:///i.imgur.com/dgPxGMg.png)
+
+(Screenshot above of me replicating team 1678's hooded shooter)
+
+We all learned Onshape our own different ways. I personally found it useful to try copying other teams (Like above) models and try to make them myself. In that way, I learned by doing.
+
+The new students happened to all be in one friend group so they all seemed to have a singular interest in 3D printing. Again, it seems luck stuck again, as we needed people who new how to 3D print. Michael helped teach the new students to do 3D printing, and lucky for us, the process was fairly simple as they already came in with prior knowledge.
+
+The robot in 3 months challenge helped us out greatly as we got to test out the capabilities of Onshape before the season started
+
+![first robot](https:///i.imgur.com/LcA4cOA.png)
+
+While we understood that this was the first model, we were kind of... disappointed. We learned onshape but we kind of struggled with communication (having mistakes working in wrong branches, not being able to complete subsystems because of waiting for someone else to finish theirs, etc.), and we realized that more than anything that was the most important thing coming into the upcoming build season.
+
+**We needed to ensure that the design of the robot was communicated to the necessary people**
+
+## Build-season
+I'm happy to say that the work we did to improve CAD worked. I present to you, for the first time in the teams history where CAD finished before Mechanical (and also a first for having a fully completed CAD model), Agent Spyder.
+
+### [Agent Spyder (2023 - 2024)](https://cad.onshape.com/documents/1b9d7b2a208b97b111bb5a4e/w/be0ea876456565543825468e/e/b611f9a3076e40487b93ed57?renderMode=0&uiState=67697f87df9721756123ab2e)
+![robot img](https:///i.imgur.com/JbsJBCf.png)
+
+Sure enough, we cad-ded everything. Down to the very last screw. To say this model was an upgrade from last year's disaster would be a major understatement. It was like a completely different team made designed this robot. Can we just take a second to appreciate this model? A fully flushed out upside down electrical board, with the coolest looking structural cutouts ive ever seen (also a first in the team's history), with the lightest robot in this team's history, and a sick color scheme to match the vibe— it truly is a masterpiece in my eyes.
+
+Ok enough of the glazing, lets get down to the process of how we got here.
+
+Before kickoff started we went over a rigid structure of the build schedule, having CAD spend 2 weeks to design the robot. While we were extremely motivated to accomplish such a feat, realistically we had no chance in hell of completing the entire CAD model in 2 weeks.
+
+![calender](https:///i.imgur.com/vMME2k2.png)
+
+#### Brainstorming
+
+As usual, we spent the time after kickoff learning the rules, setting the design parameters for the robot. This time however, we did something new: we set design constraints upon ourselves. While they weren't necessary to have a competing robot, we set these in place based on our team goal of having a world's competing robot. The design constraints were as followed:
+
+1. Robot must be able to climb, shoot, place in trap, and amp
+2. Everything must be packaged within a 26*26in frame
+3. Robot must be no taller than 30in (To drive under stage)
+4. Robot must be light (Overall weight < 125lb)
+5. Robot must have Low CG to ensure smooth climbing
+6. Robot must be able to shoot from stage (To ensure fast cycles)
+7. Robot must be able to make 10 cycles
+8. Robot must be fast (~8 seconds in travel time across the field)
+9. Robot must be modular (Quick to fix subsystems between matches)
+10. Electrical board must have easy access
+
+The constraints were based off of the strategy that scouting came up with. Most of these constraints were ok, but the most painful was the 26*26in restriction, forcing us to really figure out some crazy geometry to meet the constraint.
+
+As usual, every design starts from the 2D world. We used variable sketches to help assist us in replicating the actions that the robot would possibly do to ensure the geometry for the robot would meet the constraints.
+
+![2d planning](https:///i.imgur.com/umVcaFs.png)
+
+Exact 2D planning sketch utilized to figure out the general geometry we desired. Most of the sketches were variable as in we could change the orientation of the makeshift intake and shooter to get the desired movements for the subassembly. This sketch represents the robot on the ground picking up a note from its left side with the amp on its right side. Construction lines are extremely useful for making design plans like this.
+
+![2d planning](https:///i.imgur.com/4TUfQVz.png)
+
+After getting an overall general sketch with an agreed upon design (We had an online Zoom meeting and 2 in person meetings w/ the mentors to design this), we started to convert the sketch to 3D to do a general review with the team. Above is the position of the robot to shoot into the trap. (It was planned for the note to go through an open slot in the intake acting as both an intake and a secondary shooter)
+
+![2d planning](https:///i.imgur.com/Y7h5xKa.png)
+
+Of course, there were other variants of the original design idea, and this one was a design idea that was copied from team 33, the Killer Bees. We decided to do the top design from a very basic trade study where we rated each design from 1 to 5 on a few categories (Reliability, Speed, Modularity, Simplicity, and Time) and the design that had the highest total would be the one we would go with. I'll talk more about why this trade study was extremely flawed towards the end. But the winner was the top design which ended up on the actual robot.
+
+After settling on a final design direction we started finalizing the overall technical requirements for each subassembly.
+![2d planning](https:///i.imgur.com/tmfXLFs.png)
+
+For example, above is the sketch we used to determine the shooting positions/shooter angles that we would require to meet our requirements (Constraints 5, 6, 7 were the main ones for this)
+
+![2d planning](https:///i.imgur.com/1zb7jNd.png)
+
+Another example of variable sketching used to determine the shooter angles at certain locations. The highlighted red and orange lines represent the overall degree of freedom that we determined the shooter required for meeting the constraints of the robot.
+
+With the brainstorming session done, we were already a week behind schedule.... However, we basically had a clear idea of what we needed to CAD up thanks to the meticulous time spent planning everything (including the general shapes of the subassemblies!)
+
+#### Design
+
+As we got started with the design, we went through many, many, manyyyyy iterations.
+
+> Sometimes, you just feel like you wanna die - Sukhesh
+
+![robot timelapse](https:///i.imgur.com/e8T1LK3.gif)
+
+As mentioned above, the work for the robot was split by subgroups. I would make the Intake, Arms, and overall structure, Arya would make the shooter, and Michael would make the electrical board. The new students would cover all the 3D printed parts that we requested to be printed.
+
+##### Intake
+
+The intake was probably the 2nd most iterated thing on the robot, 2nd only to the electrical board.
+
+![v1 intake](https:///i.imgur.com/sQzjkBX.png)
+Immediately after the presenting the sketch to the team, I extruded the sketch and adjusted the shape slightly to make it more appealing. (I know my priorities are mixed up.)
+
+![v2 intake](https:///i.imgur.com/QLkaGoH.png)
+The biggest dilemma that we had with the intake was the placement of the motor. I originally had a Kraken motor on the intake for driving the wheels and would have a twist motor connected to the arm.
+
+![v4 intake](https:///i.imgur.com/wULObAF.png)
+We eventually moved both the drive and pivot motors to the arm because of the very simple principle that the motors out there were exposed, and would be moving a lot. By Murphy's law since there's more things that can happen to the intake (collisions, wiring issues from constant movement, etc.), we decided to move the motors to the less moving and less exposed part which were the arms.
+
+![v5 intake](https:///i.imgur.com/7jUBMgL.png)
+Eventually Mr.Lawrence showed us Neo 550 motors which were tiny and could fit on the intake without significant weight issues and limited the worry of collisions since it was pretty small and well protected with the intake walls in place. However, when we tested this version (which was considered a final version), the Neo 550 could not lift the intake simply because of the sheer amount of torque that it needed to exceed to lift the intake. The intake was clearly too heavy.
+
+![v6 intake](https:///i.imgur.com/hxeSz9A.png)
+This is basically the final version of the intake that you have all come to know. Notice the replacement from wheels and axle to polycarbonate tubing, the cutouts on the intake frame, and the change in gear ratio for the pivot motor. The original intake weighed 5.2kg and with this version we brought it down to 2.8kg. The calculations we did for the torque and gear ratios have been lost, but I assure you that everything was planned with math. I would love to say that the intake was optimized for those cutouts through Altair, but I really didn't have the time to do the optimization, so I kinda just... drew random lines like a schizophrenic and got that cool pattern. (You'll see this similar process for the other cutouts on the robot as well.)
+
+![intake analysis](https:///i.imgur.com/tgMqIA6.png)
+However, I did do some final stress and displacement analysis for the intake to ensure that it would last through our competitions. This picture shows the analysis of a "moment" while lifting the intake since it's only driven from one side. Stress analysis basically confirmed to us that this intake was done.
+
+##### Arm
+
+The arm was definitely the most simple part on the robot. From the day I sketched out the arm just on a whim to the day we finished the length of the arm never changed.
+![v1 arm](https:///i.imgur.com/rS5br05.png)
+Here was just me trying to do some weight savings for the arm because it was extremely heavy. This was also the first version of the arm.
+
+![arm inspiration](https:///i.imgur.com/IBoxrrl.png)
+After getting the arm design nailed down, which included changing the diameter of the intake connection hole to the same as the structure connection one (since we were using versa hubs for both side), I researched how to effectively reduce weight on the arms. I basically copied team 3357's arm cutouts lmao.
+
+![v2 arm](https:///i.imgur.com/M7cU3nn.png)
+And that resulted in this arm version which is basically the final version. We added cuts to the hub connections so we could make the arms and intakes modular if needed. (Hubs would be removed and the subassembly would just be pulled right out).
+
+![arm analysis](https:///i.imgur.com/SFCxCR8.png)
+To confirm that the cutouts would indeed work for our design, I ran a little stress testing on the model and learned that the cutouts were perfectly fine on the arm and in fact could be reduced even more if needed. But with that the arm design was confirmed. (The light white at the bottom of the arm shows the stress applied from a force perpendicular at the top (blue arrow))
+
+##### Shooter
+
+The shooter (for the most part) was pretty straightforward
+
+![v1 shooter](https:///i.imgur.com/cJUPDTj.png)
+As usual Arya started with the making a general model of the shooter that could fit the note in it and had the wheels placed where prototyping had shown the optimized placement.
+
+![v2 shooter](https:///i.imgur.com/PTrHTsL.png)
+The pivot point for the shooter had to move to the bottom front of the shooter to fit within the frame and the back was cut accordingly to not interfere with the intake coming in
+
+![v3 shooter](https:///i.imgur.com/FdvlPOb.png)
+After adjusting the intake geometry to not interfere with the shooter the back was again extended out and the sprockets to rotate the shooter were put in place.
+
+![v4 shooter](https:///i.imgur.com/JfxWgnK.png)
+Finally, I came in as the pocket dude and pocketed as much as I could to reduce the weight of the shooter to make it easier for the motor to pivot the intake. Also added the cuts to the hub area to have the shooter be modular if needed to be replaced (spoiler: it never had to be removed ever.)
+
+##### Electrical Board
+
+Im gonna let Michael talk about this one lmao he has A LOT to say about this
+
+> Mixing my monster with battery acid sounds just about really good right now - Michael
+
+Also for anyone curious it takes over 150 hours of active cad-ing to complete a robot. So overall 200-250 hours of design to complete a robot.
+
+Time logs:
+- [Main robot CAD](https://docs.google.com/spreadsheets/d/1jI9qzt_Fwp7qHT4NBRwhnSYzr5XIiWXrd5Ef15O-5Mg/edit?usp=sharing)
+- [Electrical Board CAD](https://docs.google.com/spreadsheets/d/1aSM93n9C1fPhsFII1oQI5NxXG2Dn0Whq0hsqnZIY2bw/edit?usp=sharing)
+- [Shooter CAD](https://docs.google.com/spreadsheets/d/1knlEYCnhflQDeuKR1hhr_VBe3nxAf-dn3L73_LT-Mf0/edit?usp=sharing)
+
+There were plenty of other files but we just couldn't include all of them since it would simply be too many.
+
+## Takeaways
+
+If it wasn't already obvious this season was an overall success for cad. We got to achieve all the goals we set out to do, and we made a design that followed the constraints that we had. Of course, there's always ways to improve and this season had no shortage of lessons to learn from.
+
+> **The entire team needs to be involved with the CAD**
+
+This one is extremely important because it would've made our lives easier when designing the robot if only there were students from each subgroup actively commenting/viewing the CAD model while we work on it (90% of CAD is done at home). This is especially important because instead of waiting till the next meeting to learn whether the design suited each teams needs, they could all just tell us in advance while we were at home so we don't end up wasting time re-doing designs. **Having the input from all the subgroups in advance helps to save us time.**
+
+> **For the love of all things holy, we need to do space claims**
+
+This involves having each subgroup quite literally point at areas on the empty robot frame telling us what space they need for their things. It's also creating a rudimentary version in the form of boxes of the subassemblies and designing the path of the game piece in advance to keep the overall design of the robot running smooth. By having this baseline to design off of, we eliminate any interference from other subassemblies/subgroups needs that result in major time loss re-designing for that mistake.
+
+> **Can we actually do a data-driven design?**
+
+We had numerous designs as shown above in the brainstorming phase, however the way we decided on the direction were going to take was an absolute joke. We literally had a meeting like in the Lord of the Rings Council of Elrond scene in the CAD room.
+
+![elrond](https:///i.imgur.com/Xh4b5BL.png)
+
+The mentors and I gathered together in front of the whiteboard in the back, and we basically drew a 5 column table with 3 rows for each design option. We then rated it from 1 to 5 based on 5 categories that were mentioned in the brainstorming tab. The way we went about rating each design was almost purely based on speculation. How could you know what design was faster than another if you've never seen it before? There were many questions like this in my head, and honestly the way we went about choosing a design was pretty flawed. We definitely need a better method of figuring out which design is the best for our needs.
+
+> **We need prototyping to be useful**
+
+While it was useful for the shooter since we knew the compression and wheel spacing needed since we tested it like crazy, for everything else, it was designed from our brains. We were on our own. The compression for the note in the intake was completely guessed by me and we just rolled with it. We also couldn't test the practice robot since the arms weighed too much. We had to do the cutouts on the arm to actually use the practice robot and test the mechanisms, and unfortunately we just didn't have the time. I really wished that we had one of those holed out walls to test out contraptions like this to make prototyping easier.
+
+![rembrants](https:///i.imgur.com/C7xLoyc.png)
+
+> **The manpower of CAD has dwindled**
+
+Unfortunately now that Michael and Arya are gone I'm left all alone for next season. This season has shown me just how important it is to have other students who know what they're doing and who I can rely on to do whatever I need them to do. It's something I need to work on for the future new students of the team, especially since I'm going to be a senior.
+
+>If there's one main positive thing to take from this season, it's the living proof that we can indeed design a world's winning robot. With better collaboration, it really is possible.
