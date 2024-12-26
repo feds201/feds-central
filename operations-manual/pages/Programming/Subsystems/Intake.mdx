@@ -1,4 +1,5 @@
 import Head from 'next/head';
+import { Callout } from 'nextra/components';
 
 <Head>
     <title>Intake - FEDS201</title>
@@ -6,3 +7,489 @@ import Head from 'next/head';
 </Head>
 
 # Intake
+
+Intakes are in some way a part of every robot, which means there are many ways to go about designing and programming them. All intakes fall into two main categories: Over the bumper 
+and under the bumper.
+
+### Under the Bumper Intakes
+
+when the size and shape of the game piece allows, Under the bumper intakes can be useful in several scenarios, especially when a robot is taking heavy hits from other robots.
+
+### Over the Bumper Intakes
+
+Over the bumper intakes are used in many scenarios. They can add an extra bit of reach for a robot, or guide game pieces into a robots' frame.
+
+![robot img](https:///i.imgur.com/aVyfHJK.png)
+
+<Callout type = {"info"} emoji = {"💡"}>An **Over the bumper intake** can be seen on **Team 201's 2024 robot, <u>Spyder</u>**.</Callout>
+
+### Programming an over the bumper intake
+
+An over-the-bumper intake can use a variety of hardware, though it is typical for one to have:
+ * A wrist turning motor
+ * An intake turning motor
+ * An encoder to track wrist movement
+ * A sensor 
+
+## Example Code
+
+### Wrist
+
+``` java
+package frc.robot.subsystems.intake;
+
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkLowLevel.MotorType;
+
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.constants.CANConstants;
+import frc.robot.constants.DIOConstants;
+import frc.robot.constants.IntakeConstants;
+
+public class Wrist extends SubsystemBase {
+  private final CANSparkMax wristRotation;
+  private final DutyCycleEncoder wristRotationEncoder;
+
+  private final PIDController pid = IntakeConstants.WristPID.GetWristPID();
+  private static double encoderAngle;
+  private static double rawEncoderValue;
+ 
+  /** Creates a new intake. */
+  public Wrist() {
+    wristRotation = new CANSparkMax(CANConstants.Intake.kIntakeWrist, MotorType.kBrushless);
+    wristRotationEncoder = new DutyCycleEncoder(DIOConstants.Intake.kIntakeRotateEncoder);
+
+    wristRotationEncoder.setPositionOffset(0);
+  }
+
+  @Override
+  public void periodic() {
+    wristRotationEncoder.setPositionOffset(0);
+
+    /*Encoder returns 0 when disconnected
+    Prevents wrist from suddenly jolting to a "zero" position*/
+     if(!wristRotationEncoder.isConnected()) {
+      wristRotation.setVoltage(0);
+    }
+
+    // This method will be called once per scheduler run
+    writePeriodicOutputs();
+  }
+
+  @Override
+  public void writePeriodicOutputs() {
+    readWristEncoder();
+  }
+
+  public void readWristEncoder(){
+    rawEncoderValue = wristRotationEncoder.get();
+    encoderAngle = rawEncoderValue * 360;
+  }
+
+  // GETTERS
+  public static double getEncoderValue() {
+    return rawEncoderValue;
+  }
+
+  public double getTarget() {
+    return pid.getSetpoint();
+  }
+
+ public boolean pidAtSetpoint() {
+    return pid.atSetpoint();
+  }
+ public static double getEncoderAngle(){
+    return encoderAngle;
+ }
+
+
+  // SETTERS
+  public void setWristVoltage(double voltage) {
+    wristRotation.set(voltage); 
+  }
+
+    public void setPIDTarget(double target) {
+    pid.setSetpoint(target);
+  }
+
+    public void rotateWristPID() {
+    double output = pid.calculate(getEncoderAngle());
+    setWristVoltage(output);
+  }
+
+
+}
+```
+
+## Code Explanation
+
+### Imports:
+- **`com.revrobotics.CANSparkMax`**: A class from the REV Robotics library that provides control over a brushless motor.
+- **`edu.wpi.first.math.controller.PIDController`**: A class used to implement a PID (Proportional, Integral, Derivative) control loop, which helps the robot move the wrist to a desired position smoothly and accurately.
+- **`edu.wpi.first.wpilibj.DutyCycleEncoder`**: A class that reads the position of an encoder. In this case, it's used to monitor the wrist's angle of rotation.
+- **`frc.robot.constants.CANConstants`, `DIOConstants`, `IntakeConstants`**: These constants hold values for motor IDs, encoder ports, and PID controller settings (defined elsewhere in the code).
+
+### Class Definition:
+```java
+public class Wrist extends SubsystemBase {
+```
+- The `Wrist` class extends `SubsystemBase`, meaning it is part of the robot's subsystem structure. A subsystem is a component of the robot (such as the intake, arm, or wheels) that is responsible for a specific function.
+
+### Instance Variables:
+```java
+private final CANSparkMax wristRotation;
+private final DutyCycleEncoder wristRotationEncoder;
+private final PIDController pid = IntakeConstants.WristPID.GetWristPID();
+private static double encoderAngle;
+private static double rawEncoderValue;
+```
+- **`wristRotation`**: A `CANSparkMax` object that controls the wrist motor using a brushless motor. This is the motor that rotates the wrist.
+- **`wristRotationEncoder`**: A `DutyCycleEncoder` that reads the wrist's rotational position to track the angle of the wrist.
+- **`pid`**: A `PIDController` used to control the wrist's rotation. It helps adjust the motor's power to reach and maintain a specific target angle.
+- **`encoderAngle`**: A static variable to store the wrist's angle (calculated from the encoder's value).
+- **`rawEncoderValue`**: A static variable to store the raw value from the encoder, which will be used to calculate the angle.
+
+<Callout type={"info"} emoji={"🤔"}>Unlike the rest of this documentation, `Wrist` uses **CANSparkMax** motors instead of talonFX. This is another brushless motor used in FRC, and uses different libraries that are exemplified here.</Callout>
+### Constructor:
+```java
+public Wrist() {
+  wristRotation = new CANSparkMax(CANConstants.Intake.kIntakeWrist, MotorType.kBrushless);
+  wristRotationEncoder = new DutyCycleEncoder(DIOConstants.Intake.kIntakeRotateEncoder);
+  wristRotationEncoder.setPositionOffset(0);
+}
+```
+- **`wristRotation`**: Initializes the wrist motor using the CAN ID defined in `CANConstants.Intake.kIntakeWrist` and sets it to a brushless motor type.
+- **`wristRotationEncoder`**: Initializes the encoder using the DIO port defined in `DIOConstants.Intake.kIntakeRotateEncoder`.
+- **`setPositionOffset(0)`**: Resets the encoder's position to 0, ensuring that the encoder starts at a consistent reference position.
+
+### `periodic()` Method:
+```java
+@Override
+public void periodic() {
+  wristRotationEncoder.setPositionOffset(0);
+  if (!wristRotationEncoder.isConnected()) {
+    wristRotation.setVoltage(0);
+  }
+  writePeriodicOutputs();
+}
+```
+- **`periodic()`**: This method is called periodically by the robot framework (typically every 20 milliseconds).
+  - **`wristRotationEncoder.setPositionOffset(0)`**: Resets the encoder position offset to zero during every periodic call, potentially preventing encoder drift.
+  - **`if (!wristRotationEncoder.isConnected())`**: Checks if the encoder is connected. If not, it sets the wrist motor voltage to 0 to avoid erratic behavior due to a disconnected encoder.
+
+### `writePeriodicOutputs()` Method:
+```java
+@Override
+public void writePeriodicOutputs() {
+  readWristEncoder();
+}
+```
+- This method calls `readWristEncoder()`.
+### `readWristEncoder()` Method:
+```java
+public void readWristEncoder(){
+  rawEncoderValue = wristRotationEncoder.get();
+  encoderAngle = rawEncoderValue * 360;
+}
+```
+- **`readWristEncoder()`**: This method reads the raw encoder value from `wristRotationEncoder` and calculates the wrist's angle.
+  - **`rawEncoderValue = wristRotationEncoder.get()`**: Gets the raw encoder value (Where 360 degrees of movement is equal to 1), representing the position of the wrist in its rotation.
+  - **`encoderAngle = rawEncoderValue * 360`**: Converts the raw encoder value to an angle in degrees (since the encoder value represents a full 360° rotation).
+
+### Getters:
+```java
+public static double getEncoderValue() {
+  return rawEncoderValue;
+}
+
+public double getTarget() {
+  return pid.getSetpoint();
+}
+
+public boolean pidAtSetpoint() {
+  return pid.atSetpoint();
+}
+
+public static double getEncoderAngle() {
+  return encoderAngle;
+}
+```
+- **`getEncoderValue()`**: Returns the raw encoder value, which is a normalized value representing the wrist’s position.
+- **`getTarget()`**: Returns the target setpoint (the desired wrist angle) that the PID controller is trying to reach.
+- **`pidAtSetpoint()`**: Checks if the wrist is at the desired position (i.e., if the PID controller has reached the target setpoint).
+- **`getEncoderAngle()`**: Returns the calculated wrist angle in degrees.
+
+### Setters:
+```java
+public void setWristVoltage(double voltage) {
+  wristRotation.set(voltage); 
+}
+
+public void setPIDTarget(double target) {
+  pid.setSetpoint(target);
+}
+
+public void rotateWristPID() {
+  double output = pid.calculate(getEncoderAngle());
+  setWristVoltage(output);
+}
+```
+- **`setWristVoltage(double voltage)`**: Sets the wrist motor to a specific voltage. This controls the wrist's movement by providing power to the motor.
+- **`setPIDTarget(double target)`**: Sets the target position (angle) for the wrist. The PID controller will attempt to move the wrist to this target.
+- **`rotateWristPID()`**: Calculates the output of the PID controller based on the current wrist angle and the target setpoint. The motor's voltage is adjusted accordingly to move the wrist toward the target position.
+
+
+## `RotateWristToPosition` Command
+In the above code, several methods have been created to allow the wrist to move to a given position. The below code is a **command** created from these methods to allow for the wrist to be moved to a certain position.
+``` java
+package frc.robot.commands.intake;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.intake.Wrist;
+
+public class RotateWristToPosition extends Command {
+  
+  private final Wrist c_intake;
+  private final double c_target;
+  private final boolean c_failure;
+
+  public RotateWristToPosition(Wrist intake, double target) {
+    c_intake = intake;
+    c_target = target;
+    addRequirements(c_intake);
+
+    if(target < -20) {
+      c_failure = true;
+    } else {
+      c_failure = false;
+    }
+    SmartDashboard.putBoolean("WRIST FAILURE", c_failure);
+    // Use addRequirements() here to declare subsystem dependencies.
+
+  }
+
+  // Called when the command is initially scheduled.
+  @Override
+  public void initialize() {
+    c_intake.setPIDTarget(c_target);
+  }
+
+  // Called every time the scheduler runs while the command is scheduled.
+  @Override
+  public void execute() {
+    if(!c_failure) {
+      c_intake.rotateWristPID();
+    } else {
+      c_intake.setWristVoltage(0.0);
+    }
+  }
+
+  // Called once the command ends or is interrupted.
+  @Override
+  public void end(boolean interrupted) {
+    c_intake.setWristVoltage(0.0);
+  }
+
+  // Returns true when the command should end.
+  @Override
+  public boolean isFinished() {
+    return c_failure || c_intake.pidAtSetpoint();
+    // return false;
+  }
+}
+```
+
+## Code explanation
+
+#### Instance Variables:
+- **`c_intake`**: A reference to the `Wrist` subsystem. This allows the command to control the wrist and interact with the motor.
+- **`c_target`**: The target position (in degrees or encoder units) the wrist should rotate to.
+- **`c_failure`**: A boolean flag that determines whether a failure condition is triggered. If the target is invalid (e.g., too small), movement is halted.
+
+#### Constructor:
+- **`c_intake = intake`**: Initializes the reference to the `Wrist` subsystem.
+- **`c_target = target`**: Sets the target position for the wrist.
+- **`addRequirements(c_intake)`**: Registers the `Wrist` subsystem as a requirement, ensuring no other command can control the wrist simultaneously.
+- **Failure Condition**: If the `target` is less than `-20`, it sets the `c_failure` flag to `true`. This condition could represent an out-of-range or invalid position.
+- **`SmartDashboard.putBoolean("WRIST FAILURE", c_failure)`**: Displays the failure condition on the SmartDashboard for real-time monitoring.
+
+#### `initialize()` Method:
+- **`c_intake.setPIDTarget(c_target)`**: Sets the target position for the wrist in the PID controller.
+
+#### `execute()` Method:
+- **If no failure (`c_failure == false`)**:
+  - **`c_intake.rotateWristPID()`**: This method uses the PID controller to adjust the wrist motor’s voltage and rotate the wrist towards the target position.
+- **If a failure is detected:
+  - **`c_intake.setWristVoltage(0.0)`**: This stops the wrist motor by setting the motor's voltage to 0, preventing any movement.
+
+#### `end()` Method:
+- **`c_intake.setWristVoltage(0.0)`**: Ensures that the wrist motor stops moving when the command ends.
+
+#### `isFinished()` Method:
+- The command ends if:
+  - **Failure condition (`c_failure == true`)** is triggered.
+  - **PID controller reaches the setpoint** (i.e., the wrist reaches the target position). This is checked by `c_intake.pidAtSetpoint()`.
+
+## Intake IR sensor
+
+Another common component of an intake is a sensor used to detect when game pieces enter it. Example code can be seen below:
+
+### Example Code
+
+``` java
+package frc.robot.subsystems.intake;
+
+import edu.wpi.first.wpilibj.DigitalInput;
+import frc.robot.constants.DIOConstants.*;
+
+public class IntakeIRSensor extends SubsystemBase {
+  /** Creates a new BreakBeamSensor. */
+  private final DigitalInput receiverIntake;
+
+  public IntakeIRSensor() {
+    receiverIntake = new DigitalInput(SensorConstants.intakeBreakBeamReceiverPort);
+
+    setupShuffleboard();
+  }
+
+  @Override
+  public void setupShuffleboard() {
+    tab.add("BreakBeam", receiverIntake);
+  }
+
+  @Override
+  public void periodic() {
+  }
+
+  public boolean getBeamBroken() {
+    return beamBrokenIntake.get();
+  }
+
+}
+```
+
+### Code Explanation
+
+This class represents a subsystem for an infrared (IR) break-beam sensor in the robot's intake system. It monitors whether the beam is broken, 
+which helps detect if the intake has successfully captured an object.
+
+#### Constructor (`IntakeIRSensor`):
+- Initializes the break-beam sensor (`receiverIntake`) using the port specified in `SensorConstants.intakeBreakBeamReceiverPort`.
+- Calls `setupShuffleboard()` to display the sensor status on the Shuffleboard.
+
+#### Key Methods:
+
+1. **`getBeamBroken()`**:
+   - **Purpose**: This method checks whether the IR sensor's beam is broken (i.e., if an object has interrupted the beam).
+   - **Implementation**: It reads the sensor state through `beamBrokenIntake.get()`. If the beam is broken (an object is detected), it returns `true`; otherwise, it returns `false`.
+
+2. **`setupShuffleboard()`**:
+   - **Purpose**: This method sets up the sensor's data to be displayed on the robot's Shuffleboard.
+   - **Implementation**: It adds the IR sensor (`receiverIntake`) to the Shuffleboard under the label "BreakBeam", allowing operators to see the sensor's status in real-time.
+
+
+## Intake wheels
+
+An `IntakeWheels` class completes our Intake subsystem in addition to the `Wrist` class and the `IntakeIRSensor`. Example code can be found below:
+
+### Example Code
+
+``` java
+package frc.robot.subsystems.intake;
+
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkLowLevel.MotorType;
+import frc.robot.constants.CANConstants;
+
+
+public class IntakeWheels extends SubsystemBase {
+  private final CANSparkMax intakeWheel;
+
+  /** Creates a new intake. */
+  public IntakeWheels() {
+    intakeWheel = new CANSparkMax(CANConstants.Intake.kIntakeWheels, MotorType.kBrushless);
+  }
+
+  @Override
+  public void periodic() {
+    // This method will be called once per scheduler run
+    SmartDashboard.putNumber("intake bus voltage", intakeWheel.getBusVoltage());
+    SmartDashboard.putNumber("intake motor temperature", intakeWheel.getMotorTemperature());
+  }
+
+  // SETTERS
+  public void setIntakeWheels(double voltage) {
+    intakeWheel.set(voltage);
+  }
+}
+```
+
+### `RunIntakeWheels` command
+
+This code is then used to create the `RunIntakeWheels` command:
+
+``` java
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
+package frc.robot.commands.intake;
+
+import java.util.function.DoubleSupplier;
+import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.intake.IntakeWheels;
+
+public class RunIntakeWheels extends Command {
+  /** Creates a new IntakeIn. */
+  private final IntakeWheels c_intake;
+  private final DoubleSupplier c_intakeVoltage;
+
+  public RunIntakeWheels(IntakeWheels intake, DoubleSupplier intakeVoltage) {
+    c_intake = intake;
+    c_intakeVoltage = intakeVoltage;
+
+    addRequirements(c_intake);
+      // use addRequirements( here to declare subsystem dependency
+  }
+
+  // Called when the command is initially scheduled.
+  @Override
+  public void initialize() {}
+
+  // Called every time the scheduler runs while the command is scheduled.
+  @Override
+  public void execute() {
+    c_intake.setIntakeWheels(c_intakeVoltage.getAsDouble());
+    
+  }
+
+  // Called once the command ends or is interrupted.
+  @Override
+  public void end(boolean interrupted) {
+    c_intake.setIntakeWheels(0);
+  }
+
+  // Returns true when the command should end.
+  @Override
+  public boolean isFinished() {
+    return false;
+  }
+}
+```
+<Callout type={"info"} emoji={"💡"}>A DoubleSupplier *(Seen above)* is a functional interface that allows you to generate and return a double value. It's commonly used when you need to supply 
+double values in a flexible, functional style, such as the above code.</Callout>
+
+## Summary
+
+In this code, Commands and Subsystem classes were created for each of the 3 parts of an example intake. When putting the three of these parts together, we can program an intake to:
+1. Deploy to a "Floor position"
+2. Run intake wheels to pick up a game piece
+3. Detect the game piece with an IR sensor, causing the wrist to return into the robot's frame
+4. Spit out the game piece by reversing the direction of the intake wheels (Into a scoring zone, stow, etc.)
+
+## Conclusion
+
+Intakes are versatile and customizable subsystems that can be used to accomplish a plethora of tasks and objectives. Hopefully, the example code in this section assists you in programming your own intake subsystem. **Happy coding!**
