@@ -1,0 +1,110 @@
+## The Problem
+
+Rather than yapping about theory, lets see what "Thinking of Everything" means in an actual example. While you are reading through this example, follow along and put yourself in the shoes of a designer trying to solve this problem.
+
+![pic](https://lh3.googleusercontent.com/pw/AP1GczM0yTHOf_OnZ0GTvhFaIeMsARG4X9QOTz7KA0Hqfyr5tEv5VyiDrprqHWVz5ubRY-GMW5B2MqjZPrZ2YWq8B75c0avNrTBldyvFzL3OG0rp0YIMvtwCvj0TDWIw7mdBpSA2uXoeWHNcu9ACOftDoOjZrg=w2571-h1510-s-no?authuser=0)
+
+Meet Dora, the robot we never talk about. Even if you know the fate of Dora, just go along with this example. Dora currently has a 4 bar mechanism intake, that is designed to pick both cones and cubes as seen below:
+
+![pics](https://lh3.googleusercontent.com/pw/AP1GczOsuoDclkKayUrsWyUYl3kLwv6zCkVFlcEw018ooJRKsyJ1iGNQ-5oGUQKvk_4nQJOIlaWlp_HgjzYLyNnyDqygjoC0CLD3_fnXtSlR_9ZSie6_Rok3ZJkdf_yPSG1ij2GLgVkcrWCC6am1BLc27dHLug=w2500-h1402-s-no?authuser=0)
+
+Assume that the geometry does indeed work out where the cone and cube can be intaked in (which it did). Your goal here is to figure out how to power those wheels.
+
+![pics](https://lh3.googleusercontent.com/pw/AP1GczORMBSqEeDpd-2xomAPT6XRzViANoPYvpi9laJ4upPCxasNjZ9r9Fb2YdsLnnM-nJRMS32dpvfM13qzwAK2YLnIr8YVngfbzdoXH7gQgc3ZPxdRp9UBPc4M0vjJ0pVTt8-tkCTPNV56Fejf6mlBJW2D2A=w2749-h1591-s-no?authuser=0)
+![pics](https://lh3.googleusercontent.com/pw/AP1GczNtVnk83fn45VFmKB44fm9ij_3YMykKsA6RIvzLEZmI4B74GPXjVhnETceEyqI9y75uIX4KrA8LovGjnYKN1GjWVQy6c3ub5HfGvbx4IdInTHaqJAIRCTYR_DdDYGUXr2bXL3Kd4ivAEJpszeUXSyEw1g=w1206-h1729-s-no?authuser=0)
+
+There are also going to be chains in that area to power the actuation of the intake, with the axle that does the actuating going through the entire robot at the bottom in the main frame.
+
+![pics](https://lh3.googleusercontent.com/pw/AP1GczM_wYChEZdiCn0dGMFZz-KZSnAmpl5W4rKzHPQi5erexDzj4WGDtDNrE1QlDBwwGAjj2AkzzunALU1WjtzsEqMxNGR9ZzNllHjsxqmXhvMxtM19wJMAUjUW_J_a1zRuUaRbkvD1ynfeH1UHtA1WiB4Fgw=w1298-h742-s-no?authuser=0)
+
+Since you have to suck game pieces in, you know the rotation of the wheels are in those directions. Thats pretty much all the information you get. How would you design a way to power these wheels? Scroll down to see how I did it.
+
+## My Solution
+
+There was only 2 practical ways of going about actuating those wheels. Either you have the motor attatched to the frame of the robot and then belt it to the wheels following the path of the intake, like this 4 bar from team 254's 2022 robot:
+![pics](https://lh3.googleusercontent.com/pw/AP1GczNI56JeN2urq5pp2DbtZ7mlGuQOE_kELfl1xaydblcNkH7ZHi9yCRJ2T8esjS3hjQvNVpODtAs_sIBp-1Rt8TUMupiPgcph8eaTj_yo_sw1Ssqbnr0rSnFoy3vWl9bT1TIq3cYhpkkFx3s3ukdyWqCDGg=w1162-h764-s-no?authuser=0)
+
+or you keep the motor on the intake and power the wheels directly, like from team 118's 2022 robot:
+
+![pics](https://lh3.googleusercontent.com/pw/AP1GczMgQXo0QtjsMr_JW5EBoOiAk8m8ps-gCdzIS2BJ28TEAQyk62h7n-rfzCOUNJbaa2wP0OPrCwh9LaNndadL7m8LuKxZkwfjPAT-J5C5x4-sXGKyizQRWWT2aw0itg6VJycnohL_uwps_VYhEEVraFNEUg=w1073-h781-s-no?authuser=0)
+
+Given the complexity of the 4 bar mechanism I designed, routing a belt through the arms would prove to be a significant challenge. I therefore decided to go with team 118's approach to attaching a motor to the actual intake to reduce the build complexity for the mechanical team (the team has never done belts ever before this).
+
+![pics](https://lh3.googleusercontent.com/pw/AP1GczMQ2RCwVXNLTo9jAYfbN1mj3dAbnKTTDW-LnSktfunJILHxEHUM_1VlitG9VeIxqrSpYaaNpiOW1gn-yIMbOJ9W9rqN1x5yG-YLDkHH8Tg7w39xiBu7RJXWJSaLXLimW6z7BchYt-1OyOJsgngFG5wBDA=w1299-h960-s-no?authuser=0)
+
+So the first thing I did was of course, copy what I could from team 118's robot, and I came up with a simple design where the motor would slide into the motor mount, and it would clip onto one of the frames on the robot. There's only one problem, while everything looks all great in CAD, this motor mount makes absolutely no sense. A motor has screw holes to attach it to something, and I'm clearly missing those! Ok, lets do a second revision.
+
+
+![pics](https://lh3.googleusercontent.com/pw/AP1GczN4FO-Yd4OKYVBKwDGrCHxRk6KjzCofPliNHeBTn5dTkQJtJyMelZUlY7mFaMST3lTNPL6Jfquuv5zQ37ey5kWW6vSD4nDEHXdNPXNTd1vSOYRJyyyQOfYECIZ3Yd7YkKU6_pLf2wcQH2i5PkEQ3DJTfA=w2421-h1360-s-no?authuser=0)
+
+>(I pulled the motor out, but it would still be in that original position touching the middle wall. I just pulled out in the CAD to show you guys how it would work.)
+
+Ok cool, so now that we got those mount holes in for the motor, lets attach it to the robot!
+
+![pics](https://lh3.googleusercontent.com/pw/AP1GczM-Lc3s72wkzLHiWWsdg9pfloop9YyMm88qm4Vrkp25xvPjTL0eNlsbmcXwpb0TKREpnZucQ4RWxcM-e9R0iV5JiofMp638_fpt5m0xsnDExSe8xFzE_bKwvLTYQt7Ktdu1YTJvxRmV_HoqUbC2g7M4iQ=w1365-h997-s-no?authuser=0)
+
+Well, this is a problem. Its currently just freely spinning on one screw pinning the motor mount to the arm frame. We should probably add support screws to hold it in place. Ok lets do a 3rd revision!
+
+![pics](https://lh3.googleusercontent.com/pw/AP1GczMvykv5SRb8uol6wkViWiGEUpmSs41VSm0LzmfLUS0i5A9zWf0LrcFGX72lYugQgHHqFV8SJjox0hLbYrurySAhF5v_qu4ySFLaUDZ9gcYxQ2wR2jtLywHwBnCRSxdiZrGcQq3Prr9qzJjtRTUX4Dx4Lw=w2335-h1414-s-no?authuser=0)
+
+Ok great, we now have the motor mount officially attached to the arm! However, when you printed it out and actually tested it in real life, you noticed that when you put it on the arm, the entire mount started sagging. It was only a slight sag, however once you chained up the mount, the entire mount snapped!
+
+![pics](https://lh3.googleusercontent.com/pw/AP1GczMa01zRmSWDOjoE2D-ORs5ZZQ_QBjc10VYqFTfV305ngX79QOD-dopLMGfL1e3MwklzeiJSPG2sKeGAbS0ZRbX6ez8Ml5RJ-sUQXe5-v1YnMcivgI4yMzFUO196ynY1GRjdmFCMOj-cH45sznnlKeUOlw=w1568-h1131-s-no?authuser=0)
+
+While the motors were driving the wheels, the torque force applied on the motor caused the snap to occur on the purple line! (The yellow lines show where the stress was) Sigh, lets do a 4th revision.
+
+![pics](https://lh3.googleusercontent.com/pw/AP1GczPRHItyNpuaxTktv0udDbmkms6xZAzdagL4sx7LfMJP1zaKofwVPyOshrVXDPX2M--ScWTQs8VvQq5TxdNRkbuIsLTnLKa7EBcTPyNPPXD_1yRzmbq9SQXKRR5kGpl-5JaI_Ds-Ud7lOtDzjZIR4V03_A=w1634-h930-s-no?authuser=0)
+
+You eagerly get this mount printed and assemble it onto to the robot, only to see it break in the exact same spot again.... UGHHHHHH. WHYYYYYYYY ARE THERE MORE REVISIONS???? WHEN WILL THIS EVER END???
+
+<div align="center">![pics](https://lh3.googleusercontent.com/pw/AP1GczOZSIUb9SqdlHv6p_WKsUM5p5zO2qzA6WKZnvwX2o6QJAQZ_Cd_7S86uRxdnwvQr7AGnnXtSPMQetlkSLXzF8LAsaxEx0dHyqq2AHqnMqlX6c3QeUUBLkYRggvkJb_1VRcxpxHhUw9khqQdqbxaEt0aZQ=w384-h512-s-no?authuser=0)</div>
+
+We ended up doing 11 revision of one singular motor mount. We wasted a week and a half on just one part. One part. WE WASTED 20% OF BUILD SEASON ON ONE PART. Alright, so we eventually did figure out the final design.
+
+
+![pics](https://lh3.googleusercontent.com/pw/AP1GczOvj_t_L9F4lzV3J2gkjz0h92zJQFK_rbo8ClTzkzE8XNK7WhN3lmqMf_nxVwRQ-uosVDdP3uAeh972WGJ_R9dxnl6UJGMI9TdwU9SVQDJ93cq1jc3GN5HLPNOi6F4FEI2FoePG0gkMN7UZ8_729lfUJA=w1675-h1278-s-no?authuser=0)
+
+**Notice the motor holes on the very front of the motor mount. That lesson that I learned was the most important of all. When we had the motor holes on just the middle wall to attach to the motor, I never thought for a second how someone from mechanical would screw those screws into the motor. Like scroll up to the picture and think for yourself. I had to add those holes at the top so they could put a long Allen key through the front hole to screw in the motor holes from the top.**
+
+
+This was the final result of 11 revisions, printed from carbon fiber nylon. Truly one overkill of a part that if designed better, could've saved so much time and money. Which brings me to the whole point of this example.
+
+# Think of Everything
+
+In that example, if I simply took the time to just think of all the mounting, torque forces, and stress on the mount.... Think of the amount of time and money I could've saved. 3D printing things takes time, and filament does not grow from trees. You have to think of everything that effects your part, and create a part that meets as many criteria for a successful part as possible.
+
+> It's impractical to believe you can make a perfect part first try. Truth is no one expects you to. There's simply too many variables to account for to realistically make a perfect part. Your goal is not to have 0 revisions, it's simply to **minimize** the amount of revisions for your part to save time and money.
+
+So you're probably like: "Ok Sukhesh, cool dude, it would be really convenient if you could just give me a list of what to look out for". While i wish I could do that, every situation that you may design a part for has a different environment which has different variables that effect the design. What I can give you however, is a general list of what to check for (Kind of like a checklist).
+
+## The Infamous Checklist
+
+1. **Check for connections** : Any screw holes, mounting holes, anything where your part connects to something else.
+
+> Does that thing connecting to my part make any sense?
+
+2. **Make sure it's buildable** : Can mechanical actually assemble the parts with whatever needs to go on there? Is there easy access for someone's hand to fit through a place necessary to assemble the part? Check if tools can fit in areas where it needs to be used.
+
+> Is this a part that I could assemble myself?
+
+3. **Where do the wires go?** : If your part requires wiring to some component, imagine the path the wires will take. Is there space to fit the wires, will it not get in the way of anything? Is the component in an easy access location to wire?
+
+> Is this part designed where even I could even wire the component?
+
+4. **Check for interference** : Put your model into whatever assembly it will eventually attach to. Check to see if any other parts in the assembly have the chance of interfering with the part and the stuff it is connected to. Don't forget to check if it will interfere with any wires!
+
+> Can I assemble this part and leave it on the robot without having any worries of external influences?
+
+5. **Think of external influences** : No I don't mean interference within our own robot. I mean from other robots, field elements, the literal field. Could this part or anything connected to it be damaged? Will there be a considerable amount of wear?
+
+> Can this part realistically last through an entire competition without needing any repair/replacement?
+
+6. **FEA analysis**: Not required, however, using FEA can help predict a lot of failures that you might have that you cannot physically predict. You can test stress forces on your part, simulate motor forces, collisions, and pretty much anything you can think of. It's like putting your part in a test chamber to endure through lab tests. If it comes out of the test passing with flying colors, you know your part has been engineered to the most efficient degree.
+
+> Is this a part that has complicated variables where FEA would be shed light onto the doubts of my design?
+
+7. **Peer review**: I'll cover more about this in the collaboration section, but ensure you get someone from the subgroups that are involved with your part, and have them give approval for the design.
+
+> Our job is to cater the design to their needs. If they feel nervous about anything on the design, its always better to put in the extra effort of fixing the root of the problem, rather than having it linger through all of build season and having other subgroups band-aid the problem.
+
+If you manage to go through all those steps faithfully, I can guarantee with a 100% certainty that the part you designed is basically done. (I said FAITHFULLY following the steps)
