@@ -1,0 +1,71 @@
+import Head from 'next/head';
+import { Callout } from 'nextra/components';
+
+<Head>
+    <title>Intake IR Sensor - FEDS201</title>
+    <meta property="og:title" content="Intake IR Sensor - FEDS201" key="title" />
+</Head>
+
+## Intake IR Sensor
+
+Another common component of an intake is a sensor used to detect when game pieces enter it. Example code can be seen below:
+
+### Example Code
+
+``` java
+package frc.robot.subsystems.intake;
+
+import edu.wpi.first.wpilibj.DigitalInput;
+import frc.robot.constants.DIOConstants.*;
+
+public class IntakeIRSensor extends SubsystemBase {
+  /** Creates a new BreakBeamSensor. */
+  private final DigitalInput receiverIntake;
+
+  public IntakeIRSensor() {
+    receiverIntake = new DigitalInput(SensorConstants.intakeBreakBeamReceiverPort);
+
+    setupShuffleboard();
+  }
+
+  @Override
+  public void setupShuffleboard() {
+    tab.add("BreakBeam", receiverIntake);
+  }
+
+  @Override
+  public void periodic() {
+  }
+
+  public boolean getBeamBroken() {
+    return beamBrokenIntake.get();
+  }
+
+}
+```
+
+### Code Explanation
+
+This class represents a subsystem for an infrared (IR) break-beam sensor in the robot's intake system. It monitors whether the beam is broken, 
+which helps detect if the intake has successfully captured a game piece.
+
+#### Constructor (`IntakeIRSensor`):
+- Initializes the break-beam sensor (`receiverIntake`) using the port specified in `SensorConstants.intakeBreakBeamReceiverPort`.
+- Calls `setupShuffleboard()` to display the sensor status on the Shuffleboard.
+
+<Callout type={"info"} emoji={"💡"}>A typical IR break beam sensor is made of 2 parts: The **Transmitter** and the **Reciever**. The **Transmitter** does not have to be coded, as it only needs to be powered by the robot. On the other hand, the **Reciever** does need to be coded, as it is here.</Callout>
+
+#### Key Methods:
+
+1. **`getBeamBroken()`**:
+   - **Purpose**: This method checks whether the IR sensor's beam is broken (i.e., if an object has interrupted the beam).
+   - **Implementation**: It reads the sensor state through `beamBrokenIntake.get()`. If the beam is broken (an object is detected), it returns `true`; otherwise, it returns `false`.
+
+2. **`setupShuffleboard()`**:
+   - **Purpose**: This method sets up the sensor's data to be displayed on the robot's Shuffleboard.
+   - **Implementation**: It adds the IR sensor (`receiverIntake`) to the Shuffleboard under the label "BreakBeam", allowing anyone to see the sensor's status in real-time.
+
+
+## Conclusion
+
+The above example code details a basic implementation of an IR break-beam sensor for our purpose of programming an intake subsystem. This part of the intake does not require a command, as we are simply reading the value from the sensor and nothing more.

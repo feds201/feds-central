@@ -1,0 +1,46 @@
+import Head from 'next/head';
+import {Callout, Cards, Card, Steps} from "nextra/components";
+import { FaCode, FaExpeditedssl, FaPlug, FaCube, FaRegLightbulb, FaBuildingShield } from "react-icons/fa6";
+
+
+<Head>
+    <title>Contribution - FEDS201</title>
+    <meta property="og:title" content="Drive Base - FEDS201" key="title" />
+</Head>
+
+
+# Setting up Git
+
+Once you have installed Git, you will need to configure it with your name and email address. This information will be used to identify you when you make changes to the FEDS-Handbook.
+
+<Steps>
+### Configure Git
+
+Open the Windows Powershell as an administrator. You can do this by searching for "Powershell" in the Windows search bar, right-clicking on the Windows Powershell app, and selecting "Run as administrator".
+
+ - Run the following commands:
+```powershell
+git config --global user.name "Your Name"
+git config --global user.email "Your Email"
+```
+ - Replace "Your Name" with your actual name and "Your Email" with your actual email address.
+ 
+<Callout icon={<FaBuildingShield/>} type="info">
+    You will need to use the email address associated with your GitHub account.
+</Callout>
+
+### Verify Configuration
+
+To verify that Git has been configured correctly, run the following command:
+```powershell
+git config --global --list
+```
+You should see your name and email address listed in the output.
+
+
+### Voila!
+
+You have successfully configured Git with your name and email address. You are now ready to start contributing to the FEDS-Handbook!
+</Steps>
+
+

@@ -1,0 +1,104 @@
+import {Callout, Cards, Card, Steps} from "nextra/components";
+import { FaCode, FaExpeditedssl, FaPlug, FaCube, FaRegLightbulb, FaBuildingShield } from "react-icons/fa6";
+import Head from "next/head";
+
+<Head>
+    <title>Contribution - FEDS201</title>
+    <meta property="og:title" content="Drive Base - FEDS201" key="title" />
+</Head>
+
+
+# Running Locally
+
+To run the FEDS-Handbook locally, you will need to follow these steps:
+
+<Steps>
+
+### Clone the Repository
+![Clone Repository](https://i.imgur.com/6AQuVEu.png)
+<br></br>
+Click on the "Code" button on FEDS-Handbook's GitHub repository and copy the URL. 
+
+![Clone Repository](https://i.imgur.com/KKFwiIJ.png)
+<br></br>
+Click on the "Clone Git Repository" button in VS Code and paste the URL in the Command Pannel. This will clone the repository to your local machine.
+
+Save the repository in a location where you can easily access it.
+
+### Open the Repository in VS Code
+
+Now that you have cloned the repository, open it in VS Code by clicking on the "Open Folder" button in the Welcome view.
+
+</Steps>
+
+
+# Installing Packages
+
+<Steps>
+
+### Open the Terminal
+
+![Terminal](https://i.imgur.com/MGUsxbw.png)
+
+Click on the Terminal tab in the Activity Bar on the side of the window. This will open the Terminal view, where you can run commands.
+
+### Install Packages
+
+Run the following command in the terminal to install the necessary packages for the FEDS-Handbook:
+
+```bash
+npm install
+```
+
+This command will install all the packages listed in the `package.json` file.
+
+<Callout icon={<FaBuildingShield/>} type="info">
+    You may see some warnings during the installation process. These warnings are usually safe to ignore.
+</Callout>
+
+<Callout icon={<FaBuildingShield/>} type="info"> 
+    If you encounter "npm ERR! code ERESOLVE" errors, you can try running the following command to fix them:
+```bash
+    PS C:\Users\pyintel-admin\code\whiteboard\frontend> npm run start
+
+        > whiteboard@0.0.0 start
+        > ng serve
+
+        This program is blocked by group policy. For more information, contact your system administrator.
+ ```
+Please refer to the [InstallingApplication](installingApplication#open-admin-poweshell) , run the command and then try running `npm install` again.
+
+</Callout>
+
+### Voila!
+
+You have successfully installed the necessary packages for the FEDS-Handbook. You are now ready to start contributing to the documentation!
+
+</Steps>
+
+
+# Running the Application
+
+<Steps>
+
+### Start the Development Server
+
+Run the following command in the terminal to start the development server for the FEDS-Handbook:
+
+```bash
+npm run dev
+```
+
+This command will start the development server and open the FEDS-Handbook in your default web browser.
+
+### Explore the Application
+
+![Application](https://i.imgur.com/iRb7KEF.png)
+
+Explore the FEDS-Handbook to see the changes you have made. You can navigate through the pages and view the content you have added or modified.
+
+### Voila!
+
+You have successfully run the FEDS-Handbook locally. You can now make changes to the documentation and see the results in real-time!
+
+</Steps>

@@ -1,0 +1,166 @@
+# MDX Style Sheet
+
+This MDX style sheet provides a quick overview of all the MDX syntax elements. For more information, refer to the [MDX documentation](https://mdxjs.com/).
+
+## Basic Syntax
+
+### Importing Components
+
+```jsx
+import { MyComponent } from './components/MyComponent'
+```
+
+### Using Components
+
+```jsx
+<MyComponent />
+```
+
+### Exporting Values
+
+```jsx
+export const myValue = 'Hello, MDX!'
+```
+
+### Markdown Elements
+
+You can use all standard Markdown elements within MDX files.
+
+#### Heading
+
+# H1
+## H2
+### H3
+
+#### Bold
+
+**bold text**
+
+#### Italic
+
+*italicized text*
+
+#### Blockquote
+
+> blockquote
+
+#### Ordered List
+
+1. First item
+2. Second item
+3. Third item
+
+#### Unordered List
+
+- First item
+- Second item
+- Third item
+
+#### Code
+
+`code`
+
+#### Horizontal Rule
+
+---
+
+#### Link
+
+[MDX Documentation](https://mdxjs.com/)
+
+#### Image
+
+![alt text](https://mdxjs.com/assets/logo.png)
+
+## Advanced Syntax
+
+### JSX in Markdown
+
+You can embed JSX directly within your Markdown content.
+
+```jsx
+<div style={{ color: 'red' }}>
+  This is a red div.
+</div>
+```
+
+### Exporting Components
+
+You can export components from your MDX file.
+
+```jsx
+export const MyButton = () => <button>Click me</button>
+```
+
+### Using Props
+
+You can pass props to your components.
+
+```jsx
+<MyComponent title="Hello, MDX!" />
+```
+
+### Custom Components
+
+You can define custom components within your MDX file.
+
+```jsx
+const CustomComponent = () => <div>Custom Component</div>
+
+<CustomComponent />
+```
+
+### MDXProvider
+
+You can use MDXProvider to provide custom components for Markdown elements.
+
+```jsx
+import { MDXProvider } from '@mdx-js/react'
+
+const components = {
+  h1: (props) => <h1 style={{ color: 'tomato' }} {...props} />,
+}
+
+<MDXProvider components={components}>
+  <h1>Hello, MDX!</h1>
+</MDXProvider>
+```
+
+### Embedding Code Blocks
+
+You can embed code blocks with syntax highlighting.
+
+```jsx
+`` `javascript
+console.log('Hello, MDX!')
+`` `
+```
+
+### Footnotes
+
+Here's a sentence with a footnote. [^1]
+
+[^1]: This is the footnote.
+
+### Definition List
+
+term
+: definition
+
+### Strikethrough
+
+~~The world is flat.~~
+
+### Task List
+
+- [x] Write the press release
+- [ ] Update the website
+- [ ] Contact the media
+
+
+# Resources
+
+- [MDX Documentation](https://mdxjs.com/)
+- [MDX Syntax Highlighting](https://mdxjs.com/getting-started#syntax-highlighting)
+- [MDX Provider](https://mdxjs.com/getting-started#mdxprovider)
+- [MDX Components](https://mdxjs.com/getting-started#components)

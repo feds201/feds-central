@@ -1,0 +1,97 @@
+import Head from 'next/head';
+import {Callout, Cards, Card, Steps} from "nextra/components";
+import { FaCode, FaExpeditedssl, FaPlug, FaCube, FaRegLightbulb, FaBuildingShield } from "react-icons/fa6";
+
+
+<Head>
+    <title>Contribution - FEDS201</title>
+    <meta property="og:title" content="Drive Base - FEDS201" key="title" />
+</Head>
+
+# Downloading Software
+
+In order to contribute to the FEDS-Handbook, you will need to install the following software:
+
+<Steps>
+
+###   
+<a href="https://git-scm.com/downloads">
+    <img src="https://i.imgur.com/RApFJhN.png" alt="Git Logo" style={{borderRadius: '1%'}}  />
+</a>
+
+Git is a version control system that allows you to track changes in your code and collaborate with others. You can download Git from the official website: [Git Client](https://git-scm.com/)
+
+###
+<a href="https://nodejs.org/en/download/prebuilt-installer">
+    <img src="https://1.imgur.com/SR9huqx.png" alt="Node.js Logo" style={{borderRadius: '1%'}}/>
+</a>
+
+Node.js is a JavaScript runtime that allows you to run JavaScript code outside of a web browser. You can download Node.js from the official website: [Node.Js](https://nodejs.org/en/download/prebuilt-installer)
+
+###
+<a href="https://code.visualstudio.com/">
+    <img src="https://i.imgur.com/XgrWRAv.png" alt="VS Code Logo" style={{borderRadius: '1%'}}/>
+
+</a>
+
+VS Code is a lightweight code editor that supports a wide range of programming languages and extensions. You can download VS Code from the official website: [VS Code](https://code.visualstudio.com/)
+
+</Steps>
+
+# Installating Software
+
+Locate you downloaded files since you will need to install them in a specific order.
+
+<Steps>
+### Open Admin Poweshell
+<Callout icon={<FaBuildingShield/>} type="info">
+    If you are using a Mac, Skip this Step.
+</Callout>
+ 
+Open the Windows Powershell as an administrator. You can do this by searching for "Powershell" in the Windows search bar, right-clicking on the Windows Powershell app, and selecting "Run as administrator".
+
+ - Run the following command:
+```powershell
+Set-ExecutionPolicy RemoteSigned
+```
+ - Press `Y` to confirm the change.
+
+ This will allow you to run scripts on your computer,  Windows by default does not allow this for security reasons.
+
+<Callout icon={<FaBuildingShield/>} type="info">
+    ```RemoteSigned``` means that you can run your own scripts, but scripts from the internet will need to be signed by a trusted publisher.
+</Callout>
+
+### Install Git
+
+Double click on the Git installer you downloaded earlier. Follow the installation instructions, and make sure to select the following options:
+
+1. Use Visual Studio Code as Git's default editor.
+2. Select the default for the rest.
+3. Uncheck the "View Release Notes" box.
+
+### Install Node.js
+
+Double click on the Node.js installer you downloaded earlier. Follow the installation instructions, and make sure to select the following options:
+
+1. Make sure to check the box that says "Automatically install the necessary tools..."
+2. Select the default for the rest.
+
+<Callout icon={<FaBuildingShield/>} type="info">
+    It will take a few minutes to install the necessary tools. (It is normal for it open Terminal windows and Powershell)
+</Callout>
+
+### Install VS Code
+
+Double click on the VS Code installer you downloaded earlier. Follow the installation instructions, and make sure to select the following options:
+
+1. Make sure to check the box that says "Add to PATH".
+2. Select the default for the rest.
+
+
+<Callout icon={<FaBuildingShield/>} type="info">
+    Make sure to restart your computer after installing all the software. This will ensure that all the changes take effect.
+</Callout>
+
+</Steps>
+
