@@ -1,0 +1,142 @@
+import Head from 'next/head';
+import { Callout } from 'nextra/components';
+
+<Head>
+    <title>Intake Wheels - FEDS201</title>
+    <meta property="og:title" content="Intake Wheels - FEDS201" key="title" />
+</Head>
+
+## Intake wheels
+
+An `IntakeWheels` class completes our Intake subsystem in addition to the `Wrist` class and the `IntakeIRSensor`. Example code to program the intake wheels can be found below:
+
+### Example Code
+
+``` java
+package frc.robot.subsystems.intake;
+
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkLowLevel.MotorType;
+import frc.robot.constants.CANConstants;
+
+
+public class IntakeWheels extends SubsystemBase {
+  private final CANSparkMax intakeWheel;
+
+  /** Creates a new intake. */
+  public IntakeWheels() {
+    intakeWheel = new CANSparkMax(CANConstants.Intake.kIntakeWheels, MotorType.kBrushless);
+  }
+
+  @Override
+  public void periodic() {
+    // This method will be called once per scheduler run
+    SmartDashboard.putNumber("intake bus voltage", intakeWheel.getBusVoltage());
+    SmartDashboard.putNumber("intake motor temperature", intakeWheel.getMotorTemperature());
+  }
+
+  // SETTERS
+  public void setIntakeWheels(double voltage) {
+    intakeWheel.set(voltage);
+  }
+}
+```
+### About the code
+
+This is another more simple part of our intake subsystem. 
+* In the **Constructor**, we initialize a `CANSparkMax` motor controller.
+* In the **`periodic()`** function, we log the intke bus voltage and the intake motor temperature. While these are not necessarily important to this code, these values can be useful when monitoring the use of the intake wheels and when trying to avoid overheating.
+* Finally, the `setIntakeWheels()` method provides us a way to set the speed of the intake wheels.
+### `RunIntakeWheels` command
+
+This simple method is then used to create a `RunIntakeWheels` command:
+
+``` java
+package frc.robot.commands.intake;
+
+import java.util.function.DoubleSupplier;
+import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.intake.IntakeWheels;
+
+public class RunIntakeWheels extends Command {
+  /** Creates a new IntakeIn. */
+  private final IntakeWheels c_intake;
+  private final DoubleSupplier c_intakeVoltage;
+
+  public RunIntakeWheels(IntakeWheels intake, DoubleSupplier intakeVoltage) {
+    c_intake = intake;
+    c_intakeVoltage = intakeVoltage;
+
+    addRequirements(c_intake);
+      // use addRequirements( here to declare subsystem dependency
+  }
+
+  // Called when the command is initially scheduled.
+  @Override
+  public void initialize() {}
+
+  // Called every time the scheduler runs while the command is scheduled.
+  @Override
+  public void execute() {
+    c_intake.setIntakeWheels(c_intakeVoltage.getAsDouble());
+    
+  }
+
+  // Called once the command ends or is interrupted.
+  @Override
+  public void end(boolean interrupted) {
+    c_intake.setIntakeWheels(0);
+  }
+
+  // Returns true when the command should end.
+  @Override
+  public boolean isFinished() {
+    return false;
+  }
+}
+```
+<Callout type={"info"} emoji={"💡"}>A DoubleSupplier *(Seen above)* is a functional interface that allows you to generate and return a double value. It's commonly used when you need to supply 
+double values in a flexible, functional style, such as the above code.</Callout>
+
+## Summary
+
+In this code, Commands and Subsystem classes were created for each of the 3 parts of an example intake. When using the commands and values together, we can program an intake to:
+1. Deploy to a "Floor position"
+2. Run intake wheels to pick up a game piece
+3. Detect the game piece with an IR sensor, causing the wrist to return into the robot's frame
+4. Spit out the game piece by reversing the direction of the intake wheels (Into a scoring zone, stow, etc.)
+
+This could look something like:
+
+``` java
+package frc.robot.commands.compound;
+
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.commands.intake.RunIntakeWheels;
+import frc.robot.commands.intake.RotateWristToPosition;
+import frc.robot.constants.IntakeConstants;
+import frc.robot.subsystems.intake.IntakeIRSensor;
+import frc.robot.subsystems.intake.IntakeWheels;
+import frc.robot.subsystems.intake.Wrist;
+
+public class DeployIntake extends SequentialCommandGroup {
+    public DeployIntake(Wrist wrist, IntakeWheels intakeWheels, IntakeIRSensor breakBeamSensorIntake, CommandXboxController driver) {
+        addCommands(
+            new ParallelDeadlineGroup(
+                new RotateWristToPosition(wrist, 300),
+              new RunIntakeWheels(intakeWheels, () -> -1)
+            .until(breakBeamSensorIntake::getBeamBroken)),
+
+            new ParallelDeadlineGroup(
+                new RotateWristToPosition(wrist, 100),
+                new RunIntakeWheels(intakeWheels, () -> 0)));
+    }
+}
+```
+
+<Callout type={"info"} emoji={"🏃"}>**Challenge**: Now, go back into the previous explanations to find these commands, and try and understand what these parameters will cause the subsystem to do!</Callout>
+
+## Conclusion
+
+Intakes are versatile and customizable subsystems that can be used to accomplish a plethora of tasks and objectives. Hopefully, the example code in this section assists you in programming your own intake subsystem. **Happy coding!**
