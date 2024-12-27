@@ -1,7 +1,29 @@
 import React from 'react';
 import Chatbot from './pages/Chatbot';
+import {useConfig} from "nextra-theme-docs";
+import {useRouter} from "next/router";
 
 export default {
+
+    head() {
+        const { asPath, defaultLocale, locale } = useRouter()
+        const { frontMatter } = useConfig()
+        const url =
+            'https://my-app.com' +
+            (defaultLocale === locale ? asPath : `/${locale}${asPath}`)
+
+        return (
+            <>
+                <meta property="og:url" content={url} />
+                <meta property="og:title" content={frontMatter.title || 'FEDS201'} />
+                <meta
+                    property="og:description"
+                    content={frontMatter.description || 'FEDS201'}
+                />
+            </>
+        )
+    },
+
     logo: (
         <>
             <img
@@ -19,6 +41,11 @@ export default {
 
     project: {
         link: 'https://github.com/feds201',
+
+    },
+
+    chat: {
+        link: '/Chatbot',
     },
 
     footer: {
@@ -26,7 +53,7 @@ export default {
             <div>
                 <span>
                     <a href="https://feds201.com" target="_blank" rel="noopener noreferrer">
-                        FEDS201 <span style={{ color: '#888' }}></span>
+                        FEDS201 <span style={{color: '#888'}}></span>
                     </a>
                     {new Date().getFullYear()} ©{' '}
                     <a href="https://rhs-csclub.vercel.app" target="_blank" rel="noopener noreferrer">
@@ -37,11 +64,4 @@ export default {
         ),
     },
 
-    nav: [
-        {
-            title: 'Chatbot',
-            href: '/chatbot',
-            component: Chatbot,
-        },
-    ]
 };

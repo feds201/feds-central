@@ -1,0 +1,47 @@
+# Robot Safety System
+
+Over the course of the 2024 season, we developed a robot safety system to ensure the safe operation of our robot during competitions and testing. This system was designed to prevent accidents and injuries by implementing safety features and protocols that would protect team members and spectators and comply with competition rules and regulations.
+
+## Highlights
+
+### SubsystemABS
+- **Abstract Class**: `SubsystemABS` is an abstract class that extends `SubsystemBase`, providing a structure for subsystems in a robot project.
+- **Network Tables**: It sets up network tables for communication between the robot and the dashboard.
+- **Shuffleboard Integration**: It integrates with Shuffleboard to create tabs for displaying subsystem data.
+- **Initialization**: It includes an `init` method for initializing the subsystem.
+- **Abstract Methods**: It defines several abstract methods (`init`, `periodic`, `simulationPeriodic`, `setDefaultCommand`, `isHealthy`, `Failsafe`) that must be implemented by subclasses.
+- **Error Handling**: It handles errors when creating Shuffleboard tabs by appending " - New" to the tab name if an `IllegalArgumentException` is thrown.
+- **Instance Management**: It maintains an instance of the subsystem for easy access.
+
+### VisionABC
+- **Vision-Specific Functionalities**: Extends `SubsystemABS` and defines additional vision-specific functionalities like target checking, LED control, and pipeline switching.
+- **Simulation Handling**: Ensure that `simulationPeriodic` handles simulation-specific vision updates to align with competition simulations.
+
+### FieldMap
+- **Visualization Utility**: A well-implemented utility for visualizing the robot's pose and field elements on Shuffleboard.
+- **Error Handling**: Include bounds checking or error handling when updating game element positions.
+
+### AutonTester
+- **Dynamic Mapping**: Provides a dynamic way to map autonomous commands to Shuffleboard.
+- **Input Validation**: Add input validation to ensure the `Group` array has an even number of elements (pairs of labels and commands).
+
+### SafetyManager
+- **Health Management**: Manages health status of subsystems and handles failsafe actions if a subsystem reports unhealthy.
+- **Diagnostic Logging**: Consider logging additional diagnostic details when a subsystem fails for easier debugging.
+
+### Smooth
+- **Data Smoothing**: Implements a simple moving average for smoothing data.
+- **Generic Implementation**: Consider making `Smooth` generic so it can handle more data types or customize the windowing behavior.
+
+### VisionObject
+- **Vision Data Representation**: Represents vision data for detected objects and integrates with NetworkTables.
+- **Edge Case Handling**: Ensure the calculations for normalized angles (`getAngle`) handle edge cases (e.g., camera width/height being zero).
+
+## General Suggestions
+1. **Code Organization**: Consider separating the logic into more focused packages (e.g., `vision`, `auton`, `safety`, `utils`) to improve clarity.
+2. **Error Handling**: Improve exception handling across classes, especially in methods that interact with hardware or external libraries like NetworkTables.
+3. **Testing and Simulation**: Include unit tests or simulation-specific overrides for methods like `periodic` and `Failsafe`.
+4. **Documentation**: Add JavaDocs to all public methods and constructors to improve maintainability and onboarding for new developers.
+5. **Efficiency**: Evaluate the performance of components like `Smooth` for real-time usage, ensuring they meet the timing constraints of the robot's control loop.
+
+By following these guidelines, we can ensure a safe and productive environment for everyone involved in our robotics projects.

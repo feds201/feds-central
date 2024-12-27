@@ -2,6 +2,14 @@ import { Cards, Card } from 'nextra/components'
 
 import { FaCode, FaExpeditedssl, FaPlug, FaCube, FaRegLightbulb, FaBuildingShield } from "react-icons/fa6";
 import {ImCogs} from "react-icons/im";
+import {FaRobot} from "react-icons/fa";
+import Head from 'next/head';
+
+<Head>
+    <title>FEDS-Handbook</title>
+    <meta property="og:title" content="FEDS-Handbook" key="title" />
+</Head>
+
 
 # Welcome to FRC Team 201's Tools and Resources
 
@@ -42,6 +50,9 @@ We have put together what we did each week in the 2025 season. This is a great w
 <Cards>
     <Card title="2025 Season" href="/Experiences/2025" icon={FaExpeditedssl()}>
         Check out our weekly experiences from the 2025 season to see what we did each week and what you can expect in the future.
+    </Card>
+    <Card title="Robot Safety System" href="/Experiences/RSS" icon={FaRobot()}>
+        Check out our weekly experiences from the 2024 season to see what we did each week and what you can expect in the future.
     </Card>
 </Cards>
 
