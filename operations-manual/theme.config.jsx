@@ -1,27 +1,31 @@
 import React from 'react';
 import Chatbot from './pages/Chatbot';
-import {useConfig} from "nextra-theme-docs";
-import {useRouter} from "next/router";
+import { useConfig } from "nextra-theme-docs";
+import { useRouter } from "next/router";
 
 export default {
-
     head() {
-        const { asPath, defaultLocale, locale } = useRouter()
-        const { frontMatter } = useConfig()
+        const { asPath, defaultLocale, locale } = useRouter();
+        const { frontMatter } = useConfig();
         const url =
             'https://my-app.com' +
-            (defaultLocale === locale ? asPath : `/${locale}${asPath}`)
+            (defaultLocale === locale ? asPath : `/${locale}${asPath}`);
 
         return (
             <>
                 <meta property="og:url" content={url} />
                 <meta property="og:title" content={frontMatter.title || 'FEDS201'} />
                 <meta
+                    property="og:image"
+                    content={frontMatter.image || 'https://i.imgur.com/GmdZ72B.png'}
+                />
+                <meta
                     property="og:description"
                     content={frontMatter.description || 'FEDS201'}
                 />
+                <link rel="icon" href="https://i.imgur.com/GmdZ72B.png" />
             </>
-        )
+        );
     },
 
     logo: (
@@ -40,7 +44,7 @@ export default {
     ),
 
     project: {
-        link: 'https://github.com/feds201',
+        link: 'https://github.com/feds201/FEDS-Handbook',
 
     },
 
