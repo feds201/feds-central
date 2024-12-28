@@ -1,0 +1,5 @@
+export default {
+  "Index": "Subtractive Manufacturing",
+  "Operation": "Operation",
+  "Fusion+360": "Fusion 360"
+}

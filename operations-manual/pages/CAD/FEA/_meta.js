@@ -1,0 +1,5 @@
+export default {
+  "Index": "Introduction",
+  "Inspire": "Altair Inspire",
+  "Post+Analysis": "Post Analysis"
+}

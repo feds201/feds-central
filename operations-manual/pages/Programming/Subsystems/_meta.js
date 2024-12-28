@@ -1,0 +1,7 @@
+export default {
+  "SubsystemOverview": "Subsystem Overview",
+  "Arm":"Arm",
+  "Shooter":"Shooter",
+  "Intake":"Intake",
+  "DriveBase":"Drive Base"
+};
