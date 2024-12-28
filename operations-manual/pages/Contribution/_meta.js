@@ -1,9 +1,0 @@
-export default {
-  "general": "Getting Started",
-  "installingApplication": "Installing Applications",
-  "settingUpGit": "Setting Up Git",
-  "OpeningVsc": "Opening Visual Studio Code",
-  "runninglocallly": "Running Locally",
-  "howtopublish": "Pushing to Github",
-  "MDXStyleSheet": "MDX Style Sheet"
-}

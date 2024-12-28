@@ -1,7 +1,0 @@
-export default {
-  "Index": "Getting Started",
-  "DesignGuidelines" : "Design Guidelines",
-  "MaterialSelection" : "Material Selection",
-  "ToolsAndEquipment" : "Tools and Equipment",
-  "OnlineResourses" : "Online Resources"
-}

@@ -1,5 +1,0 @@
-export default {
-  "Index": "Before you Start...",
-  "Sketches": "Sketches",
-  "3D+Modeling": "3D Modeling"
-}

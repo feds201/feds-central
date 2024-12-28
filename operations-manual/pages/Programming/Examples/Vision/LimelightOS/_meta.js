@@ -1,4 +1,0 @@
-export default {
-  "DistanceEstimation": "Distance Estimation",
-  "CustomLib": "Year 2023-24 SPYDER"
-};
