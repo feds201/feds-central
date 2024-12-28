@@ -5,5 +5,6 @@
   "OpeningVsc": "Opening Visual Studio Code",
   "runninglocallly": "Running Locally",
   "howtopublish": "Pushing to Github",
-  "MDXStyleSheet": "MDX Style Sheet"
+  "MDXStyleSheet": "MDX Style Sheet",
+  "CovertingToMDX": "Convert to MDX"
 }
