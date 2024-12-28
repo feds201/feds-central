@@ -7,6 +7,6 @@ async function loadNextra() {
     });
 }
 
-const withNextra = loadNextra();
+const withNextra = await loadNextra();
 
-export default withNextra;
+module.exports = withNextra;
