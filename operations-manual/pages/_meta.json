@@ -7,5 +7,15 @@
   "Mechanical": "Mechanical",
   "Strategy": "Strategy/ Scouting",
   "Experiences": "Experiences",
-  "Contribution": "Contribution"
+  "---": {
+    "type": "separator"
+  },
+  "Contribution": "Contribution",
+
+  "contact": {
+    "title": "Contact Us",
+    "type": "page",
+    "href": "https://example.com/contact",
+    "newWindow": true
+  }
 }
