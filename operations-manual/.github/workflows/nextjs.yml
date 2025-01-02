@@ -1,31 +1,27 @@
-name: Build, Export and Publish Next.js App
+name: Deploy
+
 on:
   push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
-  workflow_dispatch:
+    branches: [main]
 
 jobs:
-  build:
+  github_pages_deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.9.1
+      - uses: actions/checkout@v3
+      - name: Use Node.js 22.x
+        uses: actions/setup-node@v3
         with:
           node-version: 22.x
-      - run: |
-          npm i
-          npm run build
-      - name: Next Pages
-        uses: anorcle/next-pages@v1.0
-      - name: Commit and push changes
+      - name: Install dependencies
         run: |
-          touch .nojekyll
-          git config --global user.name "ritesh raj"
-          git config --global user.email "riteshrajas.arulselvan@gmail.com"
-          git add -A
-          git commit -m "New Build"
-          git push
+          yarn install
+          yarn export
+      - name: Deploy
+        run: |
+          git remote set-url origin https://git:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
+          yarn deploy -- -u "github-actions-bot <support+actions@github.com>"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
