@@ -11,11 +11,12 @@
     "type": "separator"
   },
   "Contribution": "Contribution",
+  "FEDSHandbook": "FEDS Handbook",
 
   "contact": {
     "title": "Contact Us",
     "type": "page",
-    "href": "https://example.com/contact",
+    "href": "https://feds201.com",
     "newWindow": true
   }
 }
