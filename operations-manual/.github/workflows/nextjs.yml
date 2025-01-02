@@ -17,8 +17,8 @@ jobs:
           node-version: 22.x
       - name: Install dependencies
         run: |
-          npm install
-          npm run build
+          yarn install
+          yarn export
       - name: Deploy
         run: |
           git remote set-url origin https://git:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
