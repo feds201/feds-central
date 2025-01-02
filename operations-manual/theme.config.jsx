@@ -25,8 +25,7 @@ export default {
                 <meta name="twitter:site" content="ig" />
                 <meta name="msapplication-TileColor" content="#ffffff" />
                 <meta name="theme-color" content="#ffffff" />
-                <meta name="google-site-verification" content="TPXvHTkzRvnf91zAk6nTtyEspVRnFB3aQvcqOI3P4n0" />
-            </>
+                <meta name="google-site-verification" content="0LNTJPoseM_CflO4_VtHt5-HsjPSnKEunUGr7-APSZI" />            </>
 
         );
     },
