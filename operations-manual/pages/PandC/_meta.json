@@ -1,10 +1,7 @@
 {
 
-  "Index" : "General",
-  "Robotics" : "Robotics",
-  "Family" : "Family",
-  "KeyDays" : "Key Days",
-  "Outreach" : "Outreach",
-  "Sponsorship" : "Sponsorship"
+  "Index" : "Introduction",
+  "ToolsAndResources" : "Tools & Resources",
+  "FedsProjects" : "FEDS Projects"
 }
   
