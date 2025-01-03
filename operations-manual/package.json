@@ -32,7 +32,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "node server.js"
   },
   "devDependencies": {
     "@types/node": "20.14.4",
