@@ -5,3 +5,25 @@ import Head from 'next/head';
     <title>2024-2025 Problems + Solutions - FEDS201</title>
     <meta property="og:title" content="2024-2025 Problems + Solutions - FEDS201" key="title" />
 </Head>
+
+### Radio (VH-109) Does Not Connect to `http://radio.local/` When Configuring:
+
+- Ensure you are connected to the radio through an ethernet cable to the DS port.
+- Set a [Static IP Address](https://www.trendnet.com/press/resource-library/how-to-set-static-ip-address) with these parameters:
+
+    - IP Address: 192.168.69.2
+
+    - Subnet Mask: 255.255.255.0
+
+    - Gateway: Leave Blank
+
+    - DNS: 192.168.69.1 or Leave Blank
+- Make your way to `http://192.168.69.1/`
+- After configuring the radio, make sure to refresh the page, then **Add a Suffix** so the radios' network can be differentiated from others.
+
+
+![Configuration Page](https://docs.wpilib.org/en/stable/_images/configuration-page.webp)
+
+### CAN Id on a REV Device Doesn't Save Upon a Robot Restart
+
+- Make sure you press **`Burn Flash`** at the bottom of the configuration page once settings are all done. (Seems obvious but its easy to forget I swear)
