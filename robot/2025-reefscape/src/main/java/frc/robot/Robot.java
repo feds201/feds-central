@@ -48,7 +48,6 @@ public class Robot extends TimedRobot
     private Command autonomousCommand;
     private RobotContainer robotContainer;
     private Camera frontCamera;
-    private SwerveDrivePoseEstimator poseEstimator;
     /**
      * This method is run when the robot is first started up and should be used for any
      * initialization code.
@@ -56,42 +55,28 @@ public class Robot extends TimedRobot
     @Override
     public void robotInit()
     {
-        
 
         Pathfinding.setPathfinder(new LocalADStarAK());
 
-        //Start of pose estimation stuff
-
-        var driveState = DrivetrainConstants.drivetrain.getState();
-        Rotation2d gyroAngle = driveState.Pose.getRotation();
-        SwerveModulePosition[] modulePositions = driveState.ModulePositions;
-        poseEstimator = new SwerveDrivePoseEstimator(DrivetrainConstants.drivetrain.getKinematics(), gyroAngle, modulePositions, new Pose2d(0, 0, gyroAngle));
-
-        frontCamera = new Camera(
-                Subsystems.VISION,
-                Subsystems.VISION.getNetworkTable(),
-                ObjectType.APRIL_TAG_FRONT);
-
-        //End of pose estimation stuff
 
         SignalLogger.setPath("/media/sda1/CTRElogs/");
-        
+
         WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
         robotContainer = new RobotContainer();
         new SafetyManager(robotContainer.SafeGuardSystems());
         ComandCenter.init();
-       
+
 
         // Start logging data log
         SignalLogger.start();
         DataLogManager.start();
 
-        // Record both DS control and joystick data
+
         DriverStation.startDataLog(DataLogManager.getLog());
-         PathfindingCommand.warmupCommand().schedule();
+        PathfindingCommand.warmupCommand().schedule();
     }
-    
-    
+
+
     /**
      * This method is called every 20 ms, no matter the mode. Use this for items like diagnostics
      * that you want ran during disabled, autonomous, teleoperated and test.
@@ -100,89 +85,60 @@ public class Robot extends TimedRobot
      * SmartDashboard integrated updating.
      */
 
-     
+
     @Override
     public void robotPeriodic()
     {
-        
-        var driveState = DrivetrainConstants.drivetrain.getState();
-        double headingDeg = driveState.Pose.getRotation().getDegrees();
-        Rotation2d gyroAngle = driveState.Pose.getRotation();
-        SmartDashboard.putNumber("robot rotation", headingDeg);
-        double omega = Units.radiansToRotations(driveState.Speeds.omegaRadiansPerSecond);
-        frontCamera.SetRobotOrientation(headingDeg, 0,0,0,0,0);
-        SwerveModulePosition[] modulePositions = driveState.ModulePositions;
-        poseEstimator.update(gyroAngle, modulePositions);
-        PoseAllocate frontPose = frontCamera.getRobotPose();
-        if  (  
-                frontPose != null 
-            &&    frontPose.getPose() != null
-            && frontPose.getPoseEstimate().tagCount > 0
-            && Math.abs(omega) < 2) {
-            DrivetrainConstants.drivetrain.addVisionMeasurement(frontPose.getPose(), frontPose.getTime());
-        }
-        // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
-        // commands, running already-scheduled commands, removing finished or interrupted commands,
-        // and running subsystem periodic() methods.  This must be called from the robot's periodic
-        // block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run();
-
-
     }
-    
-    
+
     /** This method is called once each time the robot enters Disabled mode. */
     @Override
     public void disabledInit() {
 
 
     }
-    
-    
+
     @Override
     public void disabledPeriodic() {}
-    
-    
+
+
     /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
     @Override
     public void autonomousInit()
     {
         autonomousCommand = robotContainer.getAutonomousCommand();
-        
+
         // schedule the autonomous command (example)
         if (autonomousCommand != null)
         {
             autonomousCommand.schedule();
         }
     }
-    
-    
+
+
     /** This method is called periodically during autonomous. */
     @Override
     public void autonomousPeriodic() {}
-    
-    
+
+
     @Override
     public void teleopInit()
     {
-        // This makes sure that the autonomous stops running when
-        // teleop starts running. If you want the autonomous to
-        // continue until interrupted by another command, remove
-        // this line or comment it out.
 
         if (autonomousCommand != null)
         {
             autonomousCommand.cancel();
         }
     }
-    
-    
+
+
     /** This method is called periodically during operator control. */
     @Override
     public void teleopPeriodic() {
     }
-    
-    
+
+
     @Override
     public void testInit() {
         // Cancels all running commands at the start of test mode.
@@ -191,19 +147,19 @@ public class Robot extends TimedRobot
         new AutonTester(robotContainer.TestAutonCommands());
         new SystemCheckUp(robotContainer.TestSystems());
     }
-    
+
     /** This method is called periodically during test mode. */
     @Override
     public void testPeriodic() {
 
     }
-    
-    
+
+
     /** This method is called once when the robot is first started up. */
     @Override
     public void simulationInit() {}
-    
-    
+
+
     /** This method is called periodically whilst in simulation. */
     @Override
     public void simulationPeriodic() {}
