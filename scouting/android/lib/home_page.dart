@@ -1,8 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
-import 'package:scouting_app/templateBuilder/builder.dart';
 
 import 'Experiment/ExpStateManager.dart';
 import 'Match_Pages/match_page.dart';
@@ -102,7 +99,8 @@ class _HomePageState extends State<HomePage>
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const MatchPage()));
+                          builder: (context) => const MatchPage(),
+                          fullscreenDialog: true));
                 },
               ),
               const SizedBox(height: 5),
@@ -118,31 +116,32 @@ class _HomePageState extends State<HomePage>
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const Pit_Recorder()));
+                          builder: (context) => const Pit_Recorder(),
+                          fullscreenDialog: true));
                 },
               ),
               const SizedBox(height: 5),
             ];
 
-            if (isExperimentBoxOpen) {
-              children.add(
-                buildButton(
-                  context: context,
-                  text: 'Template Creator',
-                  iconColor: Colors.redAccent,
-                  textColor: Colors.redAccent,
-                  color: Colors.red.shade100,
-                  borderColor: Colors.redAccent,
-                  icon: Icons.info_outline,
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const TemplateBuilder()));
-                  },
-                ),
-              );
-            }
+            // if (isExperimentBoxOpen) {
+            //   children.add(
+            //     buildButton(
+            //       context: context,
+            //       text: 'Template Creator',
+            //       iconColor: Colors.redAccent,
+            //       textColor: Colors.redAccent,
+            //       color: Colors.red.shade100,
+            //       borderColor: Colors.redAccent,
+            //       icon: Icons.info_outline,
+            //       onPressed: () {
+            //         Navigator.push(
+            //             context,
+            //             MaterialPageRoute(
+            //                 builder: (context) => const TemplateBuilder(), fullscreenDialog: true));
+            //       },
+            //     ),
+            //   );
+            // }
 
             double height = 55.0 * children.length;
 
@@ -345,8 +344,8 @@ Widget _buildCustomAppBar(BuildContext context) {
           child: const Icon(Icons.extension, size: 30, color: Colors.white),
         ),
         onPressed: () {
-          Route route =
-              MaterialPageRoute(builder: (context) => const Plugins());
+          Route route = MaterialPageRoute(
+              builder: (context) => const Plugins(), fullscreenDialog: true);
           Navigator.push(context, route);
         },
       ),

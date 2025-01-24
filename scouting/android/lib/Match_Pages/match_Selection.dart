@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
 import '../components/DataBase.dart';
@@ -80,8 +81,8 @@ Widget _buildMatchList(int _selectedMatchType, String matchData) {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const Match(),
-                ),
+                    builder: (context) => const Match(),
+                    fullscreenDialog: true),
               );
             },
           );
@@ -134,8 +135,8 @@ Widget _buildMatchList(int _selectedMatchType, String matchData) {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const Match(),
-                ),
+                    builder: (context) => const Match(),
+                    fullscreenDialog: true),
               );
             },
           );
@@ -181,7 +182,7 @@ Widget _buildMatchList(int _selectedMatchType, String matchData) {
                 context,
                 MaterialPageRoute(
                   builder: (context) => const Match(),
-                ),
+                    fullscreenDialog: true),
               );
             },
           );

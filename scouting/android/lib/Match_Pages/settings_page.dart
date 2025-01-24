@@ -1,14 +1,16 @@
+import 'dart:developer' as developer;
+
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:scouting_app/components/MatchSelection.dart';
+
 import '../components/DataBase.dart';
 import '../components/localmatchLoader.dart';
 import '../components/nav.dart';
 import '../components/qr_code_scanner_page.dart';
 import 'match.dart';
-import 'dart:developer' as developer;
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -145,7 +147,8 @@ class SettingsPageState extends State<SettingsPage> {
                               final qrCode = await Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => QRCodeScannerPage()),
+                                    builder: (context) => QRCodeScannerPage(),
+                                    fullscreenDialog: true),
                               );
                               if (qrCode != null) {
                                 setState(() {
@@ -314,8 +317,8 @@ class SettingsPageState extends State<SettingsPage> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) =>
-                                      const localmatchLoader(),
-                                ),
+                                        const localmatchLoader(),
+                                    fullscreenDialog: true),
                               );
                             });
                           },

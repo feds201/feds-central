@@ -112,7 +112,7 @@ class _localmatchLoaderState extends State<localmatchLoader> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => const HomePage(),
-                    ),
+                        fullscreenDialog: true),
                   );
                 },
                 onLongPress: () {
@@ -120,7 +120,7 @@ class _localmatchLoaderState extends State<localmatchLoader> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => const MatchPage(),
-                    ),
+                        fullscreenDialog: true),
                   );
                 },
                 child: Text('Seek Home',

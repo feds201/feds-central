@@ -1,6 +1,7 @@
 import 'dart:convert';
-import 'package:hive/hive.dart';
+
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 
 import 'CheckLists.dart';
 
@@ -36,7 +37,8 @@ class _Pit_RecorderState extends State<Pit_Recorder> {
     print("Selected team is : ${team.teamNumber}");
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => Checklists(team: team)),
+      MaterialPageRoute(
+          builder: (context) => Checklists(team: team), fullscreenDialog: true),
     );
   }
 

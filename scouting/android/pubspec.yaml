@@ -90,11 +90,16 @@ flutter:
   # the material Icons class.
   uses-material-design: true
   assets:
-    - assets/Areana.png
-    - assets/RedAlliance.png
-    - assets/BlueAlliance.png
-    - assets/BlueAlliance_StartPosition.png
-    - assets/RedAlliance_StartPosition.png
+    - assets/2025/Areana2025.png
+    - assets/2024/Areana2024.png
+    - assets/2024/RedAlliance_2024.png
+    - assets/2024/BlueAlliance_2024.png
+    - assets/2024/BlueAlliance_StartPosition_2024.png
+    - assets/2024/RedAlliance_StartPosition_2024.png
+    - assets/2025/RedAlliance_2025.png
+    - assets/2025/BlueAlliance_2025.png
+    - assets/2025/BlueAlliance_StartPosition_2025.png
+    - assets/2025/RedAlliance_StartPosition_2025.png
     - assets/Swerve.png
     - assets/logo.png
     - assets/logo__.png

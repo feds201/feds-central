@@ -4,9 +4,6 @@ import 'package:google_fonts/google_fonts.dart';
 import '../Experiment/ExpStateManager.dart';
 import '../components/DataBase.dart';
 import '../components/QrGenerator.dart';
-import '../templateBuilder/Auton.dart';
-import '../templateBuilder/EndGame.dart';
-import '../templateBuilder/tele_operated.dart';
 import 'match/Auton.dart';
 import 'match/EndGame.dart';
 import 'match/TeleOperated.dart';
@@ -50,8 +47,10 @@ class MatchState extends State<Match> {
   Widget build(BuildContext context) {
     LocalDataBase.putData(Types.team, _team);
 
-    return Scaffold(
-      appBar: AppBar(
+    return PopScope(
+        canPop: false,
+        child: Scaffold(
+          appBar: AppBar(
         leading:  Container(
           margin: const EdgeInsets.only(left: 20, top: 15),
             child: Text(_selectedStation,
@@ -89,8 +88,8 @@ class MatchState extends State<Match> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const Qrgenerator(),
-                      ),
+                              builder: (context) => const Qrgenerator(),
+                              fullscreenDialog: true),
                     ).then((value) => print('Returned to Match Page'))
                   },
               child: const Icon(
@@ -123,25 +122,16 @@ class MatchState extends State<Match> {
           });
         },
       ),
-    );
+        ));
   }
 
   _match(BuildContext context, int selectedIndex) {
     switch (selectedIndex) {
       case 0:
-        if (isExperimentBoxOpen) {
-          return const SingleChildScrollView(child: AutonBuilder());
-        }
         return const SingleChildScrollView(child: Auton());
       case 1:
-        if (isExperimentBoxOpen) {
-          return const SingleChildScrollView(child: TeleOPBuilder());
-        }
         return const SingleChildScrollView(child: TeleOperated());
       case 2:
-        if (isExperimentBoxOpen) {
-          return const SingleChildScrollView(child: EndGameBuilder());
-        }
         return const SingleChildScrollView(child: EndGame());
     }
   }

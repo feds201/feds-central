@@ -4,7 +4,8 @@ void _defaultOnTap(TapUpDetails details) {}
 
 Widget buildMap(BuildContext context, Offset? circlePosition, Size size, String allianceColor, {Function(TapUpDetails)? onTap, Image? image}) {
   onTap ??= _defaultOnTap;
-  image ??= Image.asset('assets/${allianceColor}Alliance_StartPosition.png');
+  image ??= Image.asset(
+      'assets/2025/${allianceColor}Alliance_StartPosition_2025.png');
   return Padding(
     padding: const EdgeInsets.all(8.0),
     child: Container(

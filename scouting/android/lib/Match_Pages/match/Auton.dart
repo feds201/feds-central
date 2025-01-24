@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:scouting_app/components/CheckBox.dart';
 import 'package:scouting_app/components/CommentBox.dart';
 import 'package:scouting_app/components/CounterShelf.dart';
-import 'package:scouting_app/components/Map.dart';
 
-import '../../components/Chips.dart';
 import '../../components/DataBase.dart';
-import '../../components/RatingsBox.dart';
 import '../../components/TeamInfo.dart';
-import '../../components/ratings.dart';
 import '../match.dart';
 
 class Auton extends StatefulWidget {
@@ -19,24 +16,18 @@ class Auton extends StatefulWidget {
 
 class AutonState extends State<Auton> {
   final LocalDataBase dataMaster = LocalDataBase();
-  late Offset? _circlePosition =
-      LocalDataBase.getData(AutoType.StartPosition) ??
-          const Offset(10, 10); // Default value;
-  late int ampPlacementValue;
-  late int speakerValue;
-  late int trapValue;
 
-  late int autonRating;
-  late List<String> comments;
+  late bool left_barge;
+  late int coralScoreL1;
+  late int coralScoreL2;
+  late int coralScoreL3;
+  late int coralScoreL4;
 
   late String assignedTeam;
   late String assignedStation;
   late String matchKey;
   late String allianceColor;
 
-  bool isChip1Clicked = false;
-  bool isChip2Clicked = false;
-  bool isChip3Clicked = false;
 
   // Match Variables
   @override
@@ -44,27 +35,20 @@ class AutonState extends State<Auton> {
     super.initState();
     assignedTeam = LocalDataBase.getData(Types.team) ?? "Null";
     assignedStation = LocalDataBase.getData(Types.selectedStation) ?? "Null";
-    autonRating = LocalDataBase.getData(AutoType.AutonRating) ?? 0;
 
-    ampPlacementValue = LocalDataBase.getData(AutoType.AmpPlacement) ?? 0;
-    speakerValue = LocalDataBase.getData(AutoType.Speaker) ?? 0;
-    trapValue = LocalDataBase.getData(AutoType.Trap) ?? 0;
-    autonRating = LocalDataBase.getData(AutoType.AutonRating) ?? 0;
-
-    isChip1Clicked = LocalDataBase.getData(AutoType.Chip1) ?? false;
-    isChip2Clicked = LocalDataBase.getData(AutoType.Chip2) ?? false;
-    isChip3Clicked = LocalDataBase.getData(AutoType.Chip3) ?? false;
+    left_barge = LocalDataBase.getData(AutoType.LeftBarge) ?? false;
+    coralScoreL1 = LocalDataBase.getData(AutoType.CoralScoringLevel1) ?? 0;
+    coralScoreL2 = LocalDataBase.getData(AutoType.CoralScoringLevel2) ?? 0;
+    coralScoreL3 = LocalDataBase.getData(AutoType.CoralScoringLevel3) ?? 0;
+    coralScoreL4 = LocalDataBase.getData(AutoType.CoralScoringLevel4) ?? 0;
   }
 
   void UpdateData() {
-    LocalDataBase.putData(AutoType.AmpPlacement, ampPlacementValue);
-    LocalDataBase.putData(AutoType.Speaker, speakerValue);
-    LocalDataBase.putData(AutoType.Trap, trapValue);
-    LocalDataBase.putData(AutoType.StartPosition, _circlePosition);
-    LocalDataBase.putData(AutoType.AutonRating, autonRating);
-    LocalDataBase.putData(AutoType.Chip1, isChip1Clicked);
-    LocalDataBase.putData(AutoType.Chip2, isChip2Clicked);
-    LocalDataBase.putData(AutoType.Chip3, isChip3Clicked);
+    LocalDataBase.putData(AutoType.LeftBarge, left_barge);
+    LocalDataBase.putData(AutoType.CoralScoringLevel1, coralScoreL1);
+    LocalDataBase.putData(AutoType.CoralScoringLevel2, coralScoreL2);
+    LocalDataBase.putData(AutoType.CoralScoringLevel3, coralScoreL3);
+    LocalDataBase.putData(AutoType.CoralScoringLevel4, coralScoreL4);
   }
 
   @override
@@ -90,151 +74,91 @@ class AutonState extends State<Auton> {
               print('Team Info START button pressed');
             },
           ),
-          buildMap(
-            context,
-            _circlePosition,
-            const Size(35, 35),
-            allianceColor,
-            onTap: (TapUpDetails details) {
-              _updatePosition(details);
-            },
-          ),
+          buildCheckBoxFull("Left Barge", left_barge, (bool value) {
+            setState(() {
+              left_barge = value;
+            });
+            UpdateData();
+          }),
           buildComments(
-            "Scoring",
-            [
-              CounterSettings(
-                (int value) {
-                  value++;
-                  setState(() {
-                    ampPlacementValue = value;
-                  });
-                },
-                (int value) {
-                  value--;
-                  setState(() {
-                    ampPlacementValue = value;
-                  });
-                },
-                icon: Icons.sledding,
-                number: ampPlacementValue,
-                counterText: "Amp Placement",
-                color: Colors.blue,
-              ),
-              CounterSettings(
-                (int value) {
-                  value++;
-                  setState(() {
-                    speakerValue = value;
-                  });
-                },
-                (int value) {
-                  value--;
-                  setState(() {
-                    speakerValue = value;
-                  });
-                },
-                icon: Icons.speaker,
-                number: speakerValue,
-                counterText: "Speaker Placement",
-                color: Colors.green,
-              ),
-              CounterSettings(
-                (int value) {
-                  value++;
-                  setState(() {
-                    trapValue = value;
+              "Coral Scoring",
+              [
+                CounterSettings(
+                  (int value) {
+                    setState(() {
+                      coralScoreL1++;
+                    });
                     UpdateData();
-                  });
-                },
-                (int value) {
-                  value--;
-                  setState(() {
-                    trapValue = value;
+                  },
+                  (int value) {
+                    setState(() {
+                      coralScoreL1--;
+                    });
                     UpdateData();
-                  });
-                },
-                icon: Icons.hub_outlined,
-                number: trapValue,
-                counterText: "Trap Placement",
-                color: Colors.red,
-              ),
-            ],
-            const Icon(Icons.comment),
-          ),
-          buildComments(
-            "React",
-            [
-              buildRatings([
-                buildRating(
-                    "Auton Rating",
-                    Icons.access_alarm_outlined,
-                    autonRating.toDouble(),
-                    5,
-                    Colors.yellow.shade600, onRatingUpdate: (double rating) {
-                  setState(() {
-                    autonRating = rating.toInt();
+                  },
+                  icon: Icons.cyclone,
+                  number: coralScoreL1,
+                  counterText: "Level 1",
+                  color: Colors.green,
+                ),
+                CounterSettings(
+                  (int value) {
+                    setState(() {
+                      coralScoreL2++;
+                    });
                     UpdateData();
-                  });
-                }),
-              ]),
-              buildComments(
-                "Auton Comments",
-                [
-                  buildChips([
-                    "Encountered issues",
-                    "Fast and efficient",
-                    "No issues"
-                  ], [
-                    [Colors.red, Colors.white],
-                    [Colors.green, Colors.white],
-                    [Colors.blue, Colors.white]
-                  ], [
-                    isChip1Clicked,
-                    isChip2Clicked,
-                    isChip3Clicked,
-                  ], onTapList: [
-                    (String label) {
-                      setState(() {
-                        isChip1Clicked = !isChip1Clicked;
-                        isChip2Clicked = isChip2Clicked;
-                        isChip3Clicked = false;
-                      });
-                      UpdateData();
-                    },
-                    (String label) {
-                      setState(() {
-                        isChip1Clicked = isChip1Clicked;
-                        isChip2Clicked = !isChip2Clicked;
-                        isChip3Clicked = isChip3Clicked;
-                      });
-                      UpdateData();
-                    },
-                    (String label) {
-                      setState(() {
-                        isChip1Clicked = false;
-                        isChip2Clicked = isChip2Clicked;
-                        isChip3Clicked = !isChip3Clicked;
-                      });
-                      UpdateData();
-                    },
-                  ]),
-                ],
-                const Icon(Icons.comment_bank),
-              ),
-            ],
-            const Icon(Icons.comment_bank),
-          ),
+                  },
+                  (int value) {
+                    setState(() {
+                      coralScoreL2--;
+                    });
+                    UpdateData();
+                  },
+                  icon: Icons.cyclone,
+                  number: coralScoreL2,
+                  counterText: "Level 2",
+                  color: Colors.yellow,
+                ),
+                CounterSettings(
+                  (int value) {
+                    setState(() {
+                      coralScoreL3++;
+                    });
+                    UpdateData();
+                  },
+                  (int value) {
+                    setState(() {
+                      coralScoreL3--;
+                    });
+                    UpdateData();
+                  },
+                  icon: Icons.cyclone,
+                  number: coralScoreL3,
+                  counterText: "Level 3",
+                  color: Colors.orange,
+                ),
+                CounterSettings(
+                  (int value) {
+                    setState(() {
+                      coralScoreL4++;
+                    });
+                    UpdateData();
+                  },
+                  (int value) {
+                    setState(() {
+                      coralScoreL4--;
+                    });
+                    UpdateData();
+                  },
+                  icon: Icons.cyclone,
+                  number: coralScoreL4,
+                  counterText: "Level 4",
+                  color: Colors.red,
+                ),
+              ],
+              const Icon(Icons.emoji_nature_outlined))
         ],
       ),
     );
-  }
-
-  void _updatePosition(TapUpDetails details) {
-    setState(() {
-      _circlePosition = Offset(details.localPosition.dx.roundToDouble(),
-          details.localPosition.dy.roundToDouble());
-      LocalDataBase.putData(AutoType.StartPosition, _circlePosition);
-    });
-    UpdateData();
   }
 }

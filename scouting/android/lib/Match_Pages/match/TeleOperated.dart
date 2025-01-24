@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:scouting_app/components/CheckBox.dart';
 import 'package:scouting_app/components/CommentBox.dart';
 import 'package:scouting_app/components/CounterShelf.dart';
 
@@ -13,40 +12,34 @@ class TeleOperated extends StatefulWidget {
 }
 
 class _TeleOperatedState extends State<TeleOperated> {
-  final LocalDataBase dataMaster = LocalDataBase();
-  late int groundPickUp;
-  late int sourcePickUp;
-  late int speakerNotes;
-  late int ampPlacement;
-  late int trapPlacement;
-  late int amplifiedSpeakerNotes;
-  late bool coOpBonus;
-  late int assists;
+  late int coralScoreL1;
+  late int coralScoreL2;
+  late int coralScoreL3;
+  late int coralScoreL4;
+  late int algaeScoringProcessor;
+  late int algaeScoringBarge;
 
   @override
   void initState() {
     super.initState();
-    groundPickUp = LocalDataBase.getData(TeleType.GroundPickUp) ?? 0;
-    sourcePickUp = LocalDataBase.getData(TeleType.SourcePickUp) ?? 0;
-    speakerNotes = LocalDataBase.getData(TeleType.SpeakerNotes) ?? 0;
-    ampPlacement = LocalDataBase.getData(TeleType.AmpPlacement) ?? 0;
-    trapPlacement = LocalDataBase.getData(TeleType.TrapPlacement) ?? 0;
-    amplifiedSpeakerNotes =
-        LocalDataBase.getData(TeleType.AmplifiedSpeakerNotes) ?? 0;
-    coOpBonus = LocalDataBase.getData(TeleType.CoOpBonus) ?? false;
-    assists = LocalDataBase.getData(TeleType.Assists) ?? 0;
+
+    coralScoreL1 = LocalDataBase.getData(TeleType.CoralScoringLevel1) ?? 0;
+    coralScoreL2 = LocalDataBase.getData(TeleType.CoralScoringLevel2) ?? 0;
+    coralScoreL3 = LocalDataBase.getData(TeleType.CoralScoringLevel3) ?? 0;
+    coralScoreL4 = LocalDataBase.getData(TeleType.CoralScoringLevel4) ?? 0;
+    algaeScoringProcessor =
+        LocalDataBase.getData(TeleType.AlgaeScoringProcessor) ?? 0;
+    algaeScoringBarge = LocalDataBase.getData(TeleType.AlgaeScoringBarge) ?? 0;
   }
 
   void UpdateData() {
-    LocalDataBase.putData(TeleType.GroundPickUp, groundPickUp);
-    LocalDataBase.putData(TeleType.SourcePickUp, sourcePickUp);
-    LocalDataBase.putData(TeleType.SpeakerNotes, speakerNotes);
-    LocalDataBase.putData(TeleType.AmpPlacement, ampPlacement);
-    LocalDataBase.putData(TeleType.TrapPlacement, trapPlacement);
+    LocalDataBase.putData(TeleType.CoralScoringLevel1, coralScoreL1);
+    LocalDataBase.putData(TeleType.CoralScoringLevel2, coralScoreL2);
+    LocalDataBase.putData(TeleType.CoralScoringLevel3, coralScoreL3);
+    LocalDataBase.putData(TeleType.CoralScoringLevel4, coralScoreL4);
     LocalDataBase.putData(
-        TeleType.AmplifiedSpeakerNotes, amplifiedSpeakerNotes);
-    LocalDataBase.putData(TeleType.CoOpBonus, coOpBonus);
-    LocalDataBase.putData(TeleType.Assists, assists);
+        TeleType.AlgaeScoringProcessor, algaeScoringProcessor);
+    LocalDataBase.putData(TeleType.AlgaeScoringBarge, algaeScoringBarge);
   }
 
   @override
@@ -55,141 +48,123 @@ class _TeleOperatedState extends State<TeleOperated> {
       child: Column(
         children: [
           buildComments(
-              "Pick Up",
+              "Coral Scoring",
               [
-                CounterSettings((int value) {
-                  value++;
-                  setState(() {
-                    groundPickUp = value;
-                  });
-                  UpdateData();
-                }, (int value) {
-                  value--;
-                  setState(() {
-                    groundPickUp = value;
-                  });
-                  UpdateData();
-                },
-                    icon: Icons.grass_outlined,
-                    number: groundPickUp,
-                    counterText: "Ground",
-                    color: Colors.green),
-                CounterSettings((int value) {
-                  value++;
-                  setState(() {
-                    sourcePickUp = value;
-                  });
-                  UpdateData();
-                }, (int value) {
-                  value--;
-                  setState(() {
-                    sourcePickUp = value;
-                  });
-                  UpdateData();
-                },
-                    icon: Icons.shopping_basket_outlined,
-                    number: sourcePickUp,
-                    counterText: "Source",
-                    color: Colors.blue),
+                CounterSettings(
+                  (int value) {
+                    setState(() {
+                      coralScoreL1++;
+                    });
+                    UpdateData();
+                  },
+                  (int value) {
+                    setState(() {
+                      coralScoreL1--;
+                    });
+                    UpdateData();
+                  },
+                  icon: Icons.cyclone,
+                  number: coralScoreL1,
+                  counterText: "Level 1",
+                  color: Colors.green,
+                ),
+                CounterSettings(
+                  (int value) {
+                    setState(() {
+                      coralScoreL2++;
+                    });
+                    UpdateData();
+                  },
+                  (int value) {
+                    setState(() {
+                      coralScoreL2--;
+                    });
+                    UpdateData();
+                  },
+                  icon: Icons.cyclone,
+                  number: coralScoreL2,
+                  counterText: "Level 2",
+                  color: Colors.yellow,
+                ),
+                CounterSettings(
+                  (int value) {
+                    setState(() {
+                      coralScoreL3++;
+                    });
+                    UpdateData();
+                  },
+                  (int value) {
+                    setState(() {
+                      coralScoreL3--;
+                    });
+                    UpdateData();
+                  },
+                  icon: Icons.cyclone,
+                  number: coralScoreL3,
+                  counterText: "Level 3",
+                  color: Colors.orange,
+                ),
+                CounterSettings(
+                  (int value) {
+                    setState(() {
+                      coralScoreL4++;
+                    });
+                    UpdateData();
+                  },
+                  (int value) {
+                    setState(() {
+                      coralScoreL4--;
+                    });
+                    UpdateData();
+                  },
+                  icon: Icons.cyclone,
+                  number: coralScoreL4,
+                  counterText: "Level 4",
+                  color: Colors.red,
+                ),
               ],
-              const Icon(Icons.add_comment)),
+              const Icon(Icons.emoji_nature_outlined)),
           buildComments(
-              "Scoring",
+              "Algae Scoring",
               [
-                CounterSettings((int value) {
-                  value++;
-                  setState(() {
-                    speakerNotes = value;
-                  });
-                  UpdateData();
-                }, (int value) {
-                  value--;
-                  setState(() {
-                    speakerNotes = value;
-                  });
-                  UpdateData();
-                },
-                    icon: Icons.grass_outlined,
-                    number: speakerNotes,
-                    counterText: "Speaker Notes",
-                    color: Colors.green),
-                CounterSettings((int value) {
-                  value++;
-                  setState(() {
-                    ampPlacement = value;
-                  });
-                  UpdateData();
-                }, (int value) {
-                  value--;
-                  setState(() {
-                    ampPlacement = value;
-                  });
-                  UpdateData();
-                },
-                    icon: Icons.hub_outlined,
-                    number: ampPlacement,
-                    counterText: "Amp Placement",
-                    color: Colors.blue),
-                CounterSettings((int value) {
-                  value++;
-                  setState(() {
-                    trapPlacement = value;
-                  });
-                  UpdateData();
-                }, (int value) {
-                  value--;
-                  setState(() {
-                    trapPlacement = value;
-                  });
-                  UpdateData();
-                },
-                    icon: Icons.shopping_basket_outlined,
-                    number: trapPlacement,
-                    counterText: "Trap Placement",
-                    color: Colors.red)
+                CounterSettings(
+                  (int value) {
+                    setState(() {
+                      algaeScoringProcessor++;
+                    });
+                    UpdateData();
+                  },
+                  (int value) {
+                    setState(() {
+                      algaeScoringProcessor--;
+                    });
+                    UpdateData();
+                  },
+                  icon: Icons.wash,
+                  number: algaeScoringProcessor,
+                  counterText: "Processor",
+                  color: Colors.green,
+                ),
+                CounterSettings(
+                  (int value) {
+                    setState(() {
+                      algaeScoringBarge++;
+                    });
+                    UpdateData();
+                  },
+                  (int value) {
+                    setState(() {
+                      algaeScoringBarge--;
+                    });
+                    UpdateData();
+                  },
+                  icon: Icons.rice_bowl_outlined,
+                  number: algaeScoringBarge,
+                  counterText: "Barge",
+                  color: Colors.green,
+                ),
               ],
               const Icon(Icons.add_comment)),
-          buildCounterShelf([
-            CounterSettings((int value) {
-              value++;
-              setState(() {
-                amplifiedSpeakerNotes = value;
-              });
-              UpdateData();
-            }, (int value) {
-              value--;
-              setState(() {
-                amplifiedSpeakerNotes = value;
-              });
-              UpdateData();
-            },
-                icon: Icons.grass_outlined,
-                number: amplifiedSpeakerNotes,
-                counterText: "Amplified Speaker Notes",
-                color: Colors.green),
-          ]),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-              buildCheckBox("Co-Op Bonus", coOpBonus, (bool value) {
-                setState(() {
-                  coOpBonus = value;
-                });
-                UpdateData();
-              }),
-              buildCounter(
-                "Assists",
-                assists,
-                (int value) {
-                  setState(() {
-                    assists = value;
-                  });
-                  UpdateData();
-                },
-                color: Colors.blue,
-              ),
-            ]),
-          )
         ],
       ),
     );

@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -25,10 +26,10 @@ class LogsPage extends StatelessWidget {
         title: Center(
           child: ShaderMask(
               shaderCallback: (bounds) => const LinearGradient(
-                colors: [Colors.red, Colors.blue],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ).createShader(bounds),
+                    colors: [Colors.red, Colors.blue],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ).createShader(bounds),
               child: Text(
                 'Match Logs',
                 style: GoogleFonts.museoModerno(
@@ -57,11 +58,12 @@ class LogsPage extends StatelessWidget {
               MatchLogs.clearLogs();
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => const LogsPage()),
+                MaterialPageRoute(
+                    builder: (context) => const LogsPage(),
+                    fullscreenDialog: true),
               );
             },
           ),
-
         ],
       ),
       body: SingleChildScrollView(
@@ -70,7 +72,7 @@ class LogsPage extends StatelessWidget {
           items: [
             for (int i = 0; i < matchData.length; i++)
               MatchCard(
-                matchData: matchData[i],
+                matchData: matchData[i].toString(),
                 teamNumber: parseAndLogJson(matchData[i])[4],
                 eventName: parseAndLogJson(matchData[i])[0],
                 allianceColor: parseAndLogJson(matchData[i])[1],

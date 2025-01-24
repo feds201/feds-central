@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 import '../services/GeminiService.dart';
 
 class GeminiPredictionPage extends StatefulWidget {
@@ -24,7 +25,7 @@ class _GeminiPredictionPageState extends State<GeminiPredictionPage> {
     try {
       // Replace with the actual input data for predictions
       Map<String, dynamic> inputData = {
-        'eventKey': '2024FRC',
+        'eventKey': '2025FRC',
         'teamData': [
           {'teamNumber': 123, 'performance': 85},
           {'teamNumber': 456, 'performance': 90},

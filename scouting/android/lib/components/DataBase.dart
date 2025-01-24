@@ -114,40 +114,27 @@ class MatchLogs {
 }
 
 enum AutoType {
-  AmpPlacement,
-  Speaker,
-  Trap,
-  StartPosition,
-  AutonRating,
-  Chip1,
-  Chip2,
-  Chip3
+  CoralScoringLevel1,
+  CoralScoringLevel2,
+  CoralScoringLevel3,
+  CoralScoringLevel4,
+  LeftBarge,
 }
 
 enum EndgameType {
-  endLocation,
-  climbed,
-  immobile,
-  spotlight,
-  harmony,
-  tippy,
-  notes_droped,
-  pickup_from,
-  driver_rating,
-  defense_rating,
-  robot_speed,
-  climb_time,
+  Deep_Climb,
+  Shallow_Climb,
+  Park,
+  Comments,
 }
 
 enum TeleType {
-  GroundPickUp,
-  SourcePickUp,
-  SpeakerNotes,
-  AmpPlacement,
-  TrapPlacement,
-  AmplifiedSpeakerNotes,
-  CoOpBonus,
-  Assists
+  CoralScoringLevel1,
+  CoralScoringLevel2,
+  CoralScoringLevel3,
+  CoralScoringLevel4,
+  AlgaeScoringBarge,
+  AlgaeScoringProcessor,
 }
 
 enum PitData {

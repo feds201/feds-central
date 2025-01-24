@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'dart:developer' as developer;
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -10,7 +11,6 @@ import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:scouting_app/components/MatchSelection.dart';
 
-import '../Plugins/plugins.dart';
 import '../components/DataBase.dart';
 import '../components/nav.dart';
 import 'match.dart';
@@ -245,8 +245,8 @@ class MatchPageState extends State<MatchPage> {
           child: TextField(
             controller: eventKeyController,
             decoration: InputDecoration(
-              labelText: 'Match Event Key (e.g. 2022miket)',
-              border: OutlineInputBorder(
+            labelText: 'Match Event Key (e.g. 2024isde4)',
+            border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
@@ -348,12 +348,12 @@ class MatchPageState extends State<MatchPage> {
                   LocalDataBase.getData(Types.allianceColor);
               if (allianceColor == null || allianceColor.isEmpty) {
                 return const Text(
-                  'Please select an alliance color',
+                  'Please select an alliance color or Load the event',
                   style: TextStyle(fontSize: 16, color: Colors.red),
                 );
               } else {
                 return Image.asset(
-                  'assets/${allianceColor}Alliance.png',
+                  'assets/2025/${allianceColor}Alliance_2025.png',
                   width: MediaQuery.of(context).size.width * 0.90,
                 );
               }

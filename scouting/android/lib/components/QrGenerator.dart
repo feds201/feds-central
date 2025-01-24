@@ -24,6 +24,7 @@ class QrCoder extends State<Qrgenerator> {
   final PluginStateManager pluginStateManager = PluginStateManager();
   @override
   Widget build(BuildContext context) {
+    print(LocalDataBase.getMatchData().toString());
     return Scaffold(
       appBar: AppBar(
         title: Text('QR Code',
@@ -152,8 +153,8 @@ class QrCoder extends State<Qrgenerator> {
             await Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const HomePage(),
-              ),
+                  builder: (context) => const HomePage(),
+                  fullscreenDialog: true),
             );
 
             // Confirm navigation completion
@@ -174,8 +175,8 @@ class QrCoder extends State<Qrgenerator> {
                         await Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const HomePage(),
-                          ),
+                              builder: (context) => const HomePage(),
+                              fullscreenDialog: true),
                         );
                       },
                     ),
@@ -202,7 +203,7 @@ class QrCoder extends State<Qrgenerator> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => const HomePage(),
-                        ),
+                            fullscreenDialog: true),
                       );
                     },
                   ),
@@ -243,8 +244,7 @@ class QrCoder extends State<Qrgenerator> {
       await Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => const HomePage(),
-        ),
+            builder: (context) => const HomePage(), fullscreenDialog: true),
       );
     }
   }

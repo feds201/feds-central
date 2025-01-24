@@ -3,6 +3,7 @@ import 'package:qr_flutter/qr_flutter.dart';
 import 'package:scouting_app/components/CommentBox.dart';
 
 import 'FullScreenQrCodePage.dart';
+import 'compactifier.dart';
 
 class MatchCard extends StatelessWidget {
   final String matchData;
@@ -23,7 +24,6 @@ class MatchCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(allianceColor);
     return Container(
       decoration: BoxDecoration(
         color: allianceColor == "Red" ? Colors.red : Colors.blue,
@@ -64,8 +64,10 @@ class MatchCard extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => FullScreenQrCodePage(data: matchData),
-                        ),
+                              builder: (context) => FullScreenQrCodePage(
+                                  data: correctJsonFormat(matchData)),
+                              fullscreenDialog: true,
+                            ),
                       );
                     },
                     child: QrImageView(
