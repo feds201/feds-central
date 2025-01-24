@@ -1,5 +1,6 @@
 package frc.robot.subsystems.vision.camera;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -7,18 +8,23 @@ import frc.robot.utils.*;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTableEntry;
 
-import java.sql.Time;
 
 public class Camera extends VisionABC {
 	private ObjectType object;
 	public int lastseenAprilTag;
 	public GenericEntry lastseentag_sim;
+	private PIDController controller;
 	
 	public Camera(Subsystems vision, String networkTable, ObjectType objectType) {
 		super(vision, networkTable);
 		lastseenAprilTag = -1;
 		object = objectType;
 		lastseentag_sim =  tab.add("AprilTag"+ objectType.getName(), -1).getEntry();
+		controller = new PIDController(0,0,0);
+		controller.setSetpoint(5);
+
+		
+		controller.calculate(10);
 	}
 
 	@Override
