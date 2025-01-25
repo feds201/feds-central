@@ -1,5 +1,5 @@
 
-package frc.robot.subsystems.intake;
+package frc.robot.subsystems.coralAlgaeIntake;
 
 import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 
 import frc.robot.utils.SubsystemABS;
 
-public class AlgaeCoralIntake extends SubsystemABS {
+public class coralAlgaeIntake extends SubsystemABS {
   private TalonFX intakemotor;
   private CANrange algaeIntakeSensor;
   private CANrange coralIntakeSensor;
@@ -20,7 +20,7 @@ public class AlgaeCoralIntake extends SubsystemABS {
 
   // constructor
 
-  public AlgaeCoralIntake() {
+  public coralAlgaeIntake() {
     intakemotor = new TalonFX(intakemotorCanId); // intializing CANrange sensors
     algaeIntakeSensor = new CANrange(algaeIntakeSensorCanId);
     coralIntakeSensor = new CANrange(coralIntakeSensorCanId);
