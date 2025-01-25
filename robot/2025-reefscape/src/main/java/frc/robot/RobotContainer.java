@@ -93,12 +93,14 @@ public class RobotContainer extends RobotFramework {
         frontCamera = new Camera(
                 Subsystems.VISION,
                 Subsystems.VISION.getNetworkTable(),
-                ObjectType.APRIL_TAG_FRONT);
+                ObjectType.APRIL_TAG_FRONT,
+                "limelight-seven");
 
         rearCamera = new Camera(
                 Subsystems.VISION,
                 Subsystems.VISION.getNetworkTable(),
-                ObjectType.APRIL_TAG_BACK);
+                ObjectType.APRIL_TAG_BACK,
+                "limelight-namegoeshere");
 
         teleOpChooser = new SendableChooser<>();
         setupDrivetrain();
@@ -174,6 +176,9 @@ public class RobotContainer extends RobotFramework {
 
         driverController.leftBumper()
                 .onTrue(GameNavigator.GoLeft(frontCamera.GetAprilTag()));
+
+        driverController.rightBumper()
+                .onTrue(GameNavigator.GoRight(frontCamera.GetAprilTag()));
 
         // driverController.rightBumper()
         //         .onTrue(GameNavigator.GoRight(frontCamera.getLastseenAprilTag()));

@@ -13,19 +13,28 @@ import frc.robot.utils.PathPair;
 
 public class GameNavigator extends AutoPathFinder {
   private static final PathPair[] PATHS = {
-      // new PathPair(0, 1, "1pathleft", "1pathright"),
-      // new PathPair(2, 3, "3pathleft", "3pathright"),
-      // new PathPair(4, 5, "5pathleft", "5pathright"),
-      // new PathPair(6, 7, "7pathleft", "7pathright"),
-      // new PathPair(8, 9, "9pathleft", "9pathright"),
-      new PathPair(18, 18, "Pathto1Left", "Pathto1Right")
+      // //Coral Stations
+      // new PathPair(1, 13, "thispathwasntmadeyetdontrunthis", "thispathwasntmadeyetdontrunthis"),
+      // new PathPair(2, 12, "thispathwasntmadeyetdontrunthis", "thispathwasntmadeyetdontrunthis"),
+      // //Processor
+      // new PathPair(3, 16, "thispathwasntmadeyetdontrunthis", "thispathwasntmadeyetdontrunthis"),
+      // //Net tags
+      // new PathPair(4, 15, "thispathwasntmadeyetdontrunthis", "thispathwasntmadeyetdontrunthis"),
+      // new PathPair(5, 14, "thispathwasntmadeyetdontrunthis", "thispathwasntmadeyetdontrunthis"),
+      //Reef Paths
+      new PathPair(6, 19, "66alignRight", "66alignRight"),
+      new PathPair(7, 18, "56alignRight", "56alignRight"),
+      new PathPair(8, 17, "46alignLeft", "46alignRight"),
+      new PathPair(9, 22, "36alignLeft", "36alignRight"),
+      new PathPair(10, 21, "26alignLeft", "26alignRight"),
+      new PathPair(11, 20, "16alignLeft", "16alignRight")
   };
 
   public static Command GoLeft(int TagID) {
     if (TagID == -1) {
       return new ParallelCommandGroup();
       //return null;
-      /* returning null causes an error, */
+      /* returning null causes an error, -1 acts as null in this case. */
     }
 
     for (PathPair path : PATHS) {
@@ -36,13 +45,14 @@ public class GameNavigator extends AutoPathFinder {
 
     }
     return new ParallelCommandGroup();
-    //return null;
-    /* returning null causes an error, */
+    //Do nothing (in case something went wrong when traversing the PathPair list)
   }
 
   public static Command GoRight(int TagID) {
     if (TagID == -1) {
       return new ParallelCommandGroup();
+        //return null;
+      /* returning null causes an error, -1 acts as null in this case. */
     }
 
     for (PathPair path : PATHS) {
@@ -53,7 +63,6 @@ public class GameNavigator extends AutoPathFinder {
 
     }
     return new ParallelCommandGroup();
-    //return null;
-    /* returning null causes an error, */
+    //Do nothing (in case something went wrong when traversing the PathPair list)
   }
 }

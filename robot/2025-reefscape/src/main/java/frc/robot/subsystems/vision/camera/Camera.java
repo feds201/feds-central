@@ -13,11 +13,13 @@ public class Camera extends VisionABC {
 	private ObjectType object;
 	public int lastseenAprilTag;
 	public GenericEntry lastseentag_sim;
+	private String limelightName;
 	
-	public Camera(Subsystems vision, String networkTable, ObjectType objectType) {
+	public Camera(Subsystems vision, String networkTable, ObjectType objectType, String limelightName) {
 		super(vision, networkTable);
 		lastseenAprilTag = -1;
 		object = objectType;
+		this.limelightName = limelightName;
 		lastseentag_sim =  tab.add("AprilTag"+ objectType.getName(), -1).getEntry();
 	}
 
@@ -96,10 +98,11 @@ public class Camera extends VisionABC {
 	 * deals with
 	 * detecting and processing AprilTags.
 	 * 
-	 * @return the last seen AprilTag
+	 * @return the primary april tag ID (if one is in view)
 	 */
 	public int GetAprilTag() {
-		NetworkTableEntry entry = object.getNetworkTable().getEntry("tid");
+		
+		NetworkTableEntry entry = LimelightHelpers.getLimelightNTTableEntry(limelightName, "tid");
 		if (entry.exists()) {
 			return (int) entry.getDouble(0);
 		}
@@ -116,18 +119,18 @@ public class Camera extends VisionABC {
 	}
 
 
-	//This method has to be fixed
+	
 	public PoseAllocate getRobotPose() {
-		LimelightHelpers.PoseEstimate pose = LimelightHelpers.getBotPoseEstimate("limelight-seven", "botpose_orb_wpiblue", true);
+		LimelightHelpers.PoseEstimate pose = LimelightHelpers.getBotPoseEstimate(limelightName, "botpose_orb_wpiblue", true);
 		if(pose!=null){
 			double time = pose.timestampSeconds;
 			return new PoseAllocate(pose, time);
 		}
 		return null;
 	}
-//This method has to be fixed
+
 	public void SetRobotOrientation(double headingDeg, double yawRate, double pitch, double pitchRate, double roll, double rollRate) {
-		LimelightHelpers.SetRobotOrientation("limelight-seven", headingDeg, yawRate, pitch, pitchRate, roll, rollRate);
+		LimelightHelpers.SetRobotOrientation(limelightName, headingDeg, yawRate, pitch, pitchRate, roll, rollRate);
 	}
 
 }
