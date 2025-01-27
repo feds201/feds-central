@@ -61,6 +61,7 @@ public class RobotMap {
 
     public static class ElevatorMap {
         public static final int ELEVATOR_MOTOR = 52;
+        public static final int ELEVATOR_MOTOR2 = 54;
         public static final int ELEVATOR_SPEED = 0;
     }
 
