@@ -24,6 +24,7 @@ public class coralAlgaeIntake extends SubsystemABS {
     intakemotor = new TalonFX(intakemotorCanId); // intializing CANrange sensors
     algaeIntakeSensor = new CANrange(algaeIntakeSensorCanId);
     coralIntakeSensor = new CANrange(coralIntakeSensorCanId);
+    tab.addBoolean("Tab4", ()-> true);
   }
 
   @Override
@@ -74,13 +75,13 @@ public class coralAlgaeIntake extends SubsystemABS {
       return true;
     }
     return false;
-    // TODO Auto-generated method stub
   }
 
   @Override
   public void Failsafe() {
     intakemotor.disable();
   }
+
 
 
 }

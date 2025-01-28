@@ -152,7 +152,7 @@ public class SwerveSubsystem extends SubsystemABS {
             tab.addBoolean(tabName + "/Start Button", driverController.start());
             tab.addBoolean(tabName + "/Back Button", driverController.back());
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
     }
 
