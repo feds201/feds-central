@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.Elevator.GoUpCommand;
 import frc.robot.commands.swerve.DriveForwardCommand;
 import frc.robot.commands.swerve.GameNavigator;
 import frc.robot.constants.*;
@@ -36,6 +37,7 @@ import frc.robot.constants.RobotMap.SafetyMap;
 import frc.robot.constants.RobotMap.SensorMap;
 import frc.robot.constants.RobotMap.UsbMap;
 import frc.robot.constants.RobotMap.SafetyMap.AutonConstraints;
+import frc.robot.subsystems.Elevator.Elevator;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.vision.camera.Camera;
@@ -43,6 +45,7 @@ import frc.robot.utils.AutoPathFinder;
 import frc.robot.utils.DrivetrainConstants;
 import frc.robot.utils.ObjectType;
 import frc.robot.utils.PoseAllocate;
+import frc.robot.utils.PoseEstimator;
 import frc.robot.utils.RobotFramework;
 import frc.robot.utils.SubsystemABS;
 import frc.robot.utils.Subsystems;
@@ -58,10 +61,12 @@ public class RobotContainer extends RobotFramework {
     private Telemetry telemetry;
     private SendableChooser<Command> teleOpChooser;
     private SendableChooser<Command> autonChooser;
+    private SendableChooser<Command> commandChooser;
     private Camera frontCamera;
     private Camera rearCamera;
     private PathConstraints autoAlignConstraints;
-    private SwerveDrivePoseEstimator poseEstimator;
+    private PoseEstimator poseEstimator;
+    private Elevator elevator;
 
     public RobotContainer() {
         double swerveSpeedMultiplier = 0.4;
@@ -69,11 +74,12 @@ public class RobotContainer extends RobotFramework {
         operatorController = UsbMap.operatorController;
         autoAlignConstraints = AutonConstraints.kPathConstraints;
 
-        SwerveDriveState driveState = DrivetrainConstants.drivetrain.getState();
-        Rotation2d gyroAngle = driveState.Pose.getRotation();
-        SwerveModulePosition[] modulePositions = driveState.ModulePositions;
-        poseEstimator = new SwerveDrivePoseEstimator(DrivetrainConstants.drivetrain.getKinematics(), gyroAngle, modulePositions, new Pose2d(0, 0, gyroAngle));
-
+        poseEstimator = new PoseEstimator(DrivetrainConstants.drivetrain);
+        // SwerveDriveState driveState = DrivetrainConstants.drivetrain.getState();
+        // Rotation2d gyroAngle = driveState.Pose.getRotation();
+        // SwerveModulePosition[] modulePositions = driveState.ModulePositions;
+        // poseEstimator = new SwerveDrivePoseEstimator(DrivetrainConstants.drivetrain.getKinematics(), gyroAngle, modulePositions, new Pose2d(0, 0, gyroAngle));
+        elevator = new Elevator();
         swerveSubsystem = new SwerveSubsystem(
                 Subsystems.SWERVE_DRIVE,
                 Subsystems.SWERVE_DRIVE.getNetworkTable(),
@@ -125,7 +131,8 @@ public class RobotContainer extends RobotFramework {
         frontCamera.SetRobotOrientation(headingDeg, 0,0,0,0,0);
         rearCamera.SetRobotOrientation(headingDeg, 0,0,0,0,0);
         SwerveModulePosition[] modulePositions = driveState.ModulePositions;
-        poseEstimator.update(gyroAngle, modulePositions);
+        poseEstimator.updatePose();
+        
         PoseAllocate frontPose = frontCamera.getRobotPose();
         PoseAllocate rearPose = rearCamera.getRobotPose();
 
@@ -189,6 +196,14 @@ public class RobotContainer extends RobotFramework {
         Shuffleboard.getTab(Subsystems.SWERVE_DRIVE.getNetworkTable()).add("TeleOp Chooser", teleOpChooser)
                 .withSize(2, 1)
                 .withProperties(Map.of("position", "0, 1"));
+    }
+
+    public void setupElevator(){
+        commandChooser.addOption("GoingUP", new GoUpCommand(elevator, 0.1, 1.0));
+
+        Shuffleboard.getTab(Subsystems.SWERVE_DRIVE.getNetworkTable()).add("Command Chooser", commandChooser)
+        .withSize(2, 1)
+        .withProperties(Map.of("position", "0, 2"));
     }
 
     // DO NOT REMOVE

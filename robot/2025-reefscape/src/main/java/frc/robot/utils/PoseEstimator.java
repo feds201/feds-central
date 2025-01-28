@@ -10,13 +10,14 @@ public class PoseEstimator {
     SwerveDrivePoseEstimator poseEstimator;
     Rotation2d gyroAngle;
     SwerveModulePosition[] modulePositions;
+
     public PoseEstimator(CommandSwerveDrivetrain drivetrain) {
         gyroAngle = DrivetrainConstants.drivetrain.getState().Pose.getRotation();
         modulePositions = DrivetrainConstants.drivetrain.getState().ModulePositions;
         poseEstimator = new SwerveDrivePoseEstimator(DrivetrainConstants.drivetrain.getKinematics(), gyroAngle, modulePositions, new Pose2d(0, 0, gyroAngle));
     }
 
-    public void update() {
+    public void updatePose() {
         poseEstimator.update(gyroAngle, modulePositions);
     }
 
