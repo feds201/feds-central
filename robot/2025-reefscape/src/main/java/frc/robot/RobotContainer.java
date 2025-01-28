@@ -125,7 +125,7 @@ public class RobotContainer extends RobotFramework {
         frontCamera.SetRobotOrientation(headingDeg, 0,0,0,0,0);
         rearCamera.SetRobotOrientation(headingDeg, 0,0,0,0,0);
         SwerveModulePosition[] modulePositions = driveState.ModulePositions;
-        poseEstimator.updatePose(gyroAngle, modulePositions);
+        poseEstimator.updatePose();
         
         PoseAllocate frontPose = frontCamera.getRobotPose();
         PoseAllocate rearPose = rearCamera.getRobotPose();
