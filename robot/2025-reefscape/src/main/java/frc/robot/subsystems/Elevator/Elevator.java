@@ -44,30 +44,30 @@ public class Elevator extends SubsystemABS {
     @Override
     public void init() {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'init'");
+        
     }
 
     @Override
     public void simulationPeriodic() {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'simulationPeriodic'");
+      
     }
 
     @Override
     public void setDefaultCmd() {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setDefaultCmd'");
+      
     }
 
     @Override
     public boolean isHealthy() {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'isHealthy'");
+       return false;
     }
 
     @Override
     public void Failsafe() {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'Failsafe'");
+      
     }
 }

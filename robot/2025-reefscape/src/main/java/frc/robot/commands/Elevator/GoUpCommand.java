@@ -41,6 +41,6 @@ public class GoUpCommand extends Command {
     @Override
     public void end(boolean interrupted) {
         // elevatorSubsystem.setMotorSpeed(0); // Stop the motor
-        System.out.println("Final Height: " + elevatorSubsystem.getRangePosition());
+        // System.out.println("Final Height: " + elevatorSubsystem.getRangePosition());
     }
 }
