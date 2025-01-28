@@ -11,34 +11,34 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.SubsystemABS;
 
 public class Elevator extends SubsystemABS {
-    private final TalonFX climoter13; // Primary motor
-    private final TalonFX climoter15; // Follower motor
-    private final CANrange measure; // Range sensor
+    private final TalonFX elevatorMotorLeader; // Primary motor
+    private final TalonFX elevatorMotorFollower; // Follower motor
+    // private final CANrange measure; // Range sensor
     private final ShuffleboardTab tab = Shuffleboard.getTab("CANrange Status");
 
     public Elevator() {
-        climoter13 = new TalonFX(ElevatorMap.ELEVATOR_MOTOR);
-        climoter15 = new TalonFX(ElevatorMap.ELEVATOR_MOTOR2);
-        measure = new CANrange(17);
+        elevatorMotorLeader = new TalonFX(RobotMap.ElevatorMap.ELEVATOR_MOTOR);
+        elevatorMotorFollower = new TalonFX(RobotMap.ElevatorMap.ELEVATOR_MOTOR2);
+        // measure = new CANrange(17);
         // Configure follower motor
-        climoter15.setControl(new Follower(climoter13.getDeviceID(), false));
+        elevatorMotorFollower.setControl(new Follower(elevatorMotorLeader.getDeviceID(), false));
         
         // Add Shuffleboard widget for the range sensor
-        tab.add("Elevator Position", getRangePosition());
+        // tab.add("Elevator Position", getRangePosition());
     }
 
     public void setMotorSpeed(double speed) {
-        climoter13.set(speed); // Set the speed of the primary motor
+        elevatorMotorLeader.set(speed); // Set the speed of the primary motor
     }
 
-    public double getRangePosition() {
-        return measure.getDistance().getValueAsDouble(); // Get the range position
-    }
+    // public double getRangePosition() {
+    //     return measure.getDistance().getValueAsDouble(); // Get the range position
+    // }
 
     @Override
     public void periodic() {
         // Update Shuffleboard with the latest range position
-        tab.add("Elevator Position", getRangePosition());
+        // tab.add("Elevator Position", getRangePosition());
     }
 
     @Override
