@@ -6,7 +6,6 @@ import frc.robot.subsystems.coralAlgaeIntake.coralAlgaeIntake;
 
 public class retrieveAlgae extends Command {
   private coralAlgaeIntake intakeSubsystem; // NUll
-  private boolean isFinished;
   private PIDController pidController;
 
   public retrieveAlgae(coralAlgaeIntake intake) {
