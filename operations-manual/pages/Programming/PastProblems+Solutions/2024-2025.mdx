@@ -27,3 +27,8 @@ import Head from 'next/head';
 ### CAN Id on a REV Device Doesn't Save Upon a Robot Restart
 
 - Make sure you press **`Burn Flash`** at the bottom of the configuration page once settings are all done. (Seems obvious but its easy to forget I swear)
+
+### Using an updating value as a command parameter does not work
+
+**Do Not** directly pass the updating value into the command as a parameter, as a command's constructor will only run once upon its original call (aka configureBindings() in most cases).
+Instead, retrieve this updating value in the initialize() or execute() methods, as this will allow for a dynamically updating value instead of a one-time update to the variable. 
