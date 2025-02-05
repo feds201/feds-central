@@ -1,13 +1,14 @@
 package frc.robot.commands;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.coralAlgaeIntake.coralAlgaeIntake;
 
 public class retrieveAlgae extends Command {
-  private AlgaeCoralIntake intakeSubsystem; // NUll
-  private boolean isFinished;
-  private PIDcontroller pidController;
+  private coralAlgaeIntake intakeSubsystem; // NUll
+  private PIDController pidController;
 
-  public retrieveAlgae(AlgaeCoralIntake intake) {
+  public retrieveAlgae(coralAlgaeIntake intake) {
   this.intakeSubsystem = intake;
 
   }

@@ -1,7 +1,7 @@
-package frc.robot.commands.elevator;
+package frc.robot.commands.Elevator;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.Elevator.Elevator;
 import edu.wpi.first.wpilibj.Timer;
 
 public class GoDownCommand extends Command {
@@ -16,7 +16,7 @@ public class GoDownCommand extends Command {
         this.duration = duration;
 
         // Declare subsystem dependencies
-        addRequirements(elevatorSubsystem);
+        addRequirements(this.elevatorSubsystem);
     }
 
     @Override
@@ -29,7 +29,7 @@ public class GoDownCommand extends Command {
     @Override
     public void execute() {
         // Optionally, log or monitor the current height during execution
-        System.out.println("Current Height: " + elevatorSubsystem.getRangePosition());
+        // System.out.println("Current Height: " + elevatorSubsystem.getRangePosition());
     }
 
     @Override
@@ -41,6 +41,6 @@ public class GoDownCommand extends Command {
     @Override
     public void end(boolean interrupted) {
         elevatorSubsystem.setMotorSpeed(0); // Stop the motor
-        System.out.println("Final Height: " + elevatorSubsystem.getRangePosition());
+        // System.out.println("Final Height: " + elevatorSubsystem.getRangePosition());
     }
 }
