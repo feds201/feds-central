@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:slider_button/slider_button.dart';
 
+import '../Match_Pages/match_page.dart';
 import '../Plugins/plugin_state_manager.dart';
 import '../home_page.dart';
 import 'DataBase.dart';
@@ -202,7 +203,7 @@ class QrCoder extends State<Qrgenerator> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const HomePage(),
+                            builder: (context) => const HomePage(),
                             fullscreenDialog: true),
                       );
                     },
@@ -244,7 +245,7 @@ class QrCoder extends State<Qrgenerator> {
       await Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => const HomePage(), fullscreenDialog: true),
+            builder: (context) => const MatchPage(), fullscreenDialog: true),
       );
     }
   }

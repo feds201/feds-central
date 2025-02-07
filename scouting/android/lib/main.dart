@@ -6,7 +6,7 @@ import 'package:scouting_app/Pit_Recorder/Pit_Recorder.dart';
 
 import 'Match_Pages/about_page.dart';
 import 'Match_Pages/match_page.dart';
-import 'settings_page.dart';
+import 'Match_Pages/settings_page.dart';
 import 'home_page.dart';
 import 'model/widget_data.dart';
 
@@ -55,6 +55,7 @@ class MyApp extends StatelessWidget {
 }
 
 bool isdarkmode() {
+  return true;
   Hive.box('userData').get('darkMode') ??
       Hive.box('userData').put('darkMode', false);
   return Hive.box('userData').get('darkMode');

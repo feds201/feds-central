@@ -132,6 +132,7 @@ class _HomePageState extends State<HomePage>
             double height = 55.0 * children.length;
 
             return Container(
+              width: MediaQuery.of(context).size.width,
               height: height,
               decoration: BoxDecoration(
                 color: isdarkmode()
@@ -310,7 +311,7 @@ Widget _buildCustomAppBar(BuildContext context) {
   return AppBar(
     leading: Builder(builder: (context) {
       return IconButton(
-          icon: Icon(Icons.menu),
+          icon: const Icon(Icons.menu),
           color: !isdarkmode()
               ? const Color.fromARGB(193, 255, 255, 255)
               : const Color.fromARGB(105, 36, 33, 33),

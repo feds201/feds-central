@@ -80,7 +80,7 @@ class MatchPageState extends State<MatchPage> {
             0, 1), // Ensure currentIndex is within valid range
         selectedItemColor: Colors.red,
         unselectedItemColor: isdarkmode()
-            ? const Color.fromARGB(255, 255, 255, 255)
+            ? const Color.fromARGB(255, 117, 116, 116)
             : const Color.fromARGB(188, 255, 255, 255),
         onTap: (int index) {
           setState(() {
@@ -95,7 +95,7 @@ class MatchPageState extends State<MatchPage> {
     return AppBar(
       leading: Builder(builder: (context) {
         return IconButton(
-            icon: Icon(Icons.menu),
+            icon: const Icon(Icons.menu),
             color: !isdarkmode()
                 ? const Color.fromARGB(193, 255, 255, 255)
                 : const Color.fromARGB(105, 36, 33, 33),

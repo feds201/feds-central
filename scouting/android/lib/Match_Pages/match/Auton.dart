@@ -22,12 +22,13 @@ class AutonState extends State<Auton> {
   late int coralScoreL2;
   late int coralScoreL3;
   late int coralScoreL4;
+  late int algaeScoringProcessor;
+  late int algaeScoringBarge;
 
   late String assignedTeam;
   late String assignedStation;
   late String matchKey;
   late String allianceColor;
-
 
   // Match Variables
   @override
@@ -41,6 +42,9 @@ class AutonState extends State<Auton> {
     coralScoreL2 = LocalDataBase.getData(AutoType.CoralScoringLevel2) ?? 0;
     coralScoreL3 = LocalDataBase.getData(AutoType.CoralScoringLevel3) ?? 0;
     coralScoreL4 = LocalDataBase.getData(AutoType.CoralScoringLevel4) ?? 0;
+    algaeScoringProcessor =
+        LocalDataBase.getData(AutoType.AlgaeScoringProcessor) ?? 0;
+    algaeScoringBarge = LocalDataBase.getData(AutoType.AlgaeScoringBarge) ?? 0;
   }
 
   void UpdateData() {
@@ -49,6 +53,9 @@ class AutonState extends State<Auton> {
     LocalDataBase.putData(AutoType.CoralScoringLevel2, coralScoreL2);
     LocalDataBase.putData(AutoType.CoralScoringLevel3, coralScoreL3);
     LocalDataBase.putData(AutoType.CoralScoringLevel4, coralScoreL4);
+    LocalDataBase.putData(
+        AutoType.AlgaeScoringProcessor, algaeScoringProcessor);
+    LocalDataBase.putData(AutoType.AlgaeScoringBarge, algaeScoringBarge);
   }
 
   @override
@@ -156,7 +163,48 @@ class AutonState extends State<Auton> {
                   color: Colors.red,
                 ),
               ],
-              const Icon(Icons.emoji_nature_outlined))
+              const Icon(Icons.emoji_nature_outlined)),
+          buildComments(
+              "Algae Scoring",
+              [
+                CounterSettings(
+                  (int value) {
+                    setState(() {
+                      algaeScoringProcessor++;
+                    });
+                    UpdateData();
+                  },
+                  (int value) {
+                    setState(() {
+                      algaeScoringProcessor--;
+                    });
+                    UpdateData();
+                  },
+                  icon: Icons.wash,
+                  number: algaeScoringProcessor,
+                  counterText: "Processor",
+                  color: Colors.green,
+                ),
+                CounterSettings(
+                  (int value) {
+                    setState(() {
+                      algaeScoringBarge++;
+                    });
+                    UpdateData();
+                  },
+                  (int value) {
+                    setState(() {
+                      algaeScoringBarge--;
+                    });
+                    UpdateData();
+                  },
+                  icon: Icons.rice_bowl_outlined,
+                  number: algaeScoringBarge,
+                  counterText: "Barge",
+                  color: Colors.green,
+                ),
+              ],
+              const Icon(Icons.add_comment)),
         ],
       ),
     );

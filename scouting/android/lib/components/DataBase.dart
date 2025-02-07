@@ -92,7 +92,6 @@ class LocalDataBase {
     scoutedTeams.add(team);
     _storage['PitData.ScoutedTeam'] = scoutedTeams;
   }
-
 }
 
 class MatchLogs {
@@ -119,6 +118,8 @@ enum AutoType {
   CoralScoringLevel3,
   CoralScoringLevel4,
   LeftBarge,
+  AlgaeScoringProcessor,
+  AlgaeScoringBarge,
 }
 
 enum EndgameType {

@@ -1,17 +1,15 @@
 import 'dart:developer' as developer;
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:scouting_app/components/MatchSelection.dart';
-import 'package:scouting_app/main.dart';
 
-import 'components/DataBase.dart';
-import 'components/localmatchLoader.dart';
-import 'components/nav.dart';
-import 'components/qr_code_scanner_page.dart';
-import 'Match_Pages/match.dart';
+import '../components/DataBase.dart';
+import '../components/MatchSelection.dart';
+import '../components/localmatchLoader.dart';
+import '../components/nav.dart';
+import '../components/qr_code_scanner_page.dart';
+import 'match.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -25,7 +23,7 @@ class SettingsPageState extends State<SettingsPage> {
   bool isBluetoothGranted = false;
   bool isNearbyDevicesGranted = false;
   bool isCameraGranted = false;
-  bool isDarkMode = false;
+  bool isDarkMode = true;
   String ApiKey = Hive.box('settings').get('ApiKey', defaultValue: '');
 
   @override
@@ -62,22 +60,56 @@ class SettingsPageState extends State<SettingsPage> {
     }
   }
 
-  Future<void> _darkMode() async {
-    var currentMode = Hive.box('userData').get('darkMode');
-    if (currentMode == null) {
-      Hive.box('userData').put('darkMode', false);
-    } else {
-      Hive.box('userData').put('darkMode', !currentMode);
-    }
-    print(Hive.box('userData').get('darkMode'));
-    return Hive.box('userData').get('darkMode');
-  }
+  // Future<void> _darkMode() async {
+  //   setState(() {
+  //     isDarkMode = !isDarkMode;
+  //     Hive.box('userData').put('darkMode', isDarkMode);
+  //     print('Dark Mode: $isDarkMode');
+  //     print(Hive.box('userData').get('darkMode'));
+  //   });
+  //   if (Hive.box('userData').get('darkMode') == null) {
+  //     Hive.box('userData').put('darkMode', false);
+  //   } else {
+  //     Hive.box('userData').get('darkMode');
+  //   }
+  //   sleep(const Duration(milliseconds: 500));
+  //   Navigator.pushReplacement(
+  //     context,
+  //     MaterialPageRoute(
+  //       builder: (context) => const HomePage(),
+  //     ),
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: const NavBar(),
-      appBar: _buildCustomAppBar(context),
+      appBar: AppBar(
+        actions: const [
+          // const SizedBox(height: 10),
+          // Switch for Dark Mode
+          // IconButton(
+          //   icon: Icon(isDarkMode ? Icons.dark_mode : Icons.light_mode),
+          //   onPressed: _darkMode,
+          // ),
+        ],
+        title: ShaderMask(
+            shaderCallback: (bounds) => const LinearGradient(
+                  colors: [Colors.red, Colors.blue],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ).createShader(bounds),
+            child: Text(
+              'Settings',
+              style: GoogleFonts.museoModerno(
+                fontSize: 30,
+                fontWeight: FontWeight.w500,
+                color: Colors.white,
+              ),
+            )),
+        centerTitle: true,
+      ),
       body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -142,7 +174,8 @@ class SettingsPageState extends State<SettingsPage> {
                               final qrCode = await Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => QRCodeScannerPage(),
+                                    builder: (context) =>
+                                        const QRCodeScannerPage(),
                                     fullscreenDialog: true),
                               );
                               if (qrCode != null) {
@@ -338,7 +371,7 @@ class SettingsPageState extends State<SettingsPage> {
                                   fontSize: 25, color: Colors.white),
                             ),
                           ),
-                          selectedColor: Color.fromARGB(255, 18, 54, 133),
+                          selectedColor: const Color.fromARGB(255, 18, 54, 133),
                           selected: true,
                           side: const BorderSide(color: Colors.black),
                           showCheckmark: false,
@@ -395,43 +428,6 @@ class SettingsPageState extends State<SettingsPage> {
           ],
         ),
       ),
-    );
-  }
-
-  AppBar _buildCustomAppBar(BuildContext context) {
-    return AppBar(
-      leading: Builder(builder: (context) {
-        return IconButton(
-            icon: Icon(Icons.menu),
-            color: !isdarkmode()
-                ? const Color.fromARGB(193, 255, 255, 255)
-                : const Color.fromARGB(105, 36, 33, 33),
-            onPressed: () => Scaffold.of(context).openDrawer());
-      }),
-      actions: [
-        IconButton(
-          icon: Icon(isdarkmode() ? Icons.dark_mode : Icons.light_mode),
-          onPressed: _darkMode,
-        ),
-      ],
-      backgroundColor: Colors.transparent, // Transparent to show the animation
-      title: Center(
-        child: ShaderMask(
-            shaderCallback: (bounds) => const LinearGradient(
-                  colors: [Colors.red, Colors.blue],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ).createShader(bounds),
-            child: Text(
-              'Settings',
-              style: GoogleFonts.museoModerno(
-                fontSize: 30,
-                fontWeight: FontWeight.w500,
-                color: Colors.white,
-              ),
-            )),
-      ),
-      elevation: 0, // Remove shadow for a cleaner look
     );
   }
 }

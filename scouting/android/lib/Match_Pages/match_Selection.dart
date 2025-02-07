@@ -5,14 +5,14 @@ import 'package:flutter/material.dart';
 import '../components/DataBase.dart';
 import 'match.dart';
 
-Widget matchSelection(BuildContext context, int _selectedMatchType,
-    Function _onMatchTypeSelected, String matchData) {
+Widget matchSelection(BuildContext context, int selectedMatchType,
+    Function onMatchTypeSelected, String matchData) {
   return Row(
     children: [
       NavigationRail(
-        selectedIndex: _selectedMatchType,
+        selectedIndex: selectedMatchType,
         onDestinationSelected: (int index) {
-          _onMatchTypeSelected(index);
+          onMatchTypeSelected(index);
         },
         labelType: NavigationRailLabelType.all,
         destinations: const <NavigationRailDestination>[
@@ -22,7 +22,7 @@ Widget matchSelection(BuildContext context, int _selectedMatchType,
           ),
           NavigationRailDestination(
             icon: Icon(Icons.sports_basketball),
-            label: Text('Matches'),
+            label: Text('Playoffs'),
           ),
           NavigationRailDestination(
             icon: Icon(Icons.sports_rugby),
@@ -32,16 +32,17 @@ Widget matchSelection(BuildContext context, int _selectedMatchType,
       ),
       const VerticalDivider(thickness: 1, width: 1),
       Expanded(
-        child: _buildMatchList(_selectedMatchType, matchData),
+        child: _buildMatchList(selectedMatchType, matchData),
       ),
     ],
   );
 }
-Widget _buildMatchList(int _selectedMatchType, String matchData) {
+
+Widget _buildMatchList(int selectedMatchType, String matchData) {
   // Decode the JSON string to a Dart object
   List<dynamic> matches = jsonDecode(matchData);
 
-  switch (_selectedMatchType) {
+  switch (selectedMatchType) {
     case 0:
       var filteredMatches = matches
           .where((match) => match['comp_level'] == 'qm')
@@ -54,7 +55,7 @@ Widget _buildMatchList(int _selectedMatchType, String matchData) {
         itemBuilder: (BuildContext context, int index) {
           return ListTile(
             title:
-            Text('Qualification ${filteredMatches[index]['match_number']}'),
+                Text('Qualification ${filteredMatches[index]['match_number']}'),
             subtitle: const Text('Qualification Match'),
             leading: Icon(Icons.sports_soccer,
                 color: Theme.of(context).colorScheme.primary),
@@ -65,13 +66,14 @@ Widget _buildMatchList(int _selectedMatchType, String matchData) {
               borderRadius: BorderRadius.circular(12.0),
             ),
             contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             onTap: () {
               LocalDataBase.putData(Types.matchFile, filteredMatches[index]);
               var eventKey = LocalDataBase.getData(Types.eventKey);
               var matchKey = filteredMatches[index]['key'];
               var allianceColor = LocalDataBase.getData(Types.allianceColor);
-              var selectedStation = LocalDataBase.getData(Types.selectedStation);
+              var selectedStation =
+                  LocalDataBase.getData(Types.selectedStation);
               var matchFile = LocalDataBase.getData(Types.matchFile);
               LocalDataBase.putData(Types.matchKey, matchKey);
               LocalDataBase.putData(Types.eventKey, eventKey);
@@ -91,21 +93,23 @@ Widget _buildMatchList(int _selectedMatchType, String matchData) {
 
     case 1:
       var filteredMatches =
-      matches.where((match) => match['comp_level'] == 'sf').toList()
-        ..sort((a, b) {
-          int aValue = a['comp_level'].startsWith('sf')
-              ? int.parse(a['set_number'].toString())
-              : int.parse(a['match_number'].toString());
-          int bValue = b['comp_level'].startsWith('sf')
-              ? int.parse(b['set_number'].toString())
-              : int.parse(b['match_number'].toString());
-          return aValue.compareTo(bValue);
-        });
+          matches.where((match) => match['comp_level'] == 'sf').toList()
+            ..sort((a, b) {
+              int aValue = a['comp_level'].startsWith('sf')
+                  ? int.parse(a['set_number'].toString())
+                  : int.parse(a['match_number'].toString());
+              int bValue = b['comp_level'].startsWith('sf')
+                  ? int.parse(b['set_number'].toString())
+                  : int.parse(b['match_number'].toString());
+              return aValue.compareTo(bValue);
+            });
 
       return ListView.builder(
         itemCount: filteredMatches.length,
         itemBuilder: (BuildContext context, int index) {
           return ListTile(
+            hoverColor: Colors.white,
+            focusColor: Colors.white,
             title: Text(
               'Match ${filteredMatches[index]['comp_level'].startsWith('sf') ? filteredMatches[index]['set_number'] : filteredMatches[index]['match_number']}',
             ),
@@ -119,13 +123,14 @@ Widget _buildMatchList(int _selectedMatchType, String matchData) {
               borderRadius: BorderRadius.circular(12.0),
             ),
             contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             onTap: () {
               LocalDataBase.putData(Types.matchFile, filteredMatches[index]);
               var eventKey = LocalDataBase.getData(Types.eventKey);
               var matchKey = filteredMatches[index]['key'];
               var allianceColor = LocalDataBase.getData(Types.allianceColor);
-              var selectedStation = LocalDataBase.getData(Types.selectedStation);
+              var selectedStation =
+                  LocalDataBase.getData(Types.selectedStation);
               var matchFile = LocalDataBase.getData(Types.matchFile);
               LocalDataBase.putData(Types.matchKey, matchKey);
               LocalDataBase.putData(Types.eventKey, eventKey);
@@ -165,13 +170,14 @@ Widget _buildMatchList(int _selectedMatchType, String matchData) {
               borderRadius: BorderRadius.circular(12.0),
             ),
             contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             onTap: () {
               LocalDataBase.putData(Types.matchFile, filteredMatches[index]);
               var eventKey = LocalDataBase.getData(Types.eventKey);
               var matchKey = filteredMatches[index]['key'];
               var allianceColor = LocalDataBase.getData(Types.allianceColor);
-              var selectedStation = LocalDataBase.getData(Types.selectedStation);
+              var selectedStation =
+                  LocalDataBase.getData(Types.selectedStation);
               var matchFile = LocalDataBase.getData(Types.matchFile);
               LocalDataBase.putData(Types.matchKey, matchKey);
               LocalDataBase.putData(Types.eventKey, eventKey);
@@ -181,7 +187,7 @@ Widget _buildMatchList(int _selectedMatchType, String matchData) {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const Match(),
+                    builder: (context) => const Match(),
                     fullscreenDialog: true),
               );
             },

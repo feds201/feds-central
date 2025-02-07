@@ -367,7 +367,7 @@ class AboutPage extends StatelessWidget {
     return AppBar(
       leading: Builder(builder: (context) {
         return IconButton(
-            icon: Icon(Icons.menu),
+            icon: const Icon(Icons.menu),
             color: !isdarkmode()
                 ? const Color.fromARGB(193, 255, 255, 255)
                 : const Color.fromARGB(105, 36, 33, 33),

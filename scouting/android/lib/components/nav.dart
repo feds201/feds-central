@@ -6,7 +6,7 @@ import 'package:scouting_app/main.dart';
 import '../Match_Pages/about_page.dart';
 import '../Match_Pages/logs.dart';
 import '../Match_Pages/match_page.dart';
-import '../settings_page.dart';
+import '../Match_Pages/settings_page.dart';
 import '../home_page.dart';
 
 class NavBar extends StatelessWidget {
@@ -14,10 +14,13 @@ class NavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
     return Drawer(
       backgroundColor: isdarkmode() ? Colors.white : Colors.black,
-      width: MediaQuery.of(context).size.width *
-          1, // Drawer width is 60% of the screen width
+      width: isLandscape
+          ? MediaQuery.of(context).size.width * 0.3 // Half width in landscape
+          : MediaQuery.of(context).size.width, // Full width otherwise
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -30,7 +33,7 @@ class NavBar extends StatelessWidget {
               ),
             ),
             child: SizedBox(
-              height: 200,
+              height: 500,
               width: double.infinity,
               // This makes the width of the header fill the drawer
               child: Column(
@@ -57,9 +60,11 @@ class NavBar extends StatelessWidget {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  const Spacer(
+                    flex: 1,
+                  ),
                   Text(
-                    'Scout Ops v.1.5',
+                    'Scout Ops v.2.0',
                     style: GoogleFonts.museoModerno(
                       fontSize: 14,
                       color: isdarkmode()
@@ -69,6 +74,7 @@ class NavBar extends StatelessWidget {
                       fontWeight: FontWeight.w400,
                     ),
                   ),
+                  const SizedBox(height: 20),
                 ],
               ),
             ),

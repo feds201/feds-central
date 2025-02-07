@@ -68,7 +68,7 @@ class _PluginsState extends State<Plugins> {
                     !intergrateWithPyintelScoutz_expanded;
               });
             },
-            Expanded_Widget: PyintelScoutzWidget(),
+            Expanded_Widget: const PyintelScoutzWidget(),
           ),
         ],
       ),
@@ -79,7 +79,7 @@ class _PluginsState extends State<Plugins> {
     return AppBar(
       leading: Builder(builder: (context) {
         return IconButton(
-            icon: Icon(Icons.arrow_back),
+            icon: const Icon(Icons.arrow_back),
             color: !isdarkmode()
                 ? const Color.fromARGB(193, 255, 255, 255)
                 : const Color.fromARGB(105, 36, 33, 33),
