@@ -18,18 +18,19 @@ public class Pivet extends SubsystemBase {
   private TalonFX moterTalonFX1 = new TalonFX(13);
   private CANcoder pivetCANcoder = new CANcoder(15);
   private XboxController controller = new XboxController(0); 
-  private PIDController pidcontroller = new PIDController(.1, 0, 0)
+  private PIDController pidcontroller = new PIDController(.1, 0, 0);
   private final double speed = 1.5;
+  private final double setpoint = 0;
  
   public Pivet() {
     if (controller.getYButton()){
-      TalonFX.set(pidcontroller.calculate(pivetCANcoder.getAbsolutePosition().getValueAsDouble(), null));
+      moterTalonFX1.set(pidcontroller.calculate(pivetCANcoder.getAbsolutePosition().getValueAsDouble(), setpoint));
     } 
   }
   
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Pivet CANcoder Value", pivetCANcoder.getAbsolutePosition() );
+    SmartDashboard.putNumber("Pivet CANcoder Value", pivetCANcoder.getAbsolutePosition().getValueAsDouble());
     // This method will be called once per scheduler run
   }
 }
