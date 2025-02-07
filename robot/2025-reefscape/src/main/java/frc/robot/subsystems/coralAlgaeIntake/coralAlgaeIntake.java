@@ -3,37 +3,38 @@ package frc.robot.subsystems.coralAlgaeIntake;
 
 import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.hardware.TalonFX;
-import edu.wpi.first.wpilibj2.command.Command;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.constants.RobotMap;
 import frc.robot.utils.SubsystemABS;
 
 public class coralAlgaeIntake extends SubsystemABS {
   private TalonFX intakemotor;
   private CANrange algaeIntakeSensor;
   private CANrange coralIntakeSensor;
+  private double algaeSensorReading;
+  private double coralSensorReading;
 
-  // 1,2,3 are meant to be can IDs (not yet put in)
 
-  private final int intakemotorCanId = 1;
-  private final int algaeIntakeSensorCanId = 2;
-  private final int coralIntakeSensorCanId = 3;
+ 
 
   // constructor
 
   public coralAlgaeIntake() {
-    intakemotor = new TalonFX(intakemotorCanId); // intializing CANrange sensors
-    algaeIntakeSensor = new CANrange(algaeIntakeSensorCanId);
-    coralIntakeSensor = new CANrange(coralIntakeSensorCanId);
+    intakemotor = new TalonFX(RobotMap.IntakeMap.SensorConstants.INTAKE_MOTOR); // intializing CANrange sensors
+    algaeIntakeSensor = new CANrange(RobotMap.IntakeMap.SensorConstants.ALGAE_CANRANGE);
+    coralIntakeSensor = new CANrange(RobotMap.IntakeMap.SensorConstants.CORAL_CANRANGE);
   }
 
   @Override
   public void periodic() {
-    double algaeSensorReading = algaeIntakeSensor.getDistance().getValueAsDouble();
-    double coralSensorReading = coralIntakeSensor.getDistance().getValueAsDouble();
+    algaeSensorReading = algaeIntakeSensor.getDistance().getValueAsDouble();
+    coralSensorReading = coralIntakeSensor.getDistance().getValueAsDouble();
 
-    System.out.println("Algae Sensor Reading: " + algaeSensorReading);
-    System.out.println("Coral Sensor Reading: " + coralSensorReading);
-
+    SmartDashboard.putNumber("Algae Distance Reading: ", algaeSensorReading);
+    SmartDashboard.putNumber("Coral Distance Reading", coralSensorReading);
+    
+    
     if (algaeSensorReading < 0.1) {
       setMotorSpeed(-0.1);
     } else if (coralSensorReading < 1) { // distance is too close so motor is reversed
@@ -43,20 +44,28 @@ public class coralAlgaeIntake extends SubsystemABS {
     }
   }
 
+
+   //setters
   public void stopMotor() {
-    intakemotor.disable();
+    intakemotor.set(0);
   }
 
-  private void setMotorSpeed(double d) {
-    intakemotor.set(d);
+  public void setMotorSpeed(double speed) {
+    intakemotor.set(speed);
+  }
+
+  //getters
+  public double getCoralCanrangeValue(){
+    return coralSensorReading;
+  }
+
+  public double getAlgaeCanrangeValue(){
+    return algaeSensorReading;
   }
 
   @Override
-  public void init() {
-    intakemotor = new TalonFX(intakemotorCanId); // intializing CANrange sensors
-    algaeIntakeSensor = new CANrange(algaeIntakeSensorCanId);
-    coralIntakeSensor = new CANrange(coralIntakeSensorCanId);
-  }
+  public void init() {}
+  
 
   @Override
   public void simulationPeriodic() {
@@ -74,13 +83,13 @@ public class coralAlgaeIntake extends SubsystemABS {
       return true;
     }
     return false;
-    // TODO Auto-generated method stub
   }
 
   @Override
   public void Failsafe() {
     intakemotor.disable();
   }
+
 
 
 }

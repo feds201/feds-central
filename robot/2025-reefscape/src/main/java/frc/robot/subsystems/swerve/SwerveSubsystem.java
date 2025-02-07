@@ -24,8 +24,6 @@ import frc.robot.utils.DrivetrainConstants;
 @SuppressWarnings("unused")
 public class SwerveSubsystem extends SubsystemABS {
 
-    private ShuffleboardTab tab;
-    private String tabName;
     private final Pigeon2 pigeonIMU;
     private CommandXboxController driverController;
     public CommandSwerveDrivetrain drivetrain;
@@ -34,18 +32,19 @@ public class SwerveSubsystem extends SubsystemABS {
     private PIDController rPidController;
     private AutoBuilder builder;
     private Integer closestTAG;
-
     private double simX = 0;
     private double simY = 0;
     private double simRotation = 0;
 
     public SwerveSubsystem(Subsystems part, String tabName, int pigeonIMUID, CommandXboxController driverController) {
         super(part, tabName);
-        this.tabName = tabName;
         this.pigeonIMU = new Pigeon2(pigeonIMUID); // Initialize Pigeon IMU
         this.driverController = driverController;
         this.drivetrain = DrivetrainConstants.drivetrain;
         printcontroller();
+
+        rPidController = new PIDController(SwerveConstants.kRotationP, SwerveConstants.kRotationI,
+                SwerveConstants.kRotationD);
 
         RobotConfig config;
         try {
@@ -59,8 +58,6 @@ public class SwerveSubsystem extends SubsystemABS {
     @Override
     public void init() {
         robotFacingAngle = 0.0;
-        rPidController = new PIDController(SwerveConstants.kRotationP, SwerveConstants.kRotationI,
-                SwerveConstants.kRotationD);
         rPidController.setTolerance(SwerveConstants.kRotationTolerance);
         tab = getTab();
 
@@ -152,7 +149,7 @@ public class SwerveSubsystem extends SubsystemABS {
             tab.addBoolean(tabName + "/Start Button", driverController.start());
             tab.addBoolean(tabName + "/Back Button", driverController.back());
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
     }
 
