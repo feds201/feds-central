@@ -1,6 +1,4 @@
-package frc.robot.subsystems.Elevator;
-
-import java.util.function.DoubleSupplier;
+package frc.robot.subsystems.elevator;
 
 import java.util.function.DoubleSupplier;
 
@@ -20,7 +18,6 @@ public class Elevator extends SubsystemABS {
     private CANcoder elevatorEncoder; // Range sensor
     private DoubleSupplier canCodervalue;
 
-    
     // private final ShuffleboardTab tab = Shuffleboard.getTab("Elevator");
     private final PIDController pid;
 
@@ -37,16 +34,11 @@ public class Elevator extends SubsystemABS {
         elevatorMotorFollower.getConfigurator().apply(RobotMap.ElevatorMap.getElevatorCurrentLimitingConfiguration());
 
         elevatorEncoder = new CANcoder(RobotMap.ElevatorMap.EVEVATOR_ENCODER);
-        canCodervalue = ()-> elevatorEncoder.getPosition().getValueAsDouble();
+        canCodervalue = () -> elevatorEncoder.getPosition().getValueAsDouble();
 
         pid = new PIDController(RobotMap.ElevatorMap.ELEVATOR_P, RobotMap.ElevatorMap.ELEVATOR_I,
                 RobotMap.ElevatorMap.ELEVATOR_D);
         tab.addNumber("Elevator Position", canCodervalue);
-    }
-
-    @Override
-    public void init() {
-
     }
 
     @Override

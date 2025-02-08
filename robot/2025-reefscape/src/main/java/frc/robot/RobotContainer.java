@@ -37,8 +37,8 @@ import frc.robot.constants.RobotMap.SafetyMap;
 import frc.robot.constants.RobotMap.SensorMap;
 import frc.robot.constants.RobotMap.UsbMap;
 import frc.robot.constants.RobotMap.SafetyMap.AutonConstraints;
-import frc.robot.subsystems.Elevator.Elevator;
-import frc.robot.subsystems.gooseNeck.gooseNeck;
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.gooseNeck.GooseNeck;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.vision.camera.Camera;
@@ -68,7 +68,7 @@ public class RobotContainer extends RobotFramework {
     private PathConstraints autoAlignConstraints;
     private PoseEstimator poseEstimator;
     private Elevator elevator;
-    private gooseNeck arm;
+    private GooseNeck arm;
 
     public RobotContainer() {
         double swerveSpeedMultiplier = 0.4;
@@ -77,15 +77,10 @@ public class RobotContainer extends RobotFramework {
         autoAlignConstraints = AutonConstraints.kPathConstraints;
 
         poseEstimator = new PoseEstimator(DrivetrainConstants.drivetrain);
-        // SwerveDriveState driveState = DrivetrainConstants.drivetrain.getState();
-        // Rotation2d gyroAngle = driveState.Pose.getRotation();
-        // SwerveModulePosition[] modulePositions = driveState.ModulePositions;
-        // poseEstimator = new
-        // SwerveDrivePoseEstimator(DrivetrainConstants.drivetrain.getKinematics(),
-        // gyroAngle, modulePositions, new Pose2d(0, 0, gyroAngle));
+
         elevator = new Elevator(
                 Subsystems.ELEVATOR,
-                Subsystems.ELEVATOR.name());
+                Subsystems.ELEVATOR.getNetworkTable());
         swerveSubsystem = new SwerveSubsystem(
                 Subsystems.SWERVE_DRIVE,
                 Subsystems.SWERVE_DRIVE.getNetworkTable(),
@@ -102,12 +97,9 @@ public class RobotContainer extends RobotFramework {
                 Subsystems.VISION.getNetworkTable(),
                 ObjectType.APRIL_TAG_BACK);
 
-        arm = new gooseNeck(
-                IntakeMap.SensorConstants.INTAKE_MOTOR,
-                IntakeMap.SensorConstants.PIVOT_MOTOR,
-                IntakeMap.SensorConstants.CORAL_CANRANGE,
-                IntakeMap.SensorConstants.ALGAE_CANRANGE,
-                IntakeMap.SensorConstants.INTAKE_ENCODER);
+        arm = new GooseNeck(
+                Subsystems.INTAKE,
+                Subsystems.INTAKE.getNetworkTable());
         telemetry = new Telemetry(5);
 
         teleOpChooser = new SendableChooser<>();
@@ -132,7 +124,6 @@ public class RobotContainer extends RobotFramework {
         setupPaths();
         configureBindings();
         swerveSubsystem.printcontroller();
-        DrivetrainConstants.drivetrain.registerTelemetry(telemetry::telemeterize);
 
         // setupVisionImplants();
 

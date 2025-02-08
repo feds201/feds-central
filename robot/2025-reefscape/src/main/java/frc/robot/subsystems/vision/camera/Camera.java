@@ -70,10 +70,6 @@ public class Camera extends VisionABC {
 		lastseenAprilTag = (int)  lastseentag_sim.getDouble(-1);
 	}
 
-	@Override
-	public void init() {
-		// Implementation needed
-	}
 
 	@Override
 	public void periodic() {

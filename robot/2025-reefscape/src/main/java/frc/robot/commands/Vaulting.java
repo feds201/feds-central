@@ -12,17 +12,17 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.gooseNeck.gooseNeck;
+import frc.robot.subsystems.gooseNeck.GooseNeck;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class Vaulting extends Command {
   private double givenAngle;
-  private gooseNeck gooseneck;
+  private GooseNeck gooseneck;
   private PIDController pidController;
   private ShuffleboardTab tab;
 
   /** Creates a new Vaulting. */
-  public Vaulting(double setAngle, gooseNeck neck) {
+  public Vaulting(double setAngle, GooseNeck neck) {
     this.givenAngle = setAngle;
     this.gooseneck = neck;
     tab = Shuffleboard.getTab("getName()");

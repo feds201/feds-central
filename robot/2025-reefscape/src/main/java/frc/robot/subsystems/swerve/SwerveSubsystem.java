@@ -2,12 +2,15 @@ package frc.robot.subsystems.swerve;
 
 import java.util.Map;
 import java.util.function.DoubleSupplier;
+
+import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.Odometry;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
@@ -19,7 +22,9 @@ import frc.robot.constants.RobotMap.SafetyMap;
 import frc.robot.constants.RobotMap.SafetyMap.SwerveConstants;
 import frc.robot.utils.SubsystemABS;
 import frc.robot.utils.Subsystems;
+import frc.robot.utils.Telemetry;
 import frc.robot.utils.DrivetrainConstants;
+import frc.robot.utils.PoseAllocate;
 
 @SuppressWarnings("unused")
 public class SwerveSubsystem extends SubsystemABS {
@@ -35,6 +40,7 @@ public class SwerveSubsystem extends SubsystemABS {
     private double simX = 0;
     private double simY = 0;
     private double simRotation = 0;
+    private Telemetry telemetry;
 
     public SwerveSubsystem(Subsystems part, String tabName, int pigeonIMUID, CommandXboxController driverController) {
         super(part, tabName);
@@ -42,20 +48,8 @@ public class SwerveSubsystem extends SubsystemABS {
         this.driverController = driverController;
         this.drivetrain = DrivetrainConstants.drivetrain;
         printcontroller();
+        telemetry = new Telemetry(SafetyMap.kMaxSpeed);
 
-        
-
-        RobotConfig config;
-        try {
-            config = RobotConfig.fromGUISettings();
-        } catch (Exception e) {
-            // Handle exception as needed
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void init() {
         robotFacingAngle = 0.0;
         rPidController = new PIDController(SwerveConstants.kRotationP, SwerveConstants.kRotationI,
                 SwerveConstants.kRotationD);
@@ -76,7 +70,20 @@ public class SwerveSubsystem extends SubsystemABS {
         tab.add("Rotation PID", rPidController);
         tab.addNumber("Band/Robot X", ()-> drivetrain.getState().Pose.getX());
         tab.addNumber("Band/Robot Y", ()-> drivetrain.getState().Pose.getY());
+
+        if (Utils.isSimulation()) DrivetrainConstants.drivetrain.registerTelemetry(telemetry::telemeterize);
+
+        
+
+        RobotConfig config;
+        try {
+            config = RobotConfig.fromGUISettings();
+        } catch (Exception e) {
+            // Handle exception as needed
+            e.printStackTrace();
+        }
     }
+
 
     @Override
     public void periodic() {
@@ -86,6 +93,8 @@ public class SwerveSubsystem extends SubsystemABS {
     @Override
     public void simulationPeriodic() {
         robotFacingAngle = drivetrain.getState().Pose.getRotation().getDegrees();
+        
+
 
     }
 
@@ -248,4 +257,5 @@ public class SwerveSubsystem extends SubsystemABS {
         return drivetrain.getState().Speeds;
     }
 
+ 
 }

@@ -32,14 +32,12 @@ public abstract class SubsystemABS extends SubsystemBase {
         };
         setupNetworkTables(part.toString());
         instance = this;
-        init();
     }
 
     /**
      * Default constructor for SubsystemABS.
      */
     public SubsystemABS() {
-        init();
     }
 
     /**
@@ -86,11 +84,6 @@ public abstract class SubsystemABS extends SubsystemBase {
     public void setupNetworkTables(String part) {
         ntTable = NetworkTableInstance.getDefault().getTable(part);
     }
-
-    /**
-     * Initializes the subsystem.
-     */
-    public abstract void init();
 
     /**
      * Periodic method for the subsystem.
