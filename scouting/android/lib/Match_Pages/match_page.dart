@@ -96,47 +96,32 @@ class MatchPageState extends State<MatchPage> {
       leading: Builder(builder: (context) {
         return IconButton(
             icon: const Icon(Icons.menu),
-            color: !isdarkmode()
-                ? const Color.fromARGB(193, 255, 255, 255)
-                : const Color.fromARGB(105, 36, 33, 33),
+            color: const Color.fromARGB(105, 36, 33, 33),
             onPressed: () => Scaffold.of(context).openDrawer());
       }),
       backgroundColor: Colors.transparent, // Transparent to show the animation
-      title: Center(
-        child: ShaderMask(
-            shaderCallback: (bounds) => const LinearGradient(
-                  colors: [Colors.red, Colors.blue],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ).createShader(bounds),
-            child: Text(
-              'Match Page',
-              style: GoogleFonts.museoModerno(
-                fontSize: 30,
-                fontWeight: FontWeight.w500,
-                color: Colors.white,
-              ),
-            )),
-      ),
+      title: ShaderMask(
+          shaderCallback: (bounds) => const LinearGradient(
+                colors: [Colors.red, Colors.blue],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ).createShader(bounds),
+          child: Text(
+            'Match Page',
+            style: GoogleFonts.museoModerno(
+              fontSize: 30,
+              fontWeight: FontWeight.w500,
+              color: Colors.white,
+            ),
+          )),
+      centerTitle: true,
+
       elevation: 0, // Remove shadow for a cleaner look
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.delete),
-          tooltip: 'Clear all data',
-          onPressed: () {
-            isLoading = true;
-            setState(() {
-              matches = null;
-              LocalDataBase.putData(Types.eventFile, null);
-              LocalDataBase.putData(Types.eventKey, null);
-              eventKeyController.text = '';
-              LocalDataBase.putData(Types.allianceColor, null);
-              LocalDataBase.putData(Types.selectedStation, null);
-              LocalDataBase.putData(Types.matchFile, null);
-              LocalDataBase.putData(Types.matchKey, null);
-            });
-          },
-        ),
+      actions: const [
+        Icon(
+          Icons.face_6,
+          color: Color.fromARGB(105, 36, 33, 33),
+        )
       ],
     );
   }

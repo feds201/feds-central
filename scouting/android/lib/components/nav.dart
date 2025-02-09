@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:scouting_app/Experiment/experiment.dart';
@@ -33,7 +35,7 @@ class NavBar extends StatelessWidget {
               ),
             ),
             child: SizedBox(
-              height: 500,
+              height: 250,
               width: double.infinity,
               // This makes the width of the header fill the drawer
               child: Column(
@@ -60,9 +62,7 @@ class NavBar extends StatelessWidget {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  const Spacer(
-                    flex: 1,
-                  ),
+                  const SizedBox(height: 4),
                   Text(
                     'Scout Ops v.2.0',
                     style: GoogleFonts.museoModerno(

@@ -10,6 +10,7 @@ Widget matchSelection(BuildContext context, int selectedMatchType,
   return Row(
     children: [
       NavigationRail(
+        backgroundColor: Colors.white,
         selectedIndex: selectedMatchType,
         onDestinationSelected: (int index) {
           onMatchTypeSelected(index);
@@ -17,6 +18,7 @@ Widget matchSelection(BuildContext context, int selectedMatchType,
         labelType: NavigationRailLabelType.all,
         destinations: const <NavigationRailDestination>[
           NavigationRailDestination(
+            indicatorColor: Colors.white,
             icon: Icon(Icons.sports_soccer),
             label: Text('Quals'),
           ),
@@ -61,7 +63,7 @@ Widget _buildMatchList(int selectedMatchType, String matchData) {
                 color: Theme.of(context).colorScheme.primary),
             trailing: Icon(Icons.arrow_forward_ios_rounded,
                 color: Theme.of(context).colorScheme.onSurface),
-            tileColor: Theme.of(context).colorScheme.surface,
+            tileColor: Colors.white,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12.0),
             ),
@@ -108,8 +110,6 @@ Widget _buildMatchList(int selectedMatchType, String matchData) {
         itemCount: filteredMatches.length,
         itemBuilder: (BuildContext context, int index) {
           return ListTile(
-            hoverColor: Colors.white,
-            focusColor: Colors.white,
             title: Text(
               'Match ${filteredMatches[index]['comp_level'].startsWith('sf') ? filteredMatches[index]['set_number'] : filteredMatches[index]['match_number']}',
             ),
@@ -118,7 +118,7 @@ Widget _buildMatchList(int selectedMatchType, String matchData) {
                 color: Theme.of(context).colorScheme.primary),
             trailing: Icon(Icons.arrow_forward_ios,
                 color: Theme.of(context).colorScheme.onSurface),
-            tileColor: Theme.of(context).colorScheme.surface,
+            tileColor: Colors.white,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12.0),
             ),
@@ -165,7 +165,7 @@ Widget _buildMatchList(int selectedMatchType, String matchData) {
                 color: Theme.of(context).colorScheme.primary),
             trailing: Icon(Icons.arrow_forward_ios,
                 color: Theme.of(context).colorScheme.onSurface),
-            tileColor: Theme.of(context).colorScheme.surface,
+            tileColor: Colors.white,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12.0),
             ),

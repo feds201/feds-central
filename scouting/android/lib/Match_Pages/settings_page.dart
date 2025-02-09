@@ -25,12 +25,16 @@ class SettingsPageState extends State<SettingsPage> {
   bool isCameraGranted = false;
   bool isDarkMode = true;
   String ApiKey = Hive.box('settings').get('ApiKey', defaultValue: '');
+  late List<String> _scouterNames;
+  List<String> _selectedScouters = [];
 
   @override
   void initState() {
     super.initState();
     _checkInitialPermissions();
     Settings.setApiKey(ApiKey);
+    _scouterNames = List<String>.from(
+        Hive.box('userData').get('scouterNames', defaultValue: <String>[]));
   }
 
   Future<void> _checkInitialPermissions() async {
@@ -127,6 +131,68 @@ class SettingsPageState extends State<SettingsPage> {
                   padding: const EdgeInsets.all(10),
                   child: Column(
                     children: [
+                      Text("Scouters",
+                          style: GoogleFonts.museoModerno(fontSize: 20)),
+                      const SizedBox(height: 8),
+                      Wrap(
+                        spacing: 8,
+                        children: _scouterNames
+                            .map((name) => Chip(
+                                  label: Text(name,
+                                      style: GoogleFonts.museoModerno(
+                                          fontSize: 18)),
+                                  deleteIcon: const Icon(Icons.delete),
+                                  onDeleted: () {
+                                    setState(() {
+                                      _scouterNames.remove(name);
+                                      Hive.box('userData')
+                                          .put('scouterNames', _scouterNames);
+                                    });
+                                  },
+                                ))
+                            .toList(),
+                      ),
+                      const SizedBox(height: 8),
+                      ElevatedButton(
+                        onPressed: () {
+                          String newName = '';
+                          showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  title: const Text('Add Scouter'),
+                                  content: TextField(
+                                    onChanged: (value) {
+                                      newName = value;
+                                    },
+                                    decoration: const InputDecoration(
+                                        hintText: "Enter name"),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      child: const Text('Cancel'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        if (newName.trim().isNotEmpty) {
+                                          setState(() {
+                                            _scouterNames.add(newName.trim());
+                                            Hive.box('userData').put(
+                                                'scouterNames', _scouterNames);
+                                          });
+                                        }
+                                        Navigator.pop(context);
+                                      },
+                                      child: const Text('Add'),
+                                    ),
+                                  ],
+                                );
+                              });
+                        },
+                        child: const Text('Add Scouter'),
+                      ),
+                      const SizedBox(height: 10),
                       TextField(
                         controller: TextEditingController()
                           ..text = Hive.box('userData')
