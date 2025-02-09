@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.274750000002367,
-        "y": 3.0500000000030862
+        "x": 5.2455,
+        "y": 3.0304999999999995
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.90725,
-        "y": 5.546
+        "x": 7.877999999997629,
+        "y": 5.526499999996917
       },
       "isLocked": false,
       "linkedName": "3/6right"
     },
     {
       "anchor": {
-        "x": 4.0,
-        "y": 6.0
+        "x": 5.2455,
+        "y": 2.620999999999999
       },
       "prevControl": {
-        "x": 3.0,
-        "y": 6.0
+        "x": 4.2455,
+        "y": 2.620999999999999
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "3/6center"
     }
   ],
   "rotationTargets": [],
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 119.99999999999999
   },
   "reversed": false,
   "folder": "Pole Places",

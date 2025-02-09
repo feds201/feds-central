@@ -13,31 +13,19 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 import com.ctre.phoenix6.SignalLogger;
-import com.ctre.phoenix6.hardware.CANrange;
 import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.util.Units;
+
 import edu.wpi.first.net.WebServer;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import frc.robot.constants.ComandCenter;
-import frc.robot.subsystems.vision.camera.Camera;
 import frc.robot.utils.AutonTester;
-import frc.robot.utils.DrivetrainConstants;
 import frc.robot.utils.LocalADStarAK;
-import frc.robot.utils.ObjectType;
-import frc.robot.utils.PoseAllocate;
 import frc.robot.utils.RobotTester;
 import frc.robot.utils.SafetyManager;
-import frc.robot.utils.Subsystems;
 import frc.robot.utils.SystemCheckUp;
 
 /**
@@ -109,6 +97,9 @@ public class Robot extends TimedRobot
     public void robotPeriodic()
     {
         CommandScheduler.getInstance().run();
+        robotContainer.setupVisionImplants();
+      
+       
         // ADD: Update elevator mechanism based on current elevator height (meters converted to inches)
         if(robotContainer != null) {
             double heightMeters = robotContainer.getElevator().getElevatorHeight();

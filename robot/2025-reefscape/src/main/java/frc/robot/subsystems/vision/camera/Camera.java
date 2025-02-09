@@ -1,23 +1,24 @@
 package frc.robot.subsystems.vision.camera;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.utils.*;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
 public class Camera extends VisionABC {
 	private ObjectType object;
 	public int lastseenAprilTag;
 	public GenericEntry lastseentag_sim;
-	private PIDController controller;
+	private String limelightName;
 	
-	public Camera(Subsystems vision, String networkTable, ObjectType objectType) {
+	public Camera(Subsystems vision, String networkTable, ObjectType objectType, String limelightName) {
 		super(vision, networkTable);
 		lastseenAprilTag = -1;
 		object = objectType;
+		this.limelightName = limelightName;
 		lastseentag_sim =  tab.add("AprilTag"+ objectType.getName(), -1).getEntry();
 		controller = new PIDController(0,0,0);
 		controller.setSetpoint(5);
@@ -73,7 +74,8 @@ public class Camera extends VisionABC {
 
 	@Override
 	public void periodic() {
-		lastseenAprilTag = GetAprilTag();
+		// lastseenAprilTag = GetAprilTag();
+		
 	}
 
 	@Override
@@ -97,14 +99,16 @@ public class Camera extends VisionABC {
 	 * deals with
 	 * detecting and processing AprilTags.
 	 * 
-	 * @return the last seen AprilTag
+	 * @return the primary april tag ID (if one is in view)
 	 */
 	public int GetAprilTag() {
-		NetworkTableEntry entry = object.getNetworkTable().getEntry("tid");
+		
+		NetworkTableEntry entry = LimelightHelpers.getLimelightNTTableEntry(limelightName, "tid");
 		if (entry.exists()) {
+			SmartDashboard.putNumber("leftBumperTag", entry.getDouble(0));
 			return (int) entry.getDouble(0);
 		}
-		return lastseenAprilTag;
+		return -1;
 	}
 
 	@Override 
@@ -116,8 +120,10 @@ public class Camera extends VisionABC {
 		return lastseenAprilTag;
 	}
 
+
+	
 	public PoseAllocate getRobotPose() {
-		LimelightHelpers.PoseEstimate pose = LimelightHelpers.getBotPoseEstimate(cameraName, "botpose_orb_wpiblue", true);
+		LimelightHelpers.PoseEstimate pose = LimelightHelpers.getBotPoseEstimate(limelightName, "botpose_orb_wpiblue", true);
 		if(pose!=null){
 			double time = pose.timestampSeconds;
 			return new PoseAllocate(pose, time);
@@ -126,7 +132,7 @@ public class Camera extends VisionABC {
 	}
 
 	public void SetRobotOrientation(double headingDeg, double yawRate, double pitch, double pitchRate, double roll, double rollRate) {
-		LimelightHelpers.SetRobotOrientation(cameraName, headingDeg, yawRate, pitch, pitchRate, roll, rollRate);
+		LimelightHelpers.SetRobotOrientation(limelightName, headingDeg, yawRate, pitch, pitchRate, roll, rollRate);
 	}
 
 }

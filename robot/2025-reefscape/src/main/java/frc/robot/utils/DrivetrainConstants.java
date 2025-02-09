@@ -20,8 +20,8 @@ public final class DrivetrainConstants {
      * The FieldCentric drive request configuration with deadbands and open-loop voltage control.
      */
     public static final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-            .withDeadband(SafetyMap.kMaxSpeed * 0.1)
-            .withRotationalDeadband(SafetyMap.kMaxAngularRate * 0.1)
+            .withDeadband(SafetyMap.kMaxSpeed * 0.04)
+            .withRotationalDeadband(SafetyMap.kMaxAngularRate * 0.05)
             .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage);
 
     /**

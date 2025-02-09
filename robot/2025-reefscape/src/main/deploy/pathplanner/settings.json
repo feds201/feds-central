@@ -3,9 +3,10 @@
   "robotLength": 0.762,
   "holonomicMode": true,
   "pathFolders": [
-    "cool",
-    "New New Folder",
-    "Pole Places"
+    "autoalign",
+    "misc",
+    "Pole Places",
+    "cool"
   ],
   "autoFolders": [],
   "defaultMaxVel": 4.0,

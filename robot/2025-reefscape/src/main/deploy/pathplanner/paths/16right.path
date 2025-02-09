@@ -16,16 +16,16 @@
     },
     {
       "anchor": {
-        "x": 4.0,
-        "y": 6.0
+        "x": 5.25525,
+        "y": 5.38025
       },
       "prevControl": {
-        "x": 3.0,
-        "y": 6.0
+        "x": 4.25525,
+        "y": 5.38025
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "1/6center"
     }
   ],
   "rotationTargets": [],
@@ -41,8 +41,8 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 0.0
+    "velocity": 0.0,
+    "rotation": -119.99999999999999
   },
   "reversed": false,
   "folder": "Pole Places",
