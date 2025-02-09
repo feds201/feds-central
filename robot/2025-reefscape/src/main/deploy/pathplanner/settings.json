@@ -3,8 +3,8 @@
   "robotLength": 0.762,
   "holonomicMode": true,
   "pathFolders": [
-    "autoalign",
-    "misc",
+    "climberLocations",
+    "New New Folder",
     "Pole Places",
     "cool"
   ],
