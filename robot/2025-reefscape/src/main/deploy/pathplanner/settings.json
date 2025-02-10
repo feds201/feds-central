@@ -3,9 +3,10 @@
   "robotLength": 0.762,
   "holonomicMode": true,
   "pathFolders": [
-    "cool",
+    "climberLocations",
     "New New Folder",
-    "Pole Places"
+    "Pole Places",
+    "cool"
   ],
   "autoFolders": [],
   "defaultMaxVel": 4.0,
