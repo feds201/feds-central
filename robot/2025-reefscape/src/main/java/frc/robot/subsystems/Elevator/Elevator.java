@@ -15,8 +15,8 @@ import frc.robot.utils.Subsystems;
 public class Elevator extends SubsystemABS {
     private TalonFX elevatorMotorLeader; // Primary motor
     private TalonFX elevatorMotorFollower; // Follower motor
-    private CANcoder elevatorEncoder; // Range sensor
-    private DoubleSupplier canCodervalue;
+    // private CANcoder elevatorEncoder; // Range sensor
+    private DoubleSupplier Codervalue;
 
     // private final ShuffleboardTab tab = Shuffleboard.getTab("Elevator");
     private final PIDController pid;
@@ -35,12 +35,11 @@ public class Elevator extends SubsystemABS {
         elevatorMotorFollower.getConfigurator().apply(
                 RobotMap.CurrentLimiter.getCurrentLimitConfiguration(RobotMap.ElevatorMap.ELEVATOR_CURRENT_LIMIT));
 
-        elevatorEncoder = new CANcoder(RobotMap.ElevatorMap.EVEVATOR_ENCODER);
-        canCodervalue = () -> elevatorEncoder.getPosition().getValueAsDouble();
-
+        //elevatorEncoder = new CANcoder(RobotMap.ElevatorMap.EVEVATOR_ENCODER);
+        Codervalue = () -> elevatorMotorLeader.getPosition().getValueAsDouble();
         pid = new PIDController(RobotMap.ElevatorMap.ELEVATOR_P, RobotMap.ElevatorMap.ELEVATOR_I,
                 RobotMap.ElevatorMap.ELEVATOR_D);
-        tab.addNumber("Elevator Position", canCodervalue);
+        tab.addNumber("Elevator Position", Codervalue);
     }
 
     @Override
@@ -73,11 +72,11 @@ public class Elevator extends SubsystemABS {
     }
 
     public double getEncoderValue() {
-        return canCodervalue.getAsDouble();
+        return Codervalue.getAsDouble();
     }
 
     public double getElevatorHeight() {
-        return canCodervalue.getAsDouble() * ElevatorMap.ELEVATOR_CIRCUMFERENCE;
+        return Codervalue.getAsDouble() * ElevatorMap.ELEVATOR_CIRCUMFERENCE;
     }
 
     @Override

@@ -20,7 +20,7 @@ public class Climber extends SubsystemBase {
   private DigitalInput rightSwitch;
   private TalonFX climberMotorLeader;
   private TalonFX climberMotorFollower;
-  private CANcoder climberEncoder;
+  //private CANcoder climberEncoder;
 
   public Climber() {
     climberMotorLeader = new TalonFX(ClimberMap.CLIMBER_LEADER_MOTOR);
@@ -32,7 +32,7 @@ public class Climber extends SubsystemBase {
     climberMotorFollower.setControl(new Follower(climberMotorLeader.getDeviceID(), false));
     leftSwitch = new DigitalInput(ClimberMap.CLIMBER_LEFT_DI);
     rightSwitch = new DigitalInput(ClimberMap.CLIMBER_RIGHT_DI);
-    climberEncoder = new CANcoder(ClimberMap.CLIMBER_ENCODER);
+    //climberEncoder = new CANcoder(ClimberMap.CLIMBER_ENCODER);
 
   }
 
@@ -71,6 +71,6 @@ public class Climber extends SubsystemBase {
   }
 
   public double getEncoderValue() {
-    return climberEncoder.getPosition().getValueAsDouble();
+    return climberMotorLeader.getPosition().getValueAsDouble();
   }
 }
