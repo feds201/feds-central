@@ -216,8 +216,8 @@ public class RobotContainer extends RobotFramework {
                         DrivetrainConstants.drivetrain, frontCamera));
 
         driverController.a()
-                .whileTrue(new RotateElevatorBasic(elevator.m_elevatorSpeed.getAsDouble(), elevator));
-
+                .whileTrue(new RotateElevatorBasic(elevator.m_elevatorSpeed, elevator));
+                
                 
         // driverController.b()
         // .onTrue(AutoPathFinder.GotoPath("Pathto1"));

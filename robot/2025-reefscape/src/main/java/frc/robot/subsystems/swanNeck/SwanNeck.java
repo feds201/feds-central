@@ -25,7 +25,7 @@ public class SwanNeck extends SubsystemABS {
     // private CANcoder gooseNeckAngler;
     private DoubleSupplier algaeCANrangeVal;
     private DoubleSupplier coralCANrangeVal;
-    private DoubleSupplier swanNeckCANCoderValue;
+    private DoubleSupplier swanNeckAngleValue;
   
 
     public SwanNeck(Subsystems subsystem, String name) {
@@ -43,10 +43,10 @@ public class SwanNeck extends SubsystemABS {
 
         algaeCANrangeVal = () -> algaeCanRange.getDistance().getValueAsDouble();
         coralCANrangeVal = () -> coralCanRange.getDistance().getValueAsDouble();
-        swanNeckCANCoderValue = () -> pivotMotor.getPosition().getValueAsDouble();
-        tab.addNumber("algaeCanRange", algaeCANrangeVal);
-        tab.addNumber("coralCanRange", coralCANrangeVal);
-        tab.addNumber("gooseNeckAngler", swanNeckCANCoderValue);
+        swanNeckAngleValue = () -> pivotMotor.getPosition().getValueAsDouble();
+        tab.addNumber("algae CanRange Value", algaeCANrangeVal);
+        tab.addNumber("coral CanRange Value", coralCANrangeVal);
+        tab.addNumber("gooseNeck Angle", swanNeckAngleValue);
     }
 
     @Override
@@ -81,7 +81,7 @@ public class SwanNeck extends SubsystemABS {
     }
 
     public double getPivotAngle() {
-        return swanNeckCANCoderValue.getAsDouble();
+        return swanNeckAngleValue.getAsDouble();
     }
 
     public void lockPivot() {

@@ -75,7 +75,7 @@ public class RobotMap {
         public static final int ELEVATOR_MOTOR2 = 62;
         public static final int ELEVATOR_SPEED = 0;
         public static final int EVEVATOR_ENCODER = 63;
-        public static final double ELEVATOR_P = 0;
+        public static final double ELEVATOR_P = 0.001;
         public static final double ELEVATOR_I = 0;
         public static final double ELEVATOR_D = 0;
         public static final double PARENT_GEAR_RADIUS = Units.inchesToMeters(2.5);
@@ -150,8 +150,8 @@ public class RobotMap {
         public static final int PIVOT_MOTOR_CURRENT_LIMIT = 20;
 
         public static class SensorCanId {
-            public static final int INTAKE_MOTOR = 21;
-            public static final int PIVOT_MOTOR = 22;
+            public static final int INTAKE_MOTOR = 71;
+            public static final int PIVOT_MOTOR = 72;
             public static final int CORAL_CANRANGE = 100;
             public static final int ALGAE_CANRANGE = 100;
             public static final int INTAKE_ENCODER = 73;

@@ -1,5 +1,6 @@
-package frc.robot.subsystems.lift ;
+package frc.robot.subsystems.lift;
 
+import java.util.Map;
 import java.util.function.DoubleSupplier;
 
 import com.ctre.phoenix6.controls.Follower;
@@ -8,7 +9,10 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import frc.robot.constants.RobotMap;
 import frc.robot.constants.RobotMap.ElevatorMap;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.button.NetworkButton;
 import frc.robot.utils.SubsystemABS;
 import frc.robot.utils.Subsystems;
 
@@ -17,7 +21,7 @@ public class Lift extends SubsystemABS {
     private TalonFX elevatorMotorFollower; // Follower motor
     // private CANcoder elevatorEncoder; // Range sensor
     private DoubleSupplier m_encoderValue;
-    public DoubleSupplier m_elevatorSpeed = ()-> 0.0;
+    public DoubleSupplier m_elevatorSpeed;
 
     // private final ShuffleboardTab tab = Shuffleboard.getTab("Elevator");
     private final PIDController pid;
@@ -36,13 +40,19 @@ public class Lift extends SubsystemABS {
         elevatorMotorFollower.getConfigurator().apply(
                 RobotMap.CurrentLimiter.getCurrentLimitConfiguration(RobotMap.ElevatorMap.ELEVATOR_CURRENT_LIMIT));
 
-        //elevatorEncoder = new CANcoder(RobotMap.ElevatorMap.EVEVATOR_ENCODER);
+        // elevatorEncoder = new CANcoder(RobotMap.ElevatorMap.EVEVATOR_ENCODER);
         m_encoderValue = () -> elevatorMotorLeader.getPosition().getValueAsDouble();
-        pid = new PIDController(RobotMap.ElevatorMap.ELEVATOR_P, RobotMap.ElevatorMap.ELEVATOR_I,
-                RobotMap.ElevatorMap.ELEVATOR_D);
+        pid = new PIDController(RobotMap.ElevatorMap.ELEVATOR_P, RobotMap.ElevatorMap.ELEVATOR_I, RobotMap.ElevatorMap.ELEVATOR_D);
+        
+        tab.add("Intake PID", pid)
+            .withWidget(BuiltInWidgets.kPIDController);
+
         tab.addNumber("Elevator Position", m_encoderValue);
-        tab.addNumber("Elevator Speed", m_elevatorSpeed);
-    
+        GenericEntry elevatorSpeedSetter = tab.add("Elevator Speed", 0.0)
+                .withWidget(BuiltInWidgets.kNumberSlider)
+                .withProperties(Map.of("min", 0, "max", .2))
+                .getEntry();
+        m_elevatorSpeed = () -> elevatorSpeedSetter.getDouble(0);
     }
 
     @Override
@@ -73,7 +83,6 @@ public class Lift extends SubsystemABS {
         double output = pid.calculate(getEncoderValue());
         setMotorSpeed(output);
     }
-
 
     public double getEncoderValue() {
         return m_encoderValue.getAsDouble();
