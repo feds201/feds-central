@@ -26,7 +26,7 @@ class SettingsPageState extends State<SettingsPage> {
   bool isDarkMode = true;
   String ApiKey = Hive.box('settings').get('ApiKey', defaultValue: '');
   late List<String> _scouterNames;
-  List<String> _selectedScouters = [];
+  final List<String> _selectedScouters = [];
 
   @override
   void initState() {

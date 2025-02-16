@@ -81,9 +81,9 @@ class LogsPage extends StatelessWidget {
               )
           ],
           options: CarouselOptions(
-            height: 750,
+            height: MediaQuery.of(context).size.height,
             enlargeFactor: 1,
-            aspectRatio: 16 / 9,
+            aspectRatio: 4 / 3,
             viewportFraction: 0.85,
             initialPage: 0,
             enableInfiniteScroll: false,

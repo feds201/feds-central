@@ -11,7 +11,9 @@ class CounterSettings {
   final Function(int) onIncrement;
   final Function(int) onDecrement;
 
-  CounterSettings(this.onIncrement, this.onDecrement, {
+  CounterSettings(
+    this.onIncrement,
+    this.onDecrement, {
     required this.icon,
     required this.number,
     required this.counterText,
@@ -19,6 +21,7 @@ class CounterSettings {
   });
 }
 
+// ignore: avoid_types_as_parameter_names
 void defaultIncrement(int) {
   print('Incremented');
 }
@@ -46,7 +49,8 @@ Widget buildCounterShelf(List<CounterSettings> counterSettings) {
       child: Column(
         children: counterSettings.map((settings) {
           return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+            padding:
+                const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
             child: Row(
               children: [
                 Icon(settings.icon, color: settings.color),
@@ -88,7 +92,8 @@ Widget buildCounterShelf(List<CounterSettings> counterSettings) {
   );
 }
 
-Widget buildCounter(String title, int value, Function(int) onChanged, {required MaterialColor color}) {
+Widget buildCounter(String title, int value, Function(int) onChanged,
+    {required MaterialColor color}) {
   return LayoutBuilder(
     builder: (context, constraints) {
       double screenWidth = MediaQuery.of(context).size.width - 25;
@@ -108,7 +113,7 @@ Widget buildCounter(String title, int value, Function(int) onChanged, {required 
                   borderType: BorderType.RRect,
                   radius: const Radius.circular(12),
                   padding: const EdgeInsets.all(6),
-                  color: color ?? Colors.green,
+                  color: color,
                   dashPattern: const [8, 4],
                   strokeWidth: 2,
                   child: Container(
