@@ -44,6 +44,8 @@ class _TeleOperatedState extends State<TeleOperated> {
 
   @override
   Widget build(BuildContext context) {
+    print(LocalDataBase.getData('Settings.apiKey'));
+    print("Hello tELEoP");
     return SingleChildScrollView(
       child: Column(
         children: [

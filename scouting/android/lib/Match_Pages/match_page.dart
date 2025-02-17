@@ -58,6 +58,7 @@ class MatchPageState extends State<MatchPage> {
 
   @override
   Widget build(BuildContext context) {
+    print(LocalDataBase.getData('Settings.apiKey'));
     return Scaffold(
       drawer: const NavBar(),
       appBar: _buildCustomAppBar(context),

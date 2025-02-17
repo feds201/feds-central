@@ -66,6 +66,8 @@ class AutonState extends State<Auton> {
       matchKey = LocalDataBase.getData(Types.matchKey) ?? "Null";
       allianceColor = LocalDataBase.getData(Types.allianceColor) ?? "Null";
     });
+    print(LocalDataBase.getData('Settings.apiKey'));
+    print("Hello Auton");
     return Container(child: _buildAuto(context));
   }
 

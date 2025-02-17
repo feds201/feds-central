@@ -1,26 +1,36 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
+import 'package:scouting_app/Pit_Recorder/Send_Pitdata.dart';
+import 'package:scouting_app/components/DataBase.dart';
 
 import 'CheckLists.dart';
 
-class Pit_Recorder extends StatefulWidget {
-  const Pit_Recorder({super.key});
+class PitRecorder extends StatefulWidget {
+  const PitRecorder({super.key});
 
   @override
-  _Pit_RecorderState createState() => _Pit_RecorderState();
+  PitRecorderState createState() => PitRecorderState();
 }
 
-class _Pit_RecorderState extends State<Pit_Recorder> {
+class PitRecorderState extends State<PitRecorder> {
   List<Team> _teams = [];
   List<Team> _filteredTeams = [];
-  int _visibleCount = 7;
+  List<int> _recorded_team = [];
 
   @override
   void initState() {
+    _recorded_team = PitDataBase.GetRecorderTeam();
     super.initState();
     _fetchTeams();
+    Timer.periodic(Duration(seconds: 5), (timer) {
+      setState(() {
+        _recorded_team = PitDataBase.GetRecorderTeam();
+      });
+    });
   }
 
   void _filterTeams(String query) {
@@ -34,18 +44,11 @@ class _Pit_RecorderState extends State<Pit_Recorder> {
   }
 
   void _selectTeam(BuildContext context, Team team) {
-    print("Selected team is : ${team.teamNumber}");
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => Checklists(team: team), fullscreenDialog: true),
+          builder: (context) => Record(team: team), fullscreenDialog: true),
     );
-  }
-
-  void _showMore() {
-    setState(() {
-      _visibleCount += 7;
-    });
   }
 
   void _showErrorDialog(BuildContext context, String errorMessage) {
@@ -98,7 +101,9 @@ class _Pit_RecorderState extends State<Pit_Recorder> {
         _filteredTeams = teams;
       });
     } catch (e) {
-      _showErrorDialog(context, e.toString());
+      if (mounted) {
+        _showErrorDialog(context, e.toString());
+      }
     }
   }
 
@@ -106,39 +111,178 @@ class _Pit_RecorderState extends State<Pit_Recorder> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Pit Recorder'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.sync),
+            onPressed: PitDataBase.LoadAll,
+          ),
+          IconButton(
+              icon: const Icon(Icons.share_rounded),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SharePITDataScreen(),
+                  ),
+                );
+              }),
+        ],
+        title: ShaderMask(
+            shaderCallback: (bounds) => const LinearGradient(
+                  colors: [Colors.red, Colors.blue],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ).createShader(bounds),
+            child: Text(
+              'Pit Recorder',
+              style: GoogleFonts.museoModerno(
+                fontSize: 30,
+                fontWeight: FontWeight.w500,
+                color: Colors.white,
+              ),
+            )),
+        centerTitle: true,
       ),
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(16.0),
             child: TextField(
-              decoration: const InputDecoration(
-                labelText: 'Search Teams',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: 'Search',
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
               onChanged: _filterTeams,
             ),
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: _filteredTeams.length < _visibleCount
-                  ? _filteredTeams.length
-                  : _visibleCount,
+              itemCount: _filteredTeams.length,
               itemBuilder: (context, index) {
                 final team = _filteredTeams[index];
-                return ListTile(
-                  title: Text('Team ${team.teamNumber}: ${team.nickname}'),
-                  onTap: () => _selectTeam(context, team),
+                return Card(
+                  elevation: 4,
+                  margin:
+                      const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: isScouted(team.teamNumber, _recorded_team)
+                            ? [Colors.red, Colors.blue]
+                            : [Colors.grey, Colors.grey],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: ListTile(
+                      contentPadding: const EdgeInsets.all(16),
+                      title: Text(
+                        'Team ${team.teamNumber}: ${team.nickname}',
+                        style: GoogleFonts.museoModerno(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                      subtitle: Text(
+                        '${team.city}, ${team.stateProv}, ${team.country}',
+                        style: GoogleFonts.museoModerno(
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          color: const Color.fromARGB(134, 255, 255, 255),
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                      trailing: const Icon(Icons.arrow_forward_ios,
+                          color: Colors.white),
+                      onTap: () => _selectTeam(context, team),
+                    ),
+                  ),
                 );
               },
             ),
           ),
-          if (_filteredTeams.length > _visibleCount)
-            TextButton(
-              onPressed: _showMore,
-              child: const Text('Show More'),
+          GestureDetector(
+            onTap: () async {
+              int tapCount = 0;
+              bool confirmed = false;
+              while (tapCount < 16) {
+                confirmed = await showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text('Confirm Delete'),
+                      content: Text(
+                          'Are you sure you want to delete all data? Tap ${16 - tapCount} more times to confirm.'),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop(true);
+                          },
+                          child: const Text('Yes'),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop(false);
+                          },
+                          child: const Text('No'),
+                        ),
+                      ],
+                    );
+                  },
+                );
+                if (confirmed) {
+                  tapCount++;
+                } else {
+                  break;
+                }
+              }
+              if (tapCount == 16) {
+                // Perform delete operation
+                PitDataBase.ClearData();
+              }
+            },
+            child: Card(
+              margin: const EdgeInsets.all(16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      const Color.fromARGB(255, 255, 1, 1),
+                      const Color.fromARGB(255, 0, 38, 255)
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: ListTile(
+                  contentPadding: const EdgeInsets.all(16),
+                  title: const Text(
+                    'Delete All Data',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                  trailing: const Icon(Icons.delete, color: Colors.white),
+                ),
+              ),
             ),
+          ),
         ],
       ),
     );
@@ -151,6 +295,12 @@ Future<List<Team>> fetchTeams() async {
   dd = await Hive.box('pitData').get('teams');
   List<dynamic> teamsJson = json.decode(dd);
   return teamsJson.map((json) => Team.fromJson(json)).toList();
+}
+
+bool isScouted(int teamNumber, List<int> recorderTeam) {
+  print(
+      '$teamNumber is in $recorderTeam : ${recorderTeam.contains(teamNumber)}');
+  return recorderTeam.contains(teamNumber);
 }
 
 class Team {

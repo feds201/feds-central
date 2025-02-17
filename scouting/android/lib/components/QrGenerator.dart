@@ -9,7 +9,6 @@ import 'package:slider_button/slider_button.dart';
 
 import '../Match_Pages/match_page.dart';
 import '../Plugins/plugin_state_manager.dart';
-import '../home_page.dart';
 import 'DataBase.dart';
 import 'compactifier.dart';
 
@@ -25,7 +24,8 @@ class QrCoder extends State<Qrgenerator> {
   final PluginStateManager pluginStateManager = PluginStateManager();
   @override
   Widget build(BuildContext context) {
-    print(LocalDataBase.getMatchData().toString());
+    print(LocalDataBase.getData('Settings.apiKey'));
+
     return Scaffold(
       appBar: AppBar(
         title: Text('QR Code',
@@ -149,12 +149,14 @@ class QrCoder extends State<Qrgenerator> {
 
             // Example: Confirm whether data clearing and navigation are happening
             LocalDataBase.clearData();
+            print(LocalDataBase.getData('Settings.apiKey'));
+
             print("Data Cleared");
 
             await Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => const HomePage(),
+                  builder: (context) => const MatchPage(),
                   fullscreenDialog: true),
             );
 
@@ -176,7 +178,7 @@ class QrCoder extends State<Qrgenerator> {
                         await Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const HomePage(),
+                              builder: (context) => const MatchPage(),
                               fullscreenDialog: true),
                         );
                       },
@@ -199,11 +201,12 @@ class QrCoder extends State<Qrgenerator> {
                     child: const Text('OK'),
                     onPressed: () {
                       LocalDataBase.clearData();
+                      print(LocalDataBase.getData('Settings.apiKey'));
                       print("Data Cleared");
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const HomePage(),
+                            builder: (context) => const MatchPage(),
                             fullscreenDialog: true),
                       );
                     },
@@ -226,9 +229,11 @@ class QrCoder extends State<Qrgenerator> {
                 TextButton(
                   child: const Text('OK'),
                   onPressed: () async {
-                    await Navigator.pushNamed(
+                    await Navigator.push(
                       context,
-                      '/home',
+                      MaterialPageRoute(
+                          builder: (context) => const MatchPage(),
+                          fullscreenDialog: true),
                     );
                   },
                 ),
@@ -240,6 +245,7 @@ class QrCoder extends State<Qrgenerator> {
     } else {
       print('Server is not running.');
       LocalDataBase.clearData();
+      print(LocalDataBase.getData('Settings.apiKey'));
       print("Data Cleared");
 
       await Navigator.push(

@@ -122,7 +122,7 @@ class _HomePageState extends State<HomePage>
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const Pit_Recorder(),
+                          builder: (context) => const PitRecorder(),
                           fullscreenDialog: true));
                 },
               ),

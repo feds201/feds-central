@@ -47,7 +47,7 @@ class MyApp extends StatelessWidget {
         '/settings': (context) => const SettingsPage(),
         '/about': (context) => const AboutPage(),
         '/match_page': (context) => const MatchPage(),
-        '/pit_page': (context) => const Pit_Recorder(),
+        '/pit_page': (context) => const PitRecorder(),
       },
       home: const HomePage(),
     );
