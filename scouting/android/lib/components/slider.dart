@@ -44,7 +44,8 @@ class SliderButton extends StatefulWidget {
 
   final bool disable;
 
-  SliderButton({
+  const SliderButton({
+    super.key,
     required this.action,
     this.radius = 100,
     this.boxShadow,
@@ -155,8 +156,7 @@ class _SliderButtonState extends State<SliderButton> {
                       setState(() {
                         flag = !flag;
                       });
-                      final hasVibrator =
-                          await Vibration.hasVibrator() ?? false;
+                      final hasVibrator = await Vibration.hasVibrator();
                       if (widget.vibrationFlag && hasVibrator) {
                         try {
                           Vibration.vibrate(duration: 200);

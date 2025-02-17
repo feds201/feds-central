@@ -1,10 +1,10 @@
 # 🚀 Scout-Ops-Android
 
-ScoutOps is a mobile-friendly and UI-friendly scouting application designed for FRC matches. Originally intended for use by a single team, ScoutOps is now open for public use, allowing users to recreate and grow the app as a community. If you use this app, please mention the creator. 😊
+scouting_app is a mobile-friendly and UI-friendly scouting application designed for FRC matches. Originally intended for use by a single team, scouting_app is now open for public use, allowing users to recreate and grow the app as a community. If you use this app, please mention the creator. 😊
 
 ## 🔍 General Information
 
-- **Name:** ScoutOps
+- **Name:** scouting_app
 - **Primary Purpose:** To provide a mobile and user-friendly way to scout and record FRC match data.
 - **Intended Users:** Initially designed for a single team, now open for public use.
 - **Platforms Supported:** Android 📱 (Mobile), with ongoing extensions for Raspberry Pi 🥧 and Windows/Linux computers 🖥️ to host a local area database for immediate data transfer. A Windows ScoutData management app is also in progress.

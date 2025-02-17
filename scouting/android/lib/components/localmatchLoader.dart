@@ -29,12 +29,12 @@ class _localmatchLoaderState extends State<localmatchLoader> {
         appBar: AppBar(
           title: const Text('Local Match Loader'),
         ),
-      body: Container(
-      color: Colors.white,
-      child: Column(
-        children: modules(context),
-      ),
-      ));
+        body: Container(
+          color: Colors.white,
+          child: Column(
+            children: modules(context),
+          ),
+        ));
   }
 
   List<Widget> modules(BuildContext context) {
@@ -111,7 +111,7 @@ class _localmatchLoaderState extends State<localmatchLoader> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const HomePage(),
+                        builder: (context) => const HomePage(),
                         fullscreenDialog: true),
                   );
                 },
@@ -119,7 +119,7 @@ class _localmatchLoaderState extends State<localmatchLoader> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const MatchPage(),
+                        builder: (context) => const MatchPage(),
                         fullscreenDialog: true),
                   );
                 },
@@ -129,7 +129,6 @@ class _localmatchLoaderState extends State<localmatchLoader> {
               ),
             ],
           )),
-
     ];
   }
 
@@ -151,7 +150,8 @@ class _localmatchLoaderState extends State<localmatchLoader> {
       setState(() {
         isLoading = true;
       });
-      Hive.box('matchData').put('matches', jsonDecode(responseForMatchData.body));
+      Hive.box('matchData')
+          .put('matches', jsonDecode(responseForMatchData.body));
     }
     var responseForPitData = await http.get(
         Uri.parse(
@@ -164,7 +164,6 @@ class _localmatchLoaderState extends State<localmatchLoader> {
       }
       setState(() {
         isLoading = true;
-
       });
       Hive.box('pitData').put('teams', (responseForPitData.body));
     }

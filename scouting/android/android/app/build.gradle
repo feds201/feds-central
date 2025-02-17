@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.pyintel.scoutOps"
+    namespace = "com.pyintel.scouting_app"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 

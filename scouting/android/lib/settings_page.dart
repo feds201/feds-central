@@ -26,16 +26,12 @@ class SettingsPageState extends State<SettingsPage> {
   bool isCameraGranted = false;
   bool isDarkMode = true;
   String ApiKey = Hive.box('settings').get('ApiKey', defaultValue: '');
-  late List<String> _scouterNames;
-  final List<String> _selectedScouters = [];
 
   @override
   void initState() {
     super.initState();
     _checkInitialPermissions();
     Settings.setApiKey(ApiKey);
-    _scouterNames = List<String>.from(
-        Hive.box('userData').get('scouterNames', defaultValue: <String>[]));
   }
 
   Future<void> _checkInitialPermissions() async {

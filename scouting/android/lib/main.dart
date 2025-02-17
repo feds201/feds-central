@@ -56,9 +56,6 @@ class MyApp extends StatelessWidget {
 
 bool isdarkmode() {
   return true;
-  Hive.box('userData').get('darkMode') ??
-      Hive.box('userData').put('darkMode', false);
-  return Hive.box('userData').get('darkMode');
 }
 
 Color invertColor(Color color) {

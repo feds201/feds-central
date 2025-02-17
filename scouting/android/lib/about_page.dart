@@ -50,7 +50,7 @@ class AboutPage extends StatelessWidget {
               Expanded_Widget: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Text(
-                  "ScoutOps is an FRC Scouting app designed to streamline the tracking and analysis of match performance data. While it’s customized for the needs of our team, FEDS 201, its versatility makes it a valuable tool for any team.",
+                  "scouting_app is an FRC Scouting app designed to streamline the tracking and analysis of match performance data. While it’s customized for the needs of our team, FEDS 201, its versatility makes it a valuable tool for any team.",
                   style: GoogleFonts.chivoMono(
                     fontSize: 16,
                     color: !isdarkmode()
@@ -94,7 +94,7 @@ class AboutPage extends StatelessWidget {
               Expanded_Widget: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Text(
-                  "ScoutOps is dedicated to the hardworking members of FEDS 201, the Falcon Engineering and Design Solutions team from Rochester High School. This app reflects our commitment to excellence in robotics.",
+                  "scouting_app is dedicated to the hardworking members of FEDS 201, the Falcon Engineering and Design Solutions team from Rochester High School. This app reflects our commitment to excellence in robotics.",
                   style: GoogleFonts.chivoMono(
                     fontSize: 16,
                     color: !isdarkmode()
@@ -140,7 +140,7 @@ class AboutPage extends StatelessWidget {
                   padding: const EdgeInsets.all(16.0),
                   child: Column(children: [
                     Text(
-                      "We extend our gratitude to the open-source community and projects that made ScoutOps possible",
+                      "We extend our gratitude to the open-source community and projects that made scouting_app possible",
                       style: GoogleFonts.chivoMono(
                         fontSize: 16,
                         color: !isdarkmode()
@@ -224,7 +224,7 @@ class AboutPage extends StatelessWidget {
                   padding: const EdgeInsets.all(16.0),
                   child: Column(children: [
                     Text(
-                      "ScoutOps leverages various APIs and data sources to provide semi-real-time insights and analytics.",
+                      "scouting_app leverages various APIs and data sources to provide semi-real-time insights and analytics.",
                       style: GoogleFonts.chivoMono(
                         fontSize: 16,
                         color: !isdarkmode()

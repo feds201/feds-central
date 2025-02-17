@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -28,7 +27,6 @@ Future<bool> isWifiConnected() async {
 Future<bool> isServerConnected() async {
   var box = Hive.box('settings');
   String? ipAddress = box.get('ipAddress');
-  String? deviceName = box.get('deviceName');
   try {
     String url = 'http://$ipAddress/alive';
     Http.Response response = await Http.get(
@@ -206,7 +204,6 @@ class SharePITDataScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     var box = Hive.box('settings');
     String? ipAddress = box.get('ipAddress');
-    String? deviceName = box.get('deviceName');
     return Scaffold(
       appBar: AppBar(
         title: ShaderMask(
