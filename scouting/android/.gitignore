@@ -49,3 +49,5 @@ app.*.map.json
 windows/
 
 android/app/.cxx/Debug/
+
+android/app/.cxx/
