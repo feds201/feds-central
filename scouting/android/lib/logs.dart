@@ -4,10 +4,10 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../components/DataBase.dart';
-import '../components/SwipeCards.dart';
-import '../components/compactifier.dart';
-import 'GeminiPrediction.dart';
+import 'components/DataBase.dart';
+import 'components/SwipeCards.dart';
+import 'components/compactifier.dart';
+import 'Match_Pages/GeminiPrediction.dart';
 
 class LogsPage extends StatelessWidget {
   const LogsPage({super.key});
@@ -81,7 +81,7 @@ class LogsPage extends StatelessWidget {
               )
           ],
           options: CarouselOptions(
-            height: MediaQuery.of(context).size.height,
+            height: MediaQuery.of(context).size.height * .8,
             enlargeFactor: 1,
             aspectRatio: 4 / 3,
             viewportFraction: 0.85,

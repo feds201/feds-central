@@ -6,7 +6,7 @@ import 'package:scouting_app/home_page.dart';
 import 'package:scouting_app/main.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../components/nav.dart';
+import 'components/nav.dart';
 
 class AboutPage extends StatelessWidget {
   const AboutPage({super.key});

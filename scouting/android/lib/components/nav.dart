@@ -3,10 +3,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:scouting_app/Experiment/experiment.dart';
 import 'package:scouting_app/main.dart';
 
-import '../Match_Pages/about_page.dart';
-import '../Match_Pages/logs.dart';
+import '../about_page.dart';
+import '../logs.dart';
 import '../Match_Pages/match_page.dart';
-import '../Match_Pages/settings_page.dart';
+import '../settings_page.dart';
 import '../home_page.dart';
 
 class NavBar extends StatelessWidget {

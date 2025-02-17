@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:scouting_app/components/CheckBox.dart';
-import 'package:slider_button/slider_button.dart';
+import 'package:scouting_app/components/slider.dart';
 
 import '../../components/DataBase.dart';
 import '../../components/QrGenerator.dart';

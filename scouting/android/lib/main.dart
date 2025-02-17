@@ -4,9 +4,9 @@ import 'package:hive_flutter/adapters.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:scouting_app/Pit_Recorder/Pit_Recorder.dart';
 
-import 'Match_Pages/about_page.dart';
+import 'about_page.dart';
 import 'Match_Pages/match_page.dart';
-import 'Match_Pages/settings_page.dart';
+import 'settings_page.dart';
 import 'home_page.dart';
 import 'model/widget_data.dart';
 

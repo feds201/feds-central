@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
+import 'package:scouting_app/components/ScoutersList';
 
 class PyintelScoutzWidget extends StatefulWidget {
   const PyintelScoutzWidget({super.key});
@@ -148,13 +149,7 @@ class _PyintelScoutzWidgetState extends State<PyintelScoutzWidget> {
               ),
             ),
             const SizedBox(height: 8),
-            TextField(
-              controller: _controllerDeviceName,
-              decoration: const InputDecoration(
-                labelText: 'Enter a Unique Device Name',
-                border: OutlineInputBorder(),
-              ),
-            ),
+            ScouterList(),
             const SizedBox(height: 16),
           ],
         ),
@@ -162,23 +157,56 @@ class _PyintelScoutzWidgetState extends State<PyintelScoutzWidget> {
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          ElevatedButton.icon(
+          ElevatedButton(
             onPressed: _testConnection,
-            icon: const Icon(Icons.wifi),
-            label: const Text('Test Connection'),
             style: ElevatedButton.styleFrom(
               backgroundColor: _testButtonColor,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              textStyle: TextStyle(fontSize: 16, color: _testButtonColor),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+              elevation: 5,
+              shadowColor: Colors.black.withOpacity(0.2),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.wifi, size: 22, color: Colors.white),
+                const SizedBox(width: 8),
+                Text(
+                  'Test Connection',
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.w600),
+                ),
+              ],
             ),
           ),
-          ElevatedButton.icon(
+          const SizedBox(width: 16),
+          ElevatedButton(
             onPressed: _registerDevice,
-            icon: const Icon(Icons.save),
-            label: const Text('Register Device'),
             style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              textStyle: const TextStyle(fontSize: 16),
+              backgroundColor: Colors.greenAccent.shade700,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+              elevation: 5,
+              shadowColor: Colors.black.withOpacity(0.2),
+            ).copyWith(
+              overlayColor:
+                  MaterialStateProperty.all(Colors.greenAccent.shade400),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.save, size: 22, color: Colors.white),
+                const SizedBox(width: 8),
+                Text(
+                  'Register Device',
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.w600),
+                ),
+              ],
             ),
           ),
         ],
