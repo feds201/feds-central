@@ -40,6 +40,7 @@ public class SwanNeck extends SubsystemABS {
         coralCanRange = new CANrange(IntakeMap.SensorCanId.CORAL_CANRANGE);
         algaeCanRange = new CANrange(IntakeMap.SensorCanId.ALGAE_CANRANGE);
         pid = IntakeMap.intakePid;
+    
         // gooseNeckAngler = new CANcoder(IntakeMap.SensorCanId.INTAKE_ENCODER);
         
 

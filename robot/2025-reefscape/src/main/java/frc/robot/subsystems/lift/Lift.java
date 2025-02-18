@@ -81,7 +81,7 @@ public class Lift extends SubsystemABS {
 
     public void rotateElevatorPID() {
         double output = pid.calculate(getEncoderValue());
-        setMotorSpeed(output);
+        setMotorSpeed(output + ElevatorMap.ELEVATOR_F);
     }
 
     public double getEncoderValue() {
