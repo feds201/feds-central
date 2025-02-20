@@ -43,6 +43,7 @@ public class RotateElevatorPID extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return c_Elevator.pidAtSetpoint();
+    // return c_Elevator.pidAtSetpoint();
+    return false;
   }
 }

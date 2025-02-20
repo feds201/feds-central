@@ -37,15 +37,19 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.auton.pathfindToReef;
 import frc.robot.commands.auton.posePathfindToReef;
 import frc.robot.commands.auton.pathfindToReef.reefPole;
+import frc.robot.commands.climber.RaiseClimberBasic;
 import frc.robot.commands.lift.RotateElevatorBasic;
+import frc.robot.commands.lift.RotateElevatorPID;
 import frc.robot.commands.swerve.DriveForwardCommand;
 import frc.robot.commands.swerve.GameNavigator;
 import frc.robot.constants.*;
+import frc.robot.constants.RobotMap.ElevatorMap;
 import frc.robot.constants.RobotMap.IntakeMap;
 import frc.robot.constants.RobotMap.SafetyMap;
 import frc.robot.constants.RobotMap.SensorMap;
 import frc.robot.constants.RobotMap.UsbMap;
 import frc.robot.constants.RobotMap.SafetyMap.AutonConstraints;
+import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.lift.Lift;
 import frc.robot.subsystems.swanNeck.SwanNeck;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
@@ -77,13 +81,13 @@ public class RobotContainer extends RobotFramework {
     private final Camera frontCamera;
     private final Camera rearRightCamera;
     private final Camera rearLeftCamera;
+    private final Climber climber;
 
     // private final Camera rearCamera;
     private final PathConstraints autoAlignConstraints;
     private final PoseEstimator poseEstimator;
     private Lift elevator;
     private SwanNeck swanNeck;
-
 
     private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
 
@@ -95,9 +99,14 @@ public class RobotContainer extends RobotFramework {
 
         poseEstimator = new PoseEstimator(DrivetrainConstants.drivetrain);
 
+        climber = new Climber(
+            Subsystems.CLIMBER,
+             Subsystems.CLIMBER.getNetworkTable());
+
         elevator = new Lift(
                 Subsystems.ELEVATOR,
                 Subsystems.ELEVATOR.getNetworkTable());
+
         swerveSubsystem = new SwerveSubsystem(
                 Subsystems.SWERVE_DRIVE,
                 Subsystems.SWERVE_DRIVE.getNetworkTable(),
@@ -142,7 +151,6 @@ public class RobotContainer extends RobotFramework {
                 }
             }
 
-        
         });
 
         setupNamedCommands();
@@ -210,15 +218,23 @@ public class RobotContainer extends RobotFramework {
         driverController.leftTrigger()
                 .onTrue(new posePathfindToReef(frc.robot.commands.auton.posePathfindToReef.reefPole.LEFT,
                         DrivetrainConstants.drivetrain, frontCamera));
-                        
+
         driverController.rightTrigger()
                 .onTrue(new posePathfindToReef(frc.robot.commands.auton.posePathfindToReef.reefPole.RIGHT,
                         DrivetrainConstants.drivetrain, frontCamera));
 
+        driverController.y()
+                .whileTrue(new RotateElevatorPID(elevator, () -> ElevatorMap.L2ROTATION));
+        driverController.b()
+                .whileTrue(new RotateElevatorPID(elevator, () -> ElevatorMap.L3ROTATION));
         driverController.a()
+                .whileTrue(new RotateElevatorPID(elevator, () -> ElevatorMap.L4ROTATION));
+        driverController.povLeft()
                 .whileTrue(new RotateElevatorBasic(elevator.m_elevatorSpeed, elevator));
-                
-                
+
+        driverController.povUp()
+        .whileTrue(new RaiseClimberBasic(climber.m_climberSpeed , climber));
+
         // driverController.b()
         // .onTrue(AutoPathFinder.GotoPath("Pathto1"));
 

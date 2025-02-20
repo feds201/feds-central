@@ -29,7 +29,7 @@ public class raiseClimber extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_Climber.setRotateVoltage(m_Climber.calculatePID(m_Climber.getEncoderValue()));
+    m_Climber.rotateClimber(m_Climber.calculatePID(m_Climber.getEncoderValue()));
   }
 
   // Called once the command ends or is interrupted.

@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.function.DoubleSupplier;
 
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import frc.robot.constants.RobotMap;
@@ -57,6 +58,7 @@ public class Lift extends SubsystemABS {
 
     @Override
     public void periodic() {
+        m_encoderValue = () -> elevatorMotorLeader.getPosition().getValueAsDouble();
     }
 
     @Override
@@ -69,6 +71,11 @@ public class Lift extends SubsystemABS {
 
     public void setMotorSpeed(double speed) {
         elevatorMotorLeader.set(speed); // Set the speed of the primary motor
+        SmartDashboard.putNumber("Actual Elevator Speed", speed);
+    }
+
+    public void setMotorVolt(double volt){
+        elevatorMotorLeader.setControl(new VoltageOut(volt));
     }
 
     public void setPIDTarget(double target) {

@@ -75,13 +75,17 @@ public class RobotMap {
         public static final int ELEVATOR_MOTOR2 = 62;
         public static final int ELEVATOR_SPEED = 0;
         public static final int EVEVATOR_ENCODER = 63;
-        public static final double ELEVATOR_P = 0.001;
+        public static final double ELEVATOR_P = 0.03;
         public static final double ELEVATOR_I = 0;
         public static final double ELEVATOR_D = 0;
-        public static final double ELEVATOR_F = 0;
+        public static final double ELEVATOR_F = 0.06;
         public static final double PARENT_GEAR_RADIUS = Units.inchesToMeters(2.5);
         public static final double ELEVATOR_CIRCUMFERENCE = 2 * Math.PI * PARENT_GEAR_RADIUS;
-        public static final double ELEVATOR_CURRENT_LIMIT = 20;
+        public static final double ELEVATOR_CURRENT_LIMIT = 40;
+        public static final double L1ROTATION = 4; //tune
+        public static final double L2ROTATION = 8.48;
+        public static final double L3ROTATION = 15.35;
+        public static final double L4ROTATION = 27.65;
 
     }
 
