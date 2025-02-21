@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.2772500000000002,
-        "y": 7.184
+        "x": 7.25,
+        "y": 4.15175
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.2772500000000004,
-        "y": 7.184
+        "x": 6.75,
+        "y": 4.15175
       },
       "isLocked": false,
-      "linkedName": "coralStationCenter"
+      "linkedName": "compCenterStart"
     },
     {
       "anchor": {
-        "x": 4.0137254871595305,
-        "y": 5.187482351372001
+        "x": 5.70375,
+        "y": 4.15175
       },
       "prevControl": {
-        "x": 2.994770569126744,
-        "y": 6.098547925142492
+        "x": 6.20375,
+        "y": 4.15175
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "6/6left"
+      "linkedName": "2/6right"
     }
   ],
   "rotationTargets": [],
@@ -33,7 +33,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.0,
+    "maxVelocity": 4.0,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -59.99999999999999
+    "rotation": 180.0
   },
   "reversed": false,
-  "folder": "cool",
+  "folder": "compCenter",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -55.0
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }

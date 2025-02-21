@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "coolpathstart"
+            "pathName": "compRightTo36Left"
           }
         },
         {
@@ -19,7 +19,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "coolpath8"
+            "pathName": "36LeftToRightSource"
           }
         },
         {
@@ -31,7 +31,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "coolpath2"
+            "pathName": "rightSourceTo46Left"
           }
         },
         {
@@ -43,7 +43,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "coolpath3"
+            "pathName": "46LeftToRightSource"
           }
         },
         {
@@ -55,7 +55,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "coolpath4"
+            "pathName": "rightSourceTo46Right"
           }
         }
       ]

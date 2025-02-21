@@ -5,9 +5,15 @@
     "data": {
       "commands": [
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 2.0
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "New New Path"
+            "pathName": "compStartCenter"
           }
         }
       ]

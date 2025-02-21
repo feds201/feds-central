@@ -8,46 +8,32 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.2772500000000004,
-        "y": 7.184
+        "x": 2.2536885245901637,
+        "y": 7.207735655737704
       },
       "isLocked": false,
       "linkedName": "coralStationCenter"
     },
     {
       "anchor": {
-        "x": 3.7342500000000003,
-        "y": 5.039
+        "x": 4.0137254871595305,
+        "y": 5.187482351372001
       },
       "prevControl": {
-        "x": 3.2547418032786886,
-        "y": 5.5424836065573775
+        "x": 3.452459016393442,
+        "y": 6.008965163934425
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "6/6 Right"
+      "linkedName": "6/6left"
     }
   ],
   "rotationTargets": [],
-  "constraintZones": [
-    {
-      "name": "Constraints Zone",
-      "minWaypointRelativePos": 0.9,
-      "maxWaypointRelativePos": 1.0,
-      "constraints": {
-        "maxVelocity": 1.0,
-        "maxAcceleration": 3.0,
-        "maxAngularVelocity": 540.0,
-        "maxAngularAcceleration": 720.0,
-        "nominalVoltage": 12.0,
-        "unlimited": false
-      }
-    }
-  ],
+  "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.0,
+    "maxVelocity": 4.0,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
@@ -59,9 +45,9 @@
     "rotation": -59.99999999999999
   },
   "reversed": false,
-  "folder": "cool",
+  "folder": "compLeft",
   "idealStartingState": {
-    "velocity": 0.0,
+    "velocity": 0,
     "rotation": -55.0
   },
   "useDefaultConstraints": true

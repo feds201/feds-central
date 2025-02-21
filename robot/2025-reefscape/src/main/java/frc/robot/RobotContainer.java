@@ -215,11 +215,11 @@ public class RobotContainer extends RobotFramework {
                 .onTrue(DrivetrainConstants.drivetrain
                         .runOnce(() -> DrivetrainConstants.drivetrain.seedFieldCentric()));
 
-        driverController.leftTrigger()
+        driverController.leftBumper()
                 .onTrue(new posePathfindToReef(frc.robot.commands.auton.posePathfindToReef.reefPole.LEFT,
                         DrivetrainConstants.drivetrain, frontCamera));
 
-        driverController.rightTrigger()
+        driverController.rightBumper()
                 .onTrue(new posePathfindToReef(frc.robot.commands.auton.posePathfindToReef.reefPole.RIGHT,
                         DrivetrainConstants.drivetrain, frontCamera));
 
@@ -241,11 +241,11 @@ public class RobotContainer extends RobotFramework {
         // driverController.y()
         // .onTrue(AutoPathFinder.GotoPath("lineToRight"));
 
-        driverController.leftBumper()
-                .onTrue(new pathfindToReef(reefPole.LEFT, DrivetrainConstants.drivetrain, frontCamera));
+        // driverController.leftBumper()
+        //         .onTrue(new pathfindToReef(reefPole.LEFT, DrivetrainConstants.drivetrain, frontCamera));
 
-        driverController.rightBumper()
-                .onTrue(new pathfindToReef(reefPole.RIGHT, DrivetrainConstants.drivetrain, frontCamera));
+        // driverController.rightBumper()
+        //         .onTrue(new pathfindToReef(reefPole.RIGHT, DrivetrainConstants.drivetrain, frontCamera));
 
     }
 

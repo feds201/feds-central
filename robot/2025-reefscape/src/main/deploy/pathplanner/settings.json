@@ -3,13 +3,14 @@
   "robotLength": 0.762,
   "holonomicMode": true,
   "pathFolders": [
-    "climberLocations",
-    "New New Folder",
+    "compRight",
     "Pole Places",
-    "cool"
+    "climberLocations",
+    "compCenter",
+    "compLeft"
   ],
   "autoFolders": [],
-  "defaultMaxVel": 2.0,
+  "defaultMaxVel": 4.0,
   "defaultMaxAccel": 3.0,
   "defaultMaxAngVel": 540.0,
   "defaultMaxAngAccel": 720.0,
