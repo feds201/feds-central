@@ -12,6 +12,7 @@ import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.FileVersionException;
@@ -30,6 +31,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
@@ -215,13 +217,13 @@ public class RobotContainer extends RobotFramework {
                 .onTrue(DrivetrainConstants.drivetrain
                         .runOnce(() -> DrivetrainConstants.drivetrain.seedFieldCentric()));
 
-        driverController.leftBumper()
-                .onTrue(new posePathfindToReef(frc.robot.commands.auton.posePathfindToReef.reefPole.LEFT,
-                        DrivetrainConstants.drivetrain, frontCamera));
+        // driverController.leftBumper()
+        //         .onTrue(new posePathfindToReef(frc.robot.commands.auton.posePathfindToReef.reefPole.LEFT,
+        //                 DrivetrainConstants.drivetrain, frontCamera));
 
-        driverController.rightBumper()
-                .onTrue(new posePathfindToReef(frc.robot.commands.auton.posePathfindToReef.reefPole.RIGHT,
-                        DrivetrainConstants.drivetrain, frontCamera));
+        // driverController.rightBumper()
+        //         .onTrue(new posePathfindToReef(frc.robot.commands.auton.posePathfindToReef.reefPole.RIGHT,
+        //                 DrivetrainConstants.drivetrain, frontCamera));
 
         driverController.y()
                 .whileTrue(new RotateElevatorPID(elevator, () -> ElevatorMap.L2ROTATION));
@@ -241,11 +243,11 @@ public class RobotContainer extends RobotFramework {
         // driverController.y()
         // .onTrue(AutoPathFinder.GotoPath("lineToRight"));
 
-        // driverController.leftBumper()
-        //         .onTrue(new pathfindToReef(reefPole.LEFT, DrivetrainConstants.drivetrain, frontCamera));
+        driverController.leftBumper()
+                .onTrue(new pathfindToReef(reefPole.LEFT, DrivetrainConstants.drivetrain, frontCamera));
 
-        // driverController.rightBumper()
-        //         .onTrue(new pathfindToReef(reefPole.RIGHT, DrivetrainConstants.drivetrain, frontCamera));
+        driverController.rightBumper()
+                .onTrue(new pathfindToReef(reefPole.RIGHT, DrivetrainConstants.drivetrain, frontCamera));
 
     }
 

@@ -66,6 +66,7 @@ public class pathfindToReef extends Command {
   @Override
   public void initialize() {
     tagId = limelight.GetAprilTag();
+    tagId = 18;
     if (tagId == -1) {
       commandFinished = true;
     } else {
