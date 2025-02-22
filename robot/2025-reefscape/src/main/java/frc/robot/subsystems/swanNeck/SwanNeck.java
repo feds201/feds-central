@@ -4,13 +4,17 @@
 
 package frc.robot.subsystems.swanNeck;
 
+import java.util.Map;
 import java.util.function.DoubleSupplier;
+
+import org.dyn4j.geometry.Rotation;
 
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.WidgetType;
 import frc.robot.constants.RobotMap.CurrentLimiter;
@@ -25,9 +29,10 @@ public class SwanNeck extends SubsystemABS {
     private CANrange coralCanRange;
     private CANrange algaeCanRange;
     // private CANcoder gooseNeckAngler;
-    private DoubleSupplier algaeCANrangeVal;
-    private DoubleSupplier coralCANrangeVal;
-    private DoubleSupplier swanNeckAngleValue;
+    private DoubleSupplier algaeCANrangeVal = ()-> 0.0;
+    private DoubleSupplier coralCANrangeVal = ()-> 0.0;
+    private DoubleSupplier swanNeckAngleValue = ()-> 0.0;
+    public DoubleSupplier m_swanNeckSpeed;
     private PIDController pid;
   
 
@@ -46,18 +51,24 @@ public class SwanNeck extends SubsystemABS {
 
         pivotMotor.getConfigurator().apply(IntakeMap.getBreakConfiguration());
 
-        algaeCANrangeVal = () -> algaeCanRange.getDistance().getValueAsDouble();
-        coralCANrangeVal = () -> coralCanRange.getDistance().getValueAsDouble();
-        swanNeckAngleValue = () -> pivotMotor.getPosition().getValueAsDouble();
+      
         tab.addNumber("algae CanRange Value", algaeCANrangeVal);
         tab.addNumber("coral CanRange Value", coralCANrangeVal);
         tab.addNumber("gooseNeck Angle", swanNeckAngleValue);
         tab.add("GooseNeck PID", pid).withWidget(BuiltInWidgets.kPIDController);
+
+           GenericEntry swanNeckSpeedSetter = tab.add("Elevator Speed", 0.0)
+                .withWidget(BuiltInWidgets.kNumberSlider)
+                .withProperties(Map.of("min", 0, "max", .2))
+                .getEntry();
+                m_swanNeckSpeed = () -> swanNeckSpeedSetter.getDouble(0);
     }
 
     @Override
     public void periodic() {
-
+        algaeCANrangeVal = () -> algaeCanRange.getDistance().getValueAsDouble();
+        coralCANrangeVal = () -> coralCanRange.getDistance().getValueAsDouble();
+        swanNeckAngleValue = () -> pivotMotor.getPosition().getValueAsDouble();
     }
 
     @Override
@@ -94,14 +105,19 @@ public class SwanNeck extends SubsystemABS {
         return pid.atSetpoint();
     }
 
-    public void rotateElevatorPID() {
-        double output = pid.calculate(getPivotAngle());
+    public void rotateSwanNeckPID() {
+        double pidOutput = pid.calculate(getPivotRotation().toRadians());
+        double output = pidOutput + IntakeMap.ks + (IntakeMap.kg * Math.cos(getPivotRotation().toRadians()));
         runPivotMotor(output);
     }
 
+    public void resetGooseNeckEncoder() {
+        pivotMotor.setPosition(15);
+    }
 
-    public double getPivotAngle() {
-        return swanNeckAngleValue.getAsDouble();
+
+    public Rotation getPivotRotation() {
+        return new Rotation(pivotMotor.getPosition().getValueAsDouble());
     }
 
     public void lockPivot() {

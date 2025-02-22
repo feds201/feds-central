@@ -86,6 +86,7 @@ public class RobotMap {
         public static final double L2ROTATION = 8.48;
         public static final double L3ROTATION = 15.35;
         public static final double L4ROTATION = 27.65;
+        public static final double GEAR_RATIO = 5.70136;
 
     }
 
@@ -100,6 +101,7 @@ public class RobotMap {
         public static final double CLIMBER_UP_ANGLE = 90;
         public static final double CLIMBER_STOW_ANGLE = 0;
         public static final PIDController climberPID = new PIDController(0, 0, 0);
+        public static final double GEAR_RATIO = 48.6111;
 
         ClimberMap() {
             climberPID.setTolerance(CLIMBER_PID_TOLERANCE);
@@ -153,6 +155,15 @@ public class RobotMap {
 
         public static final int INTAKE_MOTOR_CURRENT_LIMIT = 20;
         public static final int PIVOT_MOTOR_CURRENT_LIMIT = 20;
+        public static final double GEAR_RATIO = 61.3636;
+
+        public static class ReefStops {
+            public static final double L4 = 31.6;
+            public static final double Start = 90;
+            public static final double L1 = 70;  // TODO tune it!
+            public static final double L2 = 35; // TODO tune it!
+            public static final double L3 = L2; // TODO tune it!
+        }
 
         public static class SensorCanId {
             public static final int INTAKE_MOTOR = 71;
@@ -164,10 +175,13 @@ public class RobotMap {
         }
 
         public static PIDController intakePid = new PIDController(0, 0, 0);
+        public static double ks = 0;
+        public static double kg = 0;
 
         public static TalonFXConfiguration getBreakConfiguration() {
             TalonFXConfiguration configuration = new TalonFXConfiguration();
             configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+            configuration.Feedback.RotorToSensorRatio = 60;
             return configuration;
         }
 
