@@ -13,6 +13,7 @@ import 'package:scouting_app/components/MatchSelection.dart';
 import 'package:scouting_app/main.dart';
 
 import '../components/DataBase.dart';
+import '../components/ScoutersList.dart';
 import '../components/nav.dart';
 import 'match.dart';
 import 'match_Selection.dart';
@@ -58,7 +59,6 @@ class MatchPageState extends State<MatchPage> {
 
   @override
   Widget build(BuildContext context) {
-    print(LocalDataBase.getData('Settings.apiKey'));
     return Scaffold(
       drawer: const NavBar(),
       appBar: _buildCustomAppBar(context),
@@ -116,14 +116,53 @@ class MatchPageState extends State<MatchPage> {
             ),
           )),
       centerTitle: true,
-
       elevation: 0, // Remove shadow for a cleaner look
-      actions: const [
-        Icon(
-          Icons.face_6,
-          color: Color.fromARGB(105, 36, 33, 33),
-        )
+      actions: [
+        IconButton(
+          icon: const Icon(
+            Icons.face_6,
+            color: Color.fromARGB(105, 36, 33, 33),
+          ),
+          onPressed: () {
+            _showScouterListDialog(context);
+          },
+        ),
       ],
+    );
+  }
+
+  void _showScouterListDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.transparent,
+          contentPadding: const EdgeInsets.all(0),
+          content: SizedBox(
+            width: MediaQuery.of(context).size.width * 0.90,
+            height: MediaQuery.of(context).size.height * 0.50,
+            child: Container(
+              margin: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 10.0,
+                    spreadRadius: 2.0,
+                    offset: Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: ScouterList(),
+            ),
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+        );
+      },
     );
   }
 
@@ -196,11 +235,13 @@ class MatchPageState extends State<MatchPage> {
               Hive.box('userData').get('position', defaultValue: ''));
       eventKeyController.text = LocalDataBase.getData(Types.eventKey);
       writeJson(data);
-      developer.log(data.toString());
       setState(() {
         matches = readJson();
         isLoading = false;
       });
+
+      print(LocalDataBase.getData(Types.allianceColor));
+      print(LocalDataBase.getData(Types.selectedStation));
     } catch (e) {
       if (kDebugMode) {
         print('Failed to load data');

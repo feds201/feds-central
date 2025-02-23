@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:scouting_app/components/Chips.dart';
-import 'package:scouting_app/components/plugin-tile.dart';
-import 'package:scouting_app/home_page.dart';
-import 'package:scouting_app/main.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'components/Chips.dart';
 import 'components/nav.dart';
+import 'components/plugin-tile.dart';
+import 'home_page.dart';
+import 'main.dart';
 
 class AboutPage extends StatelessWidget {
   const AboutPage({super.key});

@@ -139,37 +139,7 @@ enum TeleType {
   CoralScoringLevel4,
   AlgaeScoringBarge,
   AlgaeScoringProcessor,
-}
-
-class PitRecord {
-  final int teamNumber;
-  final String scouterName;
-  final String eventKey;
-  final String keyStrengths;
-  final String keyWeaknesses;
-  final String defensiveStratigiy;
-  final String defensePlan;
-
-  PitRecord(
-      {required this.teamNumber,
-      required this.scouterName,
-      required this.eventKey,
-      required this.keyStrengths,
-      required this.keyWeaknesses,
-      required this.defensiveStratigiy,
-      required this.defensePlan});
-
-  Map<String, dynamic> toJson() {
-    return {
-      "teamNumber": teamNumber,
-      "scouterName": scouterName,
-      "eventKey": eventKey,
-      "keyStrengths": keyStrengths,
-      "keyWeaknesses": keyWeaknesses,
-      "defensiveStratigiy": defensiveStratigiy,
-      "defensePlan": defensePlan
-    };
-  }
+  Defense,
 }
 
 class Settings {
@@ -235,5 +205,151 @@ class PitDataBase {
 
   static dynamic Export() {
     return _storage;
+  }
+}
+
+class PitRecord {
+  final int teamNumber;
+  final String scouterName;
+  final String eventKey;
+  final String keyStrengths;
+  final String keyWeaknesses;
+  final String defensiveStratigiy;
+  final String defensePlan;
+
+  PitRecord(
+      {required this.teamNumber,
+      required this.scouterName,
+      required this.eventKey,
+      required this.keyStrengths,
+      required this.keyWeaknesses,
+      required this.defensiveStratigiy,
+      required this.defensePlan});
+
+  Map<String, dynamic> toJson() {
+    return {
+      "teamNumber": teamNumber,
+      "scouterName": scouterName,
+      "eventKey": eventKey,
+      "keyStrengths": keyStrengths,
+      "keyWeaknesses": keyWeaknesses,
+      "defensiveStratigiy": defensiveStratigiy,
+      "defensePlan": defensePlan
+    };
+  }
+}
+
+class QualitativeDataBase {
+  static final Map<String, dynamic> _storage = {};
+
+  static void PutData(dynamic key, dynamic value) {
+    if (key == null) {
+      throw Exception('Both keys cannot be null');
+    }
+
+    if (!_storage.containsKey(key.toString())) {
+      _storage[key.toString()] = {};
+    }
+
+    _storage[key.toString()] = value;
+  }
+
+  static dynamic GetData(dynamic key) {
+    return _storage[key.toString()];
+  }
+
+  static void DeleteData(String key) {
+    // print('Deleting $key');
+    _storage.remove(key);
+  }
+
+  static void ClearData() {
+    // print('Clearing all data');
+    Hive.box('qualitative').put('data', null);
+    _storage.clear();
+  }
+
+  static void SaveAll() {
+    Hive.box('qualitative').put('data', jsonEncode(_storage));
+  }
+
+  static void LoadAll() {
+    var dd = Hive.box('qualitative').get('data');
+    if (dd != null) {
+      _storage.addAll(json.decode(dd));
+    }
+  }
+
+  static void PrintAll() {
+    print(_storage);
+  }
+
+  static List<String> GetRecorderTeam() {
+    List<String> teams = [];
+    _storage.forEach((key, value) {
+      teams.add(value['teamNumber']);
+    });
+    return teams;
+  }
+
+  static dynamic Export() {
+    return _storage;
+  }
+}
+
+class QualitativeRecord {
+  final String scouterName;
+  final String matchKey;
+  final String q1;
+  final String q2;
+  final String q3;
+  final String q4;
+
+  QualitativeRecord(
+      {required this.scouterName,
+      required this.matchKey,
+      required this.q1,
+      required this.q2,
+      required this.q3,
+      required this.q4});
+
+  Map<String, dynamic> toJson() {
+    return {
+      "Scouter_Name": scouterName,
+      "Match_Key": matchKey,
+      "Q1": q1,
+      "Q2": q2,
+      "Q3": q3,
+      "Q4": q4,
+    };
+  }
+}
+
+class Team {
+  final int teamNumber;
+  final String nickname;
+  final String? city;
+  final String? stateProv;
+  final String? country;
+  final String? website;
+
+  Team({
+    required this.teamNumber,
+    required this.nickname,
+    this.city,
+    this.stateProv,
+    this.country,
+    this.website,
+  });
+
+  factory Team.fromJson(Map<String, dynamic> json) {
+    return Team(
+      teamNumber: json['team_number'],
+      nickname: json['nickname'],
+      city: json['city'],
+      stateProv: json['state_prov'],
+      country: json['country'],
+      website: json['website'],
+    );
   }
 }

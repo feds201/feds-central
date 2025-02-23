@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:scouting_app/Qualitative/qualitative.dart';
 
 import 'Experiment/ExpStateManager.dart';
 import 'Match_Pages/match_page.dart';
@@ -95,7 +96,24 @@ class _HomePageState extends State<HomePage>
               const SizedBox(height: 5),
               buildButton(
                 context: context,
-                text: 'Start a match',
+                text: 'Qualitative Scouting',
+                color: const Color.fromARGB(192, 241, 131, 131),
+                borderColor: const Color.fromARGB(255, 255, 0, 0),
+                icon: Icons.question_answer_outlined,
+                textColor: const Color.fromARGB(255, 172, 18, 18),
+                iconColor: const Color.fromARGB(255, 172, 18, 18),
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const Qualitative(),
+                          fullscreenDialog: true));
+                },
+              ),
+              const SizedBox(height: 5),
+              buildButton(
+                context: context,
+                text: 'Match Scouting',
                 color: Colors.green.shade100,
                 borderColor: Colors.green.shade800,
                 icon: Icons.play_arrow_outlined,

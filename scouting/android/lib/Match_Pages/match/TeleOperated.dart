@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:scouting_app/components/CheckBox.dart';
 import 'package:scouting_app/components/CommentBox.dart';
 import 'package:scouting_app/components/CounterShelf.dart';
 
@@ -18,6 +19,7 @@ class _TeleOperatedState extends State<TeleOperated> {
   late int coralScoreL4;
   late int algaeScoringProcessor;
   late int algaeScoringBarge;
+  late bool defense;
 
   @override
   void initState() {
@@ -30,6 +32,7 @@ class _TeleOperatedState extends State<TeleOperated> {
     algaeScoringProcessor =
         LocalDataBase.getData(TeleType.AlgaeScoringProcessor) ?? 0;
     algaeScoringBarge = LocalDataBase.getData(TeleType.AlgaeScoringBarge) ?? 0;
+    defense = LocalDataBase.getData(TeleType.Defense) ?? false;
   }
 
   void UpdateData() {
@@ -40,12 +43,12 @@ class _TeleOperatedState extends State<TeleOperated> {
     LocalDataBase.putData(
         TeleType.AlgaeScoringProcessor, algaeScoringProcessor);
     LocalDataBase.putData(TeleType.AlgaeScoringBarge, algaeScoringBarge);
+    LocalDataBase.putData(TeleType.Defense, defense);
   }
 
   @override
   Widget build(BuildContext context) {
     print(LocalDataBase.getData('Settings.apiKey'));
-    print("Hello tELEoP");
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -55,38 +58,20 @@ class _TeleOperatedState extends State<TeleOperated> {
                 CounterSettings(
                   (int value) {
                     setState(() {
-                      coralScoreL1++;
+                      coralScoreL4++;
                     });
                     UpdateData();
                   },
                   (int value) {
                     setState(() {
-                      coralScoreL1--;
+                      coralScoreL4--;
                     });
                     UpdateData();
                   },
                   icon: Icons.cyclone,
-                  number: coralScoreL1,
-                  counterText: "Level 1",
-                  color: Colors.green,
-                ),
-                CounterSettings(
-                  (int value) {
-                    setState(() {
-                      coralScoreL2++;
-                    });
-                    UpdateData();
-                  },
-                  (int value) {
-                    setState(() {
-                      coralScoreL2--;
-                    });
-                    UpdateData();
-                  },
-                  icon: Icons.cyclone,
-                  number: coralScoreL2,
-                  counterText: "Level 2",
-                  color: Colors.yellow,
+                  number: coralScoreL4,
+                  counterText: "Level 4",
+                  color: Colors.red,
                 ),
                 CounterSettings(
                   (int value) {
@@ -109,20 +94,38 @@ class _TeleOperatedState extends State<TeleOperated> {
                 CounterSettings(
                   (int value) {
                     setState(() {
-                      coralScoreL4++;
+                      coralScoreL2++;
                     });
                     UpdateData();
                   },
                   (int value) {
                     setState(() {
-                      coralScoreL4--;
+                      coralScoreL2--;
                     });
                     UpdateData();
                   },
                   icon: Icons.cyclone,
-                  number: coralScoreL4,
-                  counterText: "Level 4",
-                  color: Colors.red,
+                  number: coralScoreL2,
+                  counterText: "Level 2",
+                  color: Colors.yellow,
+                ),
+                CounterSettings(
+                  (int value) {
+                    setState(() {
+                      coralScoreL1++;
+                    });
+                    UpdateData();
+                  },
+                  (int value) {
+                    setState(() {
+                      coralScoreL1--;
+                    });
+                    UpdateData();
+                  },
+                  icon: Icons.cyclone,
+                  number: coralScoreL1,
+                  counterText: "Level 1",
+                  color: Colors.green,
                 ),
               ],
               const Icon(Icons.emoji_nature_outlined)),
@@ -167,6 +170,12 @@ class _TeleOperatedState extends State<TeleOperated> {
                 ),
               ],
               const Icon(Icons.add_comment)),
+          buildCheckBox("Defense", defense, (bool value) {
+            setState(() {
+              defense = value;
+            });
+            UpdateData();
+          }),
         ],
       ),
     );

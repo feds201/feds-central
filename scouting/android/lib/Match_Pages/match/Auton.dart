@@ -67,7 +67,6 @@ class AutonState extends State<Auton> {
       allianceColor = LocalDataBase.getData(Types.allianceColor) ?? "Null";
     });
     print(LocalDataBase.getData('Settings.apiKey'));
-    print("Hello Auton");
     return Container(child: _buildAuto(context));
   }
 
@@ -83,7 +82,7 @@ class AutonState extends State<Auton> {
               print('Team Info START button pressed');
             },
           ),
-          buildCheckBoxFull("Left Barge", left_barge, (bool value) {
+          buildCheckBoxFull("Leave", left_barge, (bool value) {
             setState(() {
               left_barge = value;
             });
@@ -95,38 +94,20 @@ class AutonState extends State<Auton> {
                 CounterSettings(
                   (int value) {
                     setState(() {
-                      coralScoreL1++;
+                      coralScoreL4++;
                     });
                     UpdateData();
                   },
                   (int value) {
                     setState(() {
-                      coralScoreL1--;
+                      coralScoreL4--;
                     });
                     UpdateData();
                   },
                   icon: Icons.cyclone,
-                  number: coralScoreL1,
-                  counterText: "Level 1",
-                  color: Colors.green,
-                ),
-                CounterSettings(
-                  (int value) {
-                    setState(() {
-                      coralScoreL2++;
-                    });
-                    UpdateData();
-                  },
-                  (int value) {
-                    setState(() {
-                      coralScoreL2--;
-                    });
-                    UpdateData();
-                  },
-                  icon: Icons.cyclone,
-                  number: coralScoreL2,
-                  counterText: "Level 2",
-                  color: Colors.yellow,
+                  number: coralScoreL4,
+                  counterText: "Level 4",
+                  color: Colors.red,
                 ),
                 CounterSettings(
                   (int value) {
@@ -149,20 +130,38 @@ class AutonState extends State<Auton> {
                 CounterSettings(
                   (int value) {
                     setState(() {
-                      coralScoreL4++;
+                      coralScoreL2++;
                     });
                     UpdateData();
                   },
                   (int value) {
                     setState(() {
-                      coralScoreL4--;
+                      coralScoreL2--;
                     });
                     UpdateData();
                   },
                   icon: Icons.cyclone,
-                  number: coralScoreL4,
-                  counterText: "Level 4",
-                  color: Colors.red,
+                  number: coralScoreL2,
+                  counterText: "Level 2",
+                  color: Colors.yellow,
+                ),
+                CounterSettings(
+                  (int value) {
+                    setState(() {
+                      coralScoreL1++;
+                    });
+                    UpdateData();
+                  },
+                  (int value) {
+                    setState(() {
+                      coralScoreL1--;
+                    });
+                    UpdateData();
+                  },
+                  icon: Icons.cyclone,
+                  number: coralScoreL1,
+                  counterText: "Level 1",
+                  color: Colors.green,
                 ),
               ],
               const Icon(Icons.emoji_nature_outlined)),

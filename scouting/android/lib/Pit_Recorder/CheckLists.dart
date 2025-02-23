@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:scouting_app/components/CameraComposit.dart';
 import 'package:scouting_app/components/DataBase.dart';
 import 'package:scouting_app/components/TextBox.dart';
-import 'Pit_Recorder.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:confetti/confetti.dart';

@@ -16,7 +16,7 @@ class Match extends StatefulWidget {
 }
 
 class MatchState extends State<Match> {
-  int _selectedIndex = 0;
+  int _selectedIndex = 1;
   String _allianceColor = "";
   String _selectedStation = "";
   String _team = "";
@@ -51,77 +51,74 @@ class MatchState extends State<Match> {
         canPop: false,
         child: Scaffold(
           appBar: AppBar(
-        leading:  Container(
-          margin: const EdgeInsets.only(left: 20, top: 15),
-            child: Text(_selectedStation,
-            style: const TextStyle(
-              fontSize: 20,
-
-            ))),
-        title:
-        ShaderMask(
-            shaderCallback: (bounds) => const LinearGradient(
-              colors: [Colors.red, Colors.blue],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ).createShader(bounds),
-            child: Text(
-              _selectedIndex == 0
-                  ? 'Autonomous'
-                  : _selectedIndex == 1
-                      ? 'Tele Operated'
-                      : 'End Game',
-              style: GoogleFonts.museoModerno(
-                fontSize: 30,
-                fontWeight: FontWeight.w500,
-                color: Colors.white,
-              ),
-
-            )),
-        centerTitle: true,
-        automaticallyImplyLeading: false,
-        actions: <Widget>[
-
-          const SizedBox(width: 10),
-          MaterialButton(
-              onPressed: () => {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
+            leading: Container(
+                margin: const EdgeInsets.only(left: 20, top: 15),
+                child: Text(_selectedStation,
+                    style: const TextStyle(
+                      fontSize: 20,
+                    ))),
+            title: ShaderMask(
+                shaderCallback: (bounds) => const LinearGradient(
+                      colors: [Colors.red, Colors.blue],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ).createShader(bounds),
+                child: Text(
+                  _selectedIndex == 0
+                      ? 'Autonomous'
+                      : _selectedIndex == 1
+                          ? 'Tele Operated'
+                          : 'End Game',
+                  style: GoogleFonts.museoModerno(
+                    fontSize: 30,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.white,
+                  ),
+                )),
+            centerTitle: true,
+            automaticallyImplyLeading: false,
+            actions: <Widget>[
+              const SizedBox(width: 10),
+              MaterialButton(
+                  onPressed: () => {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
                               builder: (context) => const Qrgenerator(),
                               fullscreenDialog: true),
-                    ).then((value) => print('Returned to Match Page'))
-                  },
-              child: const Icon(
-                Icons.check_rounded,
-                size: 30,
-              )),
-        ],
-      ),
-      body: _match(context, _selectedIndex),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.auto_awesome),
-            label: 'Auto',
+                        ).then((value) => print('Returned to Match Page'))
+                      },
+                  child: const Icon(
+                    Icons.check_rounded,
+                    size: 30,
+                  )),
+            ],
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.timer),
-            label: 'Teleop',
+          body: _match(context, _selectedIndex),
+          bottomNavigationBar: BottomNavigationBar(
+            items: const <BottomNavigationBarItem>[
+              BottomNavigationBarItem(
+                icon: Icon(Icons.auto_awesome),
+                label: 'Auto',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.timer),
+                label: 'Teleop',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.gamepad),
+                label: 'End Game',
+              ),
+            ],
+            currentIndex: _selectedIndex,
+            selectedItemColor:
+                _allianceColor == "Red" ? Colors.red : Colors.blue,
+            onTap: (int index) {
+              setState(() {
+                _selectedIndex = index;
+              });
+            },
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.gamepad),
-            label: 'End Game',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: _allianceColor == "Red" ? Colors.red : Colors.blue,
-        onTap: (int index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
-      ),
         ));
   }
 

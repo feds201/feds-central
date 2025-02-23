@@ -45,7 +45,6 @@ class _EndGameState extends State<EndGame> {
   @override
   Widget build(BuildContext context) {
     print(LocalDataBase.getData('Settings.apiKey'));
-    print("Hello EndGame");
     return SingleChildScrollView(
       child: Column(
         children: [

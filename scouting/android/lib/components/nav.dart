@@ -33,7 +33,7 @@ class NavBar extends StatelessWidget {
               ),
             ),
             child: SizedBox(
-              height: 250,
+              height: 300,
               width: double.infinity,
               // This makes the width of the header fill the drawer
               child: Column(
@@ -48,7 +48,7 @@ class NavBar extends StatelessWidget {
                         width: 50,
                         fit: BoxFit.fill),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 10),
                   Text(
                     'FEDS 201',
                     style: GoogleFonts.museoModerno(
@@ -62,7 +62,7 @@ class NavBar extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Scout Ops v.2.0',
+                    'Scout Ops v.2.1',
                     style: GoogleFonts.museoModerno(
                       fontSize: 14,
                       color: isdarkmode()
@@ -72,7 +72,6 @@ class NavBar extends StatelessWidget {
                       fontWeight: FontWeight.w400,
                     ),
                   ),
-                  const SizedBox(height: 20),
                 ],
               ),
             ),

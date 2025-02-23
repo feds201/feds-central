@@ -303,31 +303,4 @@ bool isScouted(int teamNumber, List<int> recorderTeam) {
   return recorderTeam.contains(teamNumber);
 }
 
-class Team {
-  final int teamNumber;
-  final String nickname;
-  final String? city;
-  final String? stateProv;
-  final String? country;
-  final String? website;
 
-  Team({
-    required this.teamNumber,
-    required this.nickname,
-    this.city,
-    this.stateProv,
-    this.country,
-    this.website,
-  });
-
-  factory Team.fromJson(Map<String, dynamic> json) {
-    return Team(
-      teamNumber: json['team_number'],
-      nickname: json['nickname'],
-      city: json['city'],
-      stateProv: json['state_prov'],
-      country: json['country'],
-      website: json['website'],
-    );
-  }
-}

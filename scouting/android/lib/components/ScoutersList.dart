@@ -3,13 +3,17 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 
 class ScouterList extends StatefulWidget {
+  const ScouterList({super.key});
+
   @override
   _ScouterListState createState() => _ScouterListState();
 }
 
 class _ScouterListState extends State<ScouterList> {
-  List<String> _scouterNames = Hive.box('userData').get('scouterNames', defaultValue: []);
-  String _selectedChip = Hive.box('settings').get('deviceName', defaultValue: '');
+  final List<String> _scouterNames =
+      Hive.box('userData').get('scouterNames', defaultValue: []);
+  String _selectedChip =
+      Hive.box('settings').get('deviceName', defaultValue: '');
 
   void _addScouter() {
     String newName = '';
@@ -17,11 +21,15 @@ class _ScouterListState extends State<ScouterList> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
           backgroundColor: Colors.white,
           title: Text(
             'Add Scouter',
-            style: GoogleFonts.museoModerno(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black87),
+            style: GoogleFonts.museoModerno(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87),
           ),
           content: TextField(
             onChanged: (value) => newName = value,
@@ -29,7 +37,8 @@ class _ScouterListState extends State<ScouterList> {
             decoration: InputDecoration(
               hintText: "Enter name",
               hintStyle: TextStyle(color: Colors.grey[600]),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              border:
+                  OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
               filled: true,
               fillColor: Colors.grey[100],
             ),
@@ -37,7 +46,8 @@ class _ScouterListState extends State<ScouterList> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text('Cancel', style: TextStyle(color: Colors.redAccent, fontSize: 16)),
+              child: Text('Cancel',
+                  style: TextStyle(color: Colors.redAccent, fontSize: 16)),
             ),
             ElevatedButton(
               onPressed: () {
@@ -52,7 +62,8 @@ class _ScouterListState extends State<ScouterList> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blueAccent,
                 foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
                 padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               ),
               child: Text('Add', style: TextStyle(fontSize: 16)),
@@ -67,7 +78,9 @@ class _ScouterListState extends State<ScouterList> {
     setState(() {
       _scouterNames.remove(name);
       Hive.box('userData').put('scouterNames', _scouterNames);
-      if (_selectedChip == name) _selectedChip = ''; // Reset selection if deleted
+      if (_selectedChip == name) {
+        _selectedChip = ''; // Reset selection if deleted
+      }
     });
   }
 
@@ -86,7 +99,10 @@ class _ScouterListState extends State<ScouterList> {
           children: [
             Text(
               'Scouters Account',
-              style: GoogleFonts.museoModerno(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black87),
+              style: GoogleFonts.museoModerno(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87),
             ),
             const SizedBox(height: 12),
             Wrap(
@@ -94,7 +110,12 @@ class _ScouterListState extends State<ScouterList> {
               runSpacing: 8,
               children: _scouterNames.map((name) {
                 return ChoiceChip(
-                  label: Text(name, style: GoogleFonts.museoModerno(fontSize: 16, color: _selectedChip == name ? Colors.white : Colors.black87)),
+                  label: Text(name,
+                      style: GoogleFonts.museoModerno(
+                          fontSize: 16,
+                          color: _selectedChip == name
+                              ? Colors.white
+                              : Colors.black87)),
                   selected: _selectedChip == name,
                   onSelected: (bool selected) {
                     setState(() {
@@ -104,8 +125,11 @@ class _ScouterListState extends State<ScouterList> {
                   },
                   selectedColor: Colors.blueAccent,
                   backgroundColor: Colors.grey[100],
-                  labelPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: BorderSide(color: Colors.blueAccent, width: 1.2)),
+                  labelPadding:
+                      EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      side: BorderSide(color: Colors.blueAccent, width: 1.2)),
                   elevation: _selectedChip == name ? 4 : 0,
                   avatar: _selectedChip == name
                       ? Icon(Icons.check_circle, color: Colors.white, size: 20)
@@ -118,10 +142,12 @@ class _ScouterListState extends State<ScouterList> {
               child: ElevatedButton.icon(
                 onPressed: _addScouter,
                 icon: Icon(Icons.person_add, color: Colors.white),
-                label: Text('Add Scouter', style: TextStyle(color: Colors.white, fontSize: 16)),
+                label: Text('Add Scouter',
+                    style: TextStyle(color: Colors.white, fontSize: 16)),
                 style: ElevatedButton.styleFrom(
                   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
                   backgroundColor: Colors.blueAccent,
                   shadowColor: Colors.blueAccent.withOpacity(0.3),
                   elevation: 4,

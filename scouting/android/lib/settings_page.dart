@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:scouting_app/components/ScoutersList';
 
 import 'components/DataBase.dart';
 import 'components/MatchSelection.dart';
+import 'components/ScoutersList.dart';
 import 'components/localmatchLoader.dart';
 import 'components/nav.dart';
 import 'components/qr_code_scanner_page.dart';
