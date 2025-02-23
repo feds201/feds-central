@@ -43,6 +43,8 @@ import frc.robot.commands.climber.RaiseClimberBasic;
 import frc.robot.commands.lift.RotateElevatorBasic;
 import frc.robot.commands.lift.RotateElevatorPID;
 import frc.robot.commands.swanNeck.RaiseSwanNeck;
+import frc.robot.commands.swanNeck.RaiseSwanNeckPID;
+import frc.robot.commands.swanNeck.SpinSwanWheels;
 import frc.robot.commands.swerve.DriveForwardCommand;
 import frc.robot.commands.swerve.GameNavigator;
 import frc.robot.constants.*;
@@ -238,13 +240,11 @@ public class RobotContainer extends RobotFramework {
         driverController.povUp()
         .whileTrue(new RaiseClimberBasic(climber.m_climberSpeed , climber));
 
-        driverController.leftTrigger().whileTrue(new RaiseSwanNeck(swanNeck, swanNeck.m_swanNeckSpeed));
+        // driverController.leftTrigger().whileTrue(new RaiseSwanNeck(swanNeck, swanNeck.m_swanNeckPivotSpeed));
+        driverController.leftTrigger().whileTrue(new RaiseSwanNeckPID(()-> .1, swanNeck));
 
-        // driverController.b()
-        // .onTrue(AutoPathFinder.GotoPath("Pathto1"));
+        driverController.rightTrigger().whileTrue(new SpinSwanWheels(swanNeck, swanNeck.m_swanNeckWheelSpeed));
 
-        // driverController.y()
-        // .onTrue(AutoPathFinder.GotoPath("lineToRight"));
 
         driverController.leftBumper()
                 .onTrue(new pathfindToReef(reefPole.LEFT, DrivetrainConstants.drivetrain, frontCamera));

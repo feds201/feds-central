@@ -10,30 +10,36 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.swanNeck.SwanNeck;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class RaiseSwanNeck extends Command {
-  SwanNeck m_swanNeck;
-  DoubleSupplier m_speed;
-  /** Creates a new raiseSwanNeck. */
-  public RaiseSwanNeck(SwanNeck swanNeck, DoubleSupplier speed) {
-    m_swanNeck = swanNeck;
-    m_speed = speed;
-    addRequirements(m_swanNeck);
+public class RaiseSwanNeckPID extends Command {
+  DoubleSupplier m_setpoint;
+  SwanNeck m_gooseNeck;
+  /** Rotates SwanNeck Subsystem Using PID
+   * 
+   * @param setpoint The setpoint of the Gooseneck In rotations, with horizontal being 0.
+   */
+  public RaiseSwanNeckPID(DoubleSupplier setpoint, SwanNeck gooseNeck) {
+    m_gooseNeck = gooseNeck;
+    m_setpoint = setpoint;
+
+    addRequirements(m_gooseNeck);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    m_gooseNeck.setPIDTarget(m_setpoint.getAsDouble());
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_swanNeck.setPivotSpeed(m_speed.getAsDouble());
+    m_gooseNeck.rotateSwanNeckPID();
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_swanNeck.setPivotSpeed(0);
+    m_gooseNeck.setPivotSpeed(0);
   }
 
   // Returns true when the command should end.

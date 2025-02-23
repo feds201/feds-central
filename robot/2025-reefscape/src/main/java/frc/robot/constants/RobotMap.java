@@ -153,9 +153,9 @@ public class RobotMap {
 
     public static class IntakeMap {
 
-        public static final int INTAKE_MOTOR_CURRENT_LIMIT = 20;
-        public static final int PIVOT_MOTOR_CURRENT_LIMIT = 20;
-        public static final double GEAR_RATIO = 61.3636;
+        public static final int INTAKE_MOTOR_CURRENT_LIMIT = 40;
+        public static final int PIVOT_MOTOR_CURRENT_LIMIT = 40;
+        public static final double GEAR_RATIO = 55.22727273;
 
         public static class ReefStops {
             public static final double L4 = 31.6;
@@ -166,22 +166,22 @@ public class RobotMap {
         }
 
         public static class SensorCanId {
-            public static final int INTAKE_MOTOR = 71;
-            public static final int PIVOT_MOTOR = 72;
+            public static final int INTAKE_MOTOR = 59;
+            public static final int PIVOT_MOTOR = 58;
             public static final int CORAL_CANRANGE = 100;
             public static final int ALGAE_CANRANGE = 100;
             public static final int INTAKE_ENCODER = 73;
 
         }
 
-        public static PIDController intakePid = new PIDController(0, 0, 0);
-        public static double ks = 0;
-        public static double kg = 0;
+        public static PIDController intakePid = new PIDController(5, 0, 0);
+        public static final double ks = 0.0075;
+        public static final double kg = 0.015;
 
-        public static TalonFXConfiguration getBreakConfiguration() {
+        public static TalonFXConfiguration getBreakConfigurationGooseNeck() {
             TalonFXConfiguration configuration = new TalonFXConfiguration();
             configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-            configuration.Feedback.RotorToSensorRatio = 60;
+            configuration.Feedback.SensorToMechanismRatio = 55.22727273;
             return configuration;
         }
 
