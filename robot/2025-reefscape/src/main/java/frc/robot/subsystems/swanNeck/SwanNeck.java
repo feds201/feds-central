@@ -18,6 +18,7 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.WidgetType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.constants.RobotMap;
 import frc.robot.constants.RobotMap.CurrentLimiter;
 import frc.robot.constants.RobotMap.IntakeMap;
 import frc.robot.utils.SubsystemABS;
@@ -47,9 +48,10 @@ public class SwanNeck extends SubsystemABS {
         coralCanRange = new CANrange(IntakeMap.SensorCanId.CORAL_CANRANGE);
         algaeCanRange = new CANrange(IntakeMap.SensorCanId.ALGAE_CANRANGE);
         pid = IntakeMap.intakePid;
+        pid.setTolerance(.003);
     
         // gooseNeckAngler = new CANcoder(IntakeMap.SensorCanId.INTAKE_ENCODER);
-        
+        SmartDashboard.putNumber("L4 Positition", RobotMap.ElevatorMap.L4ROTATION);
 
         pivotMotor.getConfigurator().apply(IntakeMap.getBreakConfigurationGooseNeck());
         algaeCANrangeVal = () -> algaeCanRange.getDistance().getValueAsDouble();
@@ -124,7 +126,7 @@ public class SwanNeck extends SubsystemABS {
         } else {
             pidOutput -= IntakeMap.ks;
         }
-        double output = pidOutput + (IntakeMap.kg * Math.cos(getPivotPosition() * 2 * Math.PI));
+        double output = pidOutput + (IntakeMap.kg * Math.cos((getPivotPosition() + .223) * 2 * Math.PI));
         
         setPivotSpeed(output);
     }
@@ -137,6 +139,13 @@ public class SwanNeck extends SubsystemABS {
         pivotMotor.setPosition(.2);
     }
 
+    public boolean getCoralLoaded(){
+        return coralCanRange.getDistance().getValueAsDouble() <= .14;
+    }
+
+    public boolean getCoralLoadedOpposite(){
+        return !(coralCanRange.getDistance().getValueAsDouble() <= .14);
+    }
 
 
     public double getPivotPosition() {

@@ -156,19 +156,22 @@ public class RobotMap {
         public static final int INTAKE_MOTOR_CURRENT_LIMIT = 40;
         public static final int PIVOT_MOTOR_CURRENT_LIMIT = 40;
         public static final double GEAR_RATIO = 55.22727273;
+        public static final double WHEEL_SPEED_INTAKE = -0.2;
+        public static final double WHEEL_SPEED_SCORE = -0.4;
 
         public static class ReefStops {
-            public static final double L4 = 31.6;
-            public static final double Start = 90;
-            public static final double L1 = 70;  // TODO tune it!
-            public static final double L2 = 35; // TODO tune it!
-            public static final double L3 = L2; // TODO tune it!
+            public static final double L4ANGLE = .04;
+            public static final double STARTANGLE = .00;
+            public static final double SAFEANGLE = .023;
+            public static final double L1ANGLE = .04;  // TODO tune it!
+            public static final double L2ANGLE = .042; // TODO tune it!
+            public static final double L3ANGLE = .042; // TODO tune it!
         }
 
         public static class SensorCanId {
             public static final int INTAKE_MOTOR = 59;
             public static final int PIVOT_MOTOR = 58;
-            public static final int CORAL_CANRANGE = 100;
+            public static final int CORAL_CANRANGE = 57;
             public static final int ALGAE_CANRANGE = 100;
             public static final int INTAKE_ENCODER = 73;
 
