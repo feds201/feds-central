@@ -116,6 +116,10 @@ public class Lift extends SubsystemABS {
         return m_encoderValue.getAsDouble() * ElevatorMap.ELEVATOR_CIRCUMFERENCE;
     }
 
+    public void zeroElevator(){
+        elevatorMotorLeader.setPosition(0);
+    }
+
     @Override
     public boolean isHealthy() {
         // TODO Auto-generated method stub

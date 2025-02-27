@@ -154,7 +154,7 @@ public class RobotContainer extends RobotFramework {
 
         teleOpChooser = new SendableChooser<>();
         setupDrivetrain();
-        autonChooser = AutoBuilder.buildAutoChooser();
+       
         DrivetrainConstants.drivetrain.setDefaultCommand(new Command() {
 
             {
@@ -172,7 +172,9 @@ public class RobotContainer extends RobotFramework {
         });
 
         setupNamedCommands();
+        autonChooser = AutoBuilder.buildAutoChooser();
         setupPaths();
+        SmartDashboard.putData(autonChooser);
         configureBindings();
 
         telemetry = new Telemetry(SafetyMap.kMaxSpeed);
@@ -265,6 +267,8 @@ public class RobotContainer extends RobotFramework {
 
         driverController.povRight()
                 .onTrue(new InstantCommand(()-> CommandScheduler.getInstance().cancelAll()));
+
+        driverController.b().onTrue(new InstantCommand(()-> elevator.zeroElevator()));
         
         driverController.start()
                 .onTrue(DrivetrainConstants.drivetrain
@@ -320,6 +324,8 @@ public class RobotContainer extends RobotFramework {
     private void setupNamedCommands() {
         NamedCommands.registerCommand("Field Relative",
                 DrivetrainConstants.drivetrain.runOnce(() -> DrivetrainConstants.drivetrain.seedFieldCentric()));
+        NamedCommands.registerCommand("L4", new PlaceLFour(elevator, swanNeck));
+        NamedCommands.registerCommand("Feed", new IntakeCoralSequence(swanNeck));
     }
 
     public void setupPaths() {

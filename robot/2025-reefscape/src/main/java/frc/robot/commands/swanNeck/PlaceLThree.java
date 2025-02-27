@@ -6,6 +6,7 @@ package frc.robot.commands.swanNeck;
 
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.auton.MoveBack;
@@ -39,7 +40,7 @@ public class PlaceLThree extends SequentialCommandGroup {
     new ParallelDeadlineGroup(new WaitCommand(1), new RotateElevatorPID(m_elevator, ()-> ElevatorMap.L3ROTATION), 
     new SpinSwanWheels(m_SwanNeck, ()-> IntakeMap.WHEEL_SPEED_SCORE)),
     new RaiseSwanNeckPID(()-> IntakeMap.ReefStops.SAFEANGLE, m_SwanNeck).until(m_SwanNeck :: pidAtSetpoint),
-    new ParallelDeadlineGroup(new WaitCommand(0.25), new MoveBack(DrivetrainConstants.drivetrain)),
+    // new ParallelRaceGroup(new WaitCommand(0.35), new MoveBack(DrivetrainConstants.drivetrain)),
     new RotateElevatorDownPID(m_elevator).until(m_elevator :: pidDownAtSetpoint)
     
      );

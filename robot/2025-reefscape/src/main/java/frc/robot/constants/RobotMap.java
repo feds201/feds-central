@@ -75,17 +75,17 @@ public class RobotMap {
         public static final int ELEVATOR_MOTOR2 = 62;
         public static final int ELEVATOR_SPEED = 0;
         public static final int EVEVATOR_ENCODER = 63;
-        public static final double ELEVATOR_P = 0.03;
+        public static final double ELEVATOR_P = 0.04;
         public static final double ELEVATOR_I = 0;
         public static final double ELEVATOR_D = 0;
         public static final double ELEVATOR_F = 0.06;
         public static final double PARENT_GEAR_RADIUS = Units.inchesToMeters(2.5);
         public static final double ELEVATOR_CIRCUMFERENCE = 2 * Math.PI * PARENT_GEAR_RADIUS;
         public static final double ELEVATOR_CURRENT_LIMIT = 40;
-        public static final double L1ROTATION = 6.24; //tune
-        public static final double L2ROTATION = 9.48;
-        public static final double L3ROTATION = 15.35;
-        public static final double L4ROTATION = 29.65;
+        public static final double L1ROTATION = 5.34; //tune
+        public static final double L2ROTATION = 8.58;
+        public static final double L3ROTATION = 15.15;
+        public static final double L4ROTATION = 28.85;
         public static final double GEAR_RATIO = 5.70136;
 
     }
@@ -161,12 +161,12 @@ public class RobotMap {
         public static final double L1_SPEED_SCORE = -0.3;
 
         public static class ReefStops {
-            public static final double L4ANGLE = .088;
+            public static final double L4ANGLE = .12;
             public static final double STARTANGLE = .00;
-            public static final double SAFEANGLE = .0122;
-            public static final double L1ANGLE = .04;  // TODO tune it!
-            public static final double L2ANGLE = .042; // TODO tune it!
-            public static final double L3ANGLE = .042; // TODO tune it!
+            public static final double SAFEANGLE = .0444;
+            public static final double L1ANGLE = .0722;  // TODO tune it!
+            public static final double L2ANGLE = .0722; // TODO tune it!
+            public static final double L3ANGLE = .0722; // TODO tune it!
           
         }
 
