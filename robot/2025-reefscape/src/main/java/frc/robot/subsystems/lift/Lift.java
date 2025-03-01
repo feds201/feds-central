@@ -27,6 +27,7 @@ public class Lift extends SubsystemABS {
     // private final ShuffleboardTab tab = Shuffleboard.getTab("Elevator");
     private final PIDController pid;
     private final PIDController pidDown;
+    private final PIDController pidL3;
 
     public Lift(Subsystems subsystem, String name) {
         super(subsystem, name);
@@ -47,9 +48,13 @@ public class Lift extends SubsystemABS {
         pid = new PIDController(RobotMap.ElevatorMap.ELEVATOR_P, RobotMap.ElevatorMap.ELEVATOR_I, RobotMap.ElevatorMap.ELEVATOR_D);
         pid.setTolerance(.2);
 
-        pidDown = new PIDController(0.005, 0, 0);
+        pidDown = new PIDController(0.008, 0, 0);
         pidDown.setTolerance(.2);
         pidDown.setSetpoint(1);
+
+        pidL3 = new PIDController(0.008, 0, 0);
+        pidL3.setTolerance(0.2);
+        pidL3.setSetpoint(RobotMap.ElevatorMap.L3ROTATION);
 
         tab.add("Elevator PID", pid)
             .withWidget(BuiltInWidgets.kPIDController);
@@ -106,6 +111,15 @@ public class Lift extends SubsystemABS {
 
     public boolean pidDownAtSetpoint(){
         return pidDown.atSetpoint();
+    }
+
+    public void rotateElevatorPIDL3(){
+        double output = pidL3.calculate(getEncoderValue());
+        setMotorSpeed(output);
+    }
+
+    public boolean pidL3AtSetpoint(){
+        return pidL3.atSetpoint();
     }
 
     public double getEncoderValue() {

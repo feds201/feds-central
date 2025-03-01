@@ -17,9 +17,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "16RightToSource"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "16RightToSource"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ElevatorDown"
+                }
+              }
+            ]
           }
         },
         {
@@ -41,9 +54,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "66RightToSource"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "66RightToSource"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ElevatorDown"
+                }
+              }
+            ]
           }
         },
         {

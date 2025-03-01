@@ -34,7 +34,8 @@ public class RobotFramework {
          */
         public Command ConfigureHologenicDrive(CommandXboxController driverController,
                         SwerveSubsystem swerveSubsystem, Lift elevator){
-                                
+                                SmartDashboard.putNumber("hologenic elevator motor position", elevator.getEncoderValueFromMotor());
+                                SmartDashboard.putNumber("hologenic doublesupplier elevator position", elevator.getEncoderValue());
                                 if(elevator.getEncoderValueFromMotor() > RobotMap.ElevatorMap.L2ROTATION -1){
                                         return new ParallelCommandGroup(
                 DrivetrainConstants.drivetrain.applyRequest(() -> DrivetrainConstants.drive

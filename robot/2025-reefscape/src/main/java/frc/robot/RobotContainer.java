@@ -53,6 +53,7 @@ import frc.robot.commands.swanNeck.SpinSwanWheels;
 import frc.robot.commands.swanNeck.IntakeCoralSequence;
 import frc.robot.commands.swanNeck.PlaceLFour;
 import frc.robot.commands.swanNeck.PlaceLOne;
+import frc.robot.commands.swerve.ConfigureHologenicDrive;
 import frc.robot.commands.swerve.DriveForwardCommand;
 import frc.robot.commands.swerve.GameNavigator;
 import frc.robot.constants.*;
@@ -97,6 +98,7 @@ public class RobotContainer extends RobotFramework {
     private final Camera rearLeftCamera;
     private final Climber climber;
     public Command zeroMechanisms;
+    private boolean m_isInSwerveSlowMode;
 
     // private final Camera rearCamera;
     private final PathConstraints autoAlignConstraints;
@@ -156,27 +158,37 @@ public class RobotContainer extends RobotFramework {
         teleOpChooser = new SendableChooser<>();
         setupDrivetrain();
        
-        DrivetrainConstants.drivetrain.setDefaultCommand(new Command() {
+        // DrivetrainConstants.drivetrain.setDefaultCommand(new Command() {
 
-            {
-                addRequirements(DrivetrainConstants.drivetrain, swerveSubsystem);
-            }
+        //     {
+        //         addRequirements(DrivetrainConstants.drivetrain, swerveSubsystem);
+        //     }
 
-            @Override
-            public void execute() {
-                Command selectedCommand = ConfigureHologenicDrive(driverController, swerveSubsystem, elevator);
-                SmartDashboard.putNumber("executeEncoderVal", elevator.getEncoderValueFromMotor());
-                // if(elevator.getEncoderValueFromMotor() > ElevatorMap.L2ROTATION ){
-                //     selectedCommand = ConfigureHologenicDriveSlew(driverController, swerveSubsystem);
-                // } else {
-                //     selectedCommand = ConfigureHologenicDrive(driverController, swerveSubsystem, elevator);
-                // }
-                if (selectedCommand != null) {
-                    selectedCommand.schedule();
-                }
-            }
+        //     @Override
+        //     public void execute() {
+        //         Command selectedCommand = ConfigureHologenicDrive(driverController, swerveSubsystem, elevator);
+        //         SmartDashboard.putNumber("executeEncoderVal", elevator.getEncoderValueFromMotor());
+        //         // if(elevator.getEncoderValueFromMotor() > ElevatorMap.L2ROTATION ){
+        //         //     selectedCommand = ConfigureHologenicDriveSlew(driverController, swerveSubsystem);
+        //         // } else {
+        //         //     selectedCommand = ConfigureHologenicDrive(driverController, swerveSubsystem, elevator);
+        //         // }
+        //         if (selectedCommand != null) {
+        //             selectedCommand.schedule();
+        //         }
+        //     }
 
-        });
+        // }
+        // );
+
+        DrivetrainConstants.drivetrain.setDefaultCommand(DrivetrainConstants.drivetrain.applyRequest(() -> DrivetrainConstants.drive
+        .withVelocityX(-driverController.getLeftY() * SafetyMap.kMaxSpeed
+                        * SafetyMap.kMaxSpeedChange)
+        .withVelocityY(-driverController.getLeftX() * SafetyMap.kMaxSpeed
+                        * SafetyMap.kMaxSpeedChange)
+        .withRotationalRate(-driverController.getRightX()
+                        * SafetyMap.kMaxAngularRate
+                        * SafetyMap.kAngularRateMultiplier)));
 
         zeroMechanisms = new InstantCommand(()-> elevator.zeroElevator())
         .alongWith(new InstantCommand(()-> swanNeck.zeroPivotPosition()));
@@ -195,6 +207,21 @@ public class RobotContainer extends RobotFramework {
     // ADD: Getter for Elevator
     public Lift getElevator() {
         return elevator;
+    }
+
+    public void slowModeSwerve(){    
+    
+        // if Elevator is about L2, then
+        //    if slowMoServe hasn't been set and NOT auto-aligning then schedule SlowMoServe
+
+        if(elevator.getEncoderValue() > RobotMap.ElevatorMap.L2ROTATION - 1){
+            if (!m_isInSwerveSlowMode) {
+                new ConfigureHologenicDrive(driverController, DrivetrainConstants.drivetrain).schedule();;
+            }
+
+        } else {
+            m_isInSwerveSlowMode = false;
+        }
     }
 
     public void setupVisionImplants() {
@@ -262,7 +289,7 @@ public class RobotContainer extends RobotFramework {
             .whileTrue(new PlaceLThree(elevator, swanNeck));
 
         operatorController.x()
-            .whileTrue(new PlaceLFour(elevator, swanNeck));
+            .whileTrue(new PlaceLFour(elevator, swanNeck).andThen(new RotateElevatorDownPID(elevator).until(elevator :: pidDownAtSetpoint)));
 
         operatorController.povLeft()
             .whileTrue(new RaiseSwanNeckPID(()-> RobotMap.IntakeMap.ReefStops.SAFEANGLE, swanNeck));
@@ -335,6 +362,7 @@ public class RobotContainer extends RobotFramework {
         NamedCommands.registerCommand("Field Relative",
                 DrivetrainConstants.drivetrain.runOnce(() -> DrivetrainConstants.drivetrain.seedFieldCentric()));
         NamedCommands.registerCommand("L4", new PlaceLFour(elevator, swanNeck));
+        NamedCommands.registerCommand("ElevatorDown", new RotateElevatorDownPID(elevator).until(elevator :: pidDownAtSetpoint));
         NamedCommands.registerCommand("Feed", new IntakeCoralSequence(swanNeck));
     }
 

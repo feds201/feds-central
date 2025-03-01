@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.auton.MoveBack;
 import frc.robot.commands.lift.RotateElevatorDownPID;
+import frc.robot.commands.lift.RotateElevatorL3PID;
 import frc.robot.commands.lift.RotateElevatorPID;
 import frc.robot.constants.RobotMap.ElevatorMap;
 import frc.robot.constants.RobotMap.IntakeMap;
@@ -41,7 +42,7 @@ public class PlaceLFour extends SequentialCommandGroup {
     new SpinSwanWheels(m_SwanNeck, ()-> IntakeMap.WHEEL_SPEED_SCORE / 4)),
     new RaiseSwanNeckPID(()-> IntakeMap.ReefStops.SAFEANGLE, m_SwanNeck).until(m_SwanNeck :: pidAtSetpoint),
     // new ParallelRaceGroup(new WaitCommand(0.35), new MoveBack(DrivetrainConstants.drivetrain)),
-    new RotateElevatorDownPID(m_elevator).until(m_elevator :: pidDownAtSetpoint)
+    new RotateElevatorL3PID(m_elevator).until(m_elevator :: pidL3AtSetpoint)
      );
   }
 }
