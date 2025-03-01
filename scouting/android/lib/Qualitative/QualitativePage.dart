@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:scouting_app/components/Button.dart';
-import 'package:scouting_app/components/DataBase.dart';
+import 'package:scouting_app/services/DataBase.dart';
 import 'package:scouting_app/components/TextBox.dart';
 import 'package:google_fonts/google_fonts.dart';
-
-import '../Match_Pages/match.dart';
 
 class QualitativePage extends StatefulWidget {
   const QualitativePage({super.key});

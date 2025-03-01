@@ -6,7 +6,7 @@ import 'package:hive/hive.dart';
 import 'package:http/http.dart' as Http;
 import 'package:scouting_app/Plugins/plugin_state_manager.dart';
 import 'package:scouting_app/components/Button.dart';
-import 'package:scouting_app/components/DataBase.dart';
+import 'package:scouting_app/services/DataBase.dart';
 
 bool isDataValid() {
   // Replace with your actual validation logic

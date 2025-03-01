@@ -5,7 +5,6 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'Pit_Recorder/Pit_Recorder.dart';
 import 'about_page.dart';
 import 'Match_Pages/match_page.dart';
-import 'Qualitative/qualitative.dart';
 import 'home_page.dart';
 import 'model/widget_data.dart';
 import 'settings_page.dart';
@@ -24,6 +23,8 @@ void main() async {
   await Hive.openBox('pitData');
   await Hive.openBox('experiments');
   await Hive.openBox('scoutingItems');
+  await Hive.openBox('match');
+  await Hive.openBox('local');
   Hive.registerAdapter(WidgetDataAdapter());
   await Hive.openBox<WidgetData>('widgetBox');
   runApp(const MyApp());

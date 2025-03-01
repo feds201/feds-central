@@ -92,12 +92,12 @@ class NavBar extends StatelessWidget {
                   title: 'Match',
                   page: const MatchPage(),
                 ),
-                _buildNavItem(
-                  context,
-                  icon: Icons.list_alt_outlined,
-                  title: 'Logs',
-                  page: const LogsPage(),
-                ),
+                // _buildNavItem(
+                //   context,
+                //   icon: Icons.list_alt_outlined,
+                //   title: 'Logs',
+                //   page: const LogsPage(),
+                // ),
                 _buildNavItem(
                   context,
                   icon: Icons.settings_outlined,

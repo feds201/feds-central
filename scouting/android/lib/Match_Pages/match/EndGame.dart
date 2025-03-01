@@ -2,31 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:scouting_app/components/CheckBox.dart';
 import 'package:scouting_app/components/slider.dart';
 
-import '../../components/DataBase.dart';
+import '../../services/DataBase.dart';
 import '../../components/QrGenerator.dart';
 
 class EndGame extends StatefulWidget {
-  const EndGame({super.key});
+  final MatchRecord matchRecord;
+  const EndGame({super.key, required this.matchRecord});
 
   @override
   _EndGameState createState() => _EndGameState();
 }
 
 class _EndGameState extends State<EndGame> {
-  late bool DeepClimb;
-  late bool ShallowClimb;
-  late bool parked;
-  late String scouterComments;
+  late bool DeepClimb = false;
+  late bool ShallowClimb = false;
+  late bool parked = false;
+  late String scouterComments = '';
 
   @override
   void initState() {
     super.initState();
-
-    DeepClimb = LocalDataBase.getData(EndgameType.Deep_Climb) ?? false;
-    ShallowClimb = LocalDataBase.getData(EndgameType.Shallow_Climb) ?? false;
-    parked = LocalDataBase.getData(EndgameType.Park) ?? false;
-    scouterComments =
-        LocalDataBase.getData(EndgameType.Comments) ?? "HelloWorld";
   }
 
   // @override
@@ -35,12 +30,7 @@ class _EndGameState extends State<EndGame> {
   //   super.dispose();
   // }
 
-  void UpdateData() {
-    LocalDataBase.putData(EndgameType.Deep_Climb, DeepClimb);
-    LocalDataBase.putData(EndgameType.Shallow_Climb, ShallowClimb);
-    LocalDataBase.putData(EndgameType.Park, parked);
-    LocalDataBase.putData(EndgameType.Comments, scouterComments);
-  }
+  void UpdateData() {}
 
   @override
   Widget build(BuildContext context) {
@@ -98,9 +88,9 @@ class _EndGameState extends State<EndGame> {
                     await Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const Qrgenerator(),
+                            builder: (context) =>
+                                Qrgenerator(matchRecord: widget.matchRecord),
                             fullscreenDialog: true));
-                    return null;
                   },
                   label: const Text("Slide to Complete Event",
                       style: TextStyle(

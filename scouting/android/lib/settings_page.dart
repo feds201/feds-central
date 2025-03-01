@@ -1,16 +1,17 @@
+import 'dart:convert';
 import 'dart:developer' as developer;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import 'components/DataBase.dart';
+import 'services/DataBase.dart';
 import 'components/MatchSelection.dart';
 import 'components/ScoutersList.dart';
-import 'components/localmatchLoader.dart';
 import 'components/nav.dart';
 import 'components/qr_code_scanner_page.dart';
-import 'Match_Pages/match.dart';
+import 'package:http/http.dart' as http;
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -25,6 +26,8 @@ class SettingsPageState extends State<SettingsPage> {
   bool isNearbyDevicesGranted = false;
   bool isCameraGranted = false;
   bool isDarkMode = true;
+  bool isLoading = false;
+  TextEditingController eventKeyController = TextEditingController();
   String ApiKey = Hive.box('settings').get('ApiKey', defaultValue: '');
 
   @override
@@ -59,6 +62,47 @@ class SettingsPageState extends State<SettingsPage> {
     } else {
       onChanged(false);
     }
+  }
+
+  Future<void> getData(String eventKey) async {
+    setState(() {
+      isLoading = true;
+    });
+
+    print("Getting Data");
+    print(eventKey);
+    var ApiKey = Settings.getApiKey();
+    var headers = {
+      'X-TBA-Auth-Key': ApiKey,
+    };
+    var responseForMatchData = await http.get(
+        Uri.parse(
+            'https://www.thebluealliance.com/api/v3/event/$eventKey/matches'),
+        headers: headers);
+
+    if (responseForMatchData.statusCode == 200) {
+      if (kDebugMode) {
+        print('Success');
+      }
+      Hive.box('matchData')
+          .put('matches', jsonDecode(responseForMatchData.body));
+    }
+
+    var responseForPitData = await http.get(
+        Uri.parse(
+            'https://www.thebluealliance.com/api/v3/event/$eventKey/teams'),
+        headers: headers);
+
+    if (responseForPitData.statusCode == 200) {
+      if (kDebugMode) {
+        print('Success');
+      }
+      Hive.box('pitData').put('teams', (responseForPitData.body));
+    }
+
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override
@@ -101,30 +145,6 @@ class SettingsPageState extends State<SettingsPage> {
                   padding: const EdgeInsets.all(10),
                   child: Column(
                     children: [
-                      // TextField(
-                      //   controller: TextEditingController()
-                      //     ..text = Hive.box('userData')
-                      //         .get('scouterName', defaultValue: ''),
-                      //   decoration: InputDecoration(
-                      //     labelText: 'Scouter Name',
-                      //     labelStyle: GoogleFonts.museoModerno(fontSize: 15),
-                      //     hintText: 'Enter your name',
-                      //     hintStyle: GoogleFonts.museoModerno(fontSize: 15),
-                      //     border: OutlineInputBorder(
-                      //       borderRadius: BorderRadius.circular(10),
-                      //       borderSide: const BorderSide(color: Colors.black),
-                      //     ),
-                      //     focusedBorder: OutlineInputBorder(
-                      //       borderRadius: BorderRadius.circular(10),
-                      //       borderSide: const BorderSide(color: Colors.black),
-                      //     ),
-                      //   ),
-                      //   style: GoogleFonts.museoModerno(fontSize: 18),
-                      //   onSubmitted: (String value) {
-                      //     Hive.box('userData').put('scouterName', value);
-                      //   },
-                      // ),
-                      // const SizedBox(height: 10),
                       TextField(
                         controller: TextEditingController()
                           ..text = Hive.box('settings')
@@ -168,6 +188,17 @@ class SettingsPageState extends State<SettingsPage> {
                           Settings.setApiKey(value);
                         },
                       ),
+                      SizedBox(height: 10),
+                      TextField(
+                        cursorColor: const Color.fromARGB(255, 255, 255, 255),
+                        controller: eventKeyController,
+                        decoration: InputDecoration(
+                          labelText: 'Match Event Key (e.g. 2024isde4)',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -179,18 +210,11 @@ class SettingsPageState extends State<SettingsPage> {
                 onAllianceSelected: (String? alliance) {
                   setState(() {
                     Hive.box('userData').put('alliance', alliance);
-                    LocalDataBase.putData(Types.allianceColor, alliance);
                   });
                 },
                 onPositionSelected: (String? position) {
                   setState(() {
                     Hive.box('userData').put('position', position);
-                    LocalDataBase.putData(
-                        Types.selectedStation,
-                        ((Hive.box('userData').get('alliance') == "Red")
-                                ? "R"
-                                : "B") +
-                            position!);
                   });
                 },
                 initAlliance:
@@ -200,6 +224,72 @@ class SettingsPageState extends State<SettingsPage> {
                         '1') //Takeout the first letter of the alliance and add it to the position
                 ), // Alliance and Position
             const SizedBox(height: 10),
+            Center(
+              child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    spacing: 10,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Container(
+                        width: 48,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          color:
+                              isLoading ? Colors.redAccent : Colors.green[300],
+                          border: Border.all(
+                            color: isLoading ? Colors.red : Colors.green,
+                            width: 3,
+                          ),
+                          shape: BoxShape.rectangle,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          minimumSize:
+                              Size(MediaQuery.of(context).size.width / 2, 50),
+                          foregroundColor: Colors.white,
+                          backgroundColor: Colors.blueAccent[100],
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            side: const BorderSide(
+                              color: Colors.blue,
+                              width: 3,
+                            ),
+                          ),
+                        ),
+                        onPressed: () => getData(eventKeyController.text),
+                        child: Text(
+                          'Load Event',
+                          style: GoogleFonts.museoModerno(
+                              fontSize: 20, color: Colors.white),
+                        ),
+                      ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: const Size(80, 50),
+                          foregroundColor: Colors.white,
+                          backgroundColor: Colors.redAccent[100],
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            side: const BorderSide(
+                              color: Colors.red,
+                              width: 3,
+                            ),
+                          ),
+                        ),
+                        onPressed: () {},
+                        onLongPress: () {},
+                        child: Text('Use Local',
+                            style: GoogleFonts.museoModerno(
+                                fontSize: 15, color: Colors.white)),
+                      ),
+                    ],
+                  )),
+            ),
+
+            SizedBox(height: 10),
             Container(
               padding: const EdgeInsets.all(10),
               margin: const EdgeInsets.only(
@@ -312,33 +402,6 @@ class SettingsPageState extends State<SettingsPage> {
                     children: [
                       Expanded(
                         child: ChoiceChip(
-                          iconTheme: const IconThemeData(color: Colors.white),
-                          label: Center(
-                            child: Text(
-                              'Load Match',
-                              style: GoogleFonts.museoModerno(
-                                  fontSize: 25, color: Colors.white),
-                            ),
-                          ),
-                          selectedColor: const Color.fromARGB(255, 18, 54, 133),
-                          selected: true,
-                          showCheckmark: false,
-                          side: const BorderSide(color: Colors.black),
-                          onSelected: (bool selected) {
-                            setState(() {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        const localmatchLoader(),
-                                    fullscreenDialog: true),
-                              );
-                            });
-                          },
-                        ),
-                      ),
-                      Expanded(
-                        child: ChoiceChip(
                           label: Center(
                             child: Text(
                               'Eject Match',
@@ -389,7 +452,6 @@ class SettingsPageState extends State<SettingsPage> {
                               Hive.box('settings').deleteAll;
                               Hive.box('pitData').deleteAll;
                               LocalDataBase.clearData();
-                              MatchLogs.clearLogs();
                               Hive.box('matchData').delete('matches');
                             });
                           },

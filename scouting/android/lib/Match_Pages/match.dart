@@ -2,14 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../Experiment/ExpStateManager.dart';
-import '../components/DataBase.dart';
+import '../services/DataBase.dart';
 import '../components/QrGenerator.dart';
 import 'match/Auton.dart';
 import 'match/EndGame.dart';
 import 'match/TeleOperated.dart';
 
 class Match extends StatefulWidget {
-  const Match({super.key});
+  final MatchRecord matchRecord;
+  const Match({super.key, required this.matchRecord});
 
   @override
   MatchState createState() => MatchState();
@@ -25,14 +26,7 @@ class MatchState extends State<Match> {
   @override
   void initState() {
     super.initState();
-    print(LocalDataBase.getData(Types.allianceColor));
-    _allianceColor = LocalDataBase.getData(Types.allianceColor);
-    _selectedStation = LocalDataBase.getData(Types.selectedStation);
-    _team = (LocalDataBase.getData(Types.matchFile))['alliances']
-                [_allianceColor.toLowerCase()]['team_keys']
-            [int.parse(_selectedStation.substring(1)) - 1]
-        .substring(3)
-        .toString();
+    print("Hello");
     _checkExperimentBox();
   }
 
@@ -45,8 +39,7 @@ class MatchState extends State<Match> {
 
   @override
   Widget build(BuildContext context) {
-    LocalDataBase.putData(Types.team, _team);
-
+    print(widget.matchRecord);
     return PopScope(
         canPop: false,
         child: Scaffold(
@@ -84,9 +77,10 @@ class MatchState extends State<Match> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const Qrgenerator(),
+                              builder: (context) =>
+                                  Qrgenerator(matchRecord: widget.matchRecord),
                               fullscreenDialog: true),
-                        ).then((value) => print('Returned to Match Page'))
+                        ).then((value) => _checkExperimentBox()),
                       },
                   child: const Icon(
                     Icons.check_rounded,
@@ -125,12 +119,28 @@ class MatchState extends State<Match> {
   _match(BuildContext context, int selectedIndex) {
     switch (selectedIndex) {
       case 0:
-        return const SingleChildScrollView(child: Auton());
+        return SingleChildScrollView(
+            child: Auton(
+          matchRecord: widget.matchRecord,
+        ));
       case 1:
-        return const SingleChildScrollView(child: TeleOperated());
+        return SingleChildScrollView(
+            child: TeleOperated(
+          matchRecord: widget.matchRecord,
+        ));
       case 2:
-        return const SingleChildScrollView(child: EndGame());
+        return SingleChildScrollView(
+            child: EndGame(
+          matchRecord: widget.matchRecord,
+        ));
+      default:
+        return Container();
     }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 }
 

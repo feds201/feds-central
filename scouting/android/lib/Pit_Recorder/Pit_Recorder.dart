@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:scouting_app/Pit_Recorder/Send_Pitdata.dart';
-import 'package:scouting_app/components/DataBase.dart';
+import 'package:scouting_app/services/DataBase.dart';
 
 import 'CheckLists.dart';
 
@@ -302,5 +302,3 @@ bool isScouted(int teamNumber, List<int> recorderTeam) {
       '$teamNumber is in $recorderTeam : ${recorderTeam.contains(teamNumber)}');
   return recorderTeam.contains(teamNumber);
 }
-
-

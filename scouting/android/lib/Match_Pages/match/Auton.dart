@@ -3,20 +3,19 @@ import 'package:scouting_app/components/CheckBox.dart';
 import 'package:scouting_app/components/CommentBox.dart';
 import 'package:scouting_app/components/CounterShelf.dart';
 
-import '../../components/DataBase.dart';
+import '../../services/DataBase.dart';
 import '../../components/TeamInfo.dart';
 import '../match.dart';
 
 class Auton extends StatefulWidget {
-  const Auton({super.key});
+  final MatchRecord matchRecord;
+  const Auton({super.key, required this.matchRecord});
 
   @override
   AutonState createState() => AutonState();
 }
 
 class AutonState extends State<Auton> {
-  final LocalDataBase dataMaster = LocalDataBase();
-
   late bool left_barge;
   late int coralScoreL1;
   late int coralScoreL2;
@@ -25,48 +24,71 @@ class AutonState extends State<Auton> {
   late int algaeScoringProcessor;
   late int algaeScoringBarge;
 
+  late AutonPoints autonPoints;
+
   late String assignedTeam;
   late String assignedStation;
   late String matchKey;
   late String allianceColor;
 
-  // Match Variables
   @override
   void initState() {
     super.initState();
-    assignedTeam = LocalDataBase.getData(Types.team) ?? "Null";
-    assignedStation = LocalDataBase.getData(Types.selectedStation) ?? "Null";
 
-    left_barge = LocalDataBase.getData(AutoType.LeftBarge) ?? false;
-    coralScoreL1 = LocalDataBase.getData(AutoType.CoralScoringLevel1) ?? 0;
-    coralScoreL2 = LocalDataBase.getData(AutoType.CoralScoringLevel2) ?? 0;
-    coralScoreL3 = LocalDataBase.getData(AutoType.CoralScoringLevel3) ?? 0;
-    coralScoreL4 = LocalDataBase.getData(AutoType.CoralScoringLevel4) ?? 0;
-    algaeScoringProcessor =
-        LocalDataBase.getData(AutoType.AlgaeScoringProcessor) ?? 0;
-    algaeScoringBarge = LocalDataBase.getData(AutoType.AlgaeScoringBarge) ?? 0;
+    autonPoints = LocalDataBase.getData('TEMP-Data') ??
+        AutonPoints(0, 0, 0, 0, false, 0, 0);
+    assignedTeam = widget.matchRecord.teamNumber;
+    assignedStation = widget.matchRecord.station;
+    matchKey = widget.matchRecord.matchKey;
+    allianceColor = widget.matchRecord.allianceColor;
+    left_barge = autonPoints.LeftBarge;
+
+    coralScoreL1 = autonPoints.CoralScoringLevel1;
+    coralScoreL2 = autonPoints.CoralScoringLevel2;
+    coralScoreL3 = autonPoints.CoralScoringLevel3;
+    coralScoreL4 = autonPoints.CoralScoringLevel4;
+    algaeScoringProcessor = autonPoints.AlgaeScoringProcessor;
+    algaeScoringBarge = autonPoints.AlgaeScoringBarge;
+    left_barge = autonPoints.LeftBarge;
+
+    UpdateData();
   }
 
   void UpdateData() {
-    LocalDataBase.putData(AutoType.LeftBarge, left_barge);
-    LocalDataBase.putData(AutoType.CoralScoringLevel1, coralScoreL1);
-    LocalDataBase.putData(AutoType.CoralScoringLevel2, coralScoreL2);
-    LocalDataBase.putData(AutoType.CoralScoringLevel3, coralScoreL3);
-    LocalDataBase.putData(AutoType.CoralScoringLevel4, coralScoreL4);
-    LocalDataBase.putData(
-        AutoType.AlgaeScoringProcessor, algaeScoringProcessor);
-    LocalDataBase.putData(AutoType.AlgaeScoringBarge, algaeScoringBarge);
+    autonPoints = AutonPoints(
+      coralScoreL1,
+      coralScoreL2,
+      coralScoreL3,
+      coralScoreL4,
+      left_barge,
+      algaeScoringProcessor,
+      algaeScoringBarge,
+    );
+    saveState();
+  }
+
+  void saveState() {
+    LocalDataBase.putData('autonPoints', autonPoints);
+  }
+
+  void revertState() {
+    var savedData = LocalDataBase.getData('autonPoints');
+    if (savedData != null) {
+      setState(() {
+        coralScoreL1 = savedData['CoralScoringLevel1'];
+        coralScoreL2 = savedData['CoralScoringLevel2'];
+        coralScoreL3 = savedData['CoralScoringLevel3'];
+        coralScoreL4 = savedData['CoralScoringLevel4'];
+        algaeScoringProcessor = savedData['AlgaeScoringProcessor'];
+        algaeScoringBarge = savedData['AlgaeScoringBarge'];
+        left_barge = savedData['LeftBarge'];
+      });
+    }
+    print(savedData);
   }
 
   @override
   Widget build(BuildContext context) {
-    setState(() {
-      assignedTeam = LocalDataBase.getData(Types.team) ?? "Null";
-      assignedStation = LocalDataBase.getData(Types.selectedStation) ?? "Null";
-      matchKey = LocalDataBase.getData(Types.matchKey) ?? "Null";
-      allianceColor = LocalDataBase.getData(Types.allianceColor) ?? "Null";
-    });
-    print(LocalDataBase.getData('Settings.apiKey'));
     return Container(child: _buildAuto(context));
   }
 
@@ -209,5 +231,37 @@ class AutonState extends State<Auton> {
         ],
       ),
     );
+  }
+}
+
+class AutonPoints {
+  final int CoralScoringLevel1;
+  final int CoralScoringLevel2;
+  final int CoralScoringLevel3;
+  final int CoralScoringLevel4;
+  final bool LeftBarge;
+  final int AlgaeScoringProcessor;
+  final int AlgaeScoringBarge;
+
+  AutonPoints(
+    this.CoralScoringLevel1,
+    this.CoralScoringLevel2,
+    this.CoralScoringLevel3,
+    this.CoralScoringLevel4,
+    this.LeftBarge,
+    this.AlgaeScoringProcessor,
+    this.AlgaeScoringBarge,
+  );
+
+  Map<String, dynamic> toJson() {
+    return {
+      'CoralScoringLevel1': CoralScoringLevel1,
+      'CoralScoringLevel2': CoralScoringLevel2,
+      'CoralScoringLevel3': CoralScoringLevel3,
+      'CoralScoringLevel4': CoralScoringLevel4,
+      'LeftBarge': LeftBarge,
+      'AlgaeScoringProcessor': AlgaeScoringProcessor,
+      'AlgaeScoringBarge': AlgaeScoringBarge,
+    };
   }
 }

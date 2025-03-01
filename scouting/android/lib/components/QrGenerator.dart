@@ -9,11 +9,12 @@ import 'package:scouting_app/components/slider.dart';
 
 import '../Match_Pages/match_page.dart';
 import '../Plugins/plugin_state_manager.dart';
-import 'DataBase.dart';
+import '../services/DataBase.dart';
 import 'compactifier.dart';
 
 class Qrgenerator extends StatefulWidget {
-  const Qrgenerator({super.key});
+  final MatchRecord matchRecord;
+  const Qrgenerator({super.key, required this.matchRecord});
 
   @override
   QrCoder createState() => QrCoder();
@@ -40,8 +41,7 @@ class QrCoder extends State<Qrgenerator> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             QrImageView(
-              data: jsonEncode(jsonDecode(
-                  correctJsonFormat(LocalDataBase.getMatchData().toString()))),
+              data: widget.matchRecord.toJson().toString(),
               version: QrVersions.auto,
               size: MediaQuery.of(context).size.width - 40,
               semanticsLabel: 'QR code',
@@ -88,9 +88,8 @@ class QrCoder extends State<Qrgenerator> {
                   vibrationFlag: true,
                   width: MediaQuery.of(context).size.width - 40,
                   action: () async {
-                    MatchLogs.addLog(LocalDataBase.getMatchData().toString());
                     await InititiateTransactions(
-                        LocalDataBase.getMatchData().toString());
+                        widget.matchRecord.toJson().toString());
                     return true;
                   },
                   label: const Text(

@@ -3,10 +3,11 @@ import 'package:scouting_app/components/CheckBox.dart';
 import 'package:scouting_app/components/CommentBox.dart';
 import 'package:scouting_app/components/CounterShelf.dart';
 
-import '../../components/DataBase.dart';
+import '../../services/DataBase.dart';
 
 class TeleOperated extends StatefulWidget {
-  const TeleOperated({super.key});
+  final MatchRecord matchRecord;
+  const TeleOperated({super.key, required this.matchRecord});
 
   @override
   _TeleOperatedState createState() => _TeleOperatedState();
@@ -25,26 +26,16 @@ class _TeleOperatedState extends State<TeleOperated> {
   void initState() {
     super.initState();
 
-    coralScoreL1 = LocalDataBase.getData(TeleType.CoralScoringLevel1) ?? 0;
-    coralScoreL2 = LocalDataBase.getData(TeleType.CoralScoringLevel2) ?? 0;
-    coralScoreL3 = LocalDataBase.getData(TeleType.CoralScoringLevel3) ?? 0;
-    coralScoreL4 = LocalDataBase.getData(TeleType.CoralScoringLevel4) ?? 0;
-    algaeScoringProcessor =
-        LocalDataBase.getData(TeleType.AlgaeScoringProcessor) ?? 0;
-    algaeScoringBarge = LocalDataBase.getData(TeleType.AlgaeScoringBarge) ?? 0;
-    defense = LocalDataBase.getData(TeleType.Defense) ?? false;
+    coralScoreL1 = 0;
+    coralScoreL2 = 0;
+    coralScoreL3 = 0;
+    coralScoreL4 = 0;
+    algaeScoringProcessor = 0;
+    algaeScoringBarge = 0;
+    defense = false;
   }
 
-  void UpdateData() {
-    LocalDataBase.putData(TeleType.CoralScoringLevel1, coralScoreL1);
-    LocalDataBase.putData(TeleType.CoralScoringLevel2, coralScoreL2);
-    LocalDataBase.putData(TeleType.CoralScoringLevel3, coralScoreL3);
-    LocalDataBase.putData(TeleType.CoralScoringLevel4, coralScoreL4);
-    LocalDataBase.putData(
-        TeleType.AlgaeScoringProcessor, algaeScoringProcessor);
-    LocalDataBase.putData(TeleType.AlgaeScoringBarge, algaeScoringBarge);
-    LocalDataBase.putData(TeleType.Defense, defense);
-  }
+  void UpdateData() {}
 
   @override
   Widget build(BuildContext context) {
