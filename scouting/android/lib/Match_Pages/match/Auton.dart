@@ -1,22 +1,22 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:scouting_app/components/CheckBox.dart';
 import 'package:scouting_app/components/CommentBox.dart';
 import 'package:scouting_app/components/CounterShelf.dart';
 
-import '../../components/DataBase.dart';
+import '../../services/DataBase.dart';
 import '../../components/TeamInfo.dart';
-import '../match.dart';
 
 class Auton extends StatefulWidget {
-  const Auton({super.key});
+  final MatchRecord matchRecord;
+  const Auton({super.key, required this.matchRecord});
 
   @override
   AutonState createState() => AutonState();
 }
 
 class AutonState extends State<Auton> {
-  final LocalDataBase dataMaster = LocalDataBase();
-
   late bool left_barge;
   late int coralScoreL1;
   late int coralScoreL2;
@@ -25,49 +25,85 @@ class AutonState extends State<Auton> {
   late int algaeScoringProcessor;
   late int algaeScoringBarge;
 
+  late AutonPoints autonPoints;
+
   late String assignedTeam;
-  late String assignedStation;
+  late int assignedStation;
   late String matchKey;
   late String allianceColor;
+  late int matchNumber;
 
-  // Match Variables
   @override
   void initState() {
     super.initState();
-    assignedTeam = LocalDataBase.getData(Types.team) ?? "Null";
-    assignedStation = LocalDataBase.getData(Types.selectedStation) ?? "Null";
+    //   log(widget.matchRecord.toString());
 
-    left_barge = LocalDataBase.getData(AutoType.LeftBarge) ?? false;
-    coralScoreL1 = LocalDataBase.getData(AutoType.CoralScoringLevel1) ?? 0;
-    coralScoreL2 = LocalDataBase.getData(AutoType.CoralScoringLevel2) ?? 0;
-    coralScoreL3 = LocalDataBase.getData(AutoType.CoralScoringLevel3) ?? 0;
-    coralScoreL4 = LocalDataBase.getData(AutoType.CoralScoringLevel4) ?? 0;
+    assignedTeam = widget.matchRecord.teamNumber;
+    assignedStation = widget.matchRecord.station;
+    matchKey = widget.matchRecord.matchKey;
+    allianceColor = widget.matchRecord.allianceColor;
+    matchNumber = widget.matchRecord.matchNumber;
+
+    left_barge = widget.matchRecord.autonPoints.LeftBarge;
+    coralScoreL1 = widget.matchRecord.autonPoints.CoralScoringLevel1;
+    coralScoreL2 = widget.matchRecord.autonPoints.CoralScoringLevel2;
+    coralScoreL3 = widget.matchRecord.autonPoints.CoralScoringLevel3;
+    coralScoreL4 = widget.matchRecord.autonPoints.CoralScoringLevel4;
     algaeScoringProcessor =
-        LocalDataBase.getData(AutoType.AlgaeScoringProcessor) ?? 0;
-    algaeScoringBarge = LocalDataBase.getData(AutoType.AlgaeScoringBarge) ?? 0;
+        widget.matchRecord.autonPoints.AlgaeScoringProcessor;
+    algaeScoringBarge = widget.matchRecord.autonPoints.AlgaeScoringBarge;
+    autonPoints = AutonPoints(
+      coralScoreL1,
+      coralScoreL2,
+      coralScoreL3,
+      coralScoreL4,
+      left_barge,
+      algaeScoringProcessor,
+      algaeScoringBarge,
+    );
+    // log('Auton initialized: $autonPoints');
   }
 
   void UpdateData() {
-    LocalDataBase.putData(AutoType.LeftBarge, left_barge);
-    LocalDataBase.putData(AutoType.CoralScoringLevel1, coralScoreL1);
-    LocalDataBase.putData(AutoType.CoralScoringLevel2, coralScoreL2);
-    LocalDataBase.putData(AutoType.CoralScoringLevel3, coralScoreL3);
-    LocalDataBase.putData(AutoType.CoralScoringLevel4, coralScoreL4);
-    LocalDataBase.putData(
-        AutoType.AlgaeScoringProcessor, algaeScoringProcessor);
-    LocalDataBase.putData(AutoType.AlgaeScoringBarge, algaeScoringBarge);
+    autonPoints = AutonPoints(
+      coralScoreL1,
+      coralScoreL2,
+      coralScoreL3,
+      coralScoreL4,
+      left_barge,
+      algaeScoringProcessor,
+      algaeScoringBarge,
+    );
+
+    widget.matchRecord.autonPoints = autonPoints;
+    widget.matchRecord.autonPoints.LeftBarge = left_barge;
+    widget.matchRecord.autonPoints.CoralScoringLevel1 = coralScoreL1;
+    widget.matchRecord.autonPoints.CoralScoringLevel2 = coralScoreL2;
+    widget.matchRecord.autonPoints.CoralScoringLevel3 = coralScoreL3;
+    widget.matchRecord.autonPoints.CoralScoringLevel4 = coralScoreL4;
+    widget.matchRecord.autonPoints.AlgaeScoringProcessor =
+        algaeScoringProcessor;
+    widget.matchRecord.autonPoints.AlgaeScoringBarge = algaeScoringBarge;
+
+    saveState();
+  }
+
+  void saveState() {
+    LocalDataBase.putData('Auton', autonPoints.toJson());
+
+    // log('Auton state saved: $autonPoints');
+  }
+
+  @override
+  void dispose() {
+    // Make sure data is saved when navigating away
+    UpdateData();
+    saveState();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    setState(() {
-      assignedTeam = LocalDataBase.getData(Types.team) ?? "Null";
-      assignedStation = LocalDataBase.getData(Types.selectedStation) ?? "Null";
-      matchKey = LocalDataBase.getData(Types.matchKey) ?? "Null";
-      allianceColor = LocalDataBase.getData(Types.allianceColor) ?? "Null";
-    });
-    print(LocalDataBase.getData('Settings.apiKey'));
-    print("Hello Auton");
     return Container(child: _buildAuto(context));
   }
 
@@ -80,10 +116,10 @@ class AutonState extends State<Auton> {
             assignedStation: assignedStation,
             allianceColor: allianceColor,
             onPressed: () {
-              print('Team Info START button pressed');
+              // print('Team Info START button pressed');
             },
           ),
-          buildCheckBoxFull("Left Barge", left_barge, (bool value) {
+          buildCheckBoxFull("Leave", left_barge, (bool value) {
             setState(() {
               left_barge = value;
             });
@@ -95,51 +131,29 @@ class AutonState extends State<Auton> {
                 CounterSettings(
                   (int value) {
                     setState(() {
-                      coralScoreL1++;
+                      coralScoreL4++;
                     });
-                    UpdateData();
                   },
                   (int value) {
                     setState(() {
-                      coralScoreL1--;
+                      coralScoreL4--;
                     });
-                    UpdateData();
                   },
                   icon: Icons.cyclone,
-                  number: coralScoreL1,
-                  counterText: "Level 1",
-                  color: Colors.green,
-                ),
-                CounterSettings(
-                  (int value) {
-                    setState(() {
-                      coralScoreL2++;
-                    });
-                    UpdateData();
-                  },
-                  (int value) {
-                    setState(() {
-                      coralScoreL2--;
-                    });
-                    UpdateData();
-                  },
-                  icon: Icons.cyclone,
-                  number: coralScoreL2,
-                  counterText: "Level 2",
-                  color: Colors.yellow,
+                  number: coralScoreL4,
+                  counterText: "Level 4",
+                  color: Colors.red,
                 ),
                 CounterSettings(
                   (int value) {
                     setState(() {
                       coralScoreL3++;
                     });
-                    UpdateData();
                   },
                   (int value) {
                     setState(() {
                       coralScoreL3--;
                     });
-                    UpdateData();
                   },
                   icon: Icons.cyclone,
                   number: coralScoreL3,
@@ -149,20 +163,34 @@ class AutonState extends State<Auton> {
                 CounterSettings(
                   (int value) {
                     setState(() {
-                      coralScoreL4++;
+                      coralScoreL2++;
                     });
-                    UpdateData();
                   },
                   (int value) {
                     setState(() {
-                      coralScoreL4--;
+                      coralScoreL2--;
                     });
-                    UpdateData();
                   },
                   icon: Icons.cyclone,
-                  number: coralScoreL4,
-                  counterText: "Level 4",
-                  color: Colors.red,
+                  number: coralScoreL2,
+                  counterText: "Level 2",
+                  color: Colors.yellow,
+                ),
+                CounterSettings(
+                  (int value) {
+                    setState(() {
+                      coralScoreL1++;
+                    });
+                  },
+                  (int value) {
+                    setState(() {
+                      coralScoreL1--;
+                    });
+                  },
+                  icon: Icons.cyclone,
+                  number: coralScoreL1,
+                  counterText: "Level 1",
+                  color: Colors.green,
                 ),
               ],
               const Icon(Icons.emoji_nature_outlined)),
@@ -174,13 +202,11 @@ class AutonState extends State<Auton> {
                     setState(() {
                       algaeScoringProcessor++;
                     });
-                    UpdateData();
                   },
                   (int value) {
                     setState(() {
                       algaeScoringProcessor--;
                     });
-                    UpdateData();
                   },
                   icon: Icons.wash,
                   number: algaeScoringProcessor,
@@ -192,13 +218,11 @@ class AutonState extends State<Auton> {
                     setState(() {
                       algaeScoringBarge++;
                     });
-                    UpdateData();
                   },
                   (int value) {
                     setState(() {
                       algaeScoringBarge--;
                     });
-                    UpdateData();
                   },
                   icon: Icons.rice_bowl_outlined,
                   number: algaeScoringBarge,

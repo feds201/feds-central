@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -7,7 +6,7 @@ import 'package:hive/hive.dart';
 import 'package:http/http.dart' as Http;
 import 'package:scouting_app/Plugins/plugin_state_manager.dart';
 import 'package:scouting_app/components/Button.dart';
-import 'package:scouting_app/components/DataBase.dart';
+import 'package:scouting_app/services/DataBase.dart';
 
 bool isDataValid() {
   // Replace with your actual validation logic
@@ -28,7 +27,6 @@ Future<bool> isWifiConnected() async {
 Future<bool> isServerConnected() async {
   var box = Hive.box('settings');
   String? ipAddress = box.get('ipAddress');
-  String? deviceName = box.get('deviceName');
   try {
     String url = 'http://$ipAddress/alive';
     Http.Response response = await Http.get(
@@ -206,7 +204,6 @@ class SharePITDataScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     var box = Hive.box('settings');
     String? ipAddress = box.get('ipAddress');
-    String? deviceName = box.get('deviceName');
     return Scaffold(
       appBar: AppBar(
         title: ShaderMask(

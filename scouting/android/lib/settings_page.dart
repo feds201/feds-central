@@ -1,15 +1,17 @@
+import 'dart:convert';
 import 'dart:developer' as developer;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import '../components/DataBase.dart';
-import '../components/MatchSelection.dart';
-import '../components/localmatchLoader.dart';
-import '../components/nav.dart';
-import '../components/qr_code_scanner_page.dart';
-import 'match.dart';
+import 'services/DataBase.dart';
+import 'components/MatchSelection.dart';
+import 'components/ScoutersList.dart';
+import 'components/nav.dart';
+import 'components/qr_code_scanner_page.dart';
+import 'package:http/http.dart' as http;
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -24,17 +26,15 @@ class SettingsPageState extends State<SettingsPage> {
   bool isNearbyDevicesGranted = false;
   bool isCameraGranted = false;
   bool isDarkMode = true;
+  bool isLoading = false;
+  TextEditingController eventKeyController = TextEditingController();
   String ApiKey = Hive.box('settings').get('ApiKey', defaultValue: '');
-  late List<String> _scouterNames;
-  final List<String> _selectedScouters = [];
 
   @override
   void initState() {
     super.initState();
     _checkInitialPermissions();
     Settings.setApiKey(ApiKey);
-    _scouterNames = List<String>.from(
-        Hive.box('userData').get('scouterNames', defaultValue: <String>[]));
   }
 
   Future<void> _checkInitialPermissions() async {
@@ -64,40 +64,55 @@ class SettingsPageState extends State<SettingsPage> {
     }
   }
 
-  // Future<void> _darkMode() async {
-  //   setState(() {
-  //     isDarkMode = !isDarkMode;
-  //     Hive.box('userData').put('darkMode', isDarkMode);
-  //     print('Dark Mode: $isDarkMode');
-  //     print(Hive.box('userData').get('darkMode'));
-  //   });
-  //   if (Hive.box('userData').get('darkMode') == null) {
-  //     Hive.box('userData').put('darkMode', false);
-  //   } else {
-  //     Hive.box('userData').get('darkMode');
-  //   }
-  //   sleep(const Duration(milliseconds: 500));
-  //   Navigator.pushReplacement(
-  //     context,
-  //     MaterialPageRoute(
-  //       builder: (context) => const HomePage(),
-  //     ),
-  //   );
-  // }
+  Future<void> getData(String eventKey) async {
+    setState(() {
+      isLoading = true;
+    });
+
+    print("Getting Data");
+    print(eventKey);
+    var ApiKey = Settings.getApiKey();
+    var headers = {
+      'X-TBA-Auth-Key': ApiKey,
+    };
+    var responseForMatchData = await http.get(
+        Uri.parse(
+            'https://www.thebluealliance.com/api/v3/event/$eventKey/matches'),
+        headers: headers);
+
+    if (responseForMatchData.statusCode == 200) {
+      if (kDebugMode) {
+        print('Success');
+      }
+      Hive.box('matchData')
+          .put('matches', jsonDecode(responseForMatchData.body));
+
+      print(Hive.box('matchData').get('matches'));
+    }
+
+    var responseForPitData = await http.get(
+        Uri.parse(
+            'https://www.thebluealliance.com/api/v3/event/$eventKey/teams'),
+        headers: headers);
+
+    if (responseForPitData.statusCode == 200) {
+      if (kDebugMode) {
+        print('Success');
+      }
+      Hive.box('pitData').put('teams', (responseForPitData.body));
+    }
+
+    setState(() {
+      isLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: const NavBar(),
       appBar: AppBar(
-        actions: const [
-          // const SizedBox(height: 10),
-          // Switch for Dark Mode
-          // IconButton(
-          //   icon: Icon(isDarkMode ? Icons.dark_mode : Icons.light_mode),
-          //   onPressed: _darkMode,
-          // ),
-        ],
+        backgroundColor: Colors.transparent,
         title: ShaderMask(
             shaderCallback: (bounds) => const LinearGradient(
                   colors: [Colors.red, Colors.blue],
@@ -119,6 +134,7 @@ class SettingsPageState extends State<SettingsPage> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            ScouterList(),
             Container(
               padding: const EdgeInsets.all(10),
               margin: const EdgeInsets.only(
@@ -131,92 +147,6 @@ class SettingsPageState extends State<SettingsPage> {
                   padding: const EdgeInsets.all(10),
                   child: Column(
                     children: [
-                      Text("Scouters",
-                          style: GoogleFonts.museoModerno(fontSize: 20)),
-                      const SizedBox(height: 8),
-                      Wrap(
-                        spacing: 8,
-                        children: _scouterNames
-                            .map((name) => Chip(
-                                  label: Text(name,
-                                      style: GoogleFonts.museoModerno(
-                                          fontSize: 18)),
-                                  deleteIcon: const Icon(Icons.delete),
-                                  onDeleted: () {
-                                    setState(() {
-                                      _scouterNames.remove(name);
-                                      Hive.box('userData')
-                                          .put('scouterNames', _scouterNames);
-                                    });
-                                  },
-                                ))
-                            .toList(),
-                      ),
-                      const SizedBox(height: 8),
-                      ElevatedButton(
-                        onPressed: () {
-                          String newName = '';
-                          showDialog(
-                              context: context,
-                              builder: (context) {
-                                return AlertDialog(
-                                  title: const Text('Add Scouter'),
-                                  content: TextField(
-                                    onChanged: (value) {
-                                      newName = value;
-                                    },
-                                    decoration: const InputDecoration(
-                                        hintText: "Enter name"),
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () => Navigator.pop(context),
-                                      child: const Text('Cancel'),
-                                    ),
-                                    TextButton(
-                                      onPressed: () {
-                                        if (newName.trim().isNotEmpty) {
-                                          setState(() {
-                                            _scouterNames.add(newName.trim());
-                                            Hive.box('userData').put(
-                                                'scouterNames', _scouterNames);
-                                          });
-                                        }
-                                        Navigator.pop(context);
-                                      },
-                                      child: const Text('Add'),
-                                    ),
-                                  ],
-                                );
-                              });
-                        },
-                        child: const Text('Add Scouter'),
-                      ),
-                      const SizedBox(height: 10),
-                      TextField(
-                        controller: TextEditingController()
-                          ..text = Hive.box('userData')
-                              .get('scouterName', defaultValue: ''),
-                        decoration: InputDecoration(
-                          labelText: 'Scouter Name',
-                          labelStyle: GoogleFonts.museoModerno(fontSize: 15),
-                          hintText: 'Enter your name',
-                          hintStyle: GoogleFonts.museoModerno(fontSize: 15),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: const BorderSide(color: Colors.black),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: const BorderSide(color: Colors.black),
-                          ),
-                        ),
-                        style: GoogleFonts.museoModerno(fontSize: 18),
-                        onSubmitted: (String value) {
-                          Hive.box('userData').put('scouterName', value);
-                        },
-                      ),
-                      const SizedBox(height: 10),
                       TextField(
                         controller: TextEditingController()
                           ..text = Hive.box('settings')
@@ -260,28 +190,33 @@ class SettingsPageState extends State<SettingsPage> {
                           Settings.setApiKey(value);
                         },
                       ),
+                      SizedBox(height: 10),
+                      TextField(
+                        cursorColor: const Color.fromARGB(255, 255, 255, 255),
+                        controller: eventKeyController,
+                        decoration: InputDecoration(
+                          labelText: 'Match Event Key (e.g. 2024isde4)',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
               ]),
             ), // Scouter Name and API Key
+
             const SizedBox(height: 0),
             MatchSelection(
                 onAllianceSelected: (String? alliance) {
                   setState(() {
                     Hive.box('userData').put('alliance', alliance);
-                    LocalDataBase.putData(Types.allianceColor, alliance);
                   });
                 },
                 onPositionSelected: (String? position) {
                   setState(() {
                     Hive.box('userData').put('position', position);
-                    LocalDataBase.putData(
-                        Types.selectedStation,
-                        ((Hive.box('userData').get('alliance') == "Red")
-                                ? "R"
-                                : "B") +
-                            position!);
                   });
                 },
                 initAlliance:
@@ -291,6 +226,53 @@ class SettingsPageState extends State<SettingsPage> {
                         '1') //Takeout the first letter of the alliance and add it to the position
                 ), // Alliance and Position
             const SizedBox(height: 10),
+            Center(
+              child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    spacing: 10,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Container(
+                        width: 48,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          color:
+                              isLoading ? Colors.redAccent : Colors.green[300],
+                          border: Border.all(
+                            color: isLoading ? Colors.red : Colors.green,
+                            width: 3,
+                          ),
+                          shape: BoxShape.rectangle,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          minimumSize:
+                              Size(MediaQuery.of(context).size.width / 2, 50),
+                          foregroundColor: Colors.white,
+                          backgroundColor: Colors.blueAccent[100],
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            side: const BorderSide(
+                              color: Colors.blue,
+                              width: 3,
+                            ),
+                          ),
+                        ),
+                        onPressed: () => getData(eventKeyController.text),
+                        child: Text(
+                          'Load Event',
+                          style: GoogleFonts.museoModerno(
+                              fontSize: 20, color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  )),
+            ),
+
+            SizedBox(height: 10),
             Container(
               padding: const EdgeInsets.all(10),
               margin: const EdgeInsets.only(
@@ -403,33 +385,6 @@ class SettingsPageState extends State<SettingsPage> {
                     children: [
                       Expanded(
                         child: ChoiceChip(
-                          iconTheme: const IconThemeData(color: Colors.white),
-                          label: Center(
-                            child: Text(
-                              'Load Match',
-                              style: GoogleFonts.museoModerno(
-                                  fontSize: 25, color: Colors.white),
-                            ),
-                          ),
-                          selectedColor: const Color.fromARGB(255, 18, 54, 133),
-                          selected: true,
-                          showCheckmark: false,
-                          side: const BorderSide(color: Colors.black),
-                          onSelected: (bool selected) {
-                            setState(() {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        const localmatchLoader(),
-                                    fullscreenDialog: true),
-                              );
-                            });
-                          },
-                        ),
-                      ),
-                      Expanded(
-                        child: ChoiceChip(
                           label: Center(
                             child: Text(
                               'Eject Match',
@@ -479,8 +434,6 @@ class SettingsPageState extends State<SettingsPage> {
                               Hive.box('matchData').deleteAll;
                               Hive.box('settings').deleteAll;
                               Hive.box('pitData').deleteAll;
-                              LocalDataBase.clearData();
-                              MatchLogs.clearLogs();
                               Hive.box('matchData').delete('matches');
                             });
                           },

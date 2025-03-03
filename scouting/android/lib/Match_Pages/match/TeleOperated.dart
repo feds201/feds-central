@@ -1,11 +1,15 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:scouting_app/components/CheckBox.dart';
 import 'package:scouting_app/components/CommentBox.dart';
 import 'package:scouting_app/components/CounterShelf.dart';
 
-import '../../components/DataBase.dart';
+import '../../services/DataBase.dart';
 
 class TeleOperated extends StatefulWidget {
-  const TeleOperated({super.key});
+  final MatchRecord matchRecord;
+  const TeleOperated({super.key, required this.matchRecord});
 
   @override
   _TeleOperatedState createState() => _TeleOperatedState();
@@ -18,34 +22,74 @@ class _TeleOperatedState extends State<TeleOperated> {
   late int coralScoreL4;
   late int algaeScoringProcessor;
   late int algaeScoringBarge;
+  late bool defense;
+
+  late TeleOpPoints teleOpPoints;
 
   @override
   void initState() {
     super.initState();
+    // log(widget.matchRecord.toString());
 
-    coralScoreL1 = LocalDataBase.getData(TeleType.CoralScoringLevel1) ?? 0;
-    coralScoreL2 = LocalDataBase.getData(TeleType.CoralScoringLevel2) ?? 0;
-    coralScoreL3 = LocalDataBase.getData(TeleType.CoralScoringLevel3) ?? 0;
-    coralScoreL4 = LocalDataBase.getData(TeleType.CoralScoringLevel4) ?? 0;
+    coralScoreL1 = widget.matchRecord.teleOpPoints.CoralScoringLevel1;
+    coralScoreL2 = widget.matchRecord.teleOpPoints.CoralScoringLevel2;
+    coralScoreL3 = widget.matchRecord.teleOpPoints.CoralScoringLevel3;
+    coralScoreL4 = widget.matchRecord.teleOpPoints.CoralScoringLevel4;
     algaeScoringProcessor =
-        LocalDataBase.getData(TeleType.AlgaeScoringProcessor) ?? 0;
-    algaeScoringBarge = LocalDataBase.getData(TeleType.AlgaeScoringBarge) ?? 0;
+        widget.matchRecord.teleOpPoints.AlgaeScoringProcessor;
+    algaeScoringBarge = widget.matchRecord.teleOpPoints.AlgaeScoringBarge;
+    defense = widget.matchRecord.teleOpPoints.Defense;
+    teleOpPoints = TeleOpPoints(
+      coralScoreL1,
+      coralScoreL2,
+      coralScoreL3,
+      coralScoreL4,
+      algaeScoringBarge,
+      algaeScoringProcessor,
+      defense,
+    );
+    // log('TeleOp initialized: $teleOpPoints');
   }
 
   void UpdateData() {
-    LocalDataBase.putData(TeleType.CoralScoringLevel1, coralScoreL1);
-    LocalDataBase.putData(TeleType.CoralScoringLevel2, coralScoreL2);
-    LocalDataBase.putData(TeleType.CoralScoringLevel3, coralScoreL3);
-    LocalDataBase.putData(TeleType.CoralScoringLevel4, coralScoreL4);
-    LocalDataBase.putData(
-        TeleType.AlgaeScoringProcessor, algaeScoringProcessor);
-    LocalDataBase.putData(TeleType.AlgaeScoringBarge, algaeScoringBarge);
+    teleOpPoints = TeleOpPoints(
+      coralScoreL1,
+      coralScoreL2,
+      coralScoreL3,
+      coralScoreL4,
+      algaeScoringBarge,
+      algaeScoringProcessor,
+      defense,
+    );
+    widget.matchRecord.teleOpPoints.CoralScoringLevel1 = coralScoreL1;
+    widget.matchRecord.teleOpPoints.CoralScoringLevel2 = coralScoreL2;
+    widget.matchRecord.teleOpPoints.CoralScoringLevel3 = coralScoreL3;
+    widget.matchRecord.teleOpPoints.CoralScoringLevel4 = coralScoreL4;
+    widget.matchRecord.teleOpPoints.AlgaeScoringProcessor =
+        algaeScoringProcessor;
+    widget.matchRecord.teleOpPoints.AlgaeScoringBarge = algaeScoringBarge;
+    widget.matchRecord.teleOpPoints.Defense = defense;
+
+    saveState();
+  }
+
+  void saveState() {
+    LocalDataBase.putData('TeleOp', teleOpPoints.toJson());
+
+    // log('TeleOp state saved: $teleOpPoints');
+  }
+
+  @override
+  void dispose() {
+    // Make sure data is saved when navigating away
+    UpdateData();
+    saveState();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    print(LocalDataBase.getData('Settings.apiKey'));
-    print("Hello tELEoP");
+    // print(LocalDataBase.getData('Settings.apiKey'));
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -55,51 +99,29 @@ class _TeleOperatedState extends State<TeleOperated> {
                 CounterSettings(
                   (int value) {
                     setState(() {
-                      coralScoreL1++;
+                      coralScoreL4++;
                     });
-                    UpdateData();
                   },
                   (int value) {
                     setState(() {
-                      coralScoreL1--;
+                      coralScoreL4--;
                     });
-                    UpdateData();
                   },
                   icon: Icons.cyclone,
-                  number: coralScoreL1,
-                  counterText: "Level 1",
-                  color: Colors.green,
-                ),
-                CounterSettings(
-                  (int value) {
-                    setState(() {
-                      coralScoreL2++;
-                    });
-                    UpdateData();
-                  },
-                  (int value) {
-                    setState(() {
-                      coralScoreL2--;
-                    });
-                    UpdateData();
-                  },
-                  icon: Icons.cyclone,
-                  number: coralScoreL2,
-                  counterText: "Level 2",
-                  color: Colors.yellow,
+                  number: coralScoreL4,
+                  counterText: "Level 4",
+                  color: Colors.red,
                 ),
                 CounterSettings(
                   (int value) {
                     setState(() {
                       coralScoreL3++;
                     });
-                    UpdateData();
                   },
                   (int value) {
                     setState(() {
                       coralScoreL3--;
                     });
-                    UpdateData();
                   },
                   icon: Icons.cyclone,
                   number: coralScoreL3,
@@ -109,20 +131,34 @@ class _TeleOperatedState extends State<TeleOperated> {
                 CounterSettings(
                   (int value) {
                     setState(() {
-                      coralScoreL4++;
+                      coralScoreL2++;
                     });
-                    UpdateData();
                   },
                   (int value) {
                     setState(() {
-                      coralScoreL4--;
+                      coralScoreL2--;
                     });
-                    UpdateData();
                   },
                   icon: Icons.cyclone,
-                  number: coralScoreL4,
-                  counterText: "Level 4",
-                  color: Colors.red,
+                  number: coralScoreL2,
+                  counterText: "Level 2",
+                  color: Colors.yellow,
+                ),
+                CounterSettings(
+                  (int value) {
+                    setState(() {
+                      coralScoreL1++;
+                    });
+                  },
+                  (int value) {
+                    setState(() {
+                      coralScoreL1--;
+                    });
+                  },
+                  icon: Icons.cyclone,
+                  number: coralScoreL1,
+                  counterText: "Level 1",
+                  color: Colors.green,
                 ),
               ],
               const Icon(Icons.emoji_nature_outlined)),
@@ -134,13 +170,11 @@ class _TeleOperatedState extends State<TeleOperated> {
                     setState(() {
                       algaeScoringProcessor++;
                     });
-                    UpdateData();
                   },
                   (int value) {
                     setState(() {
                       algaeScoringProcessor--;
                     });
-                    UpdateData();
                   },
                   icon: Icons.wash,
                   number: algaeScoringProcessor,
@@ -152,13 +186,11 @@ class _TeleOperatedState extends State<TeleOperated> {
                     setState(() {
                       algaeScoringBarge++;
                     });
-                    UpdateData();
                   },
                   (int value) {
                     setState(() {
                       algaeScoringBarge--;
                     });
-                    UpdateData();
                   },
                   icon: Icons.rice_bowl_outlined,
                   number: algaeScoringBarge,
@@ -167,6 +199,11 @@ class _TeleOperatedState extends State<TeleOperated> {
                 ),
               ],
               const Icon(Icons.add_comment)),
+          buildCheckBox("Defense", defense, (bool value) {
+            setState(() {
+              defense = value;
+            });
+          }),
         ],
       ),
     );

@@ -1,5 +1,9 @@
-            - name: Flutter Deployment
+
+            - name: Check vulnerable NuGet packages
   # You may pin to the exact commit or the version.
-  # uses: jeanluc243/Flutter-Deployment@1fd33eb513293af0c6cde57363d66a6a848ef6e5
-  uses: jeanluc243/Flutter-Deployment@0.1
+  # uses: elmahio/github-check-vulnerable-nuget-packages-action@29003e92dc014c9b90f78a6f3ee7e8811f9ded0f
+  uses: elmahio/github-check-vulnerable-nuget-packages-action@v1
+  with:
+    # The project or solution file to operate on. If a file is not specified, the command will search current directory for one.
+    project: # optional
           

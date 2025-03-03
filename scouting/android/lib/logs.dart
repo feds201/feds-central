@@ -4,19 +4,30 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../components/DataBase.dart';
-import '../components/SwipeCards.dart';
-import '../components/compactifier.dart';
-import 'GeminiPrediction.dart';
+import 'services/DataBase.dart';
+import 'components/SwipeCards.dart';
+import 'components/compactifier.dart';
+import 'Match_Pages/GeminiPrediction.dart';
 
 class LogsPage extends StatelessWidget {
   const LogsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    List<String> matchData = MatchLogs.getLogs();
+    MatchDataBase.LoadAll();
+    print(MatchDataBase.Export());
+    List<MatchRecord> matchData = MatchDataBase.GetAll();
+
+    List<Widget> matchCards = [];
     for (int i = 0; i < matchData.length; i++) {
-      print(parseAndLogJson(matchData[i]));
+      matchCards.add(MatchCard(
+        matchData: json.encode(matchData[i].toJson()),
+        teamNumber: matchData[i].teamNumber,
+        eventName: matchData[i].eventKey,
+        allianceColor: matchData[i].allianceColor,
+        selectedStation: matchData[i].station.toString(),
+        matchKey: matchData[i].matchKey,
+      ));
     }
 
     return Scaffold(
@@ -55,7 +66,6 @@ class LogsPage extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.restore_from_trash_rounded),
             onPressed: () {
-              MatchLogs.clearLogs();
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
@@ -69,19 +79,9 @@ class LogsPage extends StatelessWidget {
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: CarouselSlider(
-          items: [
-            for (int i = 0; i < matchData.length; i++)
-              MatchCard(
-                matchData: matchData[i].toString(),
-                teamNumber: parseAndLogJson(matchData[i])[4],
-                eventName: parseAndLogJson(matchData[i])[0],
-                allianceColor: parseAndLogJson(matchData[i])[1],
-                selectedStation: parseAndLogJson(matchData[i])[2],
-                matchKey: parseAndLogJson(matchData[i])[3],
-              )
-          ],
+          items: matchCards,
           options: CarouselOptions(
-            height: MediaQuery.of(context).size.height,
+            height: MediaQuery.of(context).size.height * .8,
             enlargeFactor: 1,
             aspectRatio: 4 / 3,
             viewportFraction: 0.85,
@@ -98,21 +98,5 @@ class LogsPage extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  List<String> parseAndLogJson(String jsonString) {
-    try {
-      String correctedJsonString = correctJsonFormat(jsonString);
-      Map<String, dynamic> jsonObject = jsonDecode(correctedJsonString);
-      return [
-        jsonObject['TypeseventKey'],
-        jsonObject['TypesallianceColor'],
-        jsonObject['TypesselectedStation'],
-        jsonObject['TypesmatchKey'],
-        jsonObject['Typesteam']
-      ];
-    } catch (e) {
-      return [('Error: $e')];
-    }
   }
 }

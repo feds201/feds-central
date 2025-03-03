@@ -4,18 +4,18 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
+import 'package:scouting_app/Qualitative/QualitativePage.dart';
 import 'package:scouting_app/home_page.dart';
-import 'match.dart';
 import '../services/DataBase.dart';
 
-class MatchPage extends StatefulWidget {
-  const MatchPage({super.key});
+class Qualitative extends StatefulWidget {
+  const Qualitative({super.key});
 
   @override
-  MatchPageState createState() => MatchPageState();
+  QualitativeState createState() => QualitativeState();
 }
 
-class MatchPageState extends State<MatchPage> {
+class QualitativeState extends State<Qualitative> {
   late int selectedMatchType;
 
   @override
@@ -38,7 +38,7 @@ class MatchPageState extends State<MatchPage> {
               end: Alignment.bottomRight,
             ).createShader(bounds),
             child: Text(
-              'Match Scouting',
+              'Qualitative Scouting',
               style: GoogleFonts.museoModerno(
                 fontSize: 30,
                 fontWeight: FontWeight.w500,
@@ -78,7 +78,7 @@ class MatchPageState extends State<MatchPage> {
                   end: Alignment.bottomRight,
                 ).createShader(bounds),
             child: Text(
-              'Match Scouting',
+              'Qualitative Scouting',
               style: GoogleFonts.museoModerno(
                 fontSize: 30,
                 fontWeight: FontWeight.w500,
@@ -141,7 +141,7 @@ class MatchPageState extends State<MatchPage> {
             .toList()
           ..sort((a, b) => int.parse(a['match_number'].toString())
               .compareTo(int.parse(b['match_number'].toString())));
-
+        QualitativeDataBase.LoadAll();
         return ListView.builder(
           itemCount: filteredMatches.length,
           itemBuilder: (BuildContext context, int index) {
@@ -163,33 +163,53 @@ class MatchPageState extends State<MatchPage> {
                 // log(filteredMatches[index].toString());
                 String _scouterName = Hive.box('settings').get('deviceName');
                 String _allianceColor = Hive.box('userData').get('alliance');
-                String _station = Hive.box('userData').get('position');
-                String teamNNumber = filteredMatches[index]['alliances']
-                        [_allianceColor.toLowerCase()]['team_keys']
-                    [int.parse(_station) - 1];
-                MatchRecord matchRecord = MatchRecord(
-                  AutonPoints(0, 0, 0, 0, false, 0, 0),
-                  TeleOpPoints(0, 0, 0, 0, 0, 0, false),
-                  EndPoints(false, false, false, ""),
-                  teamNumber: teamNNumber.split(
-                    'frc',
-                  )[1],
-                  scouterName: _scouterName,
-                  matchKey: filteredMatches[index]['match_number'].toString(),
-                  allianceColor: _allianceColor,
-                  station: int.parse(_station),
-                  matchNumber: filteredMatches[index]['match_number'],
-                  eventKey: filteredMatches[index]['event_key'],
-                );
-                // log(matchRecord.toString());
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => Match(
-                            matchRecord: matchRecord,
-                          ),
-                      fullscreenDialog: true),
-                ).then((value) => print('Returned to Match Page'));
+
+                try {
+                  print("${filteredMatches[index]['key']}");
+                  print(QualitativeDataBase.GetData(
+                      filteredMatches[index]['key']));
+                  QualitativeRecord value = QualitativeRecord.fromJson(
+                      QualitativeDataBase.GetData(
+                          filteredMatches[index]['key']));
+                  print(value);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => QualitativePage(
+                        record: value,
+                      ),
+                    ),
+                  ).then((value) {
+                    if (value != null && value == true) {
+                      setState(() {});
+                    }
+                  });
+                } catch (e) {
+                  print("Ooopss" + e.toString());
+                  QualitativeRecord record = QualitativeRecord(
+                    scouterName: _scouterName,
+                    matchKey: filteredMatches[index]['key'],
+                    alliance: _allianceColor,
+                    matchNumber: filteredMatches[index]['match_number'],
+                    q1: '',
+                    q2: '',
+                    q3: '',
+                    q4: '',
+                  );
+
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => QualitativePage(
+                        record: record,
+                      ),
+                    ),
+                  ).then((value) {
+                    if (value != null && value == true) {
+                      setState(() {});
+                    }
+                  });
+                }
               },
             );
           },
@@ -230,33 +250,53 @@ class MatchPageState extends State<MatchPage> {
                 // log(filteredMatches[index].toString());
                 String _scouterName = Hive.box('settings').get('deviceName');
                 String _allianceColor = Hive.box('userData').get('alliance');
-                String _station = Hive.box('userData').get('position');
-                String teamNNumber = filteredMatches[index]['alliances']
-                        [_allianceColor.toLowerCase()]['team_keys']
-                    [int.parse(_station)];
-                MatchRecord matchRecord = MatchRecord(
-                  AutonPoints(0, 0, 0, 0, false, 0, 0),
-                  TeleOpPoints(0, 0, 0, 0, 0, 0, false),
-                  EndPoints(false, false, false, ""),
-                  teamNumber: teamNNumber.split(
-                    'frc',
-                  )[1],
-                  scouterName: _scouterName,
-                  matchKey: filteredMatches[index]['match_number'].toString(),
-                  allianceColor: _allianceColor,
-                  station: int.parse(_station),
-                  matchNumber: filteredMatches[index]['match_number'],
-                  eventKey: filteredMatches[index]['event_key'],
-                );
-                // log(matchRecord.toString());
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => Match(
-                            matchRecord: matchRecord,
-                          ),
-                      fullscreenDialog: true),
-                ).then((value) => print('Returned to Match Page'));
+
+                try {
+                  print("${filteredMatches[index]['key']}");
+                  print(QualitativeDataBase.GetData(
+                      filteredMatches[index]['key']));
+                  QualitativeRecord value = QualitativeRecord.fromJson(
+                      QualitativeDataBase.GetData(
+                          filteredMatches[index]['key']));
+                  print(value);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => QualitativePage(
+                        record: value,
+                      ),
+                    ),
+                  ).then((value) {
+                    if (value != null && value == true) {
+                      setState(() {});
+                    }
+                  });
+                } catch (e) {
+                  print("Ooopss" + e.toString());
+                  QualitativeRecord record = QualitativeRecord(
+                    scouterName: _scouterName,
+                    matchKey: filteredMatches[index]['key'],
+                    alliance: _allianceColor,
+                    matchNumber: filteredMatches[index]['match_number'],
+                    q1: '',
+                    q2: '',
+                    q3: '',
+                    q4: '',
+                  );
+
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => QualitativePage(
+                        record: record,
+                      ),
+                    ),
+                  ).then((value) {
+                    if (value != null && value == true) {
+                      setState(() {});
+                    }
+                  });
+                }
               },
             );
           },
@@ -289,33 +329,53 @@ class MatchPageState extends State<MatchPage> {
                 // log(filteredMatches[index].toString());
                 String _scouterName = Hive.box('settings').get('deviceName');
                 String _allianceColor = Hive.box('userData').get('alliance');
-                String _station = Hive.box('userData').get('position');
-                String teamNNumber = filteredMatches[index]['alliances']
-                        [_allianceColor.toLowerCase()]['team_keys']
-                    [int.parse(_station)];
-                MatchRecord matchRecord = MatchRecord(
-                  AutonPoints(0, 0, 0, 0, false, 0, 0),
-                  TeleOpPoints(0, 0, 0, 0, 0, 0, false),
-                  EndPoints(false, false, false, ""),
-                  teamNumber: teamNNumber.split(
-                    'frc',
-                  )[1],
-                  scouterName: _scouterName,
-                  matchKey: filteredMatches[index]['match_number'].toString(),
-                  allianceColor: _allianceColor,
-                  station: int.parse(_station),
-                  matchNumber: filteredMatches[index]['match_number'],
-                  eventKey: filteredMatches[index]['event_key'],
-                );
-                // log(matchRecord.toString());
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => Match(
-                            matchRecord: matchRecord,
-                          ),
-                      fullscreenDialog: true),
-                ).then((value) => print('Returned to Match Page'));
+
+                try {
+                  print("${filteredMatches[index]['key']}");
+                  print(QualitativeDataBase.GetData(
+                      filteredMatches[index]['key']));
+                  QualitativeRecord value = QualitativeRecord.fromJson(
+                      QualitativeDataBase.GetData(
+                          filteredMatches[index]['key']));
+                  print(value);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => QualitativePage(
+                        record: value,
+                      ),
+                    ),
+                  ).then((value) {
+                    if (value != null && value == true) {
+                      setState(() {});
+                    }
+                  });
+                } catch (e) {
+                  print("Ooopss" + e.toString());
+                  QualitativeRecord record = QualitativeRecord(
+                    scouterName: _scouterName,
+                    matchKey: filteredMatches[index]['key'],
+                    alliance: _allianceColor,
+                    matchNumber: filteredMatches[index]['match_number'],
+                    q1: '',
+                    q2: '',
+                    q3: '',
+                    q4: '',
+                  );
+
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => QualitativePage(
+                        record: record,
+                      ),
+                    ),
+                  ).then((value) {
+                    if (value != null && value == true) {
+                      setState(() {});
+                    }
+                  });
+                }
               },
             );
           },

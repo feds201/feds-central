@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:scouting_app/Pit_Recorder/Send_Pitdata.dart';
-import 'package:scouting_app/components/DataBase.dart';
+import 'package:scouting_app/services/DataBase.dart';
 
 import 'CheckLists.dart';
 
@@ -301,33 +301,4 @@ bool isScouted(int teamNumber, List<int> recorderTeam) {
   print(
       '$teamNumber is in $recorderTeam : ${recorderTeam.contains(teamNumber)}');
   return recorderTeam.contains(teamNumber);
-}
-
-class Team {
-  final int teamNumber;
-  final String nickname;
-  final String? city;
-  final String? stateProv;
-  final String? country;
-  final String? website;
-
-  Team({
-    required this.teamNumber,
-    required this.nickname,
-    this.city,
-    this.stateProv,
-    this.country,
-    this.website,
-  });
-
-  factory Team.fromJson(Map<String, dynamic> json) {
-    return Team(
-      teamNumber: json['team_number'],
-      nickname: json['nickname'],
-      city: json['city'],
-      stateProv: json['state_prov'],
-      country: json['country'],
-      website: json['website'],
-    );
-  }
 }

@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:scouting_app/Pit_Recorder/Pit_Recorder.dart';
-
-import 'Match_Pages/about_page.dart';
+import 'package:scouting_app/Qualitative/qualitative.dart';
+import 'Pit_Recorder/Pit_Recorder.dart';
+import 'about_page.dart';
 import 'Match_Pages/match_page.dart';
-import 'Match_Pages/settings_page.dart';
 import 'home_page.dart';
-import 'model/widget_data.dart';
+import 'services/Adapters/AutonPoints.dart';
+import 'settings_page.dart';
 
 const Color themeColor = Color.fromARGB(255, 255, 255, 0);
 const bool material3 = true;
@@ -24,8 +24,11 @@ void main() async {
   await Hive.openBox('pitData');
   await Hive.openBox('experiments');
   await Hive.openBox('scoutingItems');
-  Hive.registerAdapter(WidgetDataAdapter());
-  await Hive.openBox<WidgetData>('widgetBox');
+  await Hive.openBox('match');
+  await Hive.openBox('local');
+  await Hive.openBox('qualitative');
+  Hive.registerAdapter(AutonPointsAdapter());
+
   runApp(const MyApp());
 }
 
@@ -34,6 +37,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scouterNames =
+        Hive.box('userData').get('scouterNames', defaultValue: []);
     return MaterialApp(
       title: 'Scout Ops',
       theme: ThemeData(
@@ -48,6 +53,7 @@ class MyApp extends StatelessWidget {
         '/about': (context) => const AboutPage(),
         '/match_page': (context) => const MatchPage(),
         '/pit_page': (context) => const PitRecorder(),
+        '/qualitative': (context) => const Qualitative(),
       },
       home: const HomePage(),
     );
@@ -56,9 +62,6 @@ class MyApp extends StatelessWidget {
 
 bool isdarkmode() {
   return true;
-  Hive.box('userData').get('darkMode') ??
-      Hive.box('userData').put('darkMode', false);
-  return Hive.box('userData').get('darkMode');
 }
 
 Color invertColor(Color color) {
