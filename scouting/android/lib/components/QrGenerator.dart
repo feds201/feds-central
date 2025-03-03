@@ -10,7 +10,6 @@ import 'package:scouting_app/components/slider.dart';
 import '../Match_Pages/match_page.dart';
 import '../Plugins/plugin_state_manager.dart';
 import '../services/DataBase.dart';
-import 'compactifier.dart';
 
 class Qrgenerator extends StatefulWidget {
   final MatchRecord matchRecord;
@@ -21,12 +20,9 @@ class Qrgenerator extends StatefulWidget {
 }
 
 class QrCoder extends State<Qrgenerator> {
-  final LocalDataBase dataMaster = LocalDataBase();
   final PluginStateManager pluginStateManager = PluginStateManager();
   @override
   Widget build(BuildContext context) {
-    print(LocalDataBase.getData('Settings.apiKey'));
-
     return Scaffold(
       appBar: AppBar(
         title: Text('QR Code',
@@ -41,7 +37,7 @@ class QrCoder extends State<Qrgenerator> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             QrImageView(
-              data: widget.matchRecord.toJson().toString(),
+              data: json.encode(widget.matchRecord.toJson()),
               version: QrVersions.auto,
               size: MediaQuery.of(context).size.width - 40,
               semanticsLabel: 'QR code',
@@ -88,8 +84,7 @@ class QrCoder extends State<Qrgenerator> {
                   vibrationFlag: true,
                   width: MediaQuery.of(context).size.width - 40,
                   action: () async {
-                    await InititiateTransactions(
-                        widget.matchRecord.toJson().toString());
+                    await InititiateTransactions(widget.matchRecord.toString());
                     return true;
                   },
                   label: const Text(
@@ -147,7 +142,7 @@ class QrCoder extends State<Qrgenerator> {
             print('Data sent successfully.');
 
             // Example: Confirm whether data clearing and navigation are happening
-            LocalDataBase.clearData();
+
             print(LocalDataBase.getData('Settings.apiKey'));
 
             print("Data Cleared");
@@ -199,7 +194,6 @@ class QrCoder extends State<Qrgenerator> {
                   TextButton(
                     child: const Text('OK'),
                     onPressed: () {
-                      LocalDataBase.clearData();
                       print(LocalDataBase.getData('Settings.apiKey'));
                       print("Data Cleared");
                       Navigator.push(
@@ -243,14 +237,14 @@ class QrCoder extends State<Qrgenerator> {
       }
     } else {
       print('Server is not running.');
-      LocalDataBase.clearData();
       print(LocalDataBase.getData('Settings.apiKey'));
       print("Data Cleared");
 
-      await Navigator.push(
+      await Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
             builder: (context) => const MatchPage(), fullscreenDialog: true),
+        (Route<dynamic> route) => false,
       );
     }
   }

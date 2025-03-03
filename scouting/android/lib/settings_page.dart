@@ -86,6 +86,8 @@ class SettingsPageState extends State<SettingsPage> {
       }
       Hive.box('matchData')
           .put('matches', jsonDecode(responseForMatchData.body));
+
+      print(Hive.box('matchData').get('matches'));
     }
 
     var responseForPitData = await http.get(
@@ -266,25 +268,6 @@ class SettingsPageState extends State<SettingsPage> {
                               fontSize: 20, color: Colors.white),
                         ),
                       ),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          minimumSize: const Size(80, 50),
-                          foregroundColor: Colors.white,
-                          backgroundColor: Colors.redAccent[100],
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            side: const BorderSide(
-                              color: Colors.red,
-                              width: 3,
-                            ),
-                          ),
-                        ),
-                        onPressed: () {},
-                        onLongPress: () {},
-                        child: Text('Use Local',
-                            style: GoogleFonts.museoModerno(
-                                fontSize: 15, color: Colors.white)),
-                      ),
                     ],
                   )),
             ),
@@ -451,7 +434,6 @@ class SettingsPageState extends State<SettingsPage> {
                               Hive.box('matchData').deleteAll;
                               Hive.box('settings').deleteAll;
                               Hive.box('pitData').deleteAll;
-                              LocalDataBase.clearData();
                               Hive.box('matchData').delete('matches');
                             });
                           },

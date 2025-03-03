@@ -160,16 +160,20 @@ class QualitativeDataBase {
 }
 
 class QualitativeRecord {
-  final String scouterName;
-  final String matchKey;
-  final String q1;
-  final String q2;
-  final String q3;
-  final String q4;
+  String scouterName;
+  String matchKey;
+  int matchNumber;
+  String alliance;
+  String q1;
+  String q2;
+  String q3;
+  String q4;
 
   QualitativeRecord(
       {required this.scouterName,
       required this.matchKey,
+      required this.matchNumber,
+      required this.alliance,
       required this.q1,
       required this.q2,
       required this.q3,
@@ -179,10 +183,160 @@ class QualitativeRecord {
     return {
       "Scouter_Name": scouterName,
       "Match_Key": matchKey,
+      "Match_Number": matchNumber,
+      "Alliance": alliance,
       "Q1": q1,
       "Q2": q2,
       "Q3": q3,
       "Q4": q4,
+    };
+  }
+
+  static QualitativeRecord fromJson(Map<String, dynamic> json) {
+    return QualitativeRecord(
+      scouterName: json['Scouter_Name'] ?? "",
+      matchKey: json['Match_Key'] ?? "",
+      matchNumber: json['Match_Number'] ?? 0,
+      alliance: json['Alliance'] ?? "",
+      q1: json['Q1'] ?? "",
+      q2: json['Q2'] ?? "",
+      q3: json['Q3'] ?? "",
+      q4: json['Q4'] ?? "",
+    );
+  }
+
+  @override
+  String toString() {
+    return 'QualitativeRecord{scouterName: $scouterName, matchKey: $matchKey, matchNumber: $matchNumber, alliance: $alliance, q1: $q1, q2: $q2, q3: $q3, q4: $q4}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is QualitativeRecord &&
+        other.scouterName == scouterName &&
+        other.matchKey == matchKey &&
+        other.matchNumber == matchNumber &&
+        other.alliance == alliance &&
+        other.q1 == q1 &&
+        other.q2 == q2 &&
+        other.q3 == q3 &&
+        other.q4 == q4;
+  }
+
+  @override
+  int get hashCode {
+    return scouterName.hashCode ^
+        matchKey.hashCode ^
+        matchNumber.hashCode ^
+        alliance.hashCode ^
+        q1.hashCode ^
+        q2.hashCode ^
+        q3.hashCode ^
+        q4.hashCode;
+  }
+
+  static QualitativeRecord fromMap(Map<String, dynamic> map) {
+    return QualitativeRecord(
+      scouterName: map['Scouter_Name'] ?? "",
+      matchKey: map['Match_Key'] ?? "",
+      matchNumber: map['Match_Number'] ?? 0,
+      alliance: map['Alliance'] ?? "",
+      q1: map['Q1'] ?? "",
+      q2: map['Q2'] ?? "",
+      q3: map['Q3'] ?? "",
+      q4: map['Q4'] ?? "",
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'Scouter_Name': scouterName,
+      'Match_Key': matchKey,
+      'Match_Number': matchNumber,
+      'Alliance': alliance,
+      'Q1': q1,
+      'Q2': q2,
+      'Q3': q3,
+      'Q4': q4,
+    };
+  }
+
+  SetQ1(String value) {
+    q1 = value;
+  }
+
+  SetQ2(String value) {
+    q2 = value;
+  }
+
+  SetQ3(String value) {
+    q3 = value;
+  }
+
+  SetQ4(String value) {
+    q4 = value;
+  }
+
+  SetScouterName(String value) {
+    scouterName = value;
+  }
+
+  SetMatchKey(String value) {
+    matchKey = value;
+  }
+
+  SetMatchNumber(int value) {
+    matchNumber = value;
+  }
+
+  SetAlliance(String value) {
+    alliance = value;
+  }
+
+  getQ1() {
+    return q1;
+  }
+
+  getQ2() {
+    return q2;
+  }
+
+  getQ3() {
+    return q3;
+  }
+
+  getQ4() {
+    return q4;
+  }
+
+  getScouterName() {
+    return scouterName;
+  }
+
+  getMatchKey() {
+    return matchKey;
+  }
+
+  getMatchNumber() {
+    return matchNumber;
+  }
+
+  getAlliance() {
+    return alliance;
+  }
+
+  getAll() {
+    return {
+      'Scouter_Name': scouterName,
+      'Match_Key': matchKey,
+      'Match_Number': matchNumber,
+      'Alliance': alliance,
+      'Q1': q1,
+      'Q2': q2,
+      'Q3': q3,
+      'Q4': q4,
     };
   }
 }
@@ -248,9 +402,10 @@ class MatchRecord {
   final String teamNumber;
   final String scouterName;
   final String matchKey;
+  final int matchNumber;
   final String allianceColor;
   final String eventKey;
-  final String station;
+  final int station;
   AutonPoints autonPoints;
   TeleOpPoints teleOpPoints;
   EndPoints endPoints;
@@ -265,6 +420,7 @@ class MatchRecord {
     required this.allianceColor,
     required this.eventKey,
     required this.station,
+    required this.matchNumber,
   });
 
   Map<String, dynamic> toJson() {
@@ -286,18 +442,19 @@ class MatchRecord {
       AutonPoints.fromJson(json['autonPoints'] ?? {}),
       TeleOpPoints.fromJson(json['teleOpPoints'] ?? {}),
       EndPoints.fromJson(json['endPoints'] ?? {}),
-      teamNumber: json['teamNumber'] ?? 0,
+      teamNumber: json['teamNumber'] ?? "",
       scouterName: json['scouterName'] ?? "",
       matchKey: json['matchKey'] ?? "",
       allianceColor: json['allianceColor'] ?? "",
       eventKey: json['eventKey'] ?? "",
-      station: json['station'] ?? "",
+      station: json['station'] ?? 0,
+      matchNumber: json['matchNumber'] ?? 0,
     );
   }
 
   @override
   String toString() {
-    return 'MatchRecord{teamNumber: $teamNumber, scouterName: $scouterName, matchKey: $matchKey, autonPoints: $autonPoints, teleOpPoints: $teleOpPoints, endPoints: $endPoints}';
+    return 'MatchRecord{teamNumber: $teamNumber, scouterName: $scouterName, matchKey: $matchKey, autonPoints: $autonPoints, teleOpPoints: $teleOpPoints, endPoints: $endPoints, allianceColor: $allianceColor, eventKey: $eventKey, station: $station}';
   }
 
   @override
@@ -410,7 +567,7 @@ class TeleOpPoints {
   int CoralScoringLevel4 = 0;
   int AlgaeScoringBarge = 0;
   int AlgaeScoringProcessor = 0;
-  bool Defense = false;
+  bool Defense = true;
 
   TeleOpPoints(
     this.CoralScoringLevel1,
@@ -482,10 +639,10 @@ class TeleOpPoints {
 
 // EndPoints
 class EndPoints {
-  int Deep_Climb = 0;
-  int Shallow_Climb = 0;
-  int Park = 0;
-  int Comments = 0;
+  bool Deep_Climb = false;
+  bool Shallow_Climb = false;
+  bool Park = false;
+  String Comments = '';
 
   EndPoints(
     this.Deep_Climb,
@@ -536,20 +693,16 @@ class EndPoints {
         Comments.hashCode;
   }
 
-  setDeepClimb(int value) {
+  setDeepClimb(bool value) {
     Deep_Climb = value;
   }
 
-  setShallowClimb(int value) {
+  setShallowClimb(bool value) {
     Shallow_Climb = value;
   }
 
-  setPark(int value) {
+  setPark(bool value) {
     Park = value;
-  }
-
-  setComments(int value) {
-    Comments = value;
   }
 }
 
@@ -588,19 +741,42 @@ class LocalDataBase {
     Hive.box('local').put(key, value);
   }
 
+  // Get data from local storage
   static dynamic getData(String key) {
     return Hive.box('local').get(key);
   }
 
-  static void deleteData(String key) {
-    Hive.box('local').delete(key);
+  // Helper conversion methods
+  static AutonPoints mapToAutonPoints(Map<dynamic, dynamic> data) {
+    return AutonPoints(
+      data['CoralScoringLevel1'] ?? 0,
+      data['CoralScoringLevel2'] ?? 0,
+      data['CoralScoringLevel3'] ?? 0,
+      data['CoralScoringLevel4'] ?? 0,
+      data['LeftBarge'] ?? false,
+      data['AlgaeScoringProcessor'] ?? 0,
+      data['AlgaeScoringBarge'] ?? 0,
+    );
   }
 
-  static void clearData() {
-    Hive.box('local').clear();
+  static TeleOpPoints mapToTeleOpPoints(Map<dynamic, dynamic> data) {
+    return TeleOpPoints(
+      data['CoralScoringLevel1'] ?? 0,
+      data['CoralScoringLevel2'] ?? 0,
+      data['CoralScoringLevel3'] ?? 0,
+      data['CoralScoringLevel4'] ?? 0,
+      data['AlgaeScoringProcessor'] ?? 0,
+      data['AlgaeScoringBarge'] ?? 0,
+      data['Defended'] ?? false,
+    );
   }
 
-  static void printAll() {
-    print(Hive.box('local').toMap());
+  static EndPoints mapToEndPoints(Map<dynamic, dynamic> data) {
+    return EndPoints(
+      data['TrapScored'] ?? 0,
+      data['SpotlightLevel'] ?? 0,
+      data['Harmonize'] ?? false,
+      data['Park'] ?? false,
+    );
   }
 }

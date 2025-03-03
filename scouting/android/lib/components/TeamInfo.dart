@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-
 class MatchInfo extends StatelessWidget {
   final String assignedTeam;
-  final String assignedStation;
+  final int assignedStation;
   final String allianceColor;
   final VoidCallback onPressed;
 
-  const MatchInfo({super.key, 
+  const MatchInfo({
+    super.key,
     required this.assignedTeam,
     required this.assignedStation,
     required this.allianceColor,
@@ -24,7 +24,8 @@ class MatchInfo extends StatelessWidget {
   }
 
   // Create a widget from a map
-  factory MatchInfo.fromJson(Map<String, dynamic> json, VoidCallback onPressed) {
+  factory MatchInfo.fromJson(
+      Map<String, dynamic> json, VoidCallback onPressed) {
     return MatchInfo(
       assignedTeam: json['assignedTeam'],
       assignedStation: json['assignedStation'],
@@ -117,6 +118,7 @@ class MatchInfo extends StatelessWidget {
     );
   }
 }
+
 class TeamInfo extends StatelessWidget {
   final int teamNumber;
   final String nickname;
@@ -153,7 +155,8 @@ class TeamInfo extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  const Icon(Icons.engineering, size: 32, color: Colors.blueAccent),
+                  const Icon(Icons.engineering,
+                      size: 32, color: Colors.blueAccent),
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
@@ -170,7 +173,8 @@ class TeamInfo extends StatelessWidget {
               if (city != null || stateProv != null || country != null)
                 Row(
                   children: [
-                    const Icon(Icons.location_on, size: 20, color: Colors.redAccent),
+                    const Icon(Icons.location_on,
+                        size: 20, color: Colors.redAccent),
                     const SizedBox(width: 6),
                     Expanded(
                       child: Text(

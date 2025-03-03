@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:scouting_app/Qualitative/qualitative.dart';
 import 'Pit_Recorder/Pit_Recorder.dart';
 import 'about_page.dart';
 import 'Match_Pages/match_page.dart';
 import 'home_page.dart';
-import 'model/widget_data.dart';
+import 'services/Adapters/AutonPoints.dart';
 import 'settings_page.dart';
 
 const Color themeColor = Color.fromARGB(255, 255, 255, 0);
@@ -25,8 +26,9 @@ void main() async {
   await Hive.openBox('scoutingItems');
   await Hive.openBox('match');
   await Hive.openBox('local');
-  Hive.registerAdapter(WidgetDataAdapter());
-  await Hive.openBox<WidgetData>('widgetBox');
+  await Hive.openBox('qualitative');
+  Hive.registerAdapter(AutonPointsAdapter());
+
   runApp(const MyApp());
 }
 
@@ -49,7 +51,7 @@ class MyApp extends StatelessWidget {
         '/about': (context) => const AboutPage(),
         '/match_page': (context) => const MatchPage(),
         '/pit_page': (context) => const PitRecorder(),
-        // '/qualitative': (context) => const Qualitative(),
+        '/qualitative': (context) => const Qualitative(),
       },
       home: const HomePage(),
     );

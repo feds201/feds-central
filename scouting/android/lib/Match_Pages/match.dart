@@ -17,17 +17,14 @@ class Match extends StatefulWidget {
 }
 
 class MatchState extends State<Match> {
-  int _selectedIndex = 1;
+  int _selectedIndex = 0;
   String _allianceColor = "";
   String _selectedStation = "";
-  String _team = "";
   bool isExperimentBoxOpen = false;
 
   @override
   void initState() {
     super.initState();
-    print("Hello");
-    _checkExperimentBox();
   }
 
   Future<void> _checkExperimentBox() async {
@@ -39,7 +36,7 @@ class MatchState extends State<Match> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.matchRecord);
+    // print(widget.matchRecord);
     return PopScope(
         canPop: false,
         child: Scaffold(

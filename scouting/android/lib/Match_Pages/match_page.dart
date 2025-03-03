@@ -1,13 +1,11 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
-import 'package:scouting_app/Match_Pages/match.dart';
-import 'package:scouting_app/Match_Pages/match/EndGame.dart';
-import 'package:scouting_app/Qualitative/QualitativePage.dart';
-import 'package:scouting_app/components/MatchSelection.dart';
-
+import 'package:scouting_app/home_page.dart';
+import 'match.dart';
 import '../services/DataBase.dart';
 
 class MatchPage extends StatefulWidget {
@@ -29,7 +27,6 @@ class MatchPageState extends State<MatchPage> {
   @override
   Widget build(BuildContext context) {
     var data = Hive.box('matchData').get('matches');
-
     if (data == null) {
       return Scaffold(
         appBar: AppBar(
@@ -56,6 +53,23 @@ class MatchPageState extends State<MatchPage> {
     }
     return Scaffold(
       appBar: AppBar(
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.home),
+            onPressed: () async {
+              await Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const HomePage(),
+                  fullscreenDialog: true,
+                ),
+                (Route<dynamic> route) => false,
+              );
+
+              print('Navigated back to MatchPage and removed previous pages.');
+            },
+          ),
+        ],
         backgroundColor: Colors.transparent,
         title: ShaderMask(
             shaderCallback: (bounds) => const LinearGradient(
@@ -146,23 +160,28 @@ class MatchPageState extends State<MatchPage> {
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               onTap: () {
+                // log(filteredMatches[index].toString());
+                String _scouterName = Hive.box('settings').get('deviceName');
                 String _allianceColor = Hive.box('userData').get('alliance');
                 String _station = Hive.box('userData').get('position');
-                String _data = jsonEncode(filteredMatches[index]);
-                String teamNNumber =
-                    filteredMatches[index]['alliances']['red']['team_keys'][0];
+                String teamNNumber = filteredMatches[index]['alliances']
+                        [_allianceColor.toLowerCase()]['team_keys']
+                    [int.parse(_station) - 1];
                 MatchRecord matchRecord = MatchRecord(
-                  AutonPoints(0, 0, 0, 0, true, 0, 0),
-                  TeleOpPoints(0, 0, 0, 0, 0, 0, true),
-                  EndPoints(0, 0, 0, 0),
-                  teamNumber: teamNNumber,
-                  scouterName: "Robert",
-                  matchKey: "Ritesh is here",
+                  AutonPoints(0, 0, 0, 0, false, 0, 0),
+                  TeleOpPoints(0, 0, 0, 0, 0, 0, false),
+                  EndPoints(false, false, false, ""),
+                  teamNumber: teamNNumber.split(
+                    'frc',
+                  )[1],
+                  scouterName: _scouterName,
+                  matchKey: filteredMatches[index]['match_number'].toString(),
                   allianceColor: _allianceColor,
-                  station: _station,
+                  station: int.parse(_station),
+                  matchNumber: filteredMatches[index]['match_number'],
                   eventKey: filteredMatches[index]['event_key'],
                 );
-                String matchData = jsonEncode(filteredMatches[index]);
+                // log(matchRecord.toString());
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -207,7 +226,38 @@ class MatchPageState extends State<MatchPage> {
               ),
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-              onTap: () {},
+              onTap: () {
+                // log(filteredMatches[index].toString());
+                String _scouterName = Hive.box('settings').get('deviceName');
+                String _allianceColor = Hive.box('userData').get('alliance');
+                String _station = Hive.box('userData').get('position');
+                String teamNNumber = filteredMatches[index]['alliances']
+                        [_allianceColor.toLowerCase()]['team_keys']
+                    [int.parse(_station)];
+                MatchRecord matchRecord = MatchRecord(
+                  AutonPoints(0, 0, 0, 0, false, 0, 0),
+                  TeleOpPoints(0, 0, 0, 0, 0, 0, false),
+                  EndPoints(false, false, false, ""),
+                  teamNumber: teamNNumber.split(
+                    'frc',
+                  )[1],
+                  scouterName: _scouterName,
+                  matchKey: filteredMatches[index]['match_number'].toString(),
+                  allianceColor: _allianceColor,
+                  station: int.parse(_station),
+                  matchNumber: filteredMatches[index]['match_number'],
+                  eventKey: filteredMatches[index]['event_key'],
+                );
+                // log(matchRecord.toString());
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => Match(
+                            matchRecord: matchRecord,
+                          ),
+                      fullscreenDialog: true),
+                ).then((value) => print('Returned to Match Page'));
+              },
             );
           },
         );
@@ -223,23 +273,51 @@ class MatchPageState extends State<MatchPage> {
           itemCount: filteredMatches.length,
           itemBuilder: (BuildContext context, int index) {
             return ListTile(
-                title: Text('Match ${filteredMatches[index]['match_number']}'),
-                subtitle: const Text('Final Match'),
-                leading: Icon(Icons.sports_rugby,
-                    color: Theme.of(context).colorScheme.primary),
-                trailing: Icon(Icons.arrow_forward_ios,
-                    color: Theme.of(context).colorScheme.onSurface),
-                tileColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12.0),
-                ),
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                onTap: () {
-                  print(filteredMatches);
-                  _showMatchDetailsDialog(
-                      context, jsonDecode(matchData)[index]);
-                });
+              title: Text('Match ${filteredMatches[index]['match_number']}'),
+              subtitle: const Text('Final Match'),
+              leading: Icon(Icons.sports_rugby,
+                  color: Theme.of(context).colorScheme.primary),
+              trailing: Icon(Icons.arrow_forward_ios,
+                  color: Theme.of(context).colorScheme.onSurface),
+              tileColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12.0),
+              ),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              onTap: () {
+                // log(filteredMatches[index].toString());
+                String _scouterName = Hive.box('settings').get('deviceName');
+                String _allianceColor = Hive.box('userData').get('alliance');
+                String _station = Hive.box('userData').get('position');
+                String teamNNumber = filteredMatches[index]['alliances']
+                        [_allianceColor.toLowerCase()]['team_keys']
+                    [int.parse(_station)];
+                MatchRecord matchRecord = MatchRecord(
+                  AutonPoints(0, 0, 0, 0, false, 0, 0),
+                  TeleOpPoints(0, 0, 0, 0, 0, 0, false),
+                  EndPoints(false, false, false, ""),
+                  teamNumber: teamNNumber.split(
+                    'frc',
+                  )[1],
+                  scouterName: _scouterName,
+                  matchKey: filteredMatches[index]['match_number'].toString(),
+                  allianceColor: _allianceColor,
+                  station: int.parse(_station),
+                  matchNumber: filteredMatches[index]['match_number'],
+                  eventKey: filteredMatches[index]['event_key'],
+                );
+                // log(matchRecord.toString());
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => Match(
+                            matchRecord: matchRecord,
+                          ),
+                      fullscreenDialog: true),
+                ).then((value) => print('Returned to Match Page'));
+              },
+            );
           },
         );
 
@@ -257,9 +335,18 @@ class MatchPageState extends State<MatchPage> {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text("data"),
+              Text("Match Number: ${match['match_number']}"),
+              Text("Comp Level: ${match['comp_level']}"),
             ],
           ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Close'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
         );
       },
     );

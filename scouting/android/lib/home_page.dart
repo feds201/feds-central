@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:scouting_app/Match_Pages/match.dart';
 import 'package:scouting_app/Qualitative/qualitative.dart';
-import 'package:scouting_app/services/DataBase.dart';
 
 import 'Experiment/ExpStateManager.dart';
 import 'Match_Pages/match_page.dart';
@@ -105,11 +103,11 @@ class _HomePageState extends State<HomePage>
                 textColor: const Color.fromARGB(255, 172, 18, 18),
                 iconColor: const Color.fromARGB(255, 172, 18, 18),
                 onPressed: () {
-                  // Navigator.push(
-                  //     context,
-                  //     MaterialPageRoute(
-                  //         builder: (context) => const Qualitative(),
-                  //         fullscreenDialog: true));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const Qualitative(),
+                          fullscreenDialog: true));
                 },
               ),
               const SizedBox(height: 5),

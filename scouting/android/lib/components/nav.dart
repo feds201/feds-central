@@ -4,7 +4,6 @@ import 'package:scouting_app/Experiment/experiment.dart';
 import 'package:scouting_app/main.dart';
 
 import '../about_page.dart';
-import '../logs.dart';
 import '../Match_Pages/match_page.dart';
 import '../settings_page.dart';
 import '../home_page.dart';
@@ -62,7 +61,7 @@ class NavBar extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Scout Ops v.2.1',
+                    'Scout Ops v.2.0.1',
                     style: GoogleFonts.museoModerno(
                       fontSize: 14,
                       color: isdarkmode()

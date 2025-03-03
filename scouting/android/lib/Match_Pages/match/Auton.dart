@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:scouting_app/components/CheckBox.dart';
 import 'package:scouting_app/components/CommentBox.dart';
@@ -5,7 +7,6 @@ import 'package:scouting_app/components/CounterShelf.dart';
 
 import '../../services/DataBase.dart';
 import '../../components/TeamInfo.dart';
-import '../match.dart';
 
 class Auton extends StatefulWidget {
   final MatchRecord matchRecord;
@@ -27,31 +28,40 @@ class AutonState extends State<Auton> {
   late AutonPoints autonPoints;
 
   late String assignedTeam;
-  late String assignedStation;
+  late int assignedStation;
   late String matchKey;
   late String allianceColor;
+  late int matchNumber;
 
   @override
   void initState() {
     super.initState();
+    //   log(widget.matchRecord.toString());
 
-    autonPoints = LocalDataBase.getData('TEMP-Data') ??
-        AutonPoints(0, 0, 0, 0, false, 0, 0);
     assignedTeam = widget.matchRecord.teamNumber;
     assignedStation = widget.matchRecord.station;
     matchKey = widget.matchRecord.matchKey;
     allianceColor = widget.matchRecord.allianceColor;
-    left_barge = autonPoints.LeftBarge;
+    matchNumber = widget.matchRecord.matchNumber;
 
-    coralScoreL1 = autonPoints.CoralScoringLevel1;
-    coralScoreL2 = autonPoints.CoralScoringLevel2;
-    coralScoreL3 = autonPoints.CoralScoringLevel3;
-    coralScoreL4 = autonPoints.CoralScoringLevel4;
-    algaeScoringProcessor = autonPoints.AlgaeScoringProcessor;
-    algaeScoringBarge = autonPoints.AlgaeScoringBarge;
-    left_barge = autonPoints.LeftBarge;
-
-    UpdateData();
+    left_barge = widget.matchRecord.autonPoints.LeftBarge;
+    coralScoreL1 = widget.matchRecord.autonPoints.CoralScoringLevel1;
+    coralScoreL2 = widget.matchRecord.autonPoints.CoralScoringLevel2;
+    coralScoreL3 = widget.matchRecord.autonPoints.CoralScoringLevel3;
+    coralScoreL4 = widget.matchRecord.autonPoints.CoralScoringLevel4;
+    algaeScoringProcessor =
+        widget.matchRecord.autonPoints.AlgaeScoringProcessor;
+    algaeScoringBarge = widget.matchRecord.autonPoints.AlgaeScoringBarge;
+    autonPoints = AutonPoints(
+      coralScoreL1,
+      coralScoreL2,
+      coralScoreL3,
+      coralScoreL4,
+      left_barge,
+      algaeScoringProcessor,
+      algaeScoringBarge,
+    );
+    // log('Auton initialized: $autonPoints');
   }
 
   void UpdateData() {
@@ -64,27 +74,32 @@ class AutonState extends State<Auton> {
       algaeScoringProcessor,
       algaeScoringBarge,
     );
+
+    widget.matchRecord.autonPoints = autonPoints;
+    widget.matchRecord.autonPoints.LeftBarge = left_barge;
+    widget.matchRecord.autonPoints.CoralScoringLevel1 = coralScoreL1;
+    widget.matchRecord.autonPoints.CoralScoringLevel2 = coralScoreL2;
+    widget.matchRecord.autonPoints.CoralScoringLevel3 = coralScoreL3;
+    widget.matchRecord.autonPoints.CoralScoringLevel4 = coralScoreL4;
+    widget.matchRecord.autonPoints.AlgaeScoringProcessor =
+        algaeScoringProcessor;
+    widget.matchRecord.autonPoints.AlgaeScoringBarge = algaeScoringBarge;
+
     saveState();
   }
 
   void saveState() {
-    LocalDataBase.putData('autonPoints', autonPoints);
+    LocalDataBase.putData('Auton', autonPoints.toJson());
+
+    // log('Auton state saved: $autonPoints');
   }
 
-  void revertState() {
-    var savedData = LocalDataBase.getData('autonPoints');
-    if (savedData != null) {
-      setState(() {
-        coralScoreL1 = savedData['CoralScoringLevel1'];
-        coralScoreL2 = savedData['CoralScoringLevel2'];
-        coralScoreL3 = savedData['CoralScoringLevel3'];
-        coralScoreL4 = savedData['CoralScoringLevel4'];
-        algaeScoringProcessor = savedData['AlgaeScoringProcessor'];
-        algaeScoringBarge = savedData['AlgaeScoringBarge'];
-        left_barge = savedData['LeftBarge'];
-      });
-    }
-    print(savedData);
+  @override
+  void dispose() {
+    // Make sure data is saved when navigating away
+    UpdateData();
+    saveState();
+    super.dispose();
   }
 
   @override
@@ -101,7 +116,7 @@ class AutonState extends State<Auton> {
             assignedStation: assignedStation,
             allianceColor: allianceColor,
             onPressed: () {
-              print('Team Info START button pressed');
+              // print('Team Info START button pressed');
             },
           ),
           buildCheckBoxFull("Leave", left_barge, (bool value) {
@@ -118,13 +133,11 @@ class AutonState extends State<Auton> {
                     setState(() {
                       coralScoreL4++;
                     });
-                    UpdateData();
                   },
                   (int value) {
                     setState(() {
                       coralScoreL4--;
                     });
-                    UpdateData();
                   },
                   icon: Icons.cyclone,
                   number: coralScoreL4,
@@ -136,13 +149,11 @@ class AutonState extends State<Auton> {
                     setState(() {
                       coralScoreL3++;
                     });
-                    UpdateData();
                   },
                   (int value) {
                     setState(() {
                       coralScoreL3--;
                     });
-                    UpdateData();
                   },
                   icon: Icons.cyclone,
                   number: coralScoreL3,
@@ -154,13 +165,11 @@ class AutonState extends State<Auton> {
                     setState(() {
                       coralScoreL2++;
                     });
-                    UpdateData();
                   },
                   (int value) {
                     setState(() {
                       coralScoreL2--;
                     });
-                    UpdateData();
                   },
                   icon: Icons.cyclone,
                   number: coralScoreL2,
@@ -172,13 +181,11 @@ class AutonState extends State<Auton> {
                     setState(() {
                       coralScoreL1++;
                     });
-                    UpdateData();
                   },
                   (int value) {
                     setState(() {
                       coralScoreL1--;
                     });
-                    UpdateData();
                   },
                   icon: Icons.cyclone,
                   number: coralScoreL1,
@@ -195,13 +202,11 @@ class AutonState extends State<Auton> {
                     setState(() {
                       algaeScoringProcessor++;
                     });
-                    UpdateData();
                   },
                   (int value) {
                     setState(() {
                       algaeScoringProcessor--;
                     });
-                    UpdateData();
                   },
                   icon: Icons.wash,
                   number: algaeScoringProcessor,
@@ -213,13 +218,11 @@ class AutonState extends State<Auton> {
                     setState(() {
                       algaeScoringBarge++;
                     });
-                    UpdateData();
                   },
                   (int value) {
                     setState(() {
                       algaeScoringBarge--;
                     });
-                    UpdateData();
                   },
                   icon: Icons.rice_bowl_outlined,
                   number: algaeScoringBarge,
@@ -231,37 +234,5 @@ class AutonState extends State<Auton> {
         ],
       ),
     );
-  }
-}
-
-class AutonPoints {
-  final int CoralScoringLevel1;
-  final int CoralScoringLevel2;
-  final int CoralScoringLevel3;
-  final int CoralScoringLevel4;
-  final bool LeftBarge;
-  final int AlgaeScoringProcessor;
-  final int AlgaeScoringBarge;
-
-  AutonPoints(
-    this.CoralScoringLevel1,
-    this.CoralScoringLevel2,
-    this.CoralScoringLevel3,
-    this.CoralScoringLevel4,
-    this.LeftBarge,
-    this.AlgaeScoringProcessor,
-    this.AlgaeScoringBarge,
-  );
-
-  Map<String, dynamic> toJson() {
-    return {
-      'CoralScoringLevel1': CoralScoringLevel1,
-      'CoralScoringLevel2': CoralScoringLevel2,
-      'CoralScoringLevel3': CoralScoringLevel3,
-      'CoralScoringLevel4': CoralScoringLevel4,
-      'LeftBarge': LeftBarge,
-      'AlgaeScoringProcessor': AlgaeScoringProcessor,
-      'AlgaeScoringBarge': AlgaeScoringBarge,
-    };
   }
 }
