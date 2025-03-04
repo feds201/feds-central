@@ -88,7 +88,7 @@ public class posePathfindToReef extends Command {
     } else {
       tagIdFinal = -1;
     }
-    tagIdFinal = 18;
+    // tagIdFinal = 18;
 
     if (tagIdFinal == -1) {
       commandFinished = true;

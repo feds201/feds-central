@@ -38,6 +38,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.auton.MoveBack;
 import frc.robot.commands.auton.pathfindToReef;
@@ -194,7 +195,7 @@ public class RobotContainer extends RobotFramework {
                         * SafetyMap.kAngularRateMultiplier)));
 
         zeroMechanisms = new InstantCommand(()-> elevator.zeroElevator())
-        .alongWith(new InstantCommand(()-> swanNeck.zeroPivotPosition()));
+        .alongWith(new InstantCommand(()-> swanNeck.zeroPivotPosition())).alongWith(new InstantCommand(()-> climber.zeroClimber()));
 
         setupNamedCommands();
         autonChooser = AutoBuilder.buildAutoChooser();
@@ -284,7 +285,7 @@ public class RobotContainer extends RobotFramework {
         //Triggers
         // new Trigger(elevator :: getElevatorAboveThreshold).whileTrue(new ConfigureHologenicDrive(driverController, DrivetrainConstants.drivetrain));
         
-        new Trigger(elevator :: getElevatorAboveThreshold).onTrue(new ConfigureHologenicDrive(driverController, DrivetrainConstants.drivetrain)).onFalse(ConfigureHologenicDrive(driverController, swerveSubsystem, elevator));
+        new Trigger(elevator :: getElevatorAboveThreshold).and(RobotModeTriggers.teleop()).onTrue(new ConfigureHologenicDrive(driverController, DrivetrainConstants.drivetrain)).onFalse(ConfigureHologenicDrive(driverController, swerveSubsystem, elevator));
         //Operator
         operatorController.y()
             .whileTrue(new PlaceLOne(elevator, swanNeck));
@@ -303,6 +304,7 @@ public class RobotContainer extends RobotFramework {
         operatorController.leftBumper().whileTrue(new MoveBack(DrivetrainConstants.drivetrain));
 
         operatorController.rightBumper().whileTrue(new RotateElevatorDownPID(elevator));
+        operatorController.povDown().whileTrue(new RaiseClimberBasic(()-> .15, climber));
 
 
         
@@ -329,7 +331,7 @@ public class RobotContainer extends RobotFramework {
         driverController.povLeft()
                 .whileTrue(new RotateElevatorBasic(elevator.m_elevatorSpeed, elevator));
         
-        driverController.povUp()
+        driverController.povUp().and(operatorController.povUp())
                 .whileTrue(new RaiseClimberBasic(climber.m_climberSpeed , climber));
         
         // driverController.rightTrigger()
@@ -353,7 +355,7 @@ public class RobotContainer extends RobotFramework {
 
                 //testing purposes
       
-        driverController.a().whileTrue(new RaiseSwanNeck(swanNeck, swanNeck.m_swanNeckPivotSpeed));
+        // driverController.a().whileTrue(new RaiseSwanNeck(swanNeck, swanNeck.m_swanNeckPivotSpeed));
        
        
         // driverController.leftBumper()
@@ -371,6 +373,7 @@ public class RobotContainer extends RobotFramework {
         NamedCommands.registerCommand("ElevatorDown", new RotateElevatorDownPID(elevator).until(elevator :: pidDownAtSetpoint));
         NamedCommands.registerCommand("Feed", new IntakeCoralSequence(swanNeck));
         NamedCommands.registerCommand("L3Infinite", new RotateElevatorL3PID(elevator));
+        NamedCommands.registerCommand("ZeroMechanisms", zeroMechanisms);
     }
 
     public void setupPaths() {

@@ -100,6 +100,10 @@ public class Climber extends SubsystemABS {
     return climberMotorLeader.getPosition().getValueAsDouble();
   }
 
+  public void zeroClimber(){
+    climberMotorLeader.setPosition(0);
+  }
+
   @Override
   public void simulationPeriodic() {
     // TODO Auto-generated method stub

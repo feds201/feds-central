@@ -47,9 +47,9 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "L3Infinite",
-      "waypointRelativePos": 0.5980544747081615,
-      "endWaypointRelativePos": 0.9887159533073712,
+      "name": "Feed",
+      "waypointRelativePos": 0.2992217898832692,
+      "endWaypointRelativePos": null,
       "command": null
     }
   ],
