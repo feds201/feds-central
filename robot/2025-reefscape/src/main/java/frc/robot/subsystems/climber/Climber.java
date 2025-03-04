@@ -84,17 +84,17 @@ public class Climber extends SubsystemABS {
     ClimberMap.climberPID.setTolerance(tolerance);
   }
 
-  public boolean getLeftValue() {
-    return leftSwitch.get();
-  }
+  // public boolean getLeftValue() {
+  //   return leftSwitch.get();
+  // }
 
-  public boolean getRightValue() {
-    return rightSwitch.get();
-  }
+  // public boolean getRightValue() {
+  //   return rightSwitch.get();
+  // }
 
-  public boolean climberEngaged(){
-    return getLeftValue() && getRightValue();
-  }
+  // public boolean climberEngaged(){
+  //   return getLeftValue() && getRightValue();
+  // }
 
   public double getEncoderValue() {
     return climberMotorLeader.getPosition().getValueAsDouble();
@@ -102,6 +102,10 @@ public class Climber extends SubsystemABS {
 
   public void zeroClimber(){
     climberMotorLeader.setPosition(0);
+  }
+
+  public boolean climberPastZero(){
+    return getEncoderValue() < 0;
   }
 
   @Override

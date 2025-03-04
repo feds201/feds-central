@@ -33,7 +33,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Feed",
+      "name": "FeedThenL3",
       "waypointRelativePos": 0.30233463035019287,
       "endWaypointRelativePos": null,
       "command": null

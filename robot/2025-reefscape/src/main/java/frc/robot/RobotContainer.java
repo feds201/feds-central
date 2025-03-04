@@ -13,6 +13,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.commands.PathfindingCommand;
+import com.pathplanner.lib.events.EventTrigger;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.FileVersionException;
@@ -26,6 +27,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.wpilibj.XboxController.Axis;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -40,6 +42,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.commands.auton.FeedThenL3;
 import frc.robot.commands.auton.MoveBack;
 import frc.robot.commands.auton.pathfindToReef;
 import frc.robot.commands.auton.posePathfindToReef;
@@ -102,7 +105,6 @@ public class RobotContainer extends RobotFramework {
     private final Camera rearLeftCamera;
     private final Climber climber;
     public Command zeroMechanisms;
-    private boolean m_isInSwerveSlowMode;
 
     // private final Camera rearCamera;
     private final PathConstraints autoAlignConstraints;
@@ -149,10 +151,6 @@ public class RobotContainer extends RobotFramework {
 
         rearLeftCamera = new Camera(Subsystems.VISION, Subsystems.VISION.getNetworkTable(), ObjectType.APRIL_TAG_LEFT,
                 "limelight-one");
-        // rearCamera = new Camera(
-        // Subsystems.VISION,
-        // Subsystems.VISION.getNetworkTable(),
-        // ObjectType.APRIL_TAG_BACK);
 
         swanNeck = new SwanNeck(
                 Subsystems.INTAKE,
@@ -160,30 +158,8 @@ public class RobotContainer extends RobotFramework {
         telemetry = new Telemetry(5);
 
         teleOpChooser = new SendableChooser<>();
+
         setupDrivetrain();
-       
-        // DrivetrainConstants.drivetrain.setDefaultCommand(new Command() {
-
-        //     {
-        //         addRequirements(DrivetrainConstants.drivetrain, swerveSubsystem);
-        //     }
-
-        //     @Override
-        //     public void execute() {
-        //         Command selectedCommand = ConfigureHologenicDrive(driverController, swerveSubsystem, elevator);
-        //         SmartDashboard.putNumber("executeEncoderVal", elevator.getEncoderValueFromMotor());
-        //         // if(elevator.getEncoderValueFromMotor() > ElevatorMap.L2ROTATION ){
-        //         //     selectedCommand = ConfigureHologenicDriveSlew(driverController, swerveSubsystem);
-        //         // } else {
-        //         //     selectedCommand = ConfigureHologenicDrive(driverController, swerveSubsystem, elevator);
-        //         // }
-        //         if (selectedCommand != null) {
-        //             selectedCommand.schedule();
-        //         }
-        //     }
-
-        // }
-        // );
 
         DrivetrainConstants.drivetrain.setDefaultCommand(DrivetrainConstants.drivetrain.applyRequest(() -> DrivetrainConstants.drive
         .withVelocityX(-driverController.getLeftY() * SafetyMap.kMaxSpeed
@@ -197,6 +173,8 @@ public class RobotContainer extends RobotFramework {
         zeroMechanisms = new InstantCommand(()-> elevator.zeroElevator())
         .alongWith(new InstantCommand(()-> swanNeck.zeroPivotPosition())).alongWith(new InstantCommand(()-> climber.zeroClimber()));
 
+         
+        setupEventTriggers();
         setupNamedCommands();
         autonChooser = AutoBuilder.buildAutoChooser();
         setupPaths();
@@ -213,20 +191,6 @@ public class RobotContainer extends RobotFramework {
         return elevator;
     }
 
-    public void slowModeSwerve(){    
-    
-        // if Elevator is about L2, then
-        //    if slowMoServe hasn't been set and NOT auto-aligning then schedule SlowMoServe
-
-        if(elevator.getEncoderValue() > RobotMap.ElevatorMap.L2ROTATION - 1){
-            if (!m_isInSwerveSlowMode) {
-                new ConfigureHologenicDrive(driverController, DrivetrainConstants.drivetrain).schedule();;
-            }
-
-        } else {
-            m_isInSwerveSlowMode = false;
-        }
-    }
 
     public void setupVisionImplants() {
         var driveState = DrivetrainConstants.drivetrain.getState();
@@ -282,10 +246,9 @@ public class RobotContainer extends RobotFramework {
     }
 
     private void configureBindings() {
-        //Triggers
-        // new Trigger(elevator :: getElevatorAboveThreshold).whileTrue(new ConfigureHologenicDrive(driverController, DrivetrainConstants.drivetrain));
-        
+        //Triggers 
         new Trigger(elevator :: getElevatorAboveThreshold).and(RobotModeTriggers.teleop()).onTrue(new ConfigureHologenicDrive(driverController, DrivetrainConstants.drivetrain)).onFalse(ConfigureHologenicDrive(driverController, swerveSubsystem, elevator));
+        
         //Operator
         operatorController.y()
             .whileTrue(new PlaceLOne(elevator, swanNeck));
@@ -298,13 +261,16 @@ public class RobotContainer extends RobotFramework {
         operatorController.x()
             .whileTrue(new PlaceLFour(elevator, swanNeck).andThen(new RotateElevatorDownPID(elevator).until(elevator :: pidDownAtSetpoint)));
 
-        operatorController.povLeft()
-            .whileTrue(new RaiseSwanNeckPID(()-> RobotMap.IntakeMap.ReefStops.SAFEANGLE, swanNeck));
+        operatorController.axisLessThan(Axis.kLeftY.value, -0.1).whileTrue(new RaiseSwanNeck(swanNeck, ()-> .1));
+        operatorController.axisGreaterThan(Axis.kLeftY.value, 0.1).whileTrue(new RaiseSwanNeck(swanNeck, ()-> -.1));
+
+        operatorController.axisLessThan(Axis.kRightY.value, -0.1).whileTrue(new RotateElevatorBasic(()-> .1, elevator));
+        operatorController.axisGreaterThan(Axis.kRightY.value, 0.1).whileTrue(new RotateElevatorBasic(()-> -.1, elevator));
 
         operatorController.leftBumper().whileTrue(new MoveBack(DrivetrainConstants.drivetrain));
 
         operatorController.rightBumper().whileTrue(new RotateElevatorDownPID(elevator));
-        operatorController.povDown().whileTrue(new RaiseClimberBasic(()-> .15, climber));
+        operatorController.povDown().whileTrue(new RaiseClimberBasic(()-> .15, climber).unless(climber :: climberPastZero));
 
 
         
@@ -313,7 +279,7 @@ public class RobotContainer extends RobotFramework {
         driverController.povRight()
                 .onTrue(new InstantCommand(()-> CommandScheduler.getInstance().cancelAll()));
 
-        driverController.b().onTrue(zeroMechanisms);
+        // driverController.b().onTrue(zeroMechanisms);
         
         driverController.start()
                 .onTrue(DrivetrainConstants.drivetrain
@@ -323,56 +289,32 @@ public class RobotContainer extends RobotFramework {
                 .onTrue(new posePathfindToReef(frc.robot.commands.auton.posePathfindToReef.reefPole.LEFT,
                         DrivetrainConstants.drivetrain, frontRightCamera, frontLeftCamera));
 
-
         driverController.rightBumper()
                 .onTrue(new posePathfindToReef(frc.robot.commands.auton.posePathfindToReef.reefPole.RIGHT,
                         DrivetrainConstants.drivetrain, frontRightCamera, frontLeftCamera));
 
-        driverController.povLeft()
-                .whileTrue(new RotateElevatorBasic(elevator.m_elevatorSpeed, elevator));
-        
         driverController.povUp().and(operatorController.povUp())
                 .whileTrue(new RaiseClimberBasic(climber.m_climberSpeed , climber));
         
-        // driverController.rightTrigger()
-        //         .whileTrue(new RaiseSwanNeckPID(()-> .062, swanNeck));
         driverController.leftTrigger()
                 .whileTrue(new IntakeCoralSequence(swanNeck));
 
         driverController.rightTrigger()
                 .whileTrue(new SpinSwanWheels(swanNeck, swanNeck.m_swanNeckWheelSpeed));
         
-        // driverController.a().whileTrue(new RotateElevatorBasic(elevator.m_elevatorSpeed, elevator));
-        // operatorController.rightBumper().whileTrue(new RaiseSwanNeckPID(()-> .11, swanNeck));
-        // operatorController.leftBumper().whileTrue(new RaiseSwanNeckPID(()-> .07, swanNeck));
-        //  driverController.x().whileTrue(new RaiseSwanNeckPID(()-> .14, swanNeck));
-       
-       
-//.047
-        // operatorController.b()
-        //         .whileTrue(new RotateElevatorPID(elevator, () -> ElevatorMap.L2ROTATION));
-      
 
-                //testing purposes
-      
-        // driverController.a().whileTrue(new RaiseSwanNeck(swanNeck, swanNeck.m_swanNeckPivotSpeed));
-       
-       
-        // driverController.leftBumper()
-        //         .onTrue(new pathfindToReef(reefPole.LEFT, DrivetrainConstants.drivetrain, frontRightCamera, frontLeftCamera));
+    }
 
-        // driverController.rightBumper()
-        //         .onTrue(new pathfindToReef(reefPole.RIGHT, DrivetrainConstants.drivetrain, frontRightCamera, frontLeftCamera));
-        
+    private void setupEventTriggers(){
+         new EventTrigger("L3Infinite").whileTrue(new RotateElevatorL3PID(elevator));
+         new EventTrigger("FeedThenL3").whileTrue(new FeedThenL3(elevator, swanNeck));
     }
 
     private void setupNamedCommands() {
-        NamedCommands.registerCommand("Field Relative",
-                DrivetrainConstants.drivetrain.runOnce(() -> DrivetrainConstants.drivetrain.seedFieldCentric()));
+        NamedCommands.registerCommand("Field Relative", DrivetrainConstants.drivetrain.runOnce(() -> DrivetrainConstants.drivetrain.seedFieldCentric()));
         NamedCommands.registerCommand("L4", new PlaceLFour(elevator, swanNeck));
         NamedCommands.registerCommand("ElevatorDown", new RotateElevatorDownPID(elevator).until(elevator :: pidDownAtSetpoint));
         NamedCommands.registerCommand("Feed", new IntakeCoralSequence(swanNeck));
-        NamedCommands.registerCommand("L3Infinite", new RotateElevatorL3PID(elevator));
         NamedCommands.registerCommand("ZeroMechanisms", zeroMechanisms);
     }
 
