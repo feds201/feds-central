@@ -5,7 +5,6 @@ import 'package:qr_flutter/qr_flutter.dart';
 import 'package:scouting_app/components/CommentBox.dart';
 
 import 'FullScreenQrCodePage.dart';
-import 'compactifier.dart';
 
 class MatchCard extends StatelessWidget {
   final String matchData;

@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:scouting_app/components/CheckBox.dart';
 import 'package:scouting_app/components/QrGenerator.dart';
@@ -18,7 +16,6 @@ class EndGameState extends State<EndGame> {
   late bool deep_climb;
   late bool shallow_climb;
   late bool park;
-  late String comment;
 
   late EndPoints endPoints;
 
@@ -27,6 +24,8 @@ class EndGameState extends State<EndGame> {
   late String matchKey;
   late String allianceColor;
   late int matchNumber;
+
+  TextEditingController commentController = TextEditingController();
 
   @override
   void initState() {
@@ -41,24 +40,26 @@ class EndGameState extends State<EndGame> {
     deep_climb = widget.matchRecord.endPoints.Deep_Climb;
     shallow_climb = widget.matchRecord.endPoints.Shallow_Climb;
     park = widget.matchRecord.endPoints.Park;
-    comment = widget.matchRecord.endPoints.Comments;
+    commentController.text = widget.matchRecord.endPoints.Comments;
 
-    endPoints = EndPoints(deep_climb, shallow_climb, park, comment);
+    endPoints =
+        EndPoints(deep_climb, shallow_climb, park, commentController.text);
   }
 
   void UpdateData() {
-    endPoints = EndPoints(deep_climb, shallow_climb, park, comment);
+    endPoints =
+        EndPoints(deep_climb, shallow_climb, park, commentController.text);
     widget.matchRecord.endPoints.Deep_Climb = deep_climb;
     widget.matchRecord.endPoints.Shallow_Climb = shallow_climb;
     widget.matchRecord.endPoints.Park = park;
-    widget.matchRecord.endPoints.Comments = comment;
+    widget.matchRecord.endPoints.Comments = commentController.text;
     widget.matchRecord.endPoints = endPoints;
+
     saveState();
   }
 
   void saveState() {
     LocalDataBase.putData('endPoints', endPoints.toJson());
-
     // log('EndGame state saved: $endPoints');
   }
 
@@ -73,6 +74,7 @@ class EndGameState extends State<EndGame> {
   @override
   Widget build(BuildContext context) {
     // print(LocalDataBase.getData('Settings.apiKey'));
+    // print(endPoints.Comments);
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -97,6 +99,84 @@ class EndGameState extends State<EndGame> {
               park = value; // changed 'parked' to 'park'
             });
           }),
+          const SizedBox(height: 6),
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              color: const Color.fromARGB(255, 255, 255, 255),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.2),
+                  spreadRadius: 2,
+                  blurRadius: 8,
+                  offset: const Offset(0, 3),
+                ),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 16, top: 16, bottom: 8),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.comment_outlined,
+                        color: Colors.blueAccent,
+                        size: 24,
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        "Comments",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding:
+                      const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+                  child: TextField(
+                    controller: commentController,
+                    maxLines: 4,
+                    style: TextStyle(fontSize: 16),
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.grey.shade50,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide:
+                            BorderSide(color: Colors.grey.shade300, width: 1),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide:
+                            BorderSide(color: Colors.grey.shade300, width: 1),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide:
+                            BorderSide(color: Colors.blueAccent, width: 2),
+                      ),
+                      hintText:
+                          'Add any relevant notes about the team\'s performance...',
+                      hintStyle:
+                          TextStyle(color: Colors.grey.shade400, fontSize: 15),
+                      contentPadding: const EdgeInsets.symmetric(
+                          vertical: 16, horizontal: 16),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 6),
+          const SizedBox(height: 6),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Container(
@@ -131,6 +211,7 @@ class EndGameState extends State<EndGame> {
                             builder: (context) =>
                                 Qrgenerator(matchRecord: widget.matchRecord),
                             fullscreenDialog: true));
+                    return null;
                   },
                   label: const Text("Slide to Complete Event",
                       style: TextStyle(

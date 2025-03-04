@@ -6,7 +6,6 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'services/DataBase.dart';
 import 'components/SwipeCards.dart';
-import 'components/compactifier.dart';
 import 'Match_Pages/GeminiPrediction.dart';
 
 class LogsPage extends StatelessWidget {
@@ -66,6 +65,7 @@ class LogsPage extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.restore_from_trash_rounded),
             onPressed: () {
+              MatchDataBase.ClearData();
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(

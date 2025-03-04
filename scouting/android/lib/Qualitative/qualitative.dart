@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -384,31 +383,5 @@ class QualitativeState extends State<Qualitative> {
       default:
         return const Center(child: Text('Unknown Match Type'));
     }
-  }
-
-  void _showMatchDetailsDialog(BuildContext context, dynamic match) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Match Details'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text("Match Number: ${match['match_number']}"),
-              Text("Comp Level: ${match['comp_level']}"),
-            ],
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text('Close'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
   }
 }

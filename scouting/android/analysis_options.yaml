@@ -14,7 +14,7 @@ analyzer:
     constant_identifier_names: ignore
     deprecated_member_use: ignore
     file_names: ignore
-    library_private_types_in_public_api: ignore ignore
+    library_private_types_in_public_api: ignore
     non_constant_identifier_names: ignore
     prefer_interpolation_to_compose_strings: ignore
 include: package:flutter_lints/flutter.yaml

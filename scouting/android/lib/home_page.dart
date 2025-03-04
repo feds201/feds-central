@@ -90,6 +90,7 @@ class _HomePageState extends State<HomePage>
       animation: _colorAnimation,
       builder: (context, child) {
         return BottomSheet(
+          enableDrag: false,
           onClosing: () {},
           builder: (BuildContext context) {
             List<Widget> children = [

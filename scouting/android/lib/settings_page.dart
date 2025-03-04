@@ -100,8 +100,46 @@ class SettingsPageState extends State<SettingsPage> {
         print('Success');
       }
       Hive.box('pitData').put('teams', (responseForPitData.body));
+      setState(() {
+        isLoading = false;
+      });
+    } else {
+      if (kDebugMode) {
+        print('Error: ${responseForPitData.statusCode}');
+        setState(() {
+          isLoading = true;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                Icon(Icons.error_outline, color: Colors.white), // Error icon
+                SizedBox(width: 10), // Spacing
+                Expanded(
+                  child: Text(
+                    "Bro... maybe, just maybe, check your API Key and Event Key before blaming the universe for my app not working. Just a thought. 🙃",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: Colors.redAccent,
+            behavior: SnackBarBehavior.floating, // Floating style
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            duration: Duration(seconds: 5),
+            action: SnackBarAction(
+              label: "Retry",
+              textColor: Colors.white,
+              onPressed: () {
+                // Add retry logic here
+              },
+            ),
+          ),
+        );
+      }
     }
-
     setState(() {
       isLoading = false;
     });
@@ -109,6 +147,8 @@ class SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
+    eventKeyController.text =
+        Hive.box('userData').get('eventKey', defaultValue: '');
     return Scaffold(
       drawer: const NavBar(),
       appBar: AppBar(

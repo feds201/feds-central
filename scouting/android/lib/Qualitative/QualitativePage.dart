@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 import 'package:scouting_app/components/Button.dart';
 import 'package:scouting_app/components/FullScreenQrCodePage.dart';
 import 'package:scouting_app/services/DataBase.dart';
@@ -9,7 +8,7 @@ import 'package:scouting_app/components/TextBox.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class QualitativePage extends StatefulWidget {
-  QualitativeRecord record;
+  final QualitativeRecord record;
   QualitativePage({super.key, required this.record});
 
   @override
