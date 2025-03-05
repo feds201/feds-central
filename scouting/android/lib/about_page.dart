@@ -1193,7 +1193,7 @@ class AboutPage extends StatelessWidget {
                           ),
                           onPressed: () {
                             launchUrl(Uri.parse(
-                                "https://github.com/FEDS201-Scout-Ops"));
+                                "https://github.com/feds201/Scout-Ops-Android"));
                           },
                         ),
                       ),

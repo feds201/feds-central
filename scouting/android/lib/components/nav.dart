@@ -61,16 +61,36 @@ class NavBar extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Text(
-                    'Scout Ops v.2.0.1',
-                    style: GoogleFonts.museoModerno(
-                      fontSize: 14,
-                      color: isdarkmode()
-                          ? const Color.fromARGB(255, 255, 255, 255)
-                          : invertColor(
-                              const Color.fromARGB(255, 255, 255, 255)),
-                      fontWeight: FontWeight.w400,
-                    ),
+                  Row(
+                    children: [
+                      Text(
+                        'Scout Ops v.2.0.1',
+                        style: GoogleFonts.museoModerno(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.white.withOpacity(0.8),
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      ShaderMask(
+                        shaderCallback: (bounds) => const LinearGradient(
+                          colors: [
+                            Color.fromARGB(255, 255, 17, 0),
+                            Color.fromARGB(255, 0, 81, 148)
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ).createShader(bounds),
+                        child: Text(
+                          'MK3',
+                          style: GoogleFonts.museoModerno(
+                            fontSize: 14,
+                            color: const Color.fromARGB(255, 255, 255, 255),
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

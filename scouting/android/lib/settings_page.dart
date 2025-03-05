@@ -21,6 +21,7 @@ class SettingsPage extends StatefulWidget {
 }
 
 class SettingsPageState extends State<SettingsPage> {
+  String version = '2.0.1.2';
   bool isLocationGranted = false;
   bool isBluetoothGranted = false;
   bool isNearbyDevicesGranted = false;
@@ -475,6 +476,70 @@ class SettingsPageState extends State<SettingsPage> {
                               Hive.box('settings').deleteAll;
                               Hive.box('pitData').deleteAll;
                               Hive.box('matchData').delete('matches');
+                            });
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: ChoiceChip(
+                          label: Center(
+                            child: Text(
+                              'Check for Updates',
+                              style: GoogleFonts.museoModerno(
+                                  fontSize: 25, color: Colors.white),
+                            ),
+                          ),
+                          selectedColor: const Color.fromARGB(255, 25, 89, 241),
+                          selected: true,
+                          showCheckmark: false,
+                          side: const BorderSide(color: Colors.black),
+                          onSelected: (bool selected) {
+                            http.Request(
+                              "GET",
+                              Uri.parse(
+                                  "https://api.github.com/repos/feds201/Scout-Ops-Android/releases/latest"),
+                            ).send().then((response) {
+                              response.stream.bytesToString().then((body) {
+                                final jsonData = jsonDecode(body);
+                                String remoteTag = jsonData[
+                                    'tag_name']; // e.g. "Version-2.0.1.3"
+                                if (remoteTag.startsWith("Version-")) {
+                                  remoteTag =
+                                      remoteTag.substring("Version-".length);
+                                }
+                                List<int> localParts =
+                                    version.split('.').map(int.parse).toList();
+                                List<int> remoteParts = remoteTag
+                                    .split('.')
+                                    .map(int.parse)
+                                    .toList();
+                                print("Local Nav: $localParts");
+                                print("Remote Nav: $remoteParts");
+                                int compare = 0;
+                                for (int i = 0; i < localParts.length; i++) {
+                                  if (i >= remoteParts.length) break;
+                                  if (remoteParts[i] > localParts[i]) {
+                                    compare = 1;
+                                    break;
+                                  } else if (remoteParts[i] < localParts[i]) {
+                                    compare = -1;
+                                    break;
+                                  }
+                                }
+                                if (compare > 0) {
+                                  print("Update Available");
+                                  print(jsonData["assets"][0]
+                                      ["browser_download_url"]);
+                                } else {
+                                  print("No Update Available");
+                                }
+                              });
                             });
                           },
                         ),

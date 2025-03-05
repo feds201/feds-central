@@ -636,6 +636,7 @@ class TeleOpPoints {
   int CoralScoringLevel4 = 0;
   int AlgaeScoringBarge = 0;
   int AlgaeScoringProcessor = 0;
+  int AlgaePickUp = 0;
   bool Defense = true;
 
   TeleOpPoints(
@@ -645,6 +646,7 @@ class TeleOpPoints {
     this.CoralScoringLevel4,
     this.AlgaeScoringBarge,
     this.AlgaeScoringProcessor,
+    this.AlgaePickUp,
     this.Defense,
   );
 
@@ -656,6 +658,7 @@ class TeleOpPoints {
       "CoralScoringLevel4": CoralScoringLevel4,
       "AlgaeScoringBarge": AlgaeScoringBarge,
       "AlgaeScoringProcessor": AlgaeScoringProcessor,
+      "AlgaePickUp": AlgaePickUp,
       "Defense": Defense,
     };
   }
@@ -668,6 +671,7 @@ class TeleOpPoints {
       json['CoralScoringLevel4'] ?? 0,
       json['AlgaeScoringBarge'] ?? 0,
       json['AlgaeScoringProcessor'] ?? 0,
+      json['AlgaePickUp'] ?? 0,
       json['Defense'] ?? 0,
     );
   }
@@ -836,6 +840,7 @@ class LocalDataBase {
       data['CoralScoringLevel4'] ?? 0,
       data['AlgaeScoringProcessor'] ?? 0,
       data['AlgaeScoringBarge'] ?? 0,
+      data['AlgaePickUp'] ?? 0,
       data['Defended'] ?? false,
     );
   }

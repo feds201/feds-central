@@ -174,7 +174,7 @@ class MatchPageState extends State<MatchPage> {
                     [int.parse(_station) - 1];
                 MatchRecord matchRecord = MatchRecord(
                   AutonPoints(0, 0, 0, 0, false, 0, 0),
-                  TeleOpPoints(0, 0, 0, 0, 0, 0, false),
+                  TeleOpPoints(0, 0, 0, 0, 0, 0, 0, false),
                   EndPoints(false, false, false, ""),
                   teamNumber: teamNNumber.split(
                     'frc',
@@ -241,7 +241,7 @@ class MatchPageState extends State<MatchPage> {
                     [int.parse(_station)];
                 MatchRecord matchRecord = MatchRecord(
                   AutonPoints(0, 0, 0, 0, false, 0, 0),
-                  TeleOpPoints(0, 0, 0, 0, 0, 0, false),
+                  TeleOpPoints(0, 0, 0, 0, 0, 0, 0, false),
                   EndPoints(false, false, false, ""),
                   teamNumber: teamNNumber.split(
                     'frc',
@@ -300,7 +300,7 @@ class MatchPageState extends State<MatchPage> {
                     [int.parse(_station)];
                 MatchRecord matchRecord = MatchRecord(
                   AutonPoints(0, 0, 0, 0, false, 0, 0),
-                  TeleOpPoints(0, 0, 0, 0, 0, 0, false),
+                  TeleOpPoints(0, 0, 0, 0, 0, 0, 0, false),
                   EndPoints(false, false, false, ""),
                   teamNumber: teamNNumber.split(
                     'frc',
@@ -781,7 +781,93 @@ class MatchPageState extends State<MatchPage> {
       "Your data is your weapon—use it wisely.",
       "Precision in scouting leads to domination on the field.",
       "The best alliances are chosen, not given.",
+      "To defeat the ops, you must scout them using Scout Ops.",
       "Numbers don't lie—trust the data, trust the process.",
+      "If this app breaks, it's your fault not ours",
+      "Agents, remember a goup of spies is always better then a hivemind",
+      "Every match you scout is a step closer to seeing your strategy come to life.",
+      "The robots may be on the field, but the future is in your notes.",
+      "A great match starts with great data; your observations lay the foundation for victory.",
+      "The more you know, the better you grow. Scout with precision, compete with confidence.",
+      "Behind every winning strategy is a team that never stopped analyzing.",
+      "Scouting isn’t just about watching robots, it’s about understanding the rhythm of the game.",
+      "Success in FRC is built on the small moments captured in your scouting sheets.",
+      "In scouting, every detail matters — it’s the difference between a good match and a great one.",
+      "When you see the game clearly, you can outthink the competition.",
+      "Scouting is the quiet hero of every FRC match — it's the knowledge that wins the battle.",
+      "Every match you scout is a step closer to seeing your strategy come to life.",
+      "The robots may be on the field, but the future is in your notes.",
+      "A great match starts with great data; your observations lay the foundation for victory.",
+      "The more you know, the better you grow. Scout with precision, compete with confidence.",
+      "Behind every winning strategy is a team that never stopped analyzing.",
+      "Scouting isn’t just about watching robots, it’s about understanding the rhythm of the game.",
+      "Success in FRC is built on the small moments captured in your scouting sheets.",
+      "In scouting, every detail matters — it’s the difference between a good match and a great one.",
+      "When you see the game clearly, you can outthink the competition.",
+      "Scouting is the quiet hero of every FRC match — it's the knowledge that wins the battle.",
+      "Follow our lord and savior, Ritesh Raj, for a scouting advantage",
+      "Just like the beat of Dandanakka, Ritesh Raj Arul Selvan’s app brings the rhythm to your scouting, making every match easier to analyze and every strategy stronger!",
+      "In the rhythm of scouting, we don’t just follow the beat; we create it—just like Dandanakka!",
+      "Just like Dandanakka’s catchy beat, every piece of scouting data adds to the flow that leads to victory!",
+      "When the competition feels overwhelming, remember: keep the tempo steady, just like Dandanakka, and success will follow.",
+      "Every match you scout adds a layer to your strategy, just like the layers of rhythm in Dandanakka—steady, strong, and unstoppable.",
+      "Just as Dandanakka captures your attention, the details in every match you scout will grab your team's focus and lead them to greatness.",
+      "Keep your scouting as sharp as Dandanakka’s beat, and you’ll compose a strategy that moves with power and precision!",
+      "In the Reefscape, your scouting knowledge is the bassline that keeps the strategy in sync, just like Dandanakka keeps the crowd moving.",
+      "Like the infectious groove of Dandanakka, your scouting energy fuels the team's drive to perform with confidence.",
+      "As Dandanakka's rhythm builds to a crescendo, your insights will shape a strategy that rises above the competition.",
+      "The best teams in Reefscape move with precision—just like the rhythm of Dandanakka, they know when to strike and when to adapt.",
+      "In the Reefscape, every team is a unique species—scouting helps you understand their strengths and weaknesses.",
+      "Scouting is like mapping the ocean’s currents; the more you understand, the smoother your journey to victory.",
+      "A healthy reef thrives on diversity—your scouting insights bring together the unique strengths of every team.",
+      "In the depths of competition, your scouting knowledge is the lighthouse guiding your team toward success.",
+      "Just as a reef is built by countless tiny pieces, a winning strategy is formed from the details you discover through scouting.",
+      "Like coral in a reef, each match provides another layer of insight to strengthen your team's foundation.",
+      "Dive deep into the data—every match is an opportunity to uncover the hidden treasures of strategy.",
+      "In the Reefscape, the best teams don’t just survive—they adapt and thrive by learning from every match.",
+      "The ocean of competition is vast, but your scouting maps the best path to victory.",
+      "Just like the beat of Dandanakka, Ritesh Raj Arul Selvan’s app brings the rhythm to your scouting, making every match easier to analyze and every strategy stronger!",
+      "When scouting feels like a dance, Ritesh Raj Arul Selvan is the DJ, and his app is the track that keeps us in sync with every match!",
+      "Ritesh Raj Arul Selvan’s app makes scouting as smooth as Dandanakka’s groove—every piece of data fits perfectly into the rhythm of victory!"
+          "In the Reefscape, the key to success is precision, and thanks to Ritesh Raj Arul Selvan’s app, your scouting is as sharp and cool as the beat of Dandanakka!",
+      "Just as Dandanakka’s rhythm stays fresh and exciting, Ritesh Raj Arul Selvan’s app transforms scouting into a dynamic, essential tool for every winning strategy!",
+      "Ritesh Raj Arul Selvan made scouting as cool as the Dandanakka beat—every match you analyze brings you one step closer to victory!",
+      "In the Reefscape, your scouting game is as strong as the Dandanakka rhythm, and it's all thanks to Ritesh Raj Arul Selvan’s app helping you stay ahead!",
+      "With Ritesh Raj Arul Selvan’s app, you’re not just scouting—you’re orchestrating a strategy, just like Dandanakka sets the perfect tempo for a hit!",
+      "Just like the flow of Dandanakka, Ritesh Raj Arul Selvan’s app lets your scouting data move seamlessly into a perfect winning strategy.",
+
+      // memes:
+      //Timothy
+      "Timothy, oh Timothy,Tripped on a rock and lost his tea!(Now he's just mothy, sipping air instead of coffee.) ",
+      "Timothy, the gym is free But he’d rather nap under a tree. (Workout? Nah. Dreaming of snacks instead.)",
+      "Timothy, the symphony, Played his trumpet in disharmony. (They said stop, but he played non-stop.) ",
+      "Timothy, full of energy, Tripped and spilled his cup of tea. (Now he’s just Tim-oh-pee, sad and tea-free.) ",
+      "Timothy, the referee, Accidentally called a foul on a tree (The tree protested, but Tim stood firmly.) ",
+
+      //Sukhesh
+      "Sukhesh, oh Sukhesh,Thinks he’s cool, but he's just a mess.(Tripped on air, spilled his drink—now he’s drenched, no less! )",
+      "Sukhesh tried to flex his cash,Turns out it's all just fake mustache.(Big talk, small wallet—living life on borrowed stash. )",
+      "Sukhesh says he’s fast and fresh,But even a turtle makes him stress.(Slow-motion legend, breaking records in reverse. )",
+      "Sukhesh thinks he's got that drip,But his style looks like a garage sale flip.(Mismatched socks and a shirt that rips—fashion police, please assist! )",
+      "Sukhesh, the king of trash talk,But runs away when it’s time to walk.",
+
+      //Adit
+      "Adit, oh Adit, Hit his head on a door—just a bit!(Now he ducks, but still gets stuck.)",
+      "Adit, the Aussie lad, Tried to surf but wiped out bad.(Water said nope, and down he sloped.)",
+      "Adit, so very tall,Bumped the fan and broke the wall. (His height’s a gift… until ceilings exist.)",
+      "Adit, the BBQ king,  Burnt the snags and lost his zing. (Flames went high, now sausages fly.)",
+
+      //ritesh
+      "Ritesh, oh Ritesh, he thinks he's Rizztesh but he's Ritech",
+
+      //clifford
+      "Clifford, eyes open wide,Typing fast with zero pride. (Sleep is a myth, just one more line… or fifth.)"
+
+          //Avanti
+          "Avanti, Asked for water, got ‘wa’er’ instead.(British depression and vowels got harmed.)"
+
+          //Rishi
+          "Rishi, always on the go, Writes one line, then says ‘Uh-oh.’ (Fixes none, but claims he’s done.)"
     ];
 
     return tips[DateTime.now().microsecond % tips.length];
