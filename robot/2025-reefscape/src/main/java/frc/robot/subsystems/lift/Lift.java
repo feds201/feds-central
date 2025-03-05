@@ -51,13 +51,13 @@ public class Lift extends SubsystemABS {
         pid = new PIDController(RobotMap.ElevatorMap.ELEVATOR_P, RobotMap.ElevatorMap.ELEVATOR_I, RobotMap.ElevatorMap.ELEVATOR_D);
         pid.setTolerance(.2);
 
-        pidDown = new PIDController(0.008, 0, 0);
+        pidDown = new PIDController(0.01, 0, 0);
         pidDown.setTolerance(.2);
         pidDown.setSetpoint(1);
 
-        pidL3 = new PIDController(0.008, 0, 0);
+        pidL3 = new PIDController(0.01, 0, 0);
         pidL3.setTolerance(0.2);
-        pidL3.setSetpoint(RobotMap.ElevatorMap.L3ROTATION);
+        pidL3.setSetpoint(RobotMap.ElevatorMap.L3ROTATION+3);
 
         tab.add("Elevator PID", pid)
             .withWidget(BuiltInWidgets.kPIDController);

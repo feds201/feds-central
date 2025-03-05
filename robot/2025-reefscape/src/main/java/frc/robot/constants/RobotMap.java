@@ -161,7 +161,7 @@ public class RobotMap {
         public static final double L1_SPEED_SCORE = -0.3;
 
         public static class ReefStops {
-            public static final double L4ANGLE = .1156;
+            public static final double L4ANGLE = .113;
             public static final double STARTANGLE = .00;
             public static final double SAFEANGLE = .040;
             public static final double L1ANGLE = .0678;  // TODO tune it!

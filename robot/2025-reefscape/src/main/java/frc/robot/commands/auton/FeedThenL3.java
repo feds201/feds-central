@@ -5,8 +5,10 @@
 package frc.robot.commands.auton;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.commands.lift.RotateElevatorL3PID;
+
+import frc.robot.commands.lift.RotateElevatorPID;
 import frc.robot.commands.swanNeck.IntakeCoralSequence;
+import frc.robot.constants.RobotMap.ElevatorMap;
 import frc.robot.subsystems.lift.Lift;
 import frc.robot.subsystems.swanNeck.SwanNeck;
 
@@ -20,6 +22,6 @@ public class FeedThenL3 extends SequentialCommandGroup {
   public FeedThenL3(Lift lift, SwanNeck swanNeck) {
     m_elevator = lift;
     m_gooseNeck = swanNeck;
-    addCommands(new IntakeCoralSequence(m_gooseNeck), new RotateElevatorL3PID(lift));
+    addCommands(new IntakeCoralSequence(m_gooseNeck), new RotateElevatorPID(lift, ()-> ElevatorMap.L3ROTATION));
   }
 }

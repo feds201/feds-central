@@ -20,8 +20,8 @@ public class ConfigureHologenicDrive extends Command {
   private CommandSwerveDrivetrain m_drivetrain;
   private Command driveCommand;
   
-  private SlewRateLimiter slewX = new SlewRateLimiter(2.5);
-  private SlewRateLimiter slewY = new SlewRateLimiter(2.5);
+  private SlewRateLimiter slewX = new SlewRateLimiter(1.5);
+  private SlewRateLimiter slewY = new SlewRateLimiter(1.5);
   /** Creates a new ConfigureHologenicDrive. */
   public ConfigureHologenicDrive(CommandXboxController driverController, CommandSwerveDrivetrain drivetrain) {
     m_driverController = driverController;

@@ -5,9 +5,35 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "deadline",
           "data": {
-            "pathName": "startLeftTo16Right"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "startLeftTo16Right"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.7
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "L3Infinite"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
           }
         },
         {
@@ -42,9 +68,35 @@
           }
         },
         {
-          "type": "path",
+          "type": "deadline",
           "data": {
-            "pathName": "sourceTo66Right"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "sourceTo66Right"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.7
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "L3Infinite"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
           }
         },
         {
@@ -79,9 +131,35 @@
           }
         },
         {
-          "type": "path",
+          "type": "deadline",
           "data": {
-            "pathName": "sourceTo66Left"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "sourceTo66Left"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.7
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "L3Infinite"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
           }
         },
         {
