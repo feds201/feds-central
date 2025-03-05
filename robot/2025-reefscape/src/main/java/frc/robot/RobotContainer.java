@@ -296,11 +296,11 @@ public class RobotContainer extends RobotFramework {
         driverController.y().and(operatorController.povUp())
                 .whileTrue(new RaiseClimberBasic(()-> -.15 , climber).until(climber :: climberPastMax).unless(climber :: climberPastMax));
         
-        driverController.leftTrigger()
+        driverController.rightTrigger()
                 .whileTrue(new IntakeCoralSequence(swanNeck));
 
-        driverController.rightTrigger()
-                .whileTrue(new SpinSwanWheels(swanNeck, ()->.4));
+        driverController.leftTrigger()
+                .whileTrue(new SpinSwanWheels(swanNeck, ()->-.4));
         
 
     }
@@ -317,6 +317,7 @@ public class RobotContainer extends RobotFramework {
         NamedCommands.registerCommand("Feed", new IntakeCoralSequence(swanNeck));
         NamedCommands.registerCommand("ZeroMechanisms", zeroMechanisms);
         NamedCommands.registerCommand("L3Infinite", new RaiseSwanNeckPID(()-> IntakeMap.ReefStops.SAFEANGLE, swanNeck).until(swanNeck ::pidAtSetpoint).andThen(new RotateElevatorPID(elevator, ()-> ElevatorMap.L2ROTATION)));
+        NamedCommands.registerCommand("L2", new PlaceLTwo(elevator, swanNeck));
     }
 
     public void setupPaths() {
