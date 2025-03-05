@@ -57,12 +57,14 @@ import frc.robot.commands.swanNeck.RaiseSwanNeck;
 import frc.robot.commands.swanNeck.RaiseSwanNeckPID;
 import frc.robot.commands.swanNeck.PlaceLThree;
 import frc.robot.commands.swanNeck.SpinSwanWheels;
+import frc.robot.commands.swanNeck.retriveAlgae;
 import frc.robot.commands.swanNeck.IntakeCoralSequence;
 import frc.robot.commands.swanNeck.PlaceLFour;
 import frc.robot.commands.swanNeck.PlaceLOne;
 import frc.robot.commands.swerve.ConfigureHologenicDrive;
 import frc.robot.commands.swerve.DriveForwardCommand;
 import frc.robot.commands.swerve.GameNavigator;
+import frc.robot.commands.vision.RetrieveClosestGamePiece;
 import frc.robot.constants.*;
 import frc.robot.constants.RobotMap.ElevatorMap;
 import frc.robot.constants.RobotMap.IntakeMap;
@@ -87,7 +89,6 @@ import frc.robot.utils.SafetyManager;
 import frc.robot.utils.SubsystemABS;
 import frc.robot.utils.Subsystems;
 import frc.robot.utils.Telemetry;
-
 @SuppressWarnings("unused") // DO NOT REMOVE
 
 public class RobotContainer extends RobotFramework {
@@ -255,8 +256,10 @@ public class RobotContainer extends RobotFramework {
         operatorController.b()
             .whileTrue(new PlaceLTwo(elevator, swanNeck));
 
-        operatorController.a()
-            .whileTrue(new PlaceLThree(elevator, swanNeck));
+        // operatorController.a()
+        //     .whileTrue(new PlaceLThree(elevator, swanNeck));
+
+        operatorController.a().whileTrue(new PlaceLThree(elevator, swanNeck));
 
         operatorController.x()
             .whileTrue(new PlaceLFour(elevator, swanNeck).andThen(new RotateElevatorDownPID(elevator).until(elevator :: pidDownAtSetpoint)));
@@ -266,10 +269,13 @@ public class RobotContainer extends RobotFramework {
 
         operatorController.axisLessThan(Axis.kRightY.value, -0.1).whileTrue(new RotateElevatorBasic(()-> .1, elevator));
         operatorController.axisGreaterThan(Axis.kRightY.value, 0.1).whileTrue(new RotateElevatorBasic(()-> -.1, elevator));
+        operatorController.rightTrigger().whileTrue(new retriveAlgae(elevator, swanNeck, IntakeMap.ReefStops.L1ANGLE)).onFalse(new RaiseSwanNeckPID(()-> IntakeMap.ReefStops.SAFEANGLE, swanNeck).until(swanNeck :: pidAtSetpoint).andThen(new RotateElevatorPID(elevator, ()-> 1)));
+        operatorController.rightBumper().whileTrue(new retriveAlgae(elevator, swanNeck, IntakeMap.ReefStops.L1ANGLE)).onFalse(new RaiseSwanNeckPID(()-> IntakeMap.ReefStops.SAFEANGLE, swanNeck).until(swanNeck :: pidAtSetpoint).andThen(new RotateElevatorPID(elevator, ()-> 1)));
+        
+        // operatorController.rightTrigger().whileTrue(zeroMechanisms);
+       
 
-        operatorController.leftBumper().whileTrue(new MoveBack(DrivetrainConstants.drivetrain));
-
-        operatorController.rightBumper().whileTrue(new RotateElevatorDownPID(elevator));
+        operatorController.leftBumper().whileTrue(new RotateElevatorDownPID(elevator));
         operatorController.povDown().and(driverController.y()).whileTrue(new RaiseClimberBasic(()-> .15, climber).until(climber:: climberPastZero).unless(climber :: climberPastZero));
 
 
@@ -301,8 +307,9 @@ public class RobotContainer extends RobotFramework {
 
         driverController.leftTrigger()
                 .whileTrue(new SpinSwanWheels(swanNeck, ()->-.4));
+                
         
-
+        
     }
 
     private void setupEventTriggers(){

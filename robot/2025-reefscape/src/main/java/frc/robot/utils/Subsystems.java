@@ -19,7 +19,10 @@ public enum Subsystems {
     TESTER("Tester", "This System is responsible for testing the robot"),
     LIVEWINDOW("LiveWindow", "This Subsystem is responsible for controlling the LiveWindow"),
     TELEOP("Teleoperated", "This Subsystem is responsible for controlling the Teleop"),
-    AUTONOMOUS("Autonomous", "This Subsystem is responsible for controlling the Autonomous");
+    AUTONOMOUS("Autonomous", "This Subsystem is responsible for controlling the Autonomous"), 
+    SWAN_NECK_ROLLER("Swan Neck Roller", "This Subsystem is responsible for controlling the Swan Neck Roller"),
+    SWAN_NECK_PIVOT("Swan Neck Pivot", "This Subsystem is responsible for controlling the Swan Neck Pivot"); 
+
 
     private final String ntName;
     private final String description;
