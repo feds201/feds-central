@@ -196,16 +196,14 @@ public class RobotContainer extends RobotFramework {
     public void setupVisionImplants() {
         var driveState = DrivetrainConstants.drivetrain.getState();
         double headingDeg = driveState.Pose.getRotation().getDegrees();
-        Rotation2d gyroAngle = driveState.Pose.getRotation();
-        SmartDashboard.putNumber("robot rotation", headingDeg);
-        double omega = Units.radiansToRotations(driveState.Speeds.omegaRadiansPerSecond);
+        // Rotation2d gyroAngle = driveState.Pose.getRotation();
+        double omega = Math.abs(Units.radiansToRotations(driveState.Speeds.omegaRadiansPerSecond));
         frontRightCamera.SetRobotOrientation(headingDeg, 0, 0, 0, 0, 0);
         rearRightCamera.SetRobotOrientation(headingDeg, 0, 0, 0, 0, 0);
         rearLeftCamera.SetRobotOrientation(headingDeg, 0, 0, 0, 0, 0);
         frontLeftCamera.SetRobotOrientation(headingDeg, 0, 0, 0, 0, 0);
 
-        SwerveModulePosition[] modulePositions = driveState.ModulePositions;
-        poseEstimator.updatePose();
+        // poseEstimator.updatePose();
 
         PoseAllocate frontRightPose = frontRightCamera.getRobotPose();
         PoseAllocate rearRightPose = rearRightCamera.getRobotPose();
@@ -215,7 +213,7 @@ public class RobotContainer extends RobotFramework {
         if (frontRightPose != null
                 && frontRightPose.getPose() != null
                 && frontRightPose.getPoseEstimate().tagCount > 0
-                && Math.abs(omega) < 2) {
+                && omega < 2) {
             DrivetrainConstants.drivetrain.addVisionMeasurement(frontRightPose.getPose(), frontRightPose.getTime());
 
         }
@@ -223,7 +221,7 @@ public class RobotContainer extends RobotFramework {
         if (frontLeftPose != null
                 && frontLeftPose.getPose() != null
                 && frontLeftPose.getPoseEstimate().tagCount > 0
-                && Math.abs(omega) < 2) {
+                && omega < 2) {
             DrivetrainConstants.drivetrain.addVisionMeasurement(frontLeftPose.getPose(), frontLeftPose.getTime());
 
         }
@@ -231,7 +229,7 @@ public class RobotContainer extends RobotFramework {
         if (rearLeftPose != null
                 && rearLeftPose.getPose() != null
                 && rearLeftPose.getPoseEstimate().tagCount > 0
-                && Math.abs(omega) < 2) {
+                && omega < 2) {
             DrivetrainConstants.drivetrain.addVisionMeasurement(rearLeftPose.getPose(), rearLeftPose.getTime());
 
         }
@@ -239,7 +237,7 @@ public class RobotContainer extends RobotFramework {
         if (rearRightPose != null
                 && rearRightPose.getPose() != null
                 && rearRightPose.getPoseEstimate().tagCount > 0
-                && Math.abs(omega) < 2) {
+                && omega < 2) {
             DrivetrainConstants.drivetrain.addVisionMeasurement(rearRightPose.getPose(), rearRightPose.getTime());
 
         }
@@ -264,19 +262,19 @@ public class RobotContainer extends RobotFramework {
         operatorController.x()
             .whileTrue(new PlaceLFour(elevator, swanNeck).andThen(new RotateElevatorDownPID(elevator).until(elevator :: pidDownAtSetpoint)));
 
-        operatorController.axisLessThan(Axis.kLeftY.value, -0.1).whileTrue(new RaiseSwanNeck(swanNeck, ()-> .1));
-        operatorController.axisGreaterThan(Axis.kLeftY.value, 0.1).whileTrue(new RaiseSwanNeck(swanNeck, ()-> -.1));
+        operatorController.axisLessThan(Axis.kLeftY.value, -0.1).whileTrue(new RaiseSwanNeck(swanNeck, ()-> -.1));
+        operatorController.axisGreaterThan(Axis.kLeftY.value, 0.1).whileTrue(new RaiseSwanNeck(swanNeck, ()-> .1));
 
         operatorController.axisLessThan(Axis.kRightY.value, -0.1).whileTrue(new RotateElevatorBasic(()-> .1, elevator));
         operatorController.axisGreaterThan(Axis.kRightY.value, 0.1).whileTrue(new RotateElevatorBasic(()-> -.1, elevator));
-        operatorController.rightTrigger().whileTrue(new retriveAlgae(elevator, swanNeck, IntakeMap.ReefStops.L1ANGLE)).onFalse(new RaiseSwanNeckPID(()-> IntakeMap.ReefStops.SAFEANGLE, swanNeck).until(swanNeck :: pidAtSetpoint).andThen(new RotateElevatorPID(elevator, ()-> 1)));
-        operatorController.rightBumper().whileTrue(new retriveAlgae(elevator, swanNeck, IntakeMap.ReefStops.L1ANGLE)).onFalse(new RaiseSwanNeckPID(()-> IntakeMap.ReefStops.SAFEANGLE, swanNeck).until(swanNeck :: pidAtSetpoint).andThen(new RotateElevatorPID(elevator, ()-> 1)));
+        operatorController.rightBumper().whileTrue(new retriveAlgae(elevator, swanNeck, ElevatorMap.L1ROTATION+2)).onFalse(new ParallelCommandGroup(new RotateElevatorDownPID(elevator), new SpinSwanWheels(swanNeck, ()-> IntakeMap.WHEEL_SPEED_SCORE)));
+        operatorController.rightTrigger().whileTrue(new retriveAlgae(elevator, swanNeck, ElevatorMap.L2ROTATION+4)).onFalse(new ParallelCommandGroup(new RotateElevatorDownPID(elevator), new SpinSwanWheels(swanNeck, ()-> IntakeMap.WHEEL_SPEED_SCORE)));
         
         // operatorController.rightTrigger().whileTrue(zeroMechanisms);
        
 
         operatorController.leftBumper().whileTrue(new RotateElevatorDownPID(elevator));
-        operatorController.povDown().and(driverController.y()).whileTrue(new RaiseClimberBasic(()-> .15, climber).until(climber:: climberPastZero).unless(climber :: climberPastZero));
+        driverController.y().and(operatorController.povDown()).whileTrue(new RaiseClimberBasic(()-> .15, climber).until(climber:: climberPastZero).unless(climber :: climberPastZero));
 
 
         
@@ -300,7 +298,7 @@ public class RobotContainer extends RobotFramework {
                         DrivetrainConstants.drivetrain, frontRightCamera, frontLeftCamera));
 
         driverController.y().and(operatorController.povUp())
-                .whileTrue(new RaiseClimberBasic(()-> -.15 , climber).until(climber :: climberPastMax).unless(climber :: climberPastMax));
+                .whileTrue(new RaiseClimberBasic(()-> -.25 , climber).until(climber :: climberPastMax).unless(climber :: climberPastMax));
         
         driverController.rightTrigger()
                 .whileTrue(new IntakeCoralSequence(swanNeck));

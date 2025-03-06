@@ -40,7 +40,7 @@ public class retriveAlgae extends SequentialCommandGroup {
 
         new ParallelCommandGroup(
             new RotateElevatorPID(m_elevator, () -> m_algaePosition),
-            new RaiseSwanNeckPID(() -> 0.070068359375, m_SwanNeck)
+            new RaiseSwanNeckPID(() -> 0.100068359375, m_SwanNeck)
         
             ).until(m_SwanNeck::pidAtSetpoint),
 
