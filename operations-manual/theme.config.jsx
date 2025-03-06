@@ -42,8 +42,7 @@ export default {
             />
             <span>&nbsp;</span>
             <span>&nbsp;</span>
-            <text>FEDS201's Toolkit</text>
-        </>
+<strong>FEDS  Operational Manual</strong>        </>
     ),
 
     project: {
