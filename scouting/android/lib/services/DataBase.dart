@@ -526,6 +526,14 @@ class MatchRecord {
     return 'MatchRecord{teamNumber: $teamNumber, scouterName: $scouterName, matchKey: $matchKey, autonPoints: $autonPoints, teleOpPoints: $teleOpPoints, endPoints: $endPoints, allianceColor: $allianceColor, eventKey: $eventKey, station: $station}';
   }
 
+  String toCsv() {
+    return '$teamNumber,$scouterName,$matchKey,$matchNumber,$allianceColor,$eventKey,$station,${autonPoints.CoralScoringLevel1},${autonPoints.CoralScoringLevel2},${autonPoints.CoralScoringLevel3},${autonPoints.CoralScoringLevel4},${autonPoints.LeftBarge},${autonPoints.AlgaeScoringProcessor},${autonPoints.AlgaeScoringBarge},${teleOpPoints.CoralScoringLevel1},${teleOpPoints.CoralScoringLevel2},${teleOpPoints.CoralScoringLevel3},${teleOpPoints.CoralScoringLevel4},${teleOpPoints.AlgaeScoringBarge},${teleOpPoints.AlgaeScoringProcessor},${teleOpPoints.AlgaePickUp},${teleOpPoints.Defense},${endPoints.Deep_Climb},${endPoints.Shallow_Climb},${endPoints.Park},${endPoints.Comments}';
+  }
+
+  String toJsonString() {
+    return jsonEncode(this.toJson());
+  }
+
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;

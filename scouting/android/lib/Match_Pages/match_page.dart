@@ -183,10 +183,11 @@ class MatchPageState extends State<MatchPage> {
                   matchKey: filteredMatches[index]['key'].toString(),
                   allianceColor: _allianceColor,
                   station: int.parse(_station),
-                  matchNumber: filteredMatches[index]['match_number'],
+                  matchNumber: filteredMatches[index]['set_number'],
                   eventKey: filteredMatches[index]['event_key'],
                 );
-                // log(matchRecord.toString());
+                // print(filteredMatches[index]['match_number']);
+                // (matchRecord.toString());
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -247,13 +248,14 @@ class MatchPageState extends State<MatchPage> {
                     'frc',
                   )[1],
                   scouterName: _scouterName,
-                  matchKey: filteredMatches[index]['match_number'].toString(),
+                  matchKey: filteredMatches[index]['key'].toString(),
                   allianceColor: _allianceColor,
                   station: int.parse(_station),
-                  matchNumber: filteredMatches[index]['match_number'],
+                  matchNumber: filteredMatches[index]['set_number'],
                   eventKey: filteredMatches[index]['event_key'],
                 );
-                // log(matchRecord.toString());
+                print(filteredMatches[index]['set_number']);
+
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -306,10 +308,10 @@ class MatchPageState extends State<MatchPage> {
                     'frc',
                   )[1],
                   scouterName: _scouterName,
-                  matchKey: filteredMatches[index]['match_number'].toString(),
+                  matchKey: filteredMatches[index]['key'].toString(),
                   allianceColor: _allianceColor,
                   station: int.parse(_station),
-                  matchNumber: filteredMatches[index]['match_number'],
+                  matchNumber: filteredMatches[index]['set_number'],
                   eventKey: filteredMatches[index]['event_key'],
                 );
                 // log(matchRecord.toString());
@@ -867,7 +869,11 @@ class MatchPageState extends State<MatchPage> {
           "Avanti, Asked for water, got ‘wa’er’ instead.(British depression and vowels got harmed.)"
 
           //Rishi
-          "Rishi, always on the go, Writes one line, then says ‘Uh-oh.’ (Fixes none, but claims he’s done.)"
+
+          "Rishi, always on the go, Writes one line, then says ‘Uh-oh.’ (Fixes none, but claims he’s done.)",
+
+      //Nisha
+      "Nisha Misha Dish Pisha Gisha Jisha Yisha Risha Bisa"
     ];
 
     return tips[DateTime.now().microsecond % tips.length];

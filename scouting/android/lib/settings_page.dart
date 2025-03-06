@@ -30,6 +30,7 @@ class SettingsPageState extends State<SettingsPage> {
   bool isCameraGranted = false;
   bool isDarkMode = true;
   bool isLoading = false;
+  bool isjson = true;
   TextEditingController eventKeyController = TextEditingController();
   String ApiKey = Hive.box('settings').get('ApiKey', defaultValue: '');
 
@@ -326,6 +327,8 @@ class SettingsPageState extends State<SettingsPage> {
               child: Column(
                 children: [
                   // Switch for Location permission
+
+                  const SizedBox(height: 10),
                   SwitchListTile(
                     tileColor: const Color.fromARGB(97, 159, 157, 157),
                     contentPadding: const EdgeInsets.only(left: 20, right: 20),
@@ -412,10 +415,30 @@ class SettingsPageState extends State<SettingsPage> {
                     activeTrackColor: const Color.fromARGB(255, 11, 243, 11),
                     activeColor: const Color.fromARGB(255, 255, 255, 255),
                   ),
+                  const SizedBox(height: 10),
+                  ChoiceChip(
+                    label: Center(
+                      child: Text(
+                        isjson ? "Json" : "Csv",
+                        style: GoogleFonts.museoModerno(
+                            fontSize: 25, color: Colors.white),
+                      ),
+                    ),
+                    selectedColor: const Color.fromARGB(255, 25, 89, 241),
+                    selected: true,
+                    showCheckmark: false,
+                    side: const BorderSide(color: Colors.black),
+                    onSelected: (bool selected) {
+                      setState(() {
+                        isjson = !isjson;
+                      });
+                      Hive.box('settings').put('isjson', isjson);
+                    },
+                  ),
                 ],
               ),
             ), // Permission Switches
-            const SizedBox(height: 10),
+
             Container(
               padding: const EdgeInsets.all(10),
               margin: const EdgeInsets.only(left: 10, right: 10),
