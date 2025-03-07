@@ -26,7 +26,7 @@ import frc.robot.utils.Subsystems;
  
 public class SwanNeck extends SubsystemABS {
     /** Creates a new gooseNeck. */
-    private TalonFX intakeMotor;
+   
     private TalonFX pivotMotor;
     private CANrange coralCanRange;
     // private CANcoder gooseNeckAngler;
@@ -34,14 +34,13 @@ public class SwanNeck extends SubsystemABS {
     private DoubleSupplier coralCANrangeVal = ()-> 0.0;
     private DoubleSupplier swanNeckAngleValue = ()-> 0.0;
     public DoubleSupplier m_swanNeckPivotSpeed;
-    public DoubleSupplier m_swanNeckWheelSpeed;
+   
     private PIDController pid;
   
 
     public SwanNeck(Subsystems subsystem, String name) {
         super(subsystem, name);
-        intakeMotor = new TalonFX(IntakeMap.SensorCanId.INTAKE_MOTOR);
-            intakeMotor.getConfigurator().apply(CurrentLimiter.getCurrentLimitConfiguration(IntakeMap.INTAKE_MOTOR_CURRENT_LIMIT));
+       
         pivotMotor = new TalonFX(IntakeMap.SensorCanId.PIVOT_MOTOR);
             pivotMotor.getConfigurator().apply(CurrentLimiter.getCurrentLimitConfiguration(IntakeMap.PIVOT_MOTOR_CURRENT_LIMIT));
         coralCanRange = new CANrange(IntakeMap.SensorCanId.CORAL_CANRANGE);
@@ -67,11 +66,7 @@ public class SwanNeck extends SubsystemABS {
                 .getEntry();
                 m_swanNeckPivotSpeed = () -> swanNeckPivotSpeedSetter.getDouble(0);
 
-            GenericEntry swanNeckWheelSpeedSetter = tab.add("Swan Neck Wheel Speed", 0.0)
-                .withWidget(BuiltInWidgets.kNumberSlider)
-                .withProperties(Map.of("min", 0, "max", .2))
-                .getEntry();
-                m_swanNeckWheelSpeed = () -> swanNeckWheelSpeedSetter.getDouble(0);
+           
     }
 
     @Override
@@ -98,7 +93,7 @@ public class SwanNeck extends SubsystemABS {
 
     @Override
     public void Failsafe() {
-        intakeMotor.disable();
+      
         pivotMotor.disable();
 
     }
@@ -127,9 +122,7 @@ public class SwanNeck extends SubsystemABS {
         setPivotSpeed(output);
     }
 
-    public void spinSwanWheels(double speed){
-        intakeMotor.set(speed);
-    }
+ 
 
     public void resetGooseNeckEncoder() {
         pivotMotor.setPosition(0);

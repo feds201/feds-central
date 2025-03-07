@@ -123,7 +123,10 @@ public class posePathfindToReef extends Command {
   }
  @Override
  public void execute(){
-  reefPathCommand.schedule();
+  if (reefPathCommand != null){
+    reefPathCommand.schedule();
+  }
+
   commandFinished = true;
  }
  

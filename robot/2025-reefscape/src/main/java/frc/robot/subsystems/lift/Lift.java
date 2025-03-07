@@ -51,7 +51,7 @@ public class Lift extends SubsystemABS {
         pid = new PIDController(RobotMap.ElevatorMap.ELEVATOR_P, RobotMap.ElevatorMap.ELEVATOR_I, RobotMap.ElevatorMap.ELEVATOR_D);
         pid.setTolerance(.2);
 
-        pidDown = new PIDController(0.012, 0, 0);
+        pidDown = new PIDController(0.008, 0, 0);
         pidDown.setTolerance(.2);
         pidDown.setSetpoint(1);
 

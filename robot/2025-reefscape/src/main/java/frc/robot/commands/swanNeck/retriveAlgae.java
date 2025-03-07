@@ -16,6 +16,7 @@ import frc.robot.constants.RobotMap.ElevatorMap;
 import frc.robot.constants.RobotMap.IntakeMap;
 import frc.robot.subsystems.lift.Lift;
 import frc.robot.subsystems.swanNeck.SwanNeck;
+import frc.robot.subsystems.swanNeck.SwanNeckWheels;
 import frc.robot.utils.DrivetrainConstants;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
@@ -23,12 +24,14 @@ import frc.robot.utils.DrivetrainConstants;
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class retriveAlgae extends SequentialCommandGroup {
   SwanNeck m_SwanNeck;
+  SwanNeckWheels m_SwanNeckWheels;
   Lift m_elevator;
   double m_algaePosition;
 
   /** Creates a new scoreLTwo. */
-  public retriveAlgae(Lift lift, SwanNeck swanNeck, double algaePosition) {
+  public retriveAlgae(Lift lift, SwanNeck swanNeck, SwanNeckWheels swanNeckWheels, double algaePosition) {
     m_SwanNeck = swanNeck;
+    m_SwanNeckWheels = swanNeckWheels;
     m_elevator = lift;
     m_algaePosition = algaePosition;
     // Add your commands in the addCommands() call, e.g.
@@ -46,7 +49,7 @@ public class retriveAlgae extends SequentialCommandGroup {
 
         new ParallelDeadlineGroup( 
           new RotateElevatorPID(m_elevator, () -> m_algaePosition),
-          new SpinSwanWheels(m_SwanNeck, () -> IntakeMap.WHEEL_SPEED_SCORE)
+          new SpinSwanWheels(m_SwanNeckWheels, () -> IntakeMap.WHEEL_SPEED_SCORE)
         )
         // new ParallelRaceGroup(new WaitCommand(0.35), new
         // MoveBack(DrivetrainConstants.drivetrain)),

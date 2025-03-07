@@ -109,7 +109,7 @@ public class Climber extends SubsystemABS {
   }
 
   public boolean climberPastMax(){
-    return getEncoderValue() < -60;
+    return getEncoderValue() < -70;
   }
 
   @Override

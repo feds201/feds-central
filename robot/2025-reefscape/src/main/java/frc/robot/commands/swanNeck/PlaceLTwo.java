@@ -18,6 +18,7 @@ import frc.robot.constants.RobotMap.ElevatorMap;
 import frc.robot.constants.RobotMap.IntakeMap;
 import frc.robot.subsystems.lift.Lift;
 import frc.robot.subsystems.swanNeck.SwanNeck;
+import frc.robot.subsystems.swanNeck.SwanNeckWheels;
 import frc.robot.utils.DrivetrainConstants;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
@@ -25,10 +26,12 @@ import frc.robot.utils.DrivetrainConstants;
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class PlaceLTwo extends SequentialCommandGroup {
   SwanNeck m_SwanNeck;
+  SwanNeckWheels m_SwanNeckWheels;
   Lift m_elevator;
   /** Creates a new scoreLTwo. */
-  public PlaceLTwo(Lift lift, SwanNeck swanNeck) {
+  public PlaceLTwo(Lift lift, SwanNeck swanNeck, SwanNeckWheels swanNeckWheels) {
     m_SwanNeck = swanNeck;
+    m_SwanNeckWheels = swanNeckWheels;
     m_elevator = lift;
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
@@ -40,7 +43,7 @@ public class PlaceLTwo extends SequentialCommandGroup {
     new RaiseSwanNeckPID(()-> IntakeMap.ReefStops.SAFEANGLE, m_SwanNeck)).until(m_SwanNeck :: pidAtSetpoint),
 
     new ParallelDeadlineGroup(new WaitCommand(1), new RotateElevatorPID(m_elevator, ()-> ElevatorMap.L2ROTATION), 
-    new SpinSwanWheels(m_SwanNeck, ()-> IntakeMap.WHEEL_SPEED_SCORE)),
+    new SpinSwanWheels(m_SwanNeckWheels, ()-> IntakeMap.WHEEL_SPEED_SCORE)),
     new RaiseSwanNeckPID(()-> IntakeMap.ReefStops.SAFEANGLE, m_SwanNeck).until(m_SwanNeck :: pidAtSetpoint),
     // new ParallelRaceGroup(new WaitCommand(0.35), new MoveBack(DrivetrainConstants.drivetrain)),
     new RotateElevatorDownPID(m_elevator).until(m_elevator :: pidDownAtSetpoint)

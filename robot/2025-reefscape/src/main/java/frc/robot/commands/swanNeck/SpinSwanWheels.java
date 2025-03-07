@@ -7,17 +7,17 @@ package frc.robot.commands.swanNeck;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.swanNeck.SwanNeck;
+import frc.robot.subsystems.swanNeck.SwanNeckWheels;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class SpinSwanWheels extends Command {
   private DoubleSupplier m_speed;
-  private SwanNeck m_SwanNeck;
+  private SwanNeckWheels m_SwanNeckWheels;
   /** Creates a new SpinSwanWheels. */
-  public SpinSwanWheels(SwanNeck swanNeck, DoubleSupplier speed) {
+  public SpinSwanWheels(SwanNeckWheels swanNeckWheels, DoubleSupplier speed) {
     m_speed = speed;
-    m_SwanNeck = swanNeck;
-    addRequirements(m_SwanNeck);
+    m_SwanNeckWheels = swanNeckWheels;
+    addRequirements(m_SwanNeckWheels);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -28,13 +28,13 @@ public class SpinSwanWheels extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_SwanNeck.spinSwanWheels(m_speed.getAsDouble());
+    m_SwanNeckWheels.spinSwanWheels(m_speed.getAsDouble());
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_SwanNeck.spinSwanWheels(0);
+    m_SwanNeckWheels.spinSwanWheels(0);
   }
 
   // Returns true when the command should end.

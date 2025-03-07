@@ -11,17 +11,20 @@ import frc.robot.commands.swanNeck.IntakeCoralSequence;
 import frc.robot.constants.RobotMap.ElevatorMap;
 import frc.robot.subsystems.lift.Lift;
 import frc.robot.subsystems.swanNeck.SwanNeck;
+import frc.robot.subsystems.swanNeck.SwanNeckWheels;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class FeedThenL3 extends SequentialCommandGroup {
   Lift m_elevator;
+  SwanNeckWheels m_swanNeckWheels;
   SwanNeck m_gooseNeck;
   /** Creates a new FeedThenL3. */
-  public FeedThenL3(Lift lift, SwanNeck swanNeck) {
+  public FeedThenL3(Lift lift, SwanNeck swanNeck, SwanNeckWheels swanNeckWheels) {
     m_elevator = lift;
+    m_swanNeckWheels = swanNeckWheels;
     m_gooseNeck = swanNeck;
-    addCommands(new IntakeCoralSequence(m_gooseNeck), new RotateElevatorPID(lift, ()-> ElevatorMap.L3ROTATION));
+    addCommands(new IntakeCoralSequence(m_gooseNeck, m_swanNeckWheels), new RotateElevatorPID(lift, ()-> ElevatorMap.L3ROTATION));
   }
 }
