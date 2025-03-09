@@ -98,7 +98,7 @@ public class Robot extends TimedRobot
     @Override
     public void robotPeriodic()
     {
-        SmartDashboard.putData("command scheduler", CommandScheduler.getInstance());
+        // SmartDashboard.putData("command scheduler", CommandScheduler.getInstance());
         CommandScheduler.getInstance().run();
        
 
@@ -108,11 +108,11 @@ public class Robot extends TimedRobot
       
        
         // ADD: Update elevator mechanism based on current elevator height (meters converted to inches)
-        if(robotContainer != null) {
-            double heightMeters = robotContainer.getElevator().getElevatorHeight();
-            double heightInches = Units.metersToInches(heightMeters);
-            elevatorLigament.setLength(heightInches);
-        }
+        // if(robotContainer != null) {
+        //     double heightMeters = robotContainer.getElevator().getElevatorHeight();
+        //     double heightInches = Units.metersToInches(heightMeters);
+        //     elevatorLigament.setLength(heightInches);
+        // }
     }
 
     /** This method is called once each time the robot enters Disabled mode. */

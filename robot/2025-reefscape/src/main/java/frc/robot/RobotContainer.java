@@ -59,6 +59,7 @@ import frc.robot.commands.swanNeck.PlaceLThree;
 import frc.robot.commands.swanNeck.SpinSwanWheels;
 import frc.robot.commands.swanNeck.retriveAlgae;
 import frc.robot.commands.swanNeck.IntakeCoralSequence;
+import frc.robot.commands.swanNeck.PlaceBarge;
 import frc.robot.commands.swanNeck.PlaceLFour;
 import frc.robot.commands.swanNeck.PlaceLOne;
 import frc.robot.commands.swerve.ConfigureHologenicDrive;
@@ -205,15 +206,15 @@ public class RobotContainer extends RobotFramework {
         // Rotation2d gyroAngle = driveState.Pose.getRotation();
         double omega = Math.abs(Units.radiansToRotations(driveState.Speeds.omegaRadiansPerSecond));
         frontRightCamera.SetRobotOrientation(headingDeg, 0, 0, 0, 0, 0);
-        rearRightCamera.SetRobotOrientation(headingDeg, 0, 0, 0, 0, 0);
-        rearLeftCamera.SetRobotOrientation(headingDeg, 0, 0, 0, 0, 0);
+        // rearRightCamera.SetRobotOrientation(headingDeg, 0, 0, 0, 0, 0);
+        // rearLeftCamera.SetRobotOrientation(headingDeg, 0, 0, 0, 0, 0);
         frontLeftCamera.SetRobotOrientation(headingDeg, 0, 0, 0, 0, 0);
 
         // poseEstimator.updatePose();
 
         PoseAllocate frontRightPose = frontRightCamera.getRobotPose();
-        PoseAllocate rearRightPose = rearRightCamera.getRobotPose();
-        PoseAllocate rearLeftPose = rearLeftCamera.getRobotPose();
+        // PoseAllocate rearRightPose = rearRightCamera.getRobotPose();
+        // PoseAllocate rearLeftPose = rearLeftCamera.getRobotPose();
         PoseAllocate frontLeftPose = frontLeftCamera.getRobotPose();
 
         if (frontRightPose != null
@@ -232,21 +233,22 @@ public class RobotContainer extends RobotFramework {
 
         }
 
-        if (rearLeftPose != null
-                && rearLeftPose.getPose() != null
-                && rearLeftPose.getPoseEstimate().tagCount > 0
-                && omega < 2) {
-            DrivetrainConstants.drivetrain.addVisionMeasurement(rearLeftPose.getPose(), rearLeftPose.getTime());
+        // if (rearLeftPose != null
+        //         && rearLeftPose.getPose() != null
+        //         && rearLeftPose.getPoseEstimate().tagCount > 0
+        //         && omega < 2) {
+        //     DrivetrainConstants.drivetrain.addVisionMeasurement(rearLeftPose.getPose(), rearLeftPose.getTime());
 
-        }
+        // }
 
-        if (rearRightPose != null
-                && rearRightPose.getPose() != null
-                && rearRightPose.getPoseEstimate().tagCount > 0
-                && omega < 2) {
-            DrivetrainConstants.drivetrain.addVisionMeasurement(rearRightPose.getPose(), rearRightPose.getTime());
+        // if (rearRightPose != null
 
-        }
+        //         && rearRightPose.getPose() != null
+        //         && rearRightPose.getPoseEstimate().tagCount > 0
+        //         && omega < 2) {
+        //     DrivetrainConstants.drivetrain.addVisionMeasurement(rearRightPose.getPose(), rearRightPose.getTime());
+
+        // }
 
     }
 
@@ -280,8 +282,18 @@ public class RobotContainer extends RobotFramework {
        
 
         operatorController.leftBumper().whileTrue(new RotateElevatorDownPID(elevator));
-        operatorController.povDown().whileTrue(new RaiseClimberBasic(()-> .15, climber).until(climber:: climberPastZero).unless(climber :: climberPastZero));
+        operatorController.povDown()
+            .whileTrue(new RaiseClimberBasic(()-> .15, climber));
+        operatorController.povDownLeft().whileTrue(new RaiseClimberBasic(()-> .15, climber));
 
+        operatorController.povDownRight().whileTrue(new RaiseClimberBasic(()-> .15, climber));
+        
+        operatorController.povUp()
+            .whileTrue(new RaiseClimberBasic(()-> -.25 , climber));
+        operatorController.povUpLeft() .whileTrue(new RaiseClimberBasic(()-> -.25 , climber));
+        operatorController.povUpRight() .whileTrue(new RaiseClimberBasic(()-> -.25 , climber));
+
+        // operatorController.leftTrigger().whileTrue(new PlaceBarge(elevator, swanNeck, swanNeckWheels)).onFalse(new RaiseSwanNeckPID(()-> IntakeMap.ReefStops.SAFEANGLE, swanNeck).andThen(new RotateElevatorDownPID(elevator).until(elevator :: pidDownAtSetpoint)));
 
         
         //Driver
@@ -305,9 +317,7 @@ public class RobotContainer extends RobotFramework {
                 .onTrue(new posePathfindToReef(frc.robot.commands.auton.posePathfindToReef.reefPole.RIGHT,
                         DrivetrainConstants.drivetrain, frontRightCamera, frontLeftCamera));
 
-        operatorController.povUp()
-                .whileTrue(new RaiseClimberBasic(()-> -.25 , climber).until(climber :: climberPastMax).unless(climber :: climberPastMax));
-        
+       
         driverController.rightTrigger()
                 .whileTrue(new IntakeCoralSequence(swanNeck, swanNeckWheels));
 
