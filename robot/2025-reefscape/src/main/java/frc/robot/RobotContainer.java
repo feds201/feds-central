@@ -199,59 +199,7 @@ public class RobotContainer extends RobotFramework {
     }
 
 
-    public void setupVisionImplantsAuto() {
-        var driveState = DrivetrainConstants.drivetrain.getState();
-        double headingDeg = driveState.Pose.getRotation().getDegrees();
-        SmartDashboard.putNumber("heading Deg", headingDeg);
-        // Rotation2d gyroAngle = driveState.Pose.getRotation();
-        double omega = Math.abs(Units.radiansToRotations(driveState.Speeds.omegaRadiansPerSecond));
-        frontRightCamera.SetRobotOrientation(headingDeg, 0, 0, 0, 0, 0);
-        rearRightCamera.SetRobotOrientation(headingDeg, 0, 0, 0, 0, 0);
-        rearLeftCamera.SetRobotOrientation(headingDeg, 0, 0, 0, 0, 0);
-        frontLeftCamera.SetRobotOrientation(headingDeg, 0, 0, 0, 0, 0);
-
-        // poseEstimator.updatePose();
-
-        PoseAllocate frontRightPose = frontRightCamera.getRobotPose();
-        PoseAllocate rearRightPose = rearRightCamera.getRobotPose();
-        PoseAllocate rearLeftPose = rearLeftCamera.getRobotPose();
-        PoseAllocate frontLeftPose = frontLeftCamera.getRobotPose();
-
-        if (frontRightPose != null
-                && frontRightPose.getPose() != null
-                && frontRightPose.getPoseEstimate().tagCount > 0
-                && omega < 2) {
-            DrivetrainConstants.drivetrain.addVisionMeasurement(frontRightPose.getPose(), frontRightPose.getTime());
-
-        }
-
-        if (frontLeftPose != null
-                && frontLeftPose.getPose() != null
-                && frontLeftPose.getPoseEstimate().tagCount > 0
-                && omega < 2) {
-            DrivetrainConstants.drivetrain.addVisionMeasurement(frontLeftPose.getPose(), frontLeftPose.getTime());
-
-        }
-
-        if (rearLeftPose != null
-                && rearLeftPose.getPose() != null
-                && rearLeftPose.getPoseEstimate().tagCount > 0
-                && omega < 2) {
-            DrivetrainConstants.drivetrain.addVisionMeasurement(rearLeftPose.getPose(), rearLeftPose.getTime());
-
-        }
-
-        if (rearRightPose != null
-
-                && rearRightPose.getPose() != null
-                && rearRightPose.getPoseEstimate().tagCount > 0
-                && omega < 2) {
-            DrivetrainConstants.drivetrain.addVisionMeasurement(rearRightPose.getPose(), rearRightPose.getTime());
-
-        }
-
-    }
-
+   
     public void setupVisionImplantsTele() {
         var driveState = DrivetrainConstants.drivetrain.getState();
         double headingDeg = driveState.Pose.getRotation().getDegrees();
@@ -317,9 +265,9 @@ public class RobotContainer extends RobotFramework {
         operatorController.povDownRight().whileTrue(new RaiseClimberBasic(()-> .15, climber));
         
         operatorController.povUp()
-            .whileTrue(new RaiseClimberBasic(()-> -.25 , climber));
-        operatorController.povUpLeft() .whileTrue(new RaiseClimberBasic(()-> -.25 , climber));
-        operatorController.povUpRight() .whileTrue(new RaiseClimberBasic(()-> -.25 , climber));
+            .whileTrue(new RaiseClimberBasic(()-> -.35 , climber));
+        operatorController.povUpLeft() .whileTrue(new RaiseClimberBasic(()-> -.35 , climber));
+        operatorController.povUpRight() .whileTrue(new RaiseClimberBasic(()-> -.35 , climber));
 
         // operatorController.leftTrigger().whileTrue(new PlaceBarge(elevator, swanNeck, swanNeckWheels)).onFalse(new RaiseSwanNeckPID(()-> IntakeMap.ReefStops.SAFEANGLE, swanNeck).andThen(new RotateElevatorDownPID(elevator).until(elevator :: pidDownAtSetpoint)));
 
@@ -364,7 +312,10 @@ public class RobotContainer extends RobotFramework {
     private void setupNamedCommands() {
         NamedCommands.registerCommand("Field Relative", DrivetrainConstants.drivetrain.runOnce(() -> DrivetrainConstants.drivetrain.seedFieldCentric()));
         NamedCommands.registerCommand("L4", new PlaceLFour(elevator, swanNeck, swanNeckWheels).andThen(new RotateElevatorSafePID(elevator).until(elevator :: pidL3AtSetpoint)));
+        NamedCommands.registerCommand("L4Fast", new PlaceLFour(elevator, swanNeck, swanNeckWheels));
+        
         NamedCommands.registerCommand("ElevatorDown", new RotateElevatorDownPID(elevator).until(elevator :: pidDownAtSetpoint));
+        
         NamedCommands.registerCommand("Feed", new IntakeCoralSequence(swanNeck, swanNeckWheels));
         NamedCommands.registerCommand("ZeroMechanisms", zeroMechanisms);
         NamedCommands.registerCommand("L3Infinite", new RaiseSwanNeckPID(()-> IntakeMap.ReefStops.SAFEANGLE, swanNeck).until(swanNeck ::pidAtSetpoint).andThen(new RotateElevatorPID(elevator, ()-> ElevatorMap.L2ROTATION)));

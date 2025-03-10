@@ -149,7 +149,7 @@ public class Robot extends TimedRobot
     /** This method is called periodically during autonomous. */
     @Override
     public void autonomousPeriodic() {
-        robotContainer.setupVisionImplantsAuto();
+        robotContainer.setupVisionImplantsTele();
     }
 
 
