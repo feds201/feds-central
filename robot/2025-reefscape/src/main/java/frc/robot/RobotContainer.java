@@ -37,7 +37,10 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
@@ -63,6 +66,7 @@ import frc.robot.commands.swanNeck.PlaceBarge;
 import frc.robot.commands.swanNeck.PlaceLFour;
 import frc.robot.commands.swanNeck.PlaceLOne;
 import frc.robot.commands.swerve.ConfigureHologenicDrive;
+import frc.robot.commands.swerve.ConfigureSlowDrive;
 import frc.robot.commands.swerve.DriveForwardCommand;
 import frc.robot.commands.swerve.GameNavigator;
 import frc.robot.commands.vision.RetrieveClosestGamePiece;
@@ -234,7 +238,7 @@ public class RobotContainer extends RobotFramework {
     private void configureBindings() {
         //Triggers 
         new Trigger(elevator :: getElevatorAboveThreshold).and(RobotModeTriggers.teleop()).onTrue(new ConfigureHologenicDrive(driverController, DrivetrainConstants.drivetrain)).onFalse(ConfigureHologenicDrive(driverController, swerveSubsystem, elevator));
-        
+        new Trigger (operatorController.leftTrigger()).whileTrue(zeroMechanisms).onTrue(new ConfigureSlowDrive(driverController, DrivetrainConstants.drivetrain, 0.1)).onFalse(ConfigureHologenicDrive(driverController, swerveSubsystem, elevator));
         //Operator
         operatorController.y()
             .whileTrue(new PlaceLOne(elevator, swanNeck, swanNeckWheels));
@@ -269,7 +273,13 @@ public class RobotContainer extends RobotFramework {
         operatorController.povUpLeft() .whileTrue(new RaiseClimberBasic(()-> -.35 , climber));
         operatorController.povUpRight() .whileTrue(new RaiseClimberBasic(()-> -.35 , climber));
 
-        // operatorController.leftTrigger().whileTrue(new PlaceBarge(elevator, swanNeck, swanNeckWheels)).onFalse(new RaiseSwanNeckPID(()-> IntakeMap.ReefStops.SAFEANGLE, swanNeck).andThen(new RotateElevatorDownPID(elevator).until(elevator :: pidDownAtSetpoint)));
+        operatorController.leftTrigger().whileTrue(new PlaceBarge(elevator, swanNeck, swanNeckWheels)).onFalse( new SequentialCommandGroup(new ParallelDeadlineGroup(new WaitCommand(.8), new RotateElevatorPID(elevator, ()-> ElevatorMap.L4ROTATION), new SpinSwanWheels(swanNeckWheels, ()-> -IntakeMap.ALGAE_WHEEL_SPEED)), new RaiseSwanNeckPID(()-> IntakeMap.ReefStops.SAFEANGLE, swanNeck).until(swanNeck :: pidAtSetpoint),
+         new RotateElevatorDownPID(elevator).until(elevator :: pidDownAtSetpoint)));
+
+
+    
+    // new RaiseSwanNeckPID(()-> IntakeMap.ReefStops.SAFEANGLE, m_SwanNeck).until(m_SwanNeck :: pidAtSetpoint),
+    // new RotateElevatorDownPID(m_elevator).until(m_elevator :: pidDownAtSetpoint));
 
         
         //Driver

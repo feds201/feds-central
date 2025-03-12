@@ -34,16 +34,11 @@ public class PlaceBarge extends SequentialCommandGroup {
     m_elevator = lift;
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
-    addCommands( new ParallelCommandGroup(new SpinSwanWheels(swanNeckWheels, ()-> IntakeMap.ALGAE_WHEEL_SPEED), new SequentialCommandGroup(
-      
+    addCommands(
+     new ParallelDeadlineGroup( new SequentialCommandGroup(
     new RaiseSwanNeckPID(()-> IntakeMap.ReefStops.SAFEANGLE, m_SwanNeck).until(m_SwanNeck :: pidAtSetpoint), 
-    new RotateElevatorPID(m_elevator, ()-> ElevatorMap.L4ROTATION).until(m_elevator :: pidAtSetpoint))), 
-    new ParallelDeadlineGroup(new WaitCommand(.4), new RotateElevatorPID(m_elevator, ()-> ElevatorMap.L4ROTATION), new SpinSwanWheels(swanNeckWheels, ()-> -IntakeMap.WHEEL_SPEED_SCORE)),
-
-
-    
-    new RaiseSwanNeckPID(()-> IntakeMap.ReefStops.SAFEANGLE, m_SwanNeck).until(m_SwanNeck :: pidAtSetpoint),
-    new RotateElevatorDownPID(m_elevator).until(m_elevator :: pidDownAtSetpoint)
+    new RotateElevatorPID(m_elevator, ()-> ElevatorMap.L4ROTATION).until(m_elevator :: pidAtSetpoint))), new SequentialCommandGroup(new SpinSwanWheels(swanNeckWheels, ()-> IntakeMap.ALGAE_WHEEL_SPEED), new RotateElevatorPID(lift, ()-> ElevatorMap.L4ROTATION)) 
+   
     // ,
 
     // new ParallelRaceGroup(new WaitCommand(0.35), new MoveBack(DrivetrainConstants.drivetrain)),
