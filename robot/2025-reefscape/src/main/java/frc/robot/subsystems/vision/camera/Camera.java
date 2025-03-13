@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.utils.*;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
@@ -77,7 +78,7 @@ public class Camera extends VisionABC {
 	@Override
 	public void periodic() {
 		// lastseenAprilTag = GetAprilTag();
-		
+	
 	}
 
 	@Override
@@ -111,6 +112,31 @@ public class Camera extends VisionABC {
 			return (int) entry.getDouble(0);
 		}
 		return -1;
+	}
+
+	public boolean shouldApplyYaw(){
+		double[] pose = NetworkTableInstance.getDefault().getTable(limelightName).getEntry("botpose_wpiblue").getDoubleArray(new double[12]);
+		return true;
+	}
+
+	public double[] getBotposeBlue(){
+		return  NetworkTableInstance.getDefault().getTable(limelightName).getEntry("botpose_wpiblue").getDoubleArray(new double[6]);
+	}
+
+	public double getMetatagYaw(){
+		return NetworkTableInstance.getDefault().getTable(limelightName).getEntry("botpose_wpiblue").getDoubleArray(new double[6])[5];
+	}
+
+	public double getMetatagYawRadians(){
+		return getMetatagYaw() * Math.PI / 180;
+	}
+
+	public double getMetatagTagCount(){
+		return  NetworkTableInstance.getDefault().getTable(limelightName).getEntry("botpose_wpiblue").getDoubleArray(new double[9])[7];
+	}
+
+	public boolean twoTagsDetected(){
+		return getMetatagTagCount() > 1;
 	}
 
 	@Override 

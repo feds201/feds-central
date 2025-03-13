@@ -107,7 +107,7 @@ public class RobotContainer extends RobotFramework {
     private final SendableChooser<Command> autonChooser;
     private SendableChooser<Command> commandChooser;
     private final Camera frontRightCamera;
-    private final Camera frontLeftCamera;
+    public Camera frontLeftCamera;
     private final Camera rearRightCamera;
     private final Camera rearLeftCamera;
     private final Climber climber;
@@ -239,6 +239,7 @@ public class RobotContainer extends RobotFramework {
         //Triggers 
         new Trigger(elevator :: getElevatorAboveThreshold).and(RobotModeTriggers.teleop()).onTrue(new ConfigureHologenicDrive(driverController, DrivetrainConstants.drivetrain)).onFalse(ConfigureHologenicDrive(driverController, swerveSubsystem, elevator));
         new Trigger (operatorController.leftTrigger()).whileTrue(zeroMechanisms).onTrue(new ConfigureSlowDrive(driverController, DrivetrainConstants.drivetrain, 0.1)).onFalse(ConfigureHologenicDrive(driverController, swerveSubsystem, elevator));
+        new Trigger (driverController.rightTrigger().and(frontLeftCamera :: twoTagsDetected)).whileTrue(DrivetrainConstants.drivetrain.runOnce(()-> DrivetrainConstants.drivetrain.resetRotation(new Rotation2d(frontLeftCamera.getMetatagYawRadians()))));
         //Operator
         operatorController.y()
             .whileTrue(new PlaceLOne(elevator, swanNeck, swanNeckWheels));
@@ -323,6 +324,7 @@ public class RobotContainer extends RobotFramework {
         NamedCommands.registerCommand("Field Relative", DrivetrainConstants.drivetrain.runOnce(() -> DrivetrainConstants.drivetrain.seedFieldCentric()));
         NamedCommands.registerCommand("L4", new PlaceLFour(elevator, swanNeck, swanNeckWheels).andThen(new RotateElevatorSafePID(elevator).until(elevator :: pidL3AtSetpoint)));
         NamedCommands.registerCommand("L4Fast", new PlaceLFour(elevator, swanNeck, swanNeckWheels));
+        NamedCommands.registerCommand("MetatagRelativeYaw", DrivetrainConstants.drivetrain.runOnce(()-> DrivetrainConstants.drivetrain.resetRotation(new Rotation2d(frontLeftCamera.getMetatagYawRadians()))));
         
         NamedCommands.registerCommand("ElevatorDown", new RotateElevatorDownPID(elevator).until(elevator :: pidDownAtSetpoint));
         

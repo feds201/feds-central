@@ -168,6 +168,8 @@ public class Robot extends TimedRobot
     @Override
     public void teleopPeriodic() {
         robotContainer.setupVisionImplantsTele();
+        SmartDashboard.putNumberArray("limelight5 blue", robotContainer.frontLeftCamera.getBotposeBlue());
+        SmartDashboard.putNumber("robot yaw", robotContainer.frontLeftCamera.getMetatagYaw());
     }
 
 
