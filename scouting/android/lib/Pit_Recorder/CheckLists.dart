@@ -1,4 +1,3 @@
-import 'dart:developer' as developer;
 import 'dart:math';
 
 import 'package:camera/camera.dart';
@@ -41,6 +40,7 @@ class _RecordState extends State<Record> {
     _confettiController =
         ConfettiController(duration: const Duration(seconds: 2));
 
+    // Initialize with empty values
     DrivetrainController = "";
     AutonController = "";
     ScoreTypeController = [];
@@ -50,13 +50,24 @@ class _RecordState extends State<Record> {
     hello = null;
     selectedChoice = '';
 
+    // Load database and try to get existing data for this team
+    PitDataBase.LoadAll();
     try {
-      // DrivetrainController =
-      ScoreObjectController = List<String>.from(
-          PitDataBase.GetData(widget.team.teamNumber)["scoreObject"]);
-      developer.log(ScoreObjectController.toString());
+      PitRecord? existingRecord = PitDataBase.GetData(widget.team.teamNumber);
+      if (existingRecord != null) {
+        // Populate UI state variables with existing data
+        setState(() {
+          DrivetrainController = existingRecord.driveTrainType;
+          AutonController = existingRecord.autonType;
+          ScoreTypeController = existingRecord.scoreType;
+          IntakeController = existingRecord.intake;
+          ClimbTypeController = existingRecord.climbType;
+          ScoreObjectController = existingRecord.scoreObject;
+        });
+        print("Loaded existing data for team ${widget.team.teamNumber}");
+      }
     } catch (e) {
-      print("Error retrieving data: $e");
+      print("Error retrieving team data: $e");
     }
   }
 
@@ -244,8 +255,10 @@ class _RecordState extends State<Record> {
     );
 
     print('Recording data: $record');
+    print("Hiv ${record.toJson()}");
     PitDataBase.PutData(widget.team.teamNumber, record);
     PitDataBase.SaveAll();
+
     PitDataBase.PrintAll();
   }
 

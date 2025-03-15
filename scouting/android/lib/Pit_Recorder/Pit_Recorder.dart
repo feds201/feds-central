@@ -298,7 +298,5 @@ Future<List<Team>> fetchTeams() async {
 }
 
 bool isScouted(int teamNumber, List<int> recorderTeam) {
-  print(
-      '$teamNumber is in $recorderTeam : ${recorderTeam.contains(teamNumber)}');
   return recorderTeam.contains(teamNumber);
 }

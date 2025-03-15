@@ -8,14 +8,22 @@ class Settings {
     LocalDataBase.putData('Settings.apiKey', key);
   }
 
+  static void setPitKey(String key) {
+    LocalDataBase.putData('Settings.pitKey', key);
+  }
+
   static String getApiKey() {
     return LocalDataBase.getData('Settings.apiKey');
+  }
+
+  static String getPitKey() {
+    return LocalDataBase.getData('Settings.pitKey');
   }
 }
 
 // PitDataBase
 class PitDataBase {
-  static final Map<String, dynamic> _storage = {};
+  static final Map<String, PitRecord> _storage = {};
 
   static void PutData(dynamic key, PitRecord value) {
     if (key == null) {
@@ -23,12 +31,24 @@ class PitDataBase {
     }
 
     // print(' Storing $key as $value');
-    _storage[key.toString()] = value.toJson();
+    _storage[key.toString()] = value;
   }
 
-  static dynamic GetData(dynamic key) {
-    // print('Retrieving $key as ${_storage[key.toString()]}');
-    return jsonDecode(jsonEncode(_storage[key.toString()]));
+  static PitRecord? GetData(dynamic key) {
+    // print('Retrieving $key as ${_storage[key]}');
+    if (_storage[key.toString()] == null) {
+      return null;
+    }
+
+    // Convert the stored data to a PitRecord object
+    var data = _storage[key.toString()];
+    if (data is PitRecord) {
+      return data;
+    } else if (data is Map<String, dynamic>) {
+      return PitRecord.fromJson(data as Map<String, dynamic>);
+    }
+
+    return null;
   }
 
   static void DeleteData(String key) {
@@ -49,7 +69,12 @@ class PitDataBase {
   static void LoadAll() {
     var dd = Hive.box('pitData').get('data');
     if (dd != null) {
-      _storage.addAll(json.decode(dd));
+      Map<String, dynamic> data = json.decode(dd);
+      data.forEach((key, value) {
+        _storage[key] = value is Map
+            ? PitRecord.fromJson(value as Map<String, dynamic>)
+            : value;
+      });
     }
   }
 
@@ -60,7 +85,7 @@ class PitDataBase {
   static List<int> GetRecorderTeam() {
     List<int> teams = [];
     _storage.forEach((key, value) {
-      teams.add(value['teamNumber']);
+      teams.add(value.teamNumber);
     });
     return teams;
   }
@@ -107,16 +132,36 @@ class PitRecord {
   }
 
   factory PitRecord.fromJson(Map<String, dynamic> json) {
+    // Parse scoreObject which might be a string representation of a list
+    List<String> parseScoreObject() {
+      var scoreObj = json['scoreObject'];
+      if (scoreObj == null) return [];
+      if (scoreObj is List) return List<String>.from(scoreObj);
+      if (scoreObj is String) {
+        // Parse string representation of list
+        if (scoreObj.startsWith('[') && scoreObj.endsWith(']')) {
+          String listContent = scoreObj.substring(1, scoreObj.length - 1);
+          return listContent.isEmpty
+              ? []
+              : listContent.split(', ').map((s) => s.trim()).toList();
+        }
+      }
+      return [];
+    }
+
     return PitRecord(
-      teamNumber: json['teamNumber'],
-      scouterName: json['scouterName'],
-      eventKey: json['eventKey'],
-      driveTrainType: json['driveTrainType'],
-      autonType: json['autonType'],
-      scoreType: List<String>.from(json['scoreType']),
-      scoreObject: List<String>.from(json['scoreObject']),
-      intake: json['intake'],
-      climbType: json['climbType'],
+      teamNumber: json['teamNumber'] ?? 0,
+      scouterName: json['scouterName'] ?? '',
+      eventKey: json['eventKey'] ?? '',
+      // These field names didn't match what's in toJson
+      driveTrainType: json['driveTrain'] ?? '',
+      autonType: json['auton'] ?? '',
+      scoreType:
+          json['scoreType'] is List ? List<String>.from(json['scoreType']) : [],
+      scoreObject: parseScoreObject(),
+      intake: json['intake'] ?? '',
+      climbType:
+          json['climbType'] is List ? List<String>.from(json['climbType']) : [],
     );
   }
 }
@@ -884,6 +929,20 @@ class LocalDataBase {
       data['SpotlightLevel'] ?? 0,
       data['Harmonize'] ?? false,
       data['Park'] ?? false,
+    );
+  }
+
+  static PitRecord mapToPitRecord(Map<dynamic, dynamic> data) {
+    return PitRecord(
+      teamNumber: data['teamNumber'] ?? 0,
+      eventKey: data['eventKey'] ?? "",
+      scouterName: data['scouterName'] ?? "",
+      driveTrainType: data['driveTrainType'] ?? "",
+      autonType: data['auton'] ?? "",
+      intake: data['intake'] ?? "",
+      scoreObject: List<String>.from(data['scoreObject'] ?? []),
+      climbType: List<String>.from(data['climbType'] ?? []),
+      scoreType: List<String>.from(data['scoreType'] ?? []),
     );
   }
 }

@@ -249,7 +249,7 @@ class SettingsPageState extends State<SettingsPage> {
                       ),
                     ],
                   ),
-                ),
+                )
               ]),
             ), // Scouter Name and API Key
 
