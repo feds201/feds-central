@@ -93,24 +93,24 @@ class MatchInfo extends StatelessWidget {
                 ],
               ),
               const Spacer(),
-              ElevatedButton(
-                onPressed: onPressed,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.deepPurple,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30.0),
-                  ),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                ),
-                child: const Text(
-                  'START',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                  ),
-                ),
-              ),
+              // ElevatedButton(
+              //   onPressed: onPressed,
+              //   style: ElevatedButton.styleFrom(
+              //     backgroundColor: Colors.deepPurple,
+              //     shape: RoundedRectangleBorder(
+              //       borderRadius: BorderRadius.circular(30.0),
+              //     ),
+              //     padding:
+              //         const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              //   ),
+              //   child: const Text(
+              //     'START',
+              //     style: TextStyle(
+              //       color: Colors.white,
+              //       fontSize: 16,
+              //     ),
+              //   ),
+              // ),
             ],
           ),
         ),

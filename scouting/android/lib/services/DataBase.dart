@@ -45,6 +45,7 @@ class PitDataBase {
     if (data is PitRecord) {
       return data;
     } else if (data is Map<String, dynamic>) {
+      // ignore: cast_from_null_always_fails
       return PitRecord.fromJson(data as Map<String, dynamic>);
     }
 
@@ -541,7 +542,7 @@ class MatchDataBase {
 
 class MatchRecord {
   final String teamNumber;
-  final String scouterName;
+  String scouterName;
   final String matchKey;
   final int matchNumber;
   final String allianceColor;
@@ -569,6 +570,7 @@ class MatchRecord {
       "teamNumber": teamNumber,
       "scouterName": scouterName,
       "matchKey": matchKey,
+      "matchNumber": matchNumber,
       "allianceColor": allianceColor,
       "eventKey": eventKey,
       "station": station,
@@ -576,6 +578,10 @@ class MatchRecord {
       "teleOpPoints": teleOpPoints.toJson(),
       "endPoints": endPoints.toJson(),
     };
+  }
+
+  String toCsv() {
+    return '${teamNumber},${scouterName},${matchKey},${allianceColor},${eventKey},${station},${matchNumber}, ${autonPoints.toCsv()}, ${teleOpPoints.toCsv()}, ${endPoints.toCsv()}';
   }
 
   static MatchRecord fromJson(Map<String, dynamic> json) {
@@ -596,10 +602,6 @@ class MatchRecord {
   @override
   String toString() {
     return 'MatchRecord{teamNumber: $teamNumber, scouterName: $scouterName, matchKey: $matchKey, autonPoints: $autonPoints, teleOpPoints: $teleOpPoints, endPoints: $endPoints, allianceColor: $allianceColor, eventKey: $eventKey, station: $station}';
-  }
-
-  String toCsv() {
-    return '$teamNumber,$scouterName,$matchKey,$matchNumber,$allianceColor,$eventKey,$station,${autonPoints.CoralScoringLevel1},${autonPoints.CoralScoringLevel2},${autonPoints.CoralScoringLevel3},${autonPoints.CoralScoringLevel4},${autonPoints.LeftBarge},${autonPoints.AlgaeScoringProcessor},${autonPoints.AlgaeScoringBarge},${teleOpPoints.CoralScoringLevel1},${teleOpPoints.CoralScoringLevel2},${teleOpPoints.CoralScoringLevel3},${teleOpPoints.CoralScoringLevel4},${teleOpPoints.AlgaeScoringBarge},${teleOpPoints.AlgaeScoringProcessor},${teleOpPoints.AlgaePickUp},${teleOpPoints.Defense},${endPoints.Deep_Climb},${endPoints.Shallow_Climb},${endPoints.Park},${endPoints.Comments}';
   }
 
   String toJsonString() {
@@ -663,6 +665,10 @@ class AutonPoints {
       "AlgaeScoringBarge": AlgaeScoringBarge,
       "RobotLocation": robot_position.toJson(),
     };
+  }
+
+  String toCsv() {
+    return '${CoralScoringLevel1},${CoralScoringLevel2},${CoralScoringLevel3},${CoralScoringLevel4},${LeftBarge},${AlgaeScoringProcessor},${AlgaeScoringBarge},${robot_position.toCsv()}';
   }
 
   static AutonPoints fromJson(Map<String, dynamic> json) {
@@ -747,6 +753,10 @@ class TeleOpPoints {
     };
   }
 
+  String toCsv() {
+    return '${CoralScoringLevel1},${CoralScoringLevel2},${CoralScoringLevel3},${CoralScoringLevel4},${AlgaeScoringBarge},${AlgaeScoringProcessor},${AlgaePickUp},${Defense}';
+  }
+
   static TeleOpPoints fromJson(Map<String, dynamic> json) {
     return TeleOpPoints(
       json['CoralScoringLevel1'] ?? 0,
@@ -829,6 +839,10 @@ class EndPoints {
   @override
   String toString() {
     return 'EndPoints{Deep_Climb: $Deep_Climb, Shallow_Climb: $Shallow_Climb, Park: $Park, Comments: $Comments}';
+  }
+
+  String toCsv() {
+    return '$Deep_Climb,$Shallow_Climb,$Park,$Comments';
   }
 
   @override
@@ -975,5 +989,9 @@ class BotLocation {
       Size(json['size']['width'], json['size']['height']),
       json['angle'],
     );
+  }
+
+  String toCsv() {
+    return '${position.dx},${position.dy},${size.width},${size.height},$angle';
   }
 }

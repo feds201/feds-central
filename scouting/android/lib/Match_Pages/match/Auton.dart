@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:scouting_app/components/CheckBox.dart';
 import 'package:scouting_app/components/CommentBox.dart';
 import 'package:scouting_app/components/CounterShelf.dart';
-import 'package:scouting_app/components/Map.dart';
+import 'package:scouting_app/components/ScoutersList.dart';
 
 import '../../services/DataBase.dart';
 import '../../components/TeamInfo.dart';
@@ -84,6 +85,8 @@ class AutonState extends State<Auton> {
     widget.matchRecord.autonPoints.AlgaeScoringProcessor =
         algaeScoringProcessor;
     widget.matchRecord.autonPoints.AlgaeScoringBarge = algaeScoringBarge;
+    widget.matchRecord.scouterName =
+        Hive.box('settings').get('deviceName', defaultValue: '');
 
     saveState();
   }
@@ -119,18 +122,12 @@ class AutonState extends State<Auton> {
               // print('Team Info START button pressed');
             },
           ),
+          ScouterList(),
           buildCheckBoxFull("Leave", left_barge, (bool value) {
             setState(() {
               left_barge = value;
             });
             UpdateData();
-          }),
-          buildMap(context, botLocations, allianceColor,
-              onLocationChanged: (BotLocation updatedLocation) {
-            setState(() {
-              botLocations = updatedLocation;
-            });
-            print(botLocations);
           }),
           buildComments(
               "Coral Scoring",

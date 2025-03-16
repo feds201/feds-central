@@ -39,8 +39,8 @@ class QrCoder extends State<Qrgenerator> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             QrImageView(
+              data: json.encode(widget.matchRecord.toCsv()),
               // data: json.encode(widget.matchRecord.toJson()),
-              data: json.encode(widget.matchRecord.toJson()),
               version: QrVersions.auto,
               size: MediaQuery.of(context).size.width - 40,
               semanticsLabel: 'QR code',
