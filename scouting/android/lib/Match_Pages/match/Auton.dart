@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:scouting_app/components/CheckBox.dart';
@@ -94,7 +96,7 @@ class AutonState extends State<Auton> {
   void saveState() {
     LocalDataBase.putData('Auton', autonPoints.toJson());
 
-    // log('Auton state saved: $autonPoints');
+    log('Auton state saved: ${autonPoints.toCsv()}');
   }
 
   @override
