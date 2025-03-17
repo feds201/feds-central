@@ -45,7 +45,7 @@ FILTERED_TEAMS = set()
 def display_welcome_screen():
     """Display the welcome screen with logo and info"""
     console.clear()
-    console.print(f"[bold cyan]{PYINTEL_LOGO}[/bold cyan]")
+    console.print(f"[bold cyan]{PYINTEL_LOGO}[/bold cyan]", justify="left")
     console.print(f"[italic dim]{POWERED_BY}[/italic dim]", justify="center")
     console.print("\n[bold green]Welcome to PyIntel Scoutz - FRC Scouting Analysis Tool[/bold green]", justify="center")
     console.print("[yellow]Analyze your scouting data and generate powerful insights for your team[/yellow]\n", justify="center")

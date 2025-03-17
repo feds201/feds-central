@@ -60,6 +60,32 @@ try {
     if ($LASTEXITCODE -eq 0) {
         Write-Host "Compilation successful."
         
+        # Modify the spec file
+        $specFilePath = "$sourcePath\server.spec"
+        if (Test-Path -Path $specFilePath) {
+            Write-Host "Modifying spec file..."
+            $specContent = Get-Content -Path $specFilePath
+            $importLine = "from PyInstaller.utils.hooks import collect_all"
+            $analysisSection = @"
+datas = []
+binaries = []
+hiddenimports = ['_curses']
+
+# Collect all for packages that might need extra files
+tmp_ret = collect_all('curses')
+datas += tmp_ret[0]; binaries += tmp_ret[1]; hiddenimports += tmp_ret[2]
+tmp_ret = collect_all('psutil')
+datas += tmp_ret[0]; binaries += tmp_ret[1]; hiddenimports += tmp_ret[2]
+"@
+
+            if ($specContent -notcontains $importLine) {
+                Add-Content -Path $specFilePath -Value $importLine
+            }
+            if ($specContent -notcontains "datas = []") {
+                Add-Content -Path $specFilePath -Value $analysisSection
+            }
+        }
+
         # Get the executable path (PyInstaller puts it in the dist folder)
         $exePath = ".\dist\server.exe"
         
