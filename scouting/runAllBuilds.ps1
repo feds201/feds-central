@@ -24,19 +24,18 @@ function Run-BuildScript {
     Write-Host "$Activity completed."
 }
 
-# Run Android build
-Run-BuildScript -ScriptPath "$BASE_DIR\buildAndroid.ps1" -Activity "Building Android APK"
+    
+Run-BuildScript -ScriptPath "$BASE_DIR\Autos\buildScoutOpsAndroid.ps1" -Activity "Building Scout Ops Android"
+Run-BuildScript -ScriptPath "$BASE_DIR\Autos\buildScoutOpsServer.ps1" -Activity "Building Scout Ops Server"
+Run-BuildScript -ScriptPath "$BASE_DIR\Autos\buildScoutOpsToolchains.ps1" -Activity "Building Scout Ops ToolChain"
 
-# Run Web build
-Run-BuildScript -ScriptPath "$BASE_DIR\buildWeb.ps1" -Activity "Building Web"
+    
 
-# Run Windows build
-Run-BuildScript -ScriptPath "$BASE_DIR\buildWindows.ps1" -Activity "Building Windows"
 
-# Run Scout-Ops server build
-Run-BuildScript -ScriptPath "$BASE_DIR\Scout-Ops-Server\generateExe.bat" -Activity "Building Scout-Ops Server"
 
-# Run Scout-Ops client build
-Run-BuildScript -ScriptPath "$BASE_DIR\Scout-Ops-Client\buildClient.bat" -Activity "Building Scout-Ops Client"
 
-Write-Host "All builds successfully completed."
+Write-Host "Summary of builds:"
+Write-Host "- Scout Ops Android built successfully." -ForegroundColor Green
+Write-Host "- Scout Ops ToolChain built successfully." -ForegroundColor Green
+Write-Host "- Scout Ops Server built successfully." -ForegroundColor Green
+Write-Host "All builds successfully completed." -ForegroundColor Green
