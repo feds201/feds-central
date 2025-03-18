@@ -2,6 +2,8 @@ param (
     [string]$BASE_DIR = "P:\FEDS201\Scouting_Suite"
 )
 
+
+
 function Show-Progress {
     param (
         [string]$Activity,
@@ -24,6 +26,9 @@ function Run-BuildScript {
     Write-Host "$Activity completed."
 }
 
+
+
+Remove-Item -Path "P:\FEDS201\Scouting_Suite\Assets" -Recurse -Force
     
 Run-BuildScript -ScriptPath "$BASE_DIR\Autos\buildScoutOpsAndroid.ps1" -Activity "Building Scout Ops Android"
 Run-BuildScript -ScriptPath "$BASE_DIR\Autos\buildScoutOpsServer.ps1" -Activity "Building Scout Ops Server"

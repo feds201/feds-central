@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scout Ops Pits</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js" defer></script>
+    <!-- Add favicon for PyIntel AI branding -->
+    <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzhlNTRlOSI+PHBhdGggZD0iTTEyIDJDNi40OCAyIDIgNi40OCAyIDEyczQuNDggMTAgMTAgMTAgMTAtNC40OCAxMC0xMFMxNy41MiAyIDEyIDJ6bTAgMThjLTQuNDEgMC04LTMuNTktOC04czMuNTktOCA4LTggOCAzLjU5IDggOC0zLjU5IDgtOCA4em0tMS0xM2gydjZoLTJ6bTAgOGgydjJoLTJ6Ii8+PC9zdmc+" type="image/svg+xml">
+    <!-- Add font for improved aesthetics -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', 'Roboto', 'Segoe UI', Arial, sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Scout Ops Pits</h1>
+    </header>
+    
+    <div class="container">
+        <div class="panel">
+            <div class="panel-header">Search & Filter</div>
+            <div class="panel-body">
+                <div class="search-controls">
+                    <div class="control-group">
+                        <label for="team-filter">Team Number</label>
+                        <input type="number" id="team-filter" placeholder="Enter team number">
+                    </div>
+                    <div class="control-group">
+                        <label for="drivetrain-filter">Drivetrain</label>
+                        <select id="drivetrain-filter">
+                            <option value="">All</option>
+                            <option value="Tank drive">Tank Drive</option>
+                            <option value="Swerve drive">Swerve Drive</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="endgame-filter">Endgame</label>
+                        <select id="endgame-filter">
+                            <option value="">All</option>
+                            <option value="Park">Park</option>
+                            <option value="Shallow Climb">Shallow Climb</option>
+                            <option value="Deep Climb">Deep Climb</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label>&nbsp;</label>
+                        <button id="apply-filters">Apply Filters</button>
+                    </div>
+                    <div class="control-group">
+                        <label>&nbsp;</label>
+                        <button id="reset-filters" class="button-red">Reset</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Smart Insights Panel -->
+        <div class="panel">
+            <div class="panel-header">
+                <span>Smart Insights</span>
+                <span class="pyintel-badge" style="margin: 0 0 0 10px; padding: 3px 8px; font-size: 0.7em;">PyIntel AI</span>
+            </div>
+            <div class="panel-body">
+                <div class="smart-insights">
+                    <div class="insights-title">
+                        <svg width="24" height="24" viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                        </svg>
+                        AI-Powered Scouting Insights
+                    </div>
+                    <div id="insights-container">
+                        <!-- Smart insights will be populated here -->
+                        <div class="loading-shimmer" style="height: 80px; border-radius: 10px;"></div>
+                    </div>
+                </div>
+                
+                <div class="stats-row">
+                    <div class="stat-card pulse-animation">
+                        <h3>Total Teams</h3>
+                        <div id="total-teams" class="stat-value">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Swerve Drive</h3>
+                        <div id="swerve-teams" class="stat-value">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Tank Drive</h3>
+                        <div id="tank-teams" class="stat-value">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Can Climb</h3>
+                        <div id="climb-teams" class="stat-value">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <div class="panel-header">Key Statistics</div>
+            <div class="panel-body">
+                <div class="charts-container">
+                    <div class="chart" id="drivetrain-chart"></div>
+                    <div class="chart" id="endgame-chart"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Advanced Analytics Section -->
+        <div class="panel">
+            <div class="panel-header">
+                <span>Advanced Analytics</span>
+                <span class="pyintel-badge" style="margin: 0 0 0 10px; padding: 3px 8px; font-size: 0.7em;">PyIntel AI</span>
+            </div>
+            <div class="panel-body">
+                <div class="analytics-grid">
+                    <div class="analytics-card">
+                        <h4>Drivetrain Comparison</h4>
+                        <div id="drivetrain-comparison" class="comparison-slider">
+                            <!-- Will be populated by JS -->
+                        </div>
+                    </div>
+                    <div class="analytics-card">
+                        <h4>Climbing Capability</h4>
+                        <div id="climbing-capability" class="comparison-slider">
+                            <!-- Will be populated by JS -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="analytics-grid" style="margin-top: 20px;">
+                    <div class="analytics-card">
+                        <h4>Team Activity Distribution</h4>
+                        <div id="team-activity-heatmap" class="heatmap">
+                            <!-- Will be populated by JS -->
+                        </div>
+                    </div>
+                    <div class="analytics-card">
+                        <h4>Correlation Analysis</h4>
+                        <div id="correlation-insights">
+                            <!-- Will be populated by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <div class="panel-header">Team Data</div>
+            <div class="panel-body">
+                <div id="loading" class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading data...</p>
+                </div>
+                
+                <div class="table-container">
+                    <table id="teams-table">
+                        <thead>
+                            <tr>
+                                <th>Team #</th>
+                                <th>Image</th>
+                                <th>Drivetrain</th>
+                                <th>Auton</th>
+                                <th>Score Type</th>
+                                <th>Endgame</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="teams-data">
+                            <!-- Data will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Team Detail Modal -->
+    <div id="team-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="modal-team-title">Team Details</h2>
+            <img id="modal-team-img" class="team-detail-img" src="" alt="Robot Image">
+            
+            <div class="team-detail-info" id="modal-team-info">
+                <!-- Details will be populated here -->
+            </div>
+            
+            <!-- Team Performance Predictions -->
+            <div id="team-predictions" style="margin-top: 25px;">
+                <h3 style="border-bottom: 2px solid #f1f3f4; padding-bottom: 10px; display: flex; align-items: center; justify-content: space-between;">
+                    Performance Predictions
+                    <span class="pyintel-badge" style="margin: 0; padding: 3px 8px; font-size: 0.7em;">PyIntel AI</span>
+                </h3>
+                <div id="predictions-container" class="loading-shimmer" style="height: 100px; border-radius: 10px;"></div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

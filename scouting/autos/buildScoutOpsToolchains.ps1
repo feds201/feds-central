@@ -101,7 +101,6 @@ catch {
 
 # Run PyInstaller to compile the application
 Write-Host "Compiling Scout-Ops-ToolChain Blue Alliance..."
-.\.venv\Scripts\activate
 try {
     & python -m PyInstaller --noconfirm --onefile --console --icon "$iconPath" `
         "$sourcePath\adit.py"
