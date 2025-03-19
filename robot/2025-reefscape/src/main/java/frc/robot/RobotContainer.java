@@ -310,6 +310,8 @@ public class RobotContainer extends RobotFramework {
 
         driverController.leftTrigger()
                 .whileTrue(new SpinSwanWheels(swanNeckWheels, ()->-.4));
+
+        driverController.povUp().whileTrue(new SpinSwanWheels(swanNeckWheels, ()-> .4));
                 
         
         
