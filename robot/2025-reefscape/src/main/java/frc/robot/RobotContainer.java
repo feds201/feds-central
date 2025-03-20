@@ -316,6 +316,8 @@ public class RobotContainer extends RobotFramework {
                 .whileTrue(new SpinSwanWheels(swanNeckWheels, ()->-.4));
 
         driverController.povUp().whileTrue(new SpinSwanWheels(swanNeckWheels, ()-> .4));
+
+        driverController.povDown().whileTrue(new RaiseClimberBasic(()-> .10, climber));
                 
         
         
