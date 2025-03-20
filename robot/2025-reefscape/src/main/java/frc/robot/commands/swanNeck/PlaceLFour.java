@@ -27,6 +27,7 @@ public class PlaceLFour extends SequentialCommandGroup {
   SwanNeck m_SwanNeck;
   SwanNeckWheels m_SwanNeckWheels;
   Lift m_elevator;
+
   /** Creates a new scoreLTwo. */
   public PlaceLFour(Lift lift, SwanNeck swanNeck, SwanNeckWheels swanNeckWheels) {
     m_SwanNeck = swanNeck;
@@ -34,19 +35,26 @@ public class PlaceLFour extends SequentialCommandGroup {
     m_elevator = lift;
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
-    addCommands(new RaiseSwanNeckPID(()-> IntakeMap.ReefStops.SAFEANGLE , m_SwanNeck).until(m_SwanNeck :: pidAtSetpoint), 
+    addCommands(new RaiseSwanNeckPID(() -> IntakeMap.ReefStops.SAFEANGLE, m_SwanNeck).until(m_SwanNeck::pidAtSetpoint),
 
-    new RotateElevatorPID(m_elevator, ()-> ElevatorMap.L4ROTATION).until(m_elevator :: pidAtSetpoint), 
+        new RotateElevatorPID(m_elevator, () -> ElevatorMap.L4ROTATION).until(m_elevator::pidAtSetpoint),
 
-    new ParallelCommandGroup(new RotateElevatorPID(m_elevator, ()-> ElevatorMap.L4ROTATION), 
-    new RaiseSwanNeckPID(()-> IntakeMap.ReefStops.L4ANGLE, m_SwanNeck)).until(m_SwanNeck :: pidAtSetpoint),
+        new ParallelCommandGroup(
+            new RotateElevatorPID(m_elevator, () -> ElevatorMap.L4ROTATION),
+            new RaiseSwanNeckPID(() -> IntakeMap.ReefStops.L4ANGLE, m_SwanNeck)).until(m_SwanNeck::pidAtSetpoint),
 
-    new ParallelDeadlineGroup(new WaitCommand(.4), new RotateElevatorPID(m_elevator, ()-> ElevatorMap.L4ROTATION), 
-    new SpinSwanWheels(m_SwanNeckWheels, ()-> IntakeMap.WHEEL_SPEED_SCORE )),
-    new RaiseSwanNeckPID(()-> IntakeMap.ReefStops.SAFEANGLE, m_SwanNeck).until(m_SwanNeck :: pidAtSetpoint)
+        // new RaiseSwanNeckPID(() -> IntakeMap.ReefStops.SAFEANGLE, m_SwanNeck).until(m_SwanNeck::pidAtSetpoint),//TESTING
+
+        new ParallelDeadlineGroup(
+            new WaitCommand(.4),
+            new RotateElevatorPID(m_elevator, () -> ElevatorMap.L4ROTATION),
+            new SpinSwanWheels(m_SwanNeckWheels, () -> IntakeMap.WHEEL_SPEED_SCORE)),
+
+        new RaiseSwanNeckPID(() -> IntakeMap.ReefStops.SAFEANGLE, m_SwanNeck).until(m_SwanNeck::pidAtSetpoint)
     // ,
-    // new ParallelRaceGroup(new WaitCommand(0.35), new MoveBack(DrivetrainConstants.drivetrain)),
+    // new ParallelRaceGroup(new WaitCommand(0.35), new
+    // MoveBack(DrivetrainConstants.drivetrain)),
     // new RotateElevatorSafePID(m_elevator).until(m_elevator :: pidL3AtSetpoint)
-     );
+    );
   }
 }
