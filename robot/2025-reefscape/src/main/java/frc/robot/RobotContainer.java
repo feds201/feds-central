@@ -245,6 +245,7 @@ public class RobotContainer extends RobotFramework {
         new Trigger(elevator :: getElevatorAboveThreshold).and(RobotModeTriggers.teleop()).onTrue(new ConfigureHologenicDrive(driverController, DrivetrainConstants.drivetrain)).onFalse(ConfigureHologenicDrive(driverController, swerveSubsystem, elevator));
         // new Trigger (operatorController.leftTrigger()).whileTrue(zeroMechanisms).onTrue(new ConfigureSlowDrive(driverController, DrivetrainConstants.drivetrain, 0.1)).onFalse(ConfigureHologenicDrive(driverController, swerveSubsystem, elevator));
         new Trigger (driverController.rightTrigger().and(frontLeftCamera :: twoTagsDetected)).whileTrue(DrivetrainConstants.drivetrain.runOnce(()-> DrivetrainConstants.drivetrain.resetRotation(new Rotation2d(frontLeftCamera.getMetatagYawRadians()))));
+        new Trigger (driverController.rightTrigger().and(frontRightCamera :: twoTagsDetected)).whileTrue(DrivetrainConstants.drivetrain.runOnce(()-> DrivetrainConstants.drivetrain.resetRotation(new Rotation2d(frontRightCamera.getMetatagYawRadians()))));
         //Operator
         operatorController.y()
             .whileTrue(new PlaceLOne(elevator, swanNeck, swanNeckWheels));
