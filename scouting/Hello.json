@@ -1,0 +1,116 @@
+{
+    "key": "2025miket_qm1",
+    "event": "2025miket",
+    "elim": false,
+    "comp_level": "qm",
+    "match_number": 1,
+    "match_name": "Qual 1",
+    "status": "Completed",
+    "alliances": {
+        "red": {
+            "team_keys": [
+                4998,
+                5260,
+                3534
+            ],
+            "surrogate_team_keys": [],
+            "dq_team_keys": []
+        },
+        "blue": {
+            "team_keys": [
+                2137,
+                9776,
+                9207
+            ],
+            "surrogate_team_keys": [],
+            "dq_team_keys": []
+        }
+    },
+    "pred": {
+        "winner": "red",
+        "red_win_prob": 0.6065,
+        "red_score": 89.95,
+        "blue_score": 78.3,
+        "red_auto_rp": 0.4299,
+        "blue_auto_rp": 0.3728,
+        "red_coral_rp": 0.0505,
+        "blue_coral_rp": 0.0491,
+        "red_barge_rp": 0.3341,
+        "blue_barge_rp": 0.294,
+        "red_rp_1": 0.4299,
+        "blue_rp_1": 0.3728,
+        "red_rp_2": 0.0505,
+        "blue_rp_2": 0.0491,
+        "red_rp_3": 0.3341,
+        "blue_rp_3": 0.294
+    },
+    "result": {
+        "winner": "blue",
+        "red_score": 36,
+        "blue_score": 111,
+        "red_no_foul": 36,
+        "blue_no_foul": 93,
+        "red_auto_points": 6,
+        "blue_auto_points": 30,
+        "red_teleop_points": 28,
+        "blue_teleop_points": 47,
+        "red_endgame_points": 2,
+        "blue_endgame_points": 16,
+        "red_auto_rp": false,
+        "blue_auto_rp": true,
+        "red_coral_rp": false,
+        "blue_coral_rp": false,
+        "red_barge_rp": false,
+        "blue_barge_rp": true,
+        "red_tiebreaker_points": 0,
+        "blue_tiebreaker_points": 0,
+        "red_auto_leave_points": 6.0,
+        "blue_auto_leave_points": 9.0,
+        "red_auto_coral": 0.0,
+        "blue_auto_coral": 3.0,
+        "red_auto_coral_points": 0.0,
+        "blue_auto_coral_points": 21.0,
+        "red_teleop_coral": 6.0,
+        "blue_teleop_coral": 16.0,
+        "red_teleop_coral_points": 28.0,
+        "blue_teleop_coral_points": 47.0,
+        "red_coral_l1": 0.0,
+        "blue_coral_l1": 9.0,
+        "red_coral_l2": 1.0,
+        "blue_coral_l2": 1.0,
+        "red_coral_l3": 0.0,
+        "blue_coral_l3": 4.0,
+        "red_coral_l4": 5.0,
+        "blue_coral_l4": 5.0,
+        "red_total_coral_points": 28.0,
+        "blue_total_coral_points": 68.0,
+        "red_processor_algae": 0.0,
+        "blue_processor_algae": 0.0,
+        "red_processor_algae_points": 0.0,
+        "blue_processor_algae_points": 0.0,
+        "red_net_algae": 0.0,
+        "blue_net_algae": 0.0,
+        "red_net_algae_points": 0.0,
+        "blue_net_algae_points": 0.0,
+        "red_total_algae_points": 0.0,
+        "blue_total_algae_points": 0.0,
+        "red_total_game_pieces": 6.0,
+        "blue_total_game_pieces": 19.0,
+        "red_barge_points": 2.0,
+        "blue_barge_points": 16.0,
+        "red_rp_1": false,
+        "blue_rp_1": true,
+        "red_rp_2": false,
+        "blue_rp_2": false,
+        "red_rp_3": false,
+        "blue_rp_3": true
+    },
+    "tba": {
+        "teams": [
+            "201" : "TheBlueAlliance COPR",
+            
+            
+        ]
+    }
+    
+}

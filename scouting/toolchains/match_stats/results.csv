@@ -1,0 +1,2 @@
+match_key,match_name,winner,red_score,blue_score,red_auto_points,blue_auto_points,red_teleop_points,blue_teleop_points,red_endgame_points,blue_endgame_points,red_foul_points,blue_foul_points,red_total_pieces,blue_total_pieces,red_auto_bonus,blue_auto_bonus,red_coral_bonus,blue_coral_bonus,red_barge_bonus,blue_barge_bonus
+2025miket_qm12,Qual 12,red,86,45,10,6,64,21,6,4,12,18,11,3,False,False,False,False,False,True
