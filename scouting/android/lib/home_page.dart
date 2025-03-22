@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:scouting_app/Pit_Checklist/CheckLists.dart';
+import 'package:scouting_app/Pit_Checklist/Pit_Checklist.dart';
 import 'package:scouting_app/Qualitative/qualitative.dart';
+import 'package:scouting_app/services/DataBase.dart';
 
 import 'Experiment/ExpStateManager.dart';
 import 'Match_Pages/match_page.dart';
@@ -142,6 +145,23 @@ class _HomePageState extends State<HomePage>
                       context,
                       MaterialPageRoute(
                           builder: (context) => const PitRecorder(),
+                          fullscreenDialog: true));
+                },
+              ),
+              const SizedBox(height: 12),
+              buildButton(
+                context: context,
+                text: 'Pit Checklist',
+                color: const Color.fromARGB(255, 230, 187, 251),
+                borderColor: const Color.fromARGB(255, 59, 24, 84),
+                icon: Icons.bookmark_add_outlined,
+                textColor: const Color.fromARGB(255, 78, 26, 96),
+                iconColor: const Color.fromARGB(255, 106, 31, 113),
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const PitCheckListPage(),
                           fullscreenDialog: true));
                 },
               ),

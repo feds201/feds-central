@@ -21,7 +21,7 @@ class Record extends StatefulWidget {
 
 class _RecordState extends State<Record> {
   int _pressCount = 0;
-  final int _requiredPresses = 5;
+  final int _requiredPresses = 1;
 
   late ConfettiController _confettiController;
 

@@ -214,14 +214,14 @@ class PitRecorderState extends State<PitRecorder> {
             onTap: () async {
               int tapCount = 0;
               bool confirmed = false;
-              while (tapCount < 16) {
+              while (tapCount < 5) {
                 confirmed = await showDialog(
                   context: context,
                   builder: (BuildContext context) {
                     return AlertDialog(
                       title: const Text('Confirm Delete'),
                       content: Text(
-                          'Are you sure you want to delete all data? Tap ${16 - tapCount} more times to confirm.'),
+                          'Are you sure you want to delete all data? Tap ${5 - tapCount} more times to confirm.'),
                       actions: [
                         TextButton(
                           onPressed: () {
@@ -245,7 +245,7 @@ class PitRecorderState extends State<PitRecorder> {
                   break;
                 }
               }
-              if (tapCount == 16) {
+              if (tapCount == 5) {
                 // Perform delete operation
                 PitDataBase.ClearData();
               }

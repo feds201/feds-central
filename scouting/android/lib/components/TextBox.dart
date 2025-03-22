@@ -113,6 +113,69 @@ Widget buildTextBox(String question, String comment, Icon titleIcon,
   );
 }
 
+Widget buildNumberBox(
+    String question, double number, Icon titleIcon, Function onchange) {
+  return Padding(
+    padding: const EdgeInsets.all(8.0),
+    child: Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.2),
+            spreadRadius: 2,
+            blurRadius: 5,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                titleIcon,
+                const SizedBox(width: 2),
+                Text("NUMBER INPUT",
+                    style: GoogleFonts.museoModerno(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey)),
+              ],
+            ),
+            Wrap(
+              children: [
+                const SizedBox(width: 8),
+                Text(question,
+                    style: GoogleFonts.museoModerno(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    )),
+              ],
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                hintText: number.toString(),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              onChanged: (value) {
+                onchange(value.toString());
+              },
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
 Widget buildDualBox(
     String question,
     Icon titleIcon,

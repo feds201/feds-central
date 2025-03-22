@@ -225,7 +225,7 @@ String _getRandomInsult() {
 
     //Avanti
     "Avanti's got the attitude of an entire spice rack",
-    "Avanti’s got more drama than a reality TV show—someone get her a camera!",
+    "Avanti spreads more drama than a reality TV show—someone get her a camera!",
     "You can always find Avanti using her height to her advantage—like standing on her tiptoes to just barely reach the top shelf…or pretending to be invisible so she can avoid gym class. ",
     "She’s always skipping meetings but wants to be a doctor—good luck diagnosing anything when you can’t even diagnose a meeting on your calendar. ",
     "Avanti’s always skipping meetings, but at least she’s got the British accent to make it sound like she’s doing something important. ",
@@ -255,6 +255,11 @@ String _getRandomInsult() {
     "But let’s be honest, it's a talent to be that oblivious. He’s like a cultural blender set on “puree” – just mixing everything up without understanding any of the ingredients! And poor girl he pulled in 16 hours? She probably thought it was an escape room, and by the end, she was just trying to find the exit! ",
     "David, my dude from South Korea. I mean, with your track record, your love life is like a K-drama that got canceled after one season!",
     "David, your love life is like a K-drama that got canceled after one season!",
+
+    //Kevin
+    "Kevin would cave in any time he has the chance to devour his Spicy Habibi Sauce"
+        "Even though he is a true Romanian, his parents call him Habibi"
+        "Sam and Kevin sitting in a tree, his misses him so much, but he isn't on the team. Prolly went to get the Habibi drip.",
 
     // Julia
     "Leasbiannnnnnnnnnnnnnnnnnnnnnnn!",
