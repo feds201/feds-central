@@ -7,19 +7,19 @@
         {
           "type": "named",
           "data": {
-            "name": "MetatagRelativeYaw"
+            "name": "MetatagRelativeYawRight"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "MetatagRelativeYaw"
+            "name": "MetatagRelativeYawRight"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "MetatagRelativeYaw"
+            "name": "MetatagRelativeYawRight"
           }
         },
         {
@@ -98,7 +98,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "L4Fast"
+                  "name": "L4"
                 }
               }
             ]

@@ -141,6 +141,10 @@ public class Climber extends SubsystemABS {
     return getCANcoderValue() > .24 && getCANcoderValue() < .33;
   }
 
+  public boolean climberAtStraight(){
+    return getCANcoderValue() > .32;
+  }
+
   @Override
   public void simulationPeriodic() {
     // TODO Auto-generated method stub
