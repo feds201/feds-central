@@ -104,13 +104,21 @@ String _getRandomInsult() {
     // GAy
     // Shamppo bottle
     // Moistorure
-    //
+    // Thigh
 
     //Adit
     "Adit, oh Adit, Hit his head on a door—just a bit!(Now he ducks, but still gets stuck.)",
     "Adit, the Aussie lad, Tried to surf but wiped out bad.(Water said nope, and down he sloped.)",
     "Adit, so very tall,Bumped the fan and broke the wall. (His height’s a gift… until ceilings exist.)",
     "Adit, the BBQ king,  Burnt the snags and lost his zing. (Flames went high, now sausages fly.)",
+    "His Name is Adit champ, but he is definitely not the best champ.",
+    "Sleepy bastard"
+        "Uncle Adit"
+        ""
+
+        // BOSSSH
+        "Boss, oh Boss, always in a rush, but never quite in touch. (Leading the team, but where’s the lunch?)",
+    "His Head is shinier than my future.",
 
     //clifford
     "Clifford, eyes open wide,Typing fast with zero pride. (Sleep is a myth, just one more line… or fifth.)",
@@ -120,7 +128,7 @@ String _getRandomInsult() {
     "Rishi, always on the go, Writes one line, then says ‘Uh-oh.’ (Fixes none, but claims he’s done.)",
 
     //Nisha
-    "Nisha Misha Dish Pisha Gisha Jisha Yisha Risha Bisa",
+    "Nisha Misha Disha Pisha Gisha Jisha Yisha Risha Bisa",
 
     //Sacheth
     "Sacheth’s mustache is so peachy, even peaches are filing a copyright claim.",
@@ -170,6 +178,7 @@ String _getRandomInsult() {
     "Laney spent money on a mobile game about cats—guess the game’s the only thing getting the ‘purr-fect’ treatment.",
     "Laney’s idea of a balanced diet is a tall latte in one hand and her phone in the other, tracking her Starbucks rewards.",
     "Laney’s jokes are like her phone battery—always dying at the worst moments.",
+    // Sleeping late`
 
     //clifford
     "He can program robots, but can’t seem to program himself to remember where he put his water bottle.",
@@ -203,6 +212,10 @@ String _getRandomInsult() {
     "Ritesh has no good angles when taking photos",
     "Ritesh will wear a tank-top in any weather to show off the non-existent muscular body.",
     "Ritesh turns the light off trips on a wire and turns the eye wash on.",
+    "Ritesh loves his v-tubers!",
+    "Fun fact: Ritesh has an AI anime girlfriend",
+    "Ritesh is the king of procrastination.",
+    "Ritesh is bad Programming lead.",
 
     //andrew salmopnson
 
@@ -220,11 +233,37 @@ String _getRandomInsult() {
     "The only thing more consistent than Avanti skipping meetings is her ongoing beef with Gunhong.",
     "I mean, how do you want to be a doctor if you're missing classes left, right, and center?",
     "Avanti could write a thesis on ‘How to Avoid Responsibility 101.’",
+    "Avanti, So schizophrenic, She laughs at everything and nothing at the same time.",
+    "Avanti, the teams Aunty Ji",
 
     // Advay
-    // Peachy Mustache
-    // Fake Thugs
     //
+    // Fake Thugs
+    // BAD DJ
+
+    // Brody
+    "Algebra 2 , Homework Mucher!",
+    "Why did the math book look sad? Because it had too many problems!",
+
+    // Charles
+    "Charles thinks he’s a genius, but even his shadow leaves him in the dark.",
+    "Charles’s idea of multitasking is staring at two screens and still getting nothing done.",
+
+    // David
+    "David, ",
+    "David’s cooking is like his jokes—always a little undercooked and hard to digest.",
+    "But let’s be honest, it's a talent to be that oblivious. He’s like a cultural blender set on “puree” – just mixing everything up without understanding any of the ingredients! And poor girl he pulled in 16 hours? She probably thought it was an escape room, and by the end, she was just trying to find the exit! ",
+    "David, my dude from South Korea. I mean, with your track record, your love life is like a K-drama that got canceled after one season!",
+    "David, your love life is like a K-drama that got canceled after one season!",
+
+    // Julia
+    "Leasbiannnnnnnnnnnnnnnnnnnnnnnn!",
+    ""
+
+        //abraham
+        "So bad a german, es ist traurig...",
+    "Bean boy"
+        ""
   ];
   return insults[DateTime.now().second % insults.length];
 }
