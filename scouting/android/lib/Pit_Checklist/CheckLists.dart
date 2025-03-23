@@ -4,10 +4,7 @@ import 'dart:developer' as developer;
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 import 'package:scouting_app/components/CameraComposit.dart';
-import 'package:scouting_app/components/CheckBox.dart';
-import 'package:scouting_app/components/CommentBox.dart';
 import 'package:scouting_app/services/DataBase.dart';
 import 'package:scouting_app/components/TextBox.dart';
 import 'package:google_fonts/google_fonts.dart';

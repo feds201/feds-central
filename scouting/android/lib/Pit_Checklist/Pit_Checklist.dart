@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -7,7 +6,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:scouting_app/Pit_Checklist/CheckLists.dart';
 import 'package:scouting_app/components/Inspiration.dart';
-import 'package:scouting_app/components/MatchSelection.dart';
 import 'package:scouting_app/components/ScoutersList.dart';
 import 'package:scouting_app/components/Insults.dart';
 import 'package:scouting_app/home_page.dart';
@@ -448,7 +446,6 @@ class PitCheckListPageState extends State<PitCheckListPage>
 
     // Determine which alliance has Team 201
     final bool team201InRed = redAlliance.contains('201');
-    final bool team201InBlue = blueAlliance.contains('201');
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
