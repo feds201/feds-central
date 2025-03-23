@@ -10,7 +10,7 @@ class StatboticsClient:
     def __init__(self):
         # Statbotics API base URL
         self.base_url = "https://api.statbotics.io/v3"
-        self.tba = BlueAllianceClient()
+        self.tba = None  # Will be set by the main app to avoid circular reference
         
     def get_event_data(self, event_key):
         """Get all relevant data for an event from Statbotics."""
@@ -58,15 +58,17 @@ class StatboticsClient:
             return None
 
     def fetch_teams(self, eventkey):
-        print(eventkey)
-        """Fetch teams from the Statbotics API."""
+        """Fetch teams from Statbotics API for an event."""
+        if not self.tba:
+            print("Error: TBA client not initialized")
+            return []
+            
         teams_data = self.tba.get_api_data(f"/event/{eventkey}/teams")
         teams = []
         if teams_data:
             for team in teams_data:
                 if 'team_number' in team:
                     teams.append(team['team_number'])
-        print(teams)
         return teams
 
     def fetch_event_data(self, eventkey):
@@ -75,16 +77,34 @@ class StatboticsClient:
         return event_data
     
     def fetch_team_epa(self, team_numbers):
-        
         """Fetch EPA data for specific teams."""
         epa_data = []
         for team_number in team_numbers:
-            data = self.get_api_data(f"/team/{team_number}")
-            team_epa = data["norm_epa"]
-            team_record = data["record"]
-            epa_data.append((team_epa, team_record))
+            try:
+                data = self.get_api_data(f"/team/{team_number}")
+                if data and "norm_epa" in data:
+                    team_epa = {
+                        "current": data.get("norm_epa", 0),
+                        "recent": data.get("recent_epa", 0),
+                        "mean": data.get("mean_epa", 0),
+                        "max": data.get("max_epa", 0)
+                    }
+                    team_record = data.get("record", {})
+                    epa_data.append((team_epa, team_record))
+                else:
+                    # Default values if data is missing
+                    epa_data.append((
+                        {"current": 0, "recent": 0, "mean": 0, "max": 0}, 
+                        {"wins": 0, "losses": 0, "ties": 0, "winrate": 0}
+                    ))
+            except Exception as e:
+                print(f"Error fetching EPA data for team {team_number}: {e}")
+                # Default values on error
+                epa_data.append((
+                    {"current": 0, "recent": 0, "mean": 0, "max": 0}, 
+                    {"wins": 0, "losses": 0, "ties": 0, "winrate": 0}
+                ))
         return epa_data
-    
 
     def fetch_match_data(self, matchkey):
         """Fetch match data from the Statbotics API."""
@@ -326,18 +346,22 @@ class ScoutingApp:
     def __init__(self, root):
         self.root = root
         self.root.title("FEDS Scouting Suite")
-        self.root.geometry("800x650")
+        self.root.geometry("900x700")  # Slightly larger for better visibility
         self.root.resizable(True, True)
         
+        # Set app icon if available
+        try:
+            self.root.iconbitmap("p:/FEDS201/Scouting_Suite/Scout-Ops-Toolchains/feds_icon.ico")
+        except:
+            pass  # Ignore if icon file not found
+        
+        # Configure the appearance
+        self.configure_appearance()
+        
+        # Initialize clients
         self.tba_client = BlueAllianceClient()
         self.statbotics_client = StatboticsClient()
-        
-        # Configure style
-        style = ttk.Style()
-        style.configure('TFrame', background='#f0f0f0')
-        style.configure('TLabel', background='#f0f0f0', font=('Arial', 12))
-        style.configure('TEntry', font=('Arial', 12))
-        style.configure('TButton', font=('Arial', 12))
+        self.statbotics_client.tba = self.tba_client  # Set TBA reference
         
         # Create notebook for tabs
         self.notebook = ttk.Notebook(root)
@@ -357,6 +381,33 @@ class ScoutingApp:
         # Load saved settings
         self.load_saved_settings()
 
+    def configure_appearance(self):
+        """Configure the visual appearance of the app."""
+        # Configure style with a modern look
+        style = ttk.Style()
+        
+        # Try to use a more modern theme if available
+        try:
+            style.theme_use('vista')  # Works well on Windows
+        except:
+            try:
+                style.theme_use('clam')  # Alternative theme
+            except:
+                pass  # Use default theme if others not available
+        
+        # Configure widget styles
+        style.configure('TFrame', background='#f5f5f5')
+        style.configure('TLabel', background='#f5f5f5', font=('Segoe UI', 11))
+        style.configure('TButton', font=('Segoe UI', 11))
+        style.configure('TEntry', font=('Segoe UI', 11))
+        style.configure('TNotebook', background='#f0f0f0', tabposition='n')
+        style.configure('TNotebook.Tab', padding=[12, 4], font=('Segoe UI', 11))
+        style.configure('Heading.TLabel', font=('Segoe UI', 16, 'bold'))
+        style.configure('Section.TLabel', font=('Segoe UI', 12, 'bold'))
+        
+        # Custom button style
+        style.configure('Accent.TButton', background='#0078d7', foreground='white')
+
     def init_stats_tab(self):
         """Initialize the Statistics tab for combined match data."""
         main_frame = ttk.Frame(self.stats_tab, padding="20")
@@ -364,7 +415,7 @@ class ScoutingApp:
         
         # Title
         title_label = ttk.Label(main_frame, text="Combined Match Statistics", 
-                                font=('Arial', 16, 'bold'))
+                                style='Heading.TLabel')
         title_label.pack(pady=(0, 20))
         
         # Event key frame
@@ -483,7 +534,7 @@ class ScoutingApp:
         
         # Title
         title_label = ttk.Label(main_frame, text="Blue Alliance Data Converter", 
-                                font=('Arial', 16, 'bold'))
+                                style='Heading.TLabel')
         title_label.pack(pady=(0, 20))
         
         # API Key frame
@@ -663,7 +714,7 @@ class ScoutingApp:
                 self.stats_progress_var.set(0)
                 return
                 
-            self.stats_progress_var.set(40)
+            self.stats_progress_var.set(30)
             self.root.update()
             
             # Step 2: Get match predictions from Statbotics
@@ -672,182 +723,76 @@ class ScoutingApp:
             
             statbotics_match_data = self.statbotics_client.get_match_prediction(match_key)
             
-            self.stats_progress_var.set(70)
+            self.stats_progress_var.set(50)
             self.root.update()
             
-            # Step 3: Get team data for all teams in the match
+            # Step 3: Extract teams from the match
             teams = []
-            # if tba_match_data and 'alliances' in tba_match_data:
-            if 'red' in tba_match_data['alliances'] and 'team_keys' in tba_match_data['alliances']['red']:
-                teams.extend([team.replace('frc', '') for team in tba_match_data['alliances']['red']['team_keys']])
-            if 'blue' in tba_match_data['alliances'] and 'team_keys' in tba_match_data['alliances']['blue']:
-                teams.extend([team.replace('frc', '') for team in tba_match_data['alliances']['blue']['team_keys']])
-            #         teams.extend([team.replace('frc', '') for team in tba_match_data['alliances']['red']['team_keys']])
-            #     if 'blue' in tba_match_data['alliances'] and 'team_keys' in tba_match_data['alliances']['blue']:
-            #         teams.extend([team.replace('frc', '') for team in tba_match_data['alliances']['blue']['team_keys']])
-
-            # Get team info for all teams involved
+            if 'alliances' in tba_match_data:
+                for alliance in ['red', 'blue']:
+                    if alliance in tba_match_data['alliances'] and 'team_keys' in tba_match_data['alliances'][alliance]:
+                        teams.extend([team.replace('frc', '') for team in tba_match_data['alliances'][alliance]['team_keys']])
+            
+            if not teams:
+                messagebox.showerror("Error", "No teams found in match data")
+                self.stats_status_var.set("Error: No teams found in match")
+                self.stats_progress_var.set(0)
+                return
+            
+            self.stats_progress_var.set(60)
+            self.root.update()
+            
+            # Step 4: Get team info and statistics
+            self.stats_status_var.set(f"Fetching data for {len(teams)} teams...")
+            self.root.update()
+            
+            # Get team OPR from TBA
+            teams_opr = self.tba_client.get_api_data(f"/event/{event_key}/oprs") or {}
+            
+            # Get EPA data from Statbotics - handle as integers for API call
+            teams_int = [int(team) for team in teams if team.isdigit()]
+            teams_epa = self.statbotics_client.fetch_team_epa(teams_int)
+            
             team_data = {}
-            teams_opr =  self.tba_client.get_api_data(f"/event/{event_key}/oprs")
-            teams_epa = self.statbotics_client.fetch_team_epa([201, 302])
-            print(teams_opr)
-            for team in teams:
+            for i, team in enumerate(teams):
                 team_info = self.tba_client.get_api_data(f"/team/frc{team}")
+                
                 if team_info:
+                    # Get EPA data for this team
+                    epa_data = teams_epa[i] if i < len(teams_epa) else (
+                        {"current": 0, "recent": 0, "mean": 0, "max": 0},
+                        {"wins": 0, "losses": 0, "ties": 0, "winrate": 0}
+                    )
+                    
                     team_data[team] = {
                         "nickname": team_info.get('nickname', ''),
                         "name": team_info.get('name', ''),
                         "city": team_info.get('city', ''),
                         "state_prov": team_info.get('state_prov', ''),
                         "country": team_info.get('country', ''),
-                        "opr": teams_opr.get("oprs", {}).get("frc" + team, 0),
-                        "epa": teams_epa[0]
+                        "opr": teams_opr.get("oprs", {}).get(f"frc{team}", 0),
+                        "epa": epa_data
                     }
             
-            # Step 4: Combine data into desired output format
+            self.stats_progress_var.set(80)
+            self.root.update()
+            
+            # Step 5: Combine data into desired output format
             combined_data = self.create_combined_match_data(tba_match_data, statbotics_match_data, team_data)
             
-            # Step 5: Save the combined data
+            # Step 6: Save the combined data
             output_filename = os.path.join(output_dir, f"{match_key}_combined.json")
             with open(output_filename, 'w') as f:
                 json.dump(combined_data, f, indent=4)
-                
-            # Step 6: Turn it into csv : results.csv
             
-            # Replace the existing CSV creation code with this updated version
-            csv_filename = os.path.join(output_dir, "results.csv")
-            with open(csv_filename, 'w', newline='') as csvfile:
-                # Define columns for match results
-                fieldnames = [
-                    'match_key', 'match_name', 'winner',
-                    'red_score', 'blue_score', 
-                    'red_auto_points', 'blue_auto_points',
-                    'red_teleop_points', 'blue_teleop_points',
-                    'red_endgame_points', 'blue_endgame_points',
-                    'red_foul_points', 'blue_foul_points',
-                    'red_total_pieces', 'blue_total_pieces',
-                    'red_auto_bonus', 'blue_auto_bonus', 
-                    'red_coral_bonus', 'blue_coral_bonus',
-                    'red_barge_bonus', 'blue_barge_bonus'
-                ]
-                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-                writer.writeheader()
-                
-                # Extract match result data
-                writer.writerow({
-                    'match_key': combined_data.get('key', ''),
-                    'match_name': combined_data.get('match_name', ''),
-                    'winner': combined_data.get('result', {}).get('winner', ''),
-                    'red_score': combined_data.get('result', {}).get('red_score', 0),
-                    'blue_score': combined_data.get('result', {}).get('blue_score', 0),
-                    'red_auto_points': combined_data.get('result', {}).get('red_auto_points', 0),
-                    'blue_auto_points': combined_data.get('result', {}).get('blue_auto_points', 0),
-                    'red_teleop_points': combined_data.get('result', {}).get('red_teleop_points', 0),
-                    'blue_teleop_points': combined_data.get('result', {}).get('blue_teleop_points', 0),
-                    'red_endgame_points': combined_data.get('result', {}).get('red_endgame_points', 0),
-                    'blue_endgame_points': combined_data.get('result', {}).get('blue_endgame_points', 0),
-                    'red_foul_points': combined_data.get('result', {}).get('red_foul_points', 0),
-                    'blue_foul_points': combined_data.get('result', {}).get('blue_foul_points', 0),
-                    'red_total_pieces': combined_data.get('result', {}).get('red_total_pieces', 0),
-                    'blue_total_pieces': combined_data.get('result', {}).get('blue_total_pieces', 0),
-                    'red_auto_bonus': combined_data.get('result', {}).get('red_auto_bonus', False),
-                    'blue_auto_bonus': combined_data.get('result', {}).get('blue_auto_bonus', False),
-                    'red_coral_bonus': combined_data.get('result', {}).get('red_coral_bonus', False),
-                    'blue_coral_bonus': combined_data.get('result', {}).get('blue_coral_bonus', False),
-                    'red_barge_bonus': combined_data.get('result', {}).get('red_barge_bonus', False),
-                    'blue_barge_bonus': combined_data.get('result', {}).get('blue_barge_bonus', False)
-                })
-
-            # Create a second CSV specifically for Team Insights
-            insights_filename = os.path.join(output_dir, "Team_Insights.csv")
-            with open(insights_filename, 'w', newline='') as csvfile:
-                fieldnames = [
-                    'team', 'nickname', 'city', 'state', 'country', 
-                    'opr', 'epa_current', 'epa_recent', 'epa_mean', 'epa_max',
-                    'wins', 'losses', 'ties', 'win_rate'
-                ]
-                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-                writer.writeheader()
-                
-                # Write data for each team
-                for team, data in team_data.items():
-                    # Extract data safely with defaults
-                    epa_data = data.get('epa', [{}, {}])
-                    epa = epa_data[0] if len(epa_data) > 0 else {}
-                    record = epa_data[1] if len(epa_data) > 1 else {}
-                    
-                    writer.writerow({
-                        'team': team,
-                        'nickname': data.get('nickname', ''),
-                        'city': data.get('city', ''),
-                        'state': data.get('state_prov', ''),
-                        'country': data.get('country', ''),
-                        'opr': data.get('opr', 0),
-                        'epa_current': epa.get('current', 0),
-                        'epa_recent': epa.get('recent', 0),
-                        'epa_mean': epa.get('mean', 0),
-                        'epa_max': epa.get('max', 0),
-                        'wins': record.get('wins', 0),
-                        'losses': record.get('losses', 0),
-                        'ties': record.get('ties', 0),
-                        'win_rate': record.get('winrate', 0)
-                    })
-
-            # Update status to include both files
+            # Create CSV files
+            self.create_match_csv_files(combined_data, team_data, output_dir)
+            
             self.stats_status_var.set(f"Done! Combined match data and team insights saved.")
             self.stats_progress_var.set(100)
-
-            # Add information about the Team Insights file in the UI
-            results_label = ttk.Label(
-                self.stats_results_frame, 
-                text=f"Data saved to:", 
-                font=('Arial', 12, 'bold')
-            )
-            results_label.pack(anchor=tk.W, pady=(10, 5))
-
-            path_label = ttk.Label(self.stats_results_frame, text=output_filename)
-            path_label.pack(anchor=tk.W)
-
-            insights_label = ttk.Label(self.stats_results_frame, text=insights_filename)
-            insights_label.pack(anchor=tk.W)
             
-            # Display the data in a preview
-            results_label = ttk.Label(
-                self.stats_results_frame, 
-                text=f"Data saved to:", 
-                font=('Arial', 12, 'bold')
-            )
-            results_label.pack(anchor=tk.W, pady=(10, 5))
-            
-            path_label = ttk.Label(self.stats_results_frame, text=output_filename)
-            path_label.pack(anchor=tk.W)
-            
-            # Create a text widget to display the JSON data
-            preview_frame = ttk.LabelFrame(self.stats_results_frame, text="Preview")
-            preview_frame.pack(fill=tk.BOTH, expand=True, pady=10)
-            
-            preview_text = tk.Text(preview_frame, wrap=tk.NONE, height=15)
-            preview_text.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-            
-            scrollbar_y = ttk.Scrollbar(preview_frame, orient=tk.VERTICAL, command=preview_text.yview)
-            scrollbar_y.pack(side=tk.RIGHT, fill=tk.Y)
-            preview_text.configure(yscrollcommand=scrollbar_y.set)
-            
-            scrollbar_x = ttk.Scrollbar(self.stats_results_frame, orient=tk.HORIZONTAL, command=preview_text.xview)
-            scrollbar_x.pack(fill=tk.X, before=preview_frame)
-            preview_text.configure(xscrollcommand=scrollbar_x.set)
-            
-            # Insert the JSON data
-            preview_text.insert(tk.END, json.dumps(combined_data, indent=4))
-            preview_text.configure(state=tk.DISABLED)  # Make it read-only
-            
-            # Open folder button
-            open_button = ttk.Button(
-                self.stats_results_frame, 
-                text="Open Output Folder", 
-                command=lambda: os.startfile(os.path.dirname(output_filename))
-            )
-            open_button.pack(pady=10)
+            # Display results in UI
+            self.display_match_results(output_dir, output_filename, combined_data)
             
         except Exception as e:
             messagebox.showerror("Error", f"An error occurred: {str(e)}")
@@ -1065,7 +1010,7 @@ class ScoutingApp:
             results_label = ttk.Label(
                 self.tba_results_frame, 
                 text=f"Data saved to:", 
-                font=('Arial', 12, 'bold')
+                style='Section.TLabel'
             )
             results_label.pack(anchor=tk.W, pady=(10, 5))
             
@@ -1075,7 +1020,7 @@ class ScoutingApp:
             files_label = ttk.Label(
                 self.tba_results_frame, 
                 text=f"Files created/updated:", 
-                font=('Arial', 12, 'bold')
+                style='Section.TLabel'
             )
             files_label.pack(anchor=tk.W, pady=(10, 5))
             
@@ -1097,40 +1042,54 @@ class ScoutingApp:
             self.tba_status_var.set(f"Error: {str(e)}")
             self.tba_progress_var.set(0)
 
-    def generate_team_insights(self):
-        # Fetch teams for the event
-        event_key = self.stats_event_key_var.get().strip()
-        if not event_key:
-            messagebox.showerror("Error", "Please enter an event key")
-            return
+    def create_match_csv_files(self, combined_data, team_data, output_dir):
+        """Create CSV files from the combined match data."""
+        # Create results.csv for match data
+        csv_filename = os.path.join(output_dir, "results.csv")
+        with open(csv_filename, 'w', newline='') as csvfile:
+            # Define columns for match results
+            fieldnames = [
+                'match_key', 'match_name', 'winner',
+                'red_score', 'blue_score', 
+                'red_auto_points', 'blue_auto_points',
+                'red_teleop_points', 'blue_teleop_points',
+                'red_endgame_points', 'blue_endgame_points',
+                'red_foul_points', 'blue_foul_points',
+                'red_total_pieces', 'blue_total_pieces',
+                'red_auto_bonus', 'blue_auto_bonus', 
+                'red_coral_bonus', 'blue_coral_bonus',
+                'red_barge_bonus', 'blue_barge_bonus'
+            ]
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writeheader()
+            
+            # Extract match result data
+            result = combined_data.get('result', {})
+            writer.writerow({
+                'match_key': combined_data.get('key', ''),
+                'match_name': combined_data.get('match_name', ''),
+                'winner': result.get('winner', ''),
+                'red_score': result.get('red_score', 0),
+                'blue_score': result.get('blue_score', 0),
+                'red_auto_points': result.get('red_auto_points', 0),
+                'blue_auto_points': result.get('blue_auto_points', 0),
+                'red_teleop_points': result.get('red_teleop_points', 0),
+                'blue_teleop_points': result.get('blue_teleop_points', 0),
+                'red_endgame_points': result.get('red_endgame_points', 0),
+                'blue_endgame_points': result.get('blue_endgame_points', 0),
+                'red_foul_points': result.get('red_foul_points', 0),
+                'blue_foul_points': result.get('blue_foul_points', 0),
+                'red_total_pieces': result.get('red_total_pieces', 0),
+                'blue_total_pieces': result.get('blue_total_pieces', 0),
+                'red_auto_bonus': result.get('red_auto_bonus', False),
+                'blue_auto_bonus': result.get('blue_auto_bonus', False),
+                'red_coral_bonus': result.get('red_coral_bonus', False),
+                'blue_coral_bonus': result.get('blue_coral_bonus', False),
+                'red_barge_bonus': result.get('red_barge_bonus', False),
+                'blue_barge_bonus': result.get('blue_barge_bonus', False)
+            })
 
-        teams = self.tba_client.fetch_teams(event_key)
-        if not teams:
-            messagebox.showerror("Error", "No teams found for the event")
-            return
-
-        # Define output directory
-        output_dir = self.stats_output_dir_var.get().strip()
-        if not os.path.exists(output_dir):
-            os.makedirs(output_dir)
-
-        # Fetch team data
-        team_data = {}
-        teams_opr = self.tba_client.get_api_data(f"/event/{event_key}/oprs")
-        teams_epa = self.statbotics_client.fetch_team_epa(teams)
-        for i, team in enumerate(teams):
-            team_info = self.tba_client.get_api_data(f"/team/frc{team}")
-            if team_info:
-                team_data[team] = {
-                    "nickname": team_info.get('nickname', ''),
-                    "city": team_info.get('city', ''),
-                    "state_prov": team_info.get('state_prov', ''),
-                    "country": team_info.get('country', ''),
-                    "opr": teams_opr.get("oprs", {}).get(f"frc{team}", 0),
-                    "epa": teams_epa[i] if i < len(teams_epa) else {}
-                }
-
-        # Write insights to CSV
+        # Create Team_Insights.csv for team data
         insights_filename = os.path.join(output_dir, "Team_Insights.csv")
         with open(insights_filename, 'w', newline='', encoding='utf-8') as csvfile:
             fieldnames = [
@@ -1140,10 +1099,19 @@ class ScoutingApp:
             ]
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
-
+            
+            # Write data for each team
             for team, data in team_data.items():
-                epa_data = data.get('epa', {})
-                record = epa_data.get('record', {})
+                # Extract EPA and record data safely
+                epa_data = data.get('epa', [])
+                
+                if isinstance(epa_data, tuple) and len(epa_data) >= 2:
+                    epa = epa_data[0] if epa_data[0] else {}
+                    record = epa_data[1] if epa_data[1] else {}
+                else:
+                    epa = {}
+                    record = {}
+                
                 writer.writerow({
                     'team': team,
                     'nickname': data.get('nickname', ''),
@@ -1151,22 +1119,391 @@ class ScoutingApp:
                     'state': data.get('state_prov', ''),
                     'country': data.get('country', ''),
                     'opr': data.get('opr', 0),
-                    'epa_current': epa_data.get('norm_epa', 0),
-                    'epa_recent': epa_data.get('recent_epa', 0),
-                    'epa_mean': epa_data.get('mean_epa', 0),
-                    'epa_max': epa_data.get('max_epa', 0),
+                    'epa_current': epa.get('current', 0),
+                    'epa_recent': epa.get('recent', 0),
+                    'epa_mean': epa.get('mean', 0),
+                    'epa_max': epa.get('max', 0),
                     'wins': record.get('wins', 0),
                     'losses': record.get('losses', 0),
                     'ties': record.get('ties', 0),
                     'win_rate': record.get('winrate', 0)
                 })
 
-        # Update status
-        self.stats_status_var.set(f"Done! Team insights saved to {insights_filename}")
-        self.stats_progress_var.set(100)
+    def display_match_results(self, output_dir, output_filename, combined_data):
+        """Display match results in the UI."""
+        # Results heading
+        results_heading = ttk.Label(
+            self.stats_results_frame, 
+            text="Analysis Complete", 
+            style='Heading.TLabel'
+        )
+        results_heading.pack(anchor=tk.W, pady=(10, 15))
+        
+        # Files saved section
+        files_label = ttk.Label(
+            self.stats_results_frame, 
+            text=f"Data saved to:", 
+            style='Section.TLabel'
+        )
+        files_label.pack(anchor=tk.W, pady=(5, 5))
+        
+        # File paths
+        json_path_label = ttk.Label(self.stats_results_frame, text=output_filename)
+        json_path_label.pack(anchor=tk.W, padx=10)
+        
+        csv_path_label = ttk.Label(self.stats_results_frame, text=os.path.join(output_dir, "results.csv"))
+        csv_path_label.pack(anchor=tk.W, padx=10)
+        
+        insights_path_label = ttk.Label(self.stats_results_frame, text=os.path.join(output_dir, "Team_Insights.csv"))
+        insights_path_label.pack(anchor=tk.W, padx=10)
+        
+        # Create a frame for match information
+        match_info_frame = ttk.LabelFrame(self.stats_results_frame, text="Match Summary")
+        match_info_frame.pack(fill=tk.X, pady=10, padx=5)
+        
+        # Match info
+        match_name = ttk.Label(match_info_frame, 
+                              text=f"Match: {combined_data.get('match_name', '')}")
+        match_name.pack(anchor=tk.W, padx=10, pady=3)
+        
+        winner = combined_data.get('result', {}).get('winner', '').upper() or "TIE"
+        winner_color = "#D62828" if winner == "RED" else "#1982C4" if winner == "BLUE" else "#666666"
+        
+        winner_label = ttk.Label(match_info_frame, 
+                               text=f"Winner: {winner}", 
+                               foreground=winner_color,
+                               font=('Segoe UI', 12, 'bold'))
+        winner_label.pack(anchor=tk.W, padx=10, pady=3)
+        
+        score_label = ttk.Label(match_info_frame, 
+                              text=f"Score: RED {combined_data.get('result', {}).get('red_score', 0)} - {combined_data.get('result', {}).get('blue_score', 0)} BLUE")
+        score_label.pack(anchor=tk.W, padx=10, pady=3)
+        
+        # Preview section
+        preview_label = ttk.Label(
+            self.stats_results_frame, 
+            text="Data Preview:", 
+            style='Section.TLabel'
+        )
+        preview_label.pack(anchor=tk.W, pady=(10, 5))
+        
+        # Create a text widget to display the JSON data
+        preview_frame = ttk.LabelFrame(self.stats_results_frame, text="JSON Data")
+        preview_frame.pack(fill=tk.BOTH, expand=True, pady=5, padx=5)
+        
+        preview_text = tk.Text(preview_frame, wrap=tk.NONE, height=12, 
+                             font=('Consolas', 10), bg='#f8f8f8')
+        preview_text.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        
+        scrollbar_y = ttk.Scrollbar(preview_frame, orient=tk.VERTICAL, command=preview_text.yview)
+        scrollbar_y.pack(side=tk.RIGHT, fill=tk.Y)
+        preview_text.configure(yscrollcommand=scrollbar_y.set)
+        
+        scrollbar_x = ttk.Scrollbar(self.stats_results_frame, orient=tk.HORIZONTAL, command=preview_text.xview)
+        scrollbar_x.pack(fill=tk.X, before=preview_frame)
+        preview_text.configure(xscrollcommand=scrollbar_x.set)
+        
+        # Insert the formatted JSON data
+        preview_text.insert(tk.END, json.dumps(combined_data, indent=4))
+        preview_text.configure(state=tk.DISABLED)  # Make it read-only
+        
+        # Button frame
+        btn_frame = ttk.Frame(self.stats_results_frame)
+        btn_frame.pack(fill=tk.X, pady=10)
+        
+        # Open folder button
+        open_button = ttk.Button(
+            btn_frame, 
+            text="Open Output Folder", 
+            style='Accent.TButton',
+            command=lambda: os.startfile(os.path.dirname(output_filename))
+        )
+        open_button.pack(side=tk.LEFT, padx=(0, 10))
+        
+        # New analysis button
+        new_analysis_button = ttk.Button(
+            btn_frame, 
+            text="New Analysis",
+            command=self.clear_match_results
+        )
+        new_analysis_button.pack(side=tk.LEFT)
 
+    def clear_match_results(self):
+        """Clear the results frame and reset UI for a new analysis."""
+        for widget in self.stats_results_frame.winfo_children():
+            widget.destroy()
+        self.stats_progress_var.set(0)
+        self.stats_status_var.set("Ready for new analysis")
+
+    def generate_team_insights(self):
+        """Generate insights for all teams at an event."""
+        # Get event key and API key
+        event_key = self.stats_event_key_var.get().strip()
+        api_key = self.stats_api_key_var.get().strip()
+        output_dir = self.stats_output_dir_var.get().strip()
+        
+        # Validate inputs
+        if not api_key:
+            messagebox.showerror("Error", "Please enter a TBA API key")
+            return
             
+        if not event_key:
+            messagebox.showerror("Error", "Please enter an event key")
+            return
+        
+        # Update client API key
+        self.tba_client.headers["X-TBA-Auth-Key"] = api_key
+        
+        # Clear previous results
+        for widget in self.stats_results_frame.winfo_children():
+            widget.destroy()
+            
+        self.stats_status_var.set("Fetching teams for the event...")
+        self.stats_progress_var.set(5)
+        self.root.update()
+        
+        try:
+            # Create output directory if it doesn't exist
+            if not os.path.exists(output_dir):
+                os.makedirs(output_dir)
+            
+            # Fetch teams for the event
+            teams_data = self.tba_client.get_api_data(f"/event/{event_key}/teams")
+            if not teams_data:
+                messagebox.showerror("Error", f"Could not find teams for event: {event_key}")
+                self.stats_status_var.set("Error: No teams found")
+                self.stats_progress_var.set(0)
+                return
+            
+            # Extract team numbers
+            teams = []
+            for team in teams_data:
+                if 'team_number' in team:
+                    teams.append(team['team_number'])
+            
+            if not teams:
+                messagebox.showerror("Error", "No valid team numbers found")
+                self.stats_status_var.set("Error: No valid team numbers")
+                self.stats_progress_var.set(0)
+                return
+            
+            self.stats_status_var.set(f"Found {len(teams)} teams. Fetching OPR data...")
+            self.stats_progress_var.set(20)
+            self.root.update()
+            
+            # Get OPR data
+            teams_opr = self.tba_client.get_api_data(f"/event/{event_key}/oprs") or {}
+            
+            self.stats_status_var.set("Fetching EPA data from Statbotics...")
+            self.stats_progress_var.set(40)
+            self.root.update()
+            
+            # Fetch EPA data in batches to avoid API limits
+            batch_size = 10
+            all_epa_data = []
+            
+            for i in range(0, len(teams), batch_size):
+                batch = teams[i:i+batch_size]
+                self.stats_status_var.set(f"Fetching EPA data for teams {i+1}-{i+len(batch)} of {len(teams)}...")
+                batch_epa = self.statbotics_client.fetch_team_epa(batch)
+                all_epa_data.extend(batch_epa)
+                
+                # Update progress proportionally
+                progress = 40 + (i + len(batch)) / len(teams) * 40
+                self.stats_progress_var.set(progress)
+                self.root.update()
+            
+            # Build team data dictionary
+            team_data = {}
+            for i, team in enumerate(teams):
+                # Get team info
+                team_info = teams_data[i] if i < len(teams_data) else {}
+                
+                # Get EPA data safely
+                epa_data = all_epa_data[i] if i < len(all_epa_data) else (
+                    {"current": 0, "recent": 0, "mean": 0, "max": 0},
+                    {"wins": 0, "losses": 0, "ties": 0, "winrate": 0}
+                )
+                
+                team_data[team] = {
+                    "nickname": team_info.get('nickname', ''),
+                    "city": team_info.get('city', ''),
+                    "state_prov": team_info.get('state_prov', ''),
+                    "country": team_info.get('country', ''),
+                    "opr": teams_opr.get("oprs", {}).get(f"frc{team}", 0),
+                    "epa": epa_data
+                }
+            
+            self.stats_status_var.set("Generating Team Insights CSV...")
+            self.stats_progress_var.set(90)
+            self.root.update()
+            
+            # Create Team Insights CSV
+            insights_filename = os.path.join(output_dir, "Team_Insights.csv")
+            with open(insights_filename, 'w', newline='', encoding='utf-8') as csvfile:
+                fieldnames = [
+                    'team', 'nickname', 'city', 'state', 'country', 
+                    'opr', 'epa_current', 'epa_recent', 'epa_mean', 'epa_max',
+                    'wins', 'losses', 'ties', 'win_rate'
+                ]
+                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+                writer.writeheader()
+                
+                # Sort teams by current EPA for better insights
+                sorted_teams = sorted(team_data.items(), 
+                                     key=lambda x: x[1]['epa'][0].get('current', 0) if isinstance(x[1]['epa'], tuple) and len(x[1]['epa']) > 0 else 0, 
+                                     reverse=True)
+                
+                for team, data in sorted_teams:
+                    # Extract EPA and record data safely
+                    epa_data = data.get('epa', [])
+                    
+                    if isinstance(epa_data, tuple) and len(epa_data) >= 2:
+                        epa = epa_data[0] if epa_data[0] else {}
+                        record = epa_data[1] if epa_data[1] else {}
+                    else:
+                        epa = {}
+                        record = {}
+                    
+                    writer.writerow({
+                        'team': team,
+                        'nickname': data.get('nickname', ''),
+                        'city': data.get('city', ''),
+                        'state': data.get('state_prov', ''),
+                        'country': data.get('country', ''),
+                        'opr': data.get('opr', 0),
+                        'epa_current': epa.get('current', 0),
+                        'epa_recent': epa.get('recent', 0),
+                        'epa_mean': epa.get('mean', 0),
+                        'epa_max': epa.get('max', 0),
+                        'wins': record.get('wins', 0),
+                        'losses': record.get('losses', 0),
+                        'ties': record.get('ties', 0),
+                        'win_rate': record.get('winrate', 0)
+                    })
+            
+            # Update status and UI
+            self.stats_status_var.set(f"Done! Team insights generated for {len(teams)} teams.")
+            self.stats_progress_var.set(100)
+            
+            # Display results in UI
+            self.display_team_insights_results(insights_filename, team_data)
+            
+        except Exception as e:
+            messagebox.showerror("Error", f"An error occurred: {str(e)}")
+            self.stats_status_var.set(f"Error: {str(e)}")
+            self.stats_progress_var.set(0)
 
+    def display_team_insights_results(self, filename, team_data):
+        """Display team insights results in the UI."""
+        # Results heading
+        results_heading = ttk.Label(
+            self.stats_results_frame, 
+            text="Team Insights Generated", 
+            style='Heading.TLabel'
+        )
+        results_heading.pack(anchor=tk.W, pady=(10, 15))
+        
+        # Files saved section
+        files_label = ttk.Label(
+            self.stats_results_frame, 
+            text=f"Data saved to:", 
+            style='Section.TLabel'
+        )
+        files_label.pack(anchor=tk.W, pady=(5, 5))
+        
+        # File path
+        path_label = ttk.Label(self.stats_results_frame, text=filename)
+        path_label.pack(anchor=tk.W, padx=10)
+        
+        # Team statistics summary
+        stats_frame = ttk.LabelFrame(self.stats_results_frame, text="Team Statistics")
+        stats_frame.pack(fill=tk.X, pady=10, padx=5)
+        
+        team_count = len(team_data)
+        avg_epa = sum(data['epa'][0].get('current', 0) 
+                    if isinstance(data['epa'], tuple) and len(data['epa']) > 0 else 0 
+                    for data in team_data.values()) / team_count if team_count else 0
+        
+        # Find highest EPA team
+        highest_epa = 0
+        highest_team = "None"
+        for team, data in team_data.items():
+            if isinstance(data['epa'], tuple) and len(data['epa']) > 0:
+                current_epa = data['epa'][0].get('current', 0)
+                if current_epa > highest_epa:
+                    highest_epa = current_epa
+                    highest_team = f"{team} ({data.get('nickname', '')})"
+        
+        team_count_label = ttk.Label(stats_frame, text=f"Total Teams: {team_count}")
+        team_count_label.pack(anchor=tk.W, padx=10, pady=3)
+        
+        avg_epa_label = ttk.Label(stats_frame, text=f"Average EPA: {avg_epa:.2f}")
+        avg_epa_label.pack(anchor=tk.W, padx=10, pady=3)
+        
+        highest_label = ttk.Label(stats_frame, 
+                                text=f"Highest EPA: {highest_epa:.2f} - {highest_team}")
+        highest_label.pack(anchor=tk.W, padx=10, pady=3)
+        
+        # Create a table preview of top teams
+        preview_label = ttk.Label(
+            self.stats_results_frame, 
+            text="Top Teams Preview:", 
+            style='Section.TLabel'
+        )
+        preview_label.pack(anchor=tk.W, pady=(10, 5))
+        
+        # Sort teams by EPA
+        sorted_teams = sorted(team_data.items(), 
+                            key=lambda x: x[1]['epa'][0].get('current', 0) 
+                                if isinstance(x[1]['epa'], tuple) and len(x[1]['epa']) > 0 else 0, 
+                            reverse=True)
+        
+        # Only show top 10
+        sorted_teams = sorted_teams[:10]
+        
+        # Create table frame
+        table_frame = ttk.Frame(self.stats_results_frame)
+        table_frame.pack(fill=tk.BOTH, expand=True, pady=5)
+        
+        # Table headers
+        headers = ["Team", "Nickname", "EPA", "OPR", "Record"]
+        for i, header in enumerate(headers):
+            label = ttk.Label(table_frame, text=header, font=('Segoe UI', 10, 'bold'))
+            label.grid(row=0, column=i, sticky="w", padx=10, pady=5)
+        
+        # Table data
+        for i, (team, data) in enumerate(sorted_teams):
+            epa = data['epa'][0].get('current', 0) if isinstance(data['epa'], tuple) and len(data['epa']) > 0 else 0
+            record = data['epa'][1] if isinstance(data['epa'], tuple) and len(data['epa']) > 1 else {}
+            record_str = f"{record.get('wins', 0)}-{record.get('losses', 0)}-{record.get('ties', 0)}"
+            
+            ttk.Label(table_frame, text=team).grid(row=i+1, column=0, sticky="w", padx=10, pady=2)
+            ttk.Label(table_frame, text=data.get('nickname', '')).grid(row=i+1, column=1, sticky="w", padx=10, pady=2)
+            ttk.Label(table_frame, text=f"{epa:.2f}").grid(row=i+1, column=2, sticky="w", padx=10, pady=2)
+            ttk.Label(table_frame, text=f"{data.get('opr', 0):.2f}").grid(row=i+1, column=3, sticky="w", padx=10, pady=2)
+            ttk.Label(table_frame, text=record_str).grid(row=i+1, column=4, sticky="w", padx=10, pady=2)
+        
+        # Button frame
+        btn_frame = ttk.Frame(self.stats_results_frame)
+        btn_frame.pack(fill=tk.X, pady=10)
+        
+        # Open folder button
+        open_button = ttk.Button(
+            btn_frame, 
+            text="Open CSV File", 
+            style='Accent.TButton',
+            command=lambda: os.startfile(filename)
+        )
+        open_button.pack(side=tk.LEFT, padx=(0, 10))
+        
+        # Open folder button
+        open_folder_button = ttk.Button(
+            btn_frame, 
+            text="Open Folder",
+            command=lambda: os.startfile(os.path.dirname(filename))
+        )
+        open_folder_button.pack(side=tk.LEFT)
 
 if __name__ == "__main__":
     # Create root window
