@@ -71,6 +71,8 @@ public class SwerveSubsystem extends SubsystemABS {
         tab.addNumber("Band/Robot X", ()-> drivetrain.getState().Pose.getX());
         tab.addNumber("Band/Robot Y", ()-> drivetrain.getState().Pose.getY());
 
+        tab.addBoolean("Robot Within Barge Range", ()-> Math.abs(DrivetrainConstants.drivetrain.getState().Pose.getX() - 8.775) <  0.8);
+
         if (Utils.isSimulation()) DrivetrainConstants.drivetrain.registerTelemetry(telemetry::telemeterize);
 
         
@@ -88,6 +90,8 @@ public class SwerveSubsystem extends SubsystemABS {
     @Override
     public void periodic() {
         robotFacingAngle = drivetrain.getState().Pose.getRotation().getDegrees();
+
+       
     }
 
     @Override

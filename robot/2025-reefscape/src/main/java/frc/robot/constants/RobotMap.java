@@ -255,6 +255,15 @@ public class RobotMap {
         public static final Pose2d right66 = new Pose2d(3.715, 5.029, Rotation2d.fromDegrees(-60));
         public static final Pose2d left66 = new Pose2d(4.014, 5.187, Rotation2d.fromDegrees(-60));
     }
+
+    public static class ReefCentersPoses {
+        public static final Pose2d center16 = new Pose2d(5.125,5.121, Rotation2d.fromDegrees(-120));
+        public static final Pose2d center26 = new Pose2d(5.775,4.030, Rotation2d.fromDegrees(180));
+        public static final Pose2d center36 = new Pose2d(5.130,2.918, Rotation2d.fromDegrees(120));
+        public static final Pose2d center46 = new Pose2d(3.844,2.918, Rotation2d.fromDegrees(60));
+        public static final Pose2d center56 = new Pose2d(3.201,4.020, Rotation2d.fromDegrees(0));
+        public static final Pose2d center66 = new Pose2d(3.842,5.144, Rotation2d.fromDegrees(-60));
+    }
     public static class RedReefTagLocations {
             public static final Pose2d id1116 = new Pose2d(Units.inchesToMeters(497.77), Units.inchesToMeters(130.17), Rotation2d.fromDegrees(240));
             public static final Pose2d id1026 = new Pose2d(Units.inchesToMeters(481.39), Units.inchesToMeters(158.5), Rotation2d.fromDegrees(180));
