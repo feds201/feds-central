@@ -124,7 +124,7 @@ class QrCoder extends State<Qrgenerator> {
     bool serverStatus =
         await pluginStateManager.getPluginState("intergrateWithPyintelScoutz");
     if (serverStatus) {
-      if (ipAddress != null && deviceName != null) {
+      if (deviceName != null) {
         String url = 'http://$ipAddress/send_data';
         try {
           print('Attempting to send data...');

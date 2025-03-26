@@ -1085,7 +1085,9 @@ class PitChecklistItem {
     required this.ethernet_swtich,
     required this.ethernet_radio,
     required this.climber_string,
+    required this.climber_hooks,
     required this.climber_springs,
+    required this.climber_bumper, 
     required this.climber_gearbox,
     required this.climber_motors,
     required this.climber_wires,
@@ -1105,6 +1107,7 @@ class PitChecklistItem {
     required this.trapdoor_supports,
     required this.trapdoor_hinges,
     required this.trapdoor_tensioners,
+    required this.trapdoor_wires, 
     required this.trapdoor_nuts_and_bolts,
     required this.trapdoor_reset,
     required this.carriage_gearbox,
@@ -1117,7 +1120,6 @@ class PitChecklistItem {
     required this.gooseneck_panels,
     required this.gooseneck_wheels,
     required this.gooseneck_belts,
-    required this.gooseneck_surgical_tubing,
     required this.gooseneck_nuts_and_bolts,
     required this.gooseneck_gears,
     required this.returning_battery_voltage,
@@ -1141,10 +1143,10 @@ class PitChecklistItem {
   String to_Csv() {
     return '$matchkey,'
         '$chassis_drive_motors,$chassis_steer_motors,$chassis_gearboxes,$chassis_tread_conditions,$chassis_wires,$chassis_bumpers,$chassis_limelight_protectors,'
-        '$ethernet_front_left_limelight,$ethernet_front_right_limlight,$ethernet_back_right_limlight,$ethernet_back_left_limlight,$ethernet_swtich,$ethernet_radio,'
+        '$ethernet_front_left_limelight,$ethernet_front_right_limlight,$ethernet_swtich,$ethernet_radio,'
         '$climber_string,$climber_springs,$climber_gearbox,$climber_motors,$climber_wires,$climber_nuts_and_bolts,$climber_reset,'
-        '$elevator_rod_of_doom,$elevator_stage_0,$elevator_stage_1,$elevator_stage_2,$elevator_chain,$elevator_string,$elevator_gearbox,$elevator_motors,$elevator_wires,$elevator_nuts_and_bolts,'
-        '$trapdoor_panels,$trapdoor_supports,$trapdoor_hinges,$trapdoor_release,$trapdoor_tensioners,$trapdoor_nuts_and_bolts,$trapdoor_reset,'
+        '$elevator_rod_of_doom,$elevator_stage_0,$elevator_stage_1,$elevator_stage_2,$elevator_chain,$elevator_gearbox,$elevator_motors,$elevator_wires,$elevator_nuts_and_bolts,'
+        '$trapdoor_panels,$trapdoor_supports,$trapdoor_hinges,$trapdoor_tensioners,$trapdoor_nuts_and_bolts,$trapdoor_reset,'
         '$carriage_gearbox,$carriage_beltbox,$carriage_motors,$carriage_wires,$carriage_nuts_and_bolts,$carriage_coral_slide,$carriage_carriage,'
         '$gooseneck_panels,$gooseneck_wheels,$gooseneck_belts,$gooseneck_surgical_tubing,$gooseneck_nuts_and_bolts,'
         '$returning_battery_voltage,$returning_battery_cca,$returning_number,'
@@ -1177,8 +1179,7 @@ class PitChecklistItem {
       'elevator_stage_0': elevator_stage_0,
       'elevator_stage_1': elevator_stage_1,
       'elevator_stage_2': elevator_stage_2,
-      'elevator_chain': elevator_chain,
-      'elevator_string': elevator_string,
+      'elevator_chain': elevator_chain, 
       'elevator_gearbox': elevator_gearbox,
       'elevator_motors': elevator_motors,
       'elevator_wires': elevator_wires,
@@ -1186,7 +1187,6 @@ class PitChecklistItem {
       'trapdoor_panels': trapdoor_panels,
       'trapdoor_supports': trapdoor_supports,
       'trapdoor_hinges': trapdoor_hinges,
-      'trapdoor_release': trapdoor_release,
       'trapdoor_tensioners': trapdoor_tensioners,
       'trapdoor_nuts_and_bolts': trapdoor_nuts_and_bolts,
       'trapdoor_reset': trapdoor_reset,
@@ -1231,16 +1231,10 @@ class PitChecklistItem {
           json['chassis_limelight_protectors'] ?? false,
       ethernet_front_left_limelight:
           json['ethernet_front_left_limelight'] ?? false,
-      ethernet_front_right_limlight:
-          json['ethernet_front_right_limlight'] ?? false,
-      ethernet_back_right_limlight:
-          json['ethernet_back_right_limlight'] ?? false,
-      ethernet_back_left_limlight: json['ethernet_back_left_limlight'] ?? false,
+      ethernet_front_right_limelight:
+          json['ethernet_front_right_limelight'] ?? false,
       ethernet_swtich: json['ethernet_swtich'] ?? false,
       ethernet_radio: json['ethernet_radio'] ?? false,
-      climber_w_shape: json['climber_w_shape'] ?? false,
-      climber_w_clips: json['climber_w_clips'] ?? false,
-      climber_surgical_tubing: json['climber_surgical_tubing'] ?? false,
       climber_string: json['climber_string'] ?? false,
       climber_springs: json['climber_springs'] ?? false,
       climber_gearbox: json['climber_gearbox'] ?? false,
@@ -1253,7 +1247,6 @@ class PitChecklistItem {
       elevator_stage_1: json['elevator_stage_1'] ?? false,
       elevator_stage_2: json['elevator_stage_2'] ?? false,
       elevator_chain: json['elevator_chain'] ?? false,
-      elevator_string: json['elevator_string'] ?? false,
       elevator_gearbox: json['elevator_gearbox'] ?? false,
       elevator_motors: json['elevator_motors'] ?? false,
       elevator_wires: json['elevator_wires'] ?? false,
@@ -1261,7 +1254,6 @@ class PitChecklistItem {
       trapdoor_panels: json['trapdoor_panels'] ?? false,
       trapdoor_supports: json['trapdoor_supports'] ?? false,
       trapdoor_hinges: json['trapdoor_hinges'] ?? false,
-      trapdoor_release: json['trapdoor_release'] ?? false,
       trapdoor_tensioners: json['trapdoor_tensioners'] ?? false,
       trapdoor_nuts_and_bolts: json['trapdoor_nuts_and_bolts'] ?? false,
       trapdoor_reset: json['trapdoor_reset'] ?? false,
@@ -1275,7 +1267,6 @@ class PitChecklistItem {
       gooseneck_panels: json['gooseneck_panels'] ?? false,
       gooseneck_wheels: json['gooseneck_wheels'] ?? false,
       gooseneck_belts: json['gooseneck_belts'] ?? false,
-      gooseneck_surgical_tubing: json['gooseneck_surgical_tubing'] ?? false,
       gooseneck_nuts_and_bolts: json['gooseneck_nuts_and_bolts'] ?? false,
       returning_battery_voltage:
           (json['returning_battery_voltage'] ?? 0.0).toDouble(),

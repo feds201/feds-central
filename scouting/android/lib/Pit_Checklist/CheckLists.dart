@@ -246,7 +246,7 @@ class _Checklist_recordState extends State<Checklist_record> {
           ethernet_front_left_limelight =
               existingRecord.ethernet_front_left_limelight;
           ethernet_front_right_limelight =
-              existingRecord.ethernet_front_right_limlight;
+              existingRecord.ethernet_front_right_limelight;
           ethernet_switch = existingRecord.ethernet_swtich;
           ethernet_radio = existingRecord.ethernet_radio;
 
@@ -598,18 +598,19 @@ class _Checklist_recordState extends State<Checklist_record> {
               ],
               Icon(Icons.add_ic_call_outlined)),
           buildTextBoxs(
-              "Ongoing Battery",
+              "Ogoing Battery",
               [
-                buildNumberBox("Battery Tag", outgoing_number, Icon(Icons.tag),
-                    (value) {
-                  setState(() {
-                    outgoing_number = (double.tryParse(value) ?? 0);
-                  });
-                }),
+
                 buildNumberBox("Battery Voltage", outgoing_battery_voltage,
                     Icon(Icons.tag), (value) {
                   setState(() {
                     outgoing_battery_voltage = (double.tryParse(value) ?? 0);
+                  });
+                }),
+                                buildNumberBox("Battery Tag", outgoing_number, Icon(Icons.tag),
+                    (value) {
+                  setState(() {
+                    outgoing_number = (double.tryParse(value) ?? 0);
                   });
                 }),
                 buildNumberBox(
@@ -741,17 +742,21 @@ class _Checklist_recordState extends State<Checklist_record> {
   void _recordData() {
     PitChecklistItem record = PitChecklistItem(
       matchkey: matchkey,
-      chassis_drive_motors: chassis.contains("Drive motors"),
+      
+      
       chassis_steer_motors: chassis.contains("Steer motors"),
+      chassis_drive_motors: chassis.contains("Drive motors"),
       chassis_gearboxes: chassis.contains("Gearboxes"),
       chassis_tread_conditions: chassis.contains("Tread condition"),
       chassis_wires: chassis.contains("Wires"),
       chassis_bumpers: chassis.contains("Bumpers"),
       chassis_limelight_protectors: chassis.contains("LL Protectors"),
       ethernet_front_left_limelight: ethernet.contains("FL Limelight"),
-      ethernet_front_right_limlight: ethernet.contains("FR Limelight")
+      ethernet_front_right_limelight: ethernet.contains("FR Limelight")
       ethernet_switch: ethernet.contains("Ethernet Switch"),
       ethernet_radio: ethernet.contains("Radio"),
+      climber_bumper: climber.contains("Bumper"),
+      climber_hooks: climber.contains("Hooks")
       climber_number: climber.contains("Number"),
       climber_clips: climber.contains("Clips"),
       climber_string: climber.contains("String"),
@@ -775,6 +780,7 @@ class _Checklist_recordState extends State<Checklist_record> {
       trapdoor_supports: trapdoor.contains("Supports"),
       trapdoor_hinges: trapdoor.contains("Hinges"),
       trapdoor_tensioners: trapdoor.contains("Tensioners"),
+      trapdoor_wires: trapdoor.contains("Wires"),
       trapdoor_nuts_and_bolts: trapdoor.contains("Nuts and Bolts"),
       trapdoor_reset: trapdoor.contains("Reset"),
       carriage_gearbox: carriage.contains("Gearbox"),
