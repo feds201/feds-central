@@ -38,18 +38,17 @@ class _Checklist_recordState extends State<Checklist_record> {
   late List<String> chassis;
 
   late bool ethernet_front_left_limelight;
-  late bool ethernet_front_right_limlight;
-  late bool ethernet_back_right_limlight;
-  late bool ethernet_back_left_limlight;
-  late bool ethernet_swtich;
+  late bool ethernet_front_right_limelight;
+  late bool ethernet_back_left_limelight;
+  late bool ethernet_switch;
   late bool ethernet_radio;
   late List<String> ethernet;
 
-  late bool climber_w_shape;
-  late bool climber_w_clips;
-  late bool climber_surgical_tubing;
+  late bool climber_number;
+  late bool climber_clips;
   late bool climber_string;
   late bool climber_springs;
+  late bool climber_hooks;
   late bool climber_gearbox;
   late bool climber_motors;
   late bool climber_wires;
@@ -62,7 +61,7 @@ class _Checklist_recordState extends State<Checklist_record> {
   late bool elevator_stage_1;
   late bool elevator_stage_2;
   late bool elevator_chain;
-  late bool elevator_string;
+  late bool elevator_belts;
   late bool elevator_gearbox;
   late bool elevator_motors;
   late bool elevator_wires;
@@ -72,7 +71,6 @@ class _Checklist_recordState extends State<Checklist_record> {
   late bool trapdoor_panels;
   late bool trapdoor_supports;
   late bool trapdoor_hinges;
-  late bool trapdoor_release;
   late bool trapdoor_tensioners;
   late bool trapdoor_nuts_and_bolts;
   late bool trapdoor_reset;
@@ -90,17 +88,17 @@ class _Checklist_recordState extends State<Checklist_record> {
   late bool gooseneck_panels;
   late bool gooseneck_wheels;
   late bool gooseneck_belts;
-  late bool gooseneck_surgical_tubing;
+  late bool gooseneck_gears;
   late bool gooseneck_nuts_and_bolts;
   late List<String> gooseneck;
 
-  late double returning_battery_voltage;
-  late double returning_battery_cca;
-  late double returning_number;
+  late double outgoing_number;
   late double outgoing_battery_voltage;
   late double outgoing_battery_cca;
-  late double outgoing_number;
-  late bool outgoing_battery_replacd;
+  late double returning_number;
+  late double returning_battery_voltage;
+  late double returning_battery_cca;
+  late bool returning_battery_replacd;
 
   late String alliance_color;
   late String image;
@@ -163,9 +161,9 @@ class _Checklist_recordState extends State<Checklist_record> {
 
     alliance_color = "";
 
-    climber_w_shape = false;
-    climber_w_clips = false;
-    climber_surgical_tubing = false;
+    climber_number = false;
+    climber_clips = false;
+    climber_hooks = false;
     climber_string = false;
     climber_springs = false;
     climber_gearbox = false;
@@ -176,10 +174,8 @@ class _Checklist_recordState extends State<Checklist_record> {
     climber = [];
 
     ethernet_front_left_limelight = false;
-    ethernet_front_right_limlight = false;
-    ethernet_back_right_limlight = false;
-    ethernet_back_left_limlight = false;
-    ethernet_swtich = false;
+    ethernet_front_right_limelight = false;
+    ethernet_switch = false;
     ethernet_radio = false;
     ethernet = [];
 
@@ -188,7 +184,7 @@ class _Checklist_recordState extends State<Checklist_record> {
     elevator_stage_1 = false;
     elevator_stage_2 = false;
     elevator_chain = false;
-    elevator_string = false;
+    elevator_belts = false;
     elevator_gearbox = false;
     elevator_motors = false;
     elevator_wires = false;
@@ -200,25 +196,23 @@ class _Checklist_recordState extends State<Checklist_record> {
     trapdoor_panels = false;
     trapdoor_supports = false;
     trapdoor_hinges = false;
-    trapdoor_release = false;
     trapdoor_tensioners = false;
     trapdoor_nuts_and_bolts = false;
     trapdoor_reset = false;
     trapdoor = [];
 
+    carriage_carriage = false;
     carriage_gearbox = false;
     carriage_beltbox = false;
     carriage_motors = false;
+    carriage_coral_slide = false;
     carriage_wires = false;
     carriage_nuts_and_bolts = false;
-    carriage_coral_slide = false;
-    carriage_carriage = false;
     carriage = [];
 
     gooseneck_panels = false;
     gooseneck_wheels = false;
     gooseneck_belts = false;
-    gooseneck_surgical_tubing = false;
     gooseneck_nuts_and_bolts = false;
     gooseneck_gears = false;
     gooseneck = [];
@@ -229,10 +223,11 @@ class _Checklist_recordState extends State<Checklist_record> {
     outgoing_battery_voltage = 0;
     outgoing_battery_cca = 0;
     outgoing_number = 0;
-    outgoing_battery_replacd = false;
+    returning_battery_replacd = false;
 
     // Load database and try to get existing data for this team
     PitCheckListDatabase.LoadAll();
+
     try {
       PitChecklistItem? existingRecord =
           PitCheckListDatabase.GetData(widget.list_item.matchkey);
@@ -250,18 +245,14 @@ class _Checklist_recordState extends State<Checklist_record> {
 
           ethernet_front_left_limelight =
               existingRecord.ethernet_front_left_limelight;
-          ethernet_front_right_limlight =
+          ethernet_front_right_limelight =
               existingRecord.ethernet_front_right_limlight;
-          ethernet_back_right_limlight =
-              existingRecord.ethernet_back_right_limlight;
-          ethernet_back_left_limlight =
-              existingRecord.ethernet_back_left_limlight;
-          ethernet_swtich = existingRecord.ethernet_swtich;
+          ethernet_switch = existingRecord.ethernet_swtich;
           ethernet_radio = existingRecord.ethernet_radio;
 
-          climber_w_shape = existingRecord.climber_w_shape;
-          climber_w_clips = existingRecord.climber_w_clips;
-          climber_surgical_tubing = existingRecord.climber_surgical_tubing;
+          climber_number = existingRecord.climber_number;
+          climber_clips = existingRecord.climber_clips;
+          climber_string = existingRecord.climber_string;
           climber_string = existingRecord.climber_string;
           climber_springs = existingRecord.climber_springs;
           climber_gearbox = existingRecord.climber_gearbox;
@@ -275,16 +266,15 @@ class _Checklist_recordState extends State<Checklist_record> {
           elevator_stage_1 = existingRecord.elevator_stage_1;
           elevator_stage_2 = existingRecord.elevator_stage_2;
           elevator_chain = existingRecord.elevator_chain;
-          elevator_string = existingRecord.elevator_string;
           elevator_gearbox = existingRecord.elevator_gearbox;
           elevator_motors = existingRecord.elevator_motors;
           elevator_wires = existingRecord.elevator_wires;
           elevator_nuts_and_bolts = existingRecord.elevator_nuts_and_bolts;
+          elevator_belts = existingRecord.elevator_belts;
 
           trapdoor_panels = existingRecord.trapdoor_panels;
           trapdoor_supports = existingRecord.trapdoor_supports;
           trapdoor_hinges = existingRecord.trapdoor_hinges;
-          trapdoor_release = existingRecord.trapdoor_release;
           trapdoor_tensioners = existingRecord.trapdoor_tensioners;
           trapdoor_nuts_and_bolts = existingRecord.trapdoor_nuts_and_bolts;
           trapdoor_reset = existingRecord.trapdoor_reset;
@@ -300,8 +290,8 @@ class _Checklist_recordState extends State<Checklist_record> {
           gooseneck_panels = existingRecord.gooseneck_panels;
           gooseneck_wheels = existingRecord.gooseneck_wheels;
           gooseneck_belts = existingRecord.gooseneck_belts;
-          gooseneck_surgical_tubing = existingRecord.gooseneck_surgical_tubing;
           gooseneck_nuts_and_bolts = existingRecord.gooseneck_nuts_and_bolts;
+          gooseneck_gears = existingRecord.gooseneck_gears;
 
           returning_battery_voltage = existingRecord.returning_battery_voltage;
           returning_battery_cca = existingRecord.returning_battery_cca;
@@ -310,7 +300,7 @@ class _Checklist_recordState extends State<Checklist_record> {
           outgoing_battery_voltage = existingRecord.outgoing_battery_voltage;
           outgoing_battery_cca = existingRecord.outgoing_battery_cca;
           outgoing_number = existingRecord.outgoing_number;
-          outgoing_battery_replacd = existingRecord.outgoing_battery_replacd;
+          returning_battery_replacd = existingRecord.outgoing_battery_replacd;
 
           alliance_color = existingRecord.alliance_color;
           image = existingRecord.broken_part_image;
@@ -338,17 +328,15 @@ class _Checklist_recordState extends State<Checklist_record> {
           // Ethernet list
           ethernet = [];
           if (ethernet_front_left_limelight) ethernet.add("FL Limelight");
-          if (ethernet_front_right_limlight) ethernet.add("FR Limelight");
-          if (ethernet_back_left_limlight) ethernet.add("BL Limelight");
-          if (ethernet_back_right_limlight) ethernet.add("BR Limelight");
-          if (ethernet_swtich) ethernet.add("Ethernet Switch");
+          if (ethernet_front_right_limelight) ethernet.add("FR Limelight");
+          if (ethernet_switch) ethernet.add("Ethernet Switch");
           if (ethernet_radio) ethernet.add("Radio");
 
           // Climber list
           climber = [];
-          if (climber_w_shape) climber.add("W Shape");
-          if (climber_w_clips) climber.add("W Clips");
-          if (climber_surgical_tubing) climber.add("Surgical Tubing");
+
+          if (climber_string) climber.add("Number");
+          if (climber_string) climber.add("Clips");
           if (climber_string) climber.add("String");
           if (climber_springs) climber.add("Springs");
           if (climber_gearbox) climber.add("Gearbox");
@@ -364,7 +352,7 @@ class _Checklist_recordState extends State<Checklist_record> {
           if (elevator_stage_1) elevator.add("Stage 1");
           if (elevator_stage_2) elevator.add("Stage 2");
           if (elevator_chain) elevator.add("Chain");
-          if (elevator_string) elevator.add("String");
+          if (elevator_belts) elevator.add("Belts");
           if (elevator_gearbox) elevator.add("Gearbox");
           if (elevator_motors) elevator.add("Motors");
           if (elevator_wires) elevator.add("Wires");
@@ -375,7 +363,7 @@ class _Checklist_recordState extends State<Checklist_record> {
           if (trapdoor_panels) trapdoor.add("Panels");
           if (trapdoor_supports) trapdoor.add("Supports");
           if (trapdoor_hinges) trapdoor.add("Hinges");
-          if (trapdoor_release) trapdoor.add("Release");
+          if (trapdoor_wires) climber.add("Wires");
           if (trapdoor_tensioners) trapdoor.add("Tensioners");
           if (trapdoor_nuts_and_bolts) trapdoor.add("Nuts and Bolts");
           if (trapdoor_reset) trapdoor.add("Reset");
@@ -383,7 +371,7 @@ class _Checklist_recordState extends State<Checklist_record> {
           // Carriage list
           carriage = [];
           if (carriage_gearbox) carriage.add("Gearbox");
-          if (carriage_beltbox) carriage.add("Beatbox");
+          if (carriage_beltbox) carriage.add("Beltbox");
           if (carriage_motors) carriage.add("Motors");
           if (carriage_wires) carriage.add("Wires");
           if (carriage_nuts_and_bolts) carriage.add("Nuts and Bolts");
@@ -395,7 +383,7 @@ class _Checklist_recordState extends State<Checklist_record> {
           if (gooseneck_panels) gooseneck.add("Panels");
           if (gooseneck_wheels) gooseneck.add("Wheels");
           if (gooseneck_belts) gooseneck.add("Belts");
-          if (gooseneck_surgical_tubing) gooseneck.add("Surgical Tubing");
+          if (gooseneck_gears) gooseneck.add("Gears");
           if (gooseneck_nuts_and_bolts) gooseneck.add("Nuts and Bolts");
 
           // Set matchkey from existing record
@@ -485,8 +473,6 @@ class _Checklist_recordState extends State<Checklist_record> {
               [
                 "FL Limelight",
                 "FR Limelight",
-                "BL Limelight",
-                "BR Limelight",
                 "Ethernet Switch",
                 "Radio",
               ],
@@ -499,9 +485,8 @@ class _Checklist_recordState extends State<Checklist_record> {
               "Climber",
               Icon(Icons.star_outline, size: 30, color: Colors.blue),
               [
-                "W Shape",
-                "W Clips",
-                "Surgical Tubing",
+                "Number",
+                "Clips",
                 "String",
                 "Springs",
                 "Gearbox",
@@ -524,6 +509,7 @@ class _Checklist_recordState extends State<Checklist_record> {
                 "Stage 1",
                 "Stage 2",
                 "Chain",
+                "Belts",
                 "String",
                 "Gearbox",
                 "Motors",
@@ -542,8 +528,8 @@ class _Checklist_recordState extends State<Checklist_record> {
                 "Panels",
                 "Supports",
                 "Hinges",
-                "Release",
                 "Tensioners",
+                "Wires",
                 "Nuts and Bolts",
                 "Reset",
               ],
@@ -556,12 +542,15 @@ class _Checklist_recordState extends State<Checklist_record> {
               "Carriage",
               Icon(Icons.star_outline, size: 30, color: Colors.blue),
               [
+                "Carriage",
                 "Gearbox",
-                "Beatbox",
+                "Beltbox",
                 "Motors",
+                "Coral Slide",
                 "Wires",
                 "Nuts and Bolts",
-                "Coral Slide",
+                "Reset"
+                
               ],
               carriage, (value) {
             setState(() {
@@ -575,8 +564,9 @@ class _Checklist_recordState extends State<Checklist_record> {
                 "Panels",
                 "Wheels",
                 "Belts",
+                "Gears",
+                "Wires",
                 "Nuts and Bolts",
-                "Surgical Tubing",
               ],
               gooseneck, (value) {
             setState(() {
@@ -656,7 +646,7 @@ class _Checklist_recordState extends State<Checklist_record> {
                 title: "Robot Images",
                 description: "Take photos of robot issues",
                 maxPhotos: 5, // Allow up to 5 photos
-                initialImages: existingFiles, // Pass existing images here
+                initialImages: existingFiles.isNotEmpty ? existingFiles : [], // Ensure it's a valid list
                 onPhotosTaken: (photos) {
                   // Convert all photos to base64 strings and store them
                   List<String> base64Images = [];
@@ -759,14 +749,11 @@ class _Checklist_recordState extends State<Checklist_record> {
       chassis_bumpers: chassis.contains("Bumpers"),
       chassis_limelight_protectors: chassis.contains("LL Protectors"),
       ethernet_front_left_limelight: ethernet.contains("FL Limelight"),
-      ethernet_front_right_limlight: ethernet.contains("FR Limelight"),
-      ethernet_back_right_limlight: ethernet.contains("BR Limelight"),
-      ethernet_back_left_limlight: ethernet.contains("BL Limelight"),
-      ethernet_swtich: ethernet.contains("Ethernet Switch"),
+      ethernet_front_right_limlight: ethernet.contains("FR Limelight")
+      ethernet_switch: ethernet.contains("Ethernet Switch"),
       ethernet_radio: ethernet.contains("Radio"),
-      climber_w_shape: climber.contains("W Shape"),
-      climber_w_clips: climber.contains("W Clips"),
-      climber_surgical_tubing: climber.contains("Surgical Tubing"),
+      climber_number: climber.contains("Number"),
+      climber_clips: climber.contains("Clips"),
       climber_string: climber.contains("String"),
       climber_springs: climber.contains("Springs"),
       climber_gearbox: climber.contains("Gearbox"),
@@ -779,7 +766,7 @@ class _Checklist_recordState extends State<Checklist_record> {
       elevator_stage_1: elevator.contains("Stage 1"),
       elevator_stage_2: elevator.contains("Stage 2"),
       elevator_chain: elevator.contains("Chain"),
-      elevator_string: elevator.contains("String"),
+      elevator_belts: elevator.contains("Belts"),
       elevator_gearbox: elevator.contains("Gearbox"),
       elevator_motors: elevator.contains("Motors"),
       elevator_wires: elevator.contains("Wires"),
@@ -787,12 +774,11 @@ class _Checklist_recordState extends State<Checklist_record> {
       trapdoor_panels: trapdoor.contains("Panels"),
       trapdoor_supports: trapdoor.contains("Supports"),
       trapdoor_hinges: trapdoor.contains("Hinges"),
-      trapdoor_release: trapdoor.contains("Release"),
       trapdoor_tensioners: trapdoor.contains("Tensioners"),
       trapdoor_nuts_and_bolts: trapdoor.contains("Nuts and Bolts"),
       trapdoor_reset: trapdoor.contains("Reset"),
       carriage_gearbox: carriage.contains("Gearbox"),
-      carriage_beltbox: carriage.contains("Beatbox"),
+      carriage_beltbox: carriage.contains("Beltbox"),
       carriage_motors: carriage.contains("Motors"),
       carriage_wires: carriage.contains("Wires"),
       carriage_nuts_and_bolts: carriage.contains("Nuts and Bolts"),
@@ -801,7 +787,7 @@ class _Checklist_recordState extends State<Checklist_record> {
       gooseneck_panels: gooseneck.contains("Panels"),
       gooseneck_wheels: gooseneck.contains("Wheels"),
       gooseneck_belts: gooseneck.contains("Belts"),
-      gooseneck_surgical_tubing: gooseneck.contains("Surgical Tubing"),
+      gooseneck_gears: gooseneck.contains("Gears"),
       gooseneck_nuts_and_bolts: gooseneck.contains("Nuts and Bolts"),
       returning_battery_voltage: returning_battery_voltage,
       returning_battery_cca: returning_battery_cca,
@@ -809,7 +795,7 @@ class _Checklist_recordState extends State<Checklist_record> {
       outgoing_battery_voltage: outgoing_battery_voltage,
       outgoing_battery_cca: outgoing_battery_cca,
       outgoing_number: outgoing_number,
-      outgoing_battery_replacd: outgoing_battery_replacd,
+      outgoing_battery_replacd: returning_battery_replacd,
       broken_part_image: image,
       broken_part_images: images, // Add the new list of images
       alliance_color: alliance_color,

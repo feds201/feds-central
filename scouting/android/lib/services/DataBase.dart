@@ -1011,14 +1011,11 @@ class PitChecklistItem {
 
   bool ethernet_front_left_limelight = false;
   bool ethernet_front_right_limlight = false;
-  bool ethernet_back_right_limlight = false;
-  bool ethernet_back_left_limlight = false;
   bool ethernet_swtich = false;
   bool ethernet_radio = false;
 
-  bool climber_w_shape = false;
-  bool climber_w_clips = false;
-  bool climber_surgical_tubing = false;
+  bool climber_bumper = false;
+  bool climber_hooks = false;
   bool climber_string = false;
   bool climber_springs = false;
   bool climber_gearbox = false;
@@ -1032,17 +1029,17 @@ class PitChecklistItem {
   bool elevator_stage_1 = false;
   bool elevator_stage_2 = false;
   bool elevator_chain = false;
-  bool elevator_string = false;
   bool elevator_gearbox = false;
   bool elevator_motors = false;
   bool elevator_wires = false;
   bool elevator_nuts_and_bolts = false;
+  bool elevator_belts = false;
 
   bool trapdoor_panels = false;
   bool trapdoor_supports = false;
   bool trapdoor_hinges = false;
-  bool trapdoor_release = false;
   bool trapdoor_tensioners = false;
+  bool trapdoor_wires = false;
   bool trapdoor_nuts_and_bolts = false;
   bool trapdoor_reset = false;
 
@@ -1059,6 +1056,7 @@ class PitChecklistItem {
   bool gooseneck_belts = false;
   bool gooseneck_surgical_tubing = false;
   bool gooseneck_nuts_and_bolts = false;
+  bool gooseneck_gears = false;
 
   double returning_battery_voltage = 0.0;
   double returning_battery_cca = 0.0;
@@ -1084,13 +1082,8 @@ class PitChecklistItem {
     required this.chassis_limelight_protectors,
     required this.ethernet_front_left_limelight,
     required this.ethernet_front_right_limlight,
-    required this.ethernet_back_right_limlight,
-    required this.ethernet_back_left_limlight,
     required this.ethernet_swtich,
     required this.ethernet_radio,
-    required this.climber_w_shape,
-    required this.climber_w_clips,
-    required this.climber_surgical_tubing,
     required this.climber_string,
     required this.climber_springs,
     required this.climber_gearbox,
@@ -1103,15 +1096,14 @@ class PitChecklistItem {
     required this.elevator_stage_1,
     required this.elevator_stage_2,
     required this.elevator_chain,
-    required this.elevator_string,
     required this.elevator_gearbox,
     required this.elevator_motors,
     required this.elevator_wires,
     required this.elevator_nuts_and_bolts,
+    required this.elevator_belts,
     required this.trapdoor_panels,
     required this.trapdoor_supports,
     required this.trapdoor_hinges,
-    required this.trapdoor_release,
     required this.trapdoor_tensioners,
     required this.trapdoor_nuts_and_bolts,
     required this.trapdoor_reset,
@@ -1127,6 +1119,7 @@ class PitChecklistItem {
     required this.gooseneck_belts,
     required this.gooseneck_surgical_tubing,
     required this.gooseneck_nuts_and_bolts,
+    required this.gooseneck_gears,
     required this.returning_battery_voltage,
     required this.returning_battery_cca,
     required this.returning_number,
@@ -1149,7 +1142,7 @@ class PitChecklistItem {
     return '$matchkey,'
         '$chassis_drive_motors,$chassis_steer_motors,$chassis_gearboxes,$chassis_tread_conditions,$chassis_wires,$chassis_bumpers,$chassis_limelight_protectors,'
         '$ethernet_front_left_limelight,$ethernet_front_right_limlight,$ethernet_back_right_limlight,$ethernet_back_left_limlight,$ethernet_swtich,$ethernet_radio,'
-        '$climber_w_shape,$climber_w_clips,$climber_surgical_tubing,$climber_string,$climber_springs,$climber_gearbox,$climber_motors,$climber_wires,$climber_nuts_and_bolts,$climber_reset,'
+        '$climber_string,$climber_springs,$climber_gearbox,$climber_motors,$climber_wires,$climber_nuts_and_bolts,$climber_reset,'
         '$elevator_rod_of_doom,$elevator_stage_0,$elevator_stage_1,$elevator_stage_2,$elevator_chain,$elevator_string,$elevator_gearbox,$elevator_motors,$elevator_wires,$elevator_nuts_and_bolts,'
         '$trapdoor_panels,$trapdoor_supports,$trapdoor_hinges,$trapdoor_release,$trapdoor_tensioners,$trapdoor_nuts_and_bolts,$trapdoor_reset,'
         '$carriage_gearbox,$carriage_beltbox,$carriage_motors,$carriage_wires,$carriage_nuts_and_bolts,$carriage_coral_slide,$carriage_carriage,'
@@ -1171,13 +1164,8 @@ class PitChecklistItem {
       'chassis_limelight_protectors': chassis_limelight_protectors,
       'ethernet_front_left_limelight': ethernet_front_left_limelight,
       'ethernet_front_right_limlight': ethernet_front_right_limlight,
-      'ethernet_back_right_limlight': ethernet_back_right_limlight,
-      'ethernet_back_left_limlight': ethernet_back_left_limlight,
       'ethernet_swtich': ethernet_swtich,
       'ethernet_radio': ethernet_radio,
-      'climber_w_shape': climber_w_shape,
-      'climber_w_clips': climber_w_clips,
-      'climber_surgical_tubing': climber_surgical_tubing,
       'climber_string': climber_string,
       'climber_springs': climber_springs,
       'climber_gearbox': climber_gearbox,
