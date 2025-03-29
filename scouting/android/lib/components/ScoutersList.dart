@@ -5,6 +5,9 @@ import 'package:hive/hive.dart';
 import 'package:confetti/confetti.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 
+import '../main.dart';
+import '../services/Colors.dart';
+
 class ScouterList extends StatefulWidget {
   const ScouterList({super.key});
 
@@ -88,7 +91,7 @@ class _ScouterListState extends State<ScouterList>
         return AlertDialog(
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          backgroundColor: Colors.white,
+          backgroundColor: islightmode() ? Colors.white : darkColors.goodblack,
           title: Row(
             children: [
               Icon(Icons.person_add_alt_1, color: Colors.blueAccent),
@@ -98,7 +101,7 @@ class _ScouterListState extends State<ScouterList>
                 style: GoogleFonts.museoModerno(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+                  color: islightmode() ? Colors.black : Colors.white,
                 ),
               ),
             ],
@@ -112,18 +115,19 @@ class _ScouterListState extends State<ScouterList>
                   style: TextStyle(color: Colors.black87),
                   decoration: InputDecoration(
                     hintText: "Enter scouter name",
-                    hintStyle: TextStyle(color: Colors.grey[600]),
+                    hintStyle: TextStyle(color: const Color.fromARGB(255, 223, 222, 222)),
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(15)),
                     filled: true,
-                    fillColor: Colors.grey[100],
+                    fillColor: const Color.fromARGB(14, 245, 245, 245),
                     prefixIcon: Icon(Icons.badge, color: Colors.blueAccent),
                   ),
                 ),
                 SizedBox(height: 20),
                 Text(
                   'Choose Avatar Color',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: TextStyle(fontWeight: FontWeight.bold, color: islightmode() ? Colors.black : Colors.white),
+                  
                 ),
                 SizedBox(height: 10),
                 Wrap(
@@ -349,7 +353,7 @@ class _ScouterListState extends State<ScouterList>
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
               gradient: LinearGradient(
-                colors: [Colors.white, Colors.blue.shade50],
+                colors: islightmode() ? [Colors.white, Colors.blue.shade50] : [darkColors.goodblack, const Color.fromARGB(255, 38, 113, 167)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -371,7 +375,7 @@ class _ScouterListState extends State<ScouterList>
                           style: GoogleFonts.museoModerno(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black87,
+                            color: islightmode() ? Colors.black87 : const Color.fromARGB(255, 255, 255, 255),
                           ),
                         ),
                       ],
@@ -442,7 +446,7 @@ class _ScouterListState extends State<ScouterList>
                               'Add your first scouter!',
                               textStyle: GoogleFonts.museoModerno(
                                 fontSize: 18,
-                                color: Colors.blueGrey,
+                                color: islightmode() ? Colors.blueGrey : const Color.fromARGB(255, 167, 169, 197),
                               ),
                               speed: Duration(milliseconds: 100),
                             ),

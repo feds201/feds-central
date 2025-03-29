@@ -63,7 +63,7 @@ class _WaveGridPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = isdarkmode() ? const Color(0x15040404) : invertColor(const Color(0x15040404))
+      ..color = islightmode() ? const Color(0x15040404) : invertColor(const Color(0x15040404))
       ..style = PaintingStyle.fill;
 
     final linePaint = Paint()

@@ -108,7 +108,7 @@ class _PluginsState extends State<Plugins> {
       leading: Builder(builder: (context) {
         return IconButton(
             icon: const Icon(Icons.arrow_back),
-            color: !isdarkmode()
+            color: !islightmode()
                 ? const Color.fromARGB(193, 255, 255, 255)
                 : const Color.fromARGB(105, 36, 33, 33),
             onPressed: () => Navigator.pop(context));

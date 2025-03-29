@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:scouting_app/Experiment/experiment.dart';
 import 'package:scouting_app/logs.dart';
 import 'package:scouting_app/main.dart';
-
+import '../services/Colors.dart';
 import '../about_page.dart';
 import '../Match_Pages/match_page.dart';
 import '../settings_page.dart';
@@ -17,7 +17,7 @@ class NavBar extends StatelessWidget {
     final isLandscape =
         MediaQuery.of(context).orientation == Orientation.landscape;
     return Drawer(
-      backgroundColor: isdarkmode() ? Colors.white : Colors.black,
+      backgroundColor: islightmode() ? lightColors.white : darkColors.goodblack,
       width: isLandscape
           ? MediaQuery.of(context).size.width * 0.3 // Half width in landscape
           : MediaQuery.of(context).size.width, // Full width otherwise
@@ -53,7 +53,7 @@ class NavBar extends StatelessWidget {
                     'FEDS 201',
                     style: GoogleFonts.museoModerno(
                       fontSize: 24,
-                      color: isdarkmode()
+                      color: islightmode()
                           ? const Color.fromARGB(255, 255, 255, 255)
                           : invertColor(
                               const Color.fromARGB(255, 255, 255, 255)),
@@ -159,7 +159,7 @@ class NavBar extends StatelessWidget {
         title,
         style: GoogleFonts.museoModerno(
           fontSize: 18,
-          color: !isdarkmode()
+          color: !islightmode()
               ? const Color.fromARGB(255, 255, 255, 255)
               : invertColor(const Color.fromARGB(255, 255, 255, 255)),
           fontWeight: FontWeight.w500,

@@ -61,8 +61,8 @@ class MyApp extends StatelessWidget {
   }
 }
 
-bool isdarkmode() {
-  return true;
+bool islightmode() {
+  return false;
 }
 
 Color invertColor(Color color) {

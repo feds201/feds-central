@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:scouting_app/main.dart';
 
 import 'services/DataBase.dart';
 import 'components/MatchSelection.dart';
@@ -197,19 +198,20 @@ class SettingsPageState extends State<SettingsPage> {
                               .get('ApiKey', defaultValue: ''),
                         decoration: InputDecoration(
                           labelText: 'BlueAlliance API Key',
-                          labelStyle: GoogleFonts.museoModerno(fontSize: 15),
+                          labelStyle: GoogleFonts.museoModerno(fontSize: 15, color: islightmode() ? Colors.black : Colors.white),
                           hintText: 'Enter your API Key',
-                          hintStyle: GoogleFonts.museoModerno(fontSize: 15),
+                          hintStyle: GoogleFonts.museoModerno(fontSize: 15, color: islightmode() ? Colors.black : Colors.white),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
-                            borderSide: const BorderSide(color: Colors.black),
+                            borderSide: BorderSide(color: islightmode() ? Colors.black : Colors.white),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
-                            borderSide: const BorderSide(color: Colors.black),
+                            borderSide: BorderSide(color: islightmode() ? Colors.black : Colors.white),
                           ),
                           suffixIcon: IconButton(
                             icon: const Icon(Icons.qr_code_scanner),
+                            color: islightmode() ? Colors.black : Colors.white,
                             onPressed: () async {
                               final qrCode = await Navigator.push(
                                 context,
@@ -242,8 +244,14 @@ class SettingsPageState extends State<SettingsPage> {
                         },
                         decoration: InputDecoration(
                           labelText: 'Match Event Key (e.g. 2024isde4)',
+                          labelStyle: GoogleFonts.museoModerno(fontSize: 15, color: islightmode() ? Colors.black : Colors.white),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(color: islightmode() ? Colors.black : Colors.white),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(color: islightmode() ? Colors.black : Colors.white),
                           ),
                         ),
                       ),
