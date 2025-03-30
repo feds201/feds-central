@@ -1,0 +1,7 @@
+# Run this in a Python console to find the pyzbar path
+import pyzbar
+import os
+print(os.path.dirname(pyzbar.__file__))
+# pyinstaller --noconfirm --onefile --windowed --icon "P:\FEDS201\Scouting_Suite\logo.ico" --add-binary "P:\FEDS201\Scouting_Suite\Scout-Ops-Compiler\Lib\site-packages\pyzbar\*.dll;pyzbar" --name "Scout-Ops-DataLogger" "P:\FEDS201\Scouting_Suite\Scout-Ops-DataChunk\qrcode_scanner.py"
+# pyinstaller --noconfirm --onefile --console --icon "P:\FEDS201\Scouting_Suite\logo.ico" --add-binary "P:\FEDS201\Scouting_Suite\Scout-Ops-Compiler\Lib\site-packages\pyzbar\*.dll;pyzbar" --name "Scout-Ops-DataLogger" --clean --add-data "P:\FEDS201\Scouting_Suite\Scout-Ops-DataChunk\qqq.wav;." --add-data "P:\FEDS201\Scouting_Suite\Scout-Ops-DataChunk\woof.wav;."  "P:\FEDS201\Scouting_Suite\Scout-Ops-DataChunk\qrcode_scanner.py"
+# pyinstaller --noconfirm --onefile --windowed --icon "P:\FEDS201\Scouting_Suite\logo.ico" --add-binary "P:\FEDS201\Scouting_Suite\Scout-Ops-Compiler\Lib\site-packages\pyzbar\*.dll;pyzbar" --name "Scout-Ops-DataLogger" --clean --add-data "P:\FEDS201\Scouting_Suite\Scout-Ops-DataChunk\qqq.wav;." --add-data "P:\FEDS201\Scouting_Suite\Scout-Ops-DataChunk\woof.wav;."  "P:\FEDS201\Scouting_Suite\Scout-Ops-DataChunk\qrcode_scanner.py"
