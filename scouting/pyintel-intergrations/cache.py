@@ -1,3 +1,4 @@
+import platform
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -11,7 +12,7 @@ from datetime import datetime
 from typing import Dict, List, Optional, Union, Any, Set
 import requests
 import hashlib
-
+from textblob import TextBlob
 # Terminal UI elements
 import argparse
 from rich.console import Console
@@ -25,15 +26,20 @@ from rich.text import Text
 from rich import box
 
 console = Console()
+# Constants for external APIs
+STATBOTICS_API = "https://api.statbotics.io/v3/team/"
+BLUE_ALLIANCE_API = "https://www.thebluealliance.com/api/v3/team/"
+BLUE_ALLIANCE_AUTH_KEY = "2ujRBcLLwzp008e9TxIrLYKG6PCt2maIpmyiWtfWGl2bT6ddpqGLoLM79o56mx3W"  # Replace with your API key
+
 
 # ASCII Art for PyIntel Scoutz
-PYINTEL_LOGO = """
+PYINTEL_LOGO = r"""
   _____            _           _            _      _____                          _         
  |  __ \          (_)         | |          | |    / ____|                        | |        
- | |__) |  _   _   _   _ __   | |_    ___  | |   | (___     ___    ___    _   _  | |_   ____
- |  ___/  | | | | | | | '_ \  | __|  / _ \ | |    \___ \   / __|  / _ \  | | | | | __| |_  /
- | |      | |_| | | | | | | | | |_  |  __/ | |    ____) | | (__  | (_) | | |_| | | |_   / / 
- |_|       \__, | |_| |_| |_|  \__|  \___| |_|   |_____/   \___|  \___/   \__,_|  \__| /___|
+ | |__) |  _   _   _   _ __   | |_    ___  | |   | (___     ___    ___    _   _  | |_   ____ 
+ |  ___/  | | | | | | | '_ \  | __|  / _ \ | |    \___ \   / __|  / _ \  | | | | | __| |_  / 
+ | |      | |_| | | | | | | | | |_  |  __/ | |    ____) | | (__  | (_) | | |_| | | |_   / /  
+ |_|       \__, | |_| |_| |_|  \__|  \___| |_|   |_____/   \___|  \___/   \__,_|  \__| /___| 
             __/ |                                                                           
            |___/                                                                            
 """
@@ -49,6 +55,53 @@ def display_welcome_screen():
     console.print(f"[italic dim]{POWERED_BY}[/italic dim]", justify="center")
     console.print("\n[bold green]Welcome to PyIntel Scoutz - FRC Scouting Analysis Tool[/bold green]", justify="center")
     console.print("[yellow]Analyze your scouting data and generate powerful insights for your team[/yellow]\n", justify="center")
+
+def get_data_directory():
+    """Get a writable directory for data storage"""
+    if platform.system() == "Windows":
+        # Use AppData folder on Windows
+        base_dir = os.path.join(os.path.expanduser("~"), "AppData", "Local", "ScoutOps")
+    else:
+        # Use home directory for other platforms
+        base_dir = os.path.join(os.path.expanduser("~"), ".scoutops")
+    
+    # Create the directory if it doesn't exist
+    os.makedirs(base_dir, exist_ok=True)
+    return base_dir
+
+def unify_qr_scanner_data():
+    """Check for .csv files in the QR code scanner's save directory and unify the data."""
+    # Define SAVE_DIR (assuming it should point to the data directory)
+    SAVE_DIR = get_data_directory()
+
+    csv_files = [f for f in os.listdir(SAVE_DIR) if f.endswith('.csv')]
+    
+    if not csv_files:
+        console.print("[yellow]No .csv files found in the QR code scanner's save directory.[/yellow]")
+        return None
+
+    console.print("[bold green]Found the following .csv files in the QR code scanner's save directory:[/bold green]")
+    for i, file in enumerate(csv_files, start=1):
+        console.print(f"{i}. {file}")
+    
+    if Confirm.ask("Do you want to unify these files into a single data stream?"):
+        try:
+            unified_data = pd.concat([pd.read_csv(os.path.join(SAVE_DIR, f)) for f in csv_files], ignore_index=True)
+            
+            # Save the unified data to the writable directory
+            save_dir = get_data_directory()
+            unified_file_path = os.path.join(save_dir, "unified_qr_data.csv")
+            unified_data.to_csv(unified_file_path, index=False)
+            
+            console.print(f"[green]Successfully unified {len(csv_files)} files into a single data stream.[/green]")
+            console.print(f"[green]Unified data saved to: {unified_file_path}[/green]")
+            return unified_data
+        except Exception as e:
+            console.print(f"[bold red]Error unifying files: {e}[/bold red]")
+            return None
+    else:
+        console.print("[yellow]Continuing without unifying the data.[/yellow]")
+        return None
 
 def analyze_scouting_data(data_path: Optional[str] = None, data_str: Optional[str] = None) -> Dict:
     """
@@ -67,45 +120,56 @@ def analyze_scouting_data(data_path: Optional[str] = None, data_str: Optional[st
         Dictionary containing analysis results
     """
     with console.status("[bold green]Loading and processing data...[/bold green]", spinner="dots"):
-        # Detect file type and load data appropriately
-        if data_path:
-            try:
-                file_ext = os.path.splitext(data_path)[1].lower()
-                if file_ext == '.csv':
-                    df = pd.read_csv(data_path)
-                    # Convert teamNumber to string if it's not already
-                    if df['teamNumber'].dtype != 'object':
-                        df['teamNumber'] = df['teamNumber'].astype(str)
-                elif file_ext == '.json':
-                    with open(data_path, 'r') as f:
-                        data = json.load(f)
-                        df = pd.DataFrame(data)
-                else:
-                    console.print(f"[bold red]Unsupported file format: {file_ext}[/bold red]")
-                    return {}
-            except Exception as e:
-                console.print(f"[bold red]Error loading data file: {e}[/bold red]")
-                return {}
-        elif data_str:
-            try:
-                # Try to determine if the string is CSV or JSON
-                if data_str.strip().startswith('{') or data_str.strip().startswith('['):
-                    # Looks like JSON
-                    data = json.loads(data_str)
-                    df = pd.DataFrame(data)
-                else:
-                    # Assume CSV
-                    import io
-                    df = pd.read_csv(io.StringIO(data_str))
-                    # Convert teamNumber to string if it's not already
-                    if df['teamNumber'].dtype != 'object':
-                        df['teamNumber'] = df['teamNumber'].astype(str)
-            except Exception as e:
-                console.print(f"[bold red]Error parsing data string: {e}[/bold red]")
+        # Check for QR code scanner data
+        if not data_path and not data_str:
+            console.print("[cyan]Checking for QR code scanner data...[/cyan]")
+            unified_data = unify_qr_scanner_data()
+            if unified_data is not None:
+                console.print("[green]Using unified QR code scanner data for analysis.[/green]")
+                df = unified_data
+            else:
+                console.print("[red]No valid data found. Exiting analysis.[/red]")
                 return {}
         else:
-            console.print("[bold red]Either data_path or data_str must be provided[/bold red]")
-            return {}
+            # Detect file type and load data appropriately
+            if data_path:
+                try:
+                    file_ext = os.path.splitext(data_path)[1].lower()
+                    if file_ext == '.csv':
+                        df = pd.read_csv(data_path)
+                        # Convert teamNumber to string if it's not already
+                        if df['teamNumber'].dtype != 'object':
+                            df['teamNumber'] = df['teamNumber'].astype(str)
+                    elif file_ext == '.json':
+                        with open(data_path, 'r') as f:
+                            data = json.load(f)
+                            df = pd.DataFrame(data)
+                    else:
+                        console.print(f"[bold red]Unsupported file format: {file_ext}[/bold red]")
+                        return {}
+                except Exception as e:
+                    console.print(f"[bold red]Error loading data file: {e}[/bold red]")
+                    return {}
+            elif data_str:
+                try:
+                    # Try to determine if the string is CSV or JSON
+                    if data_str.strip().startswith('{') or data_str.strip().startswith('['):
+                        # Looks like JSON
+                        data = json.loads(data_str)
+                        df = pd.DataFrame(data)
+                    else:
+                        # Assume CSV
+                        import io
+                        df = pd.read_csv(io.StringIO(data_str))
+                        # Convert teamNumber to string if it's not already
+                        if df['teamNumber'].dtype != 'object':
+                            df['teamNumber'] = df['teamNumber'].astype(str)
+                except Exception as e:
+                    console.print(f"[bold red]Error parsing data string: {e}[/bold red]")
+                    return {}
+            else:
+                console.print("[bold red]Either data_path or data_str must be provided[/bold red]")
+                return {}
         
         # Process the data based on format
         try:
@@ -824,55 +888,471 @@ def display_update_menu(data_path):
     console.print("\nPress Enter to continue...", end="")
     input()
 
+def check_existing_results():
+    """Check if results.csv exists and prompt the user to continue with it."""
+    scout_ops_dir = os.path.join(os.path.expanduser("~"), "AppData", "Local", "ScoutOps")
+    results_csv_path = os.path.join(scout_ops_dir, "results.csv")
+
+    if os.path.exists(results_csv_path):
+        console.print(f"[bold green]Found existing results.csv at: {results_csv_path}[/bold green]")
+        if Confirm.ask("Do you want to continue the session with this data?"):
+            return results_csv_path
+        else:
+            console.print("[yellow]Continuing without using results.csv.[/yellow]")
+            return None
+    else:
+        console.print("[yellow]No results.csv found in the ScoutOps directory.[/yellow]")
+        return None
+
+try:
+    from xgboost import XGBClassifier
+except ModuleNotFoundError:
+    console.print("[bold red]Error: 'xgboost' module is not installed. Please install it using:[/bold red]")
+    console.print("[cyan]pip install xgboost[/cyan]")
+    sys.exit(1)
+
+from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.metrics import accuracy_score, classification_report
+import pickle
+
+MODEL_PATH = os.path.join(get_data_directory(), "xgboost_match_predictor.pkl")
+
+def train_match_prediction_model(data: pd.DataFrame):
+    """Train an XGBoost model to predict match outcomes."""
+    try:
+        # Prepare the dataset
+        features = [
+            'auton_total', 'teleop_total', 'endgame_total', 'defense_value'
+        ]
+        target = 'total_score'
+
+        # Validate required columns
+        missing_columns = [col for col in features + [target] if col not in data.columns]
+        if missing_columns:
+            console.print(f"[bold red]Error: Missing required columns: {missing_columns}[/bold red]")
+            return None
+
+        # Handle missing or invalid data
+        if data[features + [target]].isnull().any().any():
+            console.print("[bold yellow]Warning: Missing values detected. Filling with 0.[/bold yellow]")
+            data[features + [target]] = data[features + [target]].fillna(0)
+
+        # Define features (X) and target (y)
+        X = data[features]
+        y = (data[target] > data[target].mean()).astype(int)  # Binary classification: above/below average
+
+        # Split the data
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+        # Debugging logs
+        console.print(f"[cyan]Training data shape: {X_train.shape}[/cyan]")
+        console.print(f"[cyan]Test data shape: {X_test.shape}[/cyan]")
+
+        # Train the model
+        model = XGBClassifier(
+            n_estimators=200,
+            learning_rate=0.1,
+            max_depth=6,
+            random_state=42,
+            verbosity=0  # Suppress warnings
+        )
+        eval_set = [(X_train, y_train), (X_test, y_test)]
+        model.fit(X_train, y_train, eval_set=eval_set, verbose=False)
+
+        # Cross-validation
+        cv_scores = cross_val_score(model, X, y, cv=5, scoring='accuracy')
+        console.print(f"[green]Cross-validated accuracy: {cv_scores.mean():.2f} ± {cv_scores.std():.2f}[/green]")
+
+        # Evaluate the model
+        y_pred = model.predict(X_test)
+        accuracy = accuracy_score(y_test, y_pred)
+        console.print(f"[green]Model trained with test accuracy: {accuracy:.2f}[/green]")
+        console.print(classification_report(y_test, y_pred))
+
+        # Save the model
+        with open(MODEL_PATH, 'wb') as f:
+            pickle.dump(model, f)
+        console.print(f"[green]Model saved to {MODEL_PATH}[/green]")
+
+        return model
+    except Exception as e:
+        console.print(f"[bold red]Error training model: {e}[/bold red]")
+        import traceback
+        traceback.print_exc()
+        return None
+
+def load_match_prediction_model():
+    """Load the trained XGBoost match prediction model."""
+    if os.path.exists(MODEL_PATH):
+        with open(MODEL_PATH, 'rb') as f:
+            return pickle.load(f)
+    else:
+        console.print("[yellow]No trained model found. Please train a model first.[/yellow]")
+        return None
+
+def display_match_prediction_with_ml(analysis_results):
+    """Display match prediction using the trained ML model."""
+    console.clear()
+    console.print("[bold cyan]MATCH PREDICTION TOOL (ML-BASED)[/bold cyan]", justify="center")
+    console.print("[yellow]Predict match outcomes using a trained ML model[/yellow]\n")
+
+    model = load_match_prediction_model()
+    if not model:
+        console.print("[bold red]No trained model available. Train a model first.[/bold red]")
+        console.print("\nPress Enter to continue...", end="")
+        input()
+        return
+
+    team_profiles = analysis_results['team_profiles']
+    teams = sorted(list(team_profiles.keys()))
+
+    # Show available teams
+    console.print("\n[cyan]Available Teams:[/cyan]")
+    team_table = Table(show_header=False, box=box.SIMPLE)
+    team_table.add_column("Teams", style="cyan")
+
+    # Format teams in rows of 6
+    team_rows = [teams[i:i+6] for i in range(0, len(teams), 6)]
+    for row in team_rows:
+        team_table.add_row(" ".join(row))
+
+    console.print(team_table)
+
+    # Get teams for red and blue alliances
+    console.print("\n[bold red]Red Alliance:[/bold red]")
+    red_teams = [Prompt.ask(f"Red Alliance Team {i+1}", default=teams[i] if i < len(teams) else "") for i in range(3)]
+    console.print("\n[bold blue]Blue Alliance:[/bold blue]")
+    blue_teams = [Prompt.ask(f"Blue Alliance Team {i+1}", default=teams[i+3] if i+3 < len(teams) else "") for i in range(3)]
+
+    # Validate teams
+    red_teams = [team for team in red_teams if team in team_profiles]
+    blue_teams = [team for team in blue_teams if team in team_profiles]
+
+    if len(red_teams) < 3 or len(blue_teams) < 3:
+        console.print("[bold red]Error: Each alliance must have 3 valid teams.[/bold red]")
+        console.print("\nPress Enter to continue...", end="")
+        input()
+        return
+
+    # Prepare input for prediction
+    def get_alliance_features(teams):
+        return {
+            'auton_total': sum(team_profiles[team]['auton_average'] for team in teams),
+            'teleop_total': sum(team_profiles[team]['teleop_average'] for team in teams),
+            'endgame_total': sum(team_profiles[team]['endgame_average'] for team in teams),
+            'defense_value': sum(5 if team_profiles[team]['plays_defense'] else 0 for team in teams)
+        }
+
+    red_features = get_alliance_features(red_teams)
+    blue_features = get_alliance_features(blue_teams)
+
+    # Ensure feature names match the trained model
+    feature_order = ['auton_total', 'teleop_total', 'endgame_total', 'defense_value']
+    red_input = [red_features[feature] for feature in feature_order]
+    blue_input = [blue_features[feature] for feature in feature_order]
+
+    # Predict outcomes
+    red_score = model.predict_proba([red_input])[0][1] * 100
+    blue_score = model.predict_proba([blue_input])[0][1] * 100
+
+    # Display prediction
+    console.print("\n[bold]Match Prediction:[/bold]")
+    console.print(f"[bold red]Red Alliance:[/bold red] {red_score:.2f}% chance of winning")
+    console.print(f"[bold blue]Blue Alliance:[/bold blue] {blue_score:.2f}% chance of winning")
+
+    # Display detailed statistics for each alliance
+    def display_alliance_details(alliance_name, teams, features):
+        console.print(f"\n[bold]{alliance_name} Details:[/bold]")
+        table = Table(title=f"{alliance_name} Team Statistics", box=box.SIMPLE)
+        table.add_column("Team", style="cyan")
+        table.add_column("Matches Played", justify="right", style="magenta")
+        table.add_column("Average Score", justify="right", style="green")
+        table.add_column("Auton Avg", justify="right", style="yellow")
+        table.add_column("Teleop Avg", justify="right", style="yellow")
+        table.add_column("Endgame Avg", justify="right", style="yellow")
+        table.add_column("Defense", justify="center", style="red")
+
+        for team in teams:
+            profile = team_profiles[team]
+            table.add_row(
+                team,
+                str(profile['matches_played']),
+                f"{profile['average_score']:.2f}",
+                f"{profile['auton_average']:.2f}",
+                f"{profile['teleop_average']:.2f}",
+                f"{profile['endgame_average']:.2f}",
+                "Yes" if profile['plays_defense'] else "No"
+            )
+
+        console.print(table)
+        console.print(f"[bold]{alliance_name} Total Features:[/bold]")
+        console.print(f"Autonomous: {features['auton_total']:.2f}")
+        console.print(f"Teleop: {features['teleop_total']:.2f}")
+        console.print(f"Endgame: {features['endgame_total']:.2f}")
+        console.print(f"Defense Value: {features['defense_value']:.2f}")
+
+    display_alliance_details("Red Alliance", red_teams, red_features)
+    display_alliance_details("Blue Alliance", blue_teams, blue_features)
+
+    console.print("\nPress Enter to continue...", end="")
+    input()
+
+def display_team_search(analysis_results):
+    """Search and filter teams based on criteria."""
+    console.clear()
+    console.print("[bold cyan]TEAM SEARCH TOOL[/bold cyan]", justify="center")
+    console.print("[yellow]Search and filter teams based on performance metrics[/yellow]\n")
+
+    team_profiles = analysis_results['team_profiles']
+
+    # Get search criteria
+    min_matches = int(Prompt.ask("Minimum matches played", default="0"))
+    min_score = float(Prompt.ask("Minimum average score", default="0"))
+    plays_defense = Confirm.ask("Filter teams that play defense?", default=False)
+
+    # Filter teams
+    filtered_teams = {
+        team: profile for team, profile in team_profiles.items()
+        if profile['matches_played'] >= min_matches and
+           profile['average_score'] >= min_score and
+           (not plays_defense or profile['plays_defense'])
+    }
+
+    if not filtered_teams:
+        console.print("[bold red]No teams match the criteria.[/bold red]")
+    else:
+        table = Table(title="Filtered Teams")
+        table.add_column("Team Number", justify="right", style="cyan", no_wrap=True)
+        table.add_column("Matches Played", justify="right", style="magenta")
+        table.add_column("Average Score", justify="right", style="green")
+        table.add_column("Plays Defense", justify="right", style="red")
+
+        for team, profile in filtered_teams.items():
+            table.add_row(
+                team,
+                str(profile['matches_played']),
+                str(profile['average_score']),
+                "Yes" if profile['plays_defense'] else "No"
+            )
+
+        console.print(table)
+
+    console.print("\nPress Enter to continue...", end="")
+    input()
+
+
+def analyze_feedback(comments):
+    """Analyze feedback comments and classify them as positive or negative."""
+    positive_comments = []
+    negative_comments = []
+
+    for comment in comments:
+        if not comment or pd.isna(comment):
+            continue
+        sentiment = TextBlob(comment).sentiment.polarity
+        if sentiment > 0:
+            positive_comments.append(comment)
+        else:
+            negative_comments.append(comment)
+
+    return positive_comments, negative_comments
+
+def fetch_team_history(team_number):
+    """Fetch team history from Statbotics and The Blue Alliance APIs."""
+    history = {}
+
+    # Fetch data from Statbotics API
+    try:
+        response = requests.get(f"{STATBOTICS_API}{team_number}")
+        if response.status_code == 200:
+            history["statbotics"] = response.json()
+        else:
+            console.print(f"[yellow]Statbotics API returned status {response.status_code} for team {team_number}[/yellow]")
+    except Exception as e:
+        console.print(f"[red]Error fetching data from Statbotics API: {e}[/red]")
+
+    # Fetch data from The Blue Alliance API
+    try:
+        headers = {"X-TBA-Auth-Key": BLUE_ALLIANCE_AUTH_KEY}
+        response = requests.get(f"{BLUE_ALLIANCE_API}frc{team_number}", headers=headers)
+        if response.status_code == 200:
+            history["blue_alliance"] = response.json()
+        else:
+            console.print(f"[yellow]The Blue Alliance API returned status {response.status_code} for team {team_number}[/yellow]")
+    except Exception as e:
+        console.print(f"[red]Error fetching data from The Blue Alliance API: {e}[/red]")
+
+    return history
+
+def display_team_profile(team_number, team_data, positive_comments, negative_comments, history):
+    """Display a detailed profile for the team."""
+    console.clear()
+    console.print(f"[bold cyan]Team {team_number} Profile[/bold cyan]", justify="center")
+
+    # Display team statistics
+    stats_table = Table(title="Team Statistics", box=box.ROUNDED)
+    stats_table.add_column("Metric", style="cyan", justify="left")
+    stats_table.add_column("Value", style="green", justify="right")
+    for key, value in team_data.items():
+        stats_table.add_row(key, str(value))
+    console.print(stats_table)
+
+    # Display feedback
+    feedback_panel = Panel(
+        f"[bold green]Positive Feedback:[/bold green]\n"
+        + ("\n".join(f"- {comment}" for comment in positive_comments) if positive_comments else "[dim]No positive feedback available.[/dim]")
+        + "\n\n[bold red]Negative Feedback:[/bold red]\n"
+        + ("\n".join(f"- {comment}" for comment in negative_comments) if negative_comments else "[dim]No negative feedback available.[/dim]"),
+        title="Feedback",
+        box=box.ROUNDED,
+        border_style="yellow",
+    )
+    console.print(feedback_panel)
+
+    # Display external history
+    if history:
+        external_data = ""
+        if "statbotics" in history:
+            statbotics = history["statbotics"]
+            external_data += (
+                "[bold cyan]Statbotics Data:[/bold cyan]\n"
+                f"- Name: {statbotics.get('name', 'N/A')}\n"
+                f"- Country: {statbotics.get('country', 'N/A')}\n"
+                f"- State: {statbotics.get('state', 'N/A')}\n"
+                f"- District: {statbotics.get('district', 'N/A')}\n"
+                f"- Rookie Year: {statbotics.get('rookie_year', 'N/A')}\n"
+                f"- Active: {'Yes' if statbotics.get('active', False) else 'No'}\n"
+                f"- Wins: {statbotics['record']['wins']} | Losses: {statbotics['record']['losses']} | Ties: {statbotics['record']['ties']}\n"
+                f"- Win Rate: {statbotics['record']['winrate']:.2%}\n"
+                f"- Current EPA: {statbotics['norm_epa']['current']}\n"
+                f"- Recent EPA: {statbotics['norm_epa']['recent']}\n"
+                f"- Mean EPA: {statbotics['norm_epa']['mean']}\n"
+                f"- Max EPA: {statbotics['norm_epa']['max']}\n\n"
+            )
+        if "blue_alliance" in history:
+            blue_alliance = history["blue_alliance"]
+            external_data += (
+                "[bold cyan]The Blue Alliance Data:[/bold cyan]\n"
+                f"- Nickname: {blue_alliance.get('nickname', 'N/A')}\n"
+                f"- City: {blue_alliance.get('city', 'N/A')}\n"
+                f"- State/Province: {blue_alliance.get('state_prov', 'N/A')}\n"
+                f"- Country: {blue_alliance.get('country', 'N/A')}\n"
+                f"- Rookie Year: {blue_alliance.get('rookie_year', 'N/A')}\n"
+                f"- School Name: {blue_alliance.get('school_name', 'N/A')}\n"
+                f"- Website: {blue_alliance.get('website', 'N/A')}\n"
+            )
+        history_panel = Panel(
+            external_data.strip(),
+            title="External History",
+            box=box.ROUNDED,
+            border_style="blue",
+        )
+        console.print(history_panel)
+
+    console.print("\n[italic]Press Enter to return to the main menu...[/italic]")
+    input()
+
+def team_lookup(data_path):
+    """Main function for team lookup."""
+    # Load scouting data
+    try:
+        df = pd.read_csv(data_path)
+        # Ensure teamNumber is treated as a string
+        df['teamNumber'] = df['teamNumber'].astype(str)
+    except Exception as e:
+        console.print(f"[red]Error loading data: {e}[/red]")
+        return
+
+    # Ask for team number
+    team_number = Prompt.ask("Enter the team number to look up")
+
+    # Filter data for the team
+    team_data = df[df["teamNumber"] == team_number]
+    if team_data.empty:
+        console.print(f"[red]No data found for team {team_number}[/red]")
+        return
+
+    # Aggregate team stats
+    team_stats = {
+        "Matches Played": len(team_data),
+        "Average Score": round(team_data["total_score"].mean(), 2) if "total_score" in team_data.columns else "N/A",
+        "Highest Score": team_data["total_score"].max() if "total_score" in team_data.columns else "N/A",
+        "Autonomous Average": round(team_data["auton_total"].mean(), 2) if "auton_total" in team_data.columns else "N/A",
+        "Teleop Average": round(team_data["teleop_total"].mean(), 2) if "teleop_total" in team_data.columns else "N/A",
+        "Endgame Average": round(team_data["endgame_total"].mean(), 2) if "endgame_total" in team_data.columns else "N/A",
+    }
+
+    # Analyze feedback
+    comments = team_data["endgame_Comments"].tolist() if "endgame_Comments" in team_data.columns else []
+    positive_comments, negative_comments = analyze_feedback(comments)
+
+    # Ask if external APIs should be used
+    use_wifi = Confirm.ask("Do you want to fetch additional data from external APIs?")
+    history = fetch_team_history(team_number) if use_wifi else {}
+
+    # Display the team profile
+    display_team_profile(team_number, team_stats, positive_comments, negative_comments, history)
+
+
+# Add new options to the main menu
 def main():
     display_welcome_screen()
-    
-    # Ask for input data
-    console.print("\n[yellow]Choose data source:[/yellow]")
-    console.print("1. CSV file")
-    console.print("2. JSON file")
-    console.print("3. QR Code data (as text)")
-    
-    choice = Prompt.ask("Enter your choice", choices=["1", "2", "3"], default="1")
-    
-    analysis_results = {}
-    data_path = None
-    
-    if choice == "1":
-        data_path = Prompt.ask("Enter path to CSV file", default="scouting_data.csv")
-        if not os.path.exists(data_path):
-            console.print(f"[bold red]Error: File not found at {data_path}[/bold red]")
-            return
-        analysis_results = analyze_scouting_data(data_path=data_path)
-    elif choice == "2":
-        data_path = Prompt.ask("Enter path to JSON file", default="scouting_data.json")
-        if not os.path.exists(data_path):
-            console.print(f"[bold red]Error: File not found at {data_path}[/bold red]")
-            return
-        analysis_results = analyze_scouting_data(data_path=data_path)
-    else:
-        data_str = Prompt.ask("Paste QR code data (CSV or JSON string)")
-        analysis_results = analyze_scouting_data(data_str=data_str)
-    
+
+    # Check for existing results.csv
+    data_path = check_existing_results()
+
+    # Ask for input data if results.csv is not used
+    if not data_path:
+        console.print("\n[yellow]Choose data source:[/yellow]")
+        console.print("1. CSV file")
+        console.print("2. JSON file")
+        console.print("3. QR Code data (as text)")
+
+        choice = Prompt.ask("Enter your choice", choices=["1", "2", "3"], default="1")
+
+        if choice == "1":
+            data_path = Prompt.ask("Enter path to CSV file", default="scouting_data.csv")
+            if not os.path.exists(data_path):
+                console.print(f"[bold red]Error: File not found at {data_path}[/bold red]")
+                return
+        elif choice == "2":
+            data_path = Prompt.ask("Enter path to JSON file", default="scouting_data.json")
+            if not os.path.exists(data_path):
+                console.print(f"[bold red]Error: File not found at {data_path}[/bold red]")
+                return
+        else:
+            data_str = Prompt.ask("Paste QR code data (CSV or JSON string)")
+            analysis_results = analyze_scouting_data(data_str=data_str)
+            if not analysis_results:
+                console.print("[bold red]No valid data to analyze. Exiting.[/bold red]")
+                return
+
+    # Analyze the data
+    analysis_results = analyze_scouting_data(data_path=data_path) if data_path else analysis_results
+
     if not analysis_results:
         console.print("[bold red]No valid data to analyze. Exiting.[/bold red]")
         return
 
     # Show menu for analysis options
     while True:
-        console.clear()
+        # console.clear()
         console.print("\n[bold cyan]SCOUTZ ANALYSIS MENU[/bold cyan]")
         console.print("1. View Team List")
         console.print("2. View Alliance Recommendations")
         console.print("3. Export Strategy Report")
         console.print("4. Generate Performance Visualization")
-        console.print("5. Predict Match Outcome")
-        console.print("6. Manage Team Filters")  # New option
-        console.print("7. Update Data Files")
-        console.print("8. Exit")
-        
-        menu_choice = Prompt.ask("Select an option", choices=["1", "2", "3", "4", "5", "6", "7", "8"], default="1")
-        
+        console.print("5. Predict Match Outcome (Basic)")
+        console.print("6. Predict Match Outcome (ML-Based)")
+        console.print("7. Manage Team Filters")
+        console.print("8. Search Teams")
+        console.print("9. Train Match Prediction Model")
+        console.print("10. Update Data Files")
+        console.print("11. Team Lookup")  # Added option for team lookup
+        console.print("12. Exit")
+
+        menu_choice = Prompt.ask("Select an option", choices=[str(i) for i in range(1, 13)], default="1")
+
         if menu_choice == "1":
             display_team_list(analysis_results)
         elif menu_choice == "2":
@@ -895,20 +1375,26 @@ def main():
         elif menu_choice == "5":
             display_match_prediction(analysis_results)
         elif menu_choice == "6":
+            display_match_prediction_with_ml(analysis_results)
+        elif menu_choice == "7":
             manage_team_filters(analysis_results['team_profiles'])
-            # Reload analysis with updated filters
             if data_path:
                 analysis_results = analyze_scouting_data(data_path=data_path)
-        elif menu_choice == "7":
+        elif menu_choice == "8":
+            display_team_search(analysis_results)
+        elif menu_choice == "9":
+            train_match_prediction_model(analysis_results['raw_data'])
+        elif menu_choice == "10":
             if data_path:
                 display_update_menu(data_path)
-                # Reload analysis with updated data if needed
                 analysis_results = analyze_scouting_data(data_path=data_path)
             else:
                 console.print("[bold yellow]Update only available for file data sources[/bold yellow]")
                 console.print("\nPress Enter to continue...", end="")
                 input()
-        elif menu_choice == "8":
+        elif menu_choice == "11":  # Team Lookup
+            team_lookup(data_path)
+        elif menu_choice == "12":
             break
 
 
