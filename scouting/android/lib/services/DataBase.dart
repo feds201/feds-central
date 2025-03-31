@@ -1069,6 +1069,7 @@ class PitChecklistItem {
   bool gooseneck_belts = false;
   bool gooseneck_nuts_and_bolts = false;
   bool gooseneck_gears = false;
+  bool gooseneck_wires = false;
 
   double returning_battery_voltage = 0.0;
   double returning_battery_cca = 0.0;
@@ -1134,12 +1135,14 @@ class PitChecklistItem {
     required this.carriage_wires,
     required this.carriage_nuts_and_bolts,
     required this.carriage_coral_slide,
+    required this.carriage_reset,
     required this.carriage_carriage,
     required this.gooseneck_panels,
     required this.gooseneck_wheels,
     required this.gooseneck_belts,
     required this.gooseneck_nuts_and_bolts,
     required this.gooseneck_gears,
+    required this.gooseneck_wires,
     required this.returning_battery_voltage,
     required this.returning_battery_cca,
     required this.returning_number,
@@ -1225,11 +1228,14 @@ class PitChecklistItem {
       
       'carriage_nuts_and_bolts': carriage_nuts_and_bolts,
       'carriage_coral_slide': carriage_coral_slide,
+      'carriage_reset': carriage_reset,
       'carriage_carriage': carriage_carriage,
       'gooseneck_panels': gooseneck_panels,
       'gooseneck_wheels': gooseneck_wheels,
       'gooseneck_belts': gooseneck_belts,
+      'gooseneck_wires': gooseneck_wires,
       'gooseneck_nuts_and_bolts': gooseneck_nuts_and_bolts,
+      'gooseneck_gears': gooseneck_gears,
       'returning_battery_voltage': returning_battery_voltage,
       'returning_battery_cca': returning_battery_cca,
       'returning_number': returning_number,
@@ -1252,6 +1258,7 @@ class PitChecklistItem {
       PitChecklistItem(
         note: json['note'] ?? "",
         matchkey: json['matchkey'] ?? " ",
+        gooseneck_wires: json['gooseneck_wires'] ?? false,
         chassis_drive_motors: json['chassis_drive_motors'] ?? false,
         chassis_steer_motors: json['chassis_steer_motors'] ?? false,
         chassis_gearboxes: json['chassis_gearboxes'] ?? false,
@@ -1270,6 +1277,7 @@ class PitChecklistItem {
             json['ethernet_back_right_limelight'] ?? false,
         ethernet_radio: json['ethernet_radio'] ?? false,
         climber_hooks: json['climber_hooks'] ?? false,
+        carriage_reset: json['carriage_reset'] ?? false,
         climber_wires: json['climber_wires'] ?? false,
         climber_clips: json['climber_clips'] ?? false,
         climber_bumper: json['climber_bumper'] ?? false,

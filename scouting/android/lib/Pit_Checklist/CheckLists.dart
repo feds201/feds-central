@@ -87,6 +87,7 @@ class _Checklist_recordState extends State<Checklist_record> {
   late bool carriage_nuts_and_bolts;
   late bool carriage_coral_slide;
   late bool carriage_carriage;
+  late bool carriage_reset;
   late List<String> carriage;
 
   late bool gooseneck_panels;
@@ -94,6 +95,7 @@ class _Checklist_recordState extends State<Checklist_record> {
   late bool gooseneck_belts;
   late bool gooseneck_gears;
   late bool gooseneck_nuts_and_bolts;
+  late bool gooseneck_wires;
   late List<String> gooseneck;
 
   late double outgoing_number;
@@ -209,6 +211,7 @@ class _Checklist_recordState extends State<Checklist_record> {
     trapdoor_tensioners = false;
     trapdoor_nuts_and_bolts = false;
     trapdoor_reset = false;
+    trapdoor_wires = false;
     trapdoor = [];
 
     carriage_carriage = false;
@@ -218,6 +221,7 @@ class _Checklist_recordState extends State<Checklist_record> {
     carriage_coral_slide = false;
     carriage_wires = false;
     carriage_nuts_and_bolts = false;
+    carriage_reset = false;
     carriage = [];
 
     gooseneck_panels = false;
@@ -225,6 +229,7 @@ class _Checklist_recordState extends State<Checklist_record> {
     gooseneck_belts = false;
     gooseneck_nuts_and_bolts = false;
     gooseneck_gears = false;
+    gooseneck_wires = false;
     gooseneck = [];
 
     returning_battery_voltage = 0;
@@ -250,6 +255,12 @@ class _Checklist_recordState extends State<Checklist_record> {
           PitCheckListDatabase.GetData(widget.list_item.matchkey);
       if (existingRecord != null) {
         // Populate UI state variables with existing data
+        print(
+          "Goosenck Wires ${existingRecord.gooseneck_wires}",
+        );
+        print(
+          "Goosenck Gears ${existingRecord.gooseneck_gears}",
+        );
         setState(() {
           chassis_drive_motors = existingRecord.chassis_drive_motors;
           chassis_steer_motors = existingRecord.chassis_steer_motors;
@@ -302,6 +313,7 @@ class _Checklist_recordState extends State<Checklist_record> {
           trapdoor_tensioners = existingRecord.trapdoor_tensioners;
           trapdoor_nuts_and_bolts = existingRecord.trapdoor_nuts_and_bolts;
           trapdoor_reset = existingRecord.trapdoor_reset;
+          trapdoor_wires = existingRecord.trapdoor_wires;
 
           carriage_gearbox = existingRecord.carriage_gearbox;
           carriage_beltbox = existingRecord.carriage_beltbox;
@@ -310,12 +322,14 @@ class _Checklist_recordState extends State<Checklist_record> {
           carriage_nuts_and_bolts = existingRecord.carriage_nuts_and_bolts;
           carriage_coral_slide = existingRecord.carriage_coral_slide;
           carriage_carriage = existingRecord.carriage_carriage;
+          carriage_reset = existingRecord.carriage_reset;
 
           gooseneck_panels = existingRecord.gooseneck_panels;
           gooseneck_wheels = existingRecord.gooseneck_wheels;
           gooseneck_belts = existingRecord.gooseneck_belts;
           gooseneck_nuts_and_bolts = existingRecord.gooseneck_nuts_and_bolts;
           gooseneck_gears = existingRecord.gooseneck_gears;
+          gooseneck_wires = existingRecord.gooseneck_wires;
 
           returning_battery_voltage = existingRecord.returning_battery_voltage;
           returning_battery_cca = existingRecord.returning_battery_cca;
@@ -402,6 +416,7 @@ class _Checklist_recordState extends State<Checklist_record> {
           if (carriage_nuts_and_bolts) carriage.add("Nuts and Bolts");
           if (carriage_coral_slide) carriage.add("Coral Slide");
           if (carriage_carriage) carriage.add("Carriage");
+          if (carriage_reset) carriage.add("Reset");
 
           // Gooseneck list
           gooseneck = [];
@@ -409,6 +424,7 @@ class _Checklist_recordState extends State<Checklist_record> {
           if (gooseneck_wheels) gooseneck.add("Wheels");
           if (gooseneck_belts) gooseneck.add("Belts");
           if (gooseneck_gears) gooseneck.add("Gears");
+          if (gooseneck_wires) gooseneck.add("Wires");
           if (gooseneck_nuts_and_bolts) gooseneck.add("Nuts and Bolts");
 
           // Set matchkey from existing record
@@ -739,6 +755,8 @@ class _Checklist_recordState extends State<Checklist_record> {
       elevator.contains("String"),
     );
     PitChecklistItem record = PitChecklistItem(
+      gooseneck_wires: gooseneck.contains("Wires"),
+      gooseneck_gears: gooseneck.contains("Gears"),
       matchkey: matchkey,
       chassis_steer_motors: chassis.contains("Steer motors"),
       chassis_drive_motors: chassis.contains("Drive motors"),
@@ -787,11 +805,11 @@ class _Checklist_recordState extends State<Checklist_record> {
       carriage_wires: carriage.contains("Wires"),
       carriage_nuts_and_bolts: carriage.contains("Nuts and Bolts"),
       carriage_coral_slide: carriage.contains("Coral Slide"),
+      carriage_reset: carriage.contains("Reset"),
       carriage_carriage: carriage.contains("Carriage"),
       gooseneck_panels: gooseneck.contains("Panels"),
       gooseneck_wheels: gooseneck.contains("Wheels"),
       gooseneck_belts: gooseneck.contains("Belts"),
-      gooseneck_gears: gooseneck.contains("Gears"),
       gooseneck_nuts_and_bolts: gooseneck.contains("Nuts and Bolts"),
       returning_battery_voltage: returning_battery_voltage,
       returning_battery_cca: returning_battery_cca,
