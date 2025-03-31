@@ -1046,6 +1046,7 @@ class PitChecklistItem {
   bool elevator_wires = false;
   bool elevator_nuts_and_bolts = false;
   bool elevator_belts = false;
+  bool elevator_string = false;
 
   bool trapdoor_panels = false;
   bool trapdoor_supports = false;
@@ -1062,7 +1063,6 @@ class PitChecklistItem {
   bool carriage_nuts_and_bolts = false;
   bool carriage_coral_slide = false;
   bool carriage_carriage = false;
-  bool climber_number = false;
 
   bool gooseneck_panels = false;
   bool gooseneck_wheels = false;
@@ -1101,11 +1101,10 @@ class PitChecklistItem {
     required this.ethernet_switch, // Changed from ethernet_swtich
     required this.ethernet_radio,
     required this.climber_string,
-    required this.climber_number,
+    required this.climber_bumper,
     required this.climber_hooks,
     required this.climber_clips,
     required this.climber_springs,
-    required this.climber_bumper,
     required this.climber_gearbox,
     required this.climber_motors,
     required this.climber_wires,
@@ -1121,6 +1120,7 @@ class PitChecklistItem {
     required this.elevator_wires,
     required this.elevator_nuts_and_bolts,
     required this.elevator_belts,
+    required this.elevator_string,    
     required this.trapdoor_panels,
     required this.trapdoor_supports,
     required this.trapdoor_hinges,
@@ -1165,8 +1165,8 @@ class PitChecklistItem {
     return '$matchkey,'
         '$chassis_drive_motors,$chassis_steer_motors,$chassis_gearboxes,$chassis_tread_conditions,$chassis_wires,$chassis_bumpers,$chassis_limelight_protectors,'
         '$ethernet_front_left_limelight,$ethernet_front_right_limelight,$ethernet_switch,$ethernet_radio,' // Changed from ethernet_swtich
-        '$climber_string,$climber_springs,$climber_gearbox,$climber_motors,$climber_wires,$climber_nuts_and_bolts,$climber_bumper,$climber_reset,$climber_number,$climber_clips,'
-        '$elevator_rod_of_doom,$elevator_stage_0,$elevator_stage_1,$elevator_stage_2,$elevator_chain,$elevator_gearbox,$elevator_motors,$elevator_wires,$elevator_nuts_and_bolts,'
+        '$climber_string,$climber_springs,$climber_gearbox,$climber_motors,$climber_wires,$climber_nuts_and_bolts,$climber_bumper,$climber_reset,$climber_bumper,$climber_clips,'
+        '$elevator_rod_of_doom,$elevator_belts,$elevator_stage_0,$elevator_stage_1,$elevator_stage_2,$elevator_chain,$elevator_gearbox, $elevator_string,$elevator_motors,$elevator_wires,$elevator_nuts_and_bolts,'
         '$trapdoor_panels,$trapdoor_supports,$trapdoor_hinges,$trapdoor_tensioners,$trapdoor_nuts_and_bolts,$trapdoor_reset,$trapdoor_wires,'
         '$carriage_gearbox,$carriage_beltbox,$carriage_motors,$carriage_wires,$carriage_nuts_and_bolts,$carriage_coral_slide,$carriage_carriage,'
         '$gooseneck_panels,$gooseneck_wheels,$gooseneck_belts,$gooseneck_nuts_and_bolts,'
@@ -1194,20 +1194,21 @@ class PitChecklistItem {
       'climber_string': climber_string,
       'climber_clips': climber_clips,
       'climber_springs': climber_springs,
-      'climber_bumper': climber_bumper,
       'climber_gearbox': climber_gearbox,
       'climber_motors': climber_motors,
       'climber_wires': climber_wires,
       'climber_nuts_and_bolts': climber_nuts_and_bolts,
       'climber_reset': climber_reset,
-      'climber_number': climber_number,
+      'climber_bumper': climber_bumper,
       'elevator_rod_of_doom': elevator_rod_of_doom,
       'elevator_stage_0': elevator_stage_0,
       'elevator_stage_1': elevator_stage_1,
+      'elevator_belts': elevator_belts,
       'elevator_stage_2': elevator_stage_2,
       'elevator_chain': elevator_chain,
       'elevator_gearbox': elevator_gearbox,
       'elevator_motors': elevator_motors,
+      'elevator_string': elevator_string,
       'elevator_wires': elevator_wires,
       'elevator_nuts_and_bolts': elevator_nuts_and_bolts,
       'trapdoor_panels': trapdoor_panels,
@@ -1221,6 +1222,7 @@ class PitChecklistItem {
       'carriage_beltbox': carriage_beltbox,
       'carriage_motors': carriage_motors,
       'carriage_wires': carriage_wires,
+      
       'carriage_nuts_and_bolts': carriage_nuts_and_bolts,
       'carriage_coral_slide': carriage_coral_slide,
       'carriage_carriage': carriage_carriage,
@@ -1270,7 +1272,6 @@ class PitChecklistItem {
         climber_hooks: json['climber_hooks'] ?? false,
         climber_wires: json['climber_wires'] ?? false,
         climber_clips: json['climber_clips'] ?? false,
-        climber_number: json['climber_number'] ?? false,
         climber_bumper: json['climber_bumper'] ?? false,
         climber_string: json['climber_string'] ?? false,
         climber_springs: json['climber_springs'] ?? false,
@@ -1286,6 +1287,7 @@ class PitChecklistItem {
         elevator_chain: json['elevator_chain'] ?? false,
         elevator_gearbox: json['elevator_gearbox'] ?? false,
         elevator_motors: json['elevator_motors'] ?? false,
+        elevator_string: json['elevator_string'] ?? false,
         elevator_wires: json['elevator_wires'] ?? false,
         elevator_nuts_and_bolts: json['elevator_nuts_and_bolts'] ?? false,
         trapdoor_panels: json['trapdoor_panels'] ?? false,

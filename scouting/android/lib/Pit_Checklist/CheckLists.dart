@@ -45,7 +45,7 @@ class _Checklist_recordState extends State<Checklist_record> {
   late bool ethernet_radio;
   late List<String> ethernet;
 
-  late bool climber_number;
+  late bool climber_bumper;
   late bool climber_clips;
   late bool climber_string;
   late bool climber_springs;
@@ -55,6 +55,7 @@ class _Checklist_recordState extends State<Checklist_record> {
   late bool climber_wires;
   late bool climber_nuts_and_bolts;
   late bool climber_reset;
+
   late List<String> climber;
 
   late bool elevator_rod_of_doom;
@@ -63,6 +64,7 @@ class _Checklist_recordState extends State<Checklist_record> {
   late bool elevator_stage_2;
   late bool elevator_chain;
   late bool elevator_belts;
+  late bool elevator_string;
   late bool elevator_gearbox;
   late bool elevator_motors;
   late bool elevator_wires;
@@ -167,7 +169,7 @@ class _Checklist_recordState extends State<Checklist_record> {
 
     alliance_color = "";
 
-    climber_number = false;
+    climber_bumper = false;
     climber_clips = false;
     climber_hooks = false;
     climber_string = false;
@@ -181,6 +183,8 @@ class _Checklist_recordState extends State<Checklist_record> {
 
     ethernet_front_left_limelight = false;
     ethernet_front_right_limelight = false;
+    ethernet_back_left_limelight = false;
+    ethernet_back_right_limelight = false;
     ethernet_switch = false;
     ethernet_radio = false;
     ethernet = [];
@@ -191,11 +195,11 @@ class _Checklist_recordState extends State<Checklist_record> {
     elevator_stage_2 = false;
     elevator_chain = false;
     elevator_belts = false;
+    elevator_string = false;
     elevator_gearbox = false;
     elevator_motors = false;
     elevator_wires = false;
     elevator_nuts_and_bolts = false;
-    elevator_belts = false;
 
     elevator = [];
 
@@ -260,11 +264,17 @@ class _Checklist_recordState extends State<Checklist_record> {
               existingRecord.ethernet_front_left_limelight;
           ethernet_front_right_limelight =
               existingRecord.ethernet_front_right_limelight;
+          ethernet_back_left_limelight =
+              existingRecord.ethernet_front_right_limelight;
+          ethernet_back_right_limelight =
+              existingRecord.ethernet_front_right_limelight;
+
           ethernet_switch = existingRecord.ethernet_switch;
           ethernet_radio = existingRecord.ethernet_radio;
 
-          climber_number = existingRecord.climber_number;
+          climber_bumper = existingRecord.climber_bumper;
           climber_clips = existingRecord.climber_clips;
+          climber_hooks = existingRecord.climber_hooks;
           climber_string = existingRecord.climber_string;
           climber_string = existingRecord.climber_string;
           climber_springs = existingRecord.climber_springs;
@@ -278,6 +288,7 @@ class _Checklist_recordState extends State<Checklist_record> {
           elevator_stage_0 = existingRecord.elevator_stage_0;
           elevator_stage_1 = existingRecord.elevator_stage_1;
           elevator_stage_2 = existingRecord.elevator_stage_2;
+          elevator_string = existingRecord.elevator_string;
           elevator_chain = existingRecord.elevator_chain;
           elevator_gearbox = existingRecord.elevator_gearbox;
           elevator_motors = existingRecord.elevator_motors;
@@ -339,14 +350,16 @@ class _Checklist_recordState extends State<Checklist_record> {
           ethernet = [];
           if (ethernet_front_left_limelight) ethernet.add("FL Limelight");
           if (ethernet_front_right_limelight) ethernet.add("FR Limelight");
+          if (ethernet_back_left_limelight) ethernet.add("BL Limelight");
+          if (ethernet_back_right_limelight) ethernet.add("BR Limelight");
           if (ethernet_switch) ethernet.add("Ethernet Switch");
           if (ethernet_radio) ethernet.add("Radio");
 
           // Climber list
           climber = [];
 
-          if (climber_string) climber.add("Number");
-          if (climber_string) climber.add("Clips");
+          if (climber_bumper) climber.add("Bumper");
+          if (climber_clips) climber.add("Clips");
           if (climber_string) climber.add("String");
           if (climber_springs) climber.add("Springs");
           if (climber_gearbox) climber.add("Gearbox");
@@ -354,6 +367,7 @@ class _Checklist_recordState extends State<Checklist_record> {
           if (climber_wires) climber.add("Wires");
           if (climber_nuts_and_bolts) climber.add("Nuts and Bolts");
           if (climber_reset) climber.add("Reset");
+          if (climber_hooks) climber.add("Hooks");
 
           // Elevator list
           elevator = [];
@@ -367,6 +381,7 @@ class _Checklist_recordState extends State<Checklist_record> {
           if (elevator_motors) elevator.add("Motors");
           if (elevator_wires) elevator.add("Wires");
           if (elevator_nuts_and_bolts) elevator.add("Nuts and Bolts");
+          if (elevator_string) elevator.add("String");
 
           // Trapdoor list
           trapdoor = [];
@@ -407,28 +422,6 @@ class _Checklist_recordState extends State<Checklist_record> {
     } catch (e) {
       print("Error retrieving team data: $e");
     } finally {}
-  }
-
-  // Add a method to convert base64 strings to File objects
-  Future<List<File>> _getImagesFromBase64Strings(
-      List<String> base64Images) async {
-    List<File> imageFiles = [];
-    final tempDir = await Directory.systemTemp.createTemp('images');
-
-    for (int i = 0; i < base64Images.length; i++) {
-      if (base64Images[i].isEmpty) continue;
-
-      try {
-        final bytes = base64Decode(base64Images[i]);
-        final file = File('${tempDir.path}/image_$i.jpg');
-        await file.writeAsBytes(bytes);
-        imageFiles.add(file);
-      } catch (e) {
-        print('Error converting base64 to file: $e');
-      }
-    }
-
-    return imageFiles;
   }
 
   @override
@@ -540,7 +533,8 @@ class _Checklist_recordState extends State<Checklist_record> {
               "Climber",
               Icon(Icons.star_outline, size: 30, color: Colors.blue),
               [
-                "Number",
+                "Bumper",
+                "Hooks",
                 "Clips",
                 "String",
                 "Springs",
@@ -741,13 +735,9 @@ class _Checklist_recordState extends State<Checklist_record> {
   }
 
   void _recordData() {
-    print(ethernet.contains("FL Limelight"));
-    print(ethernet.contains("FR Limelight"));
-    print(ethernet.contains("BL Limelight"));
-    print(ethernet.contains("BR Limelight"));
-    print(ethernet.contains("Ethernet Switch"));
-    print(ethernet.contains("Radio"));
-
+    print(
+      elevator.contains("String"),
+    );
     PitChecklistItem record = PitChecklistItem(
       matchkey: matchkey,
       chassis_steer_motors: chassis.contains("Steer motors"),
@@ -764,8 +754,7 @@ class _Checklist_recordState extends State<Checklist_record> {
       ethernet_switch: ethernet.contains("Ethernet Switch"),
       ethernet_radio: ethernet.contains("Radio"),
       climber_hooks: climber.contains("Hooks"),
-      climber_bumper: climber.contains("Climber Bumper"),
-      climber_number: climber.contains("Number"),
+      climber_bumper: climber.contains("Bumper"),
       climber_clips: climber.contains("Clips"),
       climber_string: climber.contains("String"),
       climber_springs: climber.contains("Springs"),
@@ -780,6 +769,7 @@ class _Checklist_recordState extends State<Checklist_record> {
       elevator_stage_2: elevator.contains("Stage 2"),
       elevator_chain: elevator.contains("Chain"),
       elevator_belts: elevator.contains("Belts"),
+      elevator_string: elevator.contains("String"),
       elevator_gearbox: elevator.contains("Gearbox"),
       elevator_motors: elevator.contains("Motors"),
       elevator_wires: elevator.contains("Wires"),

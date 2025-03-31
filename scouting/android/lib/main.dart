@@ -107,7 +107,7 @@ bool isDarkMode() {
 // Keep the original function for backward compatibility
 // but make it use the correct function
 bool islightmode() {
-  return isDarkMode();
+  return true;
 }
 
 Color invertColor(Color color) {
