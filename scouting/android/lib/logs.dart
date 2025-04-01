@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'services/DataBase.dart';
 import 'components/SwipeCards.dart';
-import 'Match_Pages/GeminiPrediction.dart';
+import 'services/GeminiPrediction.dart';
 
 class LogsPage extends StatelessWidget {
   const LogsPage({super.key});

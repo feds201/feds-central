@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:scouting_app/main.dart';
+import 'package:scouting_app/services/Colors.dart';
 
 class MatchInfo extends StatelessWidget {
   final String assignedTeam;
@@ -44,11 +46,13 @@ class MatchInfo extends StatelessWidget {
           minHeight: 50, // Set minimum height
         ),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: islightmode() ? Colors.white : Colors.grey[850],
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.2),
+              color: islightmode()
+                  ? Colors.grey.withOpacity(0.2)
+                  : const Color.fromARGB(255, 45, 44, 44).withOpacity(0.5),
               spreadRadius: 2,
               blurRadius: 5,
               offset: const Offset(0, 3), // changes position of shadow
@@ -78,16 +82,17 @@ class MatchInfo extends StatelessWidget {
                 children: [
                   Text(
                     assignedTeam,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
+                      color: islightmode() ? Colors.black : Colors.white,
                     ),
                   ),
                   Text(
                     '$allianceColor Alliance, Station $assignedStation',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
-                      color: Colors.black45,
+                      color: islightmode() ? Colors.black : Colors.white,
                     ),
                   ),
                 ],

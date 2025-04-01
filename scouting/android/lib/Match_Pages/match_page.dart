@@ -3,11 +3,14 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
+import 'package:scouting_app/Qualitative/qualitative.dart';
 import 'package:scouting_app/components/Inspiration.dart';
 import 'package:scouting_app/components/MatchSelection.dart';
 import 'package:scouting_app/components/ScoutersList.dart';
 import 'package:scouting_app/components/Insults.dart';
 import 'package:scouting_app/home_page.dart';
+import 'package:scouting_app/main.dart';
+import '../services/Colors.dart';
 import 'match.dart';
 import '../services/DataBase.dart';
 
@@ -65,15 +68,12 @@ class MatchPageState extends State<MatchPage>
   AppBar _buildAppBar() {
     return AppBar(
       elevation: 0,
-      actions: [
-        Container(
-          margin: const EdgeInsets.only(right: 8),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.2),
-            borderRadius: BorderRadius.circular(30),
-          ),
-          child: IconButton(
-            icon: const Icon(Icons.home, color: Color.fromARGB(255, 0, 0, 0)),
+      leading: Builder(builder: (context) {
+        return IconButton(
+            icon: const Icon(Icons.menu),
+            color: !islightmode()
+                ? const Color.fromARGB(193, 255, 255, 255)
+                : const Color.fromARGB(105, 36, 33, 33),
             onPressed: () async {
               await Navigator.pushAndRemoveUntil(
                 context,
@@ -83,11 +83,9 @@ class MatchPageState extends State<MatchPage>
                 ),
                 (Route<dynamic> route) => false,
               );
-            },
-          ),
-        ),
-      ],
-      backgroundColor: Colors.transparent,
+            });
+      }),
+      backgroundColor: islightmode() ? lightColors.white : darkColors.goodblack,
       title: ShaderMask(
           shaderCallback: (bounds) => const LinearGradient(
                 colors: [Colors.red, Colors.blue],
@@ -159,7 +157,8 @@ class MatchPageState extends State<MatchPage>
             ],
           ),
           child: NavigationRail(
-            backgroundColor: Colors.white,
+            backgroundColor:
+                islightmode() ? lightColors.white : darkColors.goodblack,
             selectedIndex: currentSelectedMatchType,
             onDestinationSelected: (int index) {
               onMatchTypeSelected(index);
@@ -172,6 +171,7 @@ class MatchPageState extends State<MatchPage>
             unselectedLabelTextStyle: GoogleFonts.museoModerno(
               color: Colors.grey.shade600,
             ),
+            indicatorShape: SnakeShapeBorder(),
             destinations: [
               _buildNavDestination(
                 Icons.sports_soccer,
@@ -200,8 +200,12 @@ class MatchPageState extends State<MatchPage>
             ],
           ),
         ),
-        const VerticalDivider(thickness: 1, width: 1),
 
+        VerticalDivider(
+          thickness: 1,
+          width: 1,
+          color: islightmode() ? lightColors.white : darkColors.goodblack,
+        ),
         // Match List with Animation
         Expanded(
           child: FadeTransition(
@@ -381,6 +385,7 @@ class MatchPageState extends State<MatchPage>
       margin: const EdgeInsets.only(bottom: 16),
       child: Card(
         elevation: 4,
+        color: islightmode() ? Colors.white : Colors.grey[850],
         shadowColor: themeColor.withOpacity(0.3),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
@@ -431,7 +436,8 @@ class MatchPageState extends State<MatchPage>
                             '$matchTypeName Match',
                             style: TextStyle(
                               fontSize: 14,
-                              color: Colors.grey.shade600,
+                              color:
+                                  islightmode() ? Colors.black : Colors.white,
                             ),
                           ),
                         ],
@@ -485,7 +491,9 @@ class MatchPageState extends State<MatchPage>
                                     child: Text(
                                       team,
                                       style: TextStyle(
-                                        color: Colors.grey.shade700,
+                                        color: islightmode()
+                                            ? Colors.black
+                                            : Colors.white,
                                       ),
                                     ),
                                   ))
@@ -527,7 +535,9 @@ class MatchPageState extends State<MatchPage>
                                     child: Text(
                                       team,
                                       style: TextStyle(
-                                        color: Colors.grey.shade700,
+                                        color: islightmode()
+                                            ? Colors.black
+                                            : Colors.white,
                                       ),
                                     ),
                                   ))
@@ -668,7 +678,9 @@ class MatchPageState extends State<MatchPage>
 
           // Match Statistics Card with enhanced visual appeal
           Card(
-            color: Colors.white,
+            color: islightmode()
+                ? Colors.white
+                : const Color.fromARGB(255, 33, 31, 31),
             margin: const EdgeInsets.fromLTRB(16, 8, 16, 16),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(18),
@@ -731,7 +743,9 @@ class MatchPageState extends State<MatchPage>
           // Scouter Configuration with enhanced visual appeal
           Card(
             margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-            color: const Color.fromARGB(255, 255, 255, 255),
+            color: islightmode()
+                ? Colors.white
+                : const Color.fromARGB(255, 33, 31, 31),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(18),
             ),
@@ -784,9 +798,11 @@ class MatchPageState extends State<MatchPage>
                             Text(
                               Hive.box('settings').get('deviceName') ??
                                   'Unknown Scout',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.bold,
+                                color:
+                                    islightmode() ? Colors.black : Colors.white,
                               ),
                             ),
                             const SizedBox(height: 4),
@@ -931,14 +947,18 @@ class MatchPageState extends State<MatchPage>
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w500,
-            color: Colors.black87,
+            color: !islightmode()
+                ? Colors.white
+                : const Color.fromARGB(255, 33, 31, 31),
           ),
         ),
         const Spacer(),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
+            color: !islightmode()
+                ? color.withOpacity(0.1)
+                : Colors.grey.withOpacity(0.1),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Text(

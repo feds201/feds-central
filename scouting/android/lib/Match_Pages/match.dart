@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:scouting_app/main.dart';
+import 'package:scouting_app/services/Colors.dart';
 
 import '../Experiment/ExpStateManager.dart';
 import '../services/DataBase.dart';
@@ -41,6 +43,8 @@ class MatchState extends State<Match> {
         canPop: false,
         child: Scaffold(
           appBar: AppBar(
+            backgroundColor:
+                islightmode() ? Colors.white : darkColors.goodblack,
             leading: Container(
                 margin: const EdgeInsets.only(left: 20, top: 15),
                 child: Text(_selectedStation,
@@ -87,6 +91,9 @@ class MatchState extends State<Match> {
           ),
           body: _match(context, _selectedIndex),
           bottomNavigationBar: BottomNavigationBar(
+            backgroundColor:
+                islightmode() ? Colors.white : darkColors.goodblack,
+            unselectedItemColor: islightmode() ? Colors.black : Colors.white,
             items: const <BottomNavigationBarItem>[
               BottomNavigationBarItem(
                 icon: Icon(Icons.auto_awesome),
