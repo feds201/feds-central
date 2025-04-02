@@ -46,11 +46,11 @@ public class PlaceLFour extends SequentialCommandGroup {
         // new RaiseSwanNeckPID(() -> IntakeMap.ReefStops.SAFEANGLE, m_SwanNeck).until(m_SwanNeck::pidAtSetpoint),//TESTING
 
         new ParallelDeadlineGroup(
-            new WaitCommand(.4),
+            new WaitCommand(.25),
             new RotateElevatorPID(m_elevator, () -> ElevatorMap.L4ROTATION),
-            new SpinSwanWheels(m_SwanNeckWheels, () -> IntakeMap.WHEEL_SPEED_SCORE)),
+            new SpinSwanWheels(m_SwanNeckWheels, () -> IntakeMap.WHEEL_SPEED_SCORE * 2)),
 
-        new RaiseSwanNeckPID(() -> IntakeMap.ReefStops.SAFEANGLE, m_SwanNeck).until(m_SwanNeck::pidAtSetpoint)
+        new RaiseSwanNeckPID(() -> IntakeMap.ReefStops.SAFEANGLE - .01, m_SwanNeck).until(m_SwanNeck::pidAtSetpoint)
     // ,
     // new ParallelRaceGroup(new WaitCommand(0.35), new
     // MoveBack(DrivetrainConstants.drivetrain)),

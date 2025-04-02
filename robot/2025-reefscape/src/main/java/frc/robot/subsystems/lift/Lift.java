@@ -55,7 +55,7 @@ public class Lift extends SubsystemABS {
         m_encoderValue = () -> elevatorMotorLeader.getPosition().getValueAsDouble();
         elevatorAboveThreshold = ()-> getElevatorAboveThreshold();
         pid = new PIDController(RobotMap.ElevatorMap.ELEVATOR_P, RobotMap.ElevatorMap.ELEVATOR_I, RobotMap.ElevatorMap.ELEVATOR_D);
-        pid.setTolerance(.05);
+        pid.setTolerance(.2);
 
         pidDown = new PIDController(0.4, 0, 0);
         pidDown.setTolerance(.1);
@@ -177,11 +177,11 @@ public class Lift extends SubsystemABS {
     }
 
     public boolean getElevatorAtBelowL4(){
-        return getEncoderValue() < RobotMap.ElevatorMap.L4ROTATION + 1;
+        return getEncoderValue() < RobotMap.ElevatorMap.L4ROTATION;
     }
 
     public boolean getElevatorAtBarge(){
-        return getEncoderValue() > RobotMap.ElevatorMap.BARGEROTATION-2;
+        return getEncoderValue() > RobotMap.ElevatorMap.BARGEROTATION-1;
     }
 
     public double getFLDistance(){

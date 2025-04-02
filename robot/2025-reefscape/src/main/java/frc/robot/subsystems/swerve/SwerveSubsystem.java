@@ -71,7 +71,7 @@ public class SwerveSubsystem extends SubsystemABS {
         tab.addNumber("Band/Robot X", ()-> drivetrain.getState().Pose.getX());
         tab.addNumber("Band/Robot Y", ()-> drivetrain.getState().Pose.getY());
 
-        tab.addBoolean("Robot Within Barge Range", ()-> Math.abs(DrivetrainConstants.drivetrain.getState().Pose.getX() - 8.775) <  1.15);
+        tab.addBoolean("Robot Within Barge Range", ()-> Math.abs(DrivetrainConstants.drivetrain.getState().Pose.getX() - 8.775) <  1.135 && Math.abs(DrivetrainConstants.drivetrain.getState().Pose.getX() - 8.775) > 1.04);
 
         if (Utils.isSimulation()) DrivetrainConstants.drivetrain.registerTelemetry(telemetry::telemeterize);
 

@@ -39,7 +39,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.2
+                        "waitTime": 0.1
                       }
                     }
                   ]
@@ -80,7 +80,7 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "deadline",
           "data": {
             "commands": [
               {
@@ -90,9 +90,22 @@
                 }
               },
               {
-                "type": "named",
+                "type": "sequential",
                 "data": {
-                  "name": "ElevatorDown"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "ElevatorDown"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Feed"
+                      }
+                    }
+                  ]
                 }
               }
             ]
@@ -109,22 +122,35 @@
                 }
               },
               {
+                "type": "named",
+                "data": {
+                  "name": "Feed"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
                 "type": "sequential",
                 "data": {
                   "commands": [
                     {
                       "type": "named",
                       "data": {
-                        "name": "Feed"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "L3Infinite"
+                        "name": "L4Fast"
                       }
                     }
                   ]
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "sourceTo66Right2"
                 }
               }
             ]
@@ -137,38 +163,26 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "sourceTo66Right2"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "L4Height"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "L4Fast"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
                   "pathName": "66RightToSource"
                 }
               },
               {
-                "type": "named",
+                "type": "sequential",
                 "data": {
-                  "name": "ElevatorDown"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "ElevatorDown"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Feed"
+                      }
+                    }
+                  ]
                 }
               }
             ]
@@ -185,22 +199,9 @@
                 }
               },
               {
-                "type": "sequential",
+                "type": "named",
                 "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Feed"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "L3Infinite"
-                      }
-                    }
-                  ]
+                  "name": "Feed"
                 }
               }
             ]
@@ -211,24 +212,18 @@
           "data": {
             "commands": [
               {
+                "type": "named",
+                "data": {
+                  "name": "L4Fast"
+                }
+              },
+              {
                 "type": "path",
                 "data": {
                   "pathName": "sourceTo66Left2"
                 }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "L4Height"
-                }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "L4"
           }
         }
       ]
