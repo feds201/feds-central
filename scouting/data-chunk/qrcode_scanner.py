@@ -1,3 +1,4 @@
+import io
 import sys
 import cv2
 import numpy as np
@@ -17,6 +18,12 @@ from PyQt5.QtWidgets import (QApplication, QMainWindow, QLabel, QVBoxLayout, QPu
 from PyQt5.QtGui import QImage, QPixmap, QColor, QPainter, QPen, QFont
 from PyQt5.QtCore import QTimer, Qt, QRect, pyqtSignal, QThread, QUrl, QBuffer, QIODevice
 from PyQt5.QtMultimedia import QSoundEffect
+from PIL import Image, ImageEnhance, ImageOps
+import subprocess  # For opening the folder
+import warnings  # To suppress warnings
+
+# Suppress zbar warnings
+warnings.filterwarnings("ignore", category=RuntimeWarning)
 
 # Replace the get_application_path function with these functions
 def get_application_path():
@@ -89,69 +96,58 @@ qr_detection_settings = {
 }
 
 class CameraThread(QThread):
-    frame_ready = pyqtSignal(np.ndarray)
-    
+    frame_ready = pyqtSignal(bytes)
+
     def __init__(self, camera_index=0):
         super().__init__()
         self.camera_index = camera_index
         self.running = False
-        self.frame_count = 0
-        self.skip_frames = 1  # Process every other frame by default
-        
+        self.capture = None
+
     def run(self):
-        self.capture = cv2.VideoCapture(self.camera_index)
-        self.capture.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
-        self.capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
-        self.capture.set(cv2.CAP_PROP_FPS, 15)  # Lower FPS to reduce CPU/memory usage
-        
+        import cv2  # Import locally to avoid unnecessary overhead when not running
+        self.capture = cv2.VideoCapture(self.camera_index, cv2.CAP_DSHOW)
+        self.capture.set(cv2.CAP_PROP_FRAME_WIDTH, 640)  # Lower resolution for faster processing
+        self.capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+        self.capture.set(cv2.CAP_PROP_FPS, 30)  # Higher FPS for smoother video
         self.running = True
+
         while self.running:
             ret, frame = self.capture.read()
             if ret:
-                self.frame_count += 1
-                # Only process every nth frame to reduce memory usage
-                if self.frame_count % self.skip_frames == 0:
-                    # Resize frame to reduce memory usage
-                    # Scale down by 50% for processing
-                    scaled_frame = cv2.resize(frame, (0, 0), fx=0.5, fy=0.5)
-                    self.frame_ready.emit(scaled_frame)
-                    
-                    # Explicitly delete the scaled frame to help memory management
-                    del scaled_frame
+                # Convert frame to bytes for lightweight processing
+                _, buffer = cv2.imencode('.jpg', frame)
+                self.frame_ready.emit(buffer.tobytes())
             else:
                 print(f"Error reading from camera {self.camera_index}")
                 break
-                
-            # Adaptive frame skipping based on available memory
-            if self.frame_count % 100 == 0:
-                memory_percent = psutil.virtual_memory().percent
-                if memory_percent > 80:  # High memory usage
-                    self.skip_frames = 4  # Skip more frames
-                elif memory_percent > 60:
-                    self.skip_frames = 2  # Skip some frames
-                else:
-                    self.skip_frames = 1  # Process all frames
-                
-            time.sleep(0.01)  # Short delay to reduce CPU usage
-            
+
         self.capture.release()
-        
+
     def stop(self):
         self.running = False
         self.wait()
-        # Explicitly delete capture object
-        if hasattr(self, 'capture'):
-            del self.capture
+        if self.capture:
+            self.capture.release()
+            self.capture = None
 
 class QRCodeScannerApp(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Scout Ops QR Scanner")
         self.setGeometry(100, 100, 1280, 720)
-        
-        # Setup sounds for feedback
-        self.setup_sounds()
-        
+
+        # Apply a lightweight stylesheet
+        self.setStyleSheet("""
+            QMainWindow { background-color: #f5f5f5; }
+            QLabel { font-family: 'Segoe UI', sans-serif; font-size: 14px; }
+            QPushButton { background-color: #0078d4; color: white; border-radius: 5px; padding: 10px 20px; }
+            QPushButton:hover { background-color: #005a9e; }
+            QGroupBox { font-family: 'Segoe UI', sans-serif; font-size: 16px; font-weight: bold; border: 1px solid #dcdcdc; border-radius: 8px; margin-top: 10px; padding: 10px; }
+            QFrame { background-color: white; border-radius: 8px; padding: 10px; }
+            QVBoxLayout, QHBoxLayout { spacing: 15px; margin: 15px; }
+        """)
+
         # Memory management
         self.memory_monitor_timer = QTimer()
         self.memory_monitor_timer.timeout.connect(self.check_memory_usage)
@@ -179,6 +175,10 @@ class QRCodeScannerApp(QMainWindow):
         self.left_panel = QWidget()
         self.left_layout = QVBoxLayout(self.left_panel)
         
+        # Add spacious margins to the left panel
+        self.left_layout.setContentsMargins(20, 20, 20, 20)
+        self.left_layout.setSpacing(20)
+
         # Tablet status group
         self.tablet_status_group = QGroupBox("Tablet Status")
         self.tablet_status_layout = QGridLayout()
@@ -199,7 +199,7 @@ class QRCodeScannerApp(QMainWindow):
             tablet_key = f"Red {i+1}"
             status_frame = QFrame()
             status_frame.setFrameShape(QFrame.StyledPanel)
-            status_frame.setStyleSheet("background-color: white; border-radius: 5px;")
+            status_frame.setStyleSheet("background-color: white; border-radius: 5px; padding: 5px;")
             
             status_layout = QHBoxLayout(status_frame)
             tablet_label = QLabel(f"Tablet {i+1}:")
@@ -224,7 +224,7 @@ class QRCodeScannerApp(QMainWindow):
             tablet_key = f"Blue {i+1}"
             status_frame = QFrame()
             status_frame.setFrameShape(QFrame.StyledPanel)
-            status_frame.setStyleSheet("background-color: white; border-radius: 5px;")
+            status_frame.setStyleSheet("background-color: white; border-radius: 5px; padding: 5px;")
             
             status_layout = QHBoxLayout(status_frame)
             tablet_label = QLabel(f"Tablet {i+1}:")
@@ -271,10 +271,10 @@ class QRCodeScannerApp(QMainWindow):
         self.settings_layout.addLayout(brightness_layout)
         
         self.left_layout.addWidget(self.settings_group)
-        
+
         # Add left panel to main layout
         self.main_layout.addWidget(self.left_panel, 1)
-        
+
         # Center panel (video)
         self.center_panel = QWidget()
         self.center_layout = QVBoxLayout(self.center_panel)
@@ -296,6 +296,11 @@ class QRCodeScannerApp(QMainWindow):
         self.video_label = QLabel("Camera feed will appear here")
         self.video_label.setAlignment(Qt.AlignCenter)
         self.video_label.setMinimumSize(640, 480)
+        self.video_label.setStyleSheet("""
+            background-color: #e0e0e0;
+            border: 1px solid #dcdcdc;
+            border-radius: 8px;
+        """)
         self.center_layout.addWidget(self.video_label)
         
         # Key shortcuts info
@@ -314,6 +319,10 @@ class QRCodeScannerApp(QMainWindow):
         self.right_panel = QWidget()
         self.right_layout = QVBoxLayout(self.right_panel)
         
+        # Add spacious margins to the right panel
+        self.right_layout.setContentsMargins(20, 20, 20, 20)
+        self.right_layout.setSpacing(20)
+
         # Match info group
         self.match_info_group = QGroupBox("Match Info")
         self.match_info_layout = QVBoxLayout()
@@ -334,6 +343,11 @@ class QRCodeScannerApp(QMainWindow):
         
         self.progress_label = QLabel("0% Complete")
         self.progress_label.setAlignment(Qt.AlignCenter)
+        self.progress_label.setStyleSheet("""
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 14px;
+            color: #0078d4;
+        """)
         self.match_info_layout.addWidget(self.progress_label)
         
         self.tablets_count_label = QLabel("0/6 Tablets Scanned")
@@ -359,7 +373,7 @@ class QRCodeScannerApp(QMainWindow):
         self.camera_group = QGroupBox("Camera Controls")
         self.camera_layout = QVBoxLayout()
         self.camera_group.setLayout(self.camera_layout)
-        
+
         # Camera selector
         camera_select_layout = QHBoxLayout()
         camera_select_layout.addWidget(QLabel("Camera:"))
@@ -369,34 +383,44 @@ class QRCodeScannerApp(QMainWindow):
         self.camera_combo.currentIndexChanged.connect(self.switch_camera)
         camera_select_layout.addWidget(self.camera_combo)
         self.camera_layout.addLayout(camera_select_layout)
-        
+
         # Camera buttons
         button_layout = QHBoxLayout()
-        
+
         self.start_button = QPushButton("Start Camera")
         self.start_button.clicked.connect(self.start_camera)
         button_layout.addWidget(self.start_button)
-        
+
         self.stop_button = QPushButton("Stop Camera")
         self.stop_button.clicked.connect(self.stop_camera)
         self.stop_button.setEnabled(False)
         button_layout.addWidget(self.stop_button)
-        
+
         self.camera_layout.addLayout(button_layout)
-        
+
         # Fullscreen button
         self.fullscreen_button = QPushButton("Toggle Fullscreen")
         self.fullscreen_button.clicked.connect(self.toggle_fullscreen)
         self.camera_layout.addWidget(self.fullscreen_button)
-        
+
         # Save data button
         self.save_button = QPushButton("Save QR Data")
         self.save_button.clicked.connect(self.manual_save_qr_data)
         self.save_button.setEnabled(False)
         self.camera_layout.addWidget(self.save_button)
-        
+
+        # Add "Check CSV Data" button to the right panel
+        self.check_csv_button = QPushButton("Check CSV Data")
+        self.check_csv_button.clicked.connect(self.check_csv_data)
+        self.right_layout.addWidget(self.check_csv_button)
+
+        # Add "Open Save Folder" button to the right panel
+        self.open_folder_button = QPushButton("Open Save Folder")
+        self.open_folder_button.clicked.connect(self.open_save_folder)
+        self.right_layout.addWidget(self.open_folder_button)
+
         self.right_layout.addWidget(self.camera_group)
-        
+
         # Add right panel to main layout
         self.main_layout.addWidget(self.right_panel, 1)
         
@@ -624,255 +648,74 @@ class QRCodeScannerApp(QMainWindow):
             self.log_labels[i].setText("")
     
     def find_potential_qr_regions(self, frame):
-        """Find bright rectangular regions that might contain QR codes"""
-        # Convert to grayscale - reuse frame to save memory
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        
-        # Apply slight blur to reduce noise
-        blurred = cv2.GaussianBlur(gray, (5, 5), 0)
-        
-        # Threshold the image to find bright areas
-        _, thresh = cv2.threshold(blurred, qr_detection_settings["brightness_threshold"], 
-                                255, cv2.THRESH_BINARY)
-        
-        # Find contours in the thresholded image
-        contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        
-        potential_regions = []
-        
-        # Only process larger contours to improve performance
-        for contour in contours:
-            area = cv2.contourArea(contour)
-            if area < 100:  # Ignore very small contours
-                continue
-            
-            # Approximate the contour
-            peri = cv2.arcLength(contour, True)
-            approx = cv2.approxPolyDP(contour, 0.04 * peri, True)
-            
-            # Check if it's a rectangle (4 points) or has 4-7 points (close to rectangular)
-            if 4 <= len(approx) <= 7:
-                x, y, w, h = cv2.boundingRect(approx)
-                
-                # Verify size constraints
-                min_size = qr_detection_settings["min_rect_size"]
-                max_size = qr_detection_settings["max_rect_size"]
-                if min_size <= w <= max_size and min_size <= h <= max_size:
-                    
-                    # Check aspect ratio
-                    aspect_ratio = max(w / h, h / w)
-                    if aspect_ratio <= qr_detection_settings["rect_aspect_ratio"]:
-                        # Calculate average brightness of the region
-                        roi = gray[y:y+h, x:x+w]
-                        if roi.size > 0:  # Ensure ROI is not empty
-                            avg_brightness = np.mean(roi)
-                            
-                            # Add to potential regions if it's bright enough
-                            if avg_brightness > qr_detection_settings["brightness_threshold"]:
-                                potential_regions.append({
-                                    'rect': (x, y, w, h),
-                                    'brightness': avg_brightness
-                                })
-        
-        # Sort by brightness (descending) but limit number of regions
-        potential_regions.sort(key=lambda x: x['brightness'], reverse=True)
-        
-        # Release memory explicitly
-        del gray
-        del blurred
-        del thresh
-        
-        # Return only top regions to save memory
-        return potential_regions[:5]
+        """Find bright rectangular regions that might contain QR codes."""
+        # Remove all filtering logic to keep the camera feed unfiltered
+        return []
 
-    def draw_potential_qr_regions(self, frame, regions):
-        """Draw highlights around potential QR code regions"""
-        for region in regions:
-            x, y, w, h = region['rect']
-            # Draw rectangle with dashed lines
-            cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 255), 2)
-            
-            # Add text indicating potential QR code
-            cv2.putText(frame, "Potential QR", (x, y - 10),
-                       cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 1)
-    
-    def scan_region_for_qr(self, frame, rect):
-        """Scan a specific region for QR codes"""
-        x, y, w, h = rect
-        
-        # Extract region with a bit of margin
-        margin = 10
-        x_start = max(0, x - margin)
-        y_start = max(0, y - margin)
-        x_end = min(frame.shape[1], x + w + margin)
-        y_end = min(frame.shape[0], y + h + margin)
-        
-        region = frame[y_start:y_end, x_start:x_end]
-        
-        # Try to detect QR codes in the region
+    def process_frame(self, frame_bytes):
+        """Process a frame from the camera."""
         try:
-            codes = decode(region)
-            
-            # If codes were found, adjust coordinates to original frame
-            adjusted_codes = []
-            for code in codes:
-                # Adjust the polygon points
-                adjusted_polygon = []
-                for point in code.polygon:
-                    adjusted_point = (point[0] + x_start, point[1] + y_start)
-                    adjusted_polygon.append(adjusted_point)
-                
-                # Adjust the rect
-                adjusted_rect = (code.rect[0] + x_start, code.rect[1] + y_start, code.rect[2], code.rect[3])
-                
-                # Create a new "code-like" object with adjusted coordinates
-                adjusted_code = type('AdjustedCode', (), {
-                    'data': code.data,
-                    'type': code.type,
-                    'polygon': adjusted_polygon,
-                    'rect': adjusted_rect
-                })
-                
-                adjusted_codes.append(adjusted_code)
-            
-            return adjusted_codes
-        except Exception as e:
-            print(f"Error scanning region: {e}")
-            return []
-    
-    def process_frame(self, frame):
-        """Process a frame from the camera thread"""
-        if frame is None:
-            return
-        
-        try:
-            # Make a copy of the frame for drawing
-            display_frame = frame.copy()
-            
-            # Only search for QR codes every few frames to reduce CPU usage
-            current_time = time.time()
-            elapsed_since_scan = current_time - self.last_scan_time
-            
-            # Adaptive QR scanning based on time since last scan
-            should_scan = elapsed_since_scan > 0.5  # Scan at most twice per second
-            
-            if should_scan:
-                # Find potential QR code regions
-                potential_regions = self.find_potential_qr_regions(frame)
-                
-                # Highlight potential regions if enabled
-                if qr_detection_settings["highlight_potential"]:
-                    self.draw_potential_qr_regions(display_frame, potential_regions)
-                
-                detected_codes = []
-                
-                # If smart focusing is enabled, scan each potential region
-                if qr_detection_settings["focus_enabled"] and potential_regions:
-                    # Limit to top 3 regions for better performance
-                    for region in potential_regions[:3]:
-                        region_codes = self.scan_region_for_qr(frame, region['rect'])
-                        detected_codes.extend(region_codes)
-                else:
-                    # Fall back to scanning entire frame
-                    detected_codes = decode(frame)
-                
-                # Process detected QR codes
-                self.process_detected_codes(display_frame, detected_codes)
-            
-            # Convert the OpenCV frame to QImage - use more efficient conversion
-            height, width, _ = display_frame.shape
-            bytes_per_line = 3 * width
-            q_img = QImage(display_frame.data, width, height, bytes_per_line, QImage.Format_RGB888).rgbSwapped()
-            
-            # Scale pixmap to fit - avoid creating multiple intermediate pixmaps
-            pixmap = QPixmap.fromImage(q_img)
-            self.video_label.setPixmap(pixmap.scaled(
-                self.video_label.width(), self.video_label.height(),
-                Qt.KeepAspectRatio, Qt.FastTransformation  # Use FastTransformation for better performance
-            ))
-            
-            # Explicitly delete objects to help garbage collection
-            del display_frame
-            del q_img
-            del pixmap
-            
+            # Convert bytes to PIL Image
+            pil_image = Image.open(io.BytesIO(frame_bytes)).convert("RGB")
+
+            # Decode QR codes using pyzbar directly on the PIL image
+            detected_codes = decode(pil_image)
+
+            # Prepare the image for display (convert to QImage)
+            q_img = QImage(pil_image.tobytes(), pil_image.width, pil_image.height, QImage.Format_RGB888)
+
+            # Process detected QR codes
+            for code in detected_codes:
+                qr_data = code.data.decode('utf-8')
+
+                # Check for duplicates
+                if qr_data in self.scanned_data_history:
+                    # Play duplicate sound
+                    if hasattr(self, 'duplicate_sound') and self.duplicate_sound is not None:
+                        self.duplicate_sound.play()
+                    self.add_status_message(f"QR code already scanned: {qr_data[:30]}...", "warning")
+                    continue
+
+                # Add to scanned history
+                self.scanned_data_history.add(qr_data)
+
+                # Identify the tablet and update status
+                tablet_id = self.identify_tablet(qr_data)
+                if tablet_id and tablet_id in scanned_tablets:
+                    scanned_tablets[tablet_id] = True
+                    self.update_tablet_status()
+
+                # Save the QR data
+                self.save_qr_data(qr_data, tablet_id)
+
+                # Add status message
+                self.add_status_message(f"Scanned data from {tablet_id or 'Unknown'}", "success")
+
+                # Play success sound
+                if hasattr(self, 'success_sound') and self.success_sound is not None:
+                    self.success_sound.play()
+
+                print(f"Scanned QR Code: {qr_data[:30]}...")
+
+            # Update the video label with the unfiltered image
+            self.video_label.setPixmap(QPixmap.fromImage(q_img))
+
         except Exception as e:
             print(f"Error processing frame: {e}")
             import traceback
             traceback.print_exc()
-    
-    def process_detected_codes(self, display_frame, detected_codes):
-        """Process detected QR codes - separated to improve code organization"""
-        for code in detected_codes:
-            # Get QR code data
-            qr_data = code.data.decode('utf-8')
-            
-            # Store QR data for manual saving
-            self.qr_data = qr_data
-            
-            # Identify which tablet the data came from
-            tablet_id = self.identify_tablet(qr_data)
-            
-            # Draw rectangle and text
-            points = code.polygon
-            if len(points) > 4:
-                hull = cv2.convexHull(np.array([point for point in points], dtype=np.float32))
-                hull = np.int0(hull)
-                
-                # Use different color if already scanned
-                color = (220, 53, 69) if qr_data in self.scanned_data_history else (46, 160, 67)
-                cv2.polylines(display_frame, [hull], True, color, 3)
-            else:
-                pts = np.array([point for point in points], dtype=np.int32)
-                
-                # Use different color if already scanned
-                color = (220, 53, 69) if qr_data in self.scanned_data_history else (46, 160, 67)
-                cv2.polylines(display_frame, [pts], True, color, 3)
-            
-            # Process and save data with cooldown to avoid duplicates
-            current_time = time.time()
-            if current_time - self.last_scan_time > 2 and qr_data not in self.scanned_data_history:
-                self.last_scan_time = current_time
-                
-                # Save the data and update tablet tracking
-                self.save_qr_data(qr_data, tablet_id)
-                
-                # Add to scanned history
-                self.scanned_data_history.add(qr_data)
-                
-                # Play success sound
-                if hasattr(self, 'success_sound') and self.success_sound is not None:
-                    self.success_sound.play()
-                    print("Playing success sound (woof.wav)")
-                
-                # Add status message
-                if tablet_id:
-                    self.add_status_message(f"Scanned data from {tablet_id}", "success")
-                else:
-                    self.add_status_message(f"Scanned data from unknown tablet", "warning")
-                
-                # Print data for verification - only print part to save memory
-                print(f"QR Code Data from {tablet_id if tablet_id else 'Unknown'}: {qr_data[:30]}...")
-            elif qr_data in self.scanned_data_history:
-                # Already scanned message
-                if current_time - self.last_scan_time > 2:
-                    # Play duplicate sound
-                    if hasattr(self, 'duplicate_sound') and self.duplicate_sound is not None:
-                        self.duplicate_sound.play()
-                        print("Playing duplicate sound (qqq.wav)")
-                    
-                    self.add_status_message(f"QR code already scanned", "warning")
-                    self.last_scan_time = current_time
-    
+
     def identify_tablet(self, csv_data):
         """Identify which tablet the data came from based on CSV values"""
         try:
+            print("Heelo")
             parts = csv_data.split(',')
             if len(parts) < 6:
                 return None
                 
             alliance_color = parts[3]  # allianceColor (Red/Blue)
             station = parts[5]        # station (1,2,3)
+
             
             if alliance_color and station:
                 return f"{alliance_color} {station}"
@@ -891,10 +734,27 @@ class QRCodeScannerApp(QMainWindow):
         except:
             return None
     
+    def sanitize_csv_data(self, data):
+        """Sanitize CSV data to handle commas in string fields."""
+        print("Sanitizing CSV data...")
+        print(data)
+        sanitized_data = []
+        for field, value in zip(CSV_HEADER.split(','), data.split(',')):
+            if field == "endgame_Comments":
+                # Replace commas in the endgame_Comments field with a pipe (|) or another character
+                value = value.replace(',', '|')
+                print(value)
+            sanitized_data.append(value)
+            print(sanitized_data)
+        return ','.join(sanitized_data)
+
     def save_qr_data(self, data, tablet_id=None):
-        """Save the QR code data to a file and update tracking"""
+        """Save the QR code data to a file and update tracking."""
         global scanned_tablets
-        
+
+        # Sanitize the data to handle commas in string fields
+        data = self.sanitize_csv_data(data)
+
         # Remove quotes if present
         data = data.strip('"\'')
         
@@ -946,26 +806,29 @@ class QRCodeScannerApp(QMainWindow):
         self.add_status_message(f"Manually saved QR data to {os.path.basename(filepath)}", "success")
     
     def append_to_results_csv(self, data):
-        """Append data to the combined results CSV file"""
+        """Append data to the combined results CSV file."""
         try:
+            # Sanitize the data to handle commas in string fields
+            data = self.sanitize_csv_data(data)
+
             # Check if file exists to determine if we need to write headers
             file_exists = os.path.isfile(RESULTS_CSV)
-            
+
             # Convert the data string to a list of values
             data_values = data.split(',')
-            
+
             # Open the file in append mode
             with open(RESULTS_CSV, 'a', newline='') as csvfile:
                 writer = csv.writer(csvfile)
-                
+
                 # Write header if file is new
                 if not file_exists:
                     header = CSV_HEADER.split(',')
                     writer.writerow(header)
-                
+
                 # Write the data row
                 writer.writerow(data_values)
-            
+
             print(f"Data appended to {RESULTS_CSV}")
         except Exception as e:
             error_msg = f"Error appending to results CSV: {str(e)}"
@@ -1014,6 +877,40 @@ class QRCodeScannerApp(QMainWindow):
             print(f"Error validating QR data: {e}")
             return False
     
+    def check_csv_data(self):
+        """Check if the CSV file has all required headers and fix missing values."""
+        try:
+            if not os.path.exists(RESULTS_CSV):
+                self.add_status_message("CSV file does not exist.", "error")
+                return
+
+            # Read the CSV file
+            with open(RESULTS_CSV, 'r', newline='') as csvfile:
+                reader = csv.DictReader(csvfile)
+                rows = list(reader)
+
+                # Check for missing headers
+                missing_headers = [header for header in CSV_HEADER.split(',') if header not in reader.fieldnames]
+                if missing_headers:
+                    self.add_status_message(f"Missing headers: {', '.join(missing_headers)}. Fixing...", "warning")
+
+                # Fix rows with missing headers
+                fixed_rows = []
+                for row in rows:
+                    fixed_row = {header: row.get(header, "null") for header in CSV_HEADER.split(',')}
+                    fixed_rows.append(fixed_row)
+
+            # Write the fixed rows back to the CSV file
+            with open(RESULTS_CSV, 'w', newline='') as csvfile:
+                writer = csv.DictWriter(csvfile, fieldnames=CSV_HEADER.split(','))
+                writer.writeheader()
+                writer.writerows(fixed_rows)
+
+            self.add_status_message("CSV data checked and fixed successfully.", "success")
+        except Exception as e:
+            self.add_status_message(f"Error checking CSV data: {e}", "error")
+            print(f"Error checking CSV data: {e}")
+
     def check_memory_usage(self):
         """Monitor and manage memory usage"""
         current_memory = psutil.Process(os.getpid()).memory_info().rss / 1024 / 1024  # MB
@@ -1066,35 +963,42 @@ class QRCodeScannerApp(QMainWindow):
         try:
             # Get app directory for sound files
             app_dir = get_application_path()
-            
-            # Success sound - try both the app directory and working directory
+
+            # Success sound
             self.success_sound = QSoundEffect()
-            sound_path = os.path.join(app_dir, "woof.wav")
-            if not os.path.exists(sound_path):
-                sound_path = "woof.wav"  # Try relative path as fallback
-            
-            self.success_sound.setSource(QUrl.fromLocalFile(os.path.abspath(sound_path)))
+            success_path = os.path.join(app_dir, "woof.wav")
+            if not os.path.exists(success_path):
+                success_path = "woof.wav"  # Fallback to relative path
+            self.success_sound.setSource(QUrl.fromLocalFile(os.path.abspath(success_path)))
             self.success_sound.setLoopCount(1)
             self.success_sound.setVolume(0.5)
-            print(f"Success sound path: {os.path.abspath(sound_path)}")
-            
+
             # Duplicate sound
             self.duplicate_sound = QSoundEffect()
-            sound_path = os.path.join(app_dir, "qqq.wav")
-            if not os.path.exists(sound_path):
-                sound_path = "qqq.wav"  # Try relative path as fallback
-                
-            self.duplicate_sound.setSource(QUrl.fromLocalFile(os.path.abspath(sound_path)))
+            duplicate_path = os.path.join(app_dir, "qqq.wav")
+            if not os.path.exists(duplicate_path):
+                duplicate_path = "qqq.wav"  # Fallback to relative path
+            self.duplicate_sound.setSource(QUrl.fromLocalFile(os.path.abspath(duplicate_path)))
             self.duplicate_sound.setLoopCount(1)
             self.duplicate_sound.setVolume(0.5)
-            print(f"Duplicate sound path: {os.path.abspath(sound_path)}")
-            
+
             print("Sound files loaded successfully")
         except Exception as e:
             print(f"Error setting up sounds: {e}")
-            # Fallback to no sounds
             self.success_sound = None
             self.duplicate_sound = None
+
+    def open_save_folder(self):
+        """Open the folder where all files are saved."""
+        try:
+            if platform.system() == "Windows":
+                os.startfile(SAVE_DIR)
+            elif platform.system() == "Darwin":  # macOS
+                subprocess.Popen(["open", SAVE_DIR])
+            else:  # Linux
+                subprocess.Popen(["xdg-open", SAVE_DIR])
+        except Exception as e:
+            self.add_status_message(f"Error opening folder: {e}", "error")
 
 # Custom QFrame for progress bar
 class ProgressFrame(QFrame):

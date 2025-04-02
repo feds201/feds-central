@@ -632,7 +632,10 @@ class ScoutingApp(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("FEDS Scouting Suite")
-        self.resize(900, 700)
+        self.resize(1000, 800)
+        
+        # Set application style
+        self.apply_stylesheet()
         
         # Initialize clients
         self.tba_client = BlueAllianceClient()
@@ -644,9 +647,25 @@ class ScoutingApp(QMainWindow):
         self.setCentralWidget(self.central_widget)
         
         self.main_layout = QVBoxLayout(self.central_widget)
+        self.main_layout.setContentsMargins(20, 20, 20, 20)
+        self.main_layout.setSpacing(15)
+        
+        # Add header
+        self.create_header()
         
         # Create tab widget
         self.tab_widget = QTabWidget()
+        self.tab_widget.setStyleSheet("""
+            QTabBar::tab {
+                padding: 8px 16px;
+                font-size: 14px;
+                font-weight: bold;
+            }
+            QTabBar::tab:selected {
+                background-color: #1976D2;
+                color: white;
+            }
+        """)
         self.main_layout.addWidget(self.tab_widget)
         
         # Create tabs
@@ -660,155 +679,379 @@ class ScoutingApp(QMainWindow):
         self.init_tba_tab()
         self.init_stats_tab()
         
+        # Add footer
+        self.create_footer()
+        
         # Load saved settings
         self.load_saved_settings()
+
+    def create_header(self):
+        """Create a header for the app with logo and title."""
+        header_frame = QFrame()
+        header_frame.setFrameShape(QFrame.StyledPanel)
+        header_frame.setStyleSheet("background-color: #1976D2; color: white; border-radius: 10px;")
+        
+        header_layout = QHBoxLayout(header_frame)
+        
+        # App title
+        title_label = QLabel("FEDS Scouting Suite")
+        title_label.setFont(QFont('Segoe UI', 24, QFont.Bold))
+        title_label.setStyleSheet("color: white; padding: 10px;")
+        
+        # Subtitle
+        subtitle_label = QLabel("Advanced FRC Scouting and Analysis")
+        subtitle_label.setFont(QFont('Segoe UI', 12))
+        subtitle_label.setStyleSheet("color: rgba(255, 255, 255, 0.8);")
+        
+        # Stack title and subtitle
+        title_layout = QVBoxLayout()
+        title_layout.addWidget(title_label)
+        title_layout.addWidget(subtitle_label)
+        
+        header_layout.addLayout(title_layout)
+        header_layout.addStretch()
+        
+        self.main_layout.addWidget(header_frame)
+
+    def create_footer(self):
+        """Create a footer with credits and version info."""
+        footer_frame = QFrame()
+        footer_frame.setStyleSheet("color: #555; font-size: 12px; padding: 5px;")
+        
+        footer_layout = QHBoxLayout(footer_frame)
+        footer_layout.addWidget(QLabel("FEDS Scouting Suite v1.0"))
+        footer_layout.addStretch()
+        footer_layout.addWidget(QLabel("© 2023 FEDS Robotics"))
+        
+        self.main_layout.addWidget(footer_frame)
+
+    def apply_stylesheet(self):
+        """Apply a stylesheet to the entire application."""
+        self.setStyleSheet("""
+            QMainWindow, QWidget {
+                background-color: #f5f5f5;
+                color: #333333;
+                font-family: 'Segoe UI', 'Arial', sans-serif;
+            }
+            
+            QLabel {
+                font-size: 13px;
+            }
+            
+            QLineEdit, QComboBox {
+                padding: 8px;
+                background-color: white;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                font-size: 13px;
+                min-height: 20px;
+            }
+            
+            QPushButton {
+                background-color: #1976D2;
+                color: white;
+                padding: 8px 15px;
+                border: none;
+                border-radius: 4px;
+                font-size: 13px;
+                font-weight: bold;
+                min-height: 30px;
+            }
+            
+            QPushButton:hover {
+                background-color: #1565C0;
+            }
+            
+            QPushButton:pressed {
+                background-color: #0D47A1;
+            }
+            
+            QProgressBar {
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                text-align: center;
+                min-height: 20px;
+            }
+            
+            QProgressBar::chunk {
+                background-color: #4CAF50;
+                border-radius: 3px;
+            }
+            
+            QFrame {
+                border-radius: 8px;
+                padding: 5px;
+            }
+            
+            QTabWidget::pane {
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                padding: 5px;
+            }
+            
+            QCheckBox {
+                font-size: 13px;
+                spacing: 8px;
+            }
+            
+            QGroupBox {
+                font-weight: bold;
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                margin-top: 15px;
+                padding-top: 15px;
+            }
+            
+            QGroupBox::title {
+                subcontrol-origin: margin;
+                subcontrol-position: top center;
+                padding: 0 10px;
+            }
+        """)
 
     def init_tba_tab(self):
         """Initialize the Blue Alliance tab."""
         layout = QVBoxLayout(self.tba_tab)
+        layout.setContentsMargins(15, 15, 15, 15)
+        layout.setSpacing(15)
         
         # Title
         title_label = QLabel("Blue Alliance Data Converter")
         title_label.setFont(QFont('Segoe UI', 16, QFont.Bold))
+        title_label.setStyleSheet("color: #1976D2;")
         layout.addWidget(title_label)
+        
+        # Description
+        desc_label = QLabel("Import and convert data from The Blue Alliance API")
+        desc_label.setStyleSheet("color: #555; margin-bottom: 15px;")
+        layout.addWidget(desc_label)
+        
+        # Input Section Group
+        input_group = QGroupBox("Configuration")
+        input_layout = QVBoxLayout(input_group)
+        input_layout.setSpacing(15)
         
         # API Key frame
         api_frame = QHBoxLayout()
         api_label = QLabel("TBA API Key:")
+        api_label.setMinimumWidth(120)
         self.tba_api_key_entry = QLineEdit()
+        self.tba_api_key_entry.setPlaceholderText("Enter your TBA API key")
         api_frame.addWidget(api_label)
         api_frame.addWidget(self.tba_api_key_entry)
-        layout.addLayout(api_frame)
+        input_layout.addLayout(api_frame)
         
         # Event key frame
         event_frame = QHBoxLayout()
         event_label = QLabel("Event Key:")
+        event_label.setMinimumWidth(120)
         self.tba_event_key_entry = QLineEdit()
-        event_help = QLabel("(e.g., 2023miliv)")
+        self.tba_event_key_entry.setPlaceholderText("e.g., 2023miliv")
+        event_help = QLabel("Format: [year][event code]")
+        event_help.setStyleSheet("color: #777;")
         event_frame.addWidget(event_label)
         event_frame.addWidget(self.tba_event_key_entry)
         event_frame.addWidget(event_help)
-        layout.addLayout(event_frame)
+        input_layout.addLayout(event_frame)
         
         # Output directory frame
         output_frame = QHBoxLayout()
         output_label = QLabel("Output Directory:")
+        output_label.setMinimumWidth(120)
         self.tba_output_dir_entry = QLineEdit(os.path.join(os.path.dirname(__file__), "tba_data"))
         browse_button = QPushButton("Browse")
+        browse_button.setFixedWidth(100)
         browse_button.clicked.connect(self.tba_browse_directory)
         output_frame.addWidget(output_label)
         output_frame.addWidget(self.tba_output_dir_entry)
         output_frame.addWidget(browse_button)
-        layout.addLayout(output_frame)
+        input_layout.addLayout(output_frame)
         
         # Update existing data option
         self.tba_update_existing = QCheckBox("Update existing files (don't create new folder)")
         self.tba_update_existing.setChecked(True)
-        layout.addWidget(self.tba_update_existing)
+        input_layout.addWidget(self.tba_update_existing)
+        
+        layout.addWidget(input_group)
+        
+        # Action Section
+        action_group = QGroupBox("Actions")
+        action_layout = QVBoxLayout(action_group)
         
         # Fetch button
         fetch_button = QPushButton("Fetch and Convert TBA Data")
+        fetch_button.setMinimumHeight(40)
         fetch_button.clicked.connect(self.tba_fetch_and_convert)
-        layout.addWidget(fetch_button)
+        action_layout.addWidget(fetch_button)
+        
+        # Status section
+        status_layout = QVBoxLayout()
         
         # Status label
         self.tba_status_label = QLabel()
-        self.tba_status_label.setStyleSheet("color: blue;")
-        layout.addWidget(self.tba_status_label)
+        self.tba_status_label.setStyleSheet("color: #1976D2; font-weight: bold;")
+        status_layout.addWidget(self.tba_status_label)
         
         # Progress bar
         self.tba_progress = QProgressBar()
         self.tba_progress.setRange(0, 100)
-        layout.addWidget(self.tba_progress)
+        self.tba_progress.setTextVisible(True)
+        status_layout.addWidget(self.tba_progress)
+        
+        action_layout.addLayout(status_layout)
+        layout.addWidget(action_group)
         
         # Results frame
-        self.tba_results_frame = QFrame()
-        self.tba_results_frame.setFrameShape(QFrame.StyledPanel)
-        self.tba_results_layout = QVBoxLayout(self.tba_results_frame)
-        layout.addWidget(self.tba_results_frame)
+        results_group = QGroupBox("Results")
+        self.tba_results_layout = QVBoxLayout(results_group)
+        self.tba_results_layout.setAlignment(Qt.AlignTop)
+        layout.addWidget(results_group)
+        
+        # Add stretch to push everything to the top
+        layout.addStretch()
 
     def init_stats_tab(self):
         """Initialize the Statistics tab."""
         layout = QVBoxLayout(self.stats_tab)
+        layout.setContentsMargins(15, 15, 15, 15)
+        layout.setSpacing(15)
         
         # Title
-        title_label = QLabel("Combined Match Statistics")
+        title_label = QLabel("Match and Team Statistics")
         title_label.setFont(QFont('Segoe UI', 16, QFont.Bold))
+        title_label.setStyleSheet("color: #1976D2;")
         layout.addWidget(title_label)
+        
+        # Description
+        desc_label = QLabel("Generate detailed match predictions and team insights")
+        desc_label.setStyleSheet("color: #555; margin-bottom: 15px;")
+        layout.addWidget(desc_label)
+        
+        # Configuration Group
+        config_group = QGroupBox("Configuration")
+        config_layout = QVBoxLayout(config_group)
+        config_layout.setSpacing(15)
         
         # Event key frame
         event_frame = QHBoxLayout()
         event_label = QLabel("Event Key:")
+        event_label.setMinimumWidth(120)
         self.stats_event_key_entry = QLineEdit()
-        event_help = QLabel("(e.g., 2025miket)")
+        self.stats_event_key_entry.setPlaceholderText("e.g., 2025miket")
+        event_help = QLabel("Format: [year][event code]")
+        event_help.setStyleSheet("color: #777;")
         event_frame.addWidget(event_label)
         event_frame.addWidget(self.stats_event_key_entry)
         event_frame.addWidget(event_help)
-        layout.addLayout(event_frame)
+        config_layout.addLayout(event_frame)
+        
+        # Match section (put in a frame to visually separate)
+        match_section = QFrame()
+        match_section.setStyleSheet("background-color: rgba(240, 240, 240, 0.5); border-radius: 5px;")
+        match_layout = QVBoxLayout(match_section)
+        
+        match_label = QLabel("Match Details:")
+        match_label.setFont(QFont('Segoe UI', 11, QFont.Bold))
+        match_layout.addWidget(match_label)
         
         # Match key frame
         match_frame = QHBoxLayout()
-        match_label = QLabel("Match Number:")
+        match_number_label = QLabel("Match Number:")
+        match_number_label.setMinimumWidth(120)
         self.stats_match_number_entry = QLineEdit()
-        match_help = QLabel("(e.g., qm1, sf2m3)")
-        match_frame.addWidget(match_label)
+        self.stats_match_number_entry.setPlaceholderText("e.g., 1, 2, 3")
+        match_help = QLabel("Number only")
+        match_help.setStyleSheet("color: #777;")
+        match_frame.addWidget(match_number_label)
         match_frame.addWidget(self.stats_match_number_entry)
         match_frame.addWidget(match_help)
-        layout.addLayout(match_frame)
+        match_layout.addLayout(match_frame)
         
         # Match type frame
         match_type_frame = QHBoxLayout()
         match_type_label = QLabel("Match Type:")
+        match_type_label.setMinimumWidth(120)
         self.stats_match_type_combo = QComboBox()
         self.stats_match_type_combo.addItems(["qm", "sf", "f", "qf"])
+        for i, text in enumerate(["Qualification", "Semifinal", "Final", "Quarterfinal"]):
+            self.stats_match_type_combo.setItemData(i, text, Qt.ToolTipRole)
         match_type_frame.addWidget(match_type_label)
         match_type_frame.addWidget(self.stats_match_type_combo)
-        layout.addLayout(match_type_frame)
+        match_type_frame.addStretch()
+        match_layout.addLayout(match_type_frame)
+        
+        config_layout.addWidget(match_section)
         
         # Output directory frame
         output_frame = QHBoxLayout()
         output_label = QLabel("Output Directory:")
+        output_label.setMinimumWidth(120)
         self.stats_output_dir_entry = QLineEdit(os.path.join(os.path.dirname(__file__), "match_stats"))
         browse_button = QPushButton("Browse")
+        browse_button.setFixedWidth(100)
         browse_button.clicked.connect(self.stats_browse_directory)
         output_frame.addWidget(output_label)
         output_frame.addWidget(self.stats_output_dir_entry)
         output_frame.addWidget(browse_button)
-        layout.addLayout(output_frame)
+        config_layout.addLayout(output_frame)
         
         # TBA API Key frame
         api_frame = QHBoxLayout()
         api_label = QLabel("TBA API Key:")
+        api_label.setMinimumWidth(120)
         self.stats_api_key_entry = QLineEdit()
+        self.stats_api_key_entry.setPlaceholderText("Enter your TBA API key")
         api_frame.addWidget(api_label)
         api_frame.addWidget(self.stats_api_key_entry)
-        layout.addLayout(api_frame)
+        config_layout.addLayout(api_frame)
+        
+        layout.addWidget(config_group)
+        
+        # Actions Group
+        actions_group = QGroupBox("Actions")
+        actions_layout = QVBoxLayout(actions_group)
         
         # Button frame
         button_frame = QHBoxLayout()
         fetch_button = QPushButton("Fetch Match Data")
+        fetch_button.setMinimumHeight(40)
+        fetch_button.setStyleSheet("background-color: #1976D2;")
         fetch_button.clicked.connect(self.fetch_combined_match_data)
+        
         team_insights_button = QPushButton("Generate Team Insights")
+        team_insights_button.setMinimumHeight(40)
+        team_insights_button.setStyleSheet("background-color: #4CAF50;")
         team_insights_button.clicked.connect(self.generate_team_insights)
+        
         button_frame.addWidget(fetch_button)
         button_frame.addWidget(team_insights_button)
-        layout.addLayout(button_frame)
+        actions_layout.addLayout(button_frame)
+        
+        # Status section
+        status_layout = QVBoxLayout()
         
         # Status label
         self.stats_status_label = QLabel()
-        self.stats_status_label.setStyleSheet("color: blue;")
-        layout.addWidget(self.stats_status_label)
+        self.stats_status_label.setStyleSheet("color: #1976D2; font-weight: bold;")
+        status_layout.addWidget(self.stats_status_label)
         
         # Progress bar
         self.stats_progress = QProgressBar()
         self.stats_progress.setRange(0, 100)
-        layout.addWidget(self.stats_progress)
+        self.stats_progress.setTextVisible(True)
+        status_layout.addWidget(self.stats_progress)
+        
+        actions_layout.addLayout(status_layout)
+        layout.addWidget(actions_group)
         
         # Results frame
-        self.stats_results_frame = QFrame()
-        self.stats_results_frame.setFrameShape(QFrame.StyledPanel)
-        self.stats_results_layout = QVBoxLayout(self.stats_results_frame)
-        layout.addWidget(self.stats_results_frame)
+        results_group = QGroupBox("Results")
+        self.stats_results_layout = QVBoxLayout(results_group)
+        self.stats_results_layout.setAlignment(Qt.AlignTop)
+        layout.addWidget(results_group)
+        
+        # Add stretch to push everything to the top
+        layout.addStretch()
 
     def stats_browse_directory(self):
         directory = QFileDialog.getExistingDirectory(self, "Select Output Directory")
@@ -896,11 +1139,28 @@ class ScoutingApp(QMainWindow):
         self.tba_progress.setValue(100)
         
         # Display results
+        success_label = QLabel("✅ Operation Completed Successfully")
+        success_label.setStyleSheet("color: #4CAF50; font-weight: bold; font-size: 14px;")
+        self.tba_results_layout.addWidget(success_label)
+        
         result_label = QLabel(f"Data saved in: {result['event_dir']}")
+        result_label.setStyleSheet("font-weight: bold;")
         self.tba_results_layout.addWidget(result_label)
+        
+        file_count = len(result['csv_files'])
+        files_label = QLabel(f"Generated {file_count} CSV files:")
+        self.tba_results_layout.addWidget(files_label)
+        
+        files_frame = QFrame()
+        files_frame.setStyleSheet("background-color: white; border: 1px solid #ddd; border-radius: 5px;")
+        files_layout = QVBoxLayout(files_frame)
+        
         for csv_file in result['csv_files']:
-            file_label = QLabel(f"CSV File: {csv_file}")
-            self.tba_results_layout.addWidget(file_label)
+            file_label = QLabel(f"• {os.path.basename(csv_file)}")
+            file_label.setToolTip(csv_file)
+            files_layout.addWidget(file_label)
+        
+        self.tba_results_layout.addWidget(files_frame)
 
     def handle_tba_thread_error(self, error_message):
         """Handle errors from the TBA data fetch thread."""
@@ -959,8 +1219,17 @@ class ScoutingApp(QMainWindow):
         self.stats_progress.setValue(100)
         
         # Display results
-        result_label = QLabel(f"Combined data saved in: {result['output_filename']}")
+        success_label = QLabel("✅ Operation Completed Successfully")
+        success_label.setStyleSheet("color: #4CAF50; font-weight: bold; font-size: 14px;")
+        self.stats_results_layout.addWidget(success_label)
+        
+        result_label = QLabel(f"Combined data saved as:")
         self.stats_results_layout.addWidget(result_label)
+        
+        filename_label = QLabel(os.path.basename(result['output_filename']))
+        filename_label.setStyleSheet("font-weight: bold; background-color: white; padding: 5px; border: 1px solid #ddd; border-radius: 3px;")
+        filename_label.setToolTip(result['output_filename'])
+        self.stats_results_layout.addWidget(filename_label)
 
     def handle_match_thread_error(self, error_message):
         """Handle errors from the match data fetch thread."""
@@ -1005,19 +1274,150 @@ class ScoutingApp(QMainWindow):
         self.stats_status_label.setText("Team insights generation completed successfully!")
         self.stats_progress.setValue(100)
         
-        # Display results
-        # Access the first CSV file in the list, if available
-        if result.get('csv_files'):
-            result_label = QLabel(f"Team insights saved in: {result['csv_files'][0]}")
+        # Display results with better formatting
+        success_label = QLabel("✅ Team Insights Generated Successfully")
+        success_label.setStyleSheet("color: #4CAF50; font-weight: bold; font-size: 14px;")
+        self.stats_results_layout.addWidget(success_label)
+        
+        # Show the combined CSV file most prominently
+        combined_file = None
+        for file in result.get('csv_files', []):
+            if "All_Team_Insights.csv" in file:
+                combined_file = file
+                break
+        
+        if combined_file:
+            combined_label = QLabel("Combined Team Insights:")
+            self.stats_results_layout.addWidget(combined_label)
+            
+            file_label = QLabel(os.path.basename(combined_file))
+            file_label.setStyleSheet("font-weight: bold; background-color: white; padding: 5px; border: 1px solid #ddd; border-radius: 3px;")
+            file_label.setToolTip(combined_file)
+            self.stats_results_layout.addWidget(file_label)
+            
+            # Add a note about individual batch files
+            batch_count = len(result.get('csv_files', [])) - 1  # Subtract the combined file
+            if batch_count > 0:
+                batches_label = QLabel(f"Individual batch files ({batch_count}) were also created in:")
+                batches_label.setStyleSheet("color: #555; font-size: 12px; margin-top: 10px;")
+                self.stats_results_layout.addWidget(batches_label)
+                
+                dir_label = QLabel(result['output_dir'])
+                dir_label.setStyleSheet("font-size: 12px;")
+                self.stats_results_layout.addWidget(dir_label)
         else:
-            result_label = QLabel(f"Team insights saved in: {result['output_dir']}")
-        self.stats_results_layout.addWidget(result_label)
+            # Fallback to previous behavior
+            if result.get('csv_files'):
+                result_label = QLabel(f"Team insights saved in: {result['csv_files'][0]}")
+            else:
+                result_label = QLabel(f"Team insights saved in: {result['output_dir']}")
+            self.stats_results_layout.addWidget(result_label)
 
     def handle_insights_thread_error(self, error_message):
         """Handle errors from the team insights fetch thread."""
         self.stats_status_label.setText(f"Error: {error_message}")
         QMessageBox.critical(self, "Error", error_message)
-
+        
+    def create_combined_match_data(self, tba_match_data, statbotics_match_data, team_data):
+        """Combine data from TBA and Statbotics into a unified structure."""
+        combined_data = {
+            "match_key": tba_match_data.get("key", ""),
+            "event_key": tba_match_data.get("event_key", ""),
+            "comp_level": tba_match_data.get("comp_level", ""),
+            "set_number": tba_match_data.get("set_number", 0),
+            "match_number": tba_match_data.get("match_number", 0),
+            "alliances": {},
+            "predictions": {},
+            "teams": team_data
+        }
+        
+        # Add alliance data from TBA
+        if "alliances" in tba_match_data:
+            combined_data["alliances"] = tba_match_data["alliances"]
+        
+        # Add score breakdown from TBA if available
+        if "score_breakdown" in tba_match_data and tba_match_data["score_breakdown"]:
+            combined_data["score_breakdown"] = tba_match_data["score_breakdown"]
+        
+        # Add prediction data from Statbotics
+        if statbotics_match_data:
+            combined_data["predictions"] = {
+                "red_score": statbotics_match_data.get("red_score", 0),
+                "blue_score": statbotics_match_data.get("blue_score", 0),
+                "red_win_prob": statbotics_match_data.get("red_win_prob", 0.5),
+                "blue_win_prob": statbotics_match_data.get("blue_win_prob", 0.5),
+                "epa_red": statbotics_match_data.get("epa_red", 0),
+                "epa_blue": statbotics_match_data.get("epa_blue", 0)
+            }
+            
+        return combined_data
+    
+    def create_match_csv_files(self, combined_data, team_data, output_dir):
+        """Create CSV files from the combined match data."""
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+            
+        match_key = combined_data.get("match_key", "unknown_match")
+        
+        # Create match summary CSV
+        summary_file = os.path.join(output_dir, f"{match_key}_summary.csv")
+        with open(summary_file, 'w', newline='', encoding='utf-8') as csvfile:
+            fieldnames = ["match_key", "event_key", "comp_level", "match_number", 
+                         "red_score", "blue_score", "red_win_prob", "blue_win_prob"]
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writeheader()
+            
+            row = {
+                "match_key": combined_data.get("match_key", ""),
+                "event_key": combined_data.get("event_key", ""),
+                "comp_level": combined_data.get("comp_level", ""),
+                "match_number": combined_data.get("match_number", 0),
+                "red_score": combined_data.get("predictions", {}).get("red_score", 0),
+                "blue_score": combined_data.get("predictions", {}).get("blue_score", 0),
+                "red_win_prob": combined_data.get("predictions", {}).get("red_win_prob", 0),
+                "blue_win_prob": combined_data.get("predictions", {}).get("blue_win_prob", 0)
+            }
+            writer.writerow(row)
+        
+        # Create teams CSV
+        teams_file = os.path.join(output_dir, f"{match_key}_teams.csv")
+        with open(teams_file, 'w', newline='', encoding='utf-8') as csvfile:
+            fieldnames = ["team", "alliance", "station", "nickname", "city", "state_prov", 
+                         "country", "opr", "epa_current", "epa_recent", "epa_mean", "epa_max"]
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writeheader()
+            
+            # Add team data for each alliance
+            for alliance in ["red", "blue"]:
+                if alliance in combined_data.get("alliances", {}):
+                    alliance_data = combined_data["alliances"][alliance]
+                    if "team_keys" in alliance_data:
+                        for i, team_key in enumerate(alliance_data["team_keys"]):
+                            team_num = team_key.replace("frc", "")
+                            if team_num in team_data:
+                                team_info = team_data[team_num]
+                                epa_data = team_info.get("epa", (
+                                    {"current": 0, "recent": 0, "mean": 0, "max": 0},
+                                    {"wins": 0, "losses": 0, "ties": 0, "winrate": 0}
+                                ))[0]
+                                
+                                row = {
+                                    "team": team_num,
+                                    "alliance": alliance,
+                                    "station": i+1,
+                                    "nickname": team_info.get("nickname", ""),
+                                    "city": team_info.get("city", ""),
+                                    "state_prov": team_info.get("state_prov", ""),
+                                    "country": team_info.get("country", ""),
+                                    "opr": team_info.get("opr", 0),
+                                    "epa_current": epa_data.get("current", 0),
+                                    "epa_recent": epa_data.get("recent", 0),
+                                    "epa_mean": epa_data.get("mean", 0),
+                                    "epa_max": epa_data.get("max", 0)
+                                }
+                                writer.writerow(row)
+        
+        return [summary_file, teams_file]
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
