@@ -18,6 +18,7 @@ class FullScreenQrCodePage extends StatelessWidget {
           version: QrVersions.auto,
           size: MediaQuery.of(context).size.width * 0.9,
           gapless: false,
+          
         ),
       ),
     );

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:scouting_app/main.dart';
+import 'package:scouting_app/services/Colors.dart';
 
 import 'CounterShelf.dart';
 
@@ -9,7 +11,7 @@ Widget buildTextBoxs(
     padding: const EdgeInsets.all(8.0),
     child: Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: islightmode() ? lightColors.white : lightColors.light_grey,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -35,6 +37,7 @@ Widget buildTextBoxs(
                       fontWeight: FontWeight.bold,
                     )),
               ],
+              
             ),
             const SizedBox(height: 8),
             ...widgetChildren.map((child) {
@@ -59,7 +62,7 @@ Widget buildTextBox(String question, String comment, Icon titleIcon,
     padding: const EdgeInsets.all(8.0),
     child: Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: islightmode() ? lightColors.white : lightColors.light_grey,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(

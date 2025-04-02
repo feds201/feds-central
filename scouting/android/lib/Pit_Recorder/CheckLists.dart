@@ -91,30 +91,7 @@ class _RecordState extends State<Record> {
     } finally {}
   }
 
-  // Helper method to convert base64 strings to File objects
-  Future<List<File>> _getImagesFromBase64Strings(String base64Images) async {
-    List<File> imageFiles = [];
-    if (base64Images.isEmpty) return imageFiles;
-
-    // Split the base64 string by comma to get individual images
-    List<String> images = base64Images.split(',');
-
-    for (int i = 0; i < images.length; i++) {
-      try {
-        final tempDir = await Directory.systemTemp.createTemp('images');
-        final bytes = base64Decode(images[i]);
-        final file = File('${tempDir.path}/image_$i.jpg');
-        await file.writeAsBytes(bytes);
-        imageFiles.add(file);
-      } catch (e) {
-        print('Error converting base64 to file: $e');
-      }
-    }
-
-    return imageFiles;
-  }
-
-  @override
+ @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(

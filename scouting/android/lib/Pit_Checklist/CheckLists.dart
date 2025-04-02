@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:core';
 import 'dart:developer' as developer;
 import 'dart:math';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:scouting_app/components/CameraComposit.dart';

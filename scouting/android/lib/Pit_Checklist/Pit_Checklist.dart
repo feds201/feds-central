@@ -517,7 +517,7 @@ class PitCheckListPageState extends State<PitCheckListPage>
     Function(dynamic) getMatchNumber,
   ) {
     // Extract all teams from these matches
-    List<String> allTeams = _extractTeamsFromMatches(matches);
+    _extractTeamsFromMatches(matches);
 
     if (matches.isEmpty) {
       return Column(
