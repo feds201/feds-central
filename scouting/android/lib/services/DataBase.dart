@@ -1247,11 +1247,11 @@ class PitChecklistItem {
       'alliance_color': alliance_color,
       'note': note,
       'alliance_selection_data': alliance_selection_data,
-      // 'img1': img1,
-      // 'img2': img2,
-      // 'img3': img3,
-      // 'img4': img4,
-      // 'img5': img5,
+      'img1': img1,
+      'img2': img2,
+      'img3': img3,
+      'img4': img4,
+      'img5': img5,
     };
   }
 

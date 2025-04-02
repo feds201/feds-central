@@ -26,13 +26,13 @@ class QrCoder extends State<Qrgenerator> {
   Widget build(BuildContext context) {
     // bool isJson = Hive.box('settings').get('isJson');
     // log('Building QR Code with isJson: $isJson');
-    
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: islightmode() ? Colors.white : Colors.black,
         title: Text('QR Code',
             style: GoogleFonts.museoModerno(
-              fontSize: 25, 
+              fontSize: 25,
               color: islightmode() ? Colors.black : Colors.white,
             )),
         centerTitle: true,
@@ -62,10 +62,11 @@ class QrCoder extends State<Qrgenerator> {
             const SizedBox(
               height: 30.0,
             ),
-           Text(
+            Text(
               'Scan the QR code to submit the data',
-              style: TextStyle(fontSize: 20.0, color: islightmode() ? Colors.black : Colors.white),
-              
+              style: TextStyle(
+                  fontSize: 20.0,
+                  color: islightmode() ? Colors.black : Colors.white),
             ),
             const Spacer(),
             Padding(
@@ -77,7 +78,10 @@ class QrCoder extends State<Qrgenerator> {
                   borderRadius: BorderRadius.circular(100),
                   boxShadow: [
                     BoxShadow(
-                      color: islightmode() ? const Color.fromARGB(255, 248, 248, 248) : const Color.fromARGB(255, 255, 255, 255).withOpacity(0.2),
+                      color: islightmode()
+                          ? const Color.fromARGB(255, 248, 248, 248)
+                          : const Color.fromARGB(255, 255, 255, 255)
+                              .withOpacity(0.2),
                       spreadRadius: 2,
                       blurRadius: 5,
                       offset: const Offset(0, 3),
@@ -86,7 +90,9 @@ class QrCoder extends State<Qrgenerator> {
                 ),
                 child: SliderButton(
                   buttonColor: const Color(0xFFFFD700), // Golden color
-                  backgroundColor: Colors.white,
+                  backgroundColor: islightmode()
+                      ? const Color.fromARGB(255, 255, 255, 255)
+                      : const Color.fromARGB(255, 34, 34, 34),
                   highlightedColor: Colors.red,
                   buttonSize: 70,
                   dismissThresholds: 0.97,
@@ -217,7 +223,7 @@ class QrCoder extends State<Qrgenerator> {
           },
         );
       }
-        } else {
+    } else {
       print('Server is not running.');
       print(LocalDataBase.getData('Settings.apiKey'));
       print("Data Cleared");

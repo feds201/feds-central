@@ -7,6 +7,7 @@ import 'package:scouting_app/components/CommentBox.dart';
 import 'package:scouting_app/components/CounterShelf.dart';
 import 'package:scouting_app/components/ScoutersList.dart';
 
+import '../../main.dart';
 import '../../services/DataBase.dart';
 import '../../components/TeamInfo.dart';
 
@@ -132,74 +133,80 @@ class AutonState extends State<Auton> {
             UpdateData();
           }),
           buildComments(
-              "Coral Scoring",
-              [
-                CounterSettings(
-                  (int value) {
-                    setState(() {
-                      coralScoreL4++;
-                    });
-                  },
-                  (int value) {
-                    setState(() {
-                      coralScoreL4--;
-                    });
-                  },
-                  icon: Icons.cyclone,
-                  number: coralScoreL4,
-                  counterText: "Level 4",
-                  color: Colors.red,
-                ),
-                CounterSettings(
-                  (int value) {
-                    setState(() {
-                      coralScoreL3++;
-                    });
-                  },
-                  (int value) {
-                    setState(() {
-                      coralScoreL3--;
-                    });
-                  },
-                  icon: Icons.cyclone,
-                  number: coralScoreL3,
-                  counterText: "Level 3",
-                  color: Colors.orange,
-                ),
-                CounterSettings(
-                  (int value) {
-                    setState(() {
-                      coralScoreL2++;
-                    });
-                  },
-                  (int value) {
-                    setState(() {
-                      coralScoreL2--;
-                    });
-                  },
-                  icon: Icons.cyclone,
-                  number: coralScoreL2,
-                  counterText: "Level 2",
-                  color: Colors.yellow,
-                ),
-                CounterSettings(
-                  (int value) {
-                    setState(() {
-                      coralScoreL1++;
-                    });
-                  },
-                  (int value) {
-                    setState(() {
-                      coralScoreL1--;
-                    });
-                  },
-                  icon: Icons.cyclone,
-                  number: coralScoreL1,
-                  counterText: "Level 1",
-                  color: Colors.green,
-                ),
-              ],
-              const Icon(Icons.emoji_nature_outlined)),
+            "Coral Scoring",
+            [
+              CounterSettings(
+                (int value) {
+                  setState(() {
+                    coralScoreL4++;
+                  });
+                },
+                (int value) {
+                  setState(() {
+                    coralScoreL4--;
+                  });
+                },
+                icon: Icons.cyclone,
+                number: coralScoreL4,
+                counterText: "Level 4",
+                color: Colors.red,
+              ),
+              CounterSettings(
+                (int value) {
+                  setState(() {
+                    coralScoreL3++;
+                  });
+                },
+                (int value) {
+                  setState(() {
+                    coralScoreL3--;
+                  });
+                },
+                icon: Icons.cyclone,
+                number: coralScoreL3,
+                counterText: "Level 3",
+                color: Colors.orange,
+              ),
+              CounterSettings(
+                (int value) {
+                  setState(() {
+                    coralScoreL2++;
+                  });
+                },
+                (int value) {
+                  setState(() {
+                    coralScoreL2--;
+                  });
+                },
+                icon: Icons.cyclone,
+                number: coralScoreL2,
+                counterText: "Level 2",
+                color: Colors.yellow,
+              ),
+              CounterSettings(
+                (int value) {
+                  setState(() {
+                    coralScoreL1++;
+                  });
+                },
+                (int value) {
+                  setState(() {
+                    coralScoreL1--;
+                  });
+                },
+                icon: Icons.cyclone,
+                number: coralScoreL1,
+                counterText: "Level 1",
+                color: Colors.green,
+              ),
+            ],
+            Icon(
+              Icons.emoji_nature_outlined,
+              color: !islightmode()
+                  ? const Color.fromARGB(255, 255, 255, 255)
+                  : const Color.fromARGB(255, 34, 34, 34),
+            ),
+          ),
           buildComments(
               "Algae Scoring",
               [
@@ -236,7 +243,12 @@ class AutonState extends State<Auton> {
                   color: Colors.green,
                 ),
               ],
-              const Icon(Icons.add_comment)),
+              Icon(
+                Icons.add_comment,
+                color: !islightmode()
+                    ? const Color.fromARGB(255, 255, 255, 255)
+                    : const Color.fromARGB(255, 34, 34, 34),
+              )),
         ],
       ),
     );

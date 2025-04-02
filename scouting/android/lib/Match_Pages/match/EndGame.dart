@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:scouting_app/components/CheckBox.dart';
 import 'package:scouting_app/components/QrGenerator.dart';
+import 'package:scouting_app/main.dart';
 import '../../components/slider.dart';
 import '../../services/DataBase.dart';
 
@@ -103,7 +104,9 @@ class EndGameState extends State<EndGame> {
             margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
-              color: const Color.fromARGB(255, 255, 255, 255),
+              color: islightmode()
+                  ? const Color.fromARGB(255, 255, 255, 255)
+                  : const Color.fromARGB(255, 34, 34, 34),
               boxShadow: [
                 BoxShadow(
                   color: Colors.grey.withOpacity(0.2),
@@ -131,7 +134,9 @@ class EndGameState extends State<EndGame> {
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w600,
-                          color: Colors.black87,
+                          color: !islightmode()
+                              ? const Color.fromARGB(255, 255, 255, 255)
+                              : const Color.fromARGB(255, 34, 34, 34),
                         ),
                       ),
                     ],
@@ -143,10 +148,19 @@ class EndGameState extends State<EndGame> {
                   child: TextField(
                     controller: commentController,
                     maxLines: 4,
-                    style: TextStyle(fontSize: 16),
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: islightmode()
+                          ? const Color.fromARGB(
+                              255, 0, 0, 0) // Black for light mode
+                          : const Color.fromARGB(
+                              255, 255, 255, 255), // White for dark mode
+                    ),
                     decoration: InputDecoration(
                       filled: true,
-                      fillColor: Colors.grey.shade50,
+                      fillColor: islightmode()
+                          ? const Color.fromARGB(255, 255, 255, 255)
+                          : const Color.fromARGB(255, 34, 34, 34),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide:
@@ -164,8 +178,12 @@ class EndGameState extends State<EndGame> {
                       ),
                       hintText:
                           'Add any relevant notes about the team\'s performance...',
-                      hintStyle:
-                          TextStyle(color: Colors.grey.shade400, fontSize: 15),
+                      hintStyle: TextStyle(
+                        color: !islightmode()
+                            ? const Color.fromARGB(255, 255, 255, 255)
+                            : const Color.fromARGB(255, 34, 34, 34),
+                        fontSize: 15,
+                      ),
                       contentPadding: const EdgeInsets.symmetric(
                           vertical: 16, horizontal: 16),
                     ),
@@ -194,7 +212,9 @@ class EndGameState extends State<EndGame> {
                 ),
                 child: SliderButton(
                   buttonColor: Colors.yellow,
-                  backgroundColor: Colors.white,
+                  backgroundColor: islightmode()
+                      ? const Color.fromARGB(255, 255, 255, 255)
+                      : const Color.fromARGB(255, 34, 34, 34),
                   highlightedColor: Colors.green,
                   dismissThresholds: 0.97,
                   vibrationFlag: true,

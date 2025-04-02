@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../main.dart';
 import 'CounterShelf.dart';
 
-Widget buildComments(String title, List<dynamic> widgetChildren, Icon titleIcon) {
+Widget buildComments(
+    String title, List<dynamic> widgetChildren, Icon titleIcon) {
   return Padding(
     padding: const EdgeInsets.all(8.0),
     child: Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: islightmode()
+            ? const Color.fromARGB(255, 255, 255, 255)
+            : const Color.fromARGB(255, 34, 34, 34),
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -28,12 +32,14 @@ Widget buildComments(String title, List<dynamic> widgetChildren, Icon titleIcon)
               children: [
                 titleIcon,
                 const SizedBox(width: 8),
-                Text(
-                  title,
-                  style:  GoogleFonts.museoModerno(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,)
-                ),
+                Text(title,
+                    style: GoogleFonts.museoModerno(
+                      fontSize: 20,
+                      color: islightmode()
+                          ? const Color.fromARGB(255, 0, 0, 0)
+                          : const Color.fromARGB(255, 255, 255, 255),
+                      fontWeight: FontWeight.bold,
+                    )),
               ],
             ),
             const SizedBox(height: 8),
@@ -53,12 +59,15 @@ Widget buildComments(String title, List<dynamic> widgetChildren, Icon titleIcon)
   );
 }
 
-Widget buildCommentsBox(String title, String comment, Icon titleIcon, Function(String) onChanged) {
+Widget buildCommentsBox(
+    String title, String comment, Icon titleIcon, Function(String) onChanged) {
   return Padding(
     padding: const EdgeInsets.all(8.0),
     child: Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: islightmode()
+            ? const Color.fromARGB(255, 255, 255, 255)
+            : const Color.fromARGB(255, 34, 34, 34),
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -78,12 +87,14 @@ Widget buildCommentsBox(String title, String comment, Icon titleIcon, Function(S
               children: [
                 titleIcon,
                 const SizedBox(width: 8),
-                Text(
-                  title,
-                  style: GoogleFonts.museoModerno(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,)
-                ),
+                Text(title,
+                    style: GoogleFonts.museoModerno(
+                      fontSize: 20,
+                      color: !islightmode()
+                          ? const Color.fromARGB(255, 255, 255, 255)
+                          : const Color.fromARGB(255, 0, 0, 0),
+                      fontWeight: FontWeight.bold,
+                    )),
               ],
             ),
             const SizedBox(height: 8),
@@ -91,6 +102,9 @@ Widget buildCommentsBox(String title, String comment, Icon titleIcon, Function(S
               comment,
               style: GoogleFonts.museoModerno(
                 fontSize: 16,
+                color: !islightmode()
+                    ? const Color.fromARGB(255, 255, 255, 255)
+                    : const Color.fromARGB(255, 0, 0, 0),
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -100,4 +114,3 @@ Widget buildCommentsBox(String title, String comment, Icon titleIcon, Function(S
     ),
   );
 }
-

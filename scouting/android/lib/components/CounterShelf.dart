@@ -2,6 +2,7 @@
 
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
+import 'package:scouting_app/main.dart';
 
 class CounterSettings {
   final IconData icon;
@@ -35,7 +36,9 @@ Widget buildCounterShelf(List<CounterSettings> counterSettings) {
     padding: const EdgeInsets.all(8.0),
     child: Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: islightmode()
+            ? const Color.fromARGB(255, 255, 255, 255)
+            : const Color.fromARGB(255, 34, 34, 34),
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -58,9 +61,12 @@ Widget buildCounterShelf(List<CounterSettings> counterSettings) {
                 Expanded(
                   child: Text(
                     settings.counterText,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
+                      color: !islightmode()
+                          ? const Color.fromARGB(255, 255, 255, 255)
+                          : const Color.fromARGB(255, 34, 34, 34),
                     ),
                   ),
                 ),
@@ -68,12 +74,20 @@ Widget buildCounterShelf(List<CounterSettings> counterSettings) {
                   onPressed: () {
                     settings.onDecrement(settings.number);
                   },
-                  icon: const Icon(Icons.remove),
+                  icon: Icon(
+                    Icons.remove,
+                    color: !islightmode()
+                        ? const Color.fromARGB(255, 255, 255, 255)
+                        : const Color.fromARGB(255, 34, 34, 34),
+                  ),
                 ),
                 Text(
                   '${settings.number}', // Display starting number
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 20,
+                    color: !islightmode()
+                        ? const Color.fromARGB(255, 255, 255, 255)
+                        : const Color.fromARGB(255, 34, 34, 34),
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -81,7 +95,12 @@ Widget buildCounterShelf(List<CounterSettings> counterSettings) {
                   onPressed: () {
                     settings.onIncrement(settings.number);
                   },
-                  icon: const Icon(Icons.add),
+                  icon: Icon(
+                    Icons.add,
+                    color: !islightmode()
+                        ? const Color.fromARGB(255, 255, 255, 255)
+                        : const Color.fromARGB(255, 34, 34, 34),
+                  ),
                 ),
               ],
             ),
@@ -102,7 +121,9 @@ Widget buildCounter(String title, int value, Function(int) onChanged,
         child: Container(
           width: screenWidth / 2,
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: islightmode()
+                ? const Color.fromARGB(255, 255, 255, 255)
+                : const Color.fromARGB(255, 34, 34, 34),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Padding(
@@ -120,7 +141,9 @@ Widget buildCounter(String title, int value, Function(int) onChanged,
                     width: double.infinity,
                     height: 100,
                     decoration: BoxDecoration(
-                      color: Colors.transparent,
+                      color: islightmode()
+                          ? const Color.fromARGB(255, 255, 255, 255)
+                          : const Color.fromARGB(255, 34, 34, 34),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Row(
@@ -130,27 +153,33 @@ Widget buildCounter(String title, int value, Function(int) onChanged,
                           onTap: () {
                             onChanged(value - 1);
                           },
-                          child: const Icon(
+                          child: Icon(
                             Icons.remove,
-                            color: Colors.black,
+                            color: !islightmode()
+                                ? const Color.fromARGB(255, 255, 255, 255)
+                                : const Color.fromARGB(255, 34, 34, 34),
                             size: 40,
                           ),
                         ),
                         Text(
                           '$value',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 40,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black,
+                            color: !islightmode()
+                                ? const Color.fromARGB(255, 255, 255, 255)
+                                : const Color.fromARGB(255, 34, 34, 34),
                           ),
                         ),
                         GestureDetector(
                           onTap: () {
                             onChanged(value + 1);
                           },
-                          child: const Icon(
+                          child: Icon(
                             Icons.add,
-                            color: Colors.black,
+                            color: !islightmode()
+                                ? const Color.fromARGB(255, 255, 255, 255)
+                                : const Color.fromARGB(255, 34, 34, 34),
                             size: 40,
                           ),
                         ),
@@ -161,10 +190,12 @@ Widget buildCounter(String title, int value, Function(int) onChanged,
                 const SizedBox(height: 8),
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 24,
                     fontStyle: FontStyle.italic,
-                    color: Colors.black,
+                    color: !islightmode()
+                        ? const Color.fromARGB(255, 255, 255, 255)
+                        : const Color.fromARGB(255, 34, 34, 34),
                   ),
                 ),
               ],

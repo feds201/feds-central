@@ -707,7 +707,7 @@ class _Checklist_recordState extends State<Checklist_record> {
                     _recordData();
                     _confettiController.play(); // 🎉 Play confetti
                     _pressCount = 0; // Reset count after saving
-                    // PopBoard(context);
+                    PopBoard(context);
                   }
                 });
               },
@@ -826,16 +826,15 @@ class _Checklist_recordState extends State<Checklist_record> {
       img5: image5,
     );
 
-    // print('Recording data: $record');
-    // print("Hiv ${record.toJson()}");
-    // print(widget.list_item.matchkey.toString());
-    // print("Data recorded for match key: ${record.matchkey}");
+    print('Recording data: $record');
+    print("Hiv ${record.toJson()}");
+    print(widget.list_item.matchkey.toString());
+    print("Data recorded for match key: ${record.matchkey}");
     developer.log(record.toJson().toString());
 
     PitCheckListDatabase.PutData(widget.list_item.matchkey, record);
     PitCheckListDatabase.SaveAll();
-
-    // PitCheckListDatabase.PrintAll();
+    PitCheckListDatabase.PrintAll();
   }
 
   void PopBoard(BuildContext context) {

@@ -83,8 +83,11 @@ class MatchState extends State<Match> {
                               fullscreenDialog: true),
                         ).then((value) => _checkExperimentBox()),
                       },
-                  child: const Icon(
+                  child: Icon(
                     Icons.check_rounded,
+                    color: !islightmode()
+                        ? const Color.fromARGB(255, 255, 255, 255)
+                        : const Color.fromARGB(255, 34, 34, 34),
                     size: 30,
                   )),
             ],

@@ -8,6 +8,8 @@ import 'package:scouting_app/services/DataBase.dart';
 import 'package:scouting_app/components/TextBox.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../services/Colors.dart';
+
 class QualitativePage extends StatefulWidget {
   final QualitativeRecord record;
   QualitativePage({super.key, required this.record});
@@ -43,7 +45,14 @@ class _QualitativePage extends State<QualitativePage> {
 
     return Scaffold(
       appBar: AppBar(
-        actions: const [],
+        leading: Builder(builder: (context) {
+          return IconButton(
+              icon: const Icon(Icons.arrow_back),
+              color: !islightmode()
+                  ? const Color.fromARGB(193, 255, 255, 255)
+                  : const Color.fromARGB(105, 36, 33, 33),
+              onPressed: () => Navigator.of(context).pop());
+        }),
         title: ShaderMask(
             shaderCallback: (bounds) => const LinearGradient(
                   colors: [Colors.red, Colors.blue],
@@ -57,7 +66,8 @@ class _QualitativePage extends State<QualitativePage> {
                   fontWeight: FontWeight.w500,
                   color: Colors.white),
             )),
-        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+        backgroundColor:
+            islightmode() ? lightColors.white : darkColors.goodblack,
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -140,7 +150,10 @@ class _QualitativePage extends State<QualitativePage> {
               buildTextBox(category["question"], category["observation"],
                   category["icon"], category["controller"]),
             ],
-            category["icon"],
+            Icon(
+              Icons.help,
+              color: Colors.transparent,
+            ),
           );
         }).toList(),
       ),

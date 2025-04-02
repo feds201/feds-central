@@ -367,9 +367,12 @@ class _ScouterListState extends State<ScouterList>
               borderRadius: BorderRadius.circular(20),
               gradient: LinearGradient(
                 colors: islightmode()
-                    ? [Colors.white, Colors.blue.shade50]
+                    ? [
+                        const Color.fromARGB(255, 243, 2, 2),
+                        const Color.fromARGB(255, 0, 149, 255)
+                      ]
                     : [
-                        darkColors.goodblack,
+                        const Color.fromARGB(255, 113, 31, 25),
                         const Color.fromARGB(255, 38, 113, 167)
                       ],
                 begin: Alignment.topLeft,
@@ -386,22 +389,22 @@ class _ScouterListState extends State<ScouterList>
                     Row(
                       children: [
                         Icon(Icons.people_alt,
-                            size: 28, color: Colors.blueAccent),
+                            size: 28,
+                            color: const Color.fromARGB(255, 255, 255, 255)),
                         SizedBox(width: 10),
                         Text(
                           'Scouting Team',
                           style: GoogleFonts.museoModerno(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
-                            color: islightmode()
-                                ? Colors.black87
-                                : const Color.fromARGB(255, 255, 255, 255),
+                            color: const Color.fromARGB(255, 255, 255, 255),
                           ),
                         ),
                       ],
                     ),
                     IconButton(
-                      icon: Icon(Icons.shuffle, color: Colors.purpleAccent),
+                      icon: Icon(Icons.shuffle,
+                          color: const Color.fromARGB(255, 249, 249, 249)),
                       tooltip: 'Pick Random Scouter',
                       onPressed: _selectRandomScouter,
                     ),

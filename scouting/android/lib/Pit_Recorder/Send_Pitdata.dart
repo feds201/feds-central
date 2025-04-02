@@ -413,11 +413,22 @@ class _SharePITDataScreenState extends State<SharePITDataScreen>
     PitDataBase.LoadAll();
 
     try {
+      print(Settings.getPitKey());
+      if (Settings.getPitKey() == "null") {
+        print('Error in sendDataToFeds: PitKey is empty');
+        setState(() {
+          _hasError = true;
+          _statusMessage = "Error: PitKey is empty";
+        });
+        // Show error dialog
+        showErrorDialog("PitKey is empty");
+        return; // Add return to exit the function early
+      }
       String scriptUrl =
           "https://script.google.com/macros/s/${Settings.getPitKey()}/exec"; // Replace {} with the actual script ID
       List<int> teams = PitDataBase.GetRecorderTeam();
       _totalTeams = teams.length;
-
+      print("Sending data for team");
       for (var i = 0; i < teams.length; i++) {
         _currentTeamIndex = i + 1;
         int teamNumber = teams[i];
@@ -429,6 +440,7 @@ class _SharePITDataScreenState extends State<SharePITDataScreen>
               "Sending team $teamNumber (${i + 1}/${teams.length})...";
           _hasError = false;
         });
+        print("Sending data for team $teamNumber");
 
         PitRecord? record = PitDataBase.GetData(teamNumber);
         if (record != null) {

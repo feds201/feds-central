@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,6 +10,8 @@ import 'package:scouting_app/components/Inspiration.dart';
 import 'package:scouting_app/components/ScoutersList.dart';
 import 'package:scouting_app/components/Insults.dart';
 import 'package:scouting_app/home_page.dart';
+import 'package:scouting_app/main.dart';
+import 'package:scouting_app/services/Colors.dart';
 import '../services/DataBase.dart';
 
 class PitCheckListPage extends StatefulWidget {
@@ -136,15 +139,12 @@ class PitCheckListPageState extends State<PitCheckListPage>
 
     return AppBar(
       elevation: 0,
-      actions: [
-        Container(
-          margin: const EdgeInsets.only(right: 8),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.2),
-            borderRadius: BorderRadius.circular(30),
-          ),
-          child: IconButton(
-            icon: const Icon(Icons.home, color: Color.fromARGB(255, 0, 0, 0)),
+      leading: Builder(builder: (context) {
+        return IconButton(
+            icon: const Icon(Icons.menu),
+            color: !islightmode()
+                ? const Color.fromARGB(193, 255, 255, 255)
+                : const Color.fromARGB(105, 36, 33, 33),
             onPressed: () async {
               await Navigator.pushAndRemoveUntil(
                 context,
@@ -154,11 +154,9 @@ class PitCheckListPageState extends State<PitCheckListPage>
                 ),
                 (Route<dynamic> route) => false,
               );
-            },
-          ),
-        ),
-      ],
-      backgroundColor: Colors.transparent,
+            });
+      }),
+      backgroundColor: islightmode() ? lightColors.white : darkColors.goodblack,
       title: ShaderMask(
           shaderCallback: (bounds) => const LinearGradient(
                 colors: [Colors.red, Colors.blue],
@@ -261,7 +259,8 @@ class PitCheckListPageState extends State<PitCheckListPage>
             ],
           ),
           child: NavigationRail(
-            backgroundColor: Colors.white,
+            backgroundColor:
+                islightmode() ? lightColors.white : darkColors.goodblack,
             selectedIndex: currentSelectedMatchType,
             onDestinationSelected: (int index) {
               onMatchTypeSelected(index);
@@ -314,8 +313,12 @@ class PitCheckListPageState extends State<PitCheckListPage>
             ],
           ),
         ),
-        const VerticalDivider(thickness: 1, width: 1),
 
+        VerticalDivider(
+          thickness: 1,
+          width: 1,
+          color: islightmode() ? lightColors.white : darkColors.goodblack,
+        ),
         // Match List with Animation
         Expanded(
           child: FadeTransition(
@@ -1528,7 +1531,7 @@ class PitCheckListPageState extends State<PitCheckListPage>
     Function(dynamic) getMatchNumber,
   ) {
     // Extract all teams from these matches
-    List<String> allTeams = _extractTeamsFromMatches(matches);
+    _extractTeamsFromMatches(matches);
 
     return Column(
       children: [
@@ -2121,12 +2124,31 @@ class PitCheckListPageState extends State<PitCheckListPage>
 
           try {
             final dataCount = PitCheckListDatabase.GetStorageSize();
-            final jsonData = PitCheckListDatabase.ExportAsJson();
+            final scriptUrl =
+                "https://script.google.com/macros/s/${Settings.getPitKey()}/exec"; // Updated to use Settings.getPitKey()
 
-            // Simulate server communication
-            for (int i = 0; i < 3; i++) {
+            // Simulate sending data to the server
+            final allChecklistData = PitCheckListDatabase.Export();
+            final keys = allChecklistData.keys.toList();
+            for (int i = 0; i < dataCount && i < keys.length; i++) {
+              final key = keys[i];
+              final PitChecklistItem checklistData =
+                  allChecklistData[key] as PitChecklistItem;
+
+              final finalchecklist = serverModifier(checklistData);
+
+              final response = await http.post(
+                Uri.parse(scriptUrl),
+                body: jsonEncode(finalchecklist),
+                headers: {"Content-Type": "application/json"},
+              );
+
+              if (response.statusCode != 200) {
+                throw Exception("Failed to share data for team ${i + 1}");
+              }
+
               setState(() {
-                _shareStatus = "Sharing data... ${i + 1}/3";
+                _shareStatus = "Sharing data... ${i + 1}/$dataCount";
               });
               await Future.delayed(const Duration(milliseconds: 800));
             }
@@ -2589,5 +2611,72 @@ class PitCheckListPageState extends State<PitCheckListPage>
         ),
       ],
     );
+  }
+
+  Map<String, dynamic> serverModifier(PitChecklistItem checklistData) {
+    return {
+      "type": "checklist",
+      "matchKey": checklistData.matchkey,
+      "chassisDriveMotors": checklistData.chassis_drive_motors,
+      "chassisSteerMotors": checklistData.chassis_steer_motors,
+      "chassisGearboxes": checklistData.chassis_gearboxes,
+      "chassisTreadConditions": checklistData.chassis_tread_conditions,
+      "chassisWires": checklistData.chassis_wires,
+      "chassisBumpers": checklistData.chassis_bumpers,
+      "chassisLimelightProtectors": checklistData.chassis_limelight_protectors,
+      "ethernetFrontLeftLimelight": checklistData.ethernet_front_left_limelight,
+      "ethernetFrontRightLimelight":
+          checklistData.ethernet_front_right_limelight,
+      "ethernetBackLeftLimelight": checklistData.ethernet_back_left_limelight,
+      "ethernetBackRightLimelight": checklistData.ethernet_back_right_limelight,
+      "ethernetSwitch": checklistData.ethernet_switch,
+      "ethernetRadio": checklistData.ethernet_radio,
+      "climberString": checklistData.climber_string,
+      "climberClips": checklistData.climber_clips,
+      "climberSprings": checklistData.climber_springs,
+      "climberBumper": checklistData.climber_bumper,
+      "climberGearbox": checklistData.climber_gearbox,
+      "climberMotors": checklistData.climber_motors,
+      "climberWires": checklistData.climber_wires,
+      "climberNutsAndBolts": checklistData.climber_nuts_and_bolts,
+      "climberReset": checklistData.climber_reset,
+      "climberNumber": checklistData.climber_hooks,
+      "elevatorRodOfDoom": checklistData.elevator_rod_of_doom,
+      "elevatorStage0": checklistData.elevator_stage_0,
+      "elevatorStage1": checklistData.elevator_stage_1,
+      "elevatorStage2": checklistData.elevator_stage_2,
+      "elevatorChain": checklistData.elevator_chain,
+      "elevatorGearbox": checklistData.elevator_gearbox,
+      "elevatorMotors": checklistData.elevator_motors,
+      "elevatorWires": checklistData.elevator_wires,
+      "elevatorNutsAndBolts": checklistData.elevator_nuts_and_bolts,
+      "trapdoorPanels": checklistData.trapdoor_panels,
+      "trapdoorWires": checklistData.trapdoor_wires,
+      "trapdoorSupports": checklistData.trapdoor_supports,
+      "trapdoorHinges": checklistData.trapdoor_hinges,
+      "trapdoorTensioners": checklistData.trapdoor_tensioners,
+      "trapdoorNutsAndBolts": checklistData.trapdoor_nuts_and_bolts,
+      "trapdoorReset": checklistData.trapdoor_reset,
+      "carriageGearbox": checklistData.carriage_gearbox,
+      "carriageBeltbox": checklistData.carriage_beltbox,
+      "carriageMotors": checklistData.carriage_motors,
+      "carriageWires": checklistData.carriage_wires,
+      "carriageNutsAndBolts": checklistData.carriage_nuts_and_bolts,
+      "carriageCoralSlide": checklistData.carriage_coral_slide,
+      "carriageCarriage": checklistData.carriage_carriage,
+      "gooseneckPanels": checklistData.gooseneck_panels,
+      "gooseneckWheels": checklistData.gooseneck_wheels,
+      "gooseneckBelts": checklistData.gooseneck_belts,
+      "gooseneckNutsAndBolts": checklistData.gooseneck_nuts_and_bolts,
+      "returningBatteryVoltage": checklistData.returning_battery_voltage,
+      "returningBatteryCCA": checklistData.returning_battery_cca,
+      "returningNumber": checklistData.returning_number,
+      "outgoingBatteryVoltage": checklistData.outgoing_battery_voltage,
+      "outgoingBatteryCCA": checklistData.outgoing_battery_cca,
+      "outgoingNumber": checklistData.outgoing_number,
+      "outgoingBatteryReplaced": checklistData.outgoing_battery_replaced,
+      "allianceColor": checklistData.alliance_color,
+      "notes": checklistData.note,
+    };
   }
 }
