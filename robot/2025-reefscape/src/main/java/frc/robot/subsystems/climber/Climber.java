@@ -7,23 +7,12 @@ package frc.robot.subsystems.climber;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 
-import static edu.wpi.first.units.Units.Micro;
-
-import java.util.Map;
-import java.util.concurrent.atomic.DoubleAccumulator;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
-import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
 
-import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Servo;
-import edu.wpi.first.wpilibj.motorcontrol.Talon;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.RobotMap.ClimberMap;
 import frc.robot.constants.RobotMap.CurrentLimiter;
 import frc.robot.utils.SubsystemABS;
@@ -134,7 +123,7 @@ public class Climber extends SubsystemABS {
   }
 
   public boolean climberPastZero(){
-    return getCANcoderValue() < .13;
+    return getCANcoderValue() < .105;
   }
 
   public boolean climberPastMax(){

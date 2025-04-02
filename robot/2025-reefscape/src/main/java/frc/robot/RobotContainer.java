@@ -326,7 +326,8 @@ public class RobotContainer extends RobotFramework {
         operatorController.povDown().or(operatorController.povDownLeft()).or( operatorController.povDownRight())
             .whileTrue(new RaiseClimberBasic(()-> .15, climber)
             .until(climber:: climberPastZero)
-            );
+            ).
+            whileFalse(new RaiseClimberBasic(()-> 0, climber));
 
         operatorController.povUp().or(operatorController.povUpLeft()).or(operatorController.povUpRight())
             .whileTrue(new climbingSequenceUp(climber));
