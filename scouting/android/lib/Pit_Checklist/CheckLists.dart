@@ -64,6 +64,7 @@ class _Checklist_recordState extends State<Checklist_record> {
   late bool elevator_stage_2;
   late bool elevator_chain;
   late bool elevator_belts;
+  late bool elevator_limit_switch;
   late bool elevator_string;
   late bool elevator_gearbox;
   late bool elevator_motors;
@@ -258,7 +259,7 @@ class _Checklist_recordState extends State<Checklist_record> {
           "Goosenck Wires ${existingRecord.gooseneck_wires}",
         );
         print(
-          "Goosenck Gears ${existingRecord.gooseneck_gears}",
+          "Gofcgjlfgj,losenck Gears ${existingRecord.elevator_limit_switch}",
         );
         setState(() {
           chassis_drive_motors = existingRecord.chassis_drive_motors;
@@ -305,6 +306,7 @@ class _Checklist_recordState extends State<Checklist_record> {
           elevator_wires = existingRecord.elevator_wires;
           elevator_nuts_and_bolts = existingRecord.elevator_nuts_and_bolts;
           elevator_belts = existingRecord.elevator_belts;
+          elevator_limit_switch = existingRecord.elevator_limit_switch;
 
           trapdoor_panels = existingRecord.trapdoor_panels;
           trapdoor_supports = existingRecord.trapdoor_supports;
@@ -394,6 +396,7 @@ class _Checklist_recordState extends State<Checklist_record> {
           if (elevator_wires) elevator.add("Wires");
           if (elevator_nuts_and_bolts) elevator.add("Nuts and Bolts");
           if (elevator_string) elevator.add("String");
+          if (elevator_limit_switch) elevator.add("Limit Switch");
 
           // Trapdoor list
           trapdoor = [];
@@ -540,6 +543,7 @@ class _Checklist_recordState extends State<Checklist_record> {
                 "Belts",
                 "String",
                 "Gearbox",
+                "Limit Switch",
                 "Motors",
                 "Wires",
                 "Nuts and Bolts",
@@ -790,6 +794,7 @@ class _Checklist_recordState extends State<Checklist_record> {
       elevator_stage_1: elevator.contains("Stage 1"),
       elevator_stage_2: elevator.contains("Stage 2"),
       elevator_chain: elevator.contains("Chain"),
+      elevator_limit_switch: elevator.contains("Limit Switch"),
       elevator_belts: elevator.contains("Belts"),
       elevator_string: elevator.contains("String"),
       elevator_gearbox: elevator.contains("Gearbox"),

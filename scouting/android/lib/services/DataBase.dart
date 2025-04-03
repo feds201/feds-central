@@ -1016,7 +1016,7 @@ class PitChecklistItem {
   bool chassis_tread_conditions = false;
   bool chassis_wires = false;
   bool chassis_bumpers = false;
-  bool chassis_camera = false; 
+  bool chassis_camera = false;
   bool chassis_limelight_protectors = false;
 
   bool ethernet_front_left_limelight = false;
@@ -1042,6 +1042,7 @@ class PitChecklistItem {
   bool elevator_stage_2 = false;
   bool elevator_chain = false;
   bool elevator_gearbox = false;
+  bool elevator_limit_switch = false;
   bool elevator_motors = false;
   bool elevator_wires = false;
   bool elevator_nuts_and_bolts = false;
@@ -1093,7 +1094,7 @@ class PitChecklistItem {
     required this.chassis_steer_motors,
     required this.chassis_gearboxes,
     required this.chassis_tread_conditions,
-    required this.chassis_camera, 
+    required this.chassis_camera,
     required this.chassis_wires,
     required this.chassis_bumpers,
     required this.chassis_limelight_protectors,
@@ -1119,6 +1120,7 @@ class PitChecklistItem {
     required this.elevator_chain,
     required this.elevator_gearbox,
     required this.elevator_motors,
+    required this.elevator_limit_switch,
     required this.elevator_wires,
     required this.elevator_nuts_and_bolts,
     required this.elevator_belts,
@@ -1170,7 +1172,7 @@ class PitChecklistItem {
         '$chassis_drive_motors, $chassis_camera, $chassis_steer_motors,$chassis_gearboxes,$chassis_tread_conditions,$chassis_wires,$chassis_bumpers,$chassis_limelight_protectors,'
         '$ethernet_front_left_limelight,$ethernet_front_right_limelight,$ethernet_switch,$ethernet_radio,' // Changed from ethernet_swtich
         '$climber_string,$climber_springs,$climber_gearbox,$climber_motors,$climber_wires,$climber_nuts_and_bolts,$climber_bumper,$climber_reset,$climber_bumper,$climber_clips,'
-        '$elevator_rod_of_doom,$elevator_belts,$elevator_stage_0,$elevator_stage_1,$elevator_stage_2,$elevator_chain,$elevator_gearbox, $elevator_string,$elevator_motors,$elevator_wires,$elevator_nuts_and_bolts,'
+        '$elevator_rod_of_doom,$elevator_limit_switch,$elevator_belts,$elevator_stage_0,$elevator_stage_1,$elevator_stage_2,$elevator_chain,$elevator_gearbox, $elevator_string,$elevator_motors,$elevator_wires,$elevator_nuts_and_bolts,'
         '$trapdoor_panels,$trapdoor_supports,$trapdoor_hinges,$trapdoor_tensioners,$trapdoor_nuts_and_bolts,$trapdoor_reset,$trapdoor_wires,'
         '$carriage_gearbox,$carriage_beltbox,$carriage_motors,$carriage_wires,$carriage_nuts_and_bolts,$carriage_coral_slide,$carriage_carriage,'
         '$gooseneck_panels,$gooseneck_wheels,$gooseneck_belts,$gooseneck_nuts_and_bolts,'
@@ -1187,7 +1189,7 @@ class PitChecklistItem {
       'chassis_gearboxes': chassis_gearboxes,
       'chassis_tread_conditions': chassis_tread_conditions,
       'chassis_wires': chassis_wires,
-      'chassis_camera': chassis_camera, 
+      'chassis_camera': chassis_camera,
       'chassis_bumpers': chassis_bumpers,
       'chassis_limelight_protectors': chassis_limelight_protectors,
       'ethernet_front_left_limelight': ethernet_front_left_limelight,
@@ -1212,6 +1214,7 @@ class PitChecklistItem {
       'elevator_chain': elevator_chain,
       'elevator_gearbox': elevator_gearbox,
       'elevator_motors': elevator_motors,
+      'elevator_limit_switch': elevator_limit_switch,
       'elevator_string': elevator_string,
       'elevator_wires': elevator_wires,
       'elevator_nuts_and_bolts': elevator_nuts_and_bolts,
@@ -1226,7 +1229,6 @@ class PitChecklistItem {
       'carriage_beltbox': carriage_beltbox,
       'carriage_motors': carriage_motors,
       'carriage_wires': carriage_wires,
-
       'carriage_nuts_and_bolts': carriage_nuts_and_bolts,
       'carriage_coral_slide': carriage_coral_slide,
       'carriage_reset': carriage_reset,
@@ -1265,7 +1267,7 @@ class PitChecklistItem {
         chassis_gearboxes: json['chassis_gearboxes'] ?? false,
         chassis_tread_conditions: json['chassis_tread_conditions'] ?? false,
         chassis_wires: json['chassis_wires'] ?? false,
-        chassis_camera: json['chassi_camera'] ?? false, 
+        chassis_camera: json['chassi_camera'] ?? false,
         chassis_bumpers: json['chassis_bumpers'] ?? false,
         chassis_limelight_protectors:
             json['chassis_limelight_protectors'] ?? false,
@@ -1295,6 +1297,7 @@ class PitChecklistItem {
         elevator_chain: json['elevator_chain'] ?? false,
         elevator_gearbox: json['elevator_gearbox'] ?? false,
         elevator_motors: json['elevator_motors'] ?? false,
+        elevator_limit_switch: json['elevator_limit_switch'] ?? false,
         elevator_string: json['elevator_string'] ?? false,
         elevator_wires: json['elevator_wires'] ?? false,
         elevator_nuts_and_bolts: json['elevator_nuts_and_bolts'] ?? false,
