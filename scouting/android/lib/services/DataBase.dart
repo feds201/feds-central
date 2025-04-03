@@ -1200,6 +1200,7 @@ class PitChecklistItem {
       'climber_string': climber_string,
       'climber_clips': climber_clips,
       'climber_springs': climber_springs,
+      'climber_hooks': climber_hooks,
       'climber_gearbox': climber_gearbox,
       'climber_motors': climber_motors,
       'climber_wires': climber_wires,

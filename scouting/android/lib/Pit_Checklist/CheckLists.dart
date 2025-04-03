@@ -255,12 +255,9 @@ class _Checklist_recordState extends State<Checklist_record> {
           PitCheckListDatabase.GetData(widget.list_item.matchkey);
       if (existingRecord != null) {
         // Populate UI state variables with existing data
-        print(
-          "Goosenck Wires ${existingRecord.gooseneck_wires}",
-        );
-        print(
-          "Gofcgjlfgj,losenck Gears ${existingRecord.elevator_limit_switch}",
-        );
+
+        print(existingRecord.climber_hooks);
+
         setState(() {
           chassis_drive_motors = existingRecord.chassis_drive_motors;
           chassis_steer_motors = existingRecord.chassis_steer_motors;
@@ -759,9 +756,7 @@ class _Checklist_recordState extends State<Checklist_record> {
   }
 
   void _recordData() {
-    print(
-      elevator.contains("String"),
-    );
+    print(climber.contains("Hooks"));
     PitChecklistItem record = PitChecklistItem(
       gooseneck_wires: gooseneck.contains("Wires"),
       gooseneck_gears: gooseneck.contains("Gears"),
