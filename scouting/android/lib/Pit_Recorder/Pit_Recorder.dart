@@ -113,6 +113,14 @@ class PitRecorderState extends State<PitRecorder> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: Builder(builder: (context) {
+          return IconButton(
+              icon: const Icon(Icons.arrow_back),
+              color: !islightmode()
+                  ? const Color.fromARGB(193, 255, 255, 255)
+                  : const Color.fromARGB(105, 36, 33, 33),
+              onPressed: () => Navigator.pop(context));
+        }),
         actions: [
           IconButton(
             icon: const Icon(Icons.sync),
@@ -129,7 +137,8 @@ class PitRecorderState extends State<PitRecorder> {
                 );
               }),
         ],
-        backgroundColor: islightmode() ? lightColors.white : darkColors.goodblack, 
+        backgroundColor:
+            islightmode() ? lightColors.white : darkColors.goodblack,
         title: ShaderMask(
             shaderCallback: (bounds) => const LinearGradient(
                   colors: [Colors.red, Colors.blue],

@@ -5,7 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:scouting_app/components/Button.dart';
+import 'package:scouting_app/services/Colors.dart';
 import 'package:scouting_app/services/DataBase.dart';
+
+import '../main.dart';
 
 bool isDataValid() {
   // Replace with your actual validation logic
@@ -41,7 +44,7 @@ Widget buildChecklistItem(String title, bool isValid) {
     child: Container(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: islightmode() ? lightColors.white : Color(0xFF2f3435),
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
@@ -77,7 +80,9 @@ Widget buildChecklistItem(String title, bool isValid) {
                 style: GoogleFonts.museoModerno(
                   fontSize: 18,
                   fontWeight: FontWeight.w500,
-                  color: Colors.black87,
+                  color: islightmode()
+                      ? Colors.black87
+                      : Color.fromARGB(255, 255, 255, 255),
                 ),
               ),
             ),
@@ -655,6 +660,16 @@ class _SharePITDataScreenState extends State<SharePITDataScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: Builder(builder: (context) {
+          return IconButton(
+              icon: const Icon(Icons.arrow_back),
+              color: !islightmode()
+                  ? const Color.fromARGB(193, 255, 255, 255)
+                  : const Color.fromARGB(105, 36, 33, 33),
+              onPressed: () => Navigator.pop(context));
+        }),
+        backgroundColor:
+            islightmode() ? lightColors.white : darkColors.goodblack,
         title: ShaderMask(
             shaderCallback: (bounds) => const LinearGradient(
                   colors: [Colors.red, Colors.blue],
@@ -711,14 +726,6 @@ class _SharePITDataScreenState extends State<SharePITDataScreen>
                     ),
                     child: Column(
                       children: [
-                        Text(
-                          'Scout Ops Pool ',
-                          style: GoogleFonts.museoModerno(
-                            fontSize: 30,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.white,
-                          ),
-                        ),
                         SizedBox(height: 10),
                         Text(
                           'Ensure all data is valid and ready to be sent to the FEDS server.',

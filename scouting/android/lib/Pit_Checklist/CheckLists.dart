@@ -6,6 +6,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:scouting_app/components/CameraComposit.dart';
 import 'package:scouting_app/main.dart';
+import 'package:scouting_app/services/Colors.dart';
 import 'package:scouting_app/services/DataBase.dart';
 import 'package:scouting_app/components/TextBox.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -447,7 +448,7 @@ class _Checklist_recordState extends State<Checklist_record> {
               color: !islightmode() ? Colors.transparent : Colors.transparent,
               onPressed: () => {});
         }),
-        backgroundColor: islightmode() ? Colors.white : Colors.black,
+        backgroundColor: islightmode() ? Colors.white : darkColors.goodblack,
         centerTitle: true,
         title: ShaderMask(
             shaderCallback: (bounds) => const LinearGradient(
