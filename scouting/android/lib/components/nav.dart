@@ -82,7 +82,7 @@ class NavBar extends StatelessWidget {
                           end: Alignment.bottomRight,
                         ).createShader(bounds),
                         child: Text(
-                          'MK1',
+                          'MK2',
                           style: GoogleFonts.museoModerno(
                             fontSize: 14,
                             color: const Color.fromARGB(255, 255, 255, 255),
