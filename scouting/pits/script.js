@@ -543,6 +543,8 @@ function animateCounter(elementId, targetValue) {
 function createCharts() {
     createDrivetrainChart();
     createEndgameChart();
+    createScoringCapabilityChart();
+    createAutonSuccessRate();
 }
 
 // Create drivetrain distribution chart
@@ -678,6 +680,393 @@ function createEndgameChart() {
     chartContainer.innerHTML = chartHTML;
 }
 
+// Function to create scoring capability pie chart
+function createScoringCapabilityChart() {
+    const chartContainer = document.getElementById("scoring-capability-chart");
+    if (!chartContainer) return;
+
+    // Calculate scoring data
+    const scoreTypes = {};
+    teamsData.forEach(team => {
+        if (!team.scoreType) return;
+
+        const types = team.scoreType.split(",").map(t => t.trim()).filter(t => t);
+        types.forEach(scoreType => {
+            scoreTypes[scoreType] = (scoreTypes[scoreType] || 0) + 1;
+        });
+    });
+
+    // Calculate percentages and prepare data for visualization
+    const total = Object.values(scoreTypes).reduce((sum, val) => sum + val, 0);
+    
+    // Sort data from highest to lowest percentage for better visualization
+    const sortedData = Object.entries(scoreTypes)
+        .sort((a, b) => b[1] - a[1])
+        .map(([type, count]) => ({
+            type,
+            count,
+            percentage: (count / total) * 100
+        }));
+    
+    // Use a more accessible color palette
+    const colors = [
+        "#4285f4", "#ea4335", "#fbbc04", "#34a853", 
+        "#46bdc6", "#7baaf7", "#ff7043", "#9c27b0", 
+        "#3f51b5", "#009688"
+    ];
+
+    // Create HTML structure for the chart
+    let chartHTML = `
+        <h3>Scoring Capabilities</h3>
+        <div class="chart-description">
+            Distribution of different scoring methods used by teams
+        </div>
+        <div class="pie-chart-container">
+            <div class="pie-chart-wrapper">
+                <svg viewBox="0 0 42 42" class="donut-chart">
+                    <circle class="donut-ring" cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#e6e6e6" stroke-width="3"></circle>
+    `;
+
+    let startAngle = 0;
+    let legendHTML = `<div class="chart-legend">`;
+    
+    sortedData.forEach((item, index) => {
+        const color = colors[index % colors.length];
+        const strokeDasharray = `${item.percentage} ${100 - item.percentage}`;
+        const strokeDashoffset = -startAngle;
+        
+        chartHTML += `
+            <circle class="donut-segment" 
+                cx="21" cy="21" r="15.91549430918954" 
+                fill="transparent" 
+                stroke="${color}" 
+                stroke-width="3" 
+                stroke-dasharray="${strokeDasharray}" 
+                stroke-dashoffset="${strokeDashoffset}"
+                data-type="${item.type}"
+                data-count="${item.count}"
+                data-percentage="${item.percentage.toFixed(1)}">
+                <title>${item.type}: ${item.percentage.toFixed(1)}% (${item.count} teams)</title>
+            </circle>
+        `;
+        
+        legendHTML += `
+            <div class="legend-item" data-type="${item.type}">
+                <span class="legend-color" style="background-color: ${color};"></span>
+                <span class="legend-label">${item.type}</span>
+                <span class="legend-value">${item.percentage.toFixed(1)}%</span>
+                <span class="legend-count">(${item.count})</span>
+            </div>
+        `;
+        
+        startAngle += item.percentage;
+    });
+    
+    chartHTML += `
+                <text x="21" y="21" class="donut-center-text">
+                    <tspan x="21" y="20" text-anchor="middle" class="donut-percent">${sortedData.length}</tspan>
+                    <tspan x="21" y="25" text-anchor="middle" class="donut-data">Types</tspan>
+                </text>
+            </svg>
+            <div class="chart-summary">
+                <div class="summary-box">
+                    <div class="summary-title">Total Scoring Methods</div>
+                    <div class="summary-value">${sortedData.length}</div>
+                </div>
+                <div class="summary-box">
+                    <div class="summary-title">Most Common</div>
+                    <div class="summary-value">${sortedData.length > 0 ? sortedData[0].type : 'N/A'}</div>
+                </div>
+            </div>
+        </div>
+        ${legendHTML}</div>
+    `;
+
+    // Render the chart
+    chartContainer.innerHTML = chartHTML;
+    
+    // Add interactive effects
+    const segments = chartContainer.querySelectorAll('.donut-segment');
+    const legendItems = chartContainer.querySelectorAll('.legend-item');
+    
+    // Add hover effects for pie segments
+    segments.forEach(segment => {
+        segment.addEventListener('mouseover', function() {
+            const type = this.getAttribute('data-type');
+            const count = this.getAttribute('data-count');
+            const percentage = this.getAttribute('data-percentage');
+            
+            // Highlight the segment
+            this.style.stroke = darkenColor(this.getAttribute('stroke'));
+            this.style.strokeWidth = '4';
+            
+            // Update center text
+            const percentText = chartContainer.querySelector('.donut-percent');
+            const dataText = chartContainer.querySelector('.donut-data');
+            if (percentText && dataText) {
+                percentText.textContent = `${percentage}%`;
+                dataText.textContent = type;
+            }
+            
+            // Highlight legend item
+            highlightLegendItem(type);
+        });
+        
+        segment.addEventListener('mouseout', function() {
+            // Restore original appearance
+            this.style.stroke = '';
+            this.style.strokeWidth = '3';
+            
+            // Restore center text
+            const percentText = chartContainer.querySelector('.donut-percent');
+            const dataText = chartContainer.querySelector('.donut-data');
+            if (percentText && dataText) {
+                percentText.textContent = sortedData.length;
+                dataText.textContent = 'Types';
+            }
+            
+            // Remove legend highlights
+            legendItems.forEach(item => {
+                item.classList.remove('highlighted');
+            });
+        });
+    });
+    
+    // Add hover effects for legend items
+    legendItems.forEach(item => {
+        item.addEventListener('mouseover', function() {
+            const type = this.getAttribute('data-type');
+            
+            // Highlight the segment
+            const segment = chartContainer.querySelector(`.donut-segment[data-type="${type}"]`);
+            if (segment) {
+                segment.style.stroke = darkenColor(segment.getAttribute('stroke'));
+                segment.style.strokeWidth = '4';
+                
+                // Update center text
+                const percentText = chartContainer.querySelector('.donut-percent');
+                const dataText = chartContainer.querySelector('.donut-data');
+                if (percentText && dataText) {
+                    percentText.textContent = segment.getAttribute('data-percentage') + '%';
+                    dataText.textContent = type;
+                }
+            }
+            
+            // Highlight this legend item
+            this.classList.add('highlighted');
+        });
+        
+        item.addEventListener('mouseout', function() {
+            // Restore original appearance for all segments
+            segments.forEach(segment => {
+                segment.style.stroke = '';
+                segment.style.strokeWidth = '3';
+            });
+            
+            // Restore center text
+            const percentText = chartContainer.querySelector('.donut-percent');
+            const dataText = chartContainer.querySelector('.donut-data');
+            if (percentText && dataText) {
+                percentText.textContent = sortedData.length;
+                dataText.textContent = 'Types';
+            }
+            
+            // Remove highlight from this item
+            this.classList.remove('highlighted');
+        });
+    });
+}
+
+// Helper function to darken a color for hover effect
+function darkenColor(color) {
+    // Convert hex to RGB
+    let r = parseInt(color.substring(1, 3), 16);
+    let g = parseInt(color.substring(3, 5), 16);
+    let b = parseInt(color.substring(5, 7), 16);
+    
+    // Darken by 20%
+    r = Math.max(0, Math.floor(r * 0.8));
+    g = Math.max(0, Math.floor(g * 0.8));
+    b = Math.max(0, Math.floor(b * 0.8));
+    
+    // Convert back to hex
+    return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+}
+
+// Helper function to highlight a legend item by type
+function highlightLegendItem(type) {
+    const legendItems = document.querySelectorAll('.legend-item');
+    legendItems.forEach(item => {
+        if (item.getAttribute('data-type') === type) {
+            item.classList.add('highlighted');
+        } else {
+            item.classList.remove('highlighted');
+        }
+    });
+}
+
+// Function to create auton success rate visualization
+function createAutonSuccessRate() {
+    const chartContainer = document.getElementById("auton-success-chart");
+    if (!chartContainer) return;
+    
+    // Count auton capabilities
+    const autonLeaveCount = teamsData.filter(team => team.leaveAuton === "Yes").length;
+    const autonNoLeaveCount = teamsData.filter(team => team.leaveAuton === "No").length;
+    const autonUnknownCount = teamsData.length - autonLeaveCount - autonNoLeaveCount;
+    const autonSuccessRate = Math.round((autonLeaveCount / teamsData.length) * 100) || 0;
+    
+    // Determine color based on success rate
+    let gaugeColor, gaugeStatus;
+    if (autonSuccessRate >= 70) {
+        gaugeColor = "#34a853"; // Green for high success
+        gaugeStatus = "High";
+    } else if (autonSuccessRate >= 40) {
+        gaugeColor = "#fbbc04"; // Yellow for medium success
+        gaugeStatus = "Medium";
+    } else {
+        gaugeColor = "#ea4335"; // Red for low success
+        gaugeStatus = "Low";
+    }
+    
+    // Create enhanced gauge visualization
+    let chartHTML = `
+        <h3>Autonomous Performance</h3>
+        <div class="chart-description">Teams that successfully navigate in autonomous mode</div>
+        
+        <div class="auton-stats-container">
+            <div class="auton-gauge-container">
+                <div class="semi-gauge">
+                    <svg viewBox="0 0 200 100" class="semi-gauge-svg">
+                        <!-- Background track -->
+                        <path 
+                            d="M20,90 A70,70 0 0,1 180,90" 
+                            stroke="#e0e0e0" 
+                            stroke-width="12" 
+                            fill="none" 
+                            stroke-linecap="round"
+                        ></path>
+                        
+                        <!-- Colored progress -->
+                        <path 
+                            class="gauge-progress" 
+                            d="M20,90 A70,70 0 0,1 180,90" 
+                            stroke="${gaugeColor}" 
+                            stroke-width="12" 
+                            fill="none" 
+                            stroke-linecap="round"
+                            stroke-dasharray="160"
+                            stroke-dashoffset="${160 - (160 * autonSuccessRate / 100)}"
+                        ></path>
+                        
+                        <!-- Center indicator -->
+                        <text x="100" y="85" text-anchor="middle" class="gauge-percentage">
+                            ${autonSuccessRate}%
+                        </text>
+                        
+                        <!-- Status text -->
+                        <text x="100" y="60" text-anchor="middle" class="gauge-status" fill="${gaugeColor}">
+                            ${gaugeStatus}
+                        </text>
+                        
+                        <!-- Min/Max labels -->
+                        <text x="20" y="110" text-anchor="middle" class="gauge-label">0%</text>
+                        <text x="180" y="110" text-anchor="middle" class="gauge-label">100%</text>
+                    </svg>
+                    
+                    <div class="gauge-annotation">
+                        Success Rate
+                    </div>
+                </div>
+            </div>
+            
+            <div class="auton-metrics">
+                <div class="auton-metric-item">
+                    <div class="auton-metric-value">${autonLeaveCount}</div>
+                    <div class="auton-metric-label">
+                        <div class="status-dot" style="background-color: #34a853;"></div>
+                        Successful
+                    </div>
+                </div>
+                <div class="auton-metric-item">
+                    <div class="auton-metric-value">${autonNoLeaveCount}</div>
+                    <div class="auton-metric-label">
+                        <div class="status-dot" style="background-color: #ea4335;"></div>
+                        Unsuccessful
+                    </div>
+                </div>
+                <div class="auton-metric-item">
+                    <div class="auton-metric-value">${autonUnknownCount}</div>
+                    <div class="auton-metric-label">
+                        <div class="status-dot" style="background-color: #9aa0a6;"></div>
+                        Unknown
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="auton-insights">
+            <div class="insight-header">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="${gaugeColor}">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+                </svg>
+                Autonomous Insight
+            </div>
+            <div class="insight-content">
+                ${getAutonInsight(autonSuccessRate, autonLeaveCount, teamsData.length)}
+            </div>
+        </div>
+        
+        ${autonLeaveCount > 0 ? `
+        <div class="auton-trend-container">
+            <div class="trend-title">Success Rate Comparison</div>
+            <div class="trend-bars">
+                <div class="trend-bar-container">
+                    <div class="trend-label">Your Data</div>
+                    <div class="trend-bar">
+                        <div class="trend-bar-fill" style="width: ${autonSuccessRate}%; background-color: ${gaugeColor};">
+                            <span class="trend-value">${autonSuccessRate}%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="trend-bar-container">
+                    <div class="trend-label">FRC Average</div>
+                    <div class="trend-bar">
+                        <div class="trend-bar-fill" style="width: 65%; background-color: #4285f4;">
+                            <span class="trend-value">65%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        ` : ''}
+    `;
+    
+    // Render the chart
+    chartContainer.innerHTML = chartHTML;
+}
+
+// Helper function to generate contextual insights based on auton success rate
+function getAutonInsight(successRate, successCount, totalCount) {
+    if (successCount === 0) {
+        return `No teams have reported autonomous navigation data yet. This data is crucial for understanding match starting strategies.`;
+    }
+    
+    if (totalCount < 5) {
+        return `With only ${totalCount} teams reporting data, the ${successRate}% success rate may not be statistically significant yet. Gather more data for better insights.`;
+    }
+    
+    if (successRate >= 75) {
+        return `Excellent autonomous performance! ${successRate}% of teams can successfully navigate in autonomous mode. This suggests high competition for early game advantages.`;
+    } else if (successRate >= 50) {
+        return `Good autonomous performance with ${successRate}% success rate. Teams with reliable autonomous routines will have a moderate advantage in the early game.`;
+    } else if (successRate >= 25) {
+        return `Below average autonomous performance at ${successRate}%. There's an opportunity for teams with strong autonomous capabilities to stand out.`;
+    } else {
+        return `Low autonomous success rate of ${successRate}%. Teams that can consistently navigate during autonomous will have a significant competitive advantage.`;
+    }
+}
+
 // Add this new function to generate smart insights based on data
 function generateSmartInsights() {
     const insightsContainer = document.getElementById("insights-container");
@@ -690,7 +1079,7 @@ function generateSmartInsights() {
     pyintelBadge.className = 'pyintel-badge';
     pyintelBadge.innerHTML = `
         <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8-8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
         </svg>
         Powered by PyIntel AI
     `;
@@ -822,185 +1211,231 @@ function generateAdvancedAnalytics() {
         sliderFill.style.width = `${climbPercentage}%`;
     }, 800);
     
-    // Generate team activity heatmap
+    // Enhanced Team Activity Heatmap
+    generateTeamActivityHeatmap();
+    
+    // Replace correlation analysis with top teams by capability
+    generateTopTeamsAnalysis();
+}
+
+// New function to generate enhanced team activity heatmap
+function generateTeamActivityHeatmap() {
     const heatmap = document.getElementById("team-activity-heatmap");
     heatmap.innerHTML = "";
     
-    // Create a simulated heatmap based on team capabilities
-    teamsData.slice(0, 20).forEach(team => {
-        const capabilities = [
-            team.auton ? 1 : 0,
-            team.drivetrain === "Swerve drive" ? 1 : 0,
-            team.endgame === "Deep Climb" ? 1 : team.endgame === "Shallow Climb" ? 0.7 : 0.3,
-            team.scoreType ? (team.scoreType.split(",").length / 3) : 0
-        ];
-        
-        const avgCapability = capabilities.reduce((sum, val) => sum + val, 0) / capabilities.length;
-        const hue = Math.floor(avgCapability * 120); // From red (0) to green (120)
-        
-        const cell = document.createElement("div");
-        cell.className = "heatmap-cell";
-        cell.style.backgroundColor = `hsl(${hue}, 80%, 60%)`;
-        cell.title = `Team ${team.team}: ${Math.round(avgCapability * 100)}% capability score`;
-        
-        heatmap.appendChild(cell);
+    // Create a proper header first
+    const header = document.createElement("div");
+    header.className = "heatmap-header";
+    header.innerHTML = `
+        <div class="heatmap-title">Team Capability Analysis</div>
+        <div class="heatmap-legend">
+            <div class="heatmap-legend-item">
+                <div class="heatmap-legend-color" style="background-color: hsl(0, 80%, 60%);"></div>
+                <div>Low</div>
+            </div>
+            <div class="heatmap-legend-item">
+                <div class="heatmap-legend-color" style="background-color: hsl(60, 80%, 60%);"></div>
+                <div>Medium</div>
+            </div>
+            <div class="heatmap-legend-item">
+                <div class="heatmap-legend-color" style="background-color: hsl(120, 80%, 60%);"></div>
+                <div>High</div>
+            </div>
+        </div>
+    `;
+    heatmap.appendChild(header);
+    
+    // Create heatmap container
+    const heatmapContainer = document.createElement("div");
+    heatmapContainer.className = "heatmap-container";
+    
+    // Add column labels
+    const labelsRow = document.createElement("div");
+    labelsRow.className = "heatmap-row heatmap-labels";
+    
+    const emptyLabel = document.createElement("div");
+    emptyLabel.className = "heatmap-team-number";
+    labelsRow.appendChild(emptyLabel);
+    
+    const capabilities = ["Mobility", "Scoring", "Endgame", "Overall"];
+    
+    capabilities.forEach(capability => {
+        const label = document.createElement("div");
+        label.className = "heatmap-label";
+        label.textContent = capability;
+        labelsRow.appendChild(label);
     });
     
-    // Generate correlation insights
+    heatmapContainer.appendChild(labelsRow);
+    
+    // Process up to 15 teams for the heatmap
+    teamsData.slice(0, 15).forEach((team, index) => {
+        const scoreValues = {
+            mobility: team.drivetrain === "Swerve drive" ? 0.9 : 
+                      team.drivetrain === "Tank drive" ? 0.6 : 0.3,
+            scoring: team.scoreType ? 
+                     Math.min(1, team.scoreType.split(",").length / 3) : 0.2,
+            endgame: team.endgame === "Deep Climb" ? 1 :
+                     team.endgame === "Shallow Climb" ? 0.7 : 0.3,
+        };
+        
+        // Calculate overall score
+        scoreValues.overall = (scoreValues.mobility + scoreValues.scoring + scoreValues.endgame) / 3;
+        
+        // Create a row for this team
+        const row = document.createElement("div");
+        row.className = "heatmap-row";
+        row.style.opacity = "0";
+        row.style.transform = "translateY(10px)";
+        row.style.animation = `fadeInUp 0.5s ease forwards ${index * 0.05 + 0.1}s`;
+        
+        // Add team number cell
+        const teamNumberCell = document.createElement("div");
+        teamNumberCell.className = "heatmap-team-number";
+        teamNumberCell.textContent = team.team || "N/A";
+        row.appendChild(teamNumberCell);
+        
+        // Add capability cells
+        Object.values(scoreValues).forEach(score => {
+            const cell = document.createElement("div");
+            cell.className = "heatmap-cell";
+            
+            // Generate color based on score
+            const hue = Math.floor(score * 120); // From red (0) to green (120)
+            cell.style.backgroundColor = `hsl(${hue}, 80%, 60%)`;
+            
+            // Add percentage inside the cell
+            const scorePercentage = Math.round(score * 100);
+            cell.innerHTML = `<span>${scorePercentage}%</span>`;
+            
+            row.appendChild(cell);
+        });
+        
+        heatmapContainer.appendChild(row);
+    });
+    
+    heatmap.appendChild(heatmapContainer);
+    
+    // Add tooltip to explain the heatmap
+    const tooltip = document.createElement("div");
+    tooltip.className = "heatmap-tooltip";
+    tooltip.innerHTML = `
+        <i class="material-icons">info</i>
+        <span>This visualization shows each team's capabilities across different aspects of gameplay.</span>
+    `;
+    heatmap.appendChild(tooltip);
+}
+
+// New function to replace correlation analysis with top teams by capability
+function generateTopTeamsAnalysis() {
     const correlationInsights = document.getElementById("correlation-insights");
     correlationInsights.innerHTML = "";
     
-    // Calculate some correlations
-    const swerveAndClimb = teamsData.filter(team => 
-        team.drivetrain === "Swerve drive" && 
-        (team.endgame === "Deep Climb" || team.endgame === "Shallow Climb")
-    ).length;
+    // Section title
+    const titleElement = document.createElement("div");
+    titleElement.className = "top-teams-title";
+    titleElement.innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M4,7h16v2H4V7z M4,13h16v-2H4V13z M4,17h7v-2H4V17z M4,21h7v-2H4V21z M15,15l5,6h-10L15,15z M15,9l-5-6h10L15,9z"/>
+        </svg>
+        Top Teams by Capability
+    `;
+    correlationInsights.appendChild(titleElement);
     
-    const swerveWithClimbPercentage = Math.round((swerveAndClimb / swerveTeams) * 100) || 0;
+    // Analyze teams to find top performers in different categories
+    const topEndgame = [...teamsData]
+        .filter(team => team.endgame === "Deep Climb")
+        .sort((a, b) => a.team - b.team)
+        .slice(0, 3)
+        .map(team => team.team);
+        
+    const topScoring = [...teamsData]
+        .filter(team => team.scoreType)
+        .sort((a, b) => (b.scoreType?.split(',').length || 0) - (a.scoreType?.split(',').length || 0))
+        .slice(0, 3)
+        .map(team => team.team);
+        
+    const topMobility = [...teamsData]
+        .filter(team => team.drivetrain === "Swerve drive" && team.leaveAuton === "Yes")
+        .sort((a, b) => a.team - b.team)
+        .slice(0, 3)
+        .map(team => team.team);
     
-    const tankTeamsCount = teamsData.filter(team => team.drivetrain === "Tank drive").length;
-    const tankAndClimb = teamsData.filter(team => 
-        team.drivetrain === "Tank drive" && 
-        (team.endgame === "Deep Climb" || team.endgame === "Shallow Climb")
-    ).length;
+    // Create card elements for each category
+    const categories = [
+        {
+            title: "Top Endgame",
+            teams: topEndgame,
+            color: "#34a853",
+            icon: "trending_up"
+        },
+        {
+            title: "Top Scoring",
+            teams: topScoring,
+            color: "#fbbc04",
+            icon: "sports_score"
+        },
+        {
+            title: "Top Mobility",
+            teams: topMobility,
+            color: "#1a73e8",
+            icon: "swipe"
+        }
+    ];
     
-    const tankWithClimbPercentage = Math.round((tankAndClimb / tankTeamsCount) * 100) || 0;
-    
-    correlationInsights.innerHTML = `
-        <div style="margin-bottom: 15px;">
-            <div style="font-weight: 500; margin-bottom: 5px;">Swerve Drive & Climbing:</div>
-            <div class="comparison-slider">
-                <div class="slider-fill" style="width: 0%"></div>
-                <div class="slider-label">Correlation</div>
-                <div class="slider-percentage">${swerveWithClimbPercentage}%</div>
+    // Create and append each category card
+    categories.forEach((category, index) => {
+        const card = document.createElement("div");
+        card.className = "top-team-category";
+        card.style.opacity = "0";
+        card.style.transform = "translateY(15px)";
+        card.style.animation = `fadeInUp 0.6s ease forwards ${index * 0.15 + 0.2}s`;
+        card.style.borderLeftColor = category.color;
+        
+        card.innerHTML = `
+            <div class="top-team-header">
+                <i class="material-icons" style="color: ${category.color}">${category.icon}</i>
+                <span>${category.title}</span>
             </div>
-        </div>
-        <div>
-            <div style="font-weight: 500; margin-bottom: 5px;">Tank Drive & Climbing:</div>
-            <div class="comparison-slider">
-                <div class="slider-fill" style="width: 0%"></div>
-                <div class="slider-label">Correlation</div>
-                <div class="slider-percentage">${tankWithClimbPercentage}%</div>
-            </div>
-        </div>
-    `;
-    
-    // Animate correlation sliders
-    setTimeout(() => {
-        const sliders = correlationInsights.querySelectorAll('.slider-fill');
-        sliders[0].style.width = `${swerveWithClimbPercentage}%`;
-        setTimeout(() => {
-            sliders[1].style.width = `${tankWithClimbPercentage}%`;
-        }, 200);
-    }, 1000);
-    
-    // Create new data visualizations
-    createScoringCapabilityChart();
-    createAutonSuccessRate();
-}
-
-// Function to create scoring capability pie chart
-function createScoringCapabilityChart() {
-    const chartContainer = document.getElementById("scoring-capability-chart");
-    if (!chartContainer) return;
-
-    // Calculate scoring data
-    const scoreTypes = {};
-    teamsData.forEach(team => {
-        if (!team.scoreType) return;
-
-        const types = team.scoreType.split(",").map(t => t.trim()).filter(t => t);
-        types.forEach(scoreType => {
-            scoreTypes[scoreType] = (scoreTypes[scoreType] || 0) + 1;
-        });
-    });
-
-    // Generate pie chart data
-    const total = Object.values(scoreTypes).reduce((sum, val) => sum + val, 0);
-    const colors = ["#4285f4", "#ea4335", "#fbbc04", "#34a853", "#46bdc6", "#7baaf7"];
-    let startAngle = 0;
-    let index = 0;
-
-    // Create pie chart HTML
-    let chartHTML = `
-        <h3>Scoring Capabilities</h3>
-        <div class="pie-chart-container">
-            <svg viewBox="0 0 32 32" class="pie-chart">
-    `;
-
-    Object.entries(scoreTypes).forEach(([type, count]) => {
-        const percentage = (count / total) * 100;
-        const angle = (percentage / 100) * 360;
-        const endAngle = startAngle + angle;
-        const color = colors[index % colors.length];
-
-        const x1 = 16 + 16 * Math.cos((startAngle - 90) * (Math.PI / 180));
-        const y1 = 16 + 16 * Math.sin((startAngle - 90) * (Math.PI / 180));
-        const x2 = 16 + 16 * Math.cos((endAngle - 90) * (Math.PI / 180));
-        const y2 = 16 + 16 * Math.sin((endAngle - 90) * (Math.PI / 180));
-        const largeArcFlag = angle > 180 ? 1 : 0;
-
-        chartHTML += `
-            <path d="M16,16 L${x1},${y1} A16,16 0 ${largeArcFlag},1 ${x2},${y2} Z" fill="${color}" />
-        `;
-
-        startAngle = endAngle;
-        index++;
-    });
-
-    chartHTML += `
-            </svg>
-            <div class="chart-legend">
-    `;
-
-    // Add legend
-    index = 0;
-    Object.entries(scoreTypes).forEach(([type, count]) => {
-        const percentage = ((count / total) * 100).toFixed(1);
-        const color = colors[index % colors.length];
-        chartHTML += `
-            <div class="legend-item">
-                <span class="legend-color" style="background-color: ${color};"></span>
-                <span class="legend-label">${type}</span>
-                <span class="legend-value">${percentage}%</span>
+            <div class="top-team-content">
+                ${category.teams.length > 0 ? 
+                    category.teams.map(team => 
+                        `<div class="top-team-badge" style="background: linear-gradient(45deg, ${category.color}, ${lightenColor(category.color, 20)})">
+                            Team ${team}
+                        </div>`
+                    ).join('') : 
+                    `<div class="no-teams">No teams match criteria</div>`
+                }
             </div>
         `;
-        index++;
+        
+        correlationInsights.appendChild(card);
     });
-
-    chartHTML += `
-            </div>
-        </div>
-    `;
-
-    chartContainer.innerHTML = chartHTML;
+    
+    // Add a "View All Teams" button
+    const viewAllBtn = document.createElement("button");
+    viewAllBtn.className = "view-all-teams-btn";
+    viewAllBtn.innerHTML = `<i class="material-icons">visibility</i> View All Teams`;
+    viewAllBtn.addEventListener("click", () => {
+        document.getElementById("teams-table").scrollIntoView({behavior: "smooth"});
+    });
+    correlationInsights.appendChild(viewAllBtn);
 }
 
-// Function to create auton success rate visualization
-function createAutonSuccessRate() {
-    const chartContainer = document.getElementById("auton-success-chart");
-    if (!chartContainer) return;
+// Helper function to lighten a color
+function lightenColor(hex, percent) {
+    // Convert hex to RGB
+    let r = parseInt(hex.substring(1, 3), 16);
+    let g = parseInt(hex.substring(3, 5), 16);
+    let b = parseInt(hex.substring(5, 7), 16);
     
-    // Count auton capabilities
-    const autonLeaveCount = teamsData.filter(team => team.leaveAuton === "Yes").length;
-    const autonSuccessRate = Math.round((autonLeaveCount / teamsData.length) * 100) || 0;
+    // Lighten by percentage
+    r = Math.min(255, Math.floor(r * (1 + percent / 100)));
+    g = Math.min(255, Math.floor(g * (1 + percent / 100)));
+    b = Math.min(255, Math.floor(b * (1 + percent / 100)));
     
-    // Create gauge chart
-    let chartHTML = `
-        <h3>Auton Success Rate</h3>
-        <div style="padding: 20px; text-align: center;">
-            <div class="gauge-chart">
-                <div class="gauge-value" style="--percentage: ${autonSuccessRate}%">
-                    <span>${autonSuccessRate}%</span>
-                </div>
-            </div>
-            <div style="margin-top: 15px; font-weight: 500; color: var(--dark-gray);">
-                Teams that successfully leave starting zone in auton
-            </div>
-        </div>
-    `;
-    
-    chartContainer.innerHTML = chartHTML;
+    // Convert back to hex
+    return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
 }
 
 // New function to generate AI-powered performance predictions
@@ -1087,7 +1522,7 @@ function renderPredictions(predictions, container) {
     let predictionsHTML = `
         <div class="pyintel-badge">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8-8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
             </svg>
             Powered by PyIntel AI
         </div>
@@ -1108,6 +1543,7 @@ function renderPredictions(predictions, container) {
             
             <div style="display: flex; flex-wrap: wrap; gap: 20px; margin-top: 20px;">
     `;
+
     
     // Add strengths section with enhanced styling
     if (predictions.strengths.length > 0) {
