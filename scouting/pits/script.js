@@ -248,9 +248,12 @@ function displayTeamsData() {
 }
 
 function extractGoogleDriveFileId(url) {
+    if (!url) return null; 
     const match = url.match(/(?:\/d\/|id=)([a-zA-Z0-9_-]+)/);
+    console.log(match);
     return match ? match[1] : null;
 }
+
 
 function showTeamDetails(team) {
     const modalTitle = document.getElementById("modal-team-title");
@@ -896,66 +899,80 @@ function generateAdvancedAnalytics() {
     createAutonSuccessRate();
 }
 
-// Function to create scoring capability chart
+// Function to create scoring capability pie chart
 function createScoringCapabilityChart() {
     const chartContainer = document.getElementById("scoring-capability-chart");
     if (!chartContainer) return;
-    
+
     // Calculate scoring data
     const scoreTypes = {};
     teamsData.forEach(team => {
         if (!team.scoreType) return;
-        
-        const type = team.scoreType;
-        const types = type.split(",").map(t => t.trim()).filter(t => t);
-        
+
+        const types = team.scoreType.split(",").map(t => t.trim()).filter(t => t);
         types.forEach(scoreType => {
             scoreTypes[scoreType] = (scoreTypes[scoreType] || 0) + 1;
         });
     });
-    
-    // Create pie chart
-    let chartHTML = `
-        <h3>Scoring Capabilities</h3>
-        <div style="height: 220px; display: flex; justify-content: center; align-items: center; margin-top: 20px;">
-            <div class="pie-chart">
-    `;
-    
-    const colors = ["#4285f4", "#ea4335", "#fbbc04", "#34a853", "#46bdc6", "#7baaf7"];
+
+    // Generate pie chart data
     const total = Object.values(scoreTypes).reduce((sum, val) => sum + val, 0);
-    
+    const colors = ["#4285f4", "#ea4335", "#fbbc04", "#34a853", "#46bdc6", "#7baaf7"];
     let startAngle = 0;
     let index = 0;
-    let legendHTML = `<div class="chart-legend">`;
-    
+
+    // Create pie chart HTML
+    let chartHTML = `
+        <h3>Scoring Capabilities</h3>
+        <div class="pie-chart-container">
+            <svg viewBox="0 0 32 32" class="pie-chart">
+    `;
+
     Object.entries(scoreTypes).forEach(([type, count]) => {
         const percentage = (count / total) * 100;
-        const angle = (percentage * 3.6); // 3.6 degrees per percentage point for a circle
+        const angle = (percentage / 100) * 360;
         const endAngle = startAngle + angle;
         const color = colors[index % colors.length];
-        
+
+        const x1 = 16 + 16 * Math.cos((startAngle - 90) * (Math.PI / 180));
+        const y1 = 16 + 16 * Math.sin((startAngle - 90) * (Math.PI / 180));
+        const x2 = 16 + 16 * Math.cos((endAngle - 90) * (Math.PI / 180));
+        const y2 = 16 + 16 * Math.sin((endAngle - 90) * (Math.PI / 180));
+        const largeArcFlag = angle > 180 ? 1 : 0;
+
         chartHTML += `
-            <div class="pie-segment" style="
-                --start-angle: ${startAngle}deg;
-                --end-angle: ${endAngle}deg;
-                --color: ${color};
-            "></div>
+            <path d="M16,16 L${x1},${y1} A16,16 0 ${largeArcFlag},1 ${x2},${y2} Z" fill="${color}" />
         `;
-        
-        legendHTML += `
-            <div class="legend-item">
-                <span class="legend-color" style="background-color: ${color}"></span>
-                <span class="legend-label">${type}</span>
-                <span class="legend-value">${Math.round(percentage)}%</span>
-            </div>
-        `;
-        
+
         startAngle = endAngle;
         index++;
     });
-    
-    chartHTML += `</div>${legendHTML}</div>`;
-    
+
+    chartHTML += `
+            </svg>
+            <div class="chart-legend">
+    `;
+
+    // Add legend
+    index = 0;
+    Object.entries(scoreTypes).forEach(([type, count]) => {
+        const percentage = ((count / total) * 100).toFixed(1);
+        const color = colors[index % colors.length];
+        chartHTML += `
+            <div class="legend-item">
+                <span class="legend-color" style="background-color: ${color};"></span>
+                <span class="legend-label">${type}</span>
+                <span class="legend-value">${percentage}%</span>
+            </div>
+        `;
+        index++;
+    });
+
+    chartHTML += `
+            </div>
+        </div>
+    `;
+
     chartContainer.innerHTML = chartHTML;
 }
 
