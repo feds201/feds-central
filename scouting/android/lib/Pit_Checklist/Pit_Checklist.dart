@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -2624,7 +2623,7 @@ class PitCheckListPageState extends State<PitCheckListPage>
       "chassisTreadConditions": checklistData.chassis_tread_conditions,
       "chassisWires": checklistData.chassis_wires,
       "chassisBumpers": checklistData.chassis_bumpers,
-      "chassisCamera": checklistData.chassis_camera, 
+      "chassisCamera": checklistData.chassis_camera,
       "chassisLimelightProtectors": checklistData.chassis_limelight_protectors,
       "ethernetFrontLeftLimelight": checklistData.ethernet_front_left_limelight,
       "ethernetFrontRightLimelight":
