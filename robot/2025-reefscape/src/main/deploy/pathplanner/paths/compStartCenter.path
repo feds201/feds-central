@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.1370000000000005,
-        "y": 4.186834016393442
+        "x": 7.176,
+        "y": 2.94275
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.6370000000000005,
-        "y": 4.186834016393442
+        "x": 6.676,
+        "y": 2.94275
       },
       "isLocked": false,
       "linkedName": "compCenterStart"
@@ -48,7 +48,7 @@
   "folder": "compCenter",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 178.63607246839715
   },
   "useDefaultConstraints": false
 }

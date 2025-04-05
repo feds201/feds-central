@@ -7,6 +7,7 @@ package frc.robot.commands.swanNeck;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.lift.RotateElevatorDownPID;
 import frc.robot.commands.lift.RotateElevatorPID;
 import frc.robot.constants.RobotMap.ElevatorMap;
@@ -38,6 +39,7 @@ public class IntakeCoralSequence extends SequentialCommandGroup {
     new SpinSwanWheels(m_SwanNeckWheels, ()-> IntakeMap.WHEEL_SPEED_INTAKE).until(m_SwanNeck :: getCoralLoaded),
     new SpinSwanWheels(m_SwanNeckWheels, ()-> IntakeMap.WHEEL_SPEED_INTAKE).until(m_SwanNeck :: getCoralLoadedOpposite),
     new SpinSwanWheels(m_SwanNeckWheels, ()-> -IntakeMap.WHEEL_SPEED_INTAKE/2).until(m_SwanNeck :: getCoralLoaded),
+    new ParallelDeadlineGroup(new WaitCommand(.08),new SpinSwanWheels(m_SwanNeckWheels, ()-> -IntakeMap.WHEEL_SPEED_INTAKE/2)),
     new RaiseSwanNeckPID(()-> IntakeMap.ReefStops.SAFEANGLE, m_SwanNeck).until(m_SwanNeck :: pidAtSetpoint)),
     new RotateElevatorPID(elevator, ()-> 1.3)
 

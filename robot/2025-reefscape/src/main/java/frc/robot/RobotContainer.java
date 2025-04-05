@@ -106,7 +106,7 @@ import frc.robot.utils.Telemetry;
 public class RobotContainer extends RobotFramework {
 
     private final SwerveSubsystem swerveSubsystem;
-    private final CommandXboxController driverController;
+    public final CommandXboxController driverController;
     private final CommandXboxController operatorController;
     private final CommandXboxController testController;
     private Telemetry telemetry;
@@ -290,11 +290,11 @@ public class RobotContainer extends RobotFramework {
         //Triggers 
         new Trigger(elevator :: getElevatorAboveThreshold).and(elevator :: getElevatorAtBelowL4).and(RobotModeTriggers.teleop())
             .onTrue(new ConfigureHologenicDrive(driverController, DrivetrainConstants.drivetrain))
-            .onFalse(ConfigureHologenicDrive(driverController, swerveSubsystem, elevator));
+            .onFalse(ConfigureHologenicDrive(driverController, swerveSubsystem));
 
         new Trigger(elevator :: getElevatorAtBarge).and(RobotModeTriggers.teleop())
             .onTrue(new ConfigureSlowDrive(driverController, DrivetrainConstants.drivetrain, 0.07))
-            .onFalse(ConfigureHologenicDrive(driverController, swerveSubsystem, elevator));
+            .onFalse(ConfigureHologenicDrive(driverController, swerveSubsystem));
        
         new Trigger (driverController.rightTrigger().and(frontLeftCamera :: twoTagsDetected))
             .whileTrue(DrivetrainConstants.drivetrain.runOnce(()-> DrivetrainConstants.drivetrain.resetRotation(new Rotation2d(frontLeftCamera.getMetatagYawRadians()))));
@@ -351,12 +351,26 @@ public class RobotContainer extends RobotFramework {
         //Getting Algae From Reef
         operatorController.rightBumper()
             .onTrue(new retriveAlgae(elevator, swanNeck, swanNeckWheels, ElevatorMap.LOWALGAEROTATION))
-            .onFalse(new ParallelCommandGroup(new RotateElevatorDownPID(elevator), new SpinSwanWheels(swanNeckWheels, ()-> IntakeMap.ALGAE_WHEEL_SPEED), new RaiseSwanNeckPID(()-> IntakeMap.ReefStops.SAFEANGLE, swanNeck)));
-        
+            .onFalse( new ParallelCommandGroup(new SpinSwanWheels(swanNeckWheels, ()-> IntakeMap.ALGAE_WHEEL_SPEED), new SequentialCommandGroup(
+                new RaiseSwanNeckPID(()-> IntakeMap.ReefStops.BARGEANGLE, swanNeck).until(swanNeck :: pidAtSetpoint),
+                new ParallelDeadlineGroup(new WaitCommand(.3), new MoveBack(DrivetrainConstants.drivetrain)),
+                new ParallelCommandGroup(ConfigureHologenicDrive(driverController, swerveSubsystem),
+                new RotateElevatorDownPID(elevator).until(elevator :: pidDownAtSetpoint)
+                )
+                )));
+       
        operatorController.rightTrigger()
             .onTrue( new retriveAlgae(elevator, swanNeck, swanNeckWheels, ElevatorMap.HIGHALGAEROTATION))
-            .onFalse(new ParallelCommandGroup(new RotateElevatorDownPID(elevator), new SpinSwanWheels(swanNeckWheels, ()-> IntakeMap.ALGAE_WHEEL_SPEED), new RaiseSwanNeckPID(()-> IntakeMap.ReefStops.SAFEANGLE, swanNeck)));
+            .onFalse( new ParallelCommandGroup(new SpinSwanWheels(swanNeckWheels, ()-> IntakeMap.ALGAE_WHEEL_SPEED), new SequentialCommandGroup(
+                new RaiseSwanNeckPID(()-> IntakeMap.ReefStops.BARGEANGLE, swanNeck).until(swanNeck :: pidAtSetpoint),
+                new ParallelDeadlineGroup(new WaitCommand(.3), new MoveBack(DrivetrainConstants.drivetrain)),
+                new ParallelCommandGroup(ConfigureHologenicDrive(driverController, swerveSubsystem),
+                new RotateElevatorDownPID(elevator).until(elevator :: pidDownAtSetpoint)
+                )
+                )));
 
+        operatorController.start().whileTrue(new ParallelCommandGroup(new RaiseSwanNeckPID(()-> 0.0966, swanNeck), new SpinSwanWheels(swanNeckWheels, ()-> IntakeMap.ALGAE_WHEEL_SPEED)))
+        .onFalse(new ParallelDeadlineGroup(new WaitCommand(2), new SpinSwanWheels(swanNeckWheels, ()-> -IntakeMap.ALGAE_WHEEL_SPEED)));
         //Bring Down Elevator
         operatorController.leftBumper()
             .whileTrue(new RotateElevatorDownPID(elevator));
@@ -412,8 +426,9 @@ public class RobotContainer extends RobotFramework {
 
         //Back-Out For Algae
         driverController.povDown()
-            .whileTrue(new MoveBack(DrivetrainConstants.drivetrain));
-        
+            // .whileTrue(new MoveBack(DrivetrainConstants.drivetrain));
+        .whileTrue( new ParallelDeadlineGroup(new WaitCommand(.3), new MoveBack(DrivetrainConstants.drivetrain)).andThen(ConfigureHologenicDrive(driverController, swerveSubsystem))
+        );
     }
 
     private void setupEventTriggers(){
@@ -449,7 +464,7 @@ public class RobotContainer extends RobotFramework {
 
 
     public void setupDrivetrain() {
-        teleOpChooser.setDefaultOption("Holo-Genic Drive", ConfigureHologenicDrive(driverController, swerveSubsystem, elevator));
+        teleOpChooser.setDefaultOption("Holo-Genic Drive", ConfigureHologenicDrive(driverController, swerveSubsystem));
         teleOpChooser.addOption("Arcade Drive", ConfigureArcadeDrive(driverController, swerveSubsystem));
         teleOpChooser.addOption("Tank Drive", ConfigureTankDrive(driverController, swerveSubsystem));
         teleOpChooser.addOption("Orbit Mode (Beta)", ConfigureOrbitMode(driverController, swerveSubsystem));

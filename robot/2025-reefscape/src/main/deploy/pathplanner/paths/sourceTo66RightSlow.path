@@ -3,40 +3,40 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.176,
-        "y": 2.94275
+        "x": 1.6303278688524592,
+        "y": 7.351588114754097
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.989855626598765,
-        "y": 3.134140102211434
+        "x": 2.471065573770492,
+        "y": 6.765549180327867
       },
       "isLocked": false,
-      "linkedName": "compCenterStart"
+      "linkedName": "coralStationCenter"
     },
     {
       "anchor": {
-        "x": 5.75,
-        "y": 3.8787499999999993
+        "x": 3.35655737704918,
+        "y": 5.433555327868853
       },
       "prevControl": {
-        "x": 5.927887823518159,
-        "y": 3.703091461226695
+        "x": 2.566807377049179,
+        "y": 6.353331967213116
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "2/6left"
+      "linkedName": "sourceTo66RightEnd"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 0.6976653696498071,
+      "minWaypointRelativePos": 0.8548553719008265,
       "maxWaypointRelativePos": 1.0,
       "constraints": {
-        "maxVelocity": 1.0,
-        "maxAcceleration": 2.0,
+        "maxVelocity": 3.0,
+        "maxAcceleration": 3.0,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
         "nominalVoltage": 12.0,
@@ -48,21 +48,21 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.5,
-    "maxAcceleration": 3.5,
+    "maxAcceleration": 4.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 180.0
+    "velocity": 0.0,
+    "rotation": -59.99999999999999
   },
   "reversed": false,
-  "folder": "compCenter",
+  "folder": "compLeft",
   "idealStartingState": {
-    "velocity": 0,
-    "rotation": 178.63607246839715
+    "velocity": 0.0,
+    "rotation": -54.0
   },
   "useDefaultConstraints": false
 }

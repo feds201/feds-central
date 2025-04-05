@@ -85,17 +85,18 @@ public class posePathfindToReef extends Command {
     leftLimelight = leftCamera;
     addRequirements(swerve);
 
-    if(DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red){
-      reefSideTagPoses = RedReefTagLocations.REDREEFTAGS;
-    } else {
-      reefSideTagPoses = BlueReefTagLocations.BLUEREEFTAGS;
-    }
+    
 
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    if(DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red){
+      reefSideTagPoses = RedReefTagLocations.REDREEFTAGS;
+    } else {
+      reefSideTagPoses = BlueReefTagLocations.BLUEREEFTAGS;
+    }
     // tagIdRight = rightLimelight.GetAprilTag();
     // tagIdLeft = leftLimelight.GetAprilTag();
 

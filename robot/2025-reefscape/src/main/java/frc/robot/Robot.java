@@ -29,6 +29,7 @@ import frc.robot.commands.swerve.ConfigureHologenicDrive;
 import frc.robot.constants.ComandCenter;
 import frc.robot.constants.RobotMap;
 import frc.robot.utils.AutonTester;
+import frc.robot.utils.DrivetrainConstants;
 import frc.robot.utils.LocalADStarAK;
 import frc.robot.utils.RobotTester;
 import frc.robot.utils.SafetyManager;
@@ -172,7 +173,12 @@ public class Robot extends TimedRobot
     /** This method is called periodically during operator control. */
     @Override
     public void teleopPeriodic() {
-        robotContainer.setupVisionImplantsTele();
+        if(Math.abs(DrivetrainConstants.drivetrain.getState().Pose.getX() - 8.775) <  1.775){
+            robotContainer.setupVisionImplantsTele();
+        } else {
+            robotContainer.setupVisionImplantsAuto();
+        }
+        
         // SmartDashboard.putNumberArray("limelight5 blue", robotContainer.frontLeftCamera.getBotposeBlue());
         // SmartDashboard.putNumber("robot yaw", robotContainer.frontLeftCamera.getMetatagYaw());
     }

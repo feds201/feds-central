@@ -92,13 +92,13 @@ public class RobotMap {
         public static final double ELEVATOR_P = .55; //.53
         public static final double ELEVATOR_I = 0;
         public static final double ELEVATOR_D = 0;
-        public static final double ELEVATOR_G = 0.53; ///.5
-        public static final double ELEVATOR_S = 0.25; //.245
+        public static final double ELEVATOR_G = 0.55; ///.5
+        public static final double ELEVATOR_S = 0.255; //.245
         public static final double PARENT_GEAR_RADIUS = Units.inchesToMeters(2.5);
         public static final double ELEVATOR_CIRCUMFERENCE = 2 * Math.PI * PARENT_GEAR_RADIUS;
-        public static final double ELEVATOR_CURRENT_LIMIT = 50;
+        public static final double ELEVATOR_CURRENT_LIMIT = 50.0;
         public static final double L1ROTATION = 4.472;
-        public static final double LOWALGAEROTATION = 7.5;
+        public static final double LOWALGAEROTATION = 8.0;
         public static final double HIGHALGAEROTATION = 15.5;
         public static final double L2ROTATION = 9.3;
         public static final double L3ROTATION = 15.7;
@@ -197,9 +197,10 @@ public class RobotMap {
 
         public static class ReefStops {
             public static final double L4ANGLE = .113;
+            // public static final double ELEVATORRAISEONREEFANGLE = 0.013;
             public static final double STARTANGLE = .00;
             public static final double SAFEANGLE = .04; //0.04
-            public static final double AGAINSTREEFANGLE = .04;
+            public static final double AGAINSTREEFANGLE = .013;
             public static final double INTAKEANGLE = .016;
             public static final double BARGEANGLE = .022;
             public static final double L1ANGLE = .01;  // TODO tune it!

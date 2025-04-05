@@ -33,7 +33,7 @@ public class RobotFramework {
          * @return the command to configure hologenic drive.
          */
         public Command ConfigureHologenicDrive(CommandXboxController driverController,
-                        SwerveSubsystem swerveSubsystem, Lift elevator){
+                        SwerveSubsystem swerveSubsystem){
                                 
                 return new ParallelCommandGroup(
                                 DrivetrainConstants.drivetrain.applyRequest(() -> DrivetrainConstants.drive
