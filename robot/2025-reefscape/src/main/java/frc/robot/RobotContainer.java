@@ -351,8 +351,8 @@ public class RobotContainer extends RobotFramework {
         //Getting Algae From Reef
         operatorController.rightBumper()
             .onTrue(new retriveAlgae(elevator, swanNeck, swanNeckWheels, ElevatorMap.LOWALGAEROTATION))
-            .onFalse( new ParallelCommandGroup(new SpinSwanWheels(swanNeckWheels, ()-> IntakeMap.ALGAE_WHEEL_SPEED), new SequentialCommandGroup(
-                new RaiseSwanNeckPID(()-> IntakeMap.ReefStops.BARGEANGLE, swanNeck).until(swanNeck :: pidAtSetpoint),
+            .onFalse( new ParallelCommandGroup(new SpinSwanWheels(swanNeckWheels, ()-> IntakeMap.ALGAE_WHEEL_SPEED), new RaiseSwanNeckPID(()-> IntakeMap.ReefStops.BARGEANGLE, swanNeck), new SequentialCommandGroup(
+                new WaitCommand(10).until(swanNeck :: pidAtSetpoint),
                 new ParallelDeadlineGroup(new WaitCommand(.3), new MoveBack(DrivetrainConstants.drivetrain)),
                 new ParallelCommandGroup(ConfigureHologenicDrive(driverController, swerveSubsystem),
                 new RotateElevatorDownPID(elevator).until(elevator :: pidDownAtSetpoint)
@@ -361,8 +361,8 @@ public class RobotContainer extends RobotFramework {
        
        operatorController.rightTrigger()
             .onTrue( new retriveAlgae(elevator, swanNeck, swanNeckWheels, ElevatorMap.HIGHALGAEROTATION))
-            .onFalse( new ParallelCommandGroup(new SpinSwanWheels(swanNeckWheels, ()-> IntakeMap.ALGAE_WHEEL_SPEED), new SequentialCommandGroup(
-                new RaiseSwanNeckPID(()-> IntakeMap.ReefStops.BARGEANGLE, swanNeck).until(swanNeck :: pidAtSetpoint),
+            .onFalse( new ParallelCommandGroup(new SpinSwanWheels(swanNeckWheels, ()-> IntakeMap.ALGAE_WHEEL_SPEED), new RaiseSwanNeckPID(()-> IntakeMap.ReefStops.BARGEANGLE, swanNeck), new SequentialCommandGroup(
+                new WaitCommand(10).until(swanNeck :: pidAtSetpoint),
                 new ParallelDeadlineGroup(new WaitCommand(.3), new MoveBack(DrivetrainConstants.drivetrain)),
                 new ParallelCommandGroup(ConfigureHologenicDrive(driverController, swerveSubsystem),
                 new RotateElevatorDownPID(elevator).until(elevator :: pidDownAtSetpoint)
@@ -454,6 +454,7 @@ public class RobotContainer extends RobotFramework {
         NamedCommands.registerCommand("UpToBarge", new PlaceBarge(elevator, swanNeck, swanNeckWheels));
         NamedCommands.registerCommand("ScoreBarge", new ParallelDeadlineGroup(new WaitCommand(1), new RotateElevatorPID(elevator, ()-> ElevatorMap.BARGEROTATION),  new SpinSwanWheels(swanNeckWheels, ()-> -IntakeMap.ALGAE_WHEEL_SPEED)));
         NamedCommands.registerCommand("DownFromBarge", new SequentialCommandGroup( new RaiseSwanNeckPIDAlgae(()-> IntakeMap.ReefStops.BARGEANGLE, swanNeck).until(swanNeck :: pidAtSetpoint), new RotateElevatorDownPID(elevator).until(elevator :: pidDownAtSetpoint)));
+        NamedCommands.registerCommand("L1", new PlaceLOne(elevator, swanNeck, swanNeckWheels));
     }
 
     public void setupPaths() {

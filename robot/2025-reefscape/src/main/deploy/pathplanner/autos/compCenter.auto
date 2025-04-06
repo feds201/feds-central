@@ -5,9 +5,33 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "MetatagRelativeYaw"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "MetatagRelativeYaw"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "MetatagRelativeYaw"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "MetatagRelativeYaw"
+          }
+        },
+        {
           "type": "wait",
           "data": {
-            "waitTime": 4.0
+            "waitTime": 0.1
           }
         },
         {
@@ -19,7 +43,7 @@
         {
           "type": "named",
           "data": {
-            "name": "L4"
+            "name": "L1"
           }
         }
       ]

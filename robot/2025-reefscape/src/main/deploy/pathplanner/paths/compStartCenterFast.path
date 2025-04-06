@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.989855626598765,
-        "y": 3.134140102211434
+        "x": 7.18063524590164,
+        "y": 3.959067622950819
       },
       "isLocked": false,
       "linkedName": "compCenterStart"
@@ -20,8 +20,8 @@
         "y": 3.8787499999999993
       },
       "prevControl": {
-        "x": 5.927887823518159,
-        "y": 3.703091461226695
+        "x": 6.017827868852459,
+        "y": 3.839190573770491
       },
       "nextControl": null,
       "isLocked": false,
@@ -35,7 +35,7 @@
       "minWaypointRelativePos": 0.6976653696498071,
       "maxWaypointRelativePos": 1.0,
       "constraints": {
-        "maxVelocity": 1.0,
+        "maxVelocity": 0.9,
         "maxAcceleration": 2.0,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
@@ -47,8 +47,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.5,
-    "maxAcceleration": 3.5,
+    "maxVelocity": 3.0,
+    "maxAcceleration": 2.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,

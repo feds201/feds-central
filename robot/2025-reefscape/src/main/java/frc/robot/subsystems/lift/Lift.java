@@ -187,7 +187,7 @@ public class Lift extends SubsystemABS {
     }
 
     public boolean getElevatorAboveThreshold(){
-        return getEncoderValue() > RobotMap.ElevatorMap.L3ROTATION - 1;
+        return getEncoderValue() > RobotMap.ElevatorMap.L3ROTATION + 1;
     }
 
     public boolean getElevatorAtBelowL4(){
