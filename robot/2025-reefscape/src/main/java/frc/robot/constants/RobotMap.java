@@ -200,7 +200,7 @@ public class RobotMap {
             // public static final double ELEVATORRAISEONREEFANGLE = 0.013;
             public static final double STARTANGLE = .00;
             public static final double SAFEANGLE = .04; //0.04
-            public static final double AGAINSTREEFANGLE = .013;
+            public static final double AGAINSTREEFANGLE = .0234;
             public static final double INTAKEANGLE = .016;
             public static final double BARGEANGLE = .022;
             public static final double L1ANGLE = .01;  // TODO tune it!
