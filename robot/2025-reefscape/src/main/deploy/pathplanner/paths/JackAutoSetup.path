@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.772,
-        "y": 3.8397499999999996
+        "x": 6.73725,
+        "y": 6.27725
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.0069231551964775,
-        "y": 3.754244964168582
+        "x": 6.97125,
+        "y": 6.95
       },
       "isLocked": false,
-      "linkedName": "2/6left"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.75,
-        "y": 4.030993852459016
+        "x": 7.1370000000000005,
+        "y": 7.584
       },
       "prevControl": {
-        "x": 5.999300720507656,
-        "y": 4.0496794285636915
+        "x": 6.961500000000001,
+        "y": 7.0865
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "2/6algae"
+      "linkedName": "JackStart"
     }
   ],
   "rotationTargets": [],
@@ -45,7 +45,7 @@
     "rotation": 180.0
   },
   "reversed": false,
-  "folder": "compCenter",
+  "folder": "compJack",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 180.0

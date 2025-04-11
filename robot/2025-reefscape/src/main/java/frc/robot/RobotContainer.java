@@ -127,6 +127,9 @@ public class RobotContainer extends RobotFramework {
     private Lift elevator;
     private SwanNeck swanNeck;
     private SwanNeckWheels swanNeckWheels;
+    private PathPlannerPath leftAutoPath;
+    private PathPlannerPath centerAutoPath;
+    private PathPlannerPath jackAutoPath;
 
     private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
 
@@ -199,6 +202,9 @@ public class RobotContainer extends RobotFramework {
         autonChooser = AutoBuilder.buildAutoChooser();
         setupPaths();
         SmartDashboard.putData(autonChooser);
+        leftAutoPath = AutoPathFinder.loadPath("LeftAutoSetup");
+        centerAutoPath = AutoPathFinder.loadPath("CenterAutoSetup");
+        jackAutoPath = AutoPathFinder.loadPath("JackAutoSetup");
         configureBindings();
 
         telemetry = new Telemetry(SafetyMap.kMaxSpeed);
@@ -281,6 +287,10 @@ public class RobotContainer extends RobotFramework {
 
     private void configureBindings() {
         //Test Controller
+
+        testController.povLeft().onTrue(AutoBuilder.pathfindThenFollowPath(leftAutoPath, AutonConstraints.kPathConstraints));
+        testController.povUp().onTrue(AutoBuilder.pathfindThenFollowPath(centerAutoPath, AutonConstraints.kPathConstraints));
+        testController.povDown().onTrue(AutoBuilder.pathfindThenFollowPath(jackAutoPath, AutonConstraints.kPathConstraints));
         testController.a()
             .whileTrue(new ServoOut(climber));
 
@@ -428,7 +438,7 @@ public class RobotContainer extends RobotFramework {
         //Back-Out For Algae
         driverController.povDown()
             // .whileTrue(new MoveBack(DrivetrainConstants.drivetrain));
-        .whileTrue( new ParallelDeadlineGroup(new WaitCommand(.3), new MoveBack(DrivetrainConstants.drivetrain)).andThen(ConfigureHologenicDrive(driverController, swerveSubsystem))
+        .whileTrue(  new MoveBack(DrivetrainConstants.drivetrain)
         );
     }
 

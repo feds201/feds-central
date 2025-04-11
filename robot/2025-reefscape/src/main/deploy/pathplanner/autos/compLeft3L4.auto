@@ -59,9 +59,22 @@
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "sequential",
                 "data": {
-                  "pathName": "StartTurnTo16LeftSlow"
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "StartTurnTo16LeftSlow"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "CompLeftMidTo16Right"
+                      }
+                    }
+                  ]
                 }
               },
               {
@@ -102,7 +115,7 @@
         {
           "type": "named",
           "data": {
-            "name": "L4SpinRelease"
+            "name": "L4Fast"
           }
         },
         {
@@ -142,9 +155,22 @@
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "sequential",
                 "data": {
-                  "pathName": "sourceTo66RightSlow"
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "sourceTo66RightSlow"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.25
+                      }
+                    }
+                  ]
                 }
               },
               {
@@ -219,9 +245,22 @@
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "sequential",
                 "data": {
-                  "pathName": "sourceTo66Left"
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "sourceTo66Left"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.25
+                      }
+                    }
+                  ]
                 }
               },
               {

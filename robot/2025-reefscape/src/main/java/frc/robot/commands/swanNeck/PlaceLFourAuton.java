@@ -35,7 +35,7 @@ public class PlaceLFourAuton extends SequentialCommandGroup {
     m_elevator = lift;
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
-    addCommands(new RaiseSwanNeckPID(() -> IntakeMap.ReefStops.AGAINSTREEFANGLE, m_SwanNeck).until(m_SwanNeck::pidAtSetpoint),
+    addCommands(
 
         new RotateElevatorPID(m_elevator, () -> ElevatorMap.L4ROTATION).until(m_elevator::pidAtSetpoint),
 

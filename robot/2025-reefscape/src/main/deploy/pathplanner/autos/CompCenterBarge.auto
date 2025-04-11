@@ -5,6 +5,36 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "MetatagRelativeYaw"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "MetatagRelativeYaw"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "MetatagRelativeYaw"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "MetatagRelativeYaw"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "MetatagRelativeYaw"
+          }
+        },
+        {
           "type": "parallel",
           "data": {
             "commands": [
@@ -19,15 +49,28 @@
                 "data": {
                   "commands": [
                     {
-                      "type": "wait",
+                      "type": "deadline",
                       "data": {
-                        "waitTime": 1.0
+                        "commands": [
+                          {
+                            "type": "wait",
+                            "data": {
+                              "waitTime": 1.5
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "L3Infinite"
+                            }
+                          }
+                        ]
                       }
                     },
                     {
                       "type": "named",
                       "data": {
-                        "name": "L4Fast"
+                        "name": "L4Height"
                       }
                     }
                   ]
@@ -37,9 +80,28 @@
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "Center26RightToAlgae"
+            "name": "L4Fast"
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Center26RightToAlgae"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ElevatorDown"
+                }
+              }
+            ]
           }
         },
         {
@@ -53,7 +115,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 1.5
+                        "waitTime": 3.0
                       }
                     },
                     {

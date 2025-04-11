@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.772,
-        "y": 3.8397499999999996
+        "x": 0.6922500000000004,
+        "y": 6.66725
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.0069231551964775,
-        "y": 3.754244964168582
+        "x": 1.4039999999999997,
+        "y": 5.8385
       },
       "isLocked": false,
-      "linkedName": "2/6left"
+      "linkedName": "leftSourceRight"
     },
     {
       "anchor": {
-        "x": 5.75,
-        "y": 4.030993852459016
+        "x": 2.6032500000000005,
+        "y": 4.09325
       },
       "prevControl": {
-        "x": 5.999300720507656,
-        "y": 4.0496794285636915
+        "x": 2.291250000000001,
+        "y": 4.4735000000000005
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "2/6algae"
+      "linkedName": "JackPre56Right"
     }
   ],
   "rotationTargets": [],
@@ -33,7 +33,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 0.5,
+    "maxVelocity": 3.0,
     "maxAcceleration": 3.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
@@ -41,14 +41,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 180.0
+    "velocity": 0.7,
+    "rotation": 0.0
   },
   "reversed": false,
-  "folder": "compCenter",
+  "folder": "compJack",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": -55.0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

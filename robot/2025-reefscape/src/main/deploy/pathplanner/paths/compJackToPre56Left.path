@@ -3,40 +3,45 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.6303278688524592,
-        "y": 7.351588114754097
+        "x": 7.1370000000000005,
+        "y": 7.584
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.5070286885245903,
-        "y": 6.789524590163933
+        "x": 0.9262500000050071,
+        "y": 6.521000000003754
       },
       "isLocked": false,
-      "linkedName": "coralStationCenter"
+      "linkedName": "JackStart"
     },
     {
       "anchor": {
-        "x": 3.7161885245901636,
-        "y": 5.63734631147541
+        "x": 2.535,
+        "y": 4.346749999999999
       },
       "prevControl": {
-        "x": 3.1527663934426227,
-        "y": 6.32064549180328
+        "x": 1.0919999999999999,
+        "y": 4.7757499999999995
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "sourceTo66LeftEnd"
+      "linkedName": "JackPre56Left"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.2809443507588531,
+      "rotationDegrees": -59.99999999999999
+    }
+  ],
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 0.92,
+      "minWaypointRelativePos": 0.8813229571984446,
       "maxWaypointRelativePos": 1.0,
       "constraints": {
-        "maxVelocity": 3.0,
-        "maxAcceleration": 0.5,
+        "maxVelocity": 0.7,
+        "maxAcceleration": 3.5,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
         "nominalVoltage": 12.0,
@@ -47,8 +52,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 4.0,
+    "maxVelocity": 4.0,
+    "maxAcceleration": 3.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -56,13 +61,13 @@
   },
   "goalEndState": {
     "velocity": 0.7,
-    "rotation": -59.99999999999999
+    "rotation": 0.0
   },
   "reversed": false,
-  "folder": "compLeft",
+  "folder": "compJack",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -54.0
+    "rotation": 180.0
   },
   "useDefaultConstraints": false
 }

@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.1566598360655735,
-        "y": 3.024026639344262
+        "x": 7.157,
+        "y": 3.0109999999999992
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.6566598360655735,
-        "y": 3.024026639344262
+        "x": 6.657,
+        "y": 3.0109999999999992
       },
       "isLocked": false,
       "linkedName": "compCenterStart"

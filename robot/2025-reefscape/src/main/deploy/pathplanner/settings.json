@@ -3,12 +3,13 @@
   "robotLength": 0.864,
   "holonomicMode": true,
   "pathFolders": [
-    "faceCenters",
+    "compJack",
     "Pole Places",
     "climberLocations",
     "compCenter",
     "compLeft",
-    "compRight"
+    "compRight",
+    "faceCenters"
   ],
   "autoFolders": [],
   "defaultMaxVel": 3.0,

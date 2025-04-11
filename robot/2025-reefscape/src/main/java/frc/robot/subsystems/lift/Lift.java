@@ -62,8 +62,8 @@ public class Lift extends SubsystemABS {
         pid.setTolerance(.2);
 
         pidDown = new PIDController(0.4, 0, 0);
-        pidDown.setTolerance(.1);
-        pidDown.setSetpoint(.5);
+        pidDown.setTolerance(.2);
+        pidDown.setSetpoint(1.3);
 
         pidL3 = new PIDController(0.4, 0, 0);
         pidL3.setTolerance(0.05);
