@@ -457,6 +457,7 @@ public class RobotContainer extends RobotFramework {
         NamedCommands.registerCommand("L4", new PlaceLFour(elevator, swanNeck, swanNeckWheels).andThen(new RotateElevatorSafePID(elevator).until(elevator :: pidL3AtSetpoint)));
         NamedCommands.registerCommand("L4Fast", new PlaceLFourAuton(elevator, swanNeck, swanNeckWheels));
         NamedCommands.registerCommand("MetatagRelativeYaw", DrivetrainConstants.drivetrain.runOnce(()-> DrivetrainConstants.drivetrain.resetRotation(new Rotation2d(frontLeftCamera.getMetatagYawRadians()))));
+        NamedCommands.registerCommand("MetatagRelativeYawSafe", DrivetrainConstants.drivetrain.runOnce(()-> DrivetrainConstants.drivetrain.resetRotation(new Rotation2d(frontLeftCamera.getMetatagYawRadians()))).onlyIf(frontLeftCamera :: twoTagsDetected));
         NamedCommands.registerCommand("MetatagRelativeYawRight", DrivetrainConstants.drivetrain.runOnce(()-> DrivetrainConstants.drivetrain.resetRotation(new Rotation2d(frontRightCamera.getMetatagYawRadians()))));
         NamedCommands.registerCommand("ElevatorDown", new SequentialCommandGroup(new RaiseSwanNeckPID(()-> ReefStops.SAFEANGLE, swanNeck).until(swanNeck :: pidAtSetpoint), new RotateElevatorDownPID(elevator).until(elevator :: pidDownAtSetpoint) ));
         NamedCommands.registerCommand("Feed", new IntakeCoralSequence(swanNeck, swanNeckWheels, elevator));

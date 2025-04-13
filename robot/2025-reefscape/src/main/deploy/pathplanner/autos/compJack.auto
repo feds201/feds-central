@@ -120,37 +120,37 @@
         {
           "type": "named",
           "data": {
-            "name": "MetatagRelativeYaw"
+            "name": "MetatagRelativeYawSafe"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "MetatagRelativeYaw"
+            "name": "MetatagRelativeYawSafe"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "MetatagRelativeYaw"
+            "name": "MetatagRelativeYawSafe"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "MetatagRelativeYaw"
+            "name": "MetatagRelativeYawSafe"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "MetatagRelativeYaw"
+            "name": "MetatagRelativeYawSafe"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "MetatagRelativeYaw"
+            "name": "MetatagRelativeYawSafe"
           }
         }
       ]
