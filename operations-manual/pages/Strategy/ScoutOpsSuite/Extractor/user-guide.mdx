@@ -1,0 +1,217 @@
+---
+title: User Guide
+---
+
+import { Callout } from 'nextra/components'
+import { Tabs, Tab } from 'nextra/components'
+
+# Scout Ops Extractor User Guide
+
+This guide provides detailed instructions on using the Scout Ops Extractor application for retrieving, processing, and analyzing FRC competition data.
+
+## Application Interface
+
+![Scout Ops Extractor Interface](/images/extractor-interface.png)
+
+The Scout Ops Extractor has a tabbed interface with the following main sections:
+
+1. **Blue Alliance Data** - Collect and convert data from The Blue Alliance API
+2. **Match Statistics** - Generate match predictions and team insights
+
+## Getting Started
+
+### Obtaining API Keys
+
+Before using Scout Ops Extractor, you'll need to obtain an API key from The Blue Alliance:
+
+1. Visit [The Blue Alliance](https://www.thebluealliance.com/account)
+2. Create an account or log in to your existing account
+3. Navigate to the "Account" section
+4. Request an API key by providing a description of your usage
+5. Copy the provided API key for use in Scout Ops Extractor
+
+<Callout type="warning">
+  Keep your API key secure and never share it publicly. The Blue Alliance has rate limits that apply to each API key.
+</Callout>
+
+### Understanding Event Keys
+
+Throughout Scout Ops Extractor, you'll need to use event keys to identify specific FRC events:
+
+- Event keys follow the format: `[year][event_code]`
+- Example: `2025miket` for the 2025 Kettering University District event
+
+You can find event codes on The Blue Alliance website by looking at the URL for an event:
+- For example, `https://www.thebluealliance.com/event/2025miket` has the event key `2025miket`
+
+## Using The Blue Alliance Data Tab
+
+The Blue Alliance Data tab allows you to retrieve and convert data from The Blue Alliance API.
+
+### Fetching Event Data
+
+1. Enter your TBA API Key in the designated field
+2. Enter the Event Key for the competition you're interested in
+3. Specify an output directory or use the default
+4. Select whether to update existing files or create a new folder
+5. Click "Fetch and Convert TBA Data"
+
+<Callout type="info">
+  By default, data will be saved in a new timestamped folder. Enable "Update existing files" to overwrite previous data.
+</Callout>
+
+### Understanding Output Files
+
+After fetching data, several CSV files will be generated:
+
+- **event_info.csv** - Basic information about the event
+- **teams.csv** - List of teams participating in the event
+- **matches.csv** - Complete match schedule with detailed scoring information
+- **rankings.csv** - Current team rankings at the event
+- **alliances.csv** - Alliance selections for playoff matches
+
+These files provide a comprehensive snapshot of the event and can be used for further analysis in spreadsheet applications.
+
+## Using the Match Statistics Tab
+
+The Match Statistics tab provides advanced features for match predictions and team insights.
+
+### Generating Match Predictions
+
+To generate predictions for a specific match:
+
+1. Enter your TBA API Key
+2. Enter the Event Key
+3. Specify the Match Number
+4. Select the Match Type (qm, qf, sf, f) from the dropdown
+   - qm = Qualification Match
+   - qf = Quarter Final
+   - sf = Semi Final
+   - f = Final
+5. Choose an output directory
+6. Click "Fetch Match Data"
+
+The application will retrieve match data from both The Blue Alliance and Statbotics, combining them to create a detailed prediction.
+
+<Tabs items={['Prediction Output', 'Data Format']}>
+  <Tab>
+    The match prediction combines:
+    
+    - Team compositions for each alliance
+    - Historical performance metrics (OPR/EPA)
+    - Expected scoring breakdowns
+    - Win probability for each alliance
+    
+    This information is presented in both JSON and CSV formats for flexibility.
+  </Tab>
+  <Tab>
+    The combined JSON output follows this structure:
+    ```json
+    {
+      "match_key": "2025miket_qm42",
+      "event_key": "2025miket",
+      "comp_level": "qm",
+      "set_number": 1,
+      "match_number": 42,
+      "alliances": {
+        "red": { ... team data ... },
+        "blue": { ... team data ... }
+      },
+      "predictions": {
+        "red_score": 65.8,
+        "blue_score": 72.3,
+        "red_win_prob": 0.42,
+        "blue_win_prob": 0.58
+      },
+      "teams": { ... detailed team data ... }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+### Generating Team Insights
+
+To generate comprehensive statistics for all teams at an event:
+
+1. Enter your TBA API Key
+2. Enter the Event Key
+3. Choose an output directory
+4. Click "Generate Team Insights"
+
+This process will:
+- Fetch team data from The Blue Alliance
+- Retrieve statistical metrics from Statbotics
+- Combine and process the data
+- Generate a CSV file with key performance indicators
+
+<Callout type="info">
+  Team insights generation may take some time for events with many teams, as the application makes individual API requests for each team's data.
+</Callout>
+
+### Understanding Team Insights Data
+
+The generated "All_Team_Insights.csv" file contains valuable information about each team:
+
+| Column | Description |
+|---------|-------------|
+| team | Team number |
+| nickname | Team name |
+| city | Team's city |
+| state | Team's state/province |
+| country | Team's country |
+| opr | Offensive Power Rating from TBA |
+| epa_current | Current EPA score from Statbotics |
+| epa_recent | Recent EPA trend from Statbotics |
+| epa_mean | Mean EPA over the season |
+| epa_max | Maximum EPA achieved |
+| wins | Win count |
+| losses | Loss count |
+| ties | Tie count |
+| win_rate | Win percentage |
+
+This data is sorted by EPA to help identify top-performing teams quickly.
+
+## Advanced Usage
+
+### Working with Data Files
+
+After generating data, you can:
+
+1. Import CSV files into spreadsheet applications like Excel or Google Sheets
+2. Create pivot tables to analyze team performances
+3. Import into data visualization tools like Tableau
+4. Use custom scripts to further process the data
+
+### Automated Workflows
+
+For competition use, consider these workflows:
+
+1. **Pre-Event Preparation:**
+   - Run "Fetch and Convert TBA Data" to get the team list and historical data
+   - Generate "Team Insights" to analyze expected performance
+
+2. **During Qualification Matches:**
+   - Run "Fetch Match Data" before important matches to get predictions
+   - Update event data periodically to track ranking changes
+
+3. **Alliance Selection:**
+   - Update "Team Insights" to get the latest performance metrics
+   - Use the data to inform alliance selection strategy
+
+## Saving and Loading Settings
+
+Scout Ops Extractor remembers your settings between sessions, including:
+
+- API keys
+- Event keys
+- Output directories
+
+This makes it easy to quickly generate updated reports throughout a competition without re-entering all the configuration details.
+
+## Exporting Data For Other Scout Ops Tools
+
+The data generated by Scout Ops Extractor is designed to integrate with other components of the Scout Ops Suite:
+
+- Team and match data can be imported into PyIntel Scoutz for advanced analytics
+- Alliance prediction data can be used by drive teams for match strategy
+- Performance metrics can validate and supplement data collected through Scout-Ops-Android

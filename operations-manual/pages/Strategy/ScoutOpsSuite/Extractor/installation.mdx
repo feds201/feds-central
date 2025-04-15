@@ -1,0 +1,186 @@
+---
+title: Installation Guide
+---
+
+import { Callout } from 'nextra/components'
+import { Steps } from 'nextra/components'
+
+# Scout Ops Extractor Installation Guide
+
+This guide will walk you through the process of installing and setting up Scout Ops Extractor on your computer. The application requires Python and several dependencies to function properly.
+
+## Prerequisites
+
+Before installing Scout Ops Extractor, ensure your system meets these requirements:
+
+- Operating System: Windows 10/11, macOS 10.14+, or Linux
+- Python 3.7 or newer
+- Internet connection for downloading dependencies and accessing APIs
+- 100MB of free disk space
+
+## Python Installation
+
+<Steps>
+### Download Python
+Visit the [official Python website](https://www.python.org/downloads/) and download the latest Python 3 release for your operating system.
+
+### Run the installer
+Execute the downloaded file and ensure you select:
+- "Add Python to PATH" (Windows)
+- "Install pip" option
+
+### Verify installation
+Open a terminal or command prompt and run:
+```bash
+python --version
+pip --version
+```
+You should see the Python and pip versions displayed.
+</Steps>
+
+## Installing Scout Ops Extractor
+
+<Steps>
+### Download the application
+Clone the repository or download from GitHub:
+```bash
+git clone https://github.com/feds201/Scout-Ops-Extractor.git
+```
+Or download the ZIP file and extract it to a convenient location.
+
+### Navigate to the application directory
+```bash
+cd Scout-Ops-Extractor
+```
+
+### Install required dependencies
+```bash
+pip install -r requirements.txt
+```
+
+If no requirements.txt is available, install the core dependencies manually:
+```bash
+pip install PyQt5 requests
+```
+</Steps>
+
+<Callout type="info">
+  For team environments, you might want to create a virtual environment to avoid dependency conflicts with other Python applications.
+</Callout>
+
+## Setting Up a Virtual Environment (Optional)
+
+Using a virtual environment is recommended to isolate the application's dependencies:
+
+<Steps>
+### Create a virtual environment
+```bash
+# Windows
+python -m venv scout_ops_env
+
+# macOS/Linux
+python3 -m venv scout_ops_env
+```
+
+### Activate the virtual environment
+```bash
+# Windows
+scout_ops_env\Scripts\activate
+
+# macOS/Linux
+source scout_ops_env/bin/activate
+```
+
+### Install dependencies within the virtual environment
+```bash
+pip install PyQt5 requests
+```
+
+### Deactivate when finished
+```bash
+deactivate
+```
+</Steps>
+
+## Creating a Desktop Shortcut
+
+### Windows
+
+1. Right-click on your desktop and select "New > Shortcut"
+2. Enter the following command:
+   ```
+   pythonw.exe "PATH_TO_EXTRACTOR\scout_ops_extractor.py"
+   ```
+   Replace `PATH_TO_EXTRACTOR` with the actual path to the application folder
+3. Click "Next" and give the shortcut a name like "Scout Ops Extractor"
+4. Right-click the new shortcut, select "Properties"
+5. Click "Change Icon" and browse to an appropriate icon file
+6. Click "OK" to save changes
+
+### macOS
+
+1. Create a new text file with the following content:
+   ```bash
+   #!/bin/bash
+   cd /path/to/Scout-Ops-Extractor
+   python3 scout_ops_extractor.py
+   ```
+2. Save the file as `launch_scout_ops.command`
+3. Make the file executable:
+   ```bash
+   chmod +x launch_scout_ops.command
+   ```
+4. Move the file to Applications or create an alias on your desktop
+
+## Troubleshooting Installation Issues
+
+### Missing Dependencies
+
+If you encounter errors related to missing modules, install them using pip:
+
+```bash
+pip install [module_name]
+```
+
+Common dependencies that might need manual installation:
+- PyQt5
+- requests
+- json
+- csv
+- datetime
+
+### PyQt5 Installation Problems
+
+If PyQt5 installation fails, try the following alternatives:
+
+```bash
+# Option 1: Install PyQt5 binary wheels
+pip install PyQt5-sip
+pip install PyQt5
+
+# Option 2: Use conda (if you have Anaconda/Miniconda installed)
+conda install pyqt
+```
+
+### Permission Errors
+
+If you encounter permission errors on Linux or macOS:
+
+```bash
+# Install dependencies with sudo
+sudo pip3 install PyQt5 requests
+
+# Or use the --user flag
+pip3 install --user PyQt5 requests
+```
+
+## Next Steps
+
+After installation is complete:
+
+1. Obtain an API key from [The Blue Alliance](https://www.thebluealliance.com/account)
+2. Launch the application
+3. Enter your API key in the settings
+4. Test the connection by fetching data for a recent event
+
+Now you're ready to use Scout Ops Extractor! Refer to the [User Guide](./user-guide) for detailed instructions on using the application.

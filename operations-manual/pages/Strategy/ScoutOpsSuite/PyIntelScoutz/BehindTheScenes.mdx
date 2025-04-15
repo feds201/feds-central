@@ -1,0 +1,78 @@
+---
+title: Behind the Scenes God Simulation
+---
+import MatchSimulator from './MatchSimulator';
+
+# Behind the Scenes: Match Prediction God Simulation
+
+This page explains and demonstrates the advanced simulation engine that powers the match prediction system. The simulation models each team's match as a dynamic decision tree, where outcomes adapt to both team statistics and user-defined parameters.
+
+## How the Simulation Works
+
+1. **Team Profiles**: Each team is modeled with statistical data (mean, standard deviation, consistency, climbing %, etc.) for each match phase.
+2. **Decision Trees**: For every phase (Autonomous, Teleop, Endgame, Defense), the simulation uses a decision tree. Each node represents a possible action or outcome, with probabilities based on team stats and simulation inputs.
+3. **Dynamic Inputs**: Simulation parameters (e.g., aggression, defense, random seed) can be adjusted. The decision tree adapts in real time, changing the simulation path and outcomes.
+4. **Adaptive Outcomes**: Each simulation run is unique. The tree branches based on both historical data and random factors, reflecting real-world unpredictability.
+
+## Example Simulation Flow
+
+```python
+import numpy as np
+
+class TeamProfile:
+    def __init__(self, auton_mean, teleop_mean, endgame_mean, defense_prob, climb_prob, stddevs):
+        self.auton_mean = auton_mean
+        self.teleop_mean = teleop_mean
+        self.endgame_mean = endgame_mean
+        self.defense_prob = defense_prob
+        self.climb_prob = climb_prob
+        self.stddevs = stddevs
+
+def simulate_phase(mean, stddev):
+    return np.random.normal(mean, stddev)
+
+def simulate_decision(prob):
+    return np.random.rand() < prob
+
+def simulate_team(team: TeamProfile, params):
+    # Autonomous
+    auton_score = simulate_phase(team.auton_mean, team.stddevs['auton'])
+    # Teleop
+    teleop_score = simulate_phase(team.teleop_mean, team.stddevs['teleop'])
+    # Endgame: decision tree
+    if simulate_decision(team.climb_prob):
+        endgame_score = 15  # Deep climb
+    elif simulate_decision(team.climb_prob * 0.5):
+        endgame_score = 10  # Shallow climb
+    else:
+        endgame_score = 5 if simulate_decision(0.3) else 0  # Park or nothing
+    # Defense
+    defense_score = 5 if simulate_decision(team.defense_prob) else 0
+    # Total
+    return auton_score + teleop_score + endgame_score + defense_score
+
+def simulate_match(red_teams, blue_teams, params):
+    red_score = sum(simulate_team(team, params) for team in red_teams)
+    blue_score = sum(simulate_team(team, params) for team in blue_teams)
+    return red_score, blue_score
+```
+
+## Adaptive Decision Trees
+
+- The simulation tree changes based on input parameters (e.g., toggling "aggressive defense" increases defense probability and may reduce scoring).
+- Each run can be visualized or logged to show the decision path for every team.
+
+## Machine Learning Integration
+
+- Simulation results are fed into an XGBoost model for win probability, using features like total phase scores and defense value.
+- The model adapts as more data is collected, improving prediction accuracy.
+
+## Visualization
+
+- Phase-by-phase breakdowns and decision paths can be visualized with stacked bar charts and color gradients, as described in the [Match Prediction Mathematics](../MatchPredictionMathematics.mdx) document.
+
+<MatchSimulator />
+
+---
+
+This simulation engine combines statistical rigor, adaptive decision trees, and machine learning to provide a realistic, flexible, and powerful match prediction system.

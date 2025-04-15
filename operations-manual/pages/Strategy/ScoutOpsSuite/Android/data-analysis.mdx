@@ -1,0 +1,313 @@
+---
+title: Data Analysis Guide
+---
+
+# Scout-Ops-Android Data Analysis Guide
+
+This guide is designed for data analysts and scouting leads who need to process, analyze, and visualize the data collected through the Scout-Ops-Android application.
+
+## Data Export Formats
+
+Scout-Ops-Android exports data in multiple formats:
+
+### QR Code Format
+
+QR codes contain a compressed JSON string with the following structure:
+
+```json
+{
+  "match_number": "Q42",
+  "team_number": "201",
+  "alliance_color": "red",
+  "alliance_position": 1,
+  "scouter_name": "John Doe",
+  "timestamp": "2025-04-12T14:30:00Z",
+  "autonomous": {
+    "starting_position": { "x": 2.5, "y": 1.8 },
+    "mobility": true,
+    "scoring": {
+      "amp": 1,
+      "speaker": 2,
+      "source_pickup": 3
+    }
+  },
+  "teleop": {
+    "scoring": {
+      "amp": 4,
+      "speaker": 6,
+      "trap": 1,
+      "source_pickup": 8
+    },
+    "defense_time_seconds": 15
+  },
+  "endgame": {
+    "climb_attempted": true,
+    "climb_successful": true,
+    "climb_position": "deep",
+    "harmony_achieved": false
+  },
+  "comments": "Fast cycle times, struggled with trap scoring"
+}
+```
+
+### CSV Export Format
+
+The CSV export contains all match data in a tabular format with the following columns:
+
+| Column Name | Description | Data Type |
+|-------------|-------------|-----------|
+| match_id | Match identifier (e.g., "Q42") | String |
+| team_number | FRC team number | String |
+| alliance_color | "red" or "blue" | String |
+| alliance_position | Position 1-3 | Integer |
+| scouter_name | Name of the scout | String |
+| timestamp | UTC timestamp | DateTime |
+| auto_mobility | Whether robot moved in auto | Boolean |
+| auto_amp_count | Notes scored in amp during auto | Integer |
+| auto_speaker_count | Notes scored in speaker during auto | Integer |
+| auto_source_pickup | Notes picked up from source during auto | Integer |
+| teleop_amp_count | Notes scored in amp during teleop | Integer |
+| teleop_speaker_count | Notes scored in speaker during teleop | Integer |
+| teleop_trap_count | Notes scored in trap during teleop | Integer |
+| teleop_source_pickup | Notes picked up from source during teleop | Integer |
+| defense_time_seconds | Time spent playing defense | Integer |
+| climb_attempted | Whether robot attempted to climb | Boolean |
+| climb_successful | Whether climb was successful | Boolean |
+| climb_position | "none", "park", "shallow", or "deep" | String |
+| harmony_achieved | Whether harmony was achieved with alliance partners | Boolean |
+| comments | Scout's comments about robot performance | String |
+
+## Data Processing Pipeline
+
+### Step 1: Data Collection
+
+Data is collected through:
+- QR code scanning
+- Bluetooth PAN transfers
+- Manual CSV uploads
+
+### Step 2: Data Cleaning
+
+Before analysis, perform these data cleaning steps:
+
+1. **Remove duplicates**:
+   ```python
+   import pandas as pd
+   
+   # Load data
+   df = pd.read_csv('scouting_data.csv')
+   
+   # Remove duplicates based on match and team
+   df = df.drop_duplicates(subset=['match_id', 'team_number'])
+   ```
+
+2. **Handle missing values**:
+   ```python
+   # Fill missing numeric values with 0
+   numeric_columns = df.select_dtypes(include=['int', 'float']).columns
+   df[numeric_columns] = df[numeric_columns].fillna(0)
+   
+   # Fill missing boolean values with False
+   boolean_columns = ['auto_mobility', 'climb_attempted', 'climb_successful']
+   for col in boolean_columns:
+       df[col] = df[col].fillna(False)
+   ```
+
+3. **Validate data ranges**:
+   ```python
+   # Ensure counts are non-negative
+   count_columns = [col for col in df.columns if 'count' in col]
+   for col in count_columns:
+       df.loc[df[col] < 0, col] = 0
+   ```
+
+### Step 3: Metric Calculation
+
+Calculate key performance metrics:
+
+1. **Total Scoring**:
+   ```python
+   df['total_amp_score'] = df['auto_amp_count'] + df['teleop_amp_count']
+   df['total_speaker_score'] = df['auto_speaker_count'] + df['teleop_speaker_count']
+   df['total_score'] = (
+       df['total_amp_score'] * 2 +       # Amp = 2 points
+       df['total_speaker_score'] * 5 +   # Speaker = 5 points
+       df['teleop_trap_count'] * 5       # Trap = 5 points
+   )
+   ```
+
+2. **Cycle Time Estimation**:
+   ```python
+   # Estimate cycle time in seconds
+   total_game_pieces = (
+       df['total_amp_score'] + 
+       df['total_speaker_score'] + 
+       df['teleop_trap_count']
+   )
+   
+   # 135 seconds of scoring time (150 - 15 seconds for auton)
+   df['estimated_cycle_time'] = 135 / total_game_pieces.replace(0, 1)
+   ```
+
+3. **Consistency Rating**:
+   ```python
+   # Group by team and calculate standard deviation of scores
+   team_consistency = df.groupby('team_number')['total_score'].std().reset_index()
+   team_consistency.columns = ['team_number', 'score_std_dev']
+   
+   # Lower std dev = more consistent
+   team_consistency['consistency_rating'] = 10 - (team_consistency['score_std_dev'] / 10).clip(0, 10)
+   ```
+
+### Step 4: Team Performance Analysis
+
+Aggregate metrics by team:
+
+```python
+team_performance = df.groupby('team_number').agg({
+    'total_score': ['mean', 'median', 'std', 'min', 'max', 'count'],
+    'auto_mobility': 'mean',  # % of matches with mobility
+    'climb_successful': 'mean',  # % of successful climbs
+    'climb_attempted': 'mean',  # % of climb attempts
+    'defense_time_seconds': 'mean'  # Average defense time
+}).reset_index()
+
+# Rename columns for clarity
+team_performance.columns = [
+    'team_number', 'avg_score', 'median_score', 'score_std_dev', 
+    'min_score', 'max_score', 'match_count', 'mobility_rate',
+    'climb_success_rate', 'climb_attempt_rate', 'avg_defense_time'
+]
+```
+
+## Data Visualization with Tableau
+
+Scout-Ops-Android data can be imported directly into Tableau for visualization:
+
+### Recommended Visualization Types
+
+1. **Team Performance Dashboard**:
+   - Bar charts showing average scores by team
+   - Heat maps showing scoring consistency
+   - Line charts showing performance trends over matches
+
+2. **Alliance Selection Helper**:
+   - Scatter plots of teams by scoring vs. climbing ability
+   - Parallel coordinates plots for multi-dimensional comparison
+   - Radar charts comparing performance across categories
+
+3. **Match Prediction Tools**:
+   - Stacked bar charts comparing predicted alliance performance
+   - Histogram showing predicted score distributions
+   - Heat maps showing alliance compatibility
+
+### Tableau Setup Steps
+
+1. Connect to the CSV data source
+2. Create calculated fields for key metrics
+3. Build interactive dashboards with filters for:
+   - Match type (Qualification, Playoff)
+   - Team number
+   - Alliance color
+   - Specific capabilities (climbing, defense, etc.)
+
+## Integration with PyIntel Scoutz
+
+For advanced analysis, the data can be integrated with PyIntel Scoutz:
+
+```python
+from pyintel_scoutz import ScoutzAnalyzer
+
+# Load data
+analyzer = ScoutzAnalyzer()
+analyzer.load_csv('scout_ops_data.csv')
+
+# Run predictive models
+predictions = analyzer.predict_match_outcomes('Q42')
+optimal_alliance = analyzer.suggest_optimal_alliance('201')
+
+# Generate reports
+analyzer.generate_team_report('201', output_path='team_201_report.pdf')
+analyzer.generate_event_summary(output_path='event_summary.pdf')
+```
+
+## Competition Workflows
+
+### Pre-Match Analysis
+
+Before each match:
+
+1. Filter data for teams in upcoming match
+2. Compare performance metrics and strengths
+3. Generate strategy recommendations for drive team
+
+### Alliance Selection Support
+
+During alliance selection:
+
+1. Sort teams by key performance metrics
+2. Highlight complementary teams for your strategy
+3. Provide real-time compatibility analysis
+
+### Post-Event Analysis
+
+After the competition:
+
+1. Compare actual vs. predicted performance
+2. Identify data collection issues or biases
+3. Generate insights for future competition preparation
+
+## Common Data Analysis Pitfalls
+
+1. **Observer Bias**: Different scouts may rate the same performance differently
+   - Solution: Normalize data by scouter or use objective metrics only
+
+2. **Small Sample Size**: Teams with few matches have less reliable metrics
+   - Solution: Include confidence intervals in analyses
+
+3. **Missing Context**: Raw numbers don't capture field conditions or robot failures
+   - Solution: Include comments and match video reviews in analysis
+
+## Custom Analysis Scripts
+
+For advanced users, custom Python scripts can enhance data analysis:
+
+```python
+# Example: Defense impact analysis
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Load data
+df = pd.read_csv('scouting_data.csv')
+
+# Calculate average score with and without defense
+def defense_impact():
+    # Define 'defended' as matches where defense time > 20 seconds
+    df['defended'] = df['defense_time_seconds'] > 20
+    
+    # Group by team and whether they were defended
+    impact = df.groupby(['team_number', 'defended'])['total_score'].mean().reset_index()
+    
+    # Pivot for comparison
+    impact_pivot = impact.pivot(index='team_number', columns='defended', values='total_score')
+    impact_pivot.columns = ['score_without_defense', 'score_with_defense']
+    
+    # Calculate defense impact percentage
+    impact_pivot['defense_impact_pct'] = 100 * (1 - (impact_pivot['score_with_defense'] / impact_pivot['score_without_defense']))
+    
+    return impact_pivot
+
+# Plot results
+defense_data = defense_impact()
+plt.figure(figsize=(12, 8))
+sns.barplot(x=defense_data.index, y=defense_data['defense_impact_pct'])
+plt.title('Impact of Defense on Team Scoring (%)')
+plt.xlabel('Team Number')
+plt.ylabel('Score Reduction (%)')
+plt.xticks(rotation=90)
+plt.tight_layout()
+plt.savefig('defense_impact.png')
+```
+
+By mastering these data analysis techniques, you can transform Scout-Ops-Android data into strategic insights that give your team a competitive edge.

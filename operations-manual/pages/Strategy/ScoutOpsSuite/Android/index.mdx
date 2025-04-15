@@ -1,0 +1,131 @@
+---
+title: Scout-Ops-Android Overview
+---
+
+import { Callout } from 'nextra/components'
+import { Steps } from 'nextra/components'
+import { Tabs, Tab } from 'nextra/components'
+
+# Scout-Ops-Android
+
+{/* ![Scout-Ops-Android Logo](/images/scout-ops-logo.png) */}
+
+## About Scout-Ops-Android
+
+Scout-Ops-Android is a mobile-friendly scouting application designed for FRC matches. Originally developed by Team 201 (FEDS), the app provides a comprehensive solution for match scouting, data collection, and sharing during competitions.
+
+<Callout type="info">
+  **Latest Version:** 4.0 (released March 27, 2025)
+</Callout>
+
+## Key Features
+
+### User-Friendly Interface
+- Intuitive match flow that follows the natural progression of FRC matches
+- Responsive design that works on various screen sizes
+- Light and dark themes for different lighting conditions
+
+### Robust Data Collection
+- Autonomous phase tracking
+- Teleop scoring metrics
+- Endgame performance recording
+- Custom comments for qualitative observations
+
+### Flexible Data Transfer
+- QR code generation for quick scanning
+- Bluetooth PAN connectivity for wireless transfers
+- Local storage for offline operation
+
+### Offline Functionality
+- Download event data before competition
+- No internet required during operation
+- Secure local storage of all scouting data
+
+## System Requirements
+
+- Android 7.0 or newer
+- 50 MB of available storage space
+- Bluetooth capability (for PAN transfers)
+- Camera (for QR code scanning)
+
+## Scout-Ops Ecosystem
+
+Scout-Ops-Android is part of a larger scouting ecosystem:
+
+<Tabs items={['Mobile App', 'Data Analysis', 'Strategy Tools']}>
+  <Tab>
+    **Scout-Ops-Android**
+    - Data collection during matches
+    - QR code generation
+    - Local data storage
+  </Tab>
+  <Tab>
+    **PyIntel Scoutz**
+    - Data processing and analytics
+    - Match prediction algorithms
+    - Team performance metrics
+  </Tab>
+  <Tab>
+    **Tableau Integration**
+    - Interactive dashboards
+    - Alliance selection tools
+    - Advanced visualization
+  </Tab>
+</Tabs>
+
+## Getting Started
+
+<Steps>
+### Install the app
+Download Scout-Ops-Android from the Amazon App Store
+
+### Configure your settings
+Set up your scouter name and grant required permissions
+
+### Load event data
+Enter the event key to download match schedules
+
+### Start scouting!
+Begin collecting match data with a tap on "Start Match"
+</Steps>
+
+## Documentation Sections
+
+Our documentation is organized to help you get the most out of Scout-Ops-Android:
+
+- [How to Use](./howtouse) - Step-by-step guide to using the app
+- [Setup & Configuration](./setup-configuration) - Installation and initial setup instructions
+- [Troubleshooting](./troubleshooting) - Solutions to common issues
+- [Data Analysis](./data-analysis) - Guide to processing and analyzing scouted data
+- [Developer Guide](./developer-guide) - Technical documentation for developers
+
+## Success Stories
+
+Team 201 has been using Scout-Ops-Android since the 2024 season, and it has significantly improved our scouting efficiency and strategic decision-making. The app has helped us:
+
+- Reduce data processing time by 75%
+- Improve alliance selection decisions
+- Enable real-time strategy adjustments
+- Create more accurate match predictions
+
+## Version History
+
+| Version | Release Date | Key Features |
+|---------|--------------|--------------|
+| 4.0     | March 27, 2025 | Bluetooth PAN integration, enhanced UI |
+| 3.5     | January 15, 2025 | Custom templates, improved performance |
+| 3.0     | October 10, 2024 | QR code optimization, offline capabilities |
+| 2.0     | May 5, 2024 | Data export, alliance selection tools |
+| 1.0     | January 20, 2024 | Initial release with basic scouting functionality |
+
+## Credits
+
+- **Lead Developer:** Ritesh Raj
+- **Design Team:** Team 201 Strategy Subgroup
+- **Testing & Feedback:** FEDS Scouting Team
+
+Scout-Ops-Android is open-source software licensed under the MIT License. Contributions and feedback are welcome through our [GitHub repository](https://github.com/feds201/Scout-Ops-Android).
+
+<Callout type="warning">
+  This application was archived on April 5, 2025. While still functional, active development has moved to the Scout-Ops-Flutter repository.
+</Callout>

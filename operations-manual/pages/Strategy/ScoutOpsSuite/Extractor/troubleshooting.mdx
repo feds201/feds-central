@@ -1,0 +1,178 @@
+---
+title: Troubleshooting
+---
+
+import { Callout } from 'nextra/components'
+
+# Scout Ops Extractor Troubleshooting Guide
+
+This guide addresses common issues that may arise when using Scout Ops Extractor and provides solutions to resolve them.
+
+## Connection Issues
+
+### API Connection Failures
+
+**Symptoms:** "Error: Connection failed" or timeout messages when trying to fetch data.
+
+**Possible Solutions:**
+1. **Check internet connection:** Ensure your device has a stable internet connection.
+2. **Verify API key:** Confirm your Blue Alliance API key is entered correctly and is still valid.
+3. **Check service status:** The Blue Alliance or Statbotics servers might be down. Check their status pages or try again later.
+4. **Firewall/proxy issues:** If using Scout Ops Extractor in a restricted network environment (like a school), firewall rules might be blocking API connections.
+
+```python
+# Test TBA API connection
+import requests
+response = requests.get("https://www.thebluealliance.com/api/v3/status", 
+                       headers={"X-TBA-Auth-Key": "YOUR_API_KEY"})
+print(f"Status code: {response.status_code}")
+print(f"Response: {response.text}")
+```
+
+### Data Not Loading Completely
+
+**Symptoms:** Partial data loaded, missing teams or matches, or empty fields in exports.
+
+**Possible Solutions:**
+1. **Check event key format:** Ensure the event key follows the correct format (year + event code, e.g., "2025miket").
+2. **Wait for event data to be published:** Data might not be available yet on TBA, especially for ongoing or future events.
+3. **Try alternative endpoints:** If match data is unavailable, team data might still be accessible.
+
+## Application Issues
+
+### Application Crashes on Launch
+
+**Symptoms:** The application closes immediately after opening or displays a brief error message.
+
+**Possible Solutions:**
+1. **Check Python version:** Ensure you have Python 3.7+ installed.
+2. **Reinstall dependencies:** Run `pip install -r requirements.txt` again to ensure all dependencies are properly installed.
+3. **Check permissions:** Ensure you have the necessary permissions to run the application and write to the output directories.
+4. **Launch from command line:** Run the application from the command line to see detailed error messages:
+   ```bash
+   python scout_ops_extractor.py
+   ```
+
+### UI Elements Not Responding
+
+**Symptoms:** Buttons don't work, text fields don't accept input, or the interface appears frozen.
+
+**Possible Solutions:**
+1. **Restart the application:** Close and reopen Scout Ops Extractor.
+2. **Check system resources:** The application might be competing for resources with other programs.
+3. **Update PyQt5:** Your PyQt installation might be outdated or corrupted.
+   ```bash
+   pip install --upgrade PyQt5
+   ```
+
+## Data Processing Issues
+
+### CSV Export Errors
+
+**Symptoms:** Error messages when trying to export CSV files or corrupted/empty CSV files.
+
+**Possible Solutions:**
+1. **Check file permissions:** Ensure you have write permissions to the output directory.
+2. **Check if files are in use:** Another application (like Excel) might have the CSV files open.
+3. **Use a different output directory:** Specify a different output path in the application settings.
+4. **Verify data structure:** The API might have returned unexpected data structures that the converter cannot handle.
+
+### Incorrect or Missing Data
+
+**Symptoms:** Data seems incorrect, incomplete, or inconsistent with what appears on The Blue Alliance website.
+
+**Possible Solutions:**
+1. **Refresh the data:** Force a refresh by using the "Update existing files" option.
+2. **Check data sources:** Compare what's showing on The Blue Alliance website with your application results.
+3. **Verify event key and match numbers:** Ensure you're looking at the correct event and match data.
+4. **API version changes:** The Blue Alliance or Statbotics may have updated their API structure.
+
+<Callout>
+  During competitions, data updates in real-time on TBA. Refresh frequently to get the latest information.
+</Callout>
+
+## Output File Issues
+
+### Cannot Open Generated Files
+
+**Symptoms:** CSV or JSON files cannot be opened or appear corrupted in other applications.
+
+**Possible Solutions:**
+1. **Check file encoding:** Some applications might not properly handle UTF-8 encoded files. Try opening in a different application.
+2. **Inspect file contents:** Open the file in a text editor to see if it contains any data.
+3. **Check file extensions:** Ensure the file has the correct extension (.csv or .json).
+4. **Regenerate the files:** Try running the export process again.
+
+### Issues with Long Team Names or Special Characters
+
+**Symptoms:** CSV files display incorrectly in Excel or have formatting issues with certain team names.
+
+**Possible Solutions:**
+1. **Use "Data → From Text" in Excel:** Import the CSV file using Excel's import wizard instead of double-clicking.
+2. **Specify UTF-8 encoding:** When opening in Excel, specify UTF-8 encoding during the import process.
+3. **Use alternative software:** Try using Google Sheets or LibreOffice Calc which may handle encoding better.
+
+## Configuration Issues
+
+### Settings Not Saving
+
+**Symptoms:** API key or event key not remembered between sessions.
+
+**Possible Solutions:**
+1. **Check file permissions:** Ensure the application has permission to write to the configuration file.
+2. **Check storage location:** The configuration file (`scouting_config.json`) should be in the same directory as the application.
+3. **Manually edit the config file:** Open `scouting_config.json` in a text editor and verify the content.
+
+```json
+{
+  "tba_api_key": "YOUR_API_KEY",
+  "tba_event_key": "2025miket",
+  "tba_output_dir": "C:/path/to/output/tba_data",
+  "stats_output_dir": "C:/path/to/output/match_stats"
+}
+```
+
+### Errors with Non-ASCII Characters in Paths
+
+**Symptoms:** Application crashes or fails to save files when using paths with non-English characters.
+
+**Possible Solutions:**
+1. **Use ASCII-only paths:** Avoid using special characters or non-English letters in output directories.
+2. **Quote the path:** If using the command line, enclose paths in quotes.
+3. **Use shorter paths:** Path length limitations might cause issues on some systems.
+
+## Advanced Troubleshooting
+
+### Debug Mode
+
+For advanced users, you can enable debug mode to get more detailed logs:
+
+1. Create a file named `debug.flag` in the application directory
+2. Run the application
+3. Check the generated `debug.log` file for detailed error information
+
+### Reporting Issues
+
+If you cannot resolve an issue using this guide, please report it by:
+
+1. Generating a diagnostic report:
+   ```bash
+   python scout_ops_extractor.py --diagnostic
+   ```
+2. Attaching the generated `diagnostic_report.txt` to your issue report
+3. Describing the steps to reproduce the problem
+4. Including any error messages displayed
+
+Send this information to the Scout Ops development team or create an issue on the GitHub repository.
+
+## Common Error Messages
+
+| Error Message | Likely Cause | Solution |
+|---------------|--------------|----------|
+| "Invalid API key" | Incorrect or expired TBA API key | Verify and update your API key |
+| "Event key not found" | Incorrect event key or event not in TBA database | Double-check the event key format and existence |
+| "Request timed out" | Connection issues or slow API response | Check internet connection and try again |
+| "Permission denied" | File system permission issues | Check output directory permissions |
+| "Match not found" | Incorrect match key or match not available | Verify match exists on TBA website |
+
+By following this troubleshooting guide, you should be able to resolve most common issues with Scout Ops Extractor. If problems persist, don't hesitate to reach out for additional support.

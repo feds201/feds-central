@@ -1,14 +1,15 @@
 import { useEffect } from 'react';
 import Head from 'next/head';
 
-function MyApp({ Component, pageProps }) {
+export default function MyApp({ Component, pageProps }) {
   useEffect(() => {
     const handleRouteChange = (url) => {
       window.gtag('config', 'G-N3TT9XBHV0', {
         page_path: url,
       });
     };
-   
+    
+    window.addEventListener('routeChangeComplete', handleRouteChange);
   }, []);
 
   return (
@@ -30,5 +31,3 @@ function MyApp({ Component, pageProps }) {
     </>
   );
 }
-
-export default MyApp;

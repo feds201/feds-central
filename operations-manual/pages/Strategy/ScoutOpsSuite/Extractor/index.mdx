@@ -1,0 +1,96 @@
+---
+title: Scout Ops Extractor
+---
+
+import { Callout } from 'nextra/components'
+import { Steps } from 'nextra/components'
+import { Tabs, Tab } from 'nextra/components'
+
+# Scout Ops Extractor
+
+![Scout Ops Extractor Logo](/images/scout-ops-extractor-logo.png)
+
+## Overview
+
+Scout Ops Extractor is a desktop application that retrieves, processes, and combines scouting data from multiple sources including The Blue Alliance (TBA) and Statbotics. It provides a unified interface for accessing competition data, match predictions, and team statistics to support strategic decision-making during FRC competitions.
+
+<Callout type="info">
+  Scout Ops Extractor is part of the broader Scout Ops Suite, working alongside Scout-Ops-Android and PyIntel Scoutz to form a comprehensive scouting ecosystem.
+</Callout>
+
+## Key Features
+
+### Data Collection
+- Retrieve event data from The Blue Alliance API
+- Import match predictions from Statbotics
+- Combine data sources into unified datasets
+- Export to CSV for easy analysis
+
+### Match Analysis
+- Generate detailed match predictions
+- Compare alliance capabilities
+- Calculate match winning probabilities
+- Extract scoring breakdowns
+
+### Team Insights
+- Compile team performance statistics
+- Calculate OPR (Offensive Power Rating) and EPA (Estimated Prediction Accuracy)
+- Generate team ranking reports
+- Compare team capabilities across matches
+
+## System Requirements
+
+- Windows, macOS, or Linux operating system
+- Python 3.7+ with PyQt5 installed
+- Internet connection for API access
+- Minimum 2GB RAM
+- 100MB available storage space
+
+## Getting Started
+
+<Steps>
+### Install Python prerequisites
+```bash
+pip install PyQt5 requests
+```
+
+### Configure API keys
+Obtain an API key from [The Blue Alliance](https://www.thebluealliance.com/account)
+
+### Launch the application
+```bash
+python scout_ops_extractor.py
+```
+
+### Enter event details
+Input your event key to begin collecting data
+</Steps>
+
+## Documentation Sections
+
+- [Installation Guide](./installation) - Step-by-step installation instructions
+- [User Guide](./user-guide) - Detailed usage instructions
+- [API Integration](./api-integration) - Information about the APIs used
+- [Troubleshooting](./troubleshooting) - Common issues and solutions
+
+## Architecture Overview
+
+Scout Ops Extractor uses a modular architecture with several key components:
+
+1. **API Clients** - Connect to The Blue Alliance and Statbotics
+2. **UI Interface** - User-friendly PyQt5 interface for data access
+3. **Data Processors** - Combine and transform data for analysis
+4. **Export Modules** - Generate CSV and JSON output files
+
+The application uses a multi-threaded approach to prevent UI freezing during data retrieval operations, with clear separation between the data processing and presentation layers.
+
+## Sample Output
+
+After processing, Scout Ops Extractor generates several output files:
+
+- Event data CSV files with team lists, match schedules, and rankings
+- Match prediction CSV files with alliance comparisons
+- Team insights CSV files with performance metrics
+- Combined JSON files with comprehensive match data
+
+These outputs integrate directly with spreadsheet applications and the PyIntel Scoutz analysis tool for further processing.

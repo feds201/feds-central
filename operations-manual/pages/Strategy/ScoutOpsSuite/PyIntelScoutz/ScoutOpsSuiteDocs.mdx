@@ -1,0 +1,136 @@
+---
+title: PyIntel Scoutz & ScoutOps Suite
+---
+
+# PyIntel Scoutz & ScoutOps Suite: Complete Documentation
+
+Welcome to the comprehensive documentation for the PyIntel Scoutz and ScoutOps Suite. This guide covers every feature, module, and workflow in the application, from data management and analysis to simulation, machine learning, and visualization.
+
+## Table of Contents
+1. [Overview](#overview)
+2. [Installation & Setup](#installation--setup)
+3. [Data Management](#data-management)
+4. [Terminal UI & User Flow](#terminal-ui--user-flow)
+5. [Scouting Data Analysis](#scouting-data-analysis)
+6. [Team Filtering & Search](#team-filtering--search)
+7. [Alliance Selection & Strategy Reports](#alliance-selection--strategy-reports)
+8. [Simulation & Match Prediction](#simulation--match-prediction)
+9. [Machine Learning Model](#machine-learning-model)
+10. [Visualization & Exports](#visualization--exports)
+11. [External API Integration](#external-api-integration)
+12. [Error Handling & Troubleshooting](#error-handling--troubleshooting)
+13. [Configuration & Customization](#configuration--customization)
+14. [FAQ](#faq)
+
+---
+
+## Overview
+PyIntel Scoutz is a powerful FRC scouting and analysis tool with:
+- Data unification from QR scans, CSV, or JSON
+- Advanced statistical analysis and team profiling
+- Interactive CLI with rich UI (tables, prompts, progress bars)
+- Alliance selection and strategy report generation
+- Match simulation and prediction (statistical & ML-based)
+- Visualizations (charts, PNG export)
+- Integration with Statbotics and The Blue Alliance APIs
+- Sentiment analysis of scout comments
+
+## Installation & Setup
+- **Requirements:** Python 3.8+, pip, Windows/macOS/Linux
+- **Install dependencies:**
+  ```sh
+  pip install pandas numpy matplotlib seaborn rich textblob requests xgboost scikit-learn
+  ```
+- **API Keys:**
+  - The Blue Alliance: Set your API key in the code or as an environment variable
+- **Run the app:**
+  ```sh
+  python <your_script>.py
+  ```
+
+## Data Management
+- **Supported formats:** CSV, JSON, QR code data
+- **Automatic unification:** Merges multiple CSVs from QR scanner
+- **Data directory:**
+  - Windows: `%USERPROFILE%\AppData\Local\ScoutOps`
+  - Others: `~/.scoutops`
+- **Backup & export:** Append, merge, and export data with built-in menu
+
+## Terminal UI & User Flow
+- **Rich UI:** Uses [rich](https://github.com/Textualize/rich) for tables, panels, markdown, and progress
+- **Main menu:**
+  - View teams, alliance recommendations, reports, visualizations
+  - Predict matches (basic & ML)
+  - Manage filters, search, update data, team lookup
+- **Navigation:** All actions are menu-driven with prompts and confirmations
+
+## Scouting Data Analysis
+- **Phase scoring:** Calculates autonomous, teleop, endgame, and defense points per match
+- **Team stats:** Mean, stddev, max, consistency, climbing %, defense
+- **Profiles:** Detailed breakdown for each team, including performance and comments
+- **Strengths:** Identifies best teams in each category (auton, teleop, endgame, defense, consistency, overall)
+
+## Team Filtering & Search
+- **Filter teams:** Add/remove/clear filters interactively
+- **Search:** Find teams by matches played, average score, defense, etc.
+- **Filtered teams:** Excluded from recommendations and reports
+
+## Alliance Selection & Strategy Reports
+- **Recommendations:** Top teams for each phase and overall
+- **Strategy report:** Markdown export with detailed team breakdowns
+- **Versatility:** Highlights teams excelling in multiple categories
+
+## Simulation & Match Prediction
+- **Statistical simulation:** Uses team stats and random factors for outcome prediction
+- **Interactive simulator:** (see Behind the Scenes page for UI)
+- **Decision tree:** Adaptive, phase-by-phase simulation
+- **Basic prediction:** Adds random factor to average scores
+- **ML-based prediction:** Uses XGBoost for win probability
+
+## Machine Learning Model
+- **Features:** auton_total, teleop_total, endgame_total, defense_value
+- **Target:** Binary (above/below average score)
+- **Training:** 200 estimators, learning_rate=0.1, max_depth=6
+- **Cross-validation:** 5-fold, accuracy reported
+- **Persistence:** Model saved/loaded with pickle
+- **Usage:** Predicts win probability for alliances
+
+## Visualization & Exports
+- **Charts:** Stacked bar (performance), color gradient (consistency)
+- **PNG export:** Saves charts to output directory
+- **Reports:** Markdown export for strategy
+
+## External API Integration
+- **Statbotics:** Fetches team history, EPA, win/loss, etc.
+- **The Blue Alliance:** Fetches team info, nickname, location, rookie year
+- **API key:** Required for TBA
+
+## Error Handling & Troubleshooting
+- **Rich error messages:** All errors are shown with context
+- **Data validation:** Checks for missing/invalid columns
+- **Backup:** Data is backed up before overwrite
+- **Common issues:**
+  - Missing dependencies: install with pip
+  - API errors: check keys and connectivity
+  - Data format errors: check CSV/JSON structure
+
+## Configuration & Customization
+- **API keys:** Set in code or as environment variable
+- **Data directory:** Auto-detected per OS
+- **Custom analysis:** Extend code for new metrics or visualizations
+
+## FAQ
+- **Q: How do I add new data?**
+  - Use the update menu to append or merge files
+- **Q: How do I train the ML model?**
+  - Select "Train Match Prediction Model" from the menu
+- **Q: Where are my charts saved?**
+  - In the directory you specify when generating visualizations
+- **Q: How do I filter out a team?**
+  - Use the filter management menu
+- **Q: How do I get help?**
+  - See this documentation or use the in-app help prompts
+
+---
+
+For more details on simulation and math, see the [Behind the Scenes](./BehindTheScenes.mdx) and [Match Prediction Mathematics](./MatchPredictionMathematics.mdx) pages.

@@ -1,0 +1,145 @@
+---
+title: Setup and Configuration
+---
+
+# Scout-Ops-Android Setup and Configuration
+
+This guide covers the installation, setup, and configuration of Scout-Ops-Android for effective scouting operations during FRC competitions.
+
+## Installation
+
+### Prerequisites
+- Android device (minimum Android 7.0 or newer)
+- Internet connection for initial setup and event data download
+- Location, Bluetooth, and Nearby Devices permissions
+
+### Installation Steps
+
+1. Download Scout-Ops-Android from the Amazon App Store
+2. Install the application by following the standard Android installation prompts
+3. Launch the app and proceed to initial configuration
+
+## Initial Configuration
+
+The first time you launch Scout-Ops-Android, you'll need to perform these setup steps:
+
+### Essential Settings
+
+1. Tap the navigation menu (☰) in the top-left corner
+2. Select Settings (⚙️)
+3. Configure the following:
+   - **Scouter Name**: Enter your full name or designated scouter ID
+   - **Permissions**: Grant all requested permissions when prompted
+   - **Theme Settings**: Optional - select light or dark mode based on preference
+
+### Permissions Setup
+
+Scout-Ops-Android requires several permissions to function properly:
+
+| Permission | Purpose | Status |
+|------------|---------|--------|
+| Location | Required for Bluetooth PAN functionality | Required |
+| Bluetooth | Data transfer between devices | Required |
+| Nearby Devices | Device discovery for data transfer | Required |
+| Storage | Storing match data locally | Required |
+
+Grant these permissions when prompted or navigate to your device's settings to enable them manually.
+
+## Event Configuration
+
+Before scouting a competition, you need to load the event data:
+
+1. In the Settings menu, tap "Load Match"
+2. Enter the event key (format: "year[EVENT_CODE]" e.g., "2025MITRY")
+3. Tap "Download"
+4. Wait for the indicator to turn green, confirming successful download
+
+### Finding Event Keys
+
+Event keys can be found on:
+- The Blue Alliance website
+- The official FRC event page
+- From your team's strategy lead
+
+## Team Configuration
+
+For personalized team tracking:
+
+1. Navigate to Settings
+2. Scroll to "My Team" section
+3. Enter your team number
+4. Toggle "Highlight My Team" to ON (if desired)
+
+## Data Transfer Configuration
+
+Scout-Ops-Android supports multiple data transfer methods. Configure based on your team's data collection strategy:
+
+### QR Code Setup
+
+No additional configuration required - QR codes are automatically generated after match data entry.
+
+### Bluetooth PAN Configuration
+
+For teams using centralized data collection:
+
+1. Go to Settings
+2. Scroll to "Data Transfer" section
+3. Toggle "Enable Bluetooth PAN" to ON
+4. Select the host device from the list when prompted
+5. Confirm pairing
+
+**Note**: The host device must be running compatible Scout-Ops software and be in discoverable mode.
+
+## Custom Scouting Templates
+
+While the default template works for most FRC games, you can customize which data points to collect:
+
+1. Go to Settings
+2. Select "Scouting Templates"
+3. Choose from available templates or create a new one
+4. Toggle fields ON/OFF based on your scouting priorities
+
+## Advanced Settings
+
+For power users and scouting leads:
+
+### Data Backup
+
+1. Go to Settings
+2. Scroll to "Backup & Restore"
+3. Tap "Backup Data" to create a local backup
+4. Use "Export Data" to save a CSV file of all scouting data
+
+### System Performance
+
+If experiencing slow performance:
+
+1. Go to Settings
+2. Select "Performance"
+3. Toggle "Reduce Animations" to ON
+4. Enable "Lightweight Mode" for older devices
+
+## Troubleshooting Configuration Issues
+
+If you encounter issues during setup:
+
+1. Ensure all permissions are properly granted
+2. Verify you have the latest version of the app
+3. Check that your device meets the minimum requirements
+4. Restart the app and try configuration again
+
+For persistent issues, refer to the [Troubleshooting](./troubleshooting) guide.
+
+## Pre-Competition Checklist
+
+Before arriving at competition:
+
+- [ ] App installed and updated to latest version
+- [ ] All permissions granted
+- [ ] Scouter name configured
+- [ ] Event data downloaded
+- [ ] Data transfer method tested
+- [ ] Battery saving mode disabled (to prevent background process termination)
+- [ ] Device storage has at least 500MB free space
+
+Following this setup guide will ensure your Scout-Ops-Android app is properly configured for effective scouting during FRC competitions.
