@@ -4,12 +4,12 @@
     {
       "anchor": {
         "x": 6.988831967213113,
-        "y": 5.6613217213114755
+        "y": 5.614
       },
       "prevControl": null,
       "nextControl": {
         "x": 5.981826411555291,
-        "y": 5.4450280263920625
+        "y": 5.397706305080587
       },
       "isLocked": false,
       "linkedName": "autostartpoint"
