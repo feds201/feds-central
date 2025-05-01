@@ -1,47 +1,9 @@
-# FRC 2025 Season Template
+# FEDS201 FRC robot "Scarlett"- 2025
 
-We're thrilled to share our comprehensive template for the 2025 FRC season! This template represents a collaborative effort to provide teams with a robust foundation for their robot code.
+This repository contains the code for the FED201 FRC robot, STINGRAY, for 2025. The robot is designed to participate in the FIRST Robotics Competition (FRC). The code is written in Java and uses the Gradle build system.
 
 ## Key Features
+- 250-Degree Apriltag vision processing
+- Custom Robot Framework optimized for maximum effciency: https://github.com/feds201/Reefscape-2025.git
 
-- **Advanced Swerve Drive System**
-  - Built-in field-oriented drive control
-  - Configurable safety limits and PID controls
-  - Integrated path planning support
 
-- **Vision Processing**
-  - LimelightHelpers integration for AprilTag detection
-  - Built-in pose estimation
-  - Camera configuration management
-
-- **Dashboard Integration**
-  - Elastic dashboard support
-  - Comprehensive field visualization
-  - Real-time telemetry display
-  - Custom command center interface
-
-- **Safety Features**
-  - Speed and acceleration limiting
-  - Configurable boundaries
-  - Failure detection systems
-
-- **Development Tools**
-  - PathPlanner integration
-  - Automated testing framework
-  - Simulation support
-
-## Getting Started
-
-1. Clone this repository
-2. Configure your team number in `build.gradle`
-3. Adjust robot constants in `RobotMap.java`
-4. Customize the dashboard layout in `elastic-layout.json`
-
-## Requirements
-
-- WPILib 2025.1.1-beta-3
-- Java 17
-- Elastic Dashboard
-- Pathplanner 2025 beta-3++
-
-We hope this template helps teams jumpstart their 2025 season development. Feel free to contribute or raise issues if you find areas for improvement!
