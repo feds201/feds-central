@@ -1,0 +1,10 @@
+{
+    "Overview":"Subsystems Overview",
+    "Autonomous":"Autonomous",
+    "Climber":"Climber",
+    "Elevator":"Elevator",
+    "Gooseneck":"Goose Neck",
+    "Vision":"Vision",
+    "Robotcontainer":"Robot Container",
+    "Other":"Other"
+}

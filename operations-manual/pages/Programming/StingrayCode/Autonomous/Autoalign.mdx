@@ -1,0 +1,348 @@
+import {Callout} from 'nextra/components';
+import Head from 'next/head';
+
+<Head>
+    <title>Auto-Alignment - FEDS201</title>
+    <meta property="og:title" content="Auto-Alignment - FEDS201" key="title" />
+</Head>
+
+# Auto-Alignment
+## Why Auto Alignment?
+After seeing the game on kickoff day, we knew how important an auto-alignment system was going to be for scoring quickly and consistently. First,
+we identified what we wanted to align to:
+ - Left and right reef poles for coral scoring
+ - Center of each reef face for algae acquiring
+ - Barge for algae scoring
+
+First, we developed a basic system for Reef alignment using **Pathplanner's `pathfindThenFollowPath` Command**. Quickly, we shifted to `PathfindToPose` 
+after encountering some innacuracies when using the previous, and we stuck with it as the backbone of our auto-alignment for the rest of the season.
+### How did we do it?
+We needed this auto-align function to fit onto a controller, as we had decided against using a button board. So, in our first design of auto alignment that
+we used at our week 2 competition, we took advantage of the AprilTag on each reef face to keep our alignment to 2 buttons: align to right and align to left.
+Using the `Tid` data value from limelight, we could find the closest AprilTag ID, which also let us know which side of the reef we were on to align correctly.
+
+    #### The Issue
+    Although this approach worked well at the beginning, we encountered a weakness where if the robot was facing just right, it would register an april tag on an
+    unintended side of the reef as the closest, causing the robot to swing around to the wrong side when we pressed auto-align. This brings us into the improved system
+    of using distance from a reef face to decide the closest one, removing room for error, and bringing us to the actual code explanation. Lets Go!
+### Code Explanation
+
+#### 1. Finding The Correct Side
+First, we needed a way to decide the reef we are aligning to in any given match. We do this in the same way that Pathplanner decides whether paths need to be flipped
+for autos. The code looks like this:
+```java
+if(DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red){
+      reefSideTagPoses = RedReefTagLocations.REDREEFTAGS;
+    } else {
+      reefSideTagPoses = BlueReefTagLocations.BLUEREEFTAGS;
+    }
+```
+<Callout type={"info"} emoji = "❔">**What is this code doing?** First off, `DriverStation.getAlliance()` retrieves the current alliance. If no alliance
+is present, the `orElse()` statement defaults the value to the blue alliance. So, if the alliance is equal to red, the `reefSideTagPoses` is set to red reef tag poses, and if not, it's set to blue.  </Callout>
+
+Next, how did we figure out which side of the reef is closest by distance? We used the `.nearest()` method, which returns the nearest pose of a list of poses 
+to any given pose2d. In our case, we used the `.nearest()` method to find the closest reef tag position to our robot's position, which gave us the closest side.
+ This is done with this line:
+```java
+tagPosefinal = DrivetrainConstants.drivetrain.getState().Pose.nearest(reefSideTagPoses);
+```
+#### 2. Left, Right, Or Center?
+
+We wanted to use one command to align anywhere on the reef, so we needed a way to differentiate between wanting to align left, right and center. We did this with an
+**enum**. This also allowed us to easily execute different code with a **switch statement**. This is what it looked like: 
+``` java
+ switch (pole) {
+      case LEFT:
+        for (AprilTagPosePair pose : aprilTagPoses) {
+          if (pose.poseToPath(tagPosefinal)) {
+            poseName = pose.getLeftPath();
+          }
+        }
+        break;
+      case RIGHT:
+        for (AprilTagPosePair pose : aprilTagPoses) {
+          if (pose.poseToPath(tagPosefinal)) {
+            poseName = pose.getRightPath();
+          }
+        }
+        break;
+      case CENTER:
+        for (AprilTagPosePair pose : aprilTagPoses) {
+          if (pose.poseToPath(tagPosefinal)) {
+            poseName = pose.getCenterPath();
+          }
+        }
+    }
+```
+
+<Callout type={"warning"} emoji={"❕"}> Right now, this code most likely doesn't make any sense, as you are missing the major knowledge of how our **AprilTagPosePair** class works.
+So, let's explain that now. </Callout>
+#### 3. Understanding the `AprilTagPosePair` class
+
+Now that we know which reef we are aligning to, which side of the reef, and whether we are aligning to the left, right, or center of a face, we need to turn that information into a pose
+that we can give to Pathplanner's `PathfindToPose` command. So, we created the `AprilTagPosePair` class to accomplish this. First, **it's important to know** we make one instance of this class
+to represent each side of the reef. This class has four methods:
+- `getLeftPath`: Returns the pose2d that corresponds to the left reef pole of a face.
+- `getRightPath`: Returns the pose2d that corresponds to the right reef pole of a face.
+- `getCenterPath`: Returns the pose2d that corresponds to the center of a face.
+
+And, one more that we will get to after a bit more explanation. First, The constructor.
+##### Class Constructor
+ ```java
+ public AprilTagPosePair(Pose2d redAlliance, Pose2d blueAlliance, Pose2d leftpose, Pose2d rightpose, Pose2d centerPose) {
+        this.redAlliance = redAlliance;
+        this.blueAlliance = blueAlliance;
+        this.leftpose = leftpose;
+        this.rightpose = rightpose;
+        this.centerPose = centerPose;
+    }
+```
+This constructor has 5 Pose2d parameters, here is what each of them are for:
+- `redAlliance`: The Red Alliance's reef side pose
+- `blueAlliance`: The Blue Alliance's reef side pose
+- `leftPose`: The pose2d that represents the position to align to the left pole.
+- `rightPose`: The pose2d that represents the position to align to the right pole.
+- `centerPose`: The pose2d that represents the position to align to the center of the face.
+
+Back to the Auto-Align command, we can see how this class is initially used:
+```java
+ private final AprilTagPosePair[] aprilTagPoses = {
+    new AprilTagPosePair(RedReefTagLocations.id1026, BlueReefTagLocations.id2126, AutonPosesMap.left26, AutonPosesMap.right26, ReefCentersPoses.center26),
+    new AprilTagPosePair(RedReefTagLocations.id1116, BlueReefTagLocations.id2016, AutonPosesMap.left16, AutonPosesMap.right16, ReefCentersPoses.center16),
+    new AprilTagPosePair(RedReefTagLocations.id936, BlueReefTagLocations.id2236, AutonPosesMap.left36, AutonPosesMap.right36, ReefCentersPoses.center36),
+    new AprilTagPosePair(RedReefTagLocations.id846, BlueReefTagLocations.id1746, AutonPosesMap.left46, AutonPosesMap.right46, ReefCentersPoses.center46),
+    new AprilTagPosePair(RedReefTagLocations.id756, BlueReefTagLocations.id1856, AutonPosesMap.left56, AutonPosesMap.right56, ReefCentersPoses.center56),
+    new AprilTagPosePair(RedReefTagLocations.id666, BlueReefTagLocations.id1966, AutonPosesMap.left66, AutonPosesMap.right66, ReefCentersPoses.center66)
+  };
+```
+This represents all the information we need for a full reef. In case you are wondering what all the numbers mean, it represents the naming scheme we use to differentiate reef sides.
+So, the final 2 numbers on each variable represents the reef face (ex. 2 of 6 (26) or 3 of 6 (36)). Additional numbers before the final two on each variable represent the Apriltag ID
+that the side represents. (ex. `RedReefTagLocations.id1026` represents the position of Apriltag 10, which is on the 2nd of 6 sides on the red reef.)
+![Reef Diagram](https://i.imgur.com/oWJDlwB.png)
+#### 4. Deciding the Correct Position Target
+Through our array of AprilTagPosePair instances, we have a full reef of poses mapped out. We also have the specified side selected through the `.nearest()` function, and a specified
+target of Left, Right, Or Center using our enum variable. Now, lets look deeper at the code that uses this information to decide the correct pose to pathfind to.
+``` java
+ switch (pole) {
+      case LEFT:
+        for (AprilTagPosePair pose : aprilTagPoses) {
+          if (pose.poseToPath(tagPosefinal)) {
+            poseName = pose.getLeftPath();
+          }
+        }
+        break;
+      case RIGHT:
+        for (AprilTagPosePair pose : aprilTagPoses) {
+          if (pose.poseToPath(tagPosefinal)) {
+            poseName = pose.getRightPath();
+          }
+        }
+        break;
+      case CENTER:
+        for (AprilTagPosePair pose : aprilTagPoses) {
+          if (pose.poseToPath(tagPosefinal)) {
+            poseName = pose.getCenterPath();
+          }
+        }
+    }
+```
+Let's look specifically at the case of `LEFT`, for simplicity:
+```java
+ for (AprilTagPosePair pose : aprilTagPoses) {
+          if (pose.poseToPath(tagPosefinal)) {
+            poseName = pose.getLeftPath();
+          }
+        }
+```
+Here, we have a for loop that iterates through our array of `AprilTagPosePair` instances, `aprilTagPoses`. It uses the `poseToPath()` method described earlier,
+with the `tagPosefinal` variable (which specifies the side we want) set as the parameter. To review, `poseToPath` returns true if the pose2d passed in matches the red or blue alliance reef side specified
+in parameters one and two of an `AprilTagPosePair` instance. With an if statement inside the for loop, we loop through the mapped out field until we find the correct reef side that matches the side we found
+based on our robot pose. Once it's found, we use the `getLeftPath()` method to retrieve the left pole pose from the `AprilTagPosePair` instance. Then, the value is stored in a variable for later use.
+#### 5. Deciding the Correct Reef
+While we do have the pose to the correct pole of the correct side of the reef for alignment, we don't yet know which reef we are aligning to. We can figure out this information in a similar way to how we did before,
+seen below:
+```java 
+ if(poseName != null){
+     if(DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red){
+      poseName = FlippingUtil.flipFieldPose(poseName);
+     }
+ }
+```
+Using Pathplanner's `FlippingUtil`, we can flip our specified target pose over to the red reef if necessary (if we are on the red alliance). Now, we have the correct target Pose2d which our robot needs to align to in order
+to be aligned to the reef. With that, we can create a `PathfindToPose` command that we will schedule later, like this:
+```java
+reefPathCommand = AutoBuilder.pathfindToPose(poseName, AutonConstraints.kPathConstraints, 0);
+```
+We store the command in a variable called `reefPathCommand`.
+#### 6. Scheduling the Alignment Command
+The scheduling of the command is very simple, and we do it in the `execute()` method of the command:
+```java
+public void execute(){
+  if (reefPathCommand != null){
+    reefPathCommand.schedule();
+  }
+
+  commandFinished = true;
+ }
+ ```
+ And, that's a wrap! Now, see the full code below.
+ ### Alignment Command Full Code
+ ```java
+package frc.robot.commands.auton;
+
+import java.util.List;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.util.FlippingUtil;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.constants.RobotMap.AutonPosesMap;
+import frc.robot.constants.RobotMap.BlueReefTagLocations;
+import frc.robot.constants.RobotMap.RedReefTagLocations;
+import frc.robot.constants.RobotMap.ReefCentersPoses;
+import frc.robot.constants.RobotMap.SafetyMap.AutonConstraints;
+import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
+import frc.robot.subsystems.vision.camera.Camera;
+import frc.robot.utils.AprilTagPosePair;
+import frc.robot.utils.DrivetrainConstants;
+import frc.robot.utils.PosePair;
+
+public class posePathfindToReef extends Command {
+  public enum reefPole {
+    LEFT, RIGHT, CENTER
+  }
+  private List<Pose2d> reefSideTagPoses;
+  private reefPole pole;
+  private Pose2d tagPosefinal;
+  private boolean commandFinished;
+  private Pose2d poseName;
+  private Command reefPathCommand;
+  private final AprilTagPosePair[] aprilTagPoses = {
+    new AprilTagPosePair(RedReefTagLocations.id1026, BlueReefTagLocations.id2126, AutonPosesMap.left26, AutonPosesMap.right26, ReefCentersPoses.center26),
+    new AprilTagPosePair(RedReefTagLocations.id1116, BlueReefTagLocations.id2016, AutonPosesMap.left16, AutonPosesMap.right16, ReefCentersPoses.center16),
+    new AprilTagPosePair(RedReefTagLocations.id936, BlueReefTagLocations.id2236, AutonPosesMap.left36, AutonPosesMap.right36, ReefCentersPoses.center36),
+    new AprilTagPosePair(RedReefTagLocations.id846, BlueReefTagLocations.id1746, AutonPosesMap.left46, AutonPosesMap.right46, ReefCentersPoses.center46),
+    new AprilTagPosePair(RedReefTagLocations.id756, BlueReefTagLocations.id1856, AutonPosesMap.left56, AutonPosesMap.right56, ReefCentersPoses.center56),
+    new AprilTagPosePair(RedReefTagLocations.id666, BlueReefTagLocations.id1966, AutonPosesMap.left66, AutonPosesMap.right66, ReefCentersPoses.center66)
+  };
+
+
+  public posePathfindToReef(reefPole pole, CommandSwerveDrivetrain swerve) {
+    this.pole = pole;
+    addRequirements(swerve);
+  }
+
+  @Override
+  public void initialize() {
+    if(DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red){
+      reefSideTagPoses = RedReefTagLocations.REDREEFTAGS;
+    } else {
+      reefSideTagPoses = BlueReefTagLocations.BLUEREEFTAGS;
+    }
+
+    tagPosefinal = DrivetrainConstants.drivetrain.getState().Pose.nearest(reefSideTagPoses);
+
+    if (tagPosefinal == null) {
+      commandFinished = true;
+    } else {
+
+    switch (pole) {
+      case LEFT:
+        for (AprilTagPosePair pose : aprilTagPoses) {
+          if (pose.poseToPath(tagPosefinal)) {
+            poseName = pose.getLeftPath();
+          }
+        }
+        break;
+      case RIGHT:
+        for (AprilTagPosePair pose : aprilTagPoses) {
+          if (pose.poseToPath(tagPosefinal)) {
+            poseName = pose.getRightPath();
+          }
+        }
+        break;
+      case CENTER:
+        for (AprilTagPosePair pose : aprilTagPoses) {
+          if (pose.poseToPath(tagPosefinal)) {
+            poseName = pose.getCenterPath();
+          }
+        }
+    }
+      
+    if(poseName != null){
+     if(DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red){
+      poseName = FlippingUtil.flipFieldPose(poseName);
+     }
+    reefPathCommand = AutoBuilder.pathfindToPose(poseName, AutonConstraints.kPathConstraints, 0);
+    
+    }
+  }
+  }
+ @Override
+ public void execute(){
+  if (reefPathCommand != null){
+    reefPathCommand.schedule();
+  }
+
+  commandFinished = true;
+ }
+ 
+  @Override
+  public void end(boolean interrupted) {
+  }
+
+  @Override
+  public boolean isFinished() {
+    return commandFinished || reefPathCommand.isFinished();
+  }
+}
+```
+### `AprilTagPosePair` Class Full Code
+```java
+package frc.robot.utils;
+
+import edu.wpi.first.math.geometry.Pose2d;
+
+public class AprilTagPosePair {
+    public Pose2d redAlliance;
+    public Pose2d blueAlliance;
+    public Pose2d leftpose;
+    public Pose2d rightpose;
+    public Pose2d centerPose;
+
+    public AprilTagPosePair(Pose2d redAlliance, Pose2d blueAlliance, Pose2d leftpose, Pose2d rightpose, Pose2d centerPose) {
+        this.redAlliance = redAlliance;
+        this.blueAlliance = blueAlliance;
+        this.leftpose = leftpose;
+        this.rightpose = rightpose;
+        this.centerPose = centerPose;
+    }
+    
+    public Pose2d getLeftPath() {
+        return leftpose;
+    }
+
+    public Pose2d getRightPath() {
+        return rightpose;
+    }
+
+    public Pose2d getCenterPath(){
+        return centerPose;
+    }
+
+    public boolean poseToPath(Pose2d robotPose) {
+        if (robotPose == redAlliance) {
+            return true;
+        } else if (robotPose == blueAlliance) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+}
+```

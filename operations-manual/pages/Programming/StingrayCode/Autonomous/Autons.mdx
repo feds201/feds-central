@@ -1,0 +1,55 @@
+import {Callout} from 'nextra/components';
+import Head from 'next/head';
+
+<Head>
+    <title>Autonomous Modes - FEDS201</title>
+    <meta property="og:title" content="Autonomous Modes - FEDS201" key="title" />
+</Head>
+# Autonomous Modes
+### The Golden Ticket
+At our first event this year, we started our autons by lining our robot up with the wall. Because we use Limelight's Metatag 2 for Apriltag localization, influencing
+things such as our autons and auto-alignment, knowing the exact (or as close to it as possible) yaw of our robot is very important. While lining up with the wall worked great
+at our home practice field, the inconsistiencies on competition fields were enough to mess up our autons and auto-align for the whole match. So, as a fix, we had the idea to use
+Metatag 1 (when seeing 2 reef Apriltags at once) to correct our robot yaw and allow for much more accurate play throughout the whole match, and it worked out Amazing! We used this to line up our robot at the beginning of the match,
+letting us start closer to the reef and get faster autons that allow us to squeeze in more points.
+## What Were our Options?
+For the Reefscape season, we had 3 main autons at the World Championship:
+### **1.** L / R 3 Coral Autonomous
+<br />
+<video controls width="100%" playsInline>
+  <source src="https://i.imgur.com/IdkRnn4.mp4" type="video/mp4" />
+  Video of Auton -- Your browser does not support the video tag.
+</video>
+<br />
+This auton is by FAR the one that has gone through the most iterations, going from 1 L4 and 1 L2, to 2 L4, to 2 L4 and 1 L2, until we got here. This is what the auton looks like in pathplanner:
+
+![Image](https://i.imgur.com/2PV7eU4.png)
+
+### **2.** Center 1 Coral + 1 Barge
+<br />
+<video controls width="100%" playsInline>
+  <source src="https://i.imgur.com/FW0EH8J.mp4" type="video/mp4" />
+  Video of Auton -- Your browser does not support the video tag.
+</video>
+<br />
+We created this auton for our state championship competition, though we found it was extremely inconsistent because we were not using our Metatag 1 yaw correction 
+(We were not able to see two april tags from the center of the start line). But, after more testing between states and worlds, we were able to get this auton consistient
+by starting slightly off center, allowing us to get the sight of 2 april tags and the measurement we needed. Additionally, we chose to go with an L3 score on this auto because
+we found it to be faster, more consistent, and still score the same amount of extra points as an L4 in auto. Here is the outline of the auto in pathplanner:
+
+![Image](https://i.imgur.com/h8tP8vQ.png)
+
+### **3.** Far left Swing-Around 2 Coral Auton (Aka Sneak)
+<br />
+<video controls width="100%" playsInline>
+  <source src="https://i.imgur.com/YTZSkvK.mp4" type="video/mp4" />
+  Video of Auton -- Your browser does not support the video tag.
+</video>
+<br />
+This auton only started as an idea between DCMP and Worlds, but after developing it, we were happy with how it turned out. It was inspired by 2910's "sneak" auto that they pulled
+off at their events, and allowed us to have better synergy with alliance partners at worlds. Here is a pathplanner view of this auton:
+
+![Image](https://i.imgur.com/OFxsNMq.png)
+
+
+If You want to learn more about how you can make autonomous routines in pathplanner, check out our [autonomous documentation here](/Programming/Autonomous/Index).
