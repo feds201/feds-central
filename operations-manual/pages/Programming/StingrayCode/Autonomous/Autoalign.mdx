@@ -346,3 +346,15 @@ public class AprilTagPosePair {
 
 }
 ```
+
+### Implementation in RobotContainer
+
+```java
+ driverController.leftBumper()
+            .onTrue(new posePathfindToReef(frc.robot.commands.auton.posePathfindToReef.reefPole.LEFT, DrivetrainConstants.drivetrain));
+
+        driverController.rightBumper()
+            .onTrue(new posePathfindToReef(frc.robot.commands.auton.posePathfindToReef.reefPole.RIGHT, DrivetrainConstants.drivetrain));
+```
+Here, you can see how this command would work with our robot. By pressing left or right bumper, the driver can align to a reef face, with the command
+showing left or right through the value of the enum (first parameter).
