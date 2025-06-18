@@ -1,83 +1,293 @@
 import { Cards, Card } from 'nextra/components'
-import { FaCode, FaExpeditedssl, FaPlug, FaCube, FaRegLightbulb, FaBuildingShield } from "react-icons/fa6";
+import { FaCode, FaExpeditedssl, FaPlug, FaCube, FaRegLightbulb, FaBuildingShield, FaRocket, FaTrophy, FaUsers, FaGear, FaStar, FaChartLine } from "react-icons/fa6";
 import {ImCogs} from "react-icons/im";
 import {FaRobot} from "react-icons/fa";
 import Head from 'next/head';
+import { useState, useEffect } from 'react'
+import Link from 'next/link'
+import { useTheme } from 'nextra-theme-docs'
+import { HeroSection, ModernCard, StatsSection } from '../components'
 
 
+# Welcome to the Future of Robotics Excellence
 
+{/* <HeroSection /> */}
 
-# Welcome to FRC Team 201's Tools and Resources
+## 🚀 Our Subgroups
 
-Welcome to FRC Team 201's Tools and Resources! This guide is a comprehensive collection of tutorials, notes, and resources designed to help you master the tools and technologies used by our team. Whether you're a new member just starting your robotics journey or a seasoned veteran looking to sharpen your skills, this guide has something for everyone. It's a work in progress and will be updated regularly with new content and resources.
+Discover the specialized teams that make FEDS 201 a championship-winning organization. Each subgroup represents a crucial aspect of modern robotics excellence.
 
-## Our Team's Mission
+<div style={{
+  display: 'grid',
+  gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
+  gap: '32px',
+  margin: '60px 0'
+}}>
+ <ModernCard
+  icon={<FaCode />}
+  title="Programming"
+  description="Explore two powerful wings of the Programming team: FRC  and Software. Learn how we build, organize, and maintain our robot’s codebase using Java and WPILib, while also diving into web technologies that power our custom scouting platform. Master programming languages and tools that make data-driven robotics possible."
+  link="/Programming"
+  gradient="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+  delay={0}
+/>
 
-The FEDS' mission is to inspire students to become STEM leaders through mentoring and innovation.
+<ModernCard
+  icon={<FaPlug />}
+  title="Electrical Systems"
+  description="Understand how power flows through the robot. Dive into wiring best practices, sensor integration, power management, and safety standards. This section teaches how to bring a robot to life—reliably and safely—through clean, efficient electrical work."
+  link="/Electrical/Tools&Setup"
+  gradient="linear-gradient(135deg, #f59e0b 0%, #d97706 100%)"
+  delay={100}
+/>
 
-## Subgroups
+<ModernCard
+  icon={<FaCube />}
+  title="CAD & Design"
+  description="Get started with Onshape and explore everything a CAD designer needs to succeed—from 3D modeling and mechanical layout to design reviews and manufacturing drawings. Learn the skills to translate imagination into engineered reality."
+  link="/CAD/Introduction"
+  gradient="linear-gradient(135deg, #10b981 0%, #059669 100%)"
+  delay={200}
+/>
 
-To support your learning journey, we have a variety of subgroups that focus on different aspects of robotics. These include:
+<ModernCard
+  icon={<ImCogs />}
+  title="Mechanical Engineering"
+  description="Welcome to the Mechanical Subgroup of FEDS201! This section includes design resources, tool guides, project logs, and lessons learned. From alignment issues to tool wear, dive deep into real-world mechanical problem-solving and documentation of past builds and assemblies."
+  link="/Mechanical/Index"
+  gradient="linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)"
+  delay={300}
+/>
 
-<Cards>
-    <Card title="Programming" href="/Programming" icon={FaCode()}>
-        The programming subgroup focuses on developing the software that controls the robot. Members learn programming languages like Java and C++ and work on autonomous routines and driver controls.
-    </Card>
-    <Card title="Electrical" href="/Electrical/Tools&Setup" icon={FaPlug()}>
-        The electrical subgroup is responsible for designing and wiring the electrical systems on the robot. Members learn about circuits, sensors, and power distribution.
-    </Card>
-    <Card title="CAD" href="/CAD/Introduction" icon={FaCube()} >
-        The CAD subgroup uses computer-aided design software to create 3D models of the robot. Members learn about mechanical design and create detailed drawings for manufacturing.
-    </Card>
-    <Card title="Mechanical" href="/Mechanical/Index" icon={ImCogs()}>
-        The mechanical subgroup designs and builds the physical structure of the robot. Members work with tools, materials, and CAD software to create the robot's components.
-    </Card>
-    <Card title="Scouting/Strategy" href="/Strategy/Tools&Setup" icon={FaRegLightbulb()}>
-        The strategy subgroup analyzes game data and develops game strategies for competitions. Members work on scouting, match analysis, and robot performance optimization.
-    </Card>
-    <Card title="Poeple & Culture" href="/PandC/Index" icon={FaBuildingShield()}>
-        The People & Culture subgroup focuses on fundraising, marketing, team outreach, and more. Members work on sponsorship acquisition, social media, our impact portfolio, and advocacy efforts.
-    </Card>
+<ModernCard
+  icon={<FaRegLightbulb />}
+  title="Strategy & Scouting"
+  description="Explore the evolution of FEDS201’s scouting systems—from the Paper Era to our advanced digital platforms. Learn how we collect data, analyze performance, and build match-winning strategies. Includes historical archives, technical documents, and our custom scouting tools."
+  link="/Strategy/Tools&Setup"
+  gradient="linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)"
+  delay={400}
+/>
 
-</Cards>
+<ModernCard
+  icon={<FaBuildingShield />}
+  title="People & Culture"
+  description="Discover the heartbeat of FEDS201: Safety, Outreach, Business, Advocacy, Fundraising, and Team Culture. This section houses resources that empower leadership, promote STEM initiatives, and shape a strong, inclusive team identity."
+  link="/PandC/Index"
+  gradient="linear-gradient(135deg, #ef4444 0%, #dc2626 100%)"
+  delay={500}
+/>
 
-## Experiences
+</div>
 
-We have put together what we did each week in the 2025 season. This is a great way to see what we did and what you can expect to do in the future.
+<StatsSection />
 
-<Cards>
-    <Card title="2025 Season" href="/Experiences/2025" icon={FaExpeditedssl()}>
-        Check out our weekly experiences from the 2025 season to see what we did each week and what you can expect in the future.
-    </Card>
-    <Card title="Robot Safety System" href="/Experiences/RSS" icon={FaRobot()}>
-        Check out our weekly experiences from the 2024 season to see what we did each week and what you can expect in the future.
-    </Card>
-     <Card title="Robot Design" href="/Experiences/Robot_Design/robotDesign" icon={FaRobot()}>
-            The Robot Safety System subgroup focuses on developing a safety system for the robot. Members work on implementing safety features and ensuring compliance with competition rules.
-    </Card>
-</Cards>
+## 🏆 Championship Experiences
 
-## What every member should know
+Learn from our championship journey and discover what it takes to compete at the highest level.
 
-FEDS Handbook has been created to help you learn about a general overview of what you should know as a member of FEDS. This includes information about the team, the tools we use, and the resources available to you
+<div style={{
+  display: 'grid',
+  gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))',
+  gap: '32px',
+  margin: '60px 0'
+}}>
+  <ModernCard
+    icon={<FaTrophy />}
+    title="2025 Season Journey"
+    description="Follow our weekly progression through the 2025 season. Detailed insights into our design process, challenges overcome, and lessons learned."
+    link="/Experiences/2025"
+    gradient="linear-gradient(135deg, #f59e0b 0%, #d97706 100%)"
+    delay={0}
+  />
+  
+  <ModernCard
+    icon={<FaRobot />}
+    title="Robot Safety System"
+    description="Comprehensive safety protocols and systems that ensure safe robot operation in all environments. Industry-leading safety standards."
+    link="/Experiences/RSS"
+    gradient="linear-gradient(135deg, #ef4444 0%, #dc2626 100%)"
+    delay={100}
+  />
+  
+  <ModernCard
+    icon={<FaGear />}
+    title="Advanced Robot Design"
+    description="Deep dive into our robot design methodology, from concept to championship performance. Engineering excellence in every component."
+    link="/Experiences/Robot_Design/robotDesign"
+    gradient="linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)"
+    delay={200}
+  />
+</div>
 
-<Cards>
-    <Card title="FEDS Handbook" href="/FEDSHandbook" icon={FaExpeditedssl()}>
-        The FEDS Handbook is a comprehensive guide to everything you need to know as a member of FEDS. It covers team structure, tools, resources, and more.
-    </Card>
-</Cards>
+## 📚 Essential Knowledge Base
 
-## Tools and Resources
+Master the fundamentals every FEDS member needs to know for success.
 
-FRC teams and the resources they use aren't always the most environmentally friendly. This and being inspired by the rule in the manual G201, we wanted to understand as a team what our impact on our environment is and identify what steps we can take to reduce it.
+<div style={{
+  display: 'grid',
+  gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
+  gap: '32px',
+  margin: '60px 0'
+}}>
+  <ModernCard
+    icon={<FaUsers />}
+    title="FEDS Handbook"
+    description="The complete guide to everything you need to know as a FEDS member. Team structure, culture, tools, and resources for success."
+    link="/FEDSHandbook"
+    gradient="linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)"
+    delay={0}
+  />
+</div>
 
-Our mission: Promote a team culture that cultivates good persons and increases sustainable practices at a team level.
+## 🌱 Sustainability & Impact
 
-As a team we thought of many different projects that could further our goal. Ideas ranged from finding new uses for old FRC parts to eliminating single use items. Ideas have been prioritized so that we can achieve these goals over time.
+Leading the way in environmentally responsible robotics through innovation and conscious engineering practices.
 
-    <Card title="G201 Calculator" href="/G201Calculator" icon={FaExpeditedssl()}>
-        The G201 Calculator is a tool that helps teams calculate their environmental impact and identify areas for improvement. It provides a score based on the team's practices and offers suggestions for reducing their impact.
-    </Card>
+<div style={{
+  background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+  borderRadius: '32px',
+  padding: '60px 40px',
+  margin: '80px 0',
+  color: 'white',
+  textAlign: 'center',
+  position: 'relative',
+  overflow: 'hidden'
+}}>
+  <div style={{
+    position: 'absolute',
+    top: '10px',
+    right: '20px',
+    fontSize: '120px',
+    opacity: '0.1'
+  }}>
+    🌱
+  </div>
+  
+  <h2 style={{
+    fontSize: 'clamp(28px, 4vw, 40px)',
+    fontWeight: '800',
+    marginBottom: '24px'
+  }}>
+    Environmental Leadership Initiative
+  </h2>
+  <p style={{
+    fontSize: '18px',
+    marginBottom: '40px',
+    opacity: '0.95',
+    maxWidth: '800px',
+    margin: '0 auto 40px'
+  }}>
+    Inspired by FRC rule G201, we're pioneering sustainable robotics practices. Our mission: cultivate environmental consciousness while maintaining championship performance.
+  </p>
+  
+  <div style={{
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '16px',
+    background: 'rgba(255, 255, 255, 0.2)',
+    padding: '20px 32px',
+    borderRadius: '16px',
+    backdropFilter: 'blur(10px)',
+    border: '1px solid rgba(255, 255, 255, 0.3)',
+    cursor: 'pointer',
+    transition: 'all 0.3s ease'
+  }}
+  onClick={() => window.open('https://feds201.github.io/G201-Calculator/', '_blank')}>
+    <FaChartLine size={24} />
+    <span style={{ fontWeight: '600', fontSize: '18px' }}>
+      Launch G201 Impact Calculator
+    </span>
+  </div>
+</div>
 
-<button onClick={() => window.location.href='https://feds201.github.io/G201-Calculator/'} style={{borderRadius: '25px', padding: '10px 20px', backgroundColor: '#3D3D3D', color: '#fff', border: 'none', cursor: 'pointer'}}>Go to G201 Calculator</button>
+---
 
+<div style={{
+  textAlign: 'center',
+  padding: '80px 40px',
+  background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
+  borderRadius: '32px',
+  color: 'white',
+  margin: '80px 0',
+  position: 'relative',
+  overflow: 'hidden'
+}}>
+  <div style={{
+    position: 'absolute',
+    top: '20px',
+    left: '20px',
+    fontSize: '100px',
+    opacity: '0.1'
+  }}>
+    🚀
+  </div>
+  
+  <h2 style={{
+    fontSize: 'clamp(36px, 6vw, 56px)',
+    fontWeight: '800',
+    marginBottom: '24px',
+    textShadow: '0 4px 8px rgba(0, 0, 0, 0.3)'
+  }}>
+    Ready to Build Knowledge?
+  </h2>
+  <p style={{
+    fontSize: 'clamp(18px, 2.5vw, 22px)',
+    opacity: '0.9',
+    marginBottom: '48px',
+    maxWidth: '700px',
+    margin: '0 auto 48px',
+    lineHeight: '1.6'
+  }}>
+    Join the legacy of innovation, excellence, and performance. Your journey to robotics mastery starts here.
+  </p>
+  
+  <div style={{
+    display: 'flex',
+    gap: '24px',
+    justifyContent: 'center',
+    flexWrap: 'wrap'
+  }}>
+    <Link href="/Programming">
+      <div style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '16px',
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        padding: '20px 40px',
+        borderRadius: '16px',
+        fontWeight: '600',
+        fontSize: '18px',
+        textDecoration: 'none',
+        color: 'white',
+        transition: 'all 0.3s ease',
+        cursor: 'pointer',
+        boxShadow: '0 8px 16px -4px rgba(102, 126, 234, 0.4)'
+      }}>
+      
+        Start Your Journey
+      </div>
+    </Link>
+    
+    <Link href="/FEDSHandbook">
+      <div style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '16px',
+        background: 'rgba(255, 255, 255, 0.1)',
+        padding: '20px 40px',
+        borderRadius: '16px',
+        fontWeight: '600',
+        fontSize: '18px',
+        textDecoration: 'none',
+        color: 'white',
+        transition: 'all 0.3s ease',
+        cursor: 'pointer',
+        border: '1px solid rgba(255, 255, 255, 0.2)',
+        backdropFilter: 'blur(10px)'
+      }}>
+       
+        Team Handbook
+      </div>
+    </Link>
+  </div>
+</div>

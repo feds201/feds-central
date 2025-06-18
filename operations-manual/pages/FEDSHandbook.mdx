@@ -1,451 +1,350 @@
-REVISED 8/10/23 
+import React from 'react';
+import { EnhancedHandbookHero, StatsSection, ModernCard, InteractiveTimeline, TeamStructureGrid, ModernWidgetGrid, InteractiveStatsWidget, ResourceWidget } from '../components';
 
 # Rochester High School Robotics (FRC 201)
 
 ## Team Handbook
 
-REVISED 8/10/23 
+**REVISED 8/10/23**
 
-### Introduction
+<EnhancedHandbookHero />
+
+<div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 20px' }}>
+
+## Welcome to Team 201: The FEDS!
 
 Welcome to Team 201: The FEDS! We hope you will find your experience very rewarding and enjoyable. This guide is intended to give you and your parent/guardian an understanding of the program and the required responsibilities. In the following pages you will find information relating to team rules, expectations, and many other aspects of our team and FIRST.
 
 As a FIRST Robotics member, you have an incredible opportunity to gain knowledge and share your enthusiasm while growing into future Business, Technology, and Engineering Leaders. You will participate in a life changing experience, and have the opportunity to learn many skills that will help you in your future, from networking with other teams and gaining sponsorships to designing and building a robot to our own specifications to working as a fully functional team with a varied group of people.
 
-The success of Team 201 in robotics and its numerous other activities is due to the dedication of our members (this includes our Students, Mentors, and Parents) acting as a TEAM. Your participation is essential to fulfilling our program’s goals. Every member’s commitment and responsibility keeps our team running smoothly. The possibilities are only limited by your engagement and enthusiasm. We encourage you to have an abundance of both!
+The success of Team 201 in robotics and its numerous other activities is due to the dedication of our members (this includes our Students, Mentors, and Parents) acting as a TEAM. Your participation is essential to fulfilling our program's goals. Every member's commitment and responsibility keeps our team running smoothly. The possibilities are only limited by your engagement and enthusiasm. We encourage you to have an abundance of both!
 
-### Purpose Statement
+<InteractiveStatsWidget />
 
-The mission of the FEDS (201) is to inspire students to be STEM leaders through mentoring and innovation. The FIRST robotics program provides hands-on Science, Technology, Engineering, and Mathematics (STEM) experience for our students centered on the FIRST Robotics Competition. The team will use this experience to provide students practical, technical, business and community relations experiences and to promote STEM within the school district as well as the community of Rochester/Rochester Hills.
+## Our Mission & Core Values
 
-For additional information please refer to the following websites:
+<ModernWidgetGrid />
 
-- [Team 201 website](http://www.feds201.com)
-- [FIRST Robotics website](http://www.firstinspires.org)
-- [FIRST Michigan district information](http://www.firstinmichigan.org)
-- [FIRST teams’ discussion forums](http://www.chiefdelphi.com/forums)
+### Essential Resources
 
-### Joining the Team
+<div style={{
+  display: 'grid',
+  gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+  gap: '20px',
+  margin: '40px 0'
+}}>
+  
+<ResourceWidget 
+  icon="🌐"
+  title="Team Website"
+  link="http://www.feds201.com"
+  displayUrl="feds201.com"
+/>
 
-All Rochester High School students are eligible to apply to Team 201. Members must submit an application. New students will participate in an interview in the Fall. Returning students will be interviewed at the end of the prior season in the Spring. Decisions about student groups/roles will be based on the prior year’s level of commitment, including special project hours, event attendance and dedication to the team. The new members will also need to submit an application and participate in an interview.
+<ResourceWidget 
+  icon="🤖"
+  title="FIRST Robotics"
+  link="http://www.firstinspires.org"
+  displayUrl="firstinspires.org"
+/>
 
-Due to the high costs of materials, registration, and other fees associated with robotics, each team member will contribute a participation fee of $250 to be paid at the mandatory Parent/Student Orientation, offered twice in September. The fee is payable by check made to Stem United or Venmo (@stemunited201). There is an additional club fee of $30 that should be paid directly to the school at the RCS enrichment website under RHS – Clubs. Students with financial hardship will not be prevented from participating and should contact Team 201’s teacher sponsor to express any concerns. In addition, students are each required to raise an additional $500 by December through fundraisers and/or sponsorship solicitation.
+<ResourceWidget 
+  icon="🏛️"
+  title="Michigan District"
+  link="http://www.firstinmichigan.org"
+  displayUrl="firstinmichigan.org"
+/>
 
-### FIRST Consent and Release forms (STIMS)
+<ResourceWidget 
+  icon="💬"
+  title="Community Forum"
+  link="http://www.chiefdelphi.com/forums"
+  displayUrl="chiefdelphi.com"
+/>
 
-FIRST requires all youth team members to register as a member of a specific FIRST team via [www.firstinspires.org](http://www.firstinspires.org). The student will create a user account and provide the parent/guardian email address. Our team number is 201 and the program is FRC. The parent should receive an email to complete the registration and electronically sign the FIRST Consent and Release Form.
+</div>
 
-The full application form, with all orientation steps, can be found at [feds201.com](http://feds201.com) in the Application tab.
+## Understanding FIRST
 
-### What is FIRST?
+**FIRST** (For Inspiration and Recognition of Science and Technology) was founded by inventor Dean Kamen to inspire young people's interest and participation in science and technology. FIRST is volunteer-driven and built on partnerships with individuals, businesses, educational institutions, and government. Some of the world's most respected companies provide funding, mentorship time, talent, and equipment to make FIRST's mission a reality.
 
-FIRST (For Inspiration and Recognition of Science and Technology) was founded by inventor Dean Kamen to inspire young people’s interest and participation in science and technology. FIRST is volunteer-driven and built on partnerships with individuals, businesses, educational institutions, and government. Some of the world’s most respected companies provide funding, mentorship time, talent, and equipment to make FIRST’s mission a reality. Visit the website at [www.firstinspires.org](http://www.firstinspires.org). There are various levels within FIRST including Lego League Explorer (K-3 grades); Lego League Challenge (4-5th grades); FIRST Tech Challenge (FTC, 6-8th grade). These programs are high-tech spectator sports.
+### FIRST Program Levels
+- **LEGO League Explorer** (K-3 grades)
+- **LEGO League Challenge** (4-5th grades)  
+- **FIRST Tech Challenge (FTC)** (6-8th grade)
+- **FIRST Robotics Competition (FRC)** (High School)
 
-### FRC (FIRST Robotics Competition)
+These programs are high-tech spectator sports that combine the excitement of competition with real-world engineering challenges.
 
-The FRC competOur team operates year-round. During the summer and fall, we conduct training, outreach activities, team building activities and fundraisers. ition season typically starts at the end of February and lasts for eight weeks. Team 201 will participate in a minimum of two Michigan District competitions during the regular season. Each year FRC unveils a new challenge at kickoff in January. High school students work with professional mentors to solve the engineering design problem and then join other teams in alliances to play the game at competition events where they are judged on design, innovation, and performance. Students learn teamwork, acquire technical skills, develop business acumen, and discover strengths they never knew they had. The program is a life-changing, career-molding experience and it’s a lot of fun. Be competitive and play hard on the field, but it is much, much more than a game.
+## FRC (FIRST Robotics Competition)
 
-### Gracious Professionalism (GP)
+Our team operates year-round. During summer and fall, we conduct training, outreach activities, team building activities and fundraisers. The FRC competition season typically starts at the end of February and lasts for eight weeks. Team 201 will participate in a minimum of two Michigan District competitions during the regular season.
 
-The FIRST organization is based on the principles of teamwork and the concept of gracious professionalism, which is part of the ethos of FIRST. It’s a way of doing things that encourages high-quality work, emphasizes the value of others, and respects individuals and the community. With GP, fierce competition and mutual gain are not separate notions. Gracious professionals learn and compete like crazy, but treat one another with respect and kindness in the process. GP does not demand that our kindness be returned before we decide to give ours. The importance of GP is to better ourselves, rather than others, becoming responsible citizens and improving our society by example. Years from now our team alumni will remember a great play, some adversities overcome, helping out another team in need, but not so much the plastic trophies collecting dust.
+Each year FRC unveils a new challenge at kickoff in January. High school students work with professional mentors to solve the engineering design problem and then join other teams in alliances to play the game at competition events where they are judged on design, innovation, and performance. Students learn teamwork, acquire technical skills, develop business acumen, and discover strengths they never knew they had. The program is a life-changing, career-molding experience and it's a lot of fun. Be competitive and play hard on the field, but it is much, much more than a game.
 
-### What We Do
+<InteractiveTimeline />
 
-Team 201 members participate in a number of technical and non-technical programs, as described below.
+## Team Structure & Sub-teams
 
-#### The FIRST Robotics Competition (FRC) and Build
+Every member needs their role. Every role contributes to team success.
 
-**Build**
+<TeamStructureGrid />
 
-Season kickoff is in January on the first Saturday after New Year’s. This is when the new game for the season is revealed worldwide. Robot build season runs from January to March. The team will meet a minimum of 5 days a week, this includes: M-Th from 6:00 to 9:00pm (or later) and Saturday from 9:00am to 5:00 pm (or later). Lunch will be provided during Saturday meetings by the team.
-
-**Competition**
-
-Team 201 will participate in a minimum of two Michigan District competitions, typically held from Thursday evening through Saturday evening, with specific dates to be determined by December before. Some events run Friday/Saturday while others run Saturday/Sunday. If students will miss 1 day of school (for each event) to attend a district competition, this will be counted as a school-related excused absence as long as the student has met all team requirements to travel with the team. We rely on parent volunteer drivers (I-Chat approved) to provide transportation to District events.
-
-Roughly, the top 160 teams that qualify, after District competitions, go to the Michigan State Championship (Saginaw, MI), typically the second week of April (which may coincide with Spring Break week). Students normally miss 2 days of school (school-related excused absence) if they attend the Michigan State Championships if it is not held during Spring Break week. Team members may be required to pay additional fees to cover registration and meals, depending on team fundraising outcomes.
-
-Based on ranking points from the competition season, teams may then qualify for the FRC World Championship held in Houston, TX in late April. Students will miss 6-8 days of school if they attend the World Championships (school-related excused absence).
-
-### General Schedule Overview
-
-**Fall – Training, Outreach, & Fundraising**
-
-- Recruit new members
-- Team meetings two evenings per week for training and projects
-- Mentoring FTC teams at RHS
-- Special Projects (Technical and Non-Technical)
-- Hosting FIRST events
-- Off-season competitions
-- Fundraising / Sponsorship kickoff
-
-**Winter – Build Season**
-
-- January kickoff, followed by robot design and construction
-- Brainstorm game play, strategies, robot designs
-- Construction of practice field
-- Design/build/integrate sub-systems
-- Test and redesign/rebuild as necessary
-- Final programming integration
-- Driver testing/practice
-- Preparation for award submissions
-
-**Spring – Competition Season**
-
-- Robot fix-it windows to repair/upgrade robot
-- Two three-day district events
-- Michigan State Championship, if qualify
-- World Championship, if qualify and have funds available
-- Outreach activities
-- Season assessment
-- End of Season celebration
-
-**Summer – Team Improvements, Planning, Outreach, & Fundraising**
-
-- June: Break from robotics
-- Student Interviews and Surveys
-- Lead Assignments for next season
-- Leadership Training
-- Sponsor Retreat
-- Team Cookout
-- Outreach events
-- Training Workshops
-
-### Sub-teams
-
-Team tasks are divided into different categories and assigned to the corresponding group or Special Project categories. Each sub-team is led by a student leader(s) and mentor who delegate work to its members. Students may participate in multiple sub-teams, as time and interest allows, but will often be designated as having a primary role while being required to complete 25 points worth of special projects. Tasks outside of the student’s primary role earn special project points. Satisfactory completion of these requirements inform good standing on the team, qualifying students to travel to competition.
-
-**The functions of the various sub-teams are listed below:**
+### Detailed Sub-team Functions
 
 #### Technical Sub-Groups
 
 **CAD/Design Group**
-
 Responsible for designing the robot on the computer. Using the prototypes, they generate CAD (Computer-Aided Design) drawings for the fabrication group to manufacture parts which the mechanical team will use for the completed robot.
 
 **Programming Group**
-
 Uses software provided by FIRST to create a program that allows the robot to perform various tasks and functions – both autonomously and by human control. Also builds the interface between the controls and the robot, with input and agreement between the users who will be interacting with the controls, and the mentors.
 
 #### Build Sub-Groups
 
 **Mechanical Group**
-
-Responsible for prototyping, assembly, testing, and repair of the robot
+Responsible for prototyping, assembly, testing, and repair of the robot.
 
 **Machining Group**
-
 Responsible for manufacturing customized parts for the robot using the machine shop and its equipment.
 
 **Electrical Group**
-
 Responsible for wiring all motors, compressors, talons, solenoids, etc. The wires shall be labeled and neatly arranged for ease of maintenance. Board layout and packaging must be worked out with the Mechanical group.
 
 #### People & Culture Subgroups
 
 **Safety Group**
-
 Responsible for reading and ensuring all safety rules are being followed at our build site and at competitions.
 
 **Business Planning Group**
-
 Responsible for developing business plan, monitoring team funds, and coordinating financial activities with our High School business contacts.
 
 **Marketing/STEM Advocacy Group**
-
-Responsible for design and production of team newsletters, sponsor updates, brochures, banners, and other materials in order to present a cohesive team brand. Responsible for keeping a record of team activities through reporting and photography. Responsible for advocacy with stakeholders to support STEM education and FIRST robotics.
+Responsible for design and production of team newsletters, sponsor updates, brochures, banners, and other materials in order to present a cohesive team brand. Responsible for keeping a record of team activities through reporting and photography.
 
 **Spirit Group**
-
 Responsible for creation of items to identify and promote the team, such as chants, dances, t-shirts and buttons.
 
 **Social Media / Website Group**
-
 Responsible for creation/maintenance of content presented through the team website and various social media platforms to develop community awareness of FIRST and Team 201.
 
 **Impact/Awards Group**
-
 Determine which awards the team is working towards, communicate requirements to the team, and develop the award presentations.
 
 #### Competition Work Groups
 
 **Scouting Group**
-
-Comprised of pit scouts and game scouts. Students in this group will develop materials and methods to assess the competition, giving our team as much advantage as possible. The collection of data and analysis of the information will assist our team in all phases of the competition. Additional students will be assigned scouting duties during competitions.
+Comprised of pit scouts and game scouts. Students in this group will develop materials and methods to assess the competition, giving our team as much advantage as possible.
 
 **Field Build Group**
-
-Design and build practice field using FIRST specifications for the current year’s game.
+Design and build practice field using FIRST specifications for the current year's game.
 
 **Drive Team**
-
 Consists of a field coach, a controls operator, a robot driver, and a human player. A competitive selection process will be used to identify both a main team and a back-up team.
 
 **Gracious Professionalism Taskforce**
+This group builds relationships with other FIRST teams at competitions and identifies ways we can support each other to succeed.
 
-This group builds relationships with other FIRST teams at competitions and identifies ways we can support each other to succeed at competition by pulling resources, lending a hand, and finding resources for teams that need them.
+## Joining the Team
 
-### Member Expectations
+All Rochester High School students are eligible to apply to Team 201. Members must submit an application. New students will participate in an interview in the Fall. Returning students will be interviewed at the end of the prior season in the Spring. Decisions about student groups/roles will be based on the prior year's level of commitment, including special project hours, event attendance and dedication to the team.
 
-- Members must maintain academic eligibility as per school policy.
-- Members must wear their team approved apparel at events.
-- Members are expected to earn a minimum of 25 special project points each season.
-- Members will abide by the RCS Code of Conduct and the Acceptable Use for Technology Agreement at all times.
-- Members will communicate their competition-related transportation needs in a timely manner, since transportation is provided by mentors and parents.
-- Members will notify team leadership when they will be absent from required activities via discord.
-- Members must sign up for the team Remind 101 by texting @feds201 to 81010.
-- Members must maintain and monitor an active student and parent email account.
-- Members must sign up for the Discord app and join the FEDS 201 group.
-- Social media accounts using the FEDS 201 name, or referring to the FEDS 201 team, must be overseen by the Operations Committee of the team.
-- Members will attend a minimum of 80% of all team meetings and actively participate when present; 90% for team leads.
-- Members will complete minimum training requirements (satisfactory completion of all introductory training workshops and advanced training or application project by December of first year on the team).
-- Members will pay the membership fees at orientation.
-- Members will meet the individual fundraising requirements by December of each year on the team.
+### Financial Requirements
 
-**Members will demonstrate appropriate behavior at all times in school and at FIRST events, including:**
+Due to the high costs of materials, registration, and other fees associated with robotics:
 
-- Operating in accordance to Gracious Professionalism
-- Demonstrate good judgment
-- Respectful behavior to team colleagues, other teams and officials, using positive behavior and language, including social media
-- Ability to commit to and follow through on projects
-- Ability to work independently and as a team member
-- Honesty and integrity
-- Teamwork, cooperation, and mutual respect will take priority during meetings and competition.
-- Personal relationships should not impact the success of our team.
+- **Team Fee**: $250 per member (paid at mandatory Parent/Student Orientation in September)
+- **School Club Fee**: $30 (paid directly to RCS enrichment website under RHS – Clubs)
+- **Individual Fundraising**: $500 minimum by December through fundraisers and/or sponsorship solicitation
 
-**Mentors reserve the right to discipline a team member as necessary for the safety of the student and the overall good of the team. Any infractions that are considered serious will be forwarded to the teacher sponsor and/or high school administration for discipline.**
+*Students with financial hardship will not be prevented from participating and should contact Team 201's teacher sponsor to express any concerns.*
 
-### Team Member in Good Standing
+Payment methods:
+- Check made to Stem United
+- Venmo (@stemunited201)
 
-- All team members are expected to remain in ‘Good Standing’ on the team by adhering to the policies and guidelines outlined in this handbook and in the RCS Code of Conduct and the Acceptable Use Technology Agreement at all times.
+### FIRST Registration (STIMS)
 
-**Team Member in Good Standing privileges:**
+FIRST requires all youth team members to register via [www.firstinspires.org](http://www.firstinspires.org). Students create a user account and provide parent/guardian email address. Our team number is **201** and the program is **FRC**. Parents receive an email to complete registration and electronically sign the FIRST Consent and Release Form.
 
-- Student is eligible for lead roles (if selected)
-- Student is eligible for participation on the drive team or pit crew (if selected).
-- Student is eligible to attend and be excused from school for competitions
-- Earn recognition items such as a varsity letter at year end (note: 2 years of good standing required for varsity letter)
+The full application form can be found at [feds201.com](http://feds201.com) in the Application tab.
 
-### Team 201 will utilize a 3-warning policy as follows:
+## Member Expectations & Responsibilities
 
-**Warnings are defined as:**
+### Academic & Behavioral Standards
+- Maintain academic eligibility per school policy
+- Wear team approved apparel at events
+- Earn minimum of 25 special project points each season
+- Abide by RCS Code of Conduct and Acceptable Use for Technology Agreement
+- Demonstrate Gracious Professionalism at all times
 
-- Failure to meet team attendance expectations
-- Failure to pay team fee without making alternate arrangements (each month past due date is considered a strike)
-- Failure to meet individual fundraising expectation (each month past due date is considered a strike)
-- Failure to act safely (consistent negligence or single major offense)
-- Behavior or engagement inconsistent with the RCS Code of Conduct and/or the Acceptable Use for Technology Agreement.
+### Communication Requirements
+- Sign up for team Remind 101 by texting @feds201 to 81010
+- Maintain active student and parent email accounts
+- Join Discord app and FEDS 201 group
+- Social media accounts using FEDS 201 name must be overseen by Operations Committee
 
-**Warning One:** A written notice of warning will be issued to the student member and parents. The student will remain in good standing with the team.
+### Attendance & Participation
+- **General Members**: 80% minimum attendance at all team meetings
+- **Team Leads**: 90% minimum attendance
+- **Build Season**: 5+ days per week (M-Th 6:00-9:00pm, Sat 9:00am-5:00pm)
+- Notify leadership of absences via Discord
+- Complete minimum training requirements by December of first year
 
-**Warning Two:** The student will not be in ‘Good Standing’ with the team, and will lose associated privileges. (A written notice will be sent to both the student and parents.)
+### Character & Conduct Standards
+- Demonstrate good judgment and respectful behavior
+- Show ability to commit and follow through on projects
+- Work independently and as team member
+- Maintain honesty and integrity
+- Prioritize teamwork, cooperation, and mutual respect
+- Keep personal relationships from impacting team success
 
-**Warning Three:** The student shall be removed from the team. (A written notice will be sent to both the student and parents.)
+## Good Standing Policy & Warning System
 
-### Return to good standing:
+### Good Standing Privileges
+- Eligible for lead roles (if selected)
+- Eligible for drive team or pit crew participation (if selected)
+- Eligible to attend competitions with school excusal
+- Earn recognition items including varsity letter (2 years good standing required)
 
-The first warning can be eliminated by 2 consecutive months of ‘Good Standing Performance’ following warning one. (Full payment of team fee will immediately remove a ‘failure to pay’ warning).
+### Three-Warning Policy
 
-A **student with two warnings** will need to submit an essay to the Coach/Teacher Sponsor. The essay shall be an explanation of why the student should be returned to good standing status. If the Coach/Teacher Sponsor accepts the explanation, the student will be returned to good standing, but still has one warning.
+**Warnings are issued for:**
+- Failure to meet attendance expectations
+- Failure to pay team fee without arrangements (each month past due = strike)
+- Failure to meet fundraising expectations (each month past due = strike)
+- Unsafe behavior (negligence or major offense)
+- Behavior inconsistent with RCS Code of Conduct
 
-A student that has **received a 3rd warning** will be removed from the team. The student may reapply to join the team the following year, but there is no guarantee that membership will be granted. There will be no refund of team fees already paid.
+**Warning One**: Written notice issued, student remains in good standing
+**Warning Two**: Student loses good standing privileges, written notice sent
+**Warning Three**: Student removed from team, written notice sent
 
-Note: Warnings will be tracked by the Lead Mentor I and II, along with School Administrators.
+### Return to Good Standing
+- First warning eliminated by 2 consecutive months of good performance
+- Second warning requires essay submission to Coach/Teacher Sponsor
+- Third warning results in removal (may reapply following year, no guarantee)
 
-### Selection of Student Leads: Criteria, Roles and Responsibilities
+## Student Leadership
 
-The Operating Committee will vote to determine which students will be selected as leads of sub-groups. This will be based on student interest as indicated in their exit surveys and end-of-season interviews, experience and their demonstration of the following criteria.
+The Operating Committee votes to select student leads based on exit surveys, interviews, and demonstration of leadership criteria:
 
-- Attend mandatory leadership training (will be offered by mentors in the summer).
-- Attend 90% of all Team Meetings. Coordinate a representative from your sub-group when you cannot attend.
-- Provide information/documentation to the Awards team when requested.
-- Work with your mentor to create and execute a pre-season, basic training plan so that newer students can contribute during build season.
-- Document subgroup training plans and outcomes.
-- Ensure your sub-team completes documentation and keeps it organized, throughout the season such as:
-  - Photos
-  - Current challenge design documents, and work log
-  - Book of Knowledge (generic knowledge of the sub-team)
-- Encourage your subteam to demonstrate FEDS values. Participate in outreach, both fundraising and mentoring, attend meetings on time, be prepared, etc. Be an example worth following.
+### Leadership Requirements
+- Attend mandatory summer leadership training
+- Maintain 90% meeting attendance
+- Coordinate sub-group representation when absent
+- Create and execute pre-season training plans
+- Document sub-team activities and maintain organization
+- Be expert in leadership area and mentor newer members
+- Complete work on time and communicate obstacles
+- Follow safety rules and maintain clean workspace
+- Lead by example and report progress
 
-### Be an expert in your area of leadership
+## Safety - Our Foundation
 
-- Work with your mentor to determine day to day activities for the sub-team
-- Be the primary support/decision maker during idea generation and prototyping.
-- Guide newer team members in gaining skills and experience. Help them remain engaged in the sub-team and feel useful.
-- Know who the experts are in your sub-team
-  - Use them to train and guide less experienced students
-  - Leverage their help for difficult tasks
-- Check in with your team members frequently. Know what they are working on. Show interest in their work. Guide them if they are struggling. Keep them busy.
-- Complete work on time, or alert mentor/other team leads if you cannot.
-- Be reliable. Attend 90% of build days. On the days you cannot attend, give notice and provide a representative from your team with enough information to be useful in your absence.
-- Ensure that your sub-team follows safety rules and cleans their workspace at the end of each build day.
-- Lead by example.
-- Report out the progress of the sub-team at the end of each build day.
+Safety enables everything we do. The following rules ensure safety for students, mentors, and visitors:
 
-### Safety
+### Core Safety Rules
+- **Safety glasses required at all times** in shop, while working on robot, and in competition pits
+- No horseplay allowed
+- Training and certification required before independent equipment use
+- Handle all equipment with extreme care
+- Maintain neat, orderly work areas
+- Fully enclosed shoes required (no sandals/flip flops)
+- Tie back hair near operating equipment
+- No loose clothing near equipment
+- No food or drink near machinery
+- Clean and put away equipment/tools nightly
 
-In order to run any successful business or team, a high level of safety must be observed, practiced, and maintained. The following rules are designed to ensure the safety of students, mentors, and any visitors to the Rochester High School Shop Area where Team 201 is based.
+## Competition Protocol & Travel
 
-- Safety glasses must be worn at all times in the shop and while working on the robot and its components, and in the pits at competition.
-- Horseplay will not be allowed at any time.
-- Members will be trained and certified by a mentor before using machinery independently.
-- All equipment will be handled with extreme care and caution.
-- Work areas will be kept neat and orderly.
-- Appropriate footwear with fully enclosed shoes (no sandals or flip flops) must be worn in the shop and at competition.
-- Hair will be tied back while operating any equipment or standing near equipment that is in operation.
-- No loose clothing is to be worn while operating equipment or standing near equipment that is in operation.
-- No food or drink near any equipment.
-- Equipment, tools, and supplies must be put away every night and work areas must be left clean.
+### Competition Participation
+**Attending competition is a privilege, not a right.** Students must:
+- Fulfill assigned team roles and duties
+- Remain engaged in team activities throughout entire event
+- Follow buddy system and safety protocols
+- Wear team uniforms at all times
+- Stay with team throughout competition
+- Keep mentors informed of activities and whereabouts
+- Not use personal vehicles or ride with other students
 
-### Parent/Guardian Responsibilities
+### Hotel & Travel Behavior
+- Respect all property and facilities
+- Follow curfew regulations and room checks
+- Students of opposite gender NOT ALLOWED in each other's rooms
+- Communicate respectfully with roommates
+- Only official travel roster members allowed in team rooms
+- Violations result in parent notification and potential removal at parent expense
 
-Parents/guardians are encouraged to become team mentors (technical or non-technical). The effort is more than rewarded with the experience of helping young minds grow, and the program runs entirely with volunteer mentors. No mentors = no robotics team. The parents/guardians of the students are an important part of the success of the team.
+### Competition Expectations
+- Stay for entire awards ceremony
+- Applaud and stand for all winning teams
+- Demonstrate good sportsmanship at all times
+- Support team from stands when not in pit/field duties
+- Wear approved eye protection in pit areas
 
-**Our team needs actively engaged mentors in the following areas:**
+## Parent & Guardian Involvement
 
-- Programming
-- Electrical
-- Mechanical
-- Machining
-- CAD Design
-- Videography/Editing
-- Photography
-- Business Planning
-- Branding/Marketing
-- Website Design
-- Social Media
-- Safety
-- Meal Planning
+Parents/guardians are encouraged to become team mentors. The program runs entirely with volunteer mentors - **No mentors = no robotics team**.
 
-Whether you engage as a mentor or a volunteer, you fill a vital role to make this team possible.
+### Volunteer Requirements
+**Minimum 4 volunteer slots per family** throughout season
 
-**Generally, each student’s parent/guardian is expected to sign up for a minimum of 4 volunteer slots throughout a season.**
+### Mentoring Opportunities
 
-**Additional parent responsibilities include:**
+**Technical Mentoring Needs:**
+- Programming, Electrical, Mechanical, Machining
+- CAD Design, Videography/Editing, Photography
+- Website Design, Safety
 
+**Non-Technical Mentoring:**
+- Business Planning, Branding/Marketing, Social Media
+- Organizational/management skills
+- Writing and presentation development
+- Art and crafts for team spirit
+
+### Additional Parent Responsibilities
 - Attend parent meetings
-- Make sure students are on time for meetings, build times, and events.
-- Timely transportation must also be provided home afterwards. Please be respectful of our volunteer mentors’ time by picking up students on time.
-- Sign and return permission slips, waiver forms and other required documents by designated due date.
-- Provide telephone numbers where they can be reached in an emergency.
-- Provide and monitor a dependable email address to receive team correspondence.
-- Parents/guardians are responsible for the conduct of their child.
-- Parents/guardians are encouraged to attend all events and provide support for the team.
-- Parents/guardians are encouraged to keep up-to-date with what their child is working on with the team and the progress that the team has made.
-- Parents/guardians are encouraged to become team mentors (technical or non-technical), which adds additional responsibilities but is a very rewarding experience.
-- Notify the team when students will be absent from a team event where they are expected.
+- Ensure timely student arrival/pickup
+- Sign and return required documents
+- Provide emergency contact information
+- Monitor team correspondence email
+- Support team events and activities
+- Keep informed of student progress
+- Notify team of student absences
 
-### Competition Protocol
-
-**Participation**
-
-It is expected that you fulfill your duties as a team member in the role you have agreed to and in any supporting role you can to assist the current needs of the team. **Attending competition is a privilege, not a right.** Since these events cause students to miss class time, students are expected to remain involved at competition in team related activities (competition, video, photography, pits, scouting, cheering, presentations, etc.). Students not involved in the pits, field activities, or presentations should remain in the stands with the team.
-
-- **Participation in competitions is a lot of fun and encouraged.** If you will not be participating in a competition, please let the lead mentor know as soon as possible so that the team can allocate competition duties efficiently and effectively.
-- Team members attending the competitions are required to attend the whole competition. While at competitions, students are expected to perform their assigned duties. Team members are required to remain with the team throughout the entire competition. Failure to do so will result in ineligibility to attend future competitions.
-- Students shall keep their adult mentors informed of their specific activities and whereabouts at all times. Students may not use their own cars or ride in cars belonging to other students during the competition. The buddy system will be strictly enforced. Students must always be with their partner. Students must not be alone at any time.
-- Uniforms are to be worn at all times during competition and not be covered by other non team apparel.
-- Approved eye protection must be worn at all times by all team members and their guests while in the pit areas.
-- Students may be responsible for their meals at competitions.
-- Because travel is required to and from competitions, students not on the official roster for a competition must be accompanied by their parent if they wish to attend the event. Students not on the official roster must not interfere with or interrupt team activities. If they do so, they will be asked to leave and they will jeopardize their future team travel opportunities.
-
-**Room/Hotel Behavior**
-
-- Attendants are guests using the facilities, special care should be taken to not deface or destroy any property. Individuals, who inflict damage to the hotel rooms or the building, will be held liable for any costs incurred for repair.
-- Curfew regulations shall be interpreted to mean that each person shall be in his/her hotel room by the published curfew. No team activities will occur after curfew. Room checks will be made nightly by mentors. Once a room check is made, students may not leave their room. Each student shall remain in his/her room until a predetermined time the next morning. Each student will be given the room number and phone number of the mentor(s) to call in case a problem arises during the night.
-- Students of the opposite gender are **NOT ALLOWED** to enter each other’s room. When possible, we will have a designated room where students can socialize, play cards or watch movies together, while being supervised by a mentor or adult chaperone.
-- Students are expected to be respectful and considerate of hotel roommates when traveling. Students should communicate with each other to reach consensus on sharing the restroom and quiet times.
-- Only people who are on the official team travel roster may be in a team hotel room. Students from other teams, friends or RCS students who are not on the travel roster may not be in the team rooms.
-- Mentors are responsible for taking all reasonable precautions to ensure the safety of their students and must be readily available in case of an emergency.
-- It is agreed that, upon violation of the RCS Code of Conduct and the Acceptable Use for Technology Agreement, the violators’ parents will be notified. And the violator will be sent home at their parents’ expense. Students violating the Code of Conduct at FIRST competitions will be disqualified from competitive awards.
-- Serious misconduct shall be reported to the mentor, teacher sponsor, principal, parents, and if necessary, the proper authorities. Any further disciplinary action will be determined by the school administration and may result in at least one calendar year of ineligibility.
-
-### Cheering
-
-Gracious professionalism comes into play strongly when we’re in the stands rooting on our team as well as others. We want all the students on all the teams to do well, to feel good about themselves, and to be inspired by the competition. We are supportive and positive at all times under every adverse condition. Demonstrate by example what good sportsmanship is.
-
-### Awards
-
-We will stay until the end of the awards ceremonies. During the ceremony we will applaud the teams that are winning awards. When we applaud we will stand to show our respect for what they have accomplished. During the awards ceremony of competitions, all Members are expected to be in the stands to support their team, with exception of the drive team and pit crew.
-
-### Event Volunteers
-
-In addition to our team’s volunteer needs, FIRST competition events are run solely by volunteers. Each FRC team is expected to provide a **minimum of two volunteers to each event** we participate in. These volunteer opportunities are facilitated through the FIRST in Michigan organization directly. The volunteer jobs do not require any prior knowledge of FIRST robotics. Please consider volunteering your time. In January of the current season, volunteer information can be found here.
-
-### Safety at Competitions
-
-Safety should be practiced at all times. **Safety glasses must be worn in the pits by all members – students and adults.**
-
-### How Parents Participate
-
-**General**
-
-Recruit other parents, retirees, sponsor mentors, etc. Network through friends, family or co-workers.
-
-Be an advocate for our team and FIRST with the school district and in our community. Help your student attend team meetings by driving or arranging car pools.
-
-**Technical Mentor**
-
-- General technical or engineering backgrounds, machinists, etc.
-- Willingness to take a backseat and let students experiment, but to step-in when they need to learn something new.
-- Mentoring needed for: structural, mechanical, electrical, pneumatic, control systems, CAD, computer animation, website, programming, safety
-
-**Non-Technical Mentor**
-
-- Work with students in any of these areas:
-- Organizational, management skills for running the team and coordinating meetings
-- Writing essays and creating presentations for award submissions, college scholarship essays, promotional literature, competition judge presentation materials
-- Art needed to decorate the Robotics room, our pit, shipping crate, website
-- Crafts to develop spirit accessories and team awards given to other teams
-
-**Support Functions**
-
-- Feeding the team during the build Jan/Feb season
-- Solicit sponsors for cash donations, materials, engineering mentors, tools, machining, excess equipment, or material clearances
-- Fundraising
-- Can (deposits) drive fundraiser in the late fall; Barnes & Noble gift wrap in Nov-Dec
-- Pays for FIRST and off-season competitions, transportation, travel food and offsets individual student expenses
-- Travel/Events
-- Coordinate permission slip creation with school sponsor
-- Travel arrangements (bus, hotel, restaurant)
-- Arrange to feed the team during competitions
-- Recruit and schedule trip drivers and chaperones
-- Spirit preparation
-- Collect/manage fees for travel
-- T-shirt orders
-- Team handouts for competition
-- Organize team building exercises
+### Support Functions
+Parents can contribute through:
+- Feeding team during build season
+- Sponsor solicitation and fundraising
+- Travel coordination and chaperoning
+- Spirit preparation and team building
 - Publicity and public relations
-- Baking treats for competitions
-- Promote team before the school board and administration
-- Teacher/mentor/sponsor/senior awards and thank you’s
-- Videotaping/photography for meetings, mentoring, outreach
-- End of season pot-luck party
-- Coaching Business/Marketing team on business plan writing, branding plans, website development and social media presence
-- Plan off-season events (Robo-Con, Maker’s Fair, Kettering Kick-off event, Alpena)
-- Connect our team to other schools’ robotics and/or STEM programs
-- Sew bumpers for our robot to sport at competition
-- Chaperone students at the Fall Club Door Decorating event hosted by Student Council
-- Chaperone students in creating robot décor for the Rochester Christmas parade
-- Provide students a specialized training in your area of expertise, tying it to robotics
-- Help Marketing group design newsletter layouts/provide editorial consultation
-- Write press releases and distribute about our team’s activities
-- Parents of returning students: help us at the new parent/student orientation
-- Make name tags for all students/mentors/parent volunteers by end of September
-- Chaperone students to elementary and middle schools where they mentor younger robotics’ teams
-- Oversee videography efforts of the Chairman’s group
-- Write PTSA and/or RCS Foundation grant applications for the team
-- Chaperone Barnes and Noble gift wrap session
-- Chaperone students at the 8th Grade Parent Night (promote robotics)
-- Returning parents: assist mentors at mandatory parent meetings prior to competitions to collect documents, make copies and plan travel
-- Chaperone students at the PTSA STEAM fair and other STEM events in the community
-- Plan team building activities after the end of the season
-- Help the team host an elementary level STEM event
+- Event planning and coordination
+- Specialized training in expertise areas
 
-### Additional Reasons to Become Involved in the Robotics Program: College & Career Opportunities
+## Competition & Event Volunteering
 
-The FEDS FIRST program is an excellent way to explore careers of engineering, communication, creative design, marketing and many other technical areas. During this program, students will be exposed to many principles of engineering, marketing, and various mentoring skills of professionals. We recognize the possibility that not all students will go on to careers in engineering. It is our goal, however, to expose all the students to technological careers including but not limited to engineering.
+Each FRC team must provide **minimum of two volunteers** to each competition event. Volunteer opportunities are coordinated through FIRST in Michigan and require no prior robotics knowledge.
+
+## Career & College Opportunities
+
+The FEDS FIRST program provides excellent exploration of careers in:
+- Engineering and technology
+- Communication and creative design
+- Marketing and business
+- Project management and leadership
+
+We expose all students to technological careers while recognizing not all will pursue engineering paths.
 
 ### Scholarship Opportunities
 
-FIRST offers over $80 million in scholarship opportunities to team members annually. While many of the scholarships are designed for those seeking degrees in engineering, math, and science, there are many that are available for any area of study. The FIRST website (www.firstinspires.org) has a complete listing and additional information.
+FIRST offers **over $80 million annually** in scholarship opportunities to team members. While many target engineering, math, and science degrees, numerous scholarships are available for any field of study. Complete information available at [www.firstinspires.org](http://www.firstinspires.org).
+
+## Your Journey Starts Here
+
+You're not just joining a robotics team - you're becoming part of a tradition of innovation, learning, and community impact that spans over two decades. You'll build robots, but more importantly, you'll build character, skills, and relationships that last a lifetime.
+
+The FEDS tradition continues with your dedication, enthusiasm, and commitment to excellence. Welcome to the team!
+
+</div>

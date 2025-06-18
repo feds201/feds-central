@@ -1,45 +1,212 @@
 import {Callout} from 'nextra/components';
 import Head from 'next/head';
 import { Cards, Card } from 'nextra/components';
+import { ProgrammingHero, SkillsMatrix, ProgrammingPath, LiveCodeDemo, ProgrammingStats, BenefitCard, TechStack } from '../../components';
 
 <Head>
-    <title>Intro - FEDS201</title>
-    <meta property="og:title" content="Intro - FEDS201" key="title" />
+    <title>Programming Excellence - FEDS201</title>
+    <meta property="og:title" content="Programming Excellence - FEDS201" key="title" />
+    <meta property="og:description" content="Master FRC robot programming with our comprehensive guide - from Java fundamentals to advanced autonomous systems" />
 </Head>
 
-# Introduction*
+<ProgrammingHero />
 
+<div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 20px' }}>
 
-> Wait a minute... How did this happen? Somehow, someway, you’ve wandered into the cursed domain of FRC robot programming—the unholy intersection of shattered dreams, endless bugs, and the cold, unfeeling void of Java stack traces. Abandon hope, all ye who enter here, for you are about to embark on a journey so fraught with frustration that even the bravest of souls would quiver at the thought.  
+# Welcome to FRC Programming Excellence
 
-FRC programming isn’t just a skill—it’s a test of your very will to exist. Each keystroke inches you closer to madness, every compile error another dagger in your heart. You’ll spend hours crafting code only to watch in horror as your robot smashes into the wall like a drunken moose, ignoring every logical command you so painstakingly wrote.  
+**Where Code Meets Competition**
 
-Why? Because this isn’t just programming. It’s *robot programming*. That means your code isn’t just running in a tidy little digital sandbox. No, it’s fighting tooth and nail with janky hardware, rebellious motors, and sensors that tell bold-faced lies to your face. Think debugging is hard? Try debugging something that’s screaming across the floor at 15 feet per second while *literally* on fire.  
+Programming in FIRST Robotics isn't just about writing code—it's about bringing mechanical marvels to life, creating intelligent autonomous systems, and pushing the boundaries of what's possible in competitive robotics. You're about to embark on a journey that combines software engineering, real-time systems, and competitive strategy.
 
-> Imagine training a hyperactive raccoon to juggle chainsaws while blindfolded. That’s about the level of cooperation you can expect from an FRC robot.  
+<ProgrammingStats />
 
-Here’s the thing: this isn’t for the faint of heart. Every inch of progress is earned in blood, sweat, and tears. Every line of working code is a miracle. And yet, the dark truth is that it will break again—probably during your demo. Resilience won’t just be helpful; it will be the only thing standing between you and total despair.  
+## Why FRC Programming Matters
 
-**Programming an FRC robot is a cruel, unforgiving grind that chews you up, spits you out, and demands you crawl back for more.**  
+<div style={{
+  display: 'grid',
+  gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+  gap: '24px',
+  margin: '40px 0'
+}}>
 
-But hey, don’t let that scare you off. There’s a twisted sort of joy in this, too. The moment when your robot finally executes an autonomous sequence flawlessly after days of struggle will feel like summiting Everest. You’ll cling to that fleeting victory as a testament to your resilience, even as the robot’s next move shatters your confidence all over again.  
+<BenefitCard 
+  icon="🚀"
+  title="Real-World Impact"
+  description="Your code directly controls a 120-pound robot operating at high speeds in competitive environments. Every line matters."
+/>
 
-As you work through this guide, remember: failure isn’t just inevitable—it’s practically the point. Embrace the chaos. Learn from it. And when your robot still somehow refuses to cooperate, just remember that the rest of us are suffering right alongside you.  
+<BenefitCard 
+  icon="⚡"
+  title="Performance Critical"
+  description="Real-time systems where millisecond delays can mean the difference between victory and defeat in competition."
+/>
 
-So, welcome to the FRC programming team. You didn’t choose this life; it chose you. And now, there’s no turning back.  
+<BenefitCard 
+  icon="🧠"
+  title="Problem Solving"
+  description="Complex challenges requiring creative solutions, from sensor fusion to autonomous path planning."
+/>
 
-Let’s begin.  
+<BenefitCard 
+  icon="🤖"
+  title="Hardware Integration"
+  description="Bridge the gap between software and physical systems - motors, sensors, and actuators working in harmony."
+/>
 
-> *This is a satirical introduction to FRC programming. While it’s true that programming can be challenging, it’s also incredibly rewarding. Don’t let the humor scare you off—programming is a valuable skill that will serve you well in robotics and beyond.*
----  
+</div>
 
+## Programming Fundamentals
 
-### Quick-Navigate
+### The FRC Technology Stack
+
+<TechStack />
+
+<SkillsMatrix />
+
+## Your Programming Journey
+
+<ProgrammingPath />
+
+## Interactive Code Exploration
+
+<LiveCodeDemo />
+
+<Callout type="info" emoji="💡">
+**Pro Tip**: Start with our Java fundamentals if you're new to programming, or jump directly to FRC-specific concepts if you have coding experience. Every great programmer started with their first "Hello, World!"
+</Callout>
+
+## Core Programming Areas
+
+### 🔧 Subsystem Programming
+Master the art of modular robot code architecture. Learn to create robust, maintainable systems for:
+- **Drive Systems**: Tank, arcade, mecanum, and swerve drive
+- **Manipulators**: Arms, elevators, intakes, and shooters  
+- **Sensors**: Encoders, gyroscopes, vision cameras, and limit switches
+- **Pneumatics**: Solenoids, compressors, and pressure systems
+
+### 🤖 Autonomous Programming
+Develop intelligent robot behaviors that operate without human input:
+- **Path Planning**: Generate smooth, collision-free trajectories
+- **Sensor Fusion**: Combine multiple data sources for accurate positioning
+- **State Machines**: Create complex, sequential autonomous routines
+- **Vision Integration**: Use computer vision for targeting and navigation
+
+### 👁️ Computer Vision
+Process visual data in real-time for competitive advantage:
+- **Target Detection**: Identify and track game pieces and scoring targets
+- **AprilTags**: Precise robot localization using fiducial markers
+- **Color Detection**: Sort and identify objects by color properties
+- **Distance Estimation**: Calculate distances to targets for accurate shooting
+
+### 📊 Data Analysis & Telemetry
+Monitor and optimize robot performance:
+- **Real-time Dashboards**: Live data visualization during competition
+- **Performance Metrics**: Track robot efficiency and identify improvements
+- **Debugging Tools**: Advanced logging and diagnostic systems
+- **Predictive Analytics**: Use historical data to improve future performance
+
+## Quick Navigation
 
 <Cards>
-<Card title="Understanding Java" target="_self" href="Programming/BasicJava/javaintro"/>
-<Card title="FRC Tools & Setup" target="_self" href = "Programming/Tools&Setup"/>
-<Card title="Subsystem Programming" target="_self" href="Programming/Subsystems/SubsystemOverview"/>
-<Card title="Autonomous Programming" target="_self" href="Programming/Autonomous/Index"/>
-<Card title="Video Processing" target="_self" href="Programming/Vision"/>
+<Card 
+  title="🚀 Java Fundamentals" 
+  href="/Programming/BasicJava/javaintro"
+  description="Master Java programming concepts essential for FRC development"
+/>
+<Card 
+  title="🛠️ Tools & Setup" 
+  href="/Programming/Tools&Setup"
+  description="Configure your development environment and essential programming tools"
+/>
+<Card 
+  title="⚙️ Subsystem Programming" 
+  href="/Programming/Subsystems/SubsystemOverview"
+  description="Build modular, maintainable robot subsystems using command-based architecture"
+/>
+<Card 
+  title="🤖 Autonomous Systems" 
+  href="/Programming/Autonomous/Index"
+  description="Create intelligent autonomous routines and path-following algorithms"
+/>
+<Card 
+  title="👁️ Computer Vision" 
+  href="/Programming/Vision"
+  description="Implement real-time vision processing for targeting and navigation"
+/>
+<Card 
+  title="📡 Communication & Networking" 
+  href="/Programming/Communication"
+  description="Master robot-to-driver station communication and data telemetry"
+/>
 </Cards>
+
+## Advanced Topics
+
+### Performance Optimization
+- **Loop Timing**: Maintain consistent 20ms control loops
+- **Memory Management**: Efficient object creation and garbage collection
+- **CPU Profiling**: Identify and eliminate performance bottlenecks
+- **Real-time Constraints**: Meet hard timing deadlines in competitive environments
+
+### Safety & Reliability
+- **Fail-safe Systems**: Graceful degradation when components fail
+- **Input Validation**: Robust handling of sensor errors and edge cases
+- **Emergency Stops**: Immediate response to critical safety conditions
+- **Watchdog Timers**: Automatic recovery from software hangs
+
+### Testing & Validation
+- **Unit Testing**: Verify individual component functionality
+- **Integration Testing**: Ensure subsystems work together correctly
+- **Simulation**: Test code without physical hardware
+- **Hardware-in-the-Loop**: Validate real-world behavior safely
+
+## Programming Best Practices
+
+<Callout type="warning" emoji="⚠️">
+**Competition Reality Check**: Your code will be tested under extreme conditions - vibration, electrical noise, time pressure, and stressed operators. Design for robustness, not just functionality.
+</Callout>
+
+### Code Quality Standards
+- **Readable Code**: Write code that your future self (and teammates) can understand
+- **Version Control**: Use Git for collaboration and change tracking
+- **Documentation**: Comment complex algorithms and non-obvious decisions
+- **Code Reviews**: Learn from experienced programmers and catch errors early
+
+### Debugging Strategies
+- **Systematic Approach**: Isolate problems methodically
+- **Logging**: Capture runtime data for post-match analysis
+- **Unit Testing**: Verify components work in isolation
+- **Hardware Debugging**: Use multimeters and oscilloscopes for electrical issues
+
+## Competition Programming
+
+### Match Strategy
+- **Autonomous Priority**: Maximize autonomous points (often 40-50% of total score)
+- **Defensive Programming**: Handle opponent interference gracefully
+- **Driver Assistance**: Provide feedback and assistance systems
+- **Quick Recovery**: Minimize downtime from minor failures
+
+### Team Collaboration
+- **Clear Communication**: Keep drivers and coaches informed of robot status
+- **Rapid Iteration**: Quick fixes and improvements between matches
+- **Documentation**: Maintain clear records of settings and configurations
+- **Knowledge Transfer**: Ensure multiple team members understand the codebase
+
+## Your Next Steps
+
+1. **Assess Your Background**: Take our programming skills assessment
+2. **Choose Your Path**: Follow our structured learning progression
+3. **Get Hands-On**: Start with practical exercises and real robot code
+4. **Join the Community**: Connect with other FRC programmers for support
+5. **Practice Regularly**: Programming is a skill that improves with consistent practice
+
+<Callout type="success" emoji="🎯">
+**Ready to Begin?** Whether you're writing your first "Hello, World!" or optimizing autonomous trajectories, every expert was once a beginner. Start with the fundamentals and build your skills systematically.
+</Callout>
+
+**Remember**: Programming is both an art and a science. While we'll teach you the technical skills, developing intuition and problem-solving abilities comes with experience. Embrace the challenges, learn from failures, and celebrate your successes along the way.
+
+Welcome to the world of competitive robotics programming. Let's build something amazing together.
+
+</div>
