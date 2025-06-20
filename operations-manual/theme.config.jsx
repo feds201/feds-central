@@ -15,11 +15,11 @@ export default {
             <>
                 <meta property="og:url" content={url} />
                 <meta property="og:title" content={frontMatter.title || 'FEDS201'} />
-                <meta property="og:image" content={frontMatter.image || 'https://i.imgur.com/9O6F2mo.png'} />
+                <meta property="og:image" content={frontMatter.image || 'https://i.imgur.com/pEpTlKh.png'} />
                 <meta property="og:description" content={frontMatter.description || 'FEDS201 - Advanced Robotics Team Operations Manual'} />
                 <meta name="titleSuffix" content="FEDS201" />
                 <meta name="description" content="FEDS201 - Advanced Robotics Team Operations Manual" />
-                <link rel="icon" href="https://i.imgur.com/9O6F2mo.png" />
+                <link rel="icon" href="https://i.imgur.com/pEpTlKh.png" />
                 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
                 <meta name="twitter:card" content="summary_large_image" />
                 <meta name="twitter:site" content="@feds201" />
@@ -147,7 +147,7 @@ export default {
                 display: 'inline-block'
             }}>
                 <img
-                    src="https://i.imgur.com/9O6F2mo.png"
+                    src="https://i.imgur.com/pEpTlKh.png"
                     alt="FEDS201"
                     width="36"
                     height="36"
@@ -284,7 +284,7 @@ export default {
                             }}
                         >
                             <img 
-                                src="https://i.imgur.com/9O6F2mo.png" 
+                                src="https://i.imgur.com/pEpTlKh.png" 
                                 alt="FEDS201" 
                                 width="20" 
                                 height="20" 
