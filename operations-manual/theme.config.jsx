@@ -373,8 +373,7 @@ export default {
         </div>
     ),
 
-    darkMode: true,
     nextThemes: {
-        defaultTheme: 'system'
+        defaultTheme: 'dark'
     }
 };
