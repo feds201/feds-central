@@ -1,0 +1,30 @@
+{
+  "Programming": {
+    "title": "Programming",
+    "type": "doc"
+  },
+  "CAD": {
+    "title": "CAD",
+    "type": "doc"
+  },
+  "Electrical": {
+    "title": "Electrical",
+    "type": "doc"
+  },
+  "PandC": {
+    "title": "People and Culture",
+    "type": "doc"
+  },
+  "Mechanical": {
+    "title": "Mechanical",
+    "type": "doc"
+  },
+  "Strategy": {
+    "title": "Strategy/ Scouting",
+    "type": "doc"
+  },
+  "Experiences": {
+    "title": "Experiences",
+    "type": "doc"
+  }
+}

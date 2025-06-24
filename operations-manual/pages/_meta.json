@@ -1,22 +1,29 @@
 {
-  "index": "Who are the FEDS",
-  "Programming": "Programming",
-  "CAD": "CAD",
-  "Electrical": "Electrical",
-  "PandC": "People and Culture",
-  "Mechanical": "Mechanical",
-  "Strategy": "Strategy/ Scouting",
-  "Experiences": "Experiences",
-  "---": {
+  "index": "Who are the FEDS?",
+    "Home": {
+    "title": "Documentation",
+    "type": "page"
+  },
+  "Tutorials": {
+    "title": "Tutorials",
+    "type": "page"
+  },
+   "---": {
     "type": "separator"
   },
-  "Contribution": "Contribution",
-  "FEDSHandbook": "FEDS Handbook",
-
+  "Contribution": {
+    "title": "Contribution",
+    "type": "doc"
+  },
+  "FEDSHandbook": {
+    "title": "FEDS Handbook",
+    "type": "doc"
+  },
   "contact": {
     "title": "Contact Us",
     "type": "page",
     "href": "https://feds201.com",
     "newWindow": true
   }
+
 }
