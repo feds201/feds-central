@@ -75,8 +75,8 @@ Successfully refactored the FEDS-Handbook codebase to use a modular, parameter-d
 
 ✅ **`pages/index.mdx`** - Homepage now uses generic components
 ✅ **`pages/FEDSHandbook.mdx`** - Main handbook page updated  
-✅ **`pages/Programming/index.mdx`** - Programming section completely refactored
-✅ **`pages/Programming/Software/index.mdx`** - Software wing page updated
+✅ **`pagesHome/Programming/index.mdx`** - Programming section completely refactored
+✅ **`pagesHome/Programming/Software/index.mdx`** - Software wing page updated
 ✅ **`Components/index.js`** - Clean, comprehensive export file
 ✅ **`Components/README.md`** - Detailed documentation with examples
 
@@ -214,8 +214,8 @@ The parameter-driven approach means new requirements can often be met by:
 ### Modified Files
 - `pages/index.mdx` - Updated to use generic components
 - `pages/FEDSHandbook.mdx` - Replaced legacy widgets
-- `pages/Programming/index.mdx` - Complete refactor with new hero and widgets
-- `pages/Programming/Software/index.mdx` - Advanced widget implementations
+- `pagesHome/Programming/index.mdx` - Complete refactor with new hero and widgets
+- `pagesHome/Programming/Software/index.mdx` - Advanced widget implementations
 - `Components/index.js` - Complete rewrite with clean exports
 - `Components/README.md` - Enhanced documentation
 

@@ -9,667 +9,667 @@
        <priority>1.0000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/Programming</loc>
+       <loc>https://feds-operational-manual-beta.vercel.appHome/Programming</loc>
        <lastmod>2025-06-20T14:33:16+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/Programming/FRC</loc>
+       <loc>https://feds-operational-manual-beta.vercel.appHome/Programming/FRC</loc>
        <lastmod>2025-06-20T14:33:16+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/Programming/FRC/BasicJava/javaintro</loc>
+       <loc>https://feds-operational-manual-beta.vercel.appHome/Programming/FRC/BasicJava/javaintro</loc>
        <lastmod>2025-06-20T14:33:16+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/Programming/FRC/Tools&amp;Setup</loc>
+       <loc>https://feds-operational-manual-beta.vercel.appHome/Programming/FRC/Tools&amp;Setup</loc>
        <lastmod>2025-06-20T14:33:17+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/Programming/FRC/InstallingNi</loc>
+       <loc>https://feds-operational-manual-beta.vercel.appHome/Programming/FRC/InstallingNi</loc>
        <lastmod>2025-06-20T14:33:17+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/Programming/FRC/Subsystems/SubsystemOverview</loc>
+       <loc>https://feds-operational-manual-beta.vercel.appHome/Programming/FRC/Subsystems/SubsystemOverview</loc>
        <lastmod>2025-06-20T14:33:17+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/Programming/FRC/Subsystems/Arm</loc>
+       <loc>https://feds-operational-manual-beta.vercel.appHome/Programming/FRC/Subsystems/Arm</loc>
        <lastmod>2025-06-20T14:33:18+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/Programming/FRC/Subsystems/Shooter</loc>
+       <loc>https://feds-operational-manual-beta.vercel.appHome/Programming/FRC/Subsystems/Shooter</loc>
        <lastmod>2025-06-20T14:33:18+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/Programming/FRC/Subsystems/Intake/IntakeOverview</loc>
+       <loc>https://feds-operational-manual-beta.vercel.appHome/Programming/FRC/Subsystems/Intake/IntakeOverview</loc>
        <lastmod>2025-06-20T14:33:18+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/Programming/FRC/Subsystems/Intake/Wrist</loc>
+       <loc>https://feds-operational-manual-beta.vercel.appHome/Programming/FRC/Subsystems/Intake/Wrist</loc>
        <lastmod>2025-06-20T14:33:18+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/Programming/FRC/Subsystems/Intake/IRsensor</loc>
+       <loc>https://feds-operational-manual-beta.vercel.appHome/Programming/FRC/Subsystems/Intake/IRsensor</loc>
        <lastmod>2025-06-20T14:33:19+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/Programming/FRC/Subsystems/Intake/Intakewheels</loc>
+       <loc>https://feds-operational-manual-beta.vercel.appHome/Programming/FRC/Subsystems/Intake/Intakewheels</loc>
        <lastmod>2025-06-20T14:33:19+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/Programming/FRC/Subsystems/Swerve</loc>
+       <loc>https://feds-operational-manual-beta.vercel.appHome/Programming/FRC/Subsystems/Swerve</loc>
        <lastmod>2025-06-20T14:33:19+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/Programming/FRC/Subsystems/Vision</loc>
+       <loc>https://feds-operational-manual-beta.vercel.appHome/Programming/FRC/Subsystems/Vision</loc>
        <lastmod>2025-06-20T14:33:19+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/Programming/FRC/StingrayCode</loc>
+       <loc>https://feds-operational-manual-beta.vercel.appHome/Programming/FRC/StingrayCode</loc>
        <lastmod>2025-06-20T14:33:20+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/Programming/FRC/StingrayCode/Autonomous/Autoalign</loc>
+       <loc>https://feds-operational-manual-beta.vercel.appHome/Programming/FRC/StingrayCode/Autonomous/Autoalign</loc>
        <lastmod>2025-06-20T14:33:20+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/Programming/FRC/StingrayCode/Autonomous/Autons</loc>
+       <loc>https://feds-operational-manual-beta.vercel.appHome/Programming/FRC/StingrayCode/Autonomous/Autons</loc>
        <lastmod>2025-06-20T14:33:20+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/Programming/FRC/StingrayCode/Climber/Commands</loc>
+       <loc>https://feds-operational-manual-beta.vercel.appHome/Programming/FRC/StingrayCode/Climber/Commands</loc>
        <lastmod>2025-06-20T14:33:21+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/Programming/FRC/StingrayCode/Climber/Subsystem</loc>
+       <loc>https://feds-operational-manual-beta.vercel.appHome/Programming/FRC/StingrayCode/Climber/Subsystem</loc>
        <lastmod>2025-06-20T14:33:21+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/Programming/FRC/StingrayCode/Elevator/Commands</loc>
+       <loc>https://feds-operational-manual-beta.vercel.appHome/Programming/FRC/StingrayCode/Elevator/Commands</loc>
        <lastmod>2025-06-20T14:33:21+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/Programming/FRC/StingrayCode/Elevator/Subsystem</loc>
+       <loc>https://feds-operational-manual-beta.vercel.appHome/Programming/FRC/StingrayCode/Elevator/Subsystem</loc>
        <lastmod>2025-06-20T14:33:21+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/Programming/FRC/StingrayCode/Gooseneck/Commands</loc>
+       <loc>https://feds-operational-manual-beta.vercel.appHome/Programming/FRC/StingrayCode/Gooseneck/Commands</loc>
        <lastmod>2025-06-20T14:33:22+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/Programming/FRC/StingrayCode/Gooseneck/Neck</loc>
+       <loc>https://feds-operational-manual-beta.vercel.appHome/Programming/FRC/StingrayCode/Gooseneck/Neck</loc>
        <lastmod>2025-06-20T14:33:22+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/Programming/FRC/StingrayCode/Gooseneck/Wheels</loc>
+       <loc>https://feds-operational-manual-beta.vercel.appHome/Programming/FRC/StingrayCode/Gooseneck/Wheels</loc>
        <lastmod>2025-06-20T14:33:22+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/Programming/FRC/StingrayCode/Vision/LimelightSubsystem</loc>
+       <loc>https://feds-operational-manual-beta.vercel.appHome/Programming/FRC/StingrayCode/Vision/LimelightSubsystem</loc>
        <lastmod>2025-06-20T14:33:22+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/Programming/FRC/StingrayCode/Robotcontainer</loc>
+       <loc>https://feds-operational-manual-beta.vercel.appHome/Programming/FRC/StingrayCode/Robotcontainer</loc>
        <lastmod>2025-06-20T14:33:23+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/Programming/FRC/StingrayCode/Overview</loc>
+       <loc>https://feds-operational-manual-beta.vercel.appHome/Programming/FRC/StingrayCode/Overview</loc>
        <lastmod>2025-06-20T14:33:23+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/Programming/FRC/PID_control</loc>
+       <loc>https://feds-operational-manual-beta.vercel.appHome/Programming/FRC/PID_control</loc>
        <lastmod>2025-06-20T14:33:23+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/Programming/FRC/Vision</loc>
+       <loc>https://feds-operational-manual-beta.vercel.appHome/Programming/FRC/Vision</loc>
        <lastmod>2025-06-20T14:33:24+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/Programming/FRC/Autonomous/Index</loc>
+       <loc>https://feds-operational-manual-beta.vercel.appHome/Programming/FRC/Autonomous/Index</loc>
        <lastmod>2025-06-20T14:33:24+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/Programming/FRC/Autonomous/PathPlanner/NamedCommands</loc>
+       <loc>https://feds-operational-manual-beta.vercel.appHome/Programming/FRC/Autonomous/PathPlanner/NamedCommands</loc>
        <lastmod>2025-06-20T14:33:24+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/Programming/FRC/Autonomous/PathPlanner/BuildAnAuton</loc>
+       <loc>https://feds-operational-manual-beta.vercel.appHome/Programming/FRC/Autonomous/PathPlanner/BuildAnAuton</loc>
        <lastmod>2025-06-20T14:33:24+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/Programming/FRC/Autonomous/PathPlanner/Settings</loc>
+       <loc>https://feds-operational-manual-beta.vercel.appHome/Programming/FRC/Autonomous/PathPlanner/Settings</loc>
        <lastmod>2025-06-20T14:33:25+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/Programming/FRC/Autonomous/PathPlanner/PathsAndAutos</loc>
+       <loc>https://feds-operational-manual-beta.vercel.appHome/Programming/FRC/Autonomous/PathPlanner/PathsAndAutos</loc>
        <lastmod>2025-06-20T14:33:25+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/Programming/FRC/Autonomous/PathPlanner/Telemetry</loc>
+       <loc>https://feds-operational-manual-beta.vercel.appHome/Programming/FRC/Autonomous/PathPlanner/Telemetry</loc>
        <lastmod>2025-06-20T14:33:25+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/Programming/FRC/Examples/Vision/LimelightOS/DistanceEstimation</loc>
+       <loc>https://feds-operational-manual-beta.vercel.appHome/Programming/FRC/Examples/Vision/LimelightOS/DistanceEstimation</loc>
        <lastmod>2025-06-20T14:33:25+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/Programming/FRC/Examples/Vision/LimelightOS/CustomLib</loc>
+       <loc>https://feds-operational-manual-beta.vercel.appHome/Programming/FRC/Examples/Vision/LimelightOS/CustomLib</loc>
        <lastmod>2025-06-20T14:33:26+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/Programming/FRC/Examples/PID</loc>
+       <loc>https://feds-operational-manual-beta.vercel.appHome/Programming/FRC/Examples/PID</loc>
        <lastmod>2025-06-20T14:33:26+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/Programming/FRC/Examples/SafetyMode/Index</loc>
+       <loc>https://feds-operational-manual-beta.vercel.appHome/Programming/FRC/Examples/SafetyMode/Index</loc>
        <lastmod>2025-06-20T14:33:26+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/Programming/FRC/UsingInterijIdea</loc>
+       <loc>https://feds-operational-manual-beta.vercel.appHome/Programming/FRC/UsingInterijIdea</loc>
        <lastmod>2025-06-20T14:33:26+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/Programming/FRC/Workshop/Live</loc>
+       <loc>https://feds-operational-manual-beta.vercel.appHome/Programming/FRC/Workshop/Live</loc>
        <lastmod>2025-06-20T14:33:27+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/Programming/FRC/Workshop/Vscode</loc>
+       <loc>https://feds-operational-manual-beta.vercel.appHome/Programming/FRC/Workshop/Vscode</loc>
        <lastmod>2025-06-20T14:33:27+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/Programming/FRC/PastProblems+Solutions/2024-2025</loc>
+       <loc>https://feds-operational-manual-beta.vercel.appHome/Programming/FRC/PastProblems+Solutions/2024-2025</loc>
        <lastmod>2025-06-20T14:33:27+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/Programming/Software</loc>
+       <loc>https://feds-operational-manual-beta.vercel.appHome/Programming/Software</loc>
        <lastmod>2025-06-20T14:33:27+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/Introduction</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/Introduction</loc>
        <lastmod>2025-06-20T14:33:28+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/Design/Design+Sense</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/Design/Design+Sense</loc>
        <lastmod>2025-06-20T14:33:28+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/Design/Brainstorming+Designs</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/Design/Brainstorming+Designs</loc>
        <lastmod>2025-06-20T14:33:29+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/Design/Think+of+Everything</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/Design/Think+of+Everything</loc>
        <lastmod>2025-06-20T14:33:29+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/Design/Mechanical+Advantage</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/Design/Mechanical+Advantage</loc>
        <lastmod>2025-06-20T14:33:29+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/Design/Space+Claims</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/Design/Space+Claims</loc>
        <lastmod>2025-06-20T14:33:30+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/Design/Subgroup+Collaboration</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/Design/Subgroup+Collaboration</loc>
        <lastmod>2025-06-20T14:33:30+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/Design/Material+Guide</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/Design/Material+Guide</loc>
        <lastmod>2025-06-20T14:33:30+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/Onshape/Index</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/Onshape/Index</loc>
        <lastmod>2025-06-20T14:33:31+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/Onshape/Essentials</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/Onshape/Essentials</loc>
        <lastmod>2025-06-20T14:33:31+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/Onshape/Parts/Index</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/Onshape/Parts/Index</loc>
        <lastmod>2025-06-20T14:33:31+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/Onshape/Parts/Sketches/Sketch</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/Onshape/Parts/Sketches/Sketch</loc>
        <lastmod>2025-06-20T14:33:31+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/Onshape/Parts/Sketches/SketchConstraints</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/Onshape/Parts/Sketches/SketchConstraints</loc>
        <lastmod>2025-06-20T14:33:32+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/Onshape/Parts/Sketches/VariableSketch</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/Onshape/Parts/Sketches/VariableSketch</loc>
        <lastmod>2025-06-20T14:33:32+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/Onshape/Parts/3D+Modeling/3D+Modeling</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/Onshape/Parts/3D+Modeling/3D+Modeling</loc>
        <lastmod>2025-06-20T14:33:32+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/Onshape/Parts/3D+Modeling/ModelingOptions</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/Onshape/Parts/3D+Modeling/ModelingOptions</loc>
        <lastmod>2025-06-20T14:33:33+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/Onshape/Parts/3D+Modeling/BeltCalculator</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/Onshape/Parts/3D+Modeling/BeltCalculator</loc>
        <lastmod>2025-06-20T14:33:33+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/Onshape/Parts/3D+Modeling/Tips+Tricks</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/Onshape/Parts/3D+Modeling/Tips+Tricks</loc>
        <lastmod>2025-06-20T14:33:33+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/Onshape/Parts/3D+Modeling/SheetMetal</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/Onshape/Parts/3D+Modeling/SheetMetal</loc>
        <lastmod>2025-06-20T14:33:34+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/Onshape/Assemblies/Assemblies</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/Onshape/Assemblies/Assemblies</loc>
        <lastmod>2025-06-20T14:33:34+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/Onshape/Assemblies/MatingGuide</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/Onshape/Assemblies/MatingGuide</loc>
        <lastmod>2025-06-20T14:33:34+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/Onshape/Assemblies/PartsInContext</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/Onshape/Assemblies/PartsInContext</loc>
        <lastmod>2025-06-20T14:33:34+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/Onshape/Assemblies/FullPartGuide</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/Onshape/Assemblies/FullPartGuide</loc>
        <lastmod>2025-06-20T14:33:34+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/Onshape/Drawings</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/Onshape/Drawings</loc>
        <lastmod>2025-06-20T14:33:35+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/3D+Printing/Index</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/3D+Printing/Index</loc>
        <lastmod>2025-06-20T14:33:35+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/3D+Printing/Operation</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/3D+Printing/Operation</loc>
        <lastmod>2025-06-20T14:33:35+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/3D+Printing/Slicing</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/3D+Printing/Slicing</loc>
        <lastmod>2025-06-20T14:33:36+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/CNC/Index</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/CNC/Index</loc>
        <lastmod>2025-06-20T14:33:36+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/CNC/Operation</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/CNC/Operation</loc>
        <lastmod>2025-06-20T14:33:36+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/CNC/Fusion+360/Index</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/CNC/Fusion+360/Index</loc>
        <lastmod>2025-06-20T14:33:37+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/CNC/Fusion+360/MaterialRules</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/CNC/Fusion+360/MaterialRules</loc>
        <lastmod>2025-06-20T14:33:37+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/CNC/Fusion+360/Import</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/CNC/Fusion+360/Import</loc>
        <lastmod>2025-06-20T14:33:37+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/CNC/Fusion+360/Manufacturing</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/CNC/Fusion+360/Manufacturing</loc>
        <lastmod>2025-06-20T14:33:38+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/CNC/Fusion+360/Posting</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/CNC/Fusion+360/Posting</loc>
        <lastmod>2025-06-20T14:33:38+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/CNC/Fusion+360/Run</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/CNC/Fusion+360/Run</loc>
        <lastmod>2025-06-20T14:33:39+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/FEA/Index</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/FEA/Index</loc>
        <lastmod>2025-06-20T14:33:39+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/FEA/Inspire/Index</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/FEA/Inspire/Index</loc>
        <lastmod>2025-06-20T14:33:39+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/FEA/Inspire/UI</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/FEA/Inspire/UI</loc>
        <lastmod>2025-06-20T14:33:39+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/FEA/Inspire/StaticAnalysis/Contacts</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/FEA/Inspire/StaticAnalysis/Contacts</loc>
        <lastmod>2025-06-20T14:33:39+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/FEA/Inspire/StaticAnalysis/Connectors</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/FEA/Inspire/StaticAnalysis/Connectors</loc>
        <lastmod>2025-06-20T14:33:40+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/FEA/Inspire/StaticAnalysis/Loads</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/FEA/Inspire/StaticAnalysis/Loads</loc>
        <lastmod>2025-06-20T14:33:40+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/FEA/Inspire/StaticAnalysis/Shape+Controls</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/FEA/Inspire/StaticAnalysis/Shape+Controls</loc>
        <lastmod>2025-06-20T14:33:40+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/FEA/Inspire/StaticAnalysis/Run+Settings</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/FEA/Inspire/StaticAnalysis/Run+Settings</loc>
        <lastmod>2025-06-20T14:33:41+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/FEA/Inspire/MotionAnalysis/Structure</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/FEA/Inspire/MotionAnalysis/Structure</loc>
        <lastmod>2025-06-20T14:33:41+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/FEA/Inspire/MotionAnalysis/Joints</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/FEA/Inspire/MotionAnalysis/Joints</loc>
        <lastmod>2025-06-20T14:33:41+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/FEA/Inspire/MotionAnalysis/RigidGrouping</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/FEA/Inspire/MotionAnalysis/RigidGrouping</loc>
        <lastmod>2025-06-20T14:33:41+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/FEA/Inspire/MotionAnalysis/Actuators&amp;Motors</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/FEA/Inspire/MotionAnalysis/Actuators&amp;Motors</loc>
        <lastmod>2025-06-20T14:33:42+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/FEA/Inspire/MotionAnalysis/Motion</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/FEA/Inspire/MotionAnalysis/Motion</loc>
        <lastmod>2025-06-20T14:33:42+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/FEA/Inspire/MotionAnalysis/Contacts</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/FEA/Inspire/MotionAnalysis/Contacts</loc>
        <lastmod>2025-06-20T14:33:42+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/FEA/Inspire/MotionAnalysis/Run+Settings</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/FEA/Inspire/MotionAnalysis/Run+Settings</loc>
        <lastmod>2025-06-20T14:33:43+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/FEA/Inspire/Materials</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/FEA/Inspire/Materials</loc>
        <lastmod>2025-06-20T14:33:43+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/FEA/Post+Analysis/Optimization/OptimizationTypes</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/FEA/Post+Analysis/Optimization/OptimizationTypes</loc>
        <lastmod>2025-06-20T14:33:43+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/FEA/Post+Analysis/Optimization/Objectives</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/FEA/Post+Analysis/Optimization/Objectives</loc>
        <lastmod>2025-06-20T14:33:44+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/FEA/Post+Analysis/Optimization/DesignSpaces</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/FEA/Post+Analysis/Optimization/DesignSpaces</loc>
        <lastmod>2025-06-20T14:33:44+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/FEA/Post+Analysis/Optimization/MultiLoadOptimization</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/FEA/Post+Analysis/Optimization/MultiLoadOptimization</loc>
        <lastmod>2025-06-20T14:33:45+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/FEA/Post+Analysis/Optimization/InspireSolvers</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/FEA/Post+Analysis/Optimization/InspireSolvers</loc>
        <lastmod>2025-06-20T14:33:45+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/FEA/Post+Analysis/Optimization/PolyNURBS</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/FEA/Post+Analysis/Optimization/PolyNURBS</loc>
        <lastmod>2025-06-20T14:33:45+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/FEA/Post+Analysis/Index</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/FEA/Post+Analysis/Index</loc>
        <lastmod>2025-06-20T14:33:46+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/Physics/Useful+Resources</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/Physics/Useful+Resources</loc>
        <lastmod>2025-06-20T14:33:46+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/Physics/Motor</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/Physics/Motor</loc>
        <lastmod>2025-06-20T14:33:46+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/Physics/GearRatios</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/Physics/GearRatios</loc>
        <lastmod>2025-06-20T14:33:46+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/Physics/Collision</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/Physics/Collision</loc>
        <lastmod>2025-06-20T14:33:47+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/Physics/DynamicAnalysis</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/Physics/DynamicAnalysis</loc>
        <lastmod>2025-06-20T14:33:47+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/Season+Recaps/2024recap</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/Season+Recaps/2024recap</loc>
        <lastmod>2025-06-20T14:33:47+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/Season+Recaps/2023recap</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/Season+Recaps/2023recap</loc>
        <lastmod>2025-06-20T14:33:48+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/CAD/Season+Recaps/2022recap</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/CAD/Season+Recaps/2022recap</loc>
        <lastmod>2025-06-20T14:33:48+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/Electrical/Tools&amp;Setup</loc>
+       <loc>https://feds-operational-manual-beta.vercel.appHome/Electrical/Tools&amp;Setup</loc>
        <lastmod>2025-06-20T14:33:49+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
@@ -1011,31 +1011,31 @@
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/Mechanical/Index</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/Mechanical/Index</loc>
        <lastmod>2025-06-20T14:35:57+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/Mechanical/DesignGuidelines</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/Mechanical/DesignGuidelines</loc>
        <lastmod>2025-06-20T14:35:57+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/Mechanical/MaterialSelection</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/Mechanical/MaterialSelection</loc>
        <lastmod>2025-06-20T14:35:57+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/Mechanical/ToolsAndEquipment</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/Mechanical/ToolsAndEquipment</loc>
        <lastmod>2025-06-20T14:35:57+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>
   </url>
   <url>
-       <loc>https://feds-operational-manual-beta.vercel.app/Mechanical/OnlineResourses/UsefulLinks</loc>
+       <loc>https://feds-operational-manual-beta.vercel.app/Home/Mechanical/OnlineResourses/UsefulLinks</loc>
        <lastmod>2025-06-20T14:35:57+00:00</lastmod>
        <changefreq>daily</changefreq>
        <priority>0.8000</priority>

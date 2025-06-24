@@ -292,22 +292,6 @@ export default {
                             />
                             FEDS201
                         </a>
-                        <a 
-                            href="https://rhs-csclub.vercel.app" 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            style={{
-                                color: '#6b7280',
-                                textDecoration: 'none',
-                                fontSize: '14px',
-                                fontWeight: '500',
-                                transition: 'color 0.2s ease'
-                            }}
-                            onMouseEnter={(e) => e.target.style.color = '#6366f1'}
-                            onMouseLeave={(e) => e.target.style.color = '#6b7280'}
-                        >
-                            CS-Club
-                        </a>
                     </div>
                     <div style={{
                         fontSize: '14px',
