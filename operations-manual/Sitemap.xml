@@ -103,12 +103,6 @@
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://operational-manual.feds201.com/Programming</loc>
-    <lastmod>2025-06-24</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
     <loc>https://operational-manual.feds201.com/_next/static/css/31f54d684301c303.css</loc>
     <lastmod>2025-06-24</lastmod>
     <changefreq>monthly</changefreq>
@@ -139,7 +133,7 @@
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://operational-manual.feds201.com/_next/static/chunks/pages/_app-d665946258dfd81e.js</loc>
+    <loc>https://operational-manual.feds201.com/_next/static/chunks/pages/_app-2e41ae93dcd9ec3b.js</loc>
     <lastmod>2025-06-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
@@ -175,19 +169,19 @@
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://operational-manual.feds201.com/_next/static/chunks/pages/index-133ed5c43f92ee68.js</loc>
+    <loc>https://operational-manual.feds201.com/_next/static/chunks/pages/index-bf44c36d31f01de0.js</loc>
     <lastmod>2025-06-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://operational-manual.feds201.com/_next/static/GXQPKjrSV-EkkzWWtdM2u/_buildManifest.js</loc>
+    <loc>https://operational-manual.feds201.com/_next/static/USVFD4TzEvYW23yIZgRRq/_buildManifest.js</loc>
     <lastmod>2025-06-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://operational-manual.feds201.com/_next/static/GXQPKjrSV-EkkzWWtdM2u/_ssgManifest.js</loc>
+    <loc>https://operational-manual.feds201.com/_next/static/USVFD4TzEvYW23yIZgRRq/_ssgManifest.js</loc>
     <lastmod>2025-06-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
