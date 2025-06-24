@@ -73,3 +73,84 @@ public class Lift extends SubsystemABS {
     }
 }
 ```
+
+### Constructor Explanation
+#### Private Member Fields
+
+| Field                                    | What it is                                          | Why it’s here                                                            |
+| ---------------------------------------- | --------------------------------------------------- | ------------------------------------------------------------------------ |
+| `TalonFX elevatorMotorLeader`            | Kraken X60 that actually drives the elevator        | Primary motor you control.                                               |
+| `TalonFX elevatorMotorFollower`          | Second Kraken X60                                   | Electrically follows the leader for more torque.                         |
+| `DoubleSupplier m_encoderValue`          | Lambda returning the leader’s position              | Handy for Shuffleboard & PID.                                            |
+| `DoubleSupplier m_elevatorSpeed`         | Lambda that reads a Shuffleboard slider             | Lets you live-tune manual speed from the DS.                             |
+| `BooleanSupplier elevatorAboveThreshold` | Lambda that checks if lift is past a certain height | Useful for logic such as “only shoot when up.”                           |
+| `DigitalInput limitSwitch`               | Hard-wired top/bottom limit switch on DIO 9         | Zeroing or hard-stop safety.                                             |
+| `PIDController pid`                      | PID used when moving **up**                         | Constants pulled from `RobotMap`.                                        |
+| `PIDController pidDown`                  | PID used when moving **down**                       | Different P-gain and a fixed set-point of 1.3 rev (counteracts gravity). |
+
+#### Motor and limit switch instantiation
+First, we instantiate our motors and limit switch:
+``` java
+    elevatorMotorLeader = new TalonFX(RobotMap.ElevatorMap.ELEVATOR_MOTOR);
+    elevatorMotorFollower = new TalonFX(RobotMap.ElevatorMap.ELEVATOR_MOTOR2);
+    limitSwitch = new DigitalInput(9);
+```
+#### Motor Configuration 
+``` java 
+ // Configure follower motor
+        elevatorMotorFollower.setControl(new Follower(elevatorMotorLeader.getDeviceID(), false));
+
+        // Configure current limits
+        elevatorMotorLeader.getConfigurator().apply(
+                RobotMap.CurrentLimiter.getCurrentLimitConfiguration(RobotMap.ElevatorMap.ELEVATOR_CURRENT_LIMIT));
+        elevatorMotorFollower.getConfigurator().apply(
+                RobotMap.CurrentLimiter.getCurrentLimitConfiguration(RobotMap.ElevatorMap.ELEVATOR_CURRENT_LIMIT));
+```
+
+- We use `.setControl()` to make our follower motor follow the output of the leader; `false` means it rotates in the same direction.
+- Then, we apply a current limiter configuration using a `CurrentLimiter` object found in the `RobotMap`
+
+<Callout type={"info"}>
+The `RobotMap` class contains all of the constants for our robot. Because our current limit is a constant configuration, 
+we keep it there for the sake of organization. The constant for the elevator current limit was 50 amps.
+</Callout>
+
+#### PID Controllers
+``` java
+    pid = new PIDController(RobotMap.ElevatorMap.ELEVATOR_P, RobotMap.ElevatorMap.ELEVATOR_I, RobotMap.ElevatorMap.ELEVATOR_D);
+    pid.setTolerance(.2);
+
+    pidDown = new PIDController(0.4, 0, 0);
+    pidDown.setTolerance(.2);
+    pidDown.setSetpoint(1.3);
+```
+We had 2 PID Controllers for our elevator this year. the `pid` PID gains are  .53, 0, and 0.
+- We had a slightly less agressive PID controller for down movement to prevent occasional loop overrun related issues. These can be prevented by using
+the [onboard 1Khz PID control](https://v6.docs.ctr-electronics.com/en/stable/docs/api-reference/device-specific/talonfx/basic-pid-control.html) on Kraken x60's, which we will be using in the future for more consistent control.
+
+#### Shuffleboard Integrations
+Using Shuffleboard, we integrated useful readouts and useful debugging features with our elevator:
+``` java
+tab.add("Elevator PID", pid).withWidget(kPIDController);
+tab.add("Elevator PID Down", pidDown).withWidget(kPIDController);
+tab.addNumber("Elevator Position", m_encoderValue);
+```
+Live tunable PID Widgets allowing for real-time updating and a readout for elevator encoder value.
+``` java
+GenericEntry elevatorSpeedSetter = tab.add("Elevator Speed", 0.0)
+        .withWidget(kNumberSlider)
+        .withProperties(Map.of("min", 0, "max", .2))
+        .getEntry();
+m_elevatorSpeed = () -> elevatorSpeedSetter.getDouble(0);
+```
+This creates a slider (limited to 0 to 0.2) that feeds a lambda so elevator commands can read the chosen manual speed, used to find elevator constants.
+
+``` java
+tab.addBoolean("elevator Threshold" , elevatorAboveThreshold);
+```
+
+This makes a red/green light indicator that tells robot operators whether or not the elevator is above the threshold that activates a swerve "Slow mode", to prevent tipping.
+
+#### Additional Missing Pieces
+
+This constructor contains a few methods such as `getElevatorAboveThreshold()` that will be explained later in the elevator code dive.
