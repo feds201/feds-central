@@ -154,3 +154,148 @@ This makes a red/green light indicator that tells robot operators whether or not
 #### Additional Missing Pieces
 
 This constructor contains a few methods such as `getElevatorAboveThreshold()` that will be explained later in the elevator code dive.
+
+### `Periodic() Method`
+
+``` java 
+ public void periodic() {
+        m_encoderValue = () -> elevatorMotorLeader.getPosition().getValueAsDouble();
+        elevatorAboveThreshold = ()-> getElevatorAboveThreshold();
+
+        SmartDashboard.putBoolean("limit switch", elevatorSwitchTriggered());
+    }
+```
+- The Periodic method runs in a loop, which means it's useful for updating values for shuffleboard.
+1. The `m_encoderValue` and `elevatorAboveThreshold` variables are both updated continuously for dashboard display
+2. The output of the `elevatorSwitchTriggered()` method is displayed to the dashboard, for debugging and system checks.
+
+### Important Methods
+
+```java
+    public void setMotorVolt(double volt){
+        elevatorMotorLeader.setControl(new VoltageOut(volt));
+    }
+
+    public void setPIDTarget(double target) {
+        pid.setSetpoint(target);
+    }
+
+    public boolean pidAtSetpoint() {
+        return pid.atSetpoint();
+    }
+
+    public boolean elevatorSwitchTriggered(){
+        return !limitSwitch.get();
+    }
+
+    public void rotateElevatorPID() {
+        double output = pid.calculate(getEncoderValue());
+        if(output > 0){
+            output += ElevatorMap.ELEVATOR_S;
+        } else {
+            output -= ElevatorMap.ELEVATOR_S;
+        }
+        output += ElevatorMap.ELEVATOR_G;
+        setMotorSpeed(output);
+    }
+
+    public void rotateElevatorPIDDown(){
+        double output = pidDown.calculate(getEncoderValue());
+        if(output > 0){
+            output += ElevatorMap.ELEVATOR_S;
+        } else {
+            output -= ElevatorMap.ELEVATOR_S;
+        }
+        output += ElevatorMap.ELEVATOR_G;
+        setMotorSpeed(output);
+    }
+
+    public boolean pidDownAtSetpoint(){
+        return pidDown.atSetpoint();
+    }
+
+    public double getEncoderValue() {
+        return m_encoderValue.getAsDouble();
+    }
+
+    public double getElevatorHeight() {
+        return m_encoderValue.getAsDouble() * ElevatorMap.ELEVATOR_CIRCUMFERENCE;
+    }
+
+    public void setElevatorAtLimitHeight(){
+        elevatorMotorLeader.setPosition(.45);
+    }
+
+    public boolean getElevatorAboveThreshold(){
+        return getEncoderValue() > RobotMap.ElevatorMap.L3ROTATION + 1;
+    }
+
+    public boolean getElevatorAtBelowL4(){
+        return getEncoderValue() < RobotMap.ElevatorMap.L4ROTATION;
+    }
+
+    public boolean getElevatorAtBarge(){
+        return getEncoderValue() > RobotMap.ElevatorMap.BARGEROTATION-1;
+    }
+```
+#### 1. `setMotorVolt(double volt)`
+
+Directly commands the leader Kraken to output a specific **voltage** using CTRE’s `VoltageOut` control mode. We used this as opposed to `.set()` to prevent
+diminishing and inconsistent motor output after battery use during a match.
+
+#### 2. `setPIDTarget(double target)`
+
+Updates the **setpoint** of the main (upward) PID controller so the elevator will try to reach the given encoder position.
+
+#### 3. `pidAtSetpoint()`
+
+Returns **`true` when the main PID reports it is within its tolerance band** of the target; otherwise `false`.
+
+#### 4. `elevatorSwitchTriggered()`
+
+Returns **`true` when the physical limit switch is pressed**.
+The boolean is inverted (`!`) because the switch is wired “normally closed.”
+
+#### 5. `rotateElevatorPID()`
+
+Runs the elevator **upward under PID control**:
+
+1. Calculates PID output from the current encoder value.
+2. Adds static friction compensation (`ELEVATOR_S`, sign-dependent).
+3. Adds gravity compensation (`ELEVATOR_G`).
+4. Sends the final speed command to the motor.
+
+#### 6. `rotateElevatorPIDDown()`
+
+Same idea as method 5 but uses the separate **downward PID (`pidDown`)**.
+#### 7. `pidDownAtSetpoint()`
+
+Returns **`true` when the downward PID controller is within tolerance** of its fixed setpoint (default = 1.3 rot).
+
+#### 8. `getEncoderValue()`
+
+A shorthand accessor that returns the **raw encoder rotations** as a double.
+
+#### 9. `getElevatorHeight()`
+
+Converts the encoder rotations to a **linear height** by multiplying by the elevator drum’s circumference.
+
+#### 10. `setElevatorAtLimitHeight()`
+
+Manually **resets (or “zeros”) the encoder position to 0.45 rotations**. We set the elevator encoder to .45 instead of 0 because the limit switch triggers
+slightly above the "true zero" position.
+
+#### 11. `getElevatorAboveThreshold()`
+
+Checks whether the elevator is **above the Level-3 rotation threshold** plus a 1-rotation safety buffer.
+
+#### 12. `getElevatorAtBelowL4()`
+
+Checks whether the elevator is **below the Level-4 rotation value**.
+
+#### 13. `getElevatorAtBarge()`
+
+Checks whether the elevator is **above the “barge” preset height** (with a 1-rotation negative buffer).
+
+### Conclusion
+And that's the Elevator subsystem code! Check it out in full on our [github page](https://github.com/feds201/Reefscape-2025/blob/main/src/main/java/frc/robot/subsystems/lift/Lift.java).
