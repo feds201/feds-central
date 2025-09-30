@@ -408,7 +408,8 @@ public class RobotContainer extends RobotFramework {
 
         driverController.x().whileTrue(new MoveForward(DrivetrainConstants.drivetrain).until(()-> swerveSubsystem.robotAtBarge()).andThen(new ConfigureSlowDrive(driverController, DrivetrainConstants.drivetrain, 0.07)));
         driverController.leftTrigger()
-            .whileTrue(new IntakeCoralSequence(swanNeck, swanNeckWheels, elevator));
+            .whileTrue(new IntakeCoralSequence(swanNeck, swanNeckWheels, elevator))
+            .onFalse(new SpinSwanWheels(swanNeckWheels, ()-> -IntakeMap.WHEEL_SPEED_INTAKE/2).until(swanNeck :: getCoralLoaded).onlyIf(swanNeck :: getCoralLoadedOpposite));
 
         // driverController.leftTrigger()
         //     .whileTrue(new SpinSwanWheels(swanNeckWheels, ()->-.4));
