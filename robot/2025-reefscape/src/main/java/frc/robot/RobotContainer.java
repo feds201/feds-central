@@ -132,6 +132,13 @@ public class RobotContainer extends RobotFramework {
     private PathPlannerPath leftAutoPath;
     private PathPlannerPath centerAutoPath;
     private PathPlannerPath jackAutoPath;
+    private Command Left3L4Part2;
+    private Command Left3L4Part3;
+    private Command Left3L4Part1;
+    private Command Right3L4Part2;
+    private Command Right3L4Part3;
+    private Command Right3L4Part1;
+
 
     private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
 
@@ -198,7 +205,14 @@ public class RobotContainer extends RobotFramework {
         zeroMechanisms = new InstantCommand(()-> elevator.zeroElevator())
         .alongWith(new InstantCommand(()-> swanNeck.zeroPivotPosition())).alongWith(new InstantCommand(()-> climber.zeroClimber()));
 
-         
+        Left3L4Part2 = AutoBuilder.buildAuto("Left3L4Part2");
+        Left3L4Part3 = AutoBuilder.buildAuto("Left3L4Part3");
+        Left3L4Part1 = AutoBuilder.buildAuto("Left3L4Part1");
+
+        Right3L4Part2 = AutoBuilder.buildAuto("Right3L4Part2");
+        Right3L4Part3 = AutoBuilder.buildAuto("Right3L4Part3");
+        Right3L4Part1 = AutoBuilder.buildAuto("Right3L4Part1");
+
         setupEventTriggers();
         setupNamedCommands();
         autonChooser = AutoBuilder.buildAutoChooser();
@@ -468,9 +482,34 @@ public class RobotContainer extends RobotFramework {
     }
 
     public void setupPaths() {
-        autonChooser.setDefaultOption("Drive Forward", new DriveForwardCommand(swerveSubsystem, 0.5, 5));
-        Shuffleboard.getTab(Subsystems.SWERVE_DRIVE.getNetworkTable()).add("Auton Chooser", autonChooser).withSize(2, 1)
-                .withProperties(Map.of("position", "0, 0"));
+                autonChooser.addOption("CompLeft3L4Robust",
+                new SequentialCommandGroup(
+                    Left3L4Part1,
+                   AutoBuilder.buildAuto("Left3L4Part1Detour").onlyIf(()-> !swanNeck.getCoralLoaded()),
+                   AutoBuilder.buildAuto("Left3L4Part1Detour").onlyIf(()-> !swanNeck.getCoralLoaded()),
+                   AutoBuilder.buildAuto("Left3L4Part1Detour").onlyIf(()-> !swanNeck.getCoralLoaded()),
+                    Left3L4Part2,
+                   AutoBuilder.buildAuto("Left3L4Part2Detour").onlyIf(()-> !swanNeck.getCoralLoaded()),
+                   AutoBuilder.buildAuto("Left3L4Part2Detour").onlyIf(()-> !swanNeck.getCoralLoaded()),
+                   AutoBuilder.buildAuto("Left3L4Part2Detour").onlyIf(()-> !swanNeck.getCoralLoaded()),
+                    Left3L4Part3
+                )
+            );
+        
+            autonChooser.addOption("CompRight3L4Robust",
+            new SequentialCommandGroup(
+                Right3L4Part1,
+               AutoBuilder.buildAuto("Right3L4Part1Detour").onlyIf(()-> !swanNeck.getCoralLoaded()),
+               AutoBuilder.buildAuto("Right3L4Part1Detour").onlyIf(()-> !swanNeck.getCoralLoaded()),
+               AutoBuilder.buildAuto("Right3L4Part1Detour").onlyIf(()-> !swanNeck.getCoralLoaded()),
+                Right3L4Part2,
+               AutoBuilder.buildAuto("Right3L4Part2Detour").onlyIf(()-> !swanNeck.getCoralLoaded()),
+               AutoBuilder.buildAuto("Right3L4Part2Detour").onlyIf(()-> !swanNeck.getCoralLoaded()),
+               AutoBuilder.buildAuto("Right3L4Part2Detour").onlyIf(()-> !swanNeck.getCoralLoaded()),
+                Right3L4Part3
+            )
+        );
+        
     }
 
 
