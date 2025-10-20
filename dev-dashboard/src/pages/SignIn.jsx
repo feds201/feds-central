@@ -25,7 +25,7 @@ export default function SignIn() {
           redirectTo: `https://developer.feds201.com/auth/callback`,
         },
       })
-      
+
       if (error) throw error
     } catch (err) {
       setError(err.message || 'An error occurred during sign-in')
