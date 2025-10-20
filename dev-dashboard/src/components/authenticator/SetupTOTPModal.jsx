@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { X, Copy } from 'lucide-react'
 import QRCode from 'qrcode.react'
-import { authenticator } from 'otplib'
+import { TOTP } from 'jsotp'
 
 export default function SetupTOTPModal({ onSetup, onClose }) {
   const [secret, setSecret] = useState('')
@@ -16,7 +16,12 @@ export default function SetupTOTPModal({ onSetup, onClose }) {
   }, [])
 
   const generateSecret = () => {
-    const newSecret = authenticator.generateSecret()
+    // Generate a random 32-character base32 secret
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567'
+    let newSecret = ''
+    for (let i = 0; i < 32; i++) {
+      newSecret += chars.charAt(Math.floor(Math.random() * chars.length))
+    }
     setSecret(newSecret)
 
     // Generate recovery codes
@@ -37,15 +42,25 @@ export default function SetupTOTPModal({ onSetup, onClose }) {
       alert('Please enter a valid 6-digit code')
       return
     }
-    onSetup(secret, recoveryCodes)
+
+    try {
+      const totpInstance = new TOTP(secret)
+      const isValid = totpInstance.verify(confirmCode)
+      if (!isValid) {
+        alert('Invalid code. Please check your authenticator app and try again.')
+        return
+      }
+      onSetup(secret, recoveryCodes)
+    } catch (error) {
+      console.error('Error verifying TOTP code:', error)
+      alert('Error verifying code. Please try again.')
+    }
   }
 
   const getOtpauthUrl = () => {
-    return authenticator.keyuri(
-      'user@fedsdevconsole.dev',
-      'FEDS Dev Console',
-      secret
-    )
+    const issuer = encodeURIComponent('FEDS Dev Console')
+    const account = encodeURIComponent('user@fedsdevconsole.dev')
+    return `otpauth://totp/${issuer}:${account}?secret=${secret}&issuer=${issuer}&algorithm=SHA1&digits=6&period=30`
   }
 
   return (

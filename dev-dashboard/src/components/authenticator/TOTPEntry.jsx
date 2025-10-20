@@ -1,7 +1,7 @@
 import { Trash2, Copy } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useState, useEffect } from 'react'
-import { totp } from 'otplib'
+import { TOTP } from 'jsotp'
 
 export default function TOTPEntry({ entry, onDelete }) {
   const [code, setCode] = useState('')
@@ -10,12 +10,19 @@ export default function TOTPEntry({ entry, onDelete }) {
 
   useEffect(() => {
     const generateCode = () => {
-      if (!entry?.totp_secret) {
-        setCode('ERROR')
+      if (!entry?.totp_secret || typeof entry.totp_secret !== 'string' || entry.totp_secret.trim() === '') {
+        setCode('NO SECRET')
         return
       }
       try {
-        const newCode = totp.generate(entry.totp_secret)
+        // Ensure the secret is properly formatted
+        const secret = entry.totp_secret.trim().toUpperCase().replace(/[^A-Z2-7]/g, '')
+        if (secret.length < 16) {
+          setCode('INVALID')
+          return
+        }
+        const totpInstance = new TOTP(secret)
+        const newCode = totpInstance.now()
         setCode(newCode)
       } catch (error) {
         console.error('Error generating TOTP code:', error)
