@@ -18,6 +18,11 @@ export default function Authenticator({ session }) {
   }, [session])
 
   const fetchTOTPData = async () => {
+    if (!session?.user?.id) {
+      setLoading(false)
+      return
+    }
+
     try {
       setLoading(true)
 
@@ -25,19 +30,16 @@ export default function Authenticator({ session }) {
       const { data: mainData, error: mainError } = await supabase
         .from('authenticator')
         .select('*')
-        .eq('user_id', session?.user?.id)
-        .single()
+        .eq('user_id', session.user.id)
 
-      if (mainError && mainError.code !== 'PGRST116') {
-        throw mainError
-      }
-      setMainTotp(mainData || null)
+      if (mainError) throw mainError
+      setMainTotp(mainData?.[0] || null)
 
       // Fetch authenticator entries
       const { data: entriesData, error: entriesError } = await supabase
         .from('authenticator_entries')
         .select('*')
-        .eq('user_id', session?.user?.id)
+        .eq('user_id', session.user.id)
         .order('created_at', { ascending: false })
 
       if (entriesError) throw entriesError
@@ -50,13 +52,18 @@ export default function Authenticator({ session }) {
   }
 
   const handleSetupTOTP = async (secret, recoveryCodes) => {
+    if (!session?.user?.id) {
+      console.error('No authenticated user session')
+      return
+    }
+
     try {
       const { error } = await supabase
         .from('authenticator')
         .upsert(
           [
             {
-              user_id: session?.user?.id,
+              user_id: session.user.id,
               totp_secret: secret,
               recovery_codes: recoveryCodes,
               updated_at: new Date(),
@@ -70,7 +77,7 @@ export default function Authenticator({ session }) {
       // Log audit event
       await supabase.from('audit_logs').insert([
         {
-          user_id: session?.user?.id,
+          user_id: session.user.id,
           action: 'totp_setup',
           details: {},
         },
@@ -84,13 +91,18 @@ export default function Authenticator({ session }) {
   }
 
   const handleAddEntry = async (newEntry) => {
+    if (!session?.user?.id) {
+      console.error('No authenticated user session')
+      return
+    }
+
     try {
       const { data, error } = await supabase
         .from('authenticator_entries')
         .insert([
           {
             ...newEntry,
-            user_id: session?.user?.id,
+            user_id: session.user.id,
           },
         ])
         .select()
@@ -100,7 +112,7 @@ export default function Authenticator({ session }) {
       // Log audit event
       await supabase.from('audit_logs').insert([
         {
-          user_id: session?.user?.id,
+          user_id: session.user.id,
           action: 'authenticator_entry_created',
           details: { service_name: newEntry.service_name },
         },
@@ -114,6 +126,11 @@ export default function Authenticator({ session }) {
   }
 
   const handleDeleteEntry = async (id) => {
+    if (!session?.user?.id) {
+      console.error('No authenticated user session')
+      return
+    }
+
     try {
       const { error } = await supabase
         .from('authenticator_entries')
@@ -125,7 +142,7 @@ export default function Authenticator({ session }) {
       // Log audit event
       await supabase.from('audit_logs').insert([
         {
-          user_id: session?.user?.id,
+          user_id: session.user.id,
           action: 'authenticator_entry_deleted',
           details: { entry_id: id },
         },

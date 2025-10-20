@@ -101,7 +101,7 @@ CREATE POLICY "Users can view their own audit logs"
 DROP POLICY IF EXISTS "System can insert audit logs" ON audit_logs;
 CREATE POLICY "System can insert audit logs" 
   ON audit_logs FOR INSERT 
-  WITH CHECK (true);
+  WITH CHECK (auth.uid() = user_id);
 
 -- ============================================
 -- RLS Policies for authenticator
@@ -115,7 +115,8 @@ CREATE POLICY "Users can view their own authenticator"
 DROP POLICY IF EXISTS "Users can manage their own authenticator" ON authenticator;
 CREATE POLICY "Users can manage their own authenticator" 
   ON authenticator FOR INSERT, UPDATE, DELETE 
-  USING (auth.uid() = user_id);
+  USING (auth.uid() = user_id)
+  WITH CHECK (auth.uid() = user_id);
 
 -- ============================================
 -- RLS Policies for authenticator_entries
@@ -129,7 +130,8 @@ CREATE POLICY "Users can view their own entries"
 DROP POLICY IF EXISTS "Users can manage their own entries" ON authenticator_entries;
 CREATE POLICY "Users can manage their own entries" 
   ON authenticator_entries FOR INSERT, UPDATE, DELETE 
-  USING (auth.uid() = user_id);
+  USING (auth.uid() = user_id)
+  WITH CHECK (auth.uid() = user_id);
 
 -- ============================================
 -- RLS Policies for services
@@ -143,7 +145,8 @@ CREATE POLICY "Users can view their own services"
 DROP POLICY IF EXISTS "Users can manage their own services" ON services;
 CREATE POLICY "Users can manage their own services" 
   ON services FOR INSERT, UPDATE, DELETE 
-  USING (auth.uid() = owner_id);
+  USING (auth.uid() = owner_id)
+  WITH CHECK (auth.uid() = owner_id);
 
 -- ============================================
 -- RLS Policies for credentials
@@ -157,4 +160,5 @@ CREATE POLICY "Users can view their own credentials"
 DROP POLICY IF EXISTS "Users can manage their own credentials" ON credentials;
 CREATE POLICY "Users can manage their own credentials" 
   ON credentials FOR INSERT, UPDATE, DELETE 
-  USING (auth.uid() = owner_id);
+  USING (auth.uid() = owner_id)
+  WITH CHECK (auth.uid() = owner_id);

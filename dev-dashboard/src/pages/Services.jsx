@@ -15,12 +15,17 @@ export default function Services({ session }) {
   }, [session])
 
   const fetchServices = async () => {
+    if (!session?.user?.id) {
+      setLoading(false)
+      return
+    }
+
     try {
       setLoading(true)
       const { data, error } = await supabase
         .from('services')
         .select('*')
-        .eq('owner_id', session?.user?.id)
+        .eq('owner_id', session.user.id)
         .order('created_at', { ascending: false })
 
       if (error) throw error
@@ -33,13 +38,18 @@ export default function Services({ session }) {
   }
 
   const handleAddService = async (newService) => {
+    if (!session?.user?.id) {
+      console.error('No authenticated user session')
+      return
+    }
+
     try {
       const { data, error } = await supabase
         .from('services')
         .insert([
           {
             ...newService,
-            owner_id: session?.user?.id,
+            owner_id: session.user.id,
           },
         ])
         .select()
@@ -49,7 +59,7 @@ export default function Services({ session }) {
       // Log audit event
       await supabase.from('audit_logs').insert([
         {
-          user_id: session?.user?.id,
+          user_id: session.user.id,
           action: 'service_created',
           details: { service_id: data?.[0]?.id, name: newService.name },
         },
@@ -63,6 +73,11 @@ export default function Services({ session }) {
   }
 
   const handleDeleteService = async (id) => {
+    if (!session?.user?.id) {
+      console.error('No authenticated user session')
+      return
+    }
+
     try {
       const { error } = await supabase.from('services').delete().eq('id', id)
       if (error) throw error
@@ -70,7 +85,7 @@ export default function Services({ session }) {
       // Log audit event
       await supabase.from('audit_logs').insert([
         {
-          user_id: session?.user?.id,
+          user_id: session.user.id,
           action: 'service_deleted',
           details: { service_id: id },
         },

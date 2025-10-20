@@ -16,13 +16,18 @@ export default function Credentials({ session }) {
   }, [session])
 
   const fetchData = async () => {
+    if (!session?.user?.id) {
+      setLoading(false)
+      return
+    }
+
     try {
       setLoading(true)
       // Fetch credentials
       const { data: credData, error: credError } = await supabase
         .from('credentials')
         .select('*')
-        .eq('owner_id', session?.user?.id)
+        .eq('owner_id', session.user.id)
         .order('created_at', { ascending: false })
 
       if (credError) throw credError
@@ -31,7 +36,7 @@ export default function Credentials({ session }) {
       const { data: servData, error: servError } = await supabase
         .from('services')
         .select('*')
-        .eq('owner_id', session?.user?.id)
+        .eq('owner_id', session.user.id)
 
       if (servError) throw servError
 
@@ -45,13 +50,18 @@ export default function Credentials({ session }) {
   }
 
   const handleAddCredential = async (newCredential) => {
+    if (!session?.user?.id) {
+      console.error('No authenticated user session')
+      return
+    }
+
     try {
       const { data, error } = await supabase
         .from('credentials')
         .insert([
           {
             ...newCredential,
-            owner_id: session?.user?.id,
+            owner_id: session.user.id,
           },
         ])
         .select()
@@ -61,7 +71,7 @@ export default function Credentials({ session }) {
       // Log audit event
       await supabase.from('audit_logs').insert([
         {
-          user_id: session?.user?.id,
+          user_id: session.user.id,
           action: 'credential_created',
           details: { credential_id: data?.[0]?.id },
         },
@@ -75,6 +85,11 @@ export default function Credentials({ session }) {
   }
 
   const handleDeleteCredential = async (id) => {
+    if (!session?.user?.id) {
+      console.error('No authenticated user session')
+      return
+    }
+
     try {
       const { error } = await supabase.from('credentials').delete().eq('id', id)
       if (error) throw error
@@ -82,7 +97,7 @@ export default function Credentials({ session }) {
       // Log audit event
       await supabase.from('audit_logs').insert([
         {
-          user_id: session?.user?.id,
+          user_id: session.user.id,
           action: 'credential_deleted',
           details: { credential_id: id },
         },

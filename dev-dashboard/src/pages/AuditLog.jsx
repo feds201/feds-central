@@ -12,12 +12,17 @@ export default function AuditLog({ session }) {
   }, [session])
 
   const fetchAuditLogs = async () => {
+    if (!session?.user?.id) {
+      setLoading(false)
+      return
+    }
+
     try {
       setLoading(true)
       const { data, error } = await supabase
         .from('audit_logs')
         .select('*')
-        .eq('user_id', session?.user?.id)
+        .eq('user_id', session.user.id)
         .order('created_at', { ascending: false })
         .limit(100)
 

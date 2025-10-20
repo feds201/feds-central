@@ -10,8 +10,17 @@ export default function TOTPEntry({ entry, onDelete }) {
 
   useEffect(() => {
     const generateCode = () => {
-      const newCode = totp.generate(entry.totp_secret)
-      setCode(newCode)
+      if (!entry?.totp_secret) {
+        setCode('ERROR')
+        return
+      }
+      try {
+        const newCode = totp.generate(entry.totp_secret)
+        setCode(newCode)
+      } catch (error) {
+        console.error('Error generating TOTP code:', error)
+        setCode('ERROR')
+      }
     }
 
     generateCode()
@@ -27,7 +36,7 @@ export default function TOTPEntry({ entry, onDelete }) {
     }, 1000)
 
     return () => clearInterval(interval)
-  }, [entry.totp_secret])
+  }, [entry?.totp_secret])
 
   const handleCopy = () => {
     navigator.clipboard.writeText(code)

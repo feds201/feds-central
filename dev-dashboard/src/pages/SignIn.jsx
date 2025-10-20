@@ -22,7 +22,7 @@ export default function SignIn() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `localhost:5173/auth/callback`,
+          redirectTo: `http://localhost:5173/auth/callback`,
         },
       })
       if (error) throw error
