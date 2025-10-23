@@ -193,7 +193,7 @@ public class RobotMap {
         public static final double WHEEL_SPEED_SCORE = -0.4;
         public static final double ALGAE_WHEEL_SPEED = -.8;
         public static final double L1_SPEED_SCORE = -0.175;
-        public static final double CANRANGETHRESHOLDVALUE = 0.15;
+        public static final double CANRANGETHRESHOLDVALUE = 0.15;   
 
         public static class ReefStops {
             public static final double L4ANGLE = .113;
@@ -221,7 +221,7 @@ public class RobotMap {
 
         public static PIDController intakePid = new PIDController(5, 0, 0);
         public static final double ks = 0.0095;
-        public static final double kg = 0.015;
+        public static final double kg = 0.01; //.015
         public static final double kgAlgae = .035;
         public static final double ksAlgae = .01;
 
