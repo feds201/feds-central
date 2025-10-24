@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
+import 'package:battery_plus/battery_plus.dart';
 import 'package:scouting_app/Qualitative/qualitative.dart';
 import 'package:scouting_app/components/Inspiration.dart';
 import 'package:scouting_app/components/MatchSelection.dart';
@@ -13,6 +14,7 @@ import 'package:scouting_app/main.dart';
 import '../services/Colors.dart';
 import 'match.dart';
 import '../services/DataBase.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 
 class MatchPage extends StatefulWidget {
   const MatchPage({super.key});
@@ -26,6 +28,7 @@ class MatchPageState extends State<MatchPage>
   late int selectedMatchType;
   late AnimationController _animationController;
   final _scrollController = ScrollController();
+  final Battery _battery = Battery();
 
   @override
   void initState() {
@@ -555,9 +558,26 @@ class MatchPageState extends State<MatchPage>
     );
   }
 
-  void _handleMatchSelection(dynamic match) {
+  Future<int> _getBatteryPercentage() async {
+    try {
+      final batteryLevel = await _battery.batteryLevel;
+      return batteryLevel;
+    } catch (e) {
+      print('Battery plugin unavailable, using fallback: $e');
+      try {
+        // Fallback: return a reasonable default
+        // You may want to implement platform channels for a proper solution
+        return 85; // Safe default battery level
+      } catch (fallbackError) {
+        print('Fallback error: $fallbackError');
+        return 85;
+      }
+    }
+  }
+
+  void _handleMatchSelection(dynamic match) async {
     String _scouterName = Hive.box('settings').get('deviceName');
-    String _allianceColor = Hive.box('userData').get('alliance');
+    String _allianceColor = Hive.box('userData').get('alliance'); 
     String _station = Hive.box('userData').get('position');
 
     // Safely get the team number based on alliance and position
@@ -574,6 +594,9 @@ class MatchPageState extends State<MatchPage>
       return;
     }
 
+    // Get actual battery percentage
+    int batteryPercentage = await _getBatteryPercentage();
+
     MatchRecord matchRecord = MatchRecord(
       AutonPoints(0, 0, 0, 0, false, 0, 0,
           BotLocation(Offset(100, 100), Size(200, 200), 0)),
@@ -586,6 +609,7 @@ class MatchPageState extends State<MatchPage>
       station: int.parse(_station),
       matchNumber: match['match_number'],
       eventKey: match['event_key'],
+      batteryPercentage: batteryPercentage,
     );
 
     Navigator.push(

@@ -516,6 +516,7 @@ class MatchDataBase {
       eventKey: json['eventKey'] ?? "",
       station: json['station'] ?? 0,
       matchNumber: json['matchNumber'] ?? 0,
+      batteryPercentage: json['batteryPercentage'] ?? 0,
     );
   }
 
@@ -531,6 +532,7 @@ class MatchDataBase {
       eventKey: map['eventKey'] ?? "",
       station: map['station'] ?? 0,
       matchNumber: map['matchNumber'] ?? 0,
+      batteryPercentage: map['batteryPercentage'] ?? 0,
     );
   }
 
@@ -546,6 +548,7 @@ class MatchDataBase {
       'autonPoints': record.autonPoints.toJson(),
       'teleOpPoints': record.teleOpPoints.toJson(),
       'endPoints': record.endPoints.toJson(),
+      'batteryPercentage': record.batteryPercentage,
     };
   }
 
@@ -577,6 +580,7 @@ class MatchRecord {
   AutonPoints autonPoints;
   TeleOpPoints teleOpPoints;
   EndPoints endPoints;
+  final int batteryPercentage;
 
   MatchRecord(
     this.autonPoints,
@@ -589,6 +593,7 @@ class MatchRecord {
     required this.eventKey,
     required this.station,
     required this.matchNumber,
+    required this.batteryPercentage,
   });
 
   Map<String, dynamic> toJson() {
@@ -603,11 +608,12 @@ class MatchRecord {
       "autonPoints": autonPoints.toJson(),
       "teleOpPoints": teleOpPoints.toJson(),
       "endPoints": endPoints.toJson(),
+      "batteryPercentage": batteryPercentage,
     };
   }
 
   String toCsv() {
-    return '${teamNumber},${scouterName},${matchKey},${allianceColor},${eventKey},${station},${matchNumber}, ${autonPoints.toCsv()}, ${teleOpPoints.toCsv()}, ${endPoints.toCsv()}';
+    return '${batteryPercentage},${teamNumber},${scouterName},${matchKey},${allianceColor},${eventKey},${station},${matchNumber}, ${autonPoints.toCsv()}, ${teleOpPoints.toCsv()}, ${endPoints.toCsv()}';
   }
 
   static MatchRecord fromJson(Map<String, dynamic> json) {
@@ -622,12 +628,13 @@ class MatchRecord {
       eventKey: json['eventKey'] ?? "",
       station: json['station'] ?? 0,
       matchNumber: json['matchNumber'] ?? 0,
+      batteryPercentage: json['batteryPercentage'] ?? 0,
     );
   }
 
   @override
   String toString() {
-    return 'MatchRecord{teamNumber: $teamNumber, scouterName: $scouterName, matchKey: $matchKey, autonPoints: $autonPoints, teleOpPoints: $teleOpPoints, endPoints: $endPoints, allianceColor: $allianceColor, eventKey: $eventKey, station: $station}';
+    return 'MatchRecord{batteryPercentage: $batteryPercentage, teamNumber: $teamNumber, scouterName: $scouterName, matchKey: $matchKey, autonPoints: $autonPoints, teleOpPoints: $teleOpPoints, endPoints: $endPoints, allianceColor: $allianceColor, eventKey: $eventKey, station: $station}';
   }
 
   String toJsonString() {
@@ -645,6 +652,7 @@ class MatchRecord {
         other.autonPoints == autonPoints &&
         other.teleOpPoints == teleOpPoints &&
         other.endPoints == endPoints;
+
   }
 
   @override
@@ -654,7 +662,8 @@ class MatchRecord {
         matchKey.hashCode ^
         autonPoints.hashCode ^
         teleOpPoints.hashCode ^
-        endPoints.hashCode;
+        endPoints.hashCode ^
+        batteryPercentage.hashCode;
   }
 }
 
