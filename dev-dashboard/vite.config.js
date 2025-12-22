@@ -31,3 +31,5 @@ export default defineConfig({
     host: true, // Allow external access for OAuth redirects
   },
 })
+
+// docker run --name devdashboard-db -e POSTGRES_PASSWORD=mysecretpassword -d postgres:14.20-alpine3.23

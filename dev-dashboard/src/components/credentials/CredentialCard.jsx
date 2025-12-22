@@ -1,8 +1,8 @@
-import { Trash2, Eye, EyeOff } from 'lucide-react'
+import { Trash2, Eye, EyeOff, Edit2 } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useState } from 'react'
 
-export default function CredentialCard({ credential, services, onDelete }) {
+export default function CredentialCard({ credential, services, onDelete, onEdit }) {
   const [showPassword, setShowPassword] = useState(false)
   const service = services.find((s) => s.id === credential.service_id)
 
@@ -34,12 +34,22 @@ export default function CredentialCard({ credential, services, onDelete }) {
         )}
       </div>
 
-      <button
-        onClick={() => onDelete(credential.id)}
-        className="p-2 rounded-lg hover:bg-red-950/50 text-red-400 transition-colors"
-      >
-        <Trash2 size={18} />
-      </button>
+      <div className="flex gap-2">
+        <button
+          onClick={() => onEdit(credential)}
+          className="p-2 rounded-lg hover:bg-indigo-950/50 text-indigo-400 transition-colors"
+          title="Edit credential"
+        >
+          <Edit2 size={18} />
+        </button>
+        <button
+          onClick={() => onDelete(credential.id)}
+          className="p-2 rounded-lg hover:bg-red-950/50 text-red-400 transition-colors"
+          title="Delete credential"
+        >
+          <Trash2 size={18} />
+        </button>
+      </div>
     </motion.div>
   )
 }

@@ -1,13 +1,13 @@
 import { motion } from 'framer-motion'
 import { AuthView } from '@neondatabase/neon-js/auth/react'
-import { Shield, Lock, KeyRound, Activity } from 'lucide-react'
+import { Shield, Sparkles, Zap, Lock } from 'lucide-react'
 
-export default function SignIn() {
-  const features = [
-    { icon: Shield, text: 'Secure credential storage', color: 'from-indigo-500 to-purple-500' },
-    { icon: Lock, text: 'Service management', color: 'from-purple-500 to-pink-500' },
-    { icon: KeyRound, text: 'TOTP authenticators', color: 'from-pink-500 to-rose-500' },
-    { icon: Activity, text: 'Audit logging', color: 'from-rose-500 to-orange-500' },
+export default function SignUp() {
+  const benefits = [
+    { icon: Sparkles, text: 'Free forever', color: 'from-indigo-500 to-purple-500' },
+    { icon: Zap, text: 'Instant setup', color: 'from-purple-500 to-pink-500' },
+    { icon: Lock, text: 'End-to-end encrypted', color: 'from-pink-500 to-rose-500' },
+    { icon: Shield, text: 'TOTP 2FA support', color: 'from-rose-500 to-orange-500' },
   ]
 
   return (
@@ -20,27 +20,27 @@ export default function SignIn() {
       {/* Header */}
       <div className="text-center space-y-4">
         <motion.div
-          initial={{ scale: 0.5, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
+          initial={{ scale: 0.5, opacity: 0, rotate: -180 }}
+          animate={{ scale: 1, opacity: 1, rotate: 0 }}
           transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
           className="inline-flex p-4 rounded-2xl bg-gradient-to-br from-indigo-500/20 to-purple-500/20 border border-indigo-500/30 glow-effect"
         >
-          <Shield size={48} className="text-indigo-400" />
+          <Sparkles size={48} className="text-indigo-400" />
         </motion.div>
-        <h1 className="text-5xl font-bold gradient-text">FEDS Dev Console</h1>
+        <h1 className="text-5xl font-bold gradient-text">Join FEDS</h1>
         <p className="text-slate-400 text-lg">
-          Your secure command center for managing credentials and authenticators
+          Create your account and start securing your credentials today
         </p>
       </div>
 
-      {/* Features Grid */}
+      {/* Benefits Grid */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.4 }}
         className="grid grid-cols-2 gap-3"
       >
-        {features.map((feature, i) => (
+        {benefits.map((benefit, i) => (
           <motion.div
             key={i}
             initial={{ opacity: 0, scale: 0.8 }}
@@ -48,10 +48,10 @@ export default function SignIn() {
             transition={{ delay: 0.5 + i * 0.1 }}
             className="flex items-center gap-2 p-3 rounded-xl bg-slate-800/40 border border-slate-700/50"
           >
-            <div className={`p-2 rounded-lg bg-gradient-to-br ${feature.color}`}>
-              <feature.icon size={16} className="text-white" />
+            <div className={`p-2 rounded-lg bg-gradient-to-br ${benefit.color}`}>
+              <benefit.icon size={16} className="text-white" />
             </div>
-            <span className="text-xs text-slate-300 font-medium">{feature.text}</span>
+            <span className="text-xs text-slate-300 font-medium">{benefit.text}</span>
           </motion.div>
         ))}
       </motion.div>
@@ -63,7 +63,7 @@ export default function SignIn() {
         transition={{ delay: 0.6 }}
         className="card shadow-2xl overflow-hidden"
       >
-        <AuthView pathname="sign-in" />
+        <AuthView pathname="sign-up" />
       </motion.div>
 
       {/* Footer */}

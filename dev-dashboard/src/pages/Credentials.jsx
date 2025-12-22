@@ -1,15 +1,17 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Plus } from 'lucide-react'
-import { supabase } from '@/lib/supabase'
+import { db } from '@/lib/db'
 import CredentialCard from '@/components/credentials/CredentialCard'
 import AddCredentialModal from '@/components/credentials/AddCredentialModal'
+import EditCredentialModal from '@/components/credentials/EditCredentialModal'
 
 export default function Credentials({ session }) {
   const [credentials, setCredentials] = useState([])
   const [services, setServices] = useState([])
   const [loading, setLoading] = useState(true)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [editingCredential, setEditingCredential] = useState(null)
 
   useEffect(() => {
     fetchData()
@@ -23,22 +25,19 @@ export default function Credentials({ session }) {
 
     try {
       setLoading(true)
-      // Fetch credentials
-      const { data: credData, error: credError } = await supabase
-        .from('credentials')
-        .select('*')
-        .eq('owner_id', session.user.id)
-        .order('created_at', { ascending: false })
+      const userId = session.user.id
 
-      if (credError) throw credError
+      // Fetch credentials
+      const credData = await db(
+        'SELECT * FROM credentials WHERE owner_id = $1 ORDER BY created_at DESC',
+        [userId]
+      )
 
       // Fetch services for reference
-      const { data: servData, error: servError } = await supabase
-        .from('services')
-        .select('*')
-        .eq('owner_id', session.user.id)
-
-      if (servError) throw servError
+      const servData = await db(
+        'SELECT * FROM services WHERE owner_id = $1',
+        [userId]
+      )
 
       setCredentials(credData || [])
       setServices(servData || [])
@@ -56,31 +55,61 @@ export default function Credentials({ session }) {
     }
 
     try {
-      const { data, error } = await supabase
-        .from('credentials')
-        .insert([
-          {
-            ...newCredential,
-            owner_id: session.user.id,
-          },
-        ])
-        .select()
+      const userId = session.user.id
 
-      if (error) throw error
+      const result = await db(
+        `INSERT INTO credentials (service_id, username, password_encrypted, notes, owner_id)
+         VALUES ($1, $2, $3, $4, $5)
+         RETURNING *`,
+        [newCredential.service_id, newCredential.username, newCredential.password_encrypted, newCredential.notes, userId]
+      )
+
+      if (!result || result.length === 0) throw new Error('Failed to create credential')
+      const createdCred = result[0]
 
       // Log audit event
-      await supabase.from('audit_logs').insert([
-        {
-          user_id: session.user.id,
-          action: 'credential_created',
-          details: { credential_id: data?.[0]?.id },
-        },
-      ])
+      await db(
+        `INSERT INTO audit_logs (user_id, action, details) VALUES ($1, $2, $3)`,
+        [userId, 'credential_created', JSON.stringify({ credential_id: createdCred.id })]
+      )
 
-      setCredentials([data[0], ...credentials])
+      setCredentials([createdCred, ...credentials])
       setIsModalOpen(false)
     } catch (error) {
       console.error('Error adding credential:', error)
+    }
+  }
+
+  const handleUpdateCredential = async (credentialId, updatedData) => {
+    if (!session?.user?.id) {
+      console.error('No authenticated user session')
+      return
+    }
+
+    try {
+      const userId = session.user.id
+
+      const result = await db(
+        `UPDATE credentials 
+         SET service_id = $1, username = $2, password_encrypted = $3, notes = $4, updated_at = now()
+         WHERE id = $5 AND owner_id = $6
+         RETURNING *`,
+        [updatedData.service_id, updatedData.username, updatedData.password_encrypted, updatedData.notes, credentialId, userId]
+      )
+
+      if (!result || result.length === 0) throw new Error('Failed to update credential')
+      const updated = result[0]
+
+      // Log audit event
+      await db(
+        `INSERT INTO audit_logs (user_id, action, details) VALUES ($1, $2, $3)`,
+        [userId, 'credential_updated', JSON.stringify({ credential_id: credentialId })]
+      )
+
+      setCredentials(credentials.map((c) => (c.id === credentialId ? updated : c)))
+      setEditingCredential(null)
+    } catch (error) {
+      console.error('Error updating credential:', error)
     }
   }
 
@@ -91,17 +120,13 @@ export default function Credentials({ session }) {
     }
 
     try {
-      const { error } = await supabase.from('credentials').delete().eq('id', id)
-      if (error) throw error
+      await db('DELETE FROM credentials WHERE id = $1', [id])
 
       // Log audit event
-      await supabase.from('audit_logs').insert([
-        {
-          user_id: session.user.id,
-          action: 'credential_deleted',
-          details: { credential_id: id },
-        },
-      ])
+      await db(
+        `INSERT INTO audit_logs (user_id, action, details) VALUES ($1, $2, $3)`,
+        [session.user.id, 'credential_deleted', JSON.stringify({ credential_id: id })]
+      )
 
       setCredentials(credentials.filter((c) => c.id !== id))
     } catch (error) {
@@ -155,6 +180,7 @@ export default function Credentials({ session }) {
                     credential={credential}
                     services={services}
                     onDelete={handleDeleteCredential}
+                    onEdit={setEditingCredential}
                   />
                 </motion.div>
               ))}
@@ -169,6 +195,16 @@ export default function Credentials({ session }) {
           services={services}
           onAdd={handleAddCredential}
           onClose={() => setIsModalOpen(false)}
+        />
+      )}
+
+      {/* Edit Credential Modal */}
+      {editingCredential && (
+        <EditCredentialModal
+          credential={editingCredential}
+          services={services}
+          onUpdate={handleUpdateCredential}
+          onClose={() => setEditingCredential(null)}
         />
       )}
     </motion.div>

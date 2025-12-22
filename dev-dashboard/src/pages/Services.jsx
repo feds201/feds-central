@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Plus } from 'lucide-react'
-import { supabase } from '@/lib/supabase'
+import { db } from '@/lib/db'
 import ServiceCard from '@/components/services/ServiceCard'
 import AddServiceModal from '@/components/services/AddServiceModal'
+import EditServiceModal from '@/components/services/EditServiceModal'
 
 export default function Services({ session }) {
   const [services, setServices] = useState([])
   const [loading, setLoading] = useState(true)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [editingService, setEditingService] = useState(null)
 
   useEffect(() => {
     fetchServices()
@@ -22,13 +24,8 @@ export default function Services({ session }) {
 
     try {
       setLoading(true)
-      const { data, error } = await supabase
-        .from('services')
-        .select('*')
-        .eq('owner_id', session.user.id)
-        .order('created_at', { ascending: false })
-
-      if (error) throw error
+      const userId = session.user.id
+      const data = await db('SELECT * FROM services WHERE owner_id = $1 ORDER BY created_at DESC', [userId])
       setServices(data || [])
     } catch (error) {
       console.error('Error fetching services:', error)
@@ -44,31 +41,63 @@ export default function Services({ session }) {
     }
 
     try {
-      const { data, error } = await supabase
-        .from('services')
-        .insert([
-          {
-            ...newService,
-            owner_id: session.user.id,
-          },
-        ])
-        .select()
+      const userId = session.user.id
 
-      if (error) throw error
+      // Insert Service
+      // Note: This relies on the table having DEFAULT gen_random_uuid() for id and now() for created_at
+      const result = await db(
+        `INSERT INTO services (name, url, description, tags, owner_id) 
+         VALUES ($1, $2, $3, $4, $5) 
+         RETURNING *`,
+        [newService.name, newService.url, newService.description, newService.tags, userId]
+      )
+
+      if (!result || result.length === 0) throw new Error('Failed to create service')
+      const createdService = result[0]
 
       // Log audit event
-      await supabase.from('audit_logs').insert([
-        {
-          user_id: session.user.id,
-          action: 'service_created',
-          details: { service_id: data?.[0]?.id, name: newService.name },
-        },
-      ])
+      await db(
+        `INSERT INTO audit_logs (user_id, action, details) VALUES ($1, $2, $3)`,
+        [userId, 'service_created', JSON.stringify({ service_id: createdService.id, name: newService.name })]
+      )
 
-      setServices([data[0], ...services])
+      setServices([createdService, ...services])
       setIsModalOpen(false)
     } catch (error) {
       console.error('Error adding service:', error)
+    }
+  }
+
+  const handleUpdateService = async (serviceId, updatedData) => {
+    if (!session?.user?.id) {
+      console.error('No authenticated user session')
+      return
+    }
+
+    try {
+      const userId = session.user.id
+
+      const result = await db(
+        `UPDATE services 
+         SET name = $1, url = $2, description = $3, tags = $4, updated_at = now()
+         WHERE id = $5 AND owner_id = $6
+         RETURNING *`,
+        [updatedData.name, updatedData.url, updatedData.description, updatedData.tags, serviceId, userId]
+      )
+
+      if (!result || result.length === 0) throw new Error('Failed to update service')
+      const updated = result[0]
+
+      // Log audit event
+      await db(
+        `INSERT INTO audit_logs (user_id, action, details) VALUES ($1, $2, $3)`,
+        [userId, 'service_updated', JSON.stringify({ service_id: serviceId, name: updatedData.name })]
+      )
+
+      setServices(services.map((s) => (s.id === serviceId ? updated : s)))
+      setEditingService(null)
+    } catch (error) {
+      console.error('Error updating service:', error)
     }
   }
 
@@ -79,17 +108,13 @@ export default function Services({ session }) {
     }
 
     try {
-      const { error } = await supabase.from('services').delete().eq('id', id)
-      if (error) throw error
+      await db('DELETE FROM services WHERE id = $1', [id])
 
       // Log audit event
-      await supabase.from('audit_logs').insert([
-        {
-          user_id: session.user.id,
-          action: 'service_deleted',
-          details: { service_id: id },
-        },
-      ])
+      await db(
+        `INSERT INTO audit_logs (user_id, action, details) VALUES ($1, $2, $3)`,
+        [session.user.id, 'service_deleted', JSON.stringify({ service_id: id })]
+      )
 
       setServices(services.filter((s) => s.id !== id))
     } catch (error) {
@@ -139,7 +164,7 @@ export default function Services({ session }) {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.05 }}
                 >
-                  <ServiceCard service={service} onDelete={handleDeleteService} />
+                  <ServiceCard service={service} onDelete={handleDeleteService} onEdit={setEditingService} />
                 </motion.div>
               ))}
             </div>
@@ -152,6 +177,15 @@ export default function Services({ session }) {
         <AddServiceModal
           onAdd={handleAddService}
           onClose={() => setIsModalOpen(false)}
+        />
+      )}
+
+      {/* Edit Service Modal */}
+      {editingService && (
+        <EditServiceModal
+          service={editingService}
+          onUpdate={handleUpdateService}
+          onClose={() => setEditingService(null)}
         />
       )}
     </motion.div>

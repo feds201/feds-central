@@ -9,15 +9,18 @@ import {
   Menu,
   X,
   Activity,
+  User,
+  KeyRound,
 } from 'lucide-react'
-import { supabase } from '@/lib/supabase'
+import { authClient } from '@/auth'
 
 const navItems = [
   { label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
   { label: 'Services', path: '/services', icon: Lock },
   { label: 'Credentials', path: '/credentials', icon: Shield },
-  { label: 'Authenticator', path: '/authenticator', icon: Shield },
+  { label: 'Authenticator', path: '/authenticator', icon: KeyRound },
   { label: 'Activity', path: '/audit', icon: Activity },
+  { label: 'Account', path: '/account', icon: User },
 ]
 
 export default function Sidebar({ session }) {
@@ -25,14 +28,24 @@ export default function Sidebar({ session }) {
   const [isOpen, setIsOpen] = useState(false)
 
   const handleLogout = async () => {
-    await supabase.auth.signOut()
+    if (authClient) {
+      await authClient.signOut()
+    }
+    window.location.href = '/sign-in'
   }
 
   const SidebarContent = () => (
     <>
       <div className="p-6 border-b border-slate-700/50">
-        <h1 className="text-2xl font-bold gradient-text">FEDS</h1>
-        <p className="text-xs text-slate-400 mt-1">Dev Console</p>
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-xl bg-gradient-to-br from-indigo-600 to-purple-600 shadow-lg shadow-indigo-500/30">
+            <Shield size={24} className="text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold gradient-text">FEDS</h1>
+            <p className="text-xs text-slate-400">Dev Console</p>
+          </div>
+        </div>
       </div>
 
       <nav className="flex-1 p-4 space-y-2">
@@ -88,7 +101,7 @@ export default function Sidebar({ session }) {
       </button>
 
       {/* Desktop Sidebar */}
-      <aside className="hidden md:flex md:flex-col w-64 glass-dark border-r border-slate-700/50">
+      <aside className="flex flex-col w-64 glass-dark border-r border-slate-700/50">
         <SidebarContent />
       </aside>
 

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { supabase } from '@/lib/supabase'
+import { db } from '@/lib/db'
 import StatCard from '@/components/dashboard/StatCard'
 import RecentActivity from '@/components/dashboard/RecentActivity'
 import QuickActions from '@/components/dashboard/QuickActions'
@@ -24,31 +24,22 @@ export default function Dashboard({ session }) {
       setLoading(true)
       const userId = session?.user?.id
 
+      if (!userId) return
+
       // Fetch services count
-      const { count: servicesCount } = await supabase
-        .from('services')
-        .select('*', { count: 'exact', head: true })
-        .eq('owner_id', userId)
+      const servicesResult = await db('SELECT count(*) FROM services WHERE owner_id = $1', [userId])
+      const servicesCount = parseInt(servicesResult[0]?.count || 0)
 
       // Fetch credentials count
-      const { count: credentialsCount } = await supabase
-        .from('credentials')
-        .select('*', { count: 'exact', head: true })
-        .eq('owner_id', userId)
+      const credentialsResult = await db('SELECT count(*) FROM credentials WHERE owner_id = $1', [userId])
+      const credentialsCount = parseInt(credentialsResult[0]?.count || 0)
 
       // Fetch authenticator entries count
-      const { count: authenticatorsCount } = await supabase
-        .from('authenticator_entries')
-        .select('*', { count: 'exact', head: true })
-        .eq('user_id', userId)
+      const authenticatorsResult = await db('SELECT count(*) FROM authenticator_entries WHERE user_id = $1', [userId])
+      const authenticatorsCount = parseInt(authenticatorsResult[0]?.count || 0)
 
       // Fetch recent audit logs
-      const { data: logs } = await supabase
-        .from('audit_logs')
-        .select('*')
-        .eq('user_id', userId)
-        .order('created_at', { ascending: false })
-        .limit(5)
+      const logs = await db('SELECT * FROM audit_logs WHERE user_id = $1 ORDER BY created_at DESC LIMIT 5', [userId])
 
       setStats({
         services: servicesCount || 0,

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Plus, RefreshCw } from 'lucide-react'
-import { supabase } from '@/lib/supabase'
+import { db } from '@/lib/db'
 import TOTPEntry from '@/components/authenticator/TOTPEntry'
 import AddTOTPModal from '@/components/authenticator/AddTOTPModal'
 import SetupTOTPModal from '@/components/authenticator/SetupTOTPModal'
@@ -25,24 +25,17 @@ export default function Authenticator({ session }) {
 
     try {
       setLoading(true)
+      const userId = session.user.id
 
       // Fetch main authenticator
-      const { data: mainData, error: mainError } = await supabase
-        .from('authenticator')
-        .select('*')
-        .eq('user_id', session.user.id)
-
-      if (mainError) throw mainError
+      const mainData = await db('SELECT * FROM authenticator WHERE user_id = $1', [userId])
       setMainTotp(mainData?.[0] || null)
 
       // Fetch authenticator entries
-      const { data: entriesData, error: entriesError } = await supabase
-        .from('authenticator_entries')
-        .select('*')
-        .eq('user_id', session.user.id)
-        .order('created_at', { ascending: false })
-
-      if (entriesError) throw entriesError
+      const entriesData = await db(
+        'SELECT * FROM authenticator_entries WHERE user_id = $1 ORDER BY created_at DESC',
+        [userId]
+      )
       setEntries(entriesData || [])
     } catch (error) {
       console.error('Error fetching TOTP data:', error)
@@ -58,30 +51,24 @@ export default function Authenticator({ session }) {
     }
 
     try {
-      const { error } = await supabase
-        .from('authenticator')
-        .upsert(
-          [
-            {
-              user_id: session.user.id,
-              totp_secret: secret,
-              recovery_codes: recoveryCodes,
-              updated_at: new Date(),
-            },
-          ],
-          { onConflict: 'user_id' }
-        )
+      const userId = session.user.id
 
-      if (error) throw error
+      // Upsert Authenticator
+      await db(
+        `INSERT INTO authenticator (user_id, totp_secret, recovery_codes, updated_at)
+         VALUES ($1, $2, $3, now())
+         ON CONFLICT (user_id) DO UPDATE 
+         SET totp_secret = EXCLUDED.totp_secret,
+             recovery_codes = EXCLUDED.recovery_codes,
+             updated_at = now()`,
+        [userId, secret, recoveryCodes]
+      )
 
       // Log audit event
-      await supabase.from('audit_logs').insert([
-        {
-          user_id: session.user.id,
-          action: 'totp_setup',
-          details: {},
-        },
-      ])
+      await db(
+        `INSERT INTO audit_logs (user_id, action, details) VALUES ($1, $2, '{}')`,
+        [userId, 'totp_setup']
+      )
 
       fetchTOTPData()
       setIsSetupModalOpen(false)
@@ -97,28 +84,34 @@ export default function Authenticator({ session }) {
     }
 
     try {
-      const { data, error } = await supabase
-        .from('authenticator_entries')
-        .insert([
-          {
-            ...newEntry,
-            user_id: session.user.id,
-          },
-        ])
-        .select()
+      const userId = session.user.id
 
-      if (error) throw error
+      const result = await db(
+        `INSERT INTO authenticator_entries (user_id, service_name, totp_secret, totp_period, notes, issuer, account_name, digits)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+         RETURNING *`,
+        [
+          userId, 
+          newEntry.service_name, 
+          newEntry.totp_secret, 
+          newEntry.totp_period || 30,
+          newEntry.notes || null,
+          newEntry.issuer || null,
+          newEntry.account_name || null,
+          newEntry.digits || 6
+        ]
+      )
+
+      if (!result || result.length === 0) throw new Error('Failed to create entry')
+      const createdEntry = result[0]
 
       // Log audit event
-      await supabase.from('audit_logs').insert([
-        {
-          user_id: session.user.id,
-          action: 'authenticator_entry_created',
-          details: { service_name: newEntry.service_name },
-        },
-      ])
+      await db(
+        `INSERT INTO audit_logs (user_id, action, details) VALUES ($1, $2, $3)`,
+        [userId, 'authenticator_entry_created', JSON.stringify({ service_name: newEntry.service_name })]
+      )
 
-      setEntries([data[0], ...entries])
+      setEntries([createdEntry, ...entries])
       setIsAddModalOpen(false)
     } catch (error) {
       console.error('Error adding entry:', error)
@@ -132,21 +125,13 @@ export default function Authenticator({ session }) {
     }
 
     try {
-      const { error } = await supabase
-        .from('authenticator_entries')
-        .delete()
-        .eq('id', id)
-
-      if (error) throw error
+      await db('DELETE FROM authenticator_entries WHERE id = $1', [id])
 
       // Log audit event
-      await supabase.from('audit_logs').insert([
-        {
-          user_id: session.user.id,
-          action: 'authenticator_entry_deleted',
-          details: { entry_id: id },
-        },
-      ])
+      await db(
+        `INSERT INTO audit_logs (user_id, action, details) VALUES ($1, $2, $3)`,
+        [session.user.id, 'authenticator_entry_deleted', JSON.stringify({ entry_id: id })]
+      )
 
       setEntries(entries.filter((e) => e.id !== id))
     } catch (error) {

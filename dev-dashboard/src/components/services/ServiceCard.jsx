@@ -1,7 +1,7 @@
-import { Trash2 } from 'lucide-react'
+import { Trash2, Edit2 } from 'lucide-react'
 import { motion } from 'framer-motion'
 
-export default function ServiceCard({ service, onDelete }) {
+export default function ServiceCard({ service, onDelete, onEdit }) {
   return (
     <motion.div whileHover={{ y: -4 }} className="card space-y-4">
       <div className="flex items-start justify-between">
@@ -11,12 +11,22 @@ export default function ServiceCard({ service, onDelete }) {
             <p className="text-sm text-slate-400 mt-1">{service.description}</p>
           )}
         </div>
-        <button
-          onClick={() => onDelete(service.id)}
-          className="p-2 rounded-lg hover:bg-red-950/50 text-red-400 transition-colors"
-        >
-          <Trash2 size={18} />
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => onEdit(service)}
+            className="p-2 rounded-lg hover:bg-indigo-950/50 text-indigo-400 transition-colors"
+            title="Edit service"
+          >
+            <Edit2 size={18} />
+          </button>
+          <button
+            onClick={() => onDelete(service.id)}
+            className="p-2 rounded-lg hover:bg-red-950/50 text-red-400 transition-colors"
+            title="Delete service"
+          >
+            <Trash2 size={18} />
+          </button>
+        </div>
       </div>
 
       {service.url && (

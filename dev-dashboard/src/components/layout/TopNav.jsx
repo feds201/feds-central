@@ -26,18 +26,13 @@ export default function TopNav({ session }) {
   }
 
   return (
-    <div className="h-16 glass-dark border-b border-slate-700/50 px-8 flex items-center justify-between">
-      <div className="hidden md:flex items-center gap-4">
-        <h2 className="text-lg font-semibold text-slate-100">
-          Welcome back, {session?.user?.email?.split('@')[0]}
-        </h2>
-      </div>
-
+    <div className="h-16 glass-dark border-b border-slate-700/50 px-8 flex items-center justify-end">
       <button
         onClick={toggleTheme}
-        className="p-2 rounded-lg glass hover:bg-white/20 transition-colors"
+        className="p-2.5 rounded-xl glass hover:bg-slate-700/50 transition-all hover:scale-110"
+        title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
       >
-        {isDark ? <Sun size={20} /> : <Moon size={20} />}
+        {isDark ? <Sun size={20} className="text-amber-400" /> : <Moon size={20} className="text-indigo-400" />}
       </button>
     </div>
   )

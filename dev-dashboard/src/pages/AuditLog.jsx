@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { supabase } from '@/lib/supabase'
+import { db } from '@/lib/db'
 import AuditEntry from '@/components/audit/AuditEntry'
 
 export default function AuditLog({ session }) {
@@ -19,14 +19,10 @@ export default function AuditLog({ session }) {
 
     try {
       setLoading(true)
-      const { data, error } = await supabase
-        .from('audit_logs')
-        .select('*')
-        .eq('user_id', session.user.id)
-        .order('created_at', { ascending: false })
-        .limit(100)
-
-      if (error) throw error
+      const data = await db(
+        'SELECT * FROM audit_logs WHERE user_id = $1 ORDER BY created_at DESC LIMIT 100',
+        [session.user.id]
+      )
       setLogs(data || [])
     } catch (error) {
       console.error('Error fetching audit logs:', error)
