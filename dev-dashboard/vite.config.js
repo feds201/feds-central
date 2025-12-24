@@ -29,6 +29,13 @@ export default defineConfig({
     port: 5173,
     open: true,
     host: true, // Allow external access for OAuth redirects
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+        secure: false,
+      },
+    },
   },
 })
 
