@@ -1,5 +1,5 @@
-import { Trash2, Copy, Check, X } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { Trash2, Copy, Check, X, Shield } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useEffect } from 'react'
 import * as OTPAuth from 'otpauth'
 
@@ -92,119 +92,213 @@ export default function TOTPEntry({ entry, onDelete }) {
     }
   }
 
+  // Calculate progress percentage for color transitions
+  const progressPercent = (timeLeft / period) * 100
+  const isExpiringSoon = timeLeft <= 5
+
   return (
     <motion.div
-      whileHover={{ x: 4 }}
-      className="card flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0"
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      whileHover={{ y: -6, scale: 1.02 }}
+      transition={{ duration: 0.2 }}
+      className="relative group h-full"
     >
-      <div className="flex-1">
-        <div className="flex items-center gap-2">
-          <h3 className="text-lg font-semibold text-slate-100">{entry.service_name}</h3>
-          {entry.issuer && (
-            <span className="badge-primary text-xs">{entry.issuer}</span>
-          )}
-        </div>
-        {entry.account_name && (
-          <p className="text-sm text-slate-400 mt-0.5">{entry.account_name}</p>
-        )}
-        {entry.notes && (
-          <p className="text-sm text-slate-500 mt-1">{entry.notes}</p>
-        )}
-      </div>
+      {/* Gradient border effect */}
+      <div className="absolute -inset-0.5 bg-gradient-to-br from-indigo-500/20 via-purple-500/20 to-pink-500/20 rounded-2xl blur opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-      <div className="flex flex-wrap items-center gap-4 w-full sm:w-auto">
-        {/* TOTP Code Display */}
-        <div className="flex items-center gap-2">
-          <div className="text-center">
-            <p className="text-xs text-slate-400 mb-1">Code</p>
-            <code className="text-2xl font-bold text-emerald-400 font-mono tracking-wider">
-              {code}
-            </code>
-            <p className="text-xs text-slate-500 mt-1">{timeLeft}s / {period}s</p>
-          </div>
-          <div className="relative w-12 h-12 flex items-center justify-center">
-            <svg className="w-full h-full" viewBox="0 0 100 100">
-              <circle
-                cx="50"
-                cy="50"
-                r="45"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                className="text-slate-700"
-              />
-              <circle
-                cx="50"
-                cy="50"
-                r="45"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                className="text-emerald-500 origin-center"
-                style={{
-                  strokeDasharray: `${(timeLeft / period) * 283} 283`,
-                  transform: 'rotate(-90deg)',
-                  transition: 'stroke-dasharray 1s linear',
-                }}
-              />
-            </svg>
-          </div>
-        </div>
+      {/* Main card */}
+      <div className="relative h-full bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl rounded-2xl border border-slate-700/50 overflow-hidden">
+        {/* Subtle background pattern */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(99,102,241,0.05),transparent_50%)]" />
 
-        {/* Copy Button */}
-        <button
-          onClick={handleCopy}
-          className="p-2 rounded-lg hover:bg-emerald-950/50 text-emerald-400 transition-colors"
-          title={copied ? 'Copied!' : 'Copy code'}
-        >
-          <Copy size={18} />
-        </button>
-
-        {/* Delete Button / Challenge */}
-        {isConfirmingDelete ? (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="flex items-center gap-2 bg-red-950/20 p-1.5 rounded-xl border border-red-500/20"
-          >
-            <input
-              type="text"
-              placeholder="12 digits of π"
-              className="w-32 px-2 py-1 bg-slate-900/50 border border-slate-700 rounded-lg text-xs text-slate-100 focus:outline-none focus:border-red-500 font-mono"
-              value={piAttempt}
-              onChange={(e) => setPiAttempt(e.target.value)}
-              autoFocus
-              onKeyDown={(e) => e.key === 'Enter' && handleConfirmDelete()}
-            />
-            <div className="flex gap-1">
-              <button
-                onClick={handleConfirmDelete}
-                className="p-1 hover:bg-emerald-950/50 text-emerald-400 rounded-md transition-colors"
-                title="Confirm"
-              >
-                <Check size={16} />
-              </button>
-              <button
-                onClick={() => {
-                  setIsConfirmingDelete(false)
-                  setPiAttempt('')
-                }}
-                className="p-1 hover:bg-red-950/50 text-red-400 rounded-md transition-colors"
-                title="Cancel"
-              >
-                <X size={16} />
-              </button>
+        {/* Content */}
+        <div className="relative p-6 flex flex-col h-full">
+          {/* Header */}
+          <div className="flex items-start justify-between mb-6">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2.5 mb-1.5">
+                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500/20 to-purple-500/20 border border-indigo-500/30">
+                  <Shield className="w-4 h-4 text-indigo-400" />
+                </div>
+                <h3 className="text-lg font-bold text-white truncate">
+                  {entry.service_name}
+                </h3>
+              </div>
+              {entry.account_name && (
+                <p className="text-sm text-slate-400 ml-10 truncate">{entry.account_name}</p>
+              )}
             </div>
-          </motion.div>
-        ) : (
-          <button
-            onClick={() => setIsConfirmingDelete(true)}
-            className="p-2 rounded-lg hover:bg-red-950/50 text-red-400 transition-colors"
-            title="Delete entry"
-          >
-            <Trash2 size={18} />
-          </button>
-        )}
+            {entry.issuer && (
+              <span className="px-2.5 py-1 text-[10px] font-semibold bg-gradient-to-r from-indigo-500/20 to-purple-500/20 text-indigo-300 rounded-full border border-indigo-500/30 whitespace-nowrap">
+                {entry.issuer}
+              </span>
+            )}
+          </div>
+
+          {/* TOTP Code Display - Centered & Prominent */}
+          <div className="flex-1 flex flex-col items-center justify-center py-4">
+            {/* Timer Circle */}
+            <div className="relative mb-4">
+              <svg className="w-48 h-48 -rotate-90" viewBox="0 0 250 250">
+                {/* Background circle */}
+                <circle
+                  cx="125"
+                  cy="125"
+                  r="110"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="6"
+                  className="text-slate-700/30"
+                />
+                {/* Progress circle with gradient */}
+                <circle
+                  cx="125"
+                  cy="125"
+                  r="110"
+                  fill="none"
+                  stroke={`url(#gradient-${entry.id})`}
+                  strokeWidth="6"
+                  strokeLinecap="round"
+                  className={`transition-all duration-1000 ${isExpiringSoon ? 'animate-pulse' : ''}`}
+                  style={{
+                    strokeDasharray: `${(timeLeft / period) * 690.8} 690.8`,
+                  }}
+                />
+                <defs>
+                  <linearGradient id={`gradient-${entry.id}`} x1="0%" y1="0%" x2="100%" y2="100%">
+                    {isExpiringSoon ? (
+                      <>
+                        <stop offset="0%" stopColor="#f87171" />
+                        <stop offset="100%" stopColor="#fb923c" />
+                      </>
+                    ) : (
+                      <>
+                        <stop offset="0%" stopColor="#34d399" />
+                        <stop offset="100%" stopColor="#22d3ee" />
+                      </>
+                    )}
+                  </linearGradient>
+                </defs>
+              </svg>
+
+              {/* Code in center of circle */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="text-center">
+                  <motion.div
+                    key={code}
+                    initial={{ scale: 1.1, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <code className={`text-3xl font-bold font-mono tracking-wider ${isExpiringSoon
+                      ? 'text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-orange-400'
+                      : 'text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400'
+                      }`}>
+                      {code}
+                    </code>
+                  </motion.div>
+                  <p className="text-xs text-slate-500 mt-2 font-medium">
+                    {timeLeft}s
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {entry.notes && (
+              <p className="text-xs text-slate-500 text-center mt-2 px-4">{entry.notes}</p>
+            )}
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex items-center justify-center gap-2 pt-4 border-t border-slate-700/50">
+            <AnimatePresence mode="wait">
+              {isConfirmingDelete ? (
+                <motion.div
+                  key="delete-confirm"
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  className="flex items-center gap-2 bg-gradient-to-r from-red-950/40 to-orange-950/40 p-2 rounded-xl border border-red-500/30 backdrop-blur-sm w-full"
+                >
+                  <input
+                    type="text"
+                    placeholder="12 digits of π"
+                    className="flex-1 px-3 py-1.5 bg-slate-900/80 border border-slate-700/50 rounded-lg text-xs text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-red-500/50 focus:ring-2 focus:ring-red-500/20 font-mono"
+                    value={piAttempt}
+                    onChange={(e) => setPiAttempt(e.target.value)}
+                    autoFocus
+                    onKeyDown={(e) => e.key === 'Enter' && handleConfirmDelete()}
+                  />
+                  <div className="flex gap-1">
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={handleConfirmDelete}
+                      className="p-1.5 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 rounded-lg transition-colors"
+                      title="Confirm"
+                    >
+                      <Check size={16} />
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => {
+                        setIsConfirmingDelete(false)
+                        setPiAttempt('')
+                      }}
+                      className="p-1.5 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg transition-colors"
+                      title="Cancel"
+                    >
+                      <X size={16} />
+                    </motion.button>
+                  </div>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="action-buttons"
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  className="flex items-center gap-2"
+                >
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={handleCopy}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-sm transition-all ${copied
+                      ? 'bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 text-emerald-400 border border-emerald-500/30'
+                      : 'bg-slate-800/50 hover:bg-slate-700/50 text-slate-300 hover:text-white border border-slate-600/50'
+                      }`}
+                    title={copied ? 'Copied!' : 'Copy code'}
+                  >
+                    {copied ? (
+                      <>
+                        <Check size={16} />
+                        <span className="text-xs">Copied!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy size={16} />
+                        <span className="text-xs">Copy</span>
+                      </>
+                    )}
+                  </motion.button>
+
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setIsConfirmingDelete(true)}
+                    className="p-2 rounded-xl bg-slate-800/50 hover:bg-red-950/30 text-slate-400 hover:text-red-400 transition-all border border-slate-600/50 hover:border-red-500/30"
+                    title="Delete entry"
+                  >
+                    <Trash2 size={16} />
+                  </motion.button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
       </div>
     </motion.div>
   )

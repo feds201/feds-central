@@ -91,9 +91,9 @@ export default function Authenticator({ session }) {
          VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
          RETURNING *`,
         [
-          userId, 
-          newEntry.service_name, 
-          newEntry.totp_secret, 
+          userId,
+          newEntry.service_name,
+          newEntry.totp_secret,
           newEntry.totp_period || 30,
           newEntry.notes || null,
           newEntry.issuer || null,
@@ -204,13 +204,14 @@ export default function Authenticator({ session }) {
               <p className="text-slate-400">No TOTP entries yet. Add one to get started!</p>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {entries.map((entry, i) => (
                 <motion.div
                   key={entry.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.05 }}
+                  className="h-full"
                 >
                   <TOTPEntry entry={entry} onDelete={handleDeleteEntry} />
                 </motion.div>
@@ -218,23 +219,28 @@ export default function Authenticator({ session }) {
             </div>
           )}
         </>
-      )}
+      )
+      }
 
       {/* Add Entry Modal */}
-      {isAddModalOpen && (
-        <AddTOTPModal
-          onAdd={handleAddEntry}
-          onClose={() => setIsAddModalOpen(false)}
-        />
-      )}
+      {
+        isAddModalOpen && (
+          <AddTOTPModal
+            onAdd={handleAddEntry}
+            onClose={() => setIsAddModalOpen(false)}
+          />
+        )
+      }
 
       {/* Setup TOTP Modal */}
-      {isSetupModalOpen && (
-        <SetupTOTPModal
-          onSetup={handleSetupTOTP}
-          onClose={() => setIsSetupModalOpen(false)}
-        />
-      )}
-    </motion.div>
+      {
+        isSetupModalOpen && (
+          <SetupTOTPModal
+            onSetup={handleSetupTOTP}
+            onClose={() => setIsSetupModalOpen(false)}
+          />
+        )
+      }
+    </motion.div >
   )
 }
