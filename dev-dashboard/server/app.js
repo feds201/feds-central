@@ -173,10 +173,14 @@ app.post('/api/auth/passkey/register-options', authenticateToken, async (req, re
         const users = await sql`SELECT * FROM app_users WHERE id = ${user.userId}`;
         const dbUser = users[0];
 
+        if (!dbUser) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
         const options = await generateRegistrationOptions({
             rpName,
             rpID,
-            userID: dbUser.id,
+            userID: new Uint8Array(Buffer.from(dbUser.id)),
             userName: dbUser.email,
             attestationType: 'none',
             excludeCredentials: userPasskeys.map(pk => ({
@@ -196,7 +200,7 @@ app.post('/api/auth/passkey/register-options', authenticateToken, async (req, re
         res.json(options);
     } catch (err) {
         console.error('Passkey register-options error:', err);
-        res.status(500).json({ error: 'Failed to generate registration options' });
+        res.status(500).json({ error: 'Failed to generate registration options', details: err.message });
     }
 });
 
@@ -229,8 +233,38 @@ app.post('/api/auth/passkey/register-verify', authenticateToken, async (req, res
 
         const { verified, registrationInfo } = verification;
 
+        // Debug logging
+        console.log('Registration Info:', registrationInfo);
+
         if (verified && registrationInfo) {
-            const { credentialPublicKey, credentialID, counter, credentialDeviceType, credentialBackedUp } = registrationInfo;
+            const { credentialDeviceType, credentialBackedUp } = registrationInfo;
+
+            // Robustly extract ID - prefer base64url string from body, fallback to buffer from info
+            const credentialID = body.id;
+
+            if (!credentialID) {
+                throw new Error('Missing credential ID');
+            }
+
+            // Extract Public Key
+            let pubKeyBase64 = '';
+
+            // Check top-level or nested credential object
+            const pubKeyInfo = registrationInfo.credentialPublicKey || (registrationInfo.credential && registrationInfo.credential.publicKey);
+
+            if (pubKeyInfo) {
+                pubKeyBase64 = Buffer.from(pubKeyInfo).toString('base64');
+            }
+
+            if (!pubKeyBase64) {
+                console.error('Missing public key. RegistrationInfo keys:', Object.keys(registrationInfo));
+                if (registrationInfo.credential) {
+                    console.error('Credential keys:', Object.keys(registrationInfo.credential));
+                }
+                return res.status(500).json({ error: 'Failed to extract public key' });
+            }
+
+            const newCounter = registrationInfo.counter || (registrationInfo.credential && registrationInfo.credential.counter) || 0;
 
             // Save new passkey
             await sql`
@@ -245,15 +279,15 @@ app.post('/api/auth/passkey/register-verify', authenticateToken, async (req, res
           backed_up, 
           transports
         ) VALUES (
-          ${credentialID}, -- Using credentialID as PK for simplicity or gen_random_uuid()
-          ${'My Passkey'}, -- Default name, allow user to rename later
-          ${Buffer.from(credentialPublicKey).toString('base64')},
+          ${credentialID},
+          ${'My Passkey'},
+          ${pubKeyBase64},
           ${user.userId},
           ${credentialID},
-          ${counter},
-          ${credentialDeviceType},
-          ${credentialBackedUp},
-          ${''} -- Transports not always returned, can be stored if sent by client
+          ${newCounter},
+          ${credentialDeviceType || 'unknown'},
+          ${credentialBackedUp || false},
+          ${''} -- Transports not always returned
         )
       `;
 
@@ -266,7 +300,7 @@ app.post('/api/auth/passkey/register-verify', authenticateToken, async (req, res
         }
     } catch (err) {
         console.error('Passkey register-verify error:', err);
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(500).json({ error: 'Internal server error', details: err.message });
     }
 });
 
@@ -274,31 +308,53 @@ app.post('/api/auth/passkey/register-verify', authenticateToken, async (req, res
 app.post('/api/auth/passkey/auth-options', async (req, res) => {
     try {
         const { email } = req.body;
-        // We need email to identify the user and get their passkeys
-        // Alternatively, for "usernameless", we don't need email, but let's stick to email-first for now.
 
-        const users = await sql`SELECT * FROM app_users WHERE email = ${email}`;
-        const user = users[0];
+        // Scenario 1: User identifier provided (Non-discoverable / Discoverable)
+        if (email) {
+            const users = await sql`SELECT * FROM app_users WHERE email = ${email}`;
+            const user = users[0];
 
-        if (!user) {
-            return res.status(400).json({ error: 'User not found' });
+            if (!user) {
+                return res.status(400).json({ error: 'User not found' });
+            }
+
+            const userPasskeys = await sql`SELECT credential_id, transports FROM passkey WHERE user_id = ${user.id}`;
+
+            const options = await generateAuthenticationOptions({
+                rpID,
+                allowCredentials: userPasskeys.map(pk => ({
+                    id: pk.credential_id,
+                    transports: pk.transports ? pk.transports.split(',') : [],
+                })),
+                userVerification: 'preferred',
+            });
+
+            // Save challenge to user
+            await sql`UPDATE app_users SET current_challenge = ${options.challenge} WHERE id = ${user.id}`;
+
+            return res.json(options);
         }
 
-        const userPasskeys = await sql`SELECT credential_id, transports FROM passkey WHERE user_id = ${user.id}`;
-
+        // Scenario 2: No user identifier (Resident Key / Discoverable Credential)
+        // We don't know who the user is yet, so we can't save the challenge to the DB user record.
+        // We'll sign the challenge in a JWT and send it to the client.
         const options = await generateAuthenticationOptions({
             rpID,
-            allowCredentials: userPasskeys.map(pk => ({
-                id: pk.credential_id,
-                transports: pk.transports ? pk.transports.split(',') : [],
-            })),
+            // keys: [], // No allowCredentials for resident keys
             userVerification: 'preferred',
         });
 
-        // Save challenge
-        await sql`UPDATE app_users SET current_challenge = ${options.challenge} WHERE id = ${user.id}`;
+        // Create a stateless challenge token
+        const challengeToken = jwt.sign(
+            { challenge: options.challenge },
+            JWT_SECRET,
+            { expiresIn: '5m' }
+        );
 
-        res.json(options);
+        // Return options + challengeToken
+        // Note: The client lib will ignore extra props, but we need to pass it back in verify
+        res.json({ ...options, challengeToken });
+
     } catch (err) {
         console.error('Passkey auth-options error:', err);
         res.status(500).json({ error: 'Failed to generate auth options' });
@@ -306,18 +362,30 @@ app.post('/api/auth/passkey/auth-options', async (req, res) => {
 });
 
 // 4. Login: Verify Response (Public, step 2 of login)
+// 4. Login: Verify Response (Public, step 2 of login)
 app.post('/api/auth/passkey/auth-verify', async (req, res) => {
     try {
-        const { email, body } = req.body; // body is the credential response
+        const { email, body, challengeToken } = req.body; // body is the credential response
 
-        const users = await sql`SELECT * FROM app_users WHERE email = ${email}`;
-        const user = users[0];
+        let user;
+        let expectedChallenge;
 
-        if (!user) {
-            return res.status(400).json({ error: 'User not found' });
+        if (email) {
+            const users = await sql`SELECT * FROM app_users WHERE email = ${email}`;
+            user = users[0];
+            if (!user) return res.status(400).json({ error: 'User not found' });
+            expectedChallenge = user.current_challenge;
+        } else if (challengeToken) {
+            // Verify token to get challenge
+            try {
+                const decoded = jwt.verify(challengeToken, JWT_SECRET);
+                expectedChallenge = decoded.challenge;
+            } catch (e) {
+                return res.status(400).json({ error: 'Invalid or expired challenge token' });
+            }
+        } else {
+            return res.status(400).json({ error: 'Missing email or challenge token' });
         }
-
-        const currentChallenge = user.current_challenge;
 
         // Find which passkey was used
         const credentialID = body.id;
@@ -328,23 +396,49 @@ app.post('/api/auth/passkey/auth-verify', async (req, res) => {
             return res.status(400).json({ error: 'Passkey not found' });
         }
 
+        // If we didn't have the user via email, we have them now via passkey
+        if (!user) {
+            const users = await sql`SELECT * FROM app_users WHERE id = ${passkey.user_id}`;
+            user = users[0];
+            if (!user) return res.status(400).json({ error: 'User not found for this passkey' });
+        }
+
+        // Check passkey object structure
+        console.log('Found passkey:', {
+            id: passkey.id,
+            counter: passkey.counter,
+            type: typeof passkey.counter,
+            credId: passkey.credential_id
+        });
+
+        if (passkey.counter === undefined || passkey.counter === null) {
+            console.error('Passkey counter is missing!');
+            return res.status(500).json({ error: 'Stored passkey corrupted: missing counter' });
+        }
+
         let verification;
         try {
-            verification = await verifyAuthenticationResponse({
+            const verificationOpts = {
                 response: body,
-                expectedChallenge: currentChallenge,
+                expectedChallenge,
                 expectedOrigin: origin,
                 expectedRPID: rpID,
-                authenticator: {
-                    credentialPublicKey: Buffer.from(passkey.public_key, 'base64'),
-                    credentialID: passkey.credential_id,
-                    counter: passkey.counter,
+                credential: {
+                    publicKey: Buffer.from(passkey.public_key, 'base64'),
+                    id: passkey.credential_id, // v13+ might expect string or buffer, passkey.credential_id is base64url string usually
+                    counter: Number(passkey.counter),
                     transports: passkey.transports ? passkey.transports.split(',') : [],
                 },
-            });
+            };
+
+            // console.log('Verification Opts prepared');
+
+            verification = await verifyAuthenticationResponse(verificationOpts);
         } catch (error) {
-            console.error(error);
-            return res.status(400).json({ error: error.message });
+            console.error('verifyAuthenticationResponse threw:', error);
+            // Print stack trace
+            console.error(error.stack);
+            return res.status(400).json({ error: error.message, stack: error.stack });
         }
 
         const { verified, authenticationInfo } = verification;
@@ -352,8 +446,11 @@ app.post('/api/auth/passkey/auth-verify', async (req, res) => {
         if (verified) {
             // Update counter
             await sql`UPDATE passkey SET counter = ${authenticationInfo.newCounter} WHERE id = ${passkey.id}`;
-            // Clear challenge
-            await sql`UPDATE app_users SET current_challenge = NULL WHERE id = ${user.id}`;
+
+            // Clear challenge if it was on user
+            if (email) {
+                await sql`UPDATE app_users SET current_challenge = NULL WHERE id = ${user.id}`;
+            }
 
             // Issue JWT
             const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, { expiresIn: '7d' });

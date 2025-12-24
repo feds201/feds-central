@@ -115,7 +115,7 @@ export default function PasskeyManager() {
     return (
         <div className="space-y-6">
             {/* Header Section */}
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
                     <div className="p-2.5 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 shadow-inner">
                         <Fingerprint className="text-indigo-400" size={26} />
@@ -128,11 +128,10 @@ export default function PasskeyManager() {
                 <button
                     onClick={handleAddPasskey}
                     disabled={adding}
-                    className="btn-primary flex items-center gap-2 text-sm !py-2 shadow-indigo-500/20"
+                    className="btn-primary w-full sm:w-auto flex items-center justify-center gap-2 text-sm !py-2 shadow-indigo-500/20"
                 >
                     {adding ? <Loader2 size={16} className="animate-spin" /> : <Plus size={16} />}
-                    <span className="hidden sm:inline">Add Secure Passkey</span>
-                    <span className="sm:hidden">Add</span>
+                    <span className="inline">Add Secure Passkey</span>
                 </button>
             </div>
 
@@ -228,7 +227,7 @@ export default function PasskeyManager() {
                                             <div className="flex items-center gap-2 mt-1">
                                                 <span className="text-[10px] bg-slate-800 text-slate-400 px-1.5 py-0.5 rounded leading-none uppercase font-bold tracking-tighter">Hardware backed</span>
                                                 <span className="text-xs text-slate-500">
-                                                    Added {new Date(pk.createdAt).toLocaleDateString()}
+                                                    Added {new Date(pk.created_at).toLocaleDateString()}
                                                 </span>
                                             </div>
                                         </div>

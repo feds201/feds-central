@@ -57,6 +57,9 @@ export const authClient = {
             isPending: ctx.loading,
             isAuthenticated: !!ctx.user
         };
+    },
+    signOut: async () => {
+        return api.signOut();
     }
 };
 

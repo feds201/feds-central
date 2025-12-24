@@ -14,7 +14,7 @@ export default function DashboardLayout({ session }) {
         <TopNav session={session} />
 
         {/* Page Content */}
-        <main className="flex-1 overflow-auto bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-8">
+        <main className="flex-1 overflow-auto bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-4 sm:p-8">
           <Outlet />
         </main>
       </div>

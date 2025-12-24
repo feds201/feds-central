@@ -27,14 +27,11 @@ export default function SignIn() {
   }
 
   const handlePasskeyLogin = async () => {
-    if (!email) {
-      setError('Please enter your email to sign in with Passkey')
-      return
-    }
+    // Email is optional now (for resident keys)
     setLoading(true)
     setError(null)
     try {
-      await signInPasskey(email)
+      await signInPasskey(email || null)
       navigate('/dashboard')
     } catch (err) {
       setError(err.message || 'Passkey login failed')

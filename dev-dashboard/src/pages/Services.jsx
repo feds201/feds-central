@@ -125,14 +125,14 @@ export default function Services({ session }) {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-slate-100">Services</h1>
-          <p className="text-slate-400 mt-1">Manage your connected services</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-slate-100">Services</h1>
+          <p className="text-sm md:text-base text-slate-400 mt-1">Manage your connected services</p>
         </div>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="btn-primary flex items-center gap-2"
+          className="btn-primary flex items-center justify-center gap-2 w-full sm:w-auto"
         >
           <Plus size={20} />
           Add Service

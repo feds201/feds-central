@@ -19,7 +19,7 @@ export default function Account() {
                         <Settings2 className="text-indigo-400" size={18} />
                         <span className="text-xs font-bold uppercase tracking-[0.2em] text-slate-500">System Preferences</span>
                     </div>
-                    <h1 className="text-4xl font-extrabold text-slate-100 tracking-tight">Account Settings</h1>
+                    <h1 className="text-2xl md:text-4xl font-extrabold text-slate-100 tracking-tight">Account Settings</h1>
                     <p className="text-slate-400 mt-2 max-w-xl">
                         Manage your digital presence, security credentials, and platform preferences from one central dashboard.
                     </p>

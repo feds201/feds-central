@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
@@ -28,6 +28,18 @@ const navItems = [
 export default function Sidebar({ session }) {
   const location = useLocation()
   const [isOpen, setIsOpen] = useState(false)
+  // Robust JS-based responsive check to avoid CSS flakiness
+  const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 768)
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsDesktop(window.innerWidth >= 768)
+      if (window.innerWidth >= 768) setIsOpen(false)
+    }
+
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   const handleLogout = async () => {
     if (authClient) {
@@ -94,26 +106,31 @@ export default function Sidebar({ session }) {
 
   return (
     <>
-      {/* Mobile Menu Toggle */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="md:hidden fixed top-4 left-4 z-50 p-2 rounded-lg glass-dark"
-      >
-        {isOpen ? <X size={24} /> : <Menu size={24} />}
-      </button>
+      {/* Mobile Menu Toggle - Only show if NOT desktop */}
+      {!isDesktop && (
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="fixed top-4 left-4 z-[100] p-3 rounded-lg bg-indigo-600 shadow-lg text-white hover:bg-indigo-700 transition-colors"
+          aria-label="Toggle Menu"
+        >
+          {isOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+      )}
 
-      {/* Desktop Sidebar */}
-      <aside className="flex flex-col w-64 glass-dark border-r border-slate-700/50">
-        <SidebarContent />
-      </aside>
+      {/* Desktop Sidebar - Always visible if isDesktop is true */}
+      {isDesktop && (
+        <aside className="flex flex-col w-64 glass-dark border-r border-slate-700/50">
+          <SidebarContent />
+        </aside>
+      )}
 
-      {/* Mobile Sidebar */}
-      {isOpen && (
+      {/* Mobile Sidebar Overlay - Only if NOT desktop and isOpen */}
+      {!isDesktop && isOpen && (
         <motion.aside
           initial={{ x: -300 }}
           animate={{ x: 0 }}
           exit={{ x: -300 }}
-          className="md:hidden fixed left-0 top-0 h-full w-64 glass-dark border-r border-slate-700/50 z-40"
+          className="fixed left-0 top-0 h-full w-64 glass-dark border-r border-slate-700/50 z-[90] bg-slate-900/95 backdrop-blur-xl"
         >
           <SidebarContent />
         </motion.aside>

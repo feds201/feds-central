@@ -107,7 +107,7 @@ export const api = {
     },
 
     // Login with Passkey
-    signInPasskey: async (email) => {
+    signInPasskey: async (email = null) => {
         try {
             // 1. Get options
             const res = await fetch(`${API_Base}/passkey/auth-options`, {
@@ -119,14 +119,23 @@ export const api = {
             if (!res.ok) throw new Error('Failed to get auth options');
             const options = await res.json();
 
+            // Extract challengeToken for resident key flow
+            const { challengeToken, ...authOptions } = options;
+
             // 2. Start ceremony
-            const asseResp = await startAuthentication(options);
+            const asseResp = await startAuthentication(authOptions);
 
             // 3. Verify
+            const verifyPayload = {
+                body: asseResp,
+                challengeToken // Will be undefined if not provided, which is fine
+            };
+            if (email) verifyPayload.email = email;
+
             const verifyRes = await fetch(`${API_Base}/passkey/auth-verify`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, body: asseResp }),
+                body: JSON.stringify(verifyPayload),
             });
 
             if (!verifyRes.ok) {
