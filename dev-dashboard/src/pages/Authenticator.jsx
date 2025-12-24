@@ -142,7 +142,7 @@ export default function Authenticator({ session }) {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-0">
         <div>
           <h1 className="text-3xl font-bold text-slate-100">Authenticator</h1>
           <p className="text-slate-400 mt-1">Manage your TOTP authenticators</p>
