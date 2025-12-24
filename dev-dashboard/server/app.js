@@ -504,11 +504,6 @@ app.delete('/api/auth/passkey/:id', authenticateToken, async (req, res) => {
     }
 });
 
-// Only start server if run directly (local dev)
-if (process.env.NODE_ENV !== 'production' && process.argv[1] === fileURLToPath(import.meta.url)) {
-    app.listen(PORT, () => {
-        console.log(`Server running on http://localhost:${PORT}`);
-    });
-}
-
-export default app;
+app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+});
