@@ -1,0 +1,23 @@
+{
+  "transition_shift": {
+    "total_shooting_time": 25.12,                 // How long does it shoot for
+    "grabbed_balls_from_neutral_zone": 0          // How many times they went to neutral zone
+  },
+  "alliance_shifts": {
+    "active": {
+      "total_shooting_time": 25.12,              // How long does it shoot for
+      "feed_to_HP_station": false,               // True or False
+      "grabbed_balls_from_neutral_zone": 0,      // How many times they went to neutral zone
+      "human_player": {
+        "throws_count": 0,
+        "successful_throws": 0
+      },
+      "defense": true                             // True or False
+    },
+    "inactive": {
+      "grabbed_balls_from_neutral_zone": 0,      // How many times they went to neutral zone
+      "feed_to_HP_station": false,               // True or False
+      "defense": true                             // True or False
+    }
+  }
+}

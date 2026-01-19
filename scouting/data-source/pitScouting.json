@@ -1,0 +1,39 @@
+{
+  "team_number": 9999,
+  "pit_scouting": {
+    "shots_per_second": 4,
+    "shooting_accuracy_percent": 78,
+
+    "mobility": {
+      "can_navigate_trenches": true,   // True Or False
+      "can_navigate_bumps": true       // True Or False
+    },
+
+    "drivetrain_type": "swerve",       // Options: Tank, Mecanum, Swerve
+
+    "autonomous": {
+      "can_shoot": true,               // True Or False
+      "can_climb": false               // True Or False
+    },
+
+    "intake_type": ["ground"],         // Options: Ground, Hp_Station
+
+    "shooter_count": 2,
+
+    "cycle_time_seconds": 18,
+
+    "driver_experience": "experienced", // Options: Rookie, Average, Experienced
+
+    "defensive_capability": true,       // True Or False
+
+    "climbing_ability": ["level_1", "level_2"], // Options: None, Level_1, Level_2, Level_3
+
+    "shooter_type": "flywheel",         // Options: Flywheel, Catapult, Pneumatic
+
+    "shooting_behavior": "dynamic",     // Options: Static, From_Specific_Spots, Shooting_While_Moving, Shooting_From_Anywhere
+
+    "robot_picture": {
+      // Data
+    }
+  }
+}
