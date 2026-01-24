@@ -1,3 +1,5 @@
+//add frame primatere, and weight without battry and bumper.
+
 {
   "team_number": 9999,
   "pit_scouting": {
@@ -27,7 +29,7 @@
     "driver_experience": "experienced", // Options: Rookie, Average, Experienced
 
     "defensive_capability": true,       // True Or False
-
+    "Durabilty":                         //Open comment box
     "climbing_ability": ["level_1", "level_2"], // Options: None, Level_1, Level_2, Level_3
 
     "shooter_type": "flywheel",         // Options: Flywheel, Catapult, Pneumatic
