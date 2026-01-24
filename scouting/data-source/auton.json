@@ -1,6 +1,5 @@
 {
   "auton": {
-    "preloading": false,                  // True or False
     "starting_location": {
       "coordinates": {
         "x": 0,
@@ -10,12 +9,9 @@
     "fuel_pickup": {
       "from_depot": false,                // True or False
       "from_outpost": false               // True or False
+      "grabbed_balls_from_neutral_zone": true,  //  Did the robot go neutral zone to get balls
     },
-    "human_player": {
-      "throws_count": 0,
-      "successful_throws": 0
-    },
-    "grabbed_balls_from_neutral_zone": 201,  // How many times did the robot go neutral zone to get balls
+    
     "shooting": {
       "total_shooting_time": 0             // How long does it shoot for
     },
