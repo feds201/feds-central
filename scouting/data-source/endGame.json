@@ -3,7 +3,7 @@
   "grabbed_balls_from_neutral_zone": 0,          // How many times they went to neutral zone
   "climb": {
     "attempted": false,
-    "levels": 0                                   // Options: 0 for none, level one, two, three
+    "levels": 0                                   // Options: zero for none, level one, two, three
   },
   "defense": true,                                // True or False
   "shooting_location": {
