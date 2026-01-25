@@ -1,5 +1,3 @@
-//add frame primatere, and weight without battry and bumper.
-
 {
   "team_number": 9999,
   "pit_scouting": {
@@ -10,7 +8,8 @@
       "can_navigate_trenches": true,   // True Or False
       "can_navigate_bumps": true       // True Or False
     },
-
+    "frame perimeter": 67,            //In meters
+    "Weight": 98,                     // In kilograms, this doesnt include the battery and bumper weight.
     "hopper_capacity": 48,
 
     "drivetrain_type": "swerve",       // Options: Tank, Mecanum, Swerve
@@ -29,7 +28,7 @@
     "driver_experience": "experienced", // Options: Rookie, Average, Experienced
 
     "defensive_capability": true,       // True Or False
-    "Durabilty":                         //Open comment box
+    "Durabilty":                         //Open comment box (can your robot take a hit)
     "climbing_ability": ["level_1", "level_2"], // Options: None, Level_1, Level_2, Level_3
 
     "shooter_type": "flywheel",         // Options: Flywheel, Catapult, Pneumatic
