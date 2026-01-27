@@ -4,6 +4,7 @@ import 'package:scouting_app/components/QrGenerator.dart';
 import 'package:scouting_app/main.dart';
 import '../../components/slider.dart';
 import '../../services/DataBase.dart';
+import 'package:scouting_app/components/CounterShelf.dart';
 
 class EndGame extends StatefulWidget {
   final MatchRecord matchRecord;
@@ -78,6 +79,15 @@ class EndGameState extends State<EndGame> {
     return SingleChildScrollView(
       child: Column(
         children: [
+
+
+
+
+
+
+
+
+
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
@@ -93,7 +103,7 @@ class EndGameState extends State<EndGame> {
               }),
             ]),
           ),
-
+          buildCounter("Hello", 201, (int value){}, color: Colors.amber, ),
           const SizedBox(height: 6),
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -111,6 +121,7 @@ class EndGameState extends State<EndGame> {
                 ),
               ],
             ),
+
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
