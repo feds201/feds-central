@@ -6,7 +6,7 @@ Widget buildCheckBox(String title, bool value, Function(bool) onChanged,
     {bool IconOveride = false}) {
   return LayoutBuilder(
     builder: (context, constraints) {
-      double screenWidth = MediaQuery.of(context).size.width - 25;
+      double screenWidth = MediaQuery.of(context).size.width - 40;
       return Padding(
         padding: const EdgeInsets.all(8.0),
         child: Container(

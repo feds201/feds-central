@@ -132,123 +132,15 @@ class AutonState extends State<Auton> {
             });
             UpdateData();
           }),
-          buildComments(
-            "Coral Scoring",
-            [
-              CounterSettings(
-                (int value) {
-                  setState(() {
-                    coralScoreL4++;
-                  });
-                },
-                (int value) {
-                  setState(() {
-                    coralScoreL4--;
-                  });
-                },
-                icon: Icons.cyclone,
-                number: coralScoreL4,
-                counterText: "Level 4",
-                color: Colors.red,
-              ),
-              CounterSettings(
-                (int value) {
-                  setState(() {
-                    coralScoreL3++;
-                  });
-                },
-                (int value) {
-                  setState(() {
-                    coralScoreL3--;
-                  });
-                },
-                icon: Icons.cyclone,
-                number: coralScoreL3,
-                counterText: "Level 3",
-                color: Colors.orange,
-              ),
-              CounterSettings(
-                (int value) {
-                  setState(() {
-                    coralScoreL2++;
-                  });
-                },
-                (int value) {
-                  setState(() {
-                    coralScoreL2--;
-                  });
-                },
-                icon: Icons.cyclone,
-                number: coralScoreL2,
-                counterText: "Level 2",
-                color: Colors.yellow,
-              ),
-              CounterSettings(
-                (int value) {
-                  setState(() {
-                    coralScoreL1++;
-                  });
-                },
-                (int value) {
-                  setState(() {
-                    coralScoreL1--;
-                  });
-                },
-                icon: Icons.cyclone,
-                number: coralScoreL1,
-                counterText: "Level 1",
-                color: Colors.green,
-              ),
-            ],
-            Icon(
-              Icons.emoji_nature_outlined,
-              color: !islightmode()
-                  ? const Color.fromARGB(255, 255, 255, 255)
-                  : const Color.fromARGB(255, 34, 34, 34),
-            ),
-          ),
-          buildComments(
-              "Algae Scoring",
-              [
-                CounterSettings(
-                  (int value) {
-                    setState(() {
-                      algaeScoringProcessor++;
-                    });
-                  },
-                  (int value) {
-                    setState(() {
-                      algaeScoringProcessor--;
-                    });
-                  },
-                  icon: Icons.wash,
-                  number: algaeScoringProcessor,
-                  counterText: "Processor",
-                  color: Colors.green,
-                ),
-                CounterSettings(
-                  (int value) {
-                    setState(() {
-                      algaeScoringBarge++;
-                    });
-                  },
-                  (int value) {
-                    setState(() {
-                      algaeScoringBarge--;
-                    });
-                  },
-                  icon: Icons.rice_bowl_outlined,
-                  number: algaeScoringBarge,
-                  counterText: "Barge",
-                  color: Colors.green,
-                ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                buildCheckBox("Depot", true, (bool value){}),
+                buildCheckBox("Outpost", false, (bool value){}),
               ],
-              Icon(
-                Icons.add_comment,
-                color: !islightmode()
-                    ? const Color.fromARGB(255, 255, 255, 255)
-                    : const Color.fromARGB(255, 34, 34, 34),
-              )),
+            ),
+          buildCheckBoxFull("Balls Grabbed From Neutral Zone", true, (bool value){}),
+          buildCheckBoxFull("Climb", true, (bool value){}),
         ],
       ),
     );
