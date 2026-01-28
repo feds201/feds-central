@@ -6,7 +6,9 @@ import 'package:scouting_app/components/CheckBox.dart';
 import 'package:scouting_app/components/CommentBox.dart';
 import 'package:scouting_app/components/CounterShelf.dart';
 import 'package:scouting_app/components/ScoutersList.dart';
+import 'package:scouting_app/components/gameSpecifics/winAfterAuton.dart';
 
+import '../../components/gameSpecifics/timer.dart';
 import '../../main.dart';
 import '../../services/DataBase.dart';
 import '../../components/TeamInfo.dart';
@@ -21,6 +23,10 @@ class Auton extends StatefulWidget {
 
 class AutonState extends State<Auton> {
   late bool left_barge;
+  late bool depot;
+  late bool outPost;
+  late bool zone;
+  late bool autoClimb;
   late int coralScoreL1;
   late int coralScoreL2;
   late int coralScoreL3;
@@ -41,7 +47,10 @@ class AutonState extends State<Auton> {
   void initState() {
     super.initState();
     //   log(widget.matchRecord.toString());
-
+    depot = false;
+    outPost = false;
+    zone = false;
+    autoClimb = false;
     assignedTeam = widget.matchRecord.teamNumber;
     assignedStation = widget.matchRecord.station;
     matchKey = widget.matchRecord.matchKey;
@@ -117,6 +126,7 @@ class AutonState extends State<Auton> {
     return SingleChildScrollView(
       child: Column(
         children: [
+
           MatchInfo(
             assignedTeam: assignedTeam,
             assignedStation: assignedStation,
@@ -132,123 +142,38 @@ class AutonState extends State<Auton> {
             });
             UpdateData();
           }),
-          buildComments(
-            "Coral Scoring",
-            [
-              CounterSettings(
-                (int value) {
-                  setState(() {
-                    coralScoreL4++;
-                  });
-                },
-                (int value) {
-                  setState(() {
-                    coralScoreL4--;
-                  });
-                },
-                icon: Icons.cyclone,
-                number: coralScoreL4,
-                counterText: "Level 4",
-                color: Colors.red,
-              ),
-              CounterSettings(
-                (int value) {
-                  setState(() {
-                    coralScoreL3++;
-                  });
-                },
-                (int value) {
-                  setState(() {
-                    coralScoreL3--;
-                  });
-                },
-                icon: Icons.cyclone,
-                number: coralScoreL3,
-                counterText: "Level 3",
-                color: Colors.orange,
-              ),
-              CounterSettings(
-                (int value) {
-                  setState(() {
-                    coralScoreL2++;
-                  });
-                },
-                (int value) {
-                  setState(() {
-                    coralScoreL2--;
-                  });
-                },
-                icon: Icons.cyclone,
-                number: coralScoreL2,
-                counterText: "Level 2",
-                color: Colors.yellow,
-              ),
-              CounterSettings(
-                (int value) {
-                  setState(() {
-                    coralScoreL1++;
-                  });
-                },
-                (int value) {
-                  setState(() {
-                    coralScoreL1--;
-                  });
-                },
-                icon: Icons.cyclone,
-                number: coralScoreL1,
-                counterText: "Level 1",
-                color: Colors.green,
-              ),
+          Image.asset('assets/2026/BlueAlliance_StartPosition.png'),
+          buildTimer(),
+          Row(
+            children: [
+              buildCheckBox("Depot", depot, (bool value){
+                setState((){
+                  depot = value;
+                });
+                UpdateData();
+              }),
+              buildCheckBox("Outpost", outPost, (bool value){
+                setState((){
+                  outPost = value;
+                });
+                UpdateData();
+              }),
             ],
-            Icon(
-              Icons.emoji_nature_outlined,
-              color: !islightmode()
-                  ? const Color.fromARGB(255, 255, 255, 255)
-                  : const Color.fromARGB(255, 34, 34, 34),
-            ),
           ),
-          buildComments(
-              "Algae Scoring",
-              [
-                CounterSettings(
-                  (int value) {
-                    setState(() {
-                      algaeScoringProcessor++;
-                    });
-                  },
-                  (int value) {
-                    setState(() {
-                      algaeScoringProcessor--;
-                    });
-                  },
-                  icon: Icons.wash,
-                  number: algaeScoringProcessor,
-                  counterText: "Processor",
-                  color: Colors.green,
-                ),
-                CounterSettings(
-                  (int value) {
-                    setState(() {
-                      algaeScoringBarge++;
-                    });
-                  },
-                  (int value) {
-                    setState(() {
-                      algaeScoringBarge--;
-                    });
-                  },
-                  icon: Icons.rice_bowl_outlined,
-                  number: algaeScoringBarge,
-                  counterText: "Barge",
-                  color: Colors.green,
-                ),
-              ],
-              Icon(
-                Icons.add_comment,
-                color: !islightmode()
-                    ? const Color.fromARGB(255, 255, 255, 255)
-                    : const Color.fromARGB(255, 34, 34, 34),
-              )),
+          buildCheckBoxFull("Grabbed Balls From Neutral Zone", zone, (bool value){
+            setState((){
+              zone = value;
+            });
+            UpdateData();
+          }),
+          buildWinAfterAuton(),
+          buildHelloWorld(),
+          buildCheckBoxFull("Climb", autoClimb, (bool value){
+            setState((){
+              autoClimb = value;
+            });
+            UpdateData();
+          }),
         ],
       ),
     );
