@@ -26,6 +26,7 @@ class EndGameState extends State<EndGame> {
   late String matchKey;
   late String allianceColor;
   late int matchNumber;
+  late int neutralTrips;
 
   TextEditingController commentController = TextEditingController();
 
@@ -43,6 +44,7 @@ class EndGameState extends State<EndGame> {
     shallow_climb = widget.matchRecord.endPoints.Shallow_Climb;
     park = widget.matchRecord.endPoints.Park;
     commentController.text = widget.matchRecord.endPoints.Comments;
+    neutralTrips = 0;
 
     endPoints =
         EndPoints(deep_climb, shallow_climb, park, commentController.text);
@@ -103,7 +105,13 @@ class EndGameState extends State<EndGame> {
               }),
             ]),
           ),
-          buildCounter("Hello", 201, (int value){}, color: Colors.amber, ),
+
+
+          buildCounter("Trips to Neutral Zone", neutralTrips, (int value){setState(() {
+            neutralTrips = value;
+          });}, color: Colors.amber, ),
+
+
           const SizedBox(height: 6),
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
