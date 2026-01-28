@@ -4,6 +4,7 @@ import 'package:scouting_app/components/QrGenerator.dart';
 import 'package:scouting_app/main.dart';
 import '../../components/slider.dart';
 import '../../services/DataBase.dart';
+import 'package:scouting_app/components/CounterShelf.dart';
 
 class EndGame extends StatefulWidget {
   final MatchRecord matchRecord;
@@ -78,27 +79,31 @@ class EndGameState extends State<EndGame> {
     return SingleChildScrollView(
       child: Column(
         children: [
+
+
+
+
+
+
+
+
+
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-              buildCheckBox("Deep Climb", deep_climb, (bool value) {
+              buildCheckBox("FEED", deep_climb, (bool value) {
                 setState(() {
                   deep_climb = value;
                 });
               }),
-              buildCheckBox("Shallow Climb", shallow_climb, (bool value) {
+              buildCheckBox("DEFENSE", shallow_climb, (bool value) {
                 setState(() {
                   shallow_climb = value;
                 });
               }),
             ]),
           ),
-          buildCheckBoxFull("Parked", park, (bool value) {
-            // changed 'parked' to 'park'
-            setState(() {
-              park = value; // changed 'parked' to 'park'
-            });
-          }),
+          buildCounter("Hello", 201, (int value){}, color: Colors.amber, ),
           const SizedBox(height: 6),
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -116,6 +121,7 @@ class EndGameState extends State<EndGame> {
                 ),
               ],
             ),
+
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
