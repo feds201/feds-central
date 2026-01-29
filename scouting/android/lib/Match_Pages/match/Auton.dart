@@ -3,15 +3,12 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:scouting_app/components/CheckBox.dart';
-import 'package:scouting_app/components/CommentBox.dart';
-import 'package:scouting_app/components/CounterShelf.dart';
 import 'package:scouting_app/components/ScoutersList.dart';
 import 'package:scouting_app/components/gameSpecifics/winAfterAuton.dart';
 
-import '../../components/gameSpecifics/timer.dart';
-import '../../main.dart';
-import '../../services/DataBase.dart';
 import '../../components/TeamInfo.dart';
+import '../../components/gameSpecifics/timer.dart';
+import '../../services/DataBase.dart';
 
 class Auton extends StatefulWidget {
   final MatchRecord matchRecord;
@@ -22,18 +19,14 @@ class Auton extends StatefulWidget {
 }
 
 class AutonState extends State<Auton> {
-  late bool left_barge;
+  late bool left_startingLocation;
   late bool depot;
   late bool outPost;
   late bool zone;
   late bool autoClimb;
-  late int coralScoreL1;
-  late int coralScoreL2;
-  late int coralScoreL3;
-  late int coralScoreL4;
-  late int algaeScoringProcessor;
-  late int algaeScoringBarge;
-  late BotLocation botLocations;
+  late BotLocation startingBotLocations;
+  late String winAfterAuton;
+  late double shootingTime;
 
   late AutonPoints autonPoints;
 
@@ -56,47 +49,50 @@ class AutonState extends State<Auton> {
     matchKey = widget.matchRecord.matchKey;
     allianceColor = widget.matchRecord.allianceColor;
     matchNumber = widget.matchRecord.matchNumber;
-    botLocations = BotLocation(Offset(200, 200), Size(2000, 2000), 45);
-    left_barge = widget.matchRecord.autonPoints.LeftBarge;
-    coralScoreL1 = widget.matchRecord.autonPoints.CoralScoringLevel1;
-    coralScoreL2 = widget.matchRecord.autonPoints.CoralScoringLevel2;
-    coralScoreL3 = widget.matchRecord.autonPoints.CoralScoringLevel3;
-    coralScoreL4 = widget.matchRecord.autonPoints.CoralScoringLevel4;
-    algaeScoringProcessor =
-        widget.matchRecord.autonPoints.AlgaeScoringProcessor;
-    algaeScoringBarge = widget.matchRecord.autonPoints.AlgaeScoringBarge;
-    autonPoints = AutonPoints(
-        coralScoreL1,
-        coralScoreL2,
-        coralScoreL3,
-        coralScoreL4,
-        left_barge,
-        algaeScoringProcessor,
-        algaeScoringBarge,
-        botLocations);
-    // log('Auton initialized: $autonPoints');
-  }
+    startingBotLocations = BotLocation(Offset(200, 200), Size(2000, 2000), 45);
+    left_startingLocation =
+        widget.matchRecord.autonPoints.left_starting_position;
+    depot = widget.matchRecord.autonPoints.fuel_pickup_from_Depot;
+    outPost = widget.matchRecord.autonPoints.fuel_pickup_from_Outpost;
+    zone = widget.matchRecord.autonPoints.fuel_pickup_from_Neutral_Zone;
+    autoClimb = widget.matchRecord.autonPoints.climb;
+    winAfterAuton = widget.matchRecord.autonPoints.winAfterAuton;
+    shootingTime = widget.matchRecord.autonPoints.total_shooting_time;
+    left_startingLocation = false;
 
+    autonPoints = AutonPoints(
+      depot,
+      outPost,
+      zone,
+      shootingTime,
+      autoClimb,
+      winAfterAuton,
+      startingBotLocations,
+      left_startingLocation,
+    );
+  }
   void UpdateData() {
     autonPoints = AutonPoints(
-        coralScoreL1,
-        coralScoreL2,
-        coralScoreL3,
-        coralScoreL4,
-        left_barge,
-        algaeScoringProcessor,
-        algaeScoringBarge,
-        botLocations);
+      depot,
+      outPost,
+      zone,
+      shootingTime,
+      autoClimb,
+      winAfterAuton,
+      startingBotLocations,
+      left_startingLocation,
+    );
 
     widget.matchRecord.autonPoints = autonPoints;
-    widget.matchRecord.autonPoints.LeftBarge = left_barge;
-    widget.matchRecord.autonPoints.CoralScoringLevel1 = coralScoreL1;
-    widget.matchRecord.autonPoints.CoralScoringLevel2 = coralScoreL2;
-    widget.matchRecord.autonPoints.CoralScoringLevel3 = coralScoreL3;
-    widget.matchRecord.autonPoints.CoralScoringLevel4 = coralScoreL4;
-    widget.matchRecord.autonPoints.AlgaeScoringProcessor =
-        algaeScoringProcessor;
-    widget.matchRecord.autonPoints.AlgaeScoringBarge = algaeScoringBarge;
+    widget.matchRecord.autonPoints.left_starting_position =
+        left_startingLocation;
+    widget.matchRecord.autonPoints.fuel_pickup_from_Depot = depot;
+    widget.matchRecord.autonPoints.fuel_pickup_from_Outpost = outPost;
+    widget.matchRecord.autonPoints.fuel_pickup_from_Neutral_Zone = zone;
+    widget.matchRecord.autonPoints.total_shooting_time = shootingTime;
+    widget.matchRecord.autonPoints.winAfterAuton = winAfterAuton;
+    widget.matchRecord.autonPoints.climb = autoClimb;
+    widget.matchRecord.autonPoints.starting_location = startingBotLocations;
     widget.matchRecord.scouterName =
         Hive.box('settings').get('deviceName', defaultValue: '');
 
@@ -136,14 +132,16 @@ class AutonState extends State<Auton> {
             },
           ),
           ScouterList(),
-          buildCheckBoxFull("Leave", left_barge, (bool value) {
+          buildCheckBoxFull("Leave", left_startingLocation, (bool value) {
             setState(() {
-              left_barge = value;
+              left_startingLocation = value;
             });
             UpdateData();
           }),
           Image.asset('assets/2026/BlueAlliance_StartPosition.png'),
-          buildTimer(),
+          buildTklKeyboard(context, (double time) {
+            print("Ola");
+          }),
           Row(
             children: [
               buildCheckBox("Depot", depot, (bool value){
@@ -166,8 +164,12 @@ class AutonState extends State<Auton> {
             });
             UpdateData();
           }),
-          buildWinAfterAuton(),
-          buildHelloWorld(),
+          buildHelloWorld(context, (String winner) {
+            setState(() {
+              winAfterAuton = winner;
+            });
+            UpdateData();
+          }),
           buildCheckBoxFull("Climb", autoClimb, (bool value){
             setState((){
               autoClimb = value;

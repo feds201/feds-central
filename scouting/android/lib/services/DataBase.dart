@@ -669,87 +669,88 @@ class MatchRecord {
 
 // AutonPoints
 class AutonPoints {
-  int CoralScoringLevel1 = 0;
-  int CoralScoringLevel2 = 0;
-  int CoralScoringLevel3 = 0;
-  int CoralScoringLevel4 = 0;
-  bool LeftBarge = false;
-  int AlgaeScoringProcessor = 0;
-  int AlgaeScoringBarge = 0;
-  BotLocation robot_position;
+  bool fuel_pickup_from_Depot = false;
+  bool fuel_pickup_from_Outpost = false;
+  bool fuel_pickup_from_Neutral_Zone = false;
+  bool left_starting_position = false;
+  double total_shooting_time = 0;
+  bool climb = false;
+  String winAfterAuton = "";
+  BotLocation starting_location;
 
-  AutonPoints(
-    this.CoralScoringLevel1,
-    this.CoralScoringLevel2,
-    this.CoralScoringLevel3,
-    this.CoralScoringLevel4,
-    this.LeftBarge,
-    this.AlgaeScoringProcessor,
-    this.AlgaeScoringBarge,
-    this.robot_position,
+  AutonPoints(this.fuel_pickup_from_Depot,
+      this.fuel_pickup_from_Outpost,
+      this.fuel_pickup_from_Neutral_Zone,
+      this.total_shooting_time,
+      this.climb,
+      this.winAfterAuton,
+      this.starting_location,
+      this.left_starting_position,
   );
 
   Map<String, dynamic> toJson() {
     return {
-      "CoralScoringLevel1": CoralScoringLevel1,
-      "CoralScoringLevel2": CoralScoringLevel2,
-      "CoralScoringLevel3": CoralScoringLevel3,
-      "CoralScoringLevel4": CoralScoringLevel4,
-      "LeftBarge": LeftBarge,
-      "AlgaeScoringProcessor": AlgaeScoringProcessor,
-      "AlgaeScoringBarge": AlgaeScoringBarge,
-      "RobotLocation": robot_position.toJson(),
+      "FuelPickUpFromDepot": fuel_pickup_from_Depot,
+      "FuelPickUpFromOutpost": fuel_pickup_from_Outpost,
+      "FuelPickUpFromNeutralZone": fuel_pickup_from_Neutral_Zone,
+      "TotalShootingTime": total_shooting_time,
+      "Climb": climb,
+      "WinAfterAuton": winAfterAuton,
+      "RobotLocation": starting_location,
+      "LeftStartingPosition": left_starting_position
     };
   }
 
   String toCsv() {
-    return '${CoralScoringLevel1},${CoralScoringLevel2},${CoralScoringLevel3},${CoralScoringLevel4},${LeftBarge},${AlgaeScoringProcessor},${AlgaeScoringBarge},${robot_position.toCsv()}';
+    return '${fuel_pickup_from_Depot},${fuel_pickup_from_Outpost},${fuel_pickup_from_Neutral_Zone},${total_shooting_time},${climb},${winAfterAuton},${starting_location.toCsv()}';
   }
 
   static AutonPoints fromJson(Map<String, dynamic> json) {
     return AutonPoints(
-      json['CoralScoringLevel1'] ?? 0,
-      json['CoralScoringLevel2'] ?? 0,
-      json['CoralScoringLevel3'] ?? 0,
-      json['CoralScoringLevel4'] ?? 0,
-      json['LeftBarge'] ?? false,
-      json['AlgaeScoringProcessor'] ?? 0,
-      json['AlgaeScoringBarge'] ?? 0,
-      BotLocation.fromJson(json['RobotLocation'] ?? {}),
+      json['FuelPickUpFromDepot'] ?? false,
+      json['FuelPickUpFromOutpost'] ?? false,
+      json['FuelPickUpFromNeutralZone'] ?? false,
+      json['TotalShootingTime'] ?? 0,
+      json['Climb'] ?? false,
+      json['WinAfterAuton'] ?? "",
+      BotLocation.fromJson(
+        json['RobotLocation'] ?? {},
+      ),
+      json['LeftStartingPosition'] ?? false,
     );
   }
 
   @override
   String toString() {
-    return 'AutonPoints{CoralScoringLevel1: $CoralScoringLevel1, CoralScoringLevel2: $CoralScoringLevel2, CoralScoringLevel3: $CoralScoringLevel3, CoralScoringLevel4: $CoralScoringLevel4, LeftBarge: $LeftBarge, AlgaeScoringProcessor: $AlgaeScoringProcessor, AlgaeScoringBarge: $AlgaeScoringBarge, RobotLocation: $robot_position}';
+    return 'AutonPoints{FuelPickUpFromDepot: $fuel_pickup_from_Depot, FuelPickUpFromOutpost: $fuel_pickup_from_Outpost, FuelPickUpFromNeutralZone: $fuel_pickup_from_Neutral_Zone, TotalShootingTime: $total_shooting_time, Climb: $climb, WinAfterAuton: $winAfterAuton, RobotLocation: $starting_location, LeftStartingPosition: $left_starting_position}';
   }
 
-  void setCoralScoringL1(int value) {
-    CoralScoringLevel1 = value;
+  void setFuelPickupFromDepot(bool value) {
+    fuel_pickup_from_Depot = value;
   }
 
-  setCoralScoringL2(int value) {
-    CoralScoringLevel2 = value;
+  setFuelPickupFromOutpost(bool value) {
+    fuel_pickup_from_Outpost = value;
   }
 
-  setCoralScoringL3(int value) {
-    CoralScoringLevel3 = value;
+  setFuelPickUpFromNeutralZone(bool value) {
+    fuel_pickup_from_Neutral_Zone = value;
   }
 
-  setCoralScoringL4(int value) {
-    CoralScoringLevel4 = value;
+  setTotalShootingTime(double value) {
+    total_shooting_time = value;
   }
 
-  setAlgaeScoringProcessor(int value) {
-    AlgaeScoringProcessor = value;
+  setClimb(bool value) {
+    climb = value;
   }
 
-  setAlgaeScoringBarge(int value) {
-    AlgaeScoringBarge = value;
+  setWinAfterAuton(String value) {
+    winAfterAuton = value;
   }
 
-  setLeftBarge(bool value) {
-    LeftBarge = value;
+  setStartingLocation(BotLocation value) {
+    starting_location = value;
   }
 }
 
@@ -955,14 +956,15 @@ class LocalDataBase {
   // Helper conversion methods
   static AutonPoints mapToAutonPoints(Map<dynamic, dynamic> data) {
     return AutonPoints(
-        data['CoralScoringLevel1'] ?? 0,
-        data['CoralScoringLevel2'] ?? 0,
-        data['CoralScoringLevel3'] ?? 0,
-        data['CoralScoringLevel4'] ?? 0,
-        data['LeftBarge'] ?? false,
-        data['AlgaeScoringProcessor'] ?? 0,
-        data['AlgaeScoringBarge'] ?? 0,
-        data['RobotLocation'] ?? Offset.zero);
+      data['FuelPickUpFromDepot'] ?? false,
+      data['FuelPickUpFromOutpost'] ?? false,
+      data['FuelPickUpFromNeutralZone'] ?? false,
+      data['TotalShootingTime'] ?? 0,
+      data['Climb'] ?? false,
+      data['WinAfterAuton'] ?? "",
+      data['RobotLocation'] ?? Offset.zero,
+      data['LeftStartingPosition'] ?? false,
+    );
   }
 
   static TeleOpPoints mapToTeleOpPoints(Map<dynamic, dynamic> data) {

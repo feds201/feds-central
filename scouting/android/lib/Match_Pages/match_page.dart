@@ -1,20 +1,20 @@
 import 'dart:convert';
 
+import 'package:battery_plus/battery_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
-import 'package:battery_plus/battery_plus.dart';
 import 'package:scouting_app/Qualitative/qualitative.dart';
 import 'package:scouting_app/components/Inspiration.dart';
+import 'package:scouting_app/components/Insults.dart';
 import 'package:scouting_app/components/MatchSelection.dart';
 import 'package:scouting_app/components/ScoutersList.dart';
-import 'package:scouting_app/components/Insults.dart';
 import 'package:scouting_app/home_page.dart';
 import 'package:scouting_app/main.dart';
+
 import '../services/Colors.dart';
-import 'match.dart';
 import '../services/DataBase.dart';
-import 'package:device_info_plus/device_info_plus.dart';
+import 'match.dart';
 
 class MatchPage extends StatefulWidget {
   const MatchPage({super.key});
@@ -636,8 +636,8 @@ class MatchPageState extends State<MatchPage>
     int batteryPercentage = await _getBatteryPercentage();
 
     MatchRecord matchRecord = MatchRecord(
-      AutonPoints(0, 0, 0, 0, false, 0, 0,
-          BotLocation(Offset(100, 100), Size(200, 200), 0)),
+      AutonPoints(false, false, false, 0.0, false, "",
+          BotLocation(Offset(0, 0), Size.zero, 0), false),
       TeleOpPoints(0, 0, 0, 0, 0, 0, 0, false),
       EndPoints(false, false, false, ""),
       teamNumber: teamNNumber.replaceAll('frc', ''),
