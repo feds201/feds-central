@@ -5,6 +5,8 @@ import 'package:scouting_app/main.dart';
 import '../../components/slider.dart';
 import '../../services/DataBase.dart';
 import 'package:scouting_app/components/CounterShelf.dart';
+import 'package:scouting_app/components/Climbendgame.dart';
+
 
 class EndGame extends StatefulWidget {
   final MatchRecord matchRecord;
@@ -81,15 +83,6 @@ class EndGameState extends State<EndGame> {
     return SingleChildScrollView(
       child: Column(
         children: [
-
-
-
-
-
-
-
-
-
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
@@ -110,9 +103,12 @@ class EndGameState extends State<EndGame> {
           buildCounter("Trips to Neutral Zone", neutralTrips, (int value){setState(() {
             neutralTrips = value;
           });}, color: Colors.amber, ),
-
-
           const SizedBox(height: 6),
+
+          const SizedBox(height: 8),  // spacing before Climb
+          Climb(),                     // <-- remove `const` here
+          const SizedBox(height: 8),  // spacing after Climb
+
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
@@ -129,6 +125,8 @@ class EndGameState extends State<EndGame> {
                 ),
               ],
             ),
+
+
 
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
