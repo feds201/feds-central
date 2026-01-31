@@ -14,21 +14,24 @@ import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.DeviceTempReporter;
+import frc.robot.utils.LimelightWrapper;
 import frc.robot.utils.SubsystemStatusManager;
+import limelight.networktables.LimelightSettings.LEDMode;
 //testing
 public class Climber extends SubsystemBase {
-  private final TalonFX sampleMotor;
+
+  private final TalonFX climberMotor;
   private TalonFXConfiguration config;
   private turret_state currentState;
 
   public enum turret_state {
-    STOP(Rotations.of(0)),
-    START(Rotations.of(0)),
+    L1(Rotations.of(0)),
     HOME(Rotations.of(0));
 
     private final Angle targetPosition;
@@ -37,7 +40,6 @@ public class Climber extends SubsystemBase {
     turret_state(Angle targetPosition){
       this.targetPosition = targetPosition;
       this.tolerance = Degrees.of(3);
-
     }
 
     public Angle getTargetPosition(){
@@ -48,23 +50,32 @@ public class Climber extends SubsystemBase {
       return tolerance;
     }
   }
-
+private final MotionMagicVoltage positionOut = new MotionMagicVoltage(Rotations.of(0));
+  
   public Climber() {
     currentState = turret_state.HOME;
-    sampleMotor = new TalonFX(1);
+    climberMotor = new TalonFX(1);
 
     config = new TalonFXConfiguration();
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     config.CurrentLimits.StatorCurrentLimit = 40;
+    config.Slot0.GravityType = GravityTypeValue.Elevator_Static;
+    //Following values would need to be tuned.
+    config.Slot0.kG = 0.0; // Constant applied for gravity compensation
+    config.Slot0.kS = 0.0; // Constant applied for friction compensation (static gain)
+    config.Slot0.kP = 0.0; // Proportional gain 
+    config.Slot0.kD = 0.0; // Derivative gain
+    config.MotionMagic.MotionMagicCruiseVelocity = 0.0; // Max allowed velocity (Motor rot / sec)
+    config.MotionMagic.MotionMagicAcceleration = 0.0; // Max allowed acceleration (Motor rot / sec^2)
     // Apply config multiple times to ensure application
     for (int i = 0; i < 2; ++i){
-      var status = sampleMotor.getConfigurator().apply(config);
+      var status = climberMotor.getConfigurator().apply(config);
       if(status.isOK()) break;
     }
 
-    SubsystemStatusManager.addSubsystem(getName(), sampleMotor);
-    DeviceTempReporter.addDevices(sampleMotor);
+    SubsystemStatusManager.addSubsystem(getName(), climberMotor);
+    DeviceTempReporter.addDevices(climberMotor);
   }
 
   @Override
@@ -73,8 +84,17 @@ public class Climber extends SubsystemBase {
     super.periodic();
   }
 
+  public void setPosition(Angle position){
+    climberMotor.setControl(positionOut.withPosition(position));
+  }
+
+  public void setState(turret_state state){
+    currentState = state;
+    setPosition(state.getTargetPosition());
+  }
+
   public Angle getPosition(){
-    return sampleMotor.getPosition().getValue();
+    return climberMotor.getPosition().getValue();
   }
 
   public Angle getTargetPosition(){
@@ -86,7 +106,7 @@ public class Climber extends SubsystemBase {
   }
 
   public void stop(){
-    sampleMotor.stopMotor();
+    climberMotor.stopMotor();
   }
 
   public turret_state getCurrentState(){
@@ -96,10 +116,11 @@ public class Climber extends SubsystemBase {
   public boolean isAtTarget(){
     return getPosition().isNear(getTargetPosition(), getTolerance());
   }
-  
 
-
-
-
+  public Command setStateCommand(turret_state targetState){
+      return new InstantCommand(() -> {
+        setState(targetState);
+      });
+  }
 }
 
