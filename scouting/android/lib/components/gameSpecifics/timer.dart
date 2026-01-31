@@ -1,14 +1,17 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+
 class TklKeyboard extends StatefulWidget {
   final Function(double) onChange;
   final Function() doChange;
-  final double currentTime;
+  double currentTime;
 
-
-
-  const TklKeyboard({super.key, required this.onChange, required this.currentTime, required this.doChange});
+  TklKeyboard(
+      {super.key,
+      required this.onChange,
+      required this.currentTime,
+      required this.doChange});
 
   @override
   State<TklKeyboard> createState() => _TklKeyboardState();
@@ -28,11 +31,7 @@ class _TklKeyboardState extends State<TklKeyboard> {
   void _stopStopwatch() {
     _stopwatch.stop();
     _timer?.cancel();
-    widget.doChange();// Successfully cancels the persistent timer
-  }
-
-  void _resetStopwatch() {
-    _stopwatch.reset();
+    widget.doChange();
   }
 
   @override
@@ -78,21 +77,22 @@ class _TklKeyboardState extends State<TklKeyboard> {
                 children: [
                   TextButton(
                     style: TextButton.styleFrom(padding: EdgeInsets.zero),
-                    onPressed: () {},
+                    onPressed: () {
+                      widget.onChange(widget.currentTime -= 0.30);
+                    },
                     child: Container(
                       alignment: Alignment.center,
                       width: 50,
                       height: 50,
                       decoration: const BoxDecoration(
                           color: Colors.red, shape: BoxShape.circle),
-                      child: const Text("-2",
-                          style: TextStyle(color: Colors.black, fontSize: 25)),
+                      child: const Text("-0.3",
+                          style: TextStyle(color: Colors.black, fontSize: 16)),
                     ),
                   ),
                   GestureDetector(
                     onTapDown: (_) {
-                      _resetStopwatch();
-                      _startStopwatch();// Start timer here
+                      _startStopwatch(); // Start timer here
                     },
                     onTapUp: (_) {
                       // Cancel timer here
@@ -100,7 +100,6 @@ class _TklKeyboardState extends State<TklKeyboard> {
                         _stopStopwatch();
                       }
                     },
-
                     child: Container(
                       alignment: Alignment.center,
                       width: 180,
@@ -116,7 +115,9 @@ class _TklKeyboardState extends State<TklKeyboard> {
                   ),
                   TextButton(
                     style: TextButton.styleFrom(padding: EdgeInsets.zero),
-                    onPressed: () {},
+                    onPressed: () {
+                      widget.onChange(widget.currentTime += 0.30);
+                    },
                     child: Container(
                       alignment: Alignment.center,
                       width: 50,
@@ -124,8 +125,8 @@ class _TklKeyboardState extends State<TklKeyboard> {
                       decoration: const BoxDecoration(
                           color: Colors.lightGreenAccent,
                           shape: BoxShape.circle),
-                      child: const Text("+2",
-                          style: TextStyle(color: Colors.black, fontSize: 25)),
+                      child: const Text("+0.3",
+                          style: TextStyle(color: Colors.black, fontSize: 16)),
                     ),
                   ),
                 ],

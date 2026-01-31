@@ -28,7 +28,6 @@ class AutonState extends State<Auton> {
   // late BotLocation startingBotLocations;
   late String winAfterAuton;
   late double shootingTime;
-  double finalTime = 0;
   late AutonPoints autonPoints;
   late int amount = 0;
   late String assignedTeam;
@@ -62,8 +61,8 @@ class AutonState extends State<Auton> {
     amount = widget.matchRecord.autonPoints.amountOfShooting;
     left_startingLocation = false;
 
-    autonPoints = AutonPoints(depot, outPost, zone, shootingTime, amount, autoClimb,
-        winAfterAuton, left_startingLocation);
+    autonPoints = AutonPoints(depot, outPost, zone, shootingTime, amount,
+        autoClimb, winAfterAuton, left_startingLocation);
   }
 
   // startingBotLocations,
@@ -138,19 +137,16 @@ class AutonState extends State<Auton> {
           }),
           Image.asset('assets/2026/BlueAlliance_StartPosition.png'),
           TklKeyboard(
-            currentTime: finalTime,
+            currentTime: shootingTime,
             onChange: (double time) {
               setState(() {
-                finalTime = time;
+                shootingTime = time;
               });
-
-
             },
-            doChange: (){
-              shootingTime += finalTime;
+            doChange: () {
               amount++;
               UpdateData();
-          },
+            },
           ),
           buildCounterShelf([
             CounterSettings((number) {

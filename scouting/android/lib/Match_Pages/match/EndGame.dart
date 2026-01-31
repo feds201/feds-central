@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:scouting_app/components/CheckBox.dart';
 import 'package:scouting_app/components/QrGenerator.dart';
+import 'package:scouting_app/components/gameSpecifics/climb.dart';
 // import 'package:scouting_app/components/gameSpecifics/climb.dart';
 import 'package:scouting_app/main.dart';
 import '../../components/slider.dart';
@@ -118,16 +119,16 @@ class EndGameState extends State<EndGame> {
             },
             color: Colors.amber,
           ),
-          
-          // buildClimbImage(selectedLevel, park, (int? newLevel) {
+
+          buildClimb(),
+          // buildClimb(selectedLevel, park, (int? newLevel) {
           //   setState(() {
           //     selectedLevel = newLevel;
           //   });
           //   park = newLevel == null;
           // },
           // ),
-          //
-          
+
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
