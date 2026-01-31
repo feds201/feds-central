@@ -1,6 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
-Widget buildTklKeyboard(BuildContext context, Function(double time) onHold) {
+Widget buildTklKeyboard(
+  BuildContext context,
+  Function(double) onChange,
+  double currentTime,
+) {
+  Stopwatch stopwatch = Stopwatch();
   return Padding(
     padding: const EdgeInsets.all(8.0),
     child: Container(
@@ -25,7 +32,7 @@ Widget buildTklKeyboard(BuildContext context, Function(double time) onHold) {
             const SizedBox(
               height: 20,
             ),
-            const Text('00:99',
+            Text(currentTime.toStringAsFixed(2),
                 textAlign: TextAlign.center,
                 style: TextStyle(color: Colors.white, fontSize: 70)),
             const SizedBox(
@@ -36,9 +43,7 @@ Widget buildTklKeyboard(BuildContext context, Function(double time) onHold) {
               children: [
                 TextButton(
                   style: TextButton.styleFrom(padding: EdgeInsets.zero),
-                  onPressed: () {
-                    onHold(-2.0);
-                  },
+                  onPressed: () {},
                   child: Container(
                     alignment: Alignment.center,
                     width: 50,
@@ -49,10 +54,17 @@ Widget buildTklKeyboard(BuildContext context, Function(double time) onHold) {
                         style: TextStyle(color: Colors.black, fontSize: 25)),
                   ),
                 ),
-                TextButton(
-                  style: TextButton.styleFrom(padding: EdgeInsets.zero),
-                  onPressed: () {
-                    onHold(0.0);
+                GestureDetector(
+                  onTapDown: (_) {
+                    print('Tap down detected');
+                    stopwatch.start();
+                  },
+                  onTapUp: (details) {
+                    stopwatch.stop();
+                    onChange(stopwatch.elapsed.inMilliseconds / 1000);
+                  },
+                  onPanUpdate: (details) {
+                    // Update position: position += details.delta;
                   },
                   child: Container(
                     alignment: Alignment.center,
@@ -69,9 +81,7 @@ Widget buildTklKeyboard(BuildContext context, Function(double time) onHold) {
                 ),
                 TextButton(
                   style: TextButton.styleFrom(padding: EdgeInsets.zero),
-                  onPressed: () {
-                    onHold(2.0);
-                  },
+                  onPressed: () {},
                   child: Container(
                     alignment: Alignment.center,
                     width: 50,

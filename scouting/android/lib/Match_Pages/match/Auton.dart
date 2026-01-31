@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:scouting_app/components/CheckBox.dart';
+import 'package:scouting_app/components/CounterShelf.dart';
 import 'package:scouting_app/components/ScoutersList.dart';
 import 'package:scouting_app/components/gameSpecifics/winAfterAuton.dart';
 
@@ -24,7 +25,7 @@ class AutonState extends State<Auton> {
   late bool outPost;
   late bool zone;
   late bool autoClimb;
-  late BotLocation startingBotLocations;
+  // late BotLocation startingBotLocations;
   late String winAfterAuton;
   late double shootingTime;
 
@@ -49,7 +50,7 @@ class AutonState extends State<Auton> {
     matchKey = widget.matchRecord.matchKey;
     allianceColor = widget.matchRecord.allianceColor;
     matchNumber = widget.matchRecord.matchNumber;
-    startingBotLocations = BotLocation(Offset(200, 200), Size(2000, 2000), 45);
+    // startingBotLocations = BotLocation(Offset(200, 200), Size(2000, 2000), 45);
     left_startingLocation =
         widget.matchRecord.autonPoints.left_starting_position;
     depot = widget.matchRecord.autonPoints.fuel_pickup_from_Depot;
@@ -60,17 +61,12 @@ class AutonState extends State<Auton> {
     shootingTime = widget.matchRecord.autonPoints.total_shooting_time;
     left_startingLocation = false;
 
-    autonPoints = AutonPoints(
-      depot,
-      outPost,
-      zone,
-      shootingTime,
-      autoClimb,
-      winAfterAuton,
-      startingBotLocations,
-      left_startingLocation,
-    );
+    autonPoints = AutonPoints(depot, outPost, zone, shootingTime, autoClimb,
+        winAfterAuton, left_startingLocation);
   }
+
+  // startingBotLocations,
+  // left_startingLocation,
   void UpdateData() {
     autonPoints = AutonPoints(
       depot,
@@ -79,8 +75,8 @@ class AutonState extends State<Auton> {
       shootingTime,
       autoClimb,
       winAfterAuton,
-      startingBotLocations,
       left_startingLocation,
+      // startingBotLocations,
     );
 
     widget.matchRecord.autonPoints = autonPoints;
@@ -92,7 +88,7 @@ class AutonState extends State<Auton> {
     widget.matchRecord.autonPoints.total_shooting_time = shootingTime;
     widget.matchRecord.autonPoints.winAfterAuton = winAfterAuton;
     widget.matchRecord.autonPoints.climb = autoClimb;
-    widget.matchRecord.autonPoints.starting_location = startingBotLocations;
+    // widget.matchRecord.autonPoints.starting_location = startingBotLocations;
     widget.matchRecord.scouterName =
         Hive.box('settings').get('deviceName', defaultValue: '');
 
@@ -122,7 +118,6 @@ class AutonState extends State<Auton> {
     return SingleChildScrollView(
       child: Column(
         children: [
-
           MatchInfo(
             assignedTeam: assignedTeam,
             assignedStation: assignedStation,
@@ -140,38 +135,65 @@ class AutonState extends State<Auton> {
           }),
           Image.asset('assets/2026/BlueAlliance_StartPosition.png'),
           buildTklKeyboard(context, (double time) {
-            print("Ola");
-          }),
+            setState(() {
+              shootingTime = time;
+            });
+            UpdateData();
+            print(time);
+          }, shootingTime),
+          buildCounterShelf([
+            CounterSettings((number) {
+              print(number);
+            }, (number) {
+              print(number);
+            },
+                icon: Icons.import_contacts,
+                number: 0,
+                counterText: 'Total Shooting Cycles',
+                color: Colors.black12)
+          ]),
           Row(
             children: [
-              buildCheckBox("Depot", depot, (bool value){
-                setState((){
+              buildCheckBox("Depot", depot, (bool value) {
+                setState(() {
                   depot = value;
                 });
                 UpdateData();
               }),
-              buildCheckBox("Outpost", outPost, (bool value){
-                setState((){
+              buildCheckBox("Outpost", outPost, (bool value) {
+                setState(() {
                   outPost = value;
                 });
                 UpdateData();
               }),
             ],
           ),
-          buildCheckBoxFull("Grabbed Balls From Neutral Zone", zone, (bool value){
-            setState((){
-              zone = value;
-            });
-            UpdateData();
-          }),
+          buildCounterShelf([
+            CounterSettings((number) {
+              print(number);
+            }, (number) {
+              print(number);
+            },
+                icon: Icons.import_contacts,
+                number: 0,
+                counterText: 'Times Grabbed Balls From Neutral Zone',
+                color: Colors.black12)
+          ]),
+          // buildCheckBoxFull("Grabbed Balls From Neutral Zone", zone,
+          //     (bool value) {
+          //   setState(() {
+          //      zone = value;
+          //   });
+          //   UpdateData();
+          // }),
           buildHelloWorld(context, (String winner) {
             setState(() {
               winAfterAuton = winner;
             });
             UpdateData();
           }),
-          buildCheckBoxFull("Climb", autoClimb, (bool value){
-            setState((){
+          buildCheckBoxFull("Climb", autoClimb, (bool value) {
+            setState(() {
               autoClimb = value;
             });
             UpdateData();

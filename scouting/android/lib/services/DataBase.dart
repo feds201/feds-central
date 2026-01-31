@@ -652,7 +652,6 @@ class MatchRecord {
         other.autonPoints == autonPoints &&
         other.teleOpPoints == teleOpPoints &&
         other.endPoints == endPoints;
-
   }
 
   @override
@@ -676,16 +675,17 @@ class AutonPoints {
   double total_shooting_time = 0;
   bool climb = false;
   String winAfterAuton = "";
-  BotLocation starting_location;
+  // BotLocation starting_location;
 
-  AutonPoints(this.fuel_pickup_from_Depot,
-      this.fuel_pickup_from_Outpost,
-      this.fuel_pickup_from_Neutral_Zone,
-      this.total_shooting_time,
-      this.climb,
-      this.winAfterAuton,
-      this.starting_location,
-      this.left_starting_position,
+  AutonPoints(
+    this.fuel_pickup_from_Depot,
+    this.fuel_pickup_from_Outpost,
+    this.fuel_pickup_from_Neutral_Zone,
+    this.total_shooting_time,
+    this.climb,
+    this.winAfterAuton,
+    // this.starting_location,
+    this.left_starting_position,
   );
 
   Map<String, dynamic> toJson() {
@@ -696,13 +696,13 @@ class AutonPoints {
       "TotalShootingTime": total_shooting_time,
       "Climb": climb,
       "WinAfterAuton": winAfterAuton,
-      "RobotLocation": starting_location,
+      // "RobotLocation": starting_location,
       "LeftStartingPosition": left_starting_position
     };
   }
 
   String toCsv() {
-    return '${fuel_pickup_from_Depot},${fuel_pickup_from_Outpost},${fuel_pickup_from_Neutral_Zone},${total_shooting_time},${climb},${winAfterAuton},${starting_location.toCsv()}';
+    return '${fuel_pickup_from_Depot},${fuel_pickup_from_Outpost},${fuel_pickup_from_Neutral_Zone},${total_shooting_time},${climb},${winAfterAuton}}';
   }
 
   static AutonPoints fromJson(Map<String, dynamic> json) {
@@ -713,16 +713,16 @@ class AutonPoints {
       json['TotalShootingTime'] ?? 0,
       json['Climb'] ?? false,
       json['WinAfterAuton'] ?? "",
-      BotLocation.fromJson(
-        json['RobotLocation'] ?? {},
-      ),
+      // BotLocation.fromJson(
+      //   json['RobotLocation'] ?? {},
+      // ),
       json['LeftStartingPosition'] ?? false,
     );
   }
 
   @override
   String toString() {
-    return 'AutonPoints{FuelPickUpFromDepot: $fuel_pickup_from_Depot, FuelPickUpFromOutpost: $fuel_pickup_from_Outpost, FuelPickUpFromNeutralZone: $fuel_pickup_from_Neutral_Zone, TotalShootingTime: $total_shooting_time, Climb: $climb, WinAfterAuton: $winAfterAuton, RobotLocation: $starting_location, LeftStartingPosition: $left_starting_position}';
+    return 'AutonPoints{FuelPickUpFromDepot: $fuel_pickup_from_Depot, FuelPickUpFromOutpost: $fuel_pickup_from_Outpost, FuelPickUpFromNeutralZone: $fuel_pickup_from_Neutral_Zone, TotalShootingTime: $total_shooting_time, Climb: $climb, WinAfterAuton: $winAfterAuton, LeftStartingPosition: $left_starting_position}';
   }
 
   void setFuelPickupFromDepot(bool value) {
@@ -750,7 +750,7 @@ class AutonPoints {
   }
 
   setStartingLocation(BotLocation value) {
-    starting_location = value;
+    // starting_location = value;
   }
 }
 
@@ -963,7 +963,7 @@ class LocalDataBase {
       data['Climb'] ?? false,
       data['WinAfterAuton'] ?? "",
       data['RobotLocation'] ?? Offset.zero,
-      data['LeftStartingPosition'] ?? false,
+      // data['LeftStartingPosition'] ?? false,
     );
   }
 
