@@ -46,7 +46,8 @@ class MatchPageState extends State<MatchPage>
 
   Future<void> _loadDefaultDataIfNeeded() async {
     try {
-      String jsonString = await DefaultAssetBundle.of(context).loadString('assets/response.json');
+      String jsonString = await DefaultAssetBundle.of(context)
+          .loadString('assets/response.json');
       var defaultData = jsonDecode(jsonString);
       Hive.box('matchData').put('matches', defaultData);
       setState(() {}); // Trigger rebuild to show the loaded data
@@ -595,9 +596,16 @@ class MatchPageState extends State<MatchPage>
   }
 
   void _handleMatchSelection(dynamic match) async {
-    String _scouterName = Hive.box('settings').get('deviceName', defaultValue: 'Scout');
-    String _allianceColor = (Hive.box('userData').get('alliance', defaultValue: 'Red') ?? 'Red').toString().trim();
-    String _station = (Hive.box('userData').get('position', defaultValue: '1') ?? '1').toString().trim();
+    String _scouterName =
+        Hive.box('settings').get('deviceName', defaultValue: 'Scout');
+    String _allianceColor =
+        (Hive.box('userData').get('alliance', defaultValue: 'Red') ?? 'Red')
+            .toString()
+            .trim();
+    String _station =
+        (Hive.box('userData').get('position', defaultValue: '1') ?? '1')
+            .toString()
+            .trim();
 
     // Ensure non-empty values
     if (_allianceColor.isEmpty) _allianceColor = 'Red';
@@ -636,8 +644,7 @@ class MatchPageState extends State<MatchPage>
     int batteryPercentage = await _getBatteryPercentage();
 
     MatchRecord matchRecord = MatchRecord(
-      AutonPoints(false, false, false, 0.0, false, "",
-          BotLocation(Offset(0, 0), Size.zero, 0), false),
+      AutonPoints(false, false, false, 0.0, false, "", false),
       TeleOpPoints(0, 0, 0, 0, 0, 0, 0, false),
       EndPoints(false, false, false, ""),
       teamNumber: teamNNumber.replaceAll('frc', ''),
