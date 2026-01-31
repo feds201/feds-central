@@ -18,7 +18,6 @@ class _TklKeyboardState extends State<TklKeyboard> {
   // Store these in the State class so they persist across rebuilds
   final Stopwatch _stopwatch = Stopwatch();
   Timer? _timer;
-  Timer? tim;
   void _startStopwatch() {
     _stopwatch.start();
     _timer = Timer.periodic(const Duration(milliseconds: 10), (timer) {
@@ -39,7 +38,6 @@ class _TklKeyboardState extends State<TklKeyboard> {
   @override
   void dispose() {
     _timer?.cancel(); // Always clean up timers to avoid memory leaks
-    tim?.cancel();
     super.dispose();
   }
 
@@ -93,18 +91,11 @@ class _TklKeyboardState extends State<TklKeyboard> {
                   ),
                   GestureDetector(
                     onTapDown: (_) {
-                      _resetStopwatch();                      // Start timer here
-                      tim = Timer(const Duration(milliseconds: 40), _startStopwatch);
+                      _resetStopwatch();
+                      _startStopwatch();// Start timer here
                     },
                     onTapUp: (_) {
                       // Cancel timer here
-                      tim?.cancel();
-                      if (_stopwatch.isRunning) {
-                        _stopStopwatch();
-                      }
-                    },
-                    onTapCancel: () {
-                      tim?.cancel();
                       if (_stopwatch.isRunning) {
                         _stopStopwatch();
                       }
