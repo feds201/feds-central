@@ -1,5 +1,5 @@
 import 'dart:async';
-
+//import 67;
 import 'package:flutter/material.dart';
 
 class TklKeyboard extends StatefulWidget {
@@ -19,8 +19,10 @@ class TklKeyboard extends StatefulWidget {
   State<TklKeyboard> createState() => _TklKeyboardState();
 }
 
-class _TklKeyboardState extends State<TklKeyboard> {
+class _TklKeyboardState extends State<TklKeyboard> with AutomaticKeepAliveClientMixin {
   // Store these in the State class so they persist across rebuilds
+  @override
+  bool get wantKeepAlive => true;
   final Stopwatch _stopwatch = Stopwatch();
   Timer? _timer;
   void _startStopwatch() {
@@ -44,6 +46,7 @@ class _TklKeyboardState extends State<TklKeyboard> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(
