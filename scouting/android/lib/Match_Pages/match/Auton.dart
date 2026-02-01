@@ -184,24 +184,13 @@ class AutonState extends State<Auton> {
               }),
             ],
           ),
-          buildCounterShelf([
-            CounterSettings((number) {
-              print(number);
-            }, (number) {
-              print(number);
-            },
-                icon: Icons.import_contacts,
-                number: 0,
-                counterText: 'Times Grabbed Balls From Neutral Zone',
-                color: Colors.black12)
-          ]),
-          // buildCheckBoxFull("Grabbed Balls From Neutral Zone", zone,
-          //     (bool value) {
-          //   setState(() {
-          //      zone = value;
-          //   });
-          //   UpdateData();
-          // }),
+          buildCheckBoxFull("Grabbed Balls From Neutral Zone", zone,
+              (bool value) {
+            setState(() {
+               zone = value;
+            });
+            UpdateData();
+          }),
           buildHelloWorld(context, (String winner) {
             setState(() {
               winAfterAuton = winner;
