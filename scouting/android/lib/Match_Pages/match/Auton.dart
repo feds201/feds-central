@@ -147,15 +147,24 @@ class AutonState extends State<Auton> {
               amount++;
               UpdateData();
             },
+            doChangenakedversion: () {
+              UpdateData();
+            },
           ),
           buildCounterShelf([
             CounterSettings((number) {
-              print(number);
+              setState(() {
+                amount++;
+                UpdateData();
+              });
             }, (number) {
-              print(number);
+              setState(() {
+                amount--;
+                UpdateData();
+              });
             },
                 icon: Icons.import_contacts,
-                number: 0,
+                number: amount,
                 counterText: 'Total Shooting Cycles',
                 color: Colors.black12)
           ]),

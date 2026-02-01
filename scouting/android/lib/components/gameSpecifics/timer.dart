@@ -5,13 +5,15 @@ import 'package:flutter/material.dart';
 class TklKeyboard extends StatefulWidget {
   final Function(double) onChange;
   final Function() doChange;
+  final Function() doChangenakedversion;
   double currentTime;
 
   TklKeyboard(
       {super.key,
       required this.onChange,
       required this.currentTime,
-      required this.doChange});
+      required this.doChange,
+      required this.doChangenakedversion});
 
   @override
   State<TklKeyboard> createState() => _TklKeyboardState();
@@ -79,6 +81,7 @@ class _TklKeyboardState extends State<TklKeyboard> {
                     style: TextButton.styleFrom(padding: EdgeInsets.zero),
                     onPressed: () {
                       widget.onChange(widget.currentTime -= 0.30);
+                      widget.doChangenakedversion();
                     },
                     child: Container(
                       alignment: Alignment.center,
@@ -117,6 +120,7 @@ class _TklKeyboardState extends State<TklKeyboard> {
                     style: TextButton.styleFrom(padding: EdgeInsets.zero),
                     onPressed: () {
                       widget.onChange(widget.currentTime += 0.30);
+                      widget.doChangenakedversion();
                     },
                     child: Container(
                       alignment: Alignment.center,
