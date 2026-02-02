@@ -139,7 +139,7 @@ Widget buildClimbImage(int? selectedLevel, bool park, ValueChanged<int?> onLevel
                                       BoxShadow(
                                         color: Color(0xFF353433),
                                         blurRadius: 16,
-                                        spreadRadius: 2,
+                          ht4io;              spreadRadius: 2,
                                         offset: Offset(0, 4),
                                         blurStyle: BlurStyle.inner,
                                       ),
