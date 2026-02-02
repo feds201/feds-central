@@ -1,24 +1,30 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+
 class TklKeyboard extends StatefulWidget {
   final Function(double) onChange;
   final Function() doChange;
-  final double currentTime;
+  final Function() doChangenakedversion;
+  double currentTime;
 
-
-
-  const TklKeyboard({super.key, required this.onChange, required this.currentTime, required this.doChange});
+  TklKeyboard(
+      {super.key,
+      required this.onChange,
+      required this.currentTime,
+      required this.doChange,
+      required this.doChangenakedversion});
 
   @override
   State<TklKeyboard> createState() => _TklKeyboardState();
 }
 
-class _TklKeyboardState extends State<TklKeyboard> {
+class _TklKeyboardState extends State<TklKeyboard> with AutomaticKeepAliveClientMixin {
   // Store these in the State class so they persist across rebuilds
+  @override
+  bool get wantKeepAlive => true;
   final Stopwatch _stopwatch = Stopwatch();
   Timer? _timer;
-  Timer? tim;
   void _startStopwatch() {
     _stopwatch.start();
     _timer = Timer.periodic(const Duration(milliseconds: 10), (timer) {
@@ -29,22 +35,18 @@ class _TklKeyboardState extends State<TklKeyboard> {
   void _stopStopwatch() {
     _stopwatch.stop();
     _timer?.cancel();
-    widget.doChange();// Successfully cancels the persistent timer
-  }
-
-  void _resetStopwatch() {
-    _stopwatch.reset();
+    widget.doChange();
   }
 
   @override
   void dispose() {
     _timer?.cancel(); // Always clean up timers to avoid memory leaks
-    tim?.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(
@@ -80,36 +82,30 @@ class _TklKeyboardState extends State<TklKeyboard> {
                 children: [
                   TextButton(
                     style: TextButton.styleFrom(padding: EdgeInsets.zero),
-                    onPressed: () {},
+                    onPressed: () {
+                      widget.onChange(widget.currentTime -= 0.30);
+                      widget.doChangenakedversion();
+                    },
                     child: Container(
                       alignment: Alignment.center,
                       width: 50,
                       height: 50,
                       decoration: const BoxDecoration(
                           color: Colors.red, shape: BoxShape.circle),
-                      child: const Text("-2",
-                          style: TextStyle(color: Colors.black, fontSize: 25)),
+                      child: const Text("-0.3",
+                          style: TextStyle(color: Colors.black, fontSize: 16)),
                     ),
                   ),
                   GestureDetector(
                     onTapDown: (_) {
-                      _resetStopwatch();                      // Start timer here
-                      tim = Timer(const Duration(milliseconds: 40), _startStopwatch);
+                      _startStopwatch(); // Start timer here
                     },
                     onTapUp: (_) {
                       // Cancel timer here
-                      tim?.cancel();
                       if (_stopwatch.isRunning) {
                         _stopStopwatch();
                       }
                     },
-                    onTapCancel: () {
-                      tim?.cancel();
-                      if (_stopwatch.isRunning) {
-                        _stopStopwatch();
-                      }
-                    },
-
                     child: Container(
                       alignment: Alignment.center,
                       width: 180,
@@ -125,7 +121,10 @@ class _TklKeyboardState extends State<TklKeyboard> {
                   ),
                   TextButton(
                     style: TextButton.styleFrom(padding: EdgeInsets.zero),
-                    onPressed: () {},
+                    onPressed: () {
+                      widget.onChange(widget.currentTime += 0.30);
+                      widget.doChangenakedversion();
+                    },
                     child: Container(
                       alignment: Alignment.center,
                       width: 50,
@@ -133,8 +132,8 @@ class _TklKeyboardState extends State<TklKeyboard> {
                       decoration: const BoxDecoration(
                           color: Colors.lightGreenAccent,
                           shape: BoxShape.circle),
-                      child: const Text("+2",
-                          style: TextStyle(color: Colors.black, fontSize: 25)),
+                      child: const Text("+0.3",
+                          style: TextStyle(color: Colors.black, fontSize: 16)),
                     ),
                   ),
                 ],

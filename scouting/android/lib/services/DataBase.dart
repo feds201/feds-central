@@ -704,7 +704,7 @@ class AutonPoints {
   }
 
   String toCsv() {
-    return '${fuel_pickup_from_Depot},${fuel_pickup_from_Outpost},${fuel_pickup_from_Neutral_Zone},${total_shooting_time},${amountOfShooting},${climb},${winAfterAuton}}';
+    return '{${left_starting_position},${fuel_pickup_from_Depot},${fuel_pickup_from_Outpost},${fuel_pickup_from_Neutral_Zone},${total_shooting_time},${amountOfShooting},${climb},${winAfterAuton}}';
   }
 
   static AutonPoints fromJson(Map<String, dynamic> json) {

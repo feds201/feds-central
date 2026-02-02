@@ -265,12 +265,15 @@ String _getRandomInsult() {
         "Sam and Kevin sitting in a tree, his misses him so much, but he isn't on the team. Prolly went to get the Habibi drip.",
     "Kevin is a 45 year old in a 18 year olds body."
 
-        // Julia
-        "Leasbiannnnnnnnnnnnnnnnnnnnnnnn!",
-    "julia thuggin",
+
 
     //abraham
     "he is so bad a german, es ist traurig...",
+    //faze clan iaan
+    "This guy broke something, and im suprised he doesnt have more",
+
+    //Ryan
+    "Ryan is the loudest in the room, so loud that he can be a push factor as well as a war",
 
     //alonso
     "Bean boy 2.0"

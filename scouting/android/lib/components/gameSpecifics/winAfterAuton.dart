@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-Widget buildHelloWorld(BuildContext context, Function(String winner) onclick) {
+Widget buildWinner(BuildContext context, Function(String winner) onclick) {
   return Padding(
     padding: const EdgeInsets.all(8.0),
     child: Container(
