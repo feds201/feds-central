@@ -98,6 +98,11 @@ class _TklKeyboardState extends State<TklKeyboard> with AutomaticKeepAliveClient
                     onTapDown: (_) {
                       _startStopwatch(); // Start timer here
                     },
+                    onTapCancel: () {
+                      if (_stopwatch.isRunning) {
+                        _stopStopwatch();
+                      }
+                    },
                     onTapUp: (_) {
                       // Cancel timer here
                       if (_stopwatch.isRunning) {
