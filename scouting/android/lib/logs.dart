@@ -4,7 +4,6 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'services/DataBase.dart';
 import 'components/SwipeCards.dart';
-import 'services/GeminiPrediction.dart';
 
 class LogsPage extends StatelessWidget {
   const LogsPage({super.key});
@@ -58,17 +57,6 @@ class LogsPage extends StatelessWidget {
         ),
         centerTitle: true,
         actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.brightness_auto_outlined),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const GeminiPredictionPage(),
-                ),
-              );
-            },
-          ),
           IconButton(
             icon: const Icon(Icons.restore_from_trash_rounded),
             onPressed: () {

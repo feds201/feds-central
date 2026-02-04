@@ -37,7 +37,7 @@ class AutonState extends State<Auton> {
   late String allianceColor;
   late int matchNumber;
   late Alliance mapcolor;
-  final GlobalKey<FieldHeatmapWidgetState> _heatmapKey = GlobalKey();
+  final GlobalKey<SinglePointSelectorState> _tapSelectorKey = GlobalKey();
 
   @override
   void initState() {
@@ -51,9 +51,9 @@ class AutonState extends State<Auton> {
     assignedStation = widget.matchRecord.station;
     matchKey = widget.matchRecord.matchKey;
     allianceColor = widget.matchRecord.allianceColor;
-    if (allianceColor == "Blue"){
+    if (allianceColor == "Blue") {
       mapcolor = Alliance.blue;
-    } else if (allianceColor == "Red"){
+    } else if (allianceColor == "Red") {
       mapcolor = Alliance.red;
     }
     matchNumber = widget.matchRecord.matchNumber;
@@ -138,22 +138,17 @@ class AutonState extends State<Auton> {
           ),
           ScouterList(),
           Container(
-            child: FieldHeatmapWidget(
-              key: _heatmapKey,
-              blueAllianceImagePath: 'assets/2026/BlueAlliance_StartPosition.png',
+            child: SinglePointSelector(
+              key: _tapSelectorKey,
+              blueAllianceImagePath:
+                  'assets/2026/BlueAlliance_StartPosition.png',
               redAllianceImagePath: 'assets/2026/RedAlliance_StartPosition.png',
               alliance: mapcolor,
-              onPointsChanged: (count) {
-                // Optional: Get notified when points are added
-                print('Points: $count');
-              },
-              onClear: () {
-                // Optional: Get notified when cleared
-                // print('Heatmap cleared');
+              onPointSelected: (imageSize, point) {
+                log('Tap at x=${point.dx}, y=${point.dy} on image width=${imageSize.width}, height=${imageSize.height}');
               },
             ),
           ),
-
           buildCheckBoxFull("Leave", left_startingLocation, (bool value) {
             setState(() {
               left_startingLocation = value;
@@ -208,30 +203,25 @@ class AutonState extends State<Auton> {
                 counterText: 'Total Shooting Cycles',
                 color: Colors.black12)
           ]),
-
           buildCheckBoxFull("Grabbed Balls From Neutral Zone", zone,
               (bool value) {
             setState(() {
-               zone = value;
+              zone = value;
             });
             UpdateData();
           }),
-
           buildCheckBoxFull("Climb", autoClimb, (bool value) {
             setState(() {
               autoClimb = value;
             });
             UpdateData();
           }),
-
           buildWinner(context, (String winner) {
             setState(() {
               winAfterAuton = winner;
             });
             UpdateData();
-          },winAfterAuton),
-
-
+          }, winAfterAuton),
         ],
       ),
     );
