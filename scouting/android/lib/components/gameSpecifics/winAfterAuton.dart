@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-Widget buildWinner(BuildContext context, Function(String winner) onclick) {
+Widget buildWinner(BuildContext context, Function(String winner) onclick, String selectedWinner) {
   return Padding(
     padding: const EdgeInsets.all(8.0),
     child: Container(
@@ -35,16 +35,19 @@ Widget buildWinner(BuildContext context, Function(String winner) onclick) {
                 onPressed: () {
                   onclick("Red");
                 },
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                ),
                 child: Container(
                   alignment: Alignment.center,
                   width: 120,
                   height: 70,
                   decoration: BoxDecoration(
-                      color: Colors.red,
+                      color: selectedWinner == "Red" ? Colors.red : Colors.red.withOpacity(0.5),
                       borderRadius: BorderRadius.circular(10)),
-                  child: const Text('RED',
+                  child: Text('RED',
                       style: TextStyle(
-                          color: Colors.black38,
+                          color: selectedWinner == "Red" ? Colors.white : Colors.black38,
                           fontSize: 35,
                           fontFamily: 'MuseoModerno',
                           fontWeight: FontWeight.w700)),
@@ -54,16 +57,19 @@ Widget buildWinner(BuildContext context, Function(String winner) onclick) {
                 onPressed: () {
                   onclick("Tie");
                 },
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                ),
                 child: Container(
                   alignment: Alignment.center,
                   width: 120,
                   height: 70,
                   decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: selectedWinner == "Tie" ? Colors.white : Colors.grey,
                       borderRadius: BorderRadius.circular(10)),
-                  child: const Text('TIE',
+                  child: Text('TIE',
                       style: TextStyle(
-                          color: Colors.black38,
+                          color: selectedWinner == "Tie" ? Colors.black : Colors.black38,
                           fontSize: 35,
                           fontFamily: 'MuseoModerno',
                           fontWeight: FontWeight.w700)),
@@ -73,16 +79,19 @@ Widget buildWinner(BuildContext context, Function(String winner) onclick) {
                 onPressed: () {
                   onclick("Blue");
                 },
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                ),
                 child: Container(
                   alignment: Alignment.center,
                   width: 120,
                   height: 70,
                   decoration: BoxDecoration(
-                      color: Colors.blue,
+                      color: selectedWinner == "Blue" ? Colors.blue : Colors.blue.withOpacity(0.5),
                       borderRadius: BorderRadius.circular(10)),
-                  child: const Text('BLUE',
+                  child: Text('BLUE',
                       style: TextStyle(
-                          color: Colors.black38,
+                          color: selectedWinner == "Blue" ? Colors.white : Colors.black38,
                           fontSize: 35,
                           fontFamily: 'MuseoModerno',
                           fontWeight: FontWeight.w700)),

@@ -229,7 +229,7 @@ class AutonState extends State<Auton> {
               winAfterAuton = winner;
             });
             UpdateData();
-          }),
+          },winAfterAuton),
 
 
         ],
