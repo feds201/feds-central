@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:scouting_app/components/CheckBox.dart';
-import 'package:scouting_app/components/CommentBox.dart';
+// import 'package:scouting_app/components/CheckBox.dart';
+// import 'package:scouting_app/components/CommentBox.dart';
 import 'package:scouting_app/components/CounterShelf.dart';
 import 'package:scouting_app/components/gameSpecifics/timer.dart';
-import 'package:scouting_app/main.dart';
+// import 'package:scouting_app/main.dart';
 import '../../components/gameSpecifics/PhaseSelection.dart';
 
 import '../../services/DataBase.dart';
@@ -28,6 +28,7 @@ class _TeleOperatedState extends State<TeleOperated> {
   late int amount1 = 0;
   late int tripAmount1 = 0;
   late bool defense;
+  late int neutralTrips =0;
 
   late TeleOpPoints teleOpPoints;
 
@@ -130,6 +131,11 @@ class _TeleOperatedState extends State<TeleOperated> {
               amount1++;
               UpdateData();
             },
+            doChangeResetter: () {
+              amount1 = 0;
+              shootingTime1 = 0.0;
+              UpdateData();
+            },
             doChangenakedversion: () {
               UpdateData();
             },
@@ -151,23 +157,16 @@ class _TeleOperatedState extends State<TeleOperated> {
                 counterText: 'Total Shooting Cycles',
                 color: Colors.black12)
           ]),
-          buildCounterShelf([
-            CounterSettings((number) {
+          buildCounter(
+            "Trips to Neutral Zone",
+            neutralTrips,
+                (int value) {
               setState(() {
-                tripAmount1++;
-                UpdateData();
-              });
-            }, (number) {
-              setState(() {
-                tripAmount1--;
-                UpdateData();
+                neutralTrips = value;
               });
             },
-                icon: Icons.import_contacts,
-                number: tripAmount1,
-                counterText: 'Total Trips to Neutral Zone',
-                color: Colors.black12)
-          ]),
+            color: Colors.amber,
+          ),
 
     ]));
   }

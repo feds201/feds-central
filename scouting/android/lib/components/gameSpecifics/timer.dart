@@ -1,5 +1,5 @@
 import 'dart:async';
-
+// anas
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 
@@ -7,6 +7,7 @@ class TklKeyboard extends StatefulWidget {
   final Function(double) onChange;
   final Function() doChange;
   final Function() doChangenakedversion;
+  final Function() doChangeResetter;
   double currentTime;
 
   TklKeyboard(
@@ -14,7 +15,8 @@ class TklKeyboard extends StatefulWidget {
       required this.onChange,
       required this.currentTime,
       required this.doChange,
-      required this.doChangenakedversion});
+      required this.doChangenakedversion,
+      required this.doChangeResetter});
 
   @override
   State<TklKeyboard> createState() => _TklKeyboardState();
@@ -32,13 +34,21 @@ class _TklKeyboardState extends State<TklKeyboard> with AutomaticKeepAliveClient
       widget.onChange(_stopwatch.elapsed.inMilliseconds / 1000);
     });
   }
-
   void _stopStopwatch() {
     _stopwatch.stop();
     _timer?.cancel();
     widget.doChange();
   }
-
+  void _resetStopwatch() {
+    setState(() {
+      _timer?.cancel();     // 1. Stop the UI update loop
+      _stopwatch.stop();    // 2. Stop the stopwatch
+      _stopwatch.reset();   // 3. Reset internal counter to 0
+      widget.doChangeResetter();
+      // 4. Update the parent/UI with the new 0.0 value
+      widget.onChange(0.0);
+    });
+  }
   @override
   void dispose() {
     _timer?.cancel(); // Always clean up timers to avoid memory leaks
@@ -98,6 +108,11 @@ class _TklKeyboardState extends State<TklKeyboard> with AutomaticKeepAliveClient
                     onTapDown: (_) {
                       _startStopwatch(); // Start timer here
                     },
+                    onTapCancel: () {
+                      if (_stopwatch.isRunning) {
+                        _stopStopwatch();
+                      }
+                    },
                     onTapUp: (_) {
                       // Cancel timer here
                       if (_stopwatch.isRunning) {
@@ -135,7 +150,27 @@ class _TklKeyboardState extends State<TklKeyboard> with AutomaticKeepAliveClient
                     ),
                   ),
                 ],
-              )
+              ),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+              TextButton(
+              style: TextButton.styleFrom(padding: EdgeInsets.zero),
+            onPressed: () {
+              _resetStopwatch();
+            },
+            child: Container(
+              alignment: Alignment.center,
+              width: 140,
+              height: 70,
+              decoration: const BoxDecoration(
+                  color: Colors.yellow, shape: BoxShape.circle),
+              child: const Text("RESET",
+                  style: TextStyle(color: Colors.black, fontSize: 16)),
+            ),
+          ),
+             ] ),
             ]),
           ),
         ),
