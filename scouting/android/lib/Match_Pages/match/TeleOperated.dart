@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:scouting_app/components/CheckBox.dart';
-import 'package:scouting_app/components/CommentBox.dart';
+// import 'package:scouting_app/components/CheckBox.dart';
+// import 'package:scouting_app/components/CommentBox.dart';
 import 'package:scouting_app/components/CounterShelf.dart';
 import 'package:scouting_app/components/gameSpecifics/timer.dart';
-import 'package:scouting_app/main.dart';
+// import 'package:scouting_app/main.dart';
 import '../../components/gameSpecifics/PhaseSelection.dart';
 
 import '../../services/DataBase.dart';
@@ -129,6 +129,11 @@ class _TeleOperatedState extends State<TeleOperated> {
             },
             doChange: () {
               amount1++;
+              UpdateData();
+            },
+            doChangeResetter: () {
+              amount1 = 0;
+              shootingTime1 = 0.0;
               UpdateData();
             },
             doChangenakedversion: () {

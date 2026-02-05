@@ -7,6 +7,7 @@ class TklKeyboard extends StatefulWidget {
   final Function(double) onChange;
   final Function() doChange;
   final Function() doChangenakedversion;
+  final Function() doChangeResetter;
   double currentTime;
 
   TklKeyboard(
@@ -14,7 +15,8 @@ class TklKeyboard extends StatefulWidget {
       required this.onChange,
       required this.currentTime,
       required this.doChange,
-      required this.doChangenakedversion});
+      required this.doChangenakedversion,
+      required this.doChangeResetter});
 
   @override
   State<TklKeyboard> createState() => _TklKeyboardState();
@@ -42,7 +44,7 @@ class _TklKeyboardState extends State<TklKeyboard> with AutomaticKeepAliveClient
       _timer?.cancel();     // 1. Stop the UI update loop
       _stopwatch.stop();    // 2. Stop the stopwatch
       _stopwatch.reset();   // 3. Reset internal counter to 0
-
+      widget.doChangeResetter();
       // 4. Update the parent/UI with the new 0.0 value
       widget.onChange(0.0);
     });

@@ -182,6 +182,11 @@ class AutonState extends State<Auton> {
               amount++;
               UpdateData();
             },
+            doChangeResetter: () {
+              amount = 0;
+              shootingTime = 0.0;
+              UpdateData();
+            },
             doChangenakedversion: () {
               UpdateData();
             },
