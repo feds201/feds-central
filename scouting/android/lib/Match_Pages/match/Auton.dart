@@ -8,9 +8,9 @@ import 'package:scouting_app/components/ScoutersList.dart';
 import 'package:scouting_app/components/gameSpecifics/winAfterAuton.dart';
 
 import '../../components/TeamInfo.dart';
+import '../../components/gameSpecifics/heatmap.dart';
 import '../../components/gameSpecifics/timer.dart';
 import '../../services/DataBase.dart';
-import '../../components/gameSpecifics/heatmap.dart';
 
 class Auton extends StatefulWidget {
   final MatchRecord matchRecord;
@@ -136,7 +136,13 @@ class AutonState extends State<Auton> {
               // print('Team Info START button pressed');
             },
           ),
+          SizedBox(
+            height: 8,
+          ),
           ScouterList(),
+          SizedBox(
+            height: 8,
+          ),
           SinglePointSelector(
             key: _tapSelectorKey,
             blueAllianceImagePath: 'assets/2026/BlueAlliance_StartPosition.png',
@@ -146,28 +152,45 @@ class AutonState extends State<Auton> {
               log('Tap at x=${point.dx}, y=${point.dy} on image width=${imageSize.width}, height=${imageSize.height}');
             },
           ),
+          SizedBox(
+            height: 8,
+          ),
           buildCheckBoxFull("Leave", left_startingLocation, (bool value) {
             setState(() {
               left_startingLocation = value;
             });
             UpdateData();
           }),
-          Row(
-            children: [
-              buildCheckBox("Depot", depot, (bool value) {
-                setState(() {
-                  depot = value;
-                });
-                UpdateData();
-              }),
-              buildCheckBox("Outpost", outPost, (bool value) {
-                setState(() {
-                  outPost = value;
-                });
-                UpdateData();
-              }),
-            ],
+          SizedBox(
+            height: 8,
           ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: buildCheckBoxHalf("Depot", depot, (bool value) {
+                    setState(() {
+                      depot = value;
+                    });
+                    UpdateData();
+                  }),
+                ),
+                Expanded(
+                  child: buildCheckBoxHalf("Outpost", outPost, (bool value) {
+                    setState(() {
+                      outPost = value;
+                    });
+                    UpdateData();
+                  }),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(
+            height: 8,
+          ),
+
           TklKeyboard(
             currentTime: shootingTime,
             onChange: (double time) {
@@ -186,19 +209,24 @@ class AutonState extends State<Auton> {
               UpdateData();
             },
           ),
-          const SizedBox(height: 12), // spacing
+          SizedBox(
+            height: 8,
+          ),
 
 // Total Shooting Cycles counter
-          buildCounter(
+          buildCounterFull(
             "Total Shooting Cycles",
             amount,
-                (int value) {
+            (int value) {
               setState(() {
                 amount = value;
               });
               UpdateData();
             },
             color: Colors.amber,
+          ),
+          SizedBox(
+            height: 8,
           ),
           buildCheckBoxFull("Grabbed Balls From Neutral Zone", zone,
               (bool value) {
@@ -207,12 +235,18 @@ class AutonState extends State<Auton> {
             });
             UpdateData();
           }),
+          SizedBox(
+            height: 8,
+          ),
           buildCheckBoxFull("Climb", autoClimb, (bool value) {
             setState(() {
               autoClimb = value;
             });
             UpdateData();
           }),
+          SizedBox(
+            height: 8,
+          ),
           buildWinner(context, (String winner) {
             setState(() {
               winAfterAuton = winner;

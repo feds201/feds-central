@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-Widget buildPhaseSele(
+Widget buildPhaseSelection(
   BuildContext context,
   Function(int shift) onclick,
   int selectedShift, // Pass the currently selected index (0-4)
@@ -13,63 +13,60 @@ Widget buildPhaseSele(
     double fontSize = 20,
   }) {
     final bool isSelected = selectedShift == id;
-    final Color textColor = const Color(0xFF2A2A2A);
 
-    return Expanded(
-      child: GestureDetector(
-        onTap: () => onclick(id),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeInOut,
-          margin: const EdgeInsets.all(6), // Spacing between buttons
-          decoration: BoxDecoration(
-            // Soft, rounded tile with subtle depth
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: isSelected
-                  ? [baseColor.withOpacity(1.0), baseColor.withOpacity(0.75)]
-                  : [baseColor.withOpacity(0.9), baseColor.withOpacity(0.65)],
-            ),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: baseColor.withOpacity(0.25),
-              width: 1,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.45),
-                blurRadius: 10,
-                offset: const Offset(0, 6),
-              ),
-              BoxShadow(
-                color: Colors.white.withOpacity(0.08),
-                blurRadius: 6,
-                offset: const Offset(-2, -2),
-              ),
-              if (isSelected)
-                BoxShadow(
-                  color: baseColor.withOpacity(0.35),
-                  blurRadius: 16,
-                  offset: const Offset(0, 2),
-                ),
-            ],
+    return GestureDetector(
+      onTap: () => onclick(id),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeInOut,
+        margin: const EdgeInsets.all(6),
+        // Spacing between buttons
+        decoration: BoxDecoration(
+          // Soft, rounded tile with subtle depth
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: isSelected
+                ? [baseColor.withOpacity(1.0), baseColor.withOpacity(0.75)]
+                : [baseColor.withOpacity(0.5), baseColor.withOpacity(0.35)],
           ),
-          child: Center(
-            child: FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  label,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: textColor.withOpacity(0.65),
-                    fontFamily: 'MuseoModerno',
-                    fontSize: fontSize,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 1.0,
-                  ),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: isSelected
+                ? baseColor.withOpacity(0.6)
+                : baseColor.withOpacity(0.4),
+            width: 1,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.45),
+              blurRadius: 10,
+              offset: const Offset(0, 6),
+            ),
+            if (isSelected)
+              BoxShadow(
+                color: baseColor.withOpacity(0.35),
+                blurRadius: 16,
+                offset: const Offset(0, 2),
+              ),
+          ],
+        ),
+        child: Center(
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                label,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: isSelected
+                      ? const Color(0xFF2A2A2A).withOpacity(0.75)
+                      : baseColor.withOpacity(1.0),
+                  fontFamily: 'MuseoModerno',
+                  fontSize: fontSize,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 1.0,
                 ),
               ),
             ),
@@ -80,11 +77,11 @@ Widget buildPhaseSele(
   }
 
   return Padding(
-    padding: const EdgeInsets.all(8.0),
+    padding: const EdgeInsets.all(16.0),
     child: Container(
       height: 190,
       width: double.infinity,
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
         color: const Color(0xFF2A2A2A),
         borderRadius: BorderRadius.circular(25),
@@ -124,8 +121,8 @@ Widget buildPhaseSele(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 // LEFT COLUMN: The Tall "Transition" Button
-                Expanded(
-                  flex: 3, // Takes ~30% width
+                SizedBox(
+                  width: 90,
                   child: buildPhaseButton(
                     label: "T",
                     id: 0,
@@ -136,24 +133,28 @@ Widget buildPhaseSele(
 
                 // RIGHT COLUMN: The 2x2 Grid
                 Expanded(
-                  flex: 7, // Takes ~70% width
+                  flex: 5, // Takes ~70% width
                   child: Column(
                     children: [
                       // TOP ROW
                       Expanded(
                         child: Row(
                           children: [
-                            buildPhaseButton(
-                              label: "A1",
-                              id: 1,
-                              baseColor: const Color(0xFF57E62E),
-                              fontSize: 40,
+                            Expanded(
+                              child: buildPhaseButton(
+                                label: "1",
+                                id: 1,
+                                baseColor: const Color(0xFF57E62E),
+                                fontSize: 40,
+                              ),
                             ),
-                            buildPhaseButton(
-                              label: "A2",
-                              id: 2,
-                              baseColor: const Color(0xFF4C6D3A),
-                              fontSize: 40,
+                            Expanded(
+                              child: buildPhaseButton(
+                                label: "2",
+                                id: 2,
+                                baseColor: const Color(0xFF57E62E),
+                                fontSize: 40,
+                              ),
                             ),
                           ],
                         ),
@@ -162,17 +163,21 @@ Widget buildPhaseSele(
                       Expanded(
                         child: Row(
                           children: [
-                            buildPhaseButton(
-                              label: "U1",
-                              id: 3,
-                              baseColor: const Color(0xFFE9B86A),
-                              fontSize: 40,
+                            Expanded(
+                              child: buildPhaseButton(
+                                label: "1",
+                                id: 3,
+                                baseColor: const Color(0xFFE9B86A),
+                                fontSize: 40,
+                              ),
                             ),
-                            buildPhaseButton(
-                              label: "U2",
-                              id: 4,
-                              baseColor: const Color(0xFFE0B15D),
-                              fontSize: 40,
+                            Expanded(
+                              child: buildPhaseButton(
+                                label: "2",
+                                id: 4,
+                                baseColor: const Color(0xFFE9B86A),
+                                fontSize: 40,
+                              ),
                             ),
                           ],
                         ),

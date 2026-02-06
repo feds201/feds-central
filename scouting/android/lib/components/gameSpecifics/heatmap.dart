@@ -45,7 +45,7 @@ class SinglePointSelectorState extends State<SinglePointSelector> {
       builder: (context, constraints) {
         double screenWidth = MediaQuery.of(context).size.width;
         return Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Container(
               width: screenWidth,
               decoration: BoxDecoration(

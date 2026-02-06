@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:scouting_app/main.dart';
 
 class MatchInfo extends StatelessWidget {
@@ -37,85 +38,144 @@ class MatchInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool isRed = allianceColor.toLowerCase().contains('red');
+    Color baseColor = isRed ? const Color(0xFFE0643B) : const Color(0xFF3B9AE0);
+
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Container(
-        constraints: const BoxConstraints(
-          minWidth: 100, // Set minimum width
-          minHeight: 50, // Set minimum height
-        ),
         decoration: BoxDecoration(
-          color: islightmode() ? Colors.white : Colors.grey[850],
-          borderRadius: BorderRadius.circular(12),
+          gradient: LinearGradient(
+            colors: islightmode()
+                ? [baseColor.withOpacity(0.95), baseColor.withOpacity(0.8)]
+                : [baseColor.withOpacity(0.8), baseColor.withOpacity(0.6)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: islightmode()
-                  ? Colors.grey.withOpacity(0.2)
-                  : const Color.fromARGB(255, 45, 44, 44).withOpacity(0.5),
-              spreadRadius: 2,
-              blurRadius: 5,
-              offset: const Offset(0, 3), // changes position of shadow
+              color: baseColor.withOpacity(0.4),
+              blurRadius: 10,
+              offset: const Offset(0, 6),
             ),
           ],
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Row(
-            children: [
-              Container(
-                width: 60,
-                height: 60,
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: const Icon(
-                  Icons.category,
-                  color: Colors.grey,
-                  size: 40,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(20),
+            onTap: onPressed, // Use the callback just in case
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 20.0, horizontal: 24.0),
+              child: Row(
                 children: [
-                  Text(
-                    assignedTeam,
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: islightmode() ? Colors.black : Colors.white,
+                  // Team Number Container
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 12.0),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.25),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: Colors.white.withOpacity(0.4),
+                        width: 1,
+                      ),
+                    ),
+                    child: Text(
+                      assignedTeam,
+                      style: GoogleFonts.museoModerno(
+                        fontSize: 36,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
-                  Text(
-                    '$allianceColor Alliance, Station $assignedStation',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: islightmode() ? Colors.black : Colors.white,
+                  const SizedBox(width: 24),
+                  // Info Column
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Alliance Station',
+                          style: GoogleFonts.roboto(
+                            fontSize: 14,
+                            color: Colors.white.withOpacity(0.9),
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            Text(
+                              allianceColor,
+                              style: GoogleFonts.museoModerno(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                '$assignedStation',
+                                style: GoogleFonts.museoModerno(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: baseColor,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
+                  ),
+                  // Icon
+                  Container(
+                    width: 50,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.white.withOpacity(0.5),
+                        width: 2,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Center(
+                      child: Text(
+                        assignedTeam, // Placeholder for team logo
+                        style: GoogleFonts.roboto(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: baseColor,
+                        ),
+                      ),
+                    ),
+                    // If you have image urls, you can use:
+                    // child: ClipOval(
+                    //   child: Image.network(imageUrl, fit: BoxFit.cover),
+                    // ),
                   ),
                 ],
               ),
-              const Spacer(),
-              // ElevatedButton(
-              //   onPressed: onPressed,
-              //   style: ElevatedButton.styleFrom(
-              //     backgroundColor: Colors.deepPurple,
-              //     shape: RoundedRectangleBorder(
-              //       borderRadius: BorderRadius.circular(30.0),
-              //     ),
-              //     padding:
-              //         const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              //   ),
-              //   child: const Text(
-              //     'START',
-              //     style: TextStyle(
-              //       color: Colors.white,
-              //       fontSize: 16,
-              //     ),
-              //   ),
-              // ),
-            ],
+            ),
           ),
         ),
       ),
@@ -146,44 +206,83 @@ class TeamInfo extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Card(
-        color: Colors.white,
+        color: islightmode() ? Colors.white : const Color(0xFF2A2A2A),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20.0),
+          borderRadius: BorderRadius.circular(24.0),
+          side: BorderSide(
+            color: islightmode()
+                ? Colors.grey.withOpacity(0.2)
+                : Colors.grey.withOpacity(0.1),
+            width: 1,
+          ),
         ),
         elevation: 8,
-        shadowColor: Colors.white,
+        shadowColor: Colors.black.withOpacity(islightmode() ? 0.1 : 0.4),
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0),
+          padding: const EdgeInsets.all(20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
-                  const Icon(Icons.engineering,
-                      size: 32, color: Colors.blueAccent),
-                  const SizedBox(width: 10),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.blueAccent.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: const Icon(Icons.engineering,
+                        size: 28, color: Colors.blueAccent),
+                  ),
+                  const SizedBox(width: 16),
                   Expanded(
-                    child: Text(
-                      'Team $teamNumber: $nickname',
-                      style: const TextStyle(
-                        fontSize: 26,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Team $teamNumber',
+                          style: GoogleFonts.museoModerno(
+                            fontSize: 16,
+                            color: Colors.blueAccent,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          nickname,
+                          style: GoogleFonts.roboto(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color:
+                                islightmode() ? Colors.black87 : Colors.white,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
               ),
-              const Divider(height: 20, thickness: 2),
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 16.0),
+                child: Divider(height: 1),
+              ),
               if (city != null || stateProv != null || country != null)
                 Row(
                   children: [
-                    const Icon(Icons.location_on,
-                        size: 20, color: Colors.redAccent),
-                    const SizedBox(width: 6),
+                    Icon(
+                      Icons.location_on,
+                      size: 20,
+                      color: Colors.redAccent.withOpacity(0.8),
+                    ),
+                    const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         '${city ?? ''}${city != null && stateProv != null ? ', ' : ''}${stateProv ?? ''}${(city != null || stateProv != null) && country != null ? ', ' : ''}${country ?? ''}',
-                        style: const TextStyle(fontSize: 16),
+                        style: GoogleFonts.roboto(
+                          fontSize: 16,
+                          color: islightmode()
+                              ? Colors.grey[700]
+                              : Colors.grey[300],
+                        ),
                       ),
                     ),
                   ],
@@ -193,8 +292,9 @@ class TeamInfo extends StatelessWidget {
                   padding: const EdgeInsets.only(top: 12.0),
                   child: Row(
                     children: [
-                      const Icon(Icons.link, size: 20, color: Colors.green),
-                      const SizedBox(width: 6),
+                      Icon(Icons.link,
+                          size: 20, color: Colors.green.withOpacity(0.8)),
+                      const SizedBox(width: 8),
                       Expanded(
                         child: InkWell(
                           onTap: () {
@@ -202,7 +302,7 @@ class TeamInfo extends StatelessWidget {
                           },
                           child: Text(
                             website!,
-                            style: const TextStyle(
+                            style: GoogleFonts.roboto(
                               color: Colors.blue,
                               fontSize: 16,
                               decoration: TextDecoration.underline,

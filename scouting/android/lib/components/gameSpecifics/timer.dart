@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 
@@ -90,171 +91,162 @@ class _TklKeyboardState extends State<TklKeyboard>
     // Fixed height prevents unbounded constraints while allowing full width.
     const double designHeight = 500;
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return Center(
-          child: SizedBox(
-            width: constraints.maxWidth,
-            height: designHeight,
+    return Center(
+      child: SizedBox(
+        width: MediaQuery.of(context).size.width,
+        height: designHeight,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Container(
+            decoration: BoxDecoration(
+              color: const Color.fromRGBO(34, 34, 34, 1),
+              borderRadius: BorderRadius.circular(12),
+            ),
             child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: const Color.fromRGBO(34, 34, 34, 1),
-                  borderRadius: BorderRadius.circular(25),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: DottedBorder(
-                    color: const Color(0xFF0032FB),
-                    borderType: BorderType.RRect,
-                    radius: const Radius.circular(20),
-                    dashPattern: const [6, 4],
-                    strokeWidth: 3,
-                    child: Stack(
-                      children: [
-                        // Main content column
-                        Positioned.fill(
-                          child: Padding(
-                            padding: const EdgeInsets.fromLTRB(16, 20, 16, 18),
-                            child: Column(
+              padding: const EdgeInsets.all(12.0),
+              child: DottedBorder(
+                color: const Color(0xBF254EEA),
+                borderType: BorderType.RRect,
+                radius: const Radius.circular(12),
+                dashPattern: const [10, 4],
+                strokeWidth: 3,
+                child: Stack(
+                  children: [
+                    // Main content column
+                    Positioned.fill(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 20, 16, 18),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            // Timer Display
+                            Container(
+                              margin:
+                                  const EdgeInsets.symmetric(horizontal: 12),
+                              padding: const EdgeInsets.symmetric(vertical: 10),
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF181818),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                _localTime.toStringAsFixed(2),
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 80,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: "monospace",
+                                ),
+                              ),
+                            ),
+                            // Control Buttons
+                            Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
-                                // Timer Display
-                                Container(
-                                  margin: const EdgeInsets.symmetric(
-                                      horizontal: 12),
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 10),
-                                  width: double.infinity,
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFF181818),
-                                    borderRadius: BorderRadius.circular(15),
-                                  ),
-                                  child: Text(
-                                    _localTime.toStringAsFixed(2),
-                                    textAlign: TextAlign.center,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 80,
-                                      fontWeight: FontWeight.bold,
-                                      fontFamily: "monospace",
+                                // Minus button
+                                _buildRoundButton(
+                                  "-0.30",
+                                  const Color.fromARGB(255, 76, 175, 80),
+                                  60,
+                                  () {
+                                    setState(() {
+                                      _localTime -= 0.30;
+                                    });
+                                    widget.onChange(_localTime);
+                                    widget.doChangenakedversion();
+                                  },
+                                ),
+                                // HOLD button
+                                GestureDetector(
+                                  onTapDown: (_) => _startStopwatch(),
+                                  onTapCancel: () {
+                                    if (_stopwatch.isRunning) _stopStopwatch();
+                                  },
+                                  onTapUp: (_) {
+                                    if (_stopwatch.isRunning) _stopStopwatch();
+                                  },
+                                  child: Container(
+                                    alignment: Alignment.center,
+                                    width: 150,
+                                    height: 150,
+                                    decoration: BoxDecoration(
+                                      color: const Color.fromARGB(
+                                          255, 37, 211, 43),
+                                      shape: BoxShape.circle,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.5),
+                                          spreadRadius: 2,
+                                          blurRadius: 10,
+                                          offset: const Offset(0, 5),
+                                        ),
+                                      ],
+                                    ),
+                                    child: const Text(
+                                      "HOLD",
+                                      style: TextStyle(
+                                        color: Colors.black26,
+                                        fontSize: 40,
+                                        fontWeight: FontWeight.w900,
+                                      ),
                                     ),
                                   ),
                                 ),
-                                // Control Buttons
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    // Minus button
-                                    _buildRoundButton(
-                                      "-0.30",
-                                      const Color.fromARGB(255, 76, 175, 80),
-                                      60,
-                                      () {
-                                        setState(() {
-                                          _localTime -= 0.30;
-                                        });
-                                        widget.onChange(_localTime);
-                                        widget.doChangenakedversion();
-                                      },
-                                    ),
-                                    // HOLD button
-                                    GestureDetector(
-                                      onTapDown: (_) => _startStopwatch(),
-                                      onTapCancel: () {
-                                        if (_stopwatch.isRunning)
-                                          _stopStopwatch();
-                                      },
-                                      onTapUp: (_) {
-                                        if (_stopwatch.isRunning)
-                                          _stopStopwatch();
-                                      },
-                                      child: Container(
-                                        alignment: Alignment.center,
-                                        width: 150,
-                                        height: 150,
-                                        decoration: BoxDecoration(
-                                          color: const Color.fromARGB(
-                                              255, 37, 211, 43),
-                                          shape: BoxShape.circle,
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color:
-                                                  Colors.black.withOpacity(0.5),
-                                              spreadRadius: 2,
-                                              blurRadius: 10,
-                                              offset: const Offset(0, 5),
-                                            ),
-                                          ],
-                                        ),
-                                        child: const Text(
-                                          "HOLD",
-                                          style: TextStyle(
-                                            color: Colors.black26,
-                                            fontSize: 40,
-                                            fontWeight: FontWeight.w900,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    // Plus button
-                                    _buildRoundButton(
-                                      "+0.30",
-                                      const Color.fromARGB(255, 229, 57, 53),
-                                      60,
-                                      () {
-                                        setState(() {
-                                          _localTime += 0.30;
-                                        });
-                                        widget.onChange(_localTime);
-                                        widget.doChangenakedversion();
-                                      },
-                                    ),
-                                  ],
+                                // Plus button
+                                _buildRoundButton(
+                                  "+0.30",
+                                  const Color.fromARGB(255, 229, 57, 53),
+                                  60,
+                                  () {
+                                    setState(() {
+                                      _localTime += 0.30;
+                                    });
+                                    widget.onChange(_localTime);
+                                    widget.doChangenakedversion();
+                                  },
                                 ),
                               ],
                             ),
-                          ),
+                          ],
                         ),
-                        // Reset button
-                        Positioned(
-                          top: 8,
-                          right: 8,
-                          child: GestureDetector(
-                            onTap: _resetStopwatch,
-                            child: Container(
-                              width: 40,
-                              height: 40,
-                              decoration: BoxDecoration(
-                                color: const Color.fromARGB(255, 255, 152, 0),
-                                shape: BoxShape.circle,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.3),
-                                    blurRadius: 4,
-                                    offset: const Offset(0, 2),
-                                  )
-                                ],
-                              ),
-                              child: const Icon(
-                                Icons.refresh,
-                                color: Colors.white,
-                                size: 20,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
-                  ),
+                    // Reset button
+                    Positioned(
+                      top: 8,
+                      right: 8,
+                      child: GestureDetector(
+                        onTap: _resetStopwatch,
+                        child: Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: const Color.fromARGB(255, 255, 152, 0),
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.3),
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
+                              )
+                            ],
+                          ),
+                          child: const Icon(
+                            Icons.refresh,
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 

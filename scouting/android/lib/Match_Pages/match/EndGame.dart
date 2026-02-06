@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:scouting_app/components/CheckBox.dart';
+import 'package:scouting_app/components/CounterShelf.dart';
 import 'package:scouting_app/components/QrGenerator.dart';
 import 'package:scouting_app/components/gameSpecifics/climb.dart';
 // import 'package:scouting_app/components/gameSpecifics/climb.dart';
 import 'package:scouting_app/main.dart';
+
 import '../../components/gameSpecifics/timer.dart';
 import '../../components/slider.dart';
 import '../../services/DataBase.dart';
-import 'package:scouting_app/components/CounterShelf.dart';
 
 class EndGame extends StatefulWidget {
   final MatchRecord matchRecord;
@@ -59,7 +60,6 @@ class EndGameState extends State<EndGame> {
     }
     commentController.text = widget.matchRecord.endPoints.Comments;
     neutralTrips = 0;
-
   }
 
   void UpdateData() {
@@ -81,8 +81,6 @@ class EndGameState extends State<EndGame> {
     saveState();
   }
 
-
-
   void saveState() {
     LocalDataBase.putData('endPoints', endPoints.toJson());
     // log('EndGame state saved: $endPoints');
@@ -102,20 +100,26 @@ class EndGameState extends State<EndGame> {
     return SingleChildScrollView(
       child: Column(
         children: [
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-              buildCheckBox("FEED", deep_climb, (bool value) {
-                setState(() {
-                  deep_climb = value;
-                });
-              }),
-              buildCheckBox("DEFENSE", shallow_climb, (bool value) {
-                setState(() {
-                  shallow_climb = value;
-                });
-              }),
-            ]),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: buildCheckBox("FEED", deep_climb, (bool value) {
+                    setState(() {
+                      deep_climb = value;
+                    });
+                  }),
+                ),
+                Expanded(
+                  child: buildCheckBox("DEFENSE", shallow_climb, (bool value) {
+                    setState(() {
+                      shallow_climb = value;
+                    });
+                  }),
+                ),
+              ],
+            ),
           ),
 
           buildCounter(
@@ -160,7 +164,7 @@ class EndGameState extends State<EndGame> {
           buildCounter(
             "Total Shooting Cycles",
             endgameActions,
-                (int value) {
+            (int value) {
               setState(() {
                 endgameActions = value;
               });
@@ -169,13 +173,15 @@ class EndGameState extends State<EndGame> {
             color: Colors.amber,
           ),
 
-
-          buildClimbImage(selectedLevel, park, (int? newLevel) {
-            setState(() {
-              selectedLevel = newLevel;
-            });
-            park = newLevel == null;
-          },
+          buildClimbImage(
+            selectedLevel,
+            park,
+            (int? newLevel) {
+              setState(() {
+                selectedLevel = newLevel;
+              });
+              park = newLevel == null;
+            },
           ),
 
           Container(

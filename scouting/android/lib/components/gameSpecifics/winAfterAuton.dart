@@ -22,7 +22,7 @@ Widget buildWinner(BuildContext context, Function(String winner) onclick,
             decoration: BoxDecoration(
               // If selected, use full color. If not, use a very dark transparent version.
               color: isSelected ? baseColor : baseColor.withOpacity(0.15),
-              borderRadius: BorderRadius.circular(15),
+              borderRadius: BorderRadius.circular(12),
               border: Border.all(
                 // Add a subtle border to unselected items so they are visible
                 color: isSelected
@@ -66,13 +66,13 @@ Widget buildWinner(BuildContext context, Function(String winner) onclick,
   }
 
   return Padding(
-    padding: const EdgeInsets.all(8.0),
+    padding: const EdgeInsets.symmetric(horizontal: 16.0),
     child: Container(
       height: 160, // Slightly taller to accommodate the glow/shadows
       width: double.infinity,
       decoration: BoxDecoration(
         color: const Color.fromRGBO(34, 34, 34, 1),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(12),
         // Subtle shadow for the main container card
         boxShadow: [
           BoxShadow(
@@ -86,7 +86,7 @@ Widget buildWinner(BuildContext context, Function(String winner) onclick,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const Text(
-            'Who Won?',
+            'Who is in the lead?',
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Colors.white,

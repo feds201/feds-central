@@ -4,8 +4,8 @@ import 'package:scouting_app/main.dart';
 import 'package:scouting_app/services/Colors.dart';
 
 import '../Experiment/ExpStateManager.dart';
-import '../services/DataBase.dart';
 import '../components/QrGenerator.dart';
+import '../services/DataBase.dart';
 import 'match/Auton.dart';
 import 'match/EndGame.dart';
 import 'match/TeleOperated.dart';
@@ -127,19 +127,22 @@ class MatchState extends State<Match> {
     switch (selectedIndex) {
       case 0:
         return SingleChildScrollView(
+            key: const PageStorageKey("AutonScroll"),
             child: Auton(
-          matchRecord: widget.matchRecord,
-        ));
+              matchRecord: widget.matchRecord,
+            ));
       case 1:
         return SingleChildScrollView(
+            key: const PageStorageKey("TeleOpScroll"),
             child: TeleOperated(
-          matchRecord: widget.matchRecord,
-        ));
+              matchRecord: widget.matchRecord,
+            ));
       case 2:
         return SingleChildScrollView(
+            key: const PageStorageKey("EndGameScroll"),
             child: EndGame(
-          matchRecord: widget.matchRecord,
-        ));
+              matchRecord: widget.matchRecord,
+            ));
       default:
         return Container();
     }

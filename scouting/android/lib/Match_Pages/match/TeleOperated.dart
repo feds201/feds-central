@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 // import 'package:scouting_app/components/CommentBox.dart';
 import 'package:scouting_app/components/CounterShelf.dart';
 import 'package:scouting_app/components/gameSpecifics/timer.dart';
+
 // import 'package:scouting_app/main.dart';
 import '../../components/CheckBox.dart';
+import '../../components/TeamInfo.dart';
 import '../../components/gameSpecifics/PhaseSelection.dart';
-
 import '../../services/DataBase.dart';
 
 class TeleOperated extends StatefulWidget {
@@ -42,9 +43,18 @@ class _TeleOperatedState extends State<TeleOperated> {
   late int neutralTripsA2 = 0;
   late int neutralTripsI1 = 0;
   late int neutralTripsI2 = 0;
-  late bool feedtoHPStation, feedtoHPStationA1, feedtoHPStationA2, feedtoHPStationI1, feedtoHPStationI2;
+  late bool feedtoHPStation,
+      feedtoHPStationA1,
+      feedtoHPStationA2,
+      feedtoHPStationI1,
+      feedtoHPStationI2;
   late bool passing, passingA1, passingA2, passingI1, passingI2;
   int _selectedPhase = 0;
+  late String assignedTeam;
+  late int assignedStation;
+  late String matchKey;
+  late String allianceColor;
+  late int matchNumber;
 
   late TeleOpPoints teleOpPoints;
 
@@ -52,6 +62,10 @@ class _TeleOperatedState extends State<TeleOperated> {
   void initState() {
     super.initState();
     // log(widget.matchRecord.toString());
+    assignedTeam = widget.matchRecord.teamNumber;
+    assignedStation = widget.matchRecord.station;
+    matchKey = widget.matchRecord.matchKey;
+    allianceColor = widget.matchRecord.allianceColor;
 
     coralScoreL1 = widget.matchRecord.teleOpPoints.CoralScoringLevel1;
     coralScoreL2 = widget.matchRecord.teleOpPoints.CoralScoringLevel2;
@@ -87,10 +101,6 @@ class _TeleOperatedState extends State<TeleOperated> {
     passingA2 = widget.matchRecord.teleOpPoints.passingA2;
     passingI1 = widget.matchRecord.teleOpPoints.passingI1;
     passingI2 = widget.matchRecord.teleOpPoints.passingI2;
-
-
-
-
 
     algaePickUp = widget.matchRecord.teleOpPoints.AlgaePickUp;
 
@@ -222,9 +232,16 @@ class _TeleOperatedState extends State<TeleOperated> {
   @override
   Widget build(BuildContext context) {
     // print(LocalDataBase.getData('Settings.apiKey'));
-    return SingleChildScrollView(
-        child: Column(children: [
-      buildPhaseSele(context, (int shift) {
+    return Column(children: [
+      MatchInfo(
+        assignedTeam: assignedTeam,
+        assignedStation: assignedStation,
+        allianceColor: allianceColor,
+        onPressed: () {
+          // print('Team Info START button pressed');
+        },
+      ),
+      buildPhaseSelection(context, (int shift) {
         setState(() {
           _selectedPhase = shift;
         });
@@ -239,7 +256,7 @@ class _TeleOperatedState extends State<TeleOperated> {
           _buildInactive2Phase(),
         ],
       ),
-    ]));
+    ]);
   }
 
   Widget _buildTransitionPhase() {
@@ -293,26 +310,31 @@ class _TeleOperatedState extends State<TeleOperated> {
         ),
         Row(
           children: [
-            buildCheckBox("Feed to HP Station", feedtoHPStation, (bool value) {
-              setState(() {
-                feedtoHPStation = value;
-              });
-              UpdateData();
-            }),
-            buildCheckBox("Passing", passing, (bool value) {
-              setState(() {
-                passing = value;
-              });
-              UpdateData();
-            }),
+            Expanded(
+              child: buildCheckBoxHalf("Feed to HP Station", feedtoHPStation,
+                  (bool value) {
+                setState(() {
+                  feedtoHPStation = value;
+                });
+                UpdateData();
+              }),
+            ),
+            Expanded(
+              child: buildCheckBoxHalf("Passing", passing, (bool value) {
+                setState(() {
+                  passing = value;
+                });
+                UpdateData();
+              }),
+            ),
           ],
         ),
-        buildCheckBoxFull("Defense", defense , (bool value){
+        buildCheckBoxFull("Defense", defense, (bool value) {
           setState(() {
-          defense = value;
+            defense = value;
           });
           UpdateData();
-          }),
+        }),
       ],
     );
   }
@@ -359,7 +381,7 @@ class _TeleOperatedState extends State<TeleOperated> {
         buildCounter(
           "Trips to Neutral Zone",
           neutralTripsA1,
-              (int value) {
+          (int value) {
             setState(() {
               neutralTripsA1 = value;
             });
@@ -368,21 +390,26 @@ class _TeleOperatedState extends State<TeleOperated> {
         ),
         Row(
           children: [
-            buildCheckBox("Feed to HP Station", feedtoHPStationA1, (bool value) {
-              setState(() {
-                feedtoHPStationA1 = value;
-              });
-              UpdateData();
-            }),
-            buildCheckBox("Passing", passingA1, (bool value) {
-              setState(() {
-                passingA1 = value;
-              });
-              UpdateData();
-            }),
+            Expanded(
+              child: buildCheckBoxHalf("Feed to HP Station", feedtoHPStationA1,
+                  (bool value) {
+                setState(() {
+                  feedtoHPStationA1 = value;
+                });
+                UpdateData();
+              }),
+            ),
+            Expanded(
+              child: buildCheckBoxHalf("Passing", passingA1, (bool value) {
+                setState(() {
+                  passingA1 = value;
+                });
+                UpdateData();
+              }),
+            ),
           ],
         ),
-        buildCheckBoxFull("Defense", defenseA1 , (bool value){
+        buildCheckBoxFull("Defense", defenseA1, (bool value) {
           setState(() {
             defenseA1 = value;
           });
@@ -434,7 +461,7 @@ class _TeleOperatedState extends State<TeleOperated> {
         buildCounter(
           "Trips to Neutral Zone",
           neutralTripsA2,
-              (int value) {
+          (int value) {
             setState(() {
               neutralTripsA2 = value;
             });
@@ -443,21 +470,26 @@ class _TeleOperatedState extends State<TeleOperated> {
         ),
         Row(
           children: [
-            buildCheckBox("Feed to HP Station", feedtoHPStationA2, (bool value) {
-              setState(() {
-                feedtoHPStationA2 = value;
-              });
-              UpdateData();
-            }),
-            buildCheckBox("Passing", passingA2, (bool value) {
-              setState(() {
-                passingA2= value;
-              });
-              UpdateData();
-            }),
+            Expanded(
+              child: buildCheckBoxHalf("Feed to HP Station", feedtoHPStationA2,
+                  (bool value) {
+                setState(() {
+                  feedtoHPStationA2 = value;
+                });
+                UpdateData();
+              }),
+            ),
+            Expanded(
+              child: buildCheckBoxHalf("Passing", passingA2, (bool value) {
+                setState(() {
+                  passingA2 = value;
+                });
+                UpdateData();
+              }),
+            ),
           ],
         ),
-        buildCheckBoxFull("Defense", defenseA2 , (bool value){
+        buildCheckBoxFull("Defense", defenseA2, (bool value) {
           setState(() {
             defenseA2 = value;
           });
@@ -474,7 +506,7 @@ class _TeleOperatedState extends State<TeleOperated> {
         buildCounter(
           "Trips to Neutral Zone",
           neutralTripsI1,
-              (int value) {
+          (int value) {
             setState(() {
               neutralTripsI1 = value;
             });
@@ -483,28 +515,34 @@ class _TeleOperatedState extends State<TeleOperated> {
         ),
         Row(
           children: [
-            buildCheckBox("Feed to HP Station", feedtoHPStationI1, (bool value) {
-              setState(() {
-                feedtoHPStationI1 = value;
-              });
-              UpdateData();
-            }),
-            buildCheckBox("Passing", passingI1, (bool value) {
-              setState(() {
-                passingI1 = value;
-              });
-              UpdateData();
-            }),
+            Expanded(
+              child: buildCheckBoxHalf("Feed to HP Station", feedtoHPStationI1,
+                  (bool value) {
+                setState(() {
+                  feedtoHPStationI1 = value;
+                });
+                UpdateData();
+              }),
+            ),
+            Expanded(
+              child: buildCheckBoxHalf("Passing", passingI1, (bool value) {
+                setState(() {
+                  passingI1 = value;
+                });
+                UpdateData();
+              }),
+            ),
           ],
         ),
-        buildCheckBoxFull("Defense", defenseI1 , (bool value){
+        buildCheckBoxFull("Defense", defenseI1, (bool value) {
           setState(() {
             defenseI1 = value;
           });
           UpdateData();
         }),
       ],
-    );  }
+    );
+  }
 
   Widget _buildInactive2Phase() {
     return Column(
@@ -513,7 +551,7 @@ class _TeleOperatedState extends State<TeleOperated> {
         buildCounter(
           "Trips to Neutral Zone",
           neutralTripsI2,
-              (int value) {
+          (int value) {
             setState(() {
               neutralTripsI2 = value;
             });
@@ -522,21 +560,26 @@ class _TeleOperatedState extends State<TeleOperated> {
         ),
         Row(
           children: [
-            buildCheckBox("Feed to HP Station", feedtoHPStationI2, (bool value) {
-              setState(() {
-                feedtoHPStationI2 = value;
-              });
-              UpdateData();
-            }),
-            buildCheckBox("Passing", passingI2, (bool value) {
-              setState(() {
-                passingI2 = value;
-              });
-              UpdateData();
-            }),
+            Expanded(
+              child: buildCheckBoxHalf("Feed to HP Station", feedtoHPStationI2,
+                  (bool value) {
+                setState(() {
+                  feedtoHPStationI2 = value;
+                });
+                UpdateData();
+              }),
+            ),
+            Expanded(
+              child: buildCheckBoxHalf("Passing", passingI2, (bool value) {
+                setState(() {
+                  passingI2 = value;
+                });
+                UpdateData();
+              }),
+            ),
           ],
         ),
-        buildCheckBoxFull("Defense", defenseI2 , (bool value){
+        buildCheckBoxFull("Defense", defenseI2, (bool value) {
           setState(() {
             defenseI2 = value;
           });
