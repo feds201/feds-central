@@ -645,7 +645,7 @@ class MatchPageState extends State<MatchPage>
 
     MatchRecord matchRecord = MatchRecord(
       AutonPoints(false, false, false, 0.0,0, false, "", false),
-      TeleOpPoints(0, 0, 0, 0, 0, 0, 0, 0,0,0,false),
+      TeleOpPoints(0, 0, 0, 0, 0, 0, 0, 0,0,0,0,0,0,0, false,false,false,false,false,0,0,0,0,0, false,false,false,false,false,false,false,false,false,false),
       EndPoints(false, false, false, ""),
       teamNumber: teamNNumber.replaceAll('frc', ''),
       scouterName: _scouterName,

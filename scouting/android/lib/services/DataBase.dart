@@ -768,8 +768,32 @@ class TeleOpPoints {
   int AlgaePickUp = 0;
   double TotalShootingTime1 = 0;
   int TotalAmount1 = 0;
+  int TotalAmountA1 = 0;
+  int TotalAmountA2 = 0;
+  int TotalAmountI1 = 0;
+  int TotalAmountI2 = 0;
   int TripAmount1 = 0;
-  bool Defense = true;
+  bool Defense = false;
+  bool DefenseA1 = false;
+  bool DefenseA2 = false;
+  bool DefenseI1 = false;
+  bool DefenseI2 = false;
+  int NeutralTrips = 0;
+  int NeutralTripsA1 = 0;
+  int NeutralTripsA2 = 0;
+  int NeutralTripsI1 = 0;
+  int NeutralTripsI2 = 0;
+  bool FeedToHPStation = false;
+  bool FeedToHPStationA1 = false;
+  bool FeedToHPStationA2 = false;
+  bool FeedToHPStationI1 = false;
+  bool FeedToHPStationI2 = false;
+  bool passing = false;
+  bool passingA1 = false;
+  bool passingA2 = false;
+  bool passingI1 = false;
+  bool passingI2 = false;
+
 
   TeleOpPoints(
     this.CoralScoringLevel1,
@@ -781,8 +805,31 @@ class TeleOpPoints {
     this.AlgaePickUp,
     this.TotalShootingTime1,
     this.TotalAmount1,
+    this.TotalAmountA1,
+    this.TotalAmountA2,
+    this.TotalAmountI1,
+    this.TotalAmountI2,
     this.TripAmount1,
     this.Defense,
+      this.DefenseA1,
+      this.DefenseA2,
+      this.DefenseI1,
+      this.DefenseI2,
+      this.NeutralTrips,
+      this.NeutralTripsA1,
+      this.NeutralTripsA2,
+      this.NeutralTripsI1,
+      this.NeutralTripsI2,
+      this.FeedToHPStation,
+      this.FeedToHPStationA1,
+      this.FeedToHPStationA2,
+      this.FeedToHPStationI1,
+      this.FeedToHPStationI2,
+      this.passing,
+      this.passingA1,
+      this.passingA2,
+      this.passingI1,
+      this.passingI2
   );
 
   Map<String, dynamic> toJson() {
@@ -796,13 +843,37 @@ class TeleOpPoints {
       "AlgaePickUp": AlgaePickUp,
       "TotalShootingTime": TotalShootingTime1,
       "TotalAmount1": TotalAmount1,
+      "TotalAmountA1": TotalAmountA1,
+      "TotalAmountA2": TotalAmountA2,
+      "TotalAmountI1": TotalAmountI1,
+      "TotalAmountI2": TotalAmountI2,
       "TripAmount1": TripAmount1,
       "Defense": Defense,
+      "DefenseA1": DefenseA1,
+      "DefenseA2": DefenseA2,
+      "DefenseI1": DefenseI1,
+      "DefenseI2": DefenseI2,
+      "NeutralTips": NeutralTrips,
+      "NeutralTipsA1": NeutralTripsA1,
+      "NeutralTipsA2": NeutralTripsA2,
+      "NeutralTipsI1": NeutralTripsI1,
+      "NeutralTipsI2": NeutralTripsI2,
+      "FeedToHPStation": FeedToHPStation,
+      "FeedToHPStationA1": FeedToHPStationA1,
+      "FeedToHPStationA2": FeedToHPStationA2,
+      "FeedToHPStationI1": FeedToHPStationI1,
+      "FeedToHPStationI2": FeedToHPStationI2,
+      "passing": passing,
+      "passingA1": passingA1,
+      "passingA2": passingA2,
+      "passingI1": passingI1,
+      "passingI2": passingI2,
+
     };
   }
 
   String toCsv() {
-    return '${CoralScoringLevel1},${CoralScoringLevel2},${CoralScoringLevel3},${CoralScoringLevel4},${AlgaeScoringBarge},${AlgaeScoringProcessor},${AlgaePickUp},${TotalShootingTime1},${TotalAmount1}, ${TripAmount1}, ${Defense}';
+    return '${CoralScoringLevel1},${CoralScoringLevel2},${CoralScoringLevel3},${CoralScoringLevel4},${AlgaeScoringBarge},${AlgaeScoringProcessor},${AlgaePickUp},${TotalShootingTime1},${TotalAmount1}, ${TotalAmountA1}, ${TotalAmountA2}, ${TotalAmountI1}, ${TotalAmountI2}, ${TripAmount1}, ${NeutralTrips}, ${NeutralTripsA1}, ${NeutralTripsA2}, ${NeutralTripsI1}, ${NeutralTripsI2}, ${Defense} ${DefenseA1} ${DefenseA2} ${DefenseI1} ${DefenseI2}, ${FeedToHPStation} ${FeedToHPStationA1} ${FeedToHPStationA2} ${FeedToHPStationI1} ${FeedToHPStationI2}, ${passing} ${passingA1} ${passingA2} ${passingI1} ${passingI2}';
   }
 
   static TeleOpPoints fromJson(Map<String, dynamic> json) {
@@ -816,14 +887,37 @@ class TeleOpPoints {
       json['AlgaePickUp'] ?? 0,
       json['TotalShootingTime1'] ?? 0,
       json['TotalAmount1'] ?? 0,
+      json['TotalAmountA1'] ?? 0,
+      json['TotalAmountA2'] ?? 0,
+      json['TotalAmountI1'] ?? 0,
+      json['TotalAmountI2'] ?? 0,
       json['TripAmount1'] ?? 0,
+      json['NeutralTrips'] ?? 0,
+      json['NeutralTripsA1'] ?? 0,
+      json['NeutralTripsA2'] ?? 0,
+      json['NeutralTripsI1'] ?? 0,
+      json['NeutralTripsI2'] ?? 0,
       json['Defense'] ?? 0,
+      json['DefenseA1'] ?? 0,
+      json['DefenseA2'] ?? 0,
+      json['DefenseI1'] ?? 0,
+      json['DefenseI2'] ?? 0,
+      json['FeedToHPStation'] ?? 0,
+      json['FeedToHPStationA1'] ?? 0,
+      json['FeedToHPStationA2'] ?? 0,
+      json['FeedToHPStationI1'] ?? 0,
+      json['FeedToHPStationI2'] ?? 0,
+      json['passing'] ?? 0,
+      json['passingA1'] ?? 0,
+      json['passingA2'] ?? 0,
+      json['passingI1'] ?? 0,
+      json['passingI2'] ?? 0,
     );
   }
 
   @override
   String toString() {
-    return 'TeleOpPoints{CoralScoringLevel1: $CoralScoringLevel1, CoralScoringLevel2: $CoralScoringLevel2, CoralScoringLevel3: $CoralScoringLevel3, CoralScoringLevel4: $CoralScoringLevel4, AlgaeScoringBarge: $AlgaeScoringBarge, AlgaeScoringProcessor: $AlgaeScoringProcessor, TotalShootingTime1: $TotalShootingTime1, TotalAmount1 $TotalAmount1, TripAmount1 $TripAmount1, Defense: $Defense}';
+    return 'TeleOpPoints{CoralScoringLevel1: $CoralScoringLevel1, CoralScoringLevel2: $CoralScoringLevel2, CoralScoringLevel3: $CoralScoringLevel3, CoralScoringLevel4: $CoralScoringLevel4, AlgaeScoringBarge: $AlgaeScoringBarge, AlgaeScoringProcessor: $AlgaeScoringProcessor, TotalShootingTime1: $TotalShootingTime1, TotalAmount1 $TotalAmount1, TotalAmountA1 $TotalAmountA1, TotalAmountA2 $TotalAmountA2, TotalAmountI1 $TotalAmountI1, TotalAmountI2 $TotalAmountI2, TripAmount1 $TripAmount1, NeutralTips $NeutralTrips, NeutralTipsA1 $NeutralTripsA1, NeutralTipsA2 $NeutralTripsA2, NeutralTipsI1 $NeutralTripsI1, NeutralTipsI2 $NeutralTripsI2, Defense: $Defense DefenseA1: $DefenseA1, DefenseA2: $DefenseA2, DefenseI1: $DefenseI1, DefenseI2: $DefenseI2, FeedToHPStation: $FeedToHPStation FeedToHPStationA1: $FeedToHPStationA1, FeedToHPStationA2: $FeedToHPStationA2 FeedToHPStationI1: $FeedToHPStationI1, FeedToHPStationI2: $FeedToHPStationI2, passing: $passing, passingA1: $passingA1, passingA2: $passingA2, passingI1: $passingI1 passingI2: $passingI2}';
   }
 
   setCoralScoringL1(int value) {
@@ -858,13 +952,107 @@ class TeleOpPoints {
     TotalAmount1 = value;
   }
 
+  setTotalAmountA1(int value) {
+    TotalAmountA1 = value;
+  }
+
+  setTotalAmountA2(int value) {
+    TotalAmountA2 = value;
+  }
+
+  setTotalAmountI1(int value) {
+    TotalAmountI1 = value;
+  }
+
+  setTotalAmountI2(int value) {
+    TotalAmountI2 = value;
+  }
+
+
   setTripAmount1(int value){
     TripAmount1 = value;
+  }
+
+  setNeutralTrips(int value){
+    NeutralTrips = value;
+  }
+
+  setNeutralTripsA1(int value){
+    NeutralTripsA1 = value;
+  }
+
+  setNeutralTripsA2(int value){
+    NeutralTripsA2 = value;
+  }
+
+  setNeutralTripsI1(int value){
+    NeutralTripsI1 = value;
+  }
+
+  setNeutralTripsI2(int value){
+    NeutralTripsI2 = value;
   }
 
   setDefense(bool value) {
     Defense = value;
   }
+
+  setDefenseA1(bool value) {
+    DefenseA1 = value;
+  }
+
+  setDefenseA2(bool value) {
+    DefenseA2 = value;
+  }
+
+  setDefenseI1(bool value) {
+    DefenseI1 = value;
+  }
+
+  setDefenseI2(bool value) {
+    DefenseI2 = value;
+  }
+
+  setFeedToHPStation(bool value) {
+    FeedToHPStation = value;
+  }
+
+  setFeedToHPStationA1(bool value) {
+    FeedToHPStationA1 = value;
+  }
+
+  setFeedToHPStationA2(bool value) {
+    FeedToHPStationA2 = value;
+  }
+
+  setFeedToHPStationI1(bool value) {
+    FeedToHPStationI1 = value;
+  }
+
+  setFeedToHPStationI2(bool value) {
+    FeedToHPStationI2 = value;
+  }
+
+  setPassing(bool value) {
+    passing = value;
+  }
+
+  setPassingA1(bool value) {
+    passingA1 = value;
+  }
+
+  setPassingA2(bool value) {
+    passingA2 = value;
+  }
+
+  setPassingI1(bool value) {
+    passingI1 = value;
+  }
+
+  setPassingI2(bool value) {
+    passingI2 = value;
+  }
+
 }
 
 // EndPoints
@@ -1006,8 +1194,31 @@ class LocalDataBase {
       data['AlgaePickUp'] ?? 0,
       data['TotalShootingTime1'] ?? 0,
       data['TotalAmount1'] ?? 0,
+      data['TotalAmountA1'] ?? 0,
+      data['TotalAmountA2'] ?? 0,
+      data['TotalAmountI1'] ?? 0,
+      data['TotalAmountI2'] ?? 0,
       data['TripAmount1'] ?? 0,
+      data['NeutralTips'] ?? 0,
+      data['NeutralTipsA1'] ?? 0,
+      data['NeutralTipsA2'] ?? 0,
+      data['NeutralTipsI1'] ?? 0,
+      data['NeutralTipsI2'] ?? 0,
       data['Defended'] ?? false,
+      data['DefendedA1'] ?? false,
+      data['DefendedA2'] ?? false,
+      data['DefendedI1'] ?? false,
+      data['DefendedI2'] ?? false,
+      data['FeedToHPStation'] ?? false,
+      data['FeedToHPStationA1'] ?? false,
+      data['FeedToHPStationA2'] ?? false,
+      data['FeedToHPStationI1'] ?? false,
+      data['FeedToHPStationI2'] ?? false,
+      data['passing'] ?? false,
+      data['passingA1'] ?? false,
+      data['passingA2'] ?? false,
+      data['passingI1'] ?? false,
+      data['passingI2'] ?? false,
     );
   }
 
