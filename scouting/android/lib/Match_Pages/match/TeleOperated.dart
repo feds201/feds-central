@@ -28,7 +28,8 @@ class _TeleOperatedState extends State<TeleOperated> {
   late int amount1 = 0;
   late int tripAmount1 = 0;
   late bool defense;
-  late int neutralTrips =0;
+  late int neutralTrips = 0;
+  int _selectedPhase = 0;
 
   late TeleOpPoints teleOpPoints;
 
@@ -114,60 +115,120 @@ class _TeleOperatedState extends State<TeleOperated> {
   Widget build(BuildContext context) {
     // print(LocalDataBase.getData('Settings.apiKey'));
     return SingleChildScrollView(
-
-      child: Column(
+        child: Column(children: [
+      buildPhaseSele(context, (int shift) {
+        setState(() {
+          _selectedPhase = shift;
+        });
+      }, _selectedPhase),
+      IndexedStack(
+        index: _selectedPhase,
         children: [
-          buildPhaseSele(context, (int shift) {
+          _buildTransitionPhase(),
+          _buildActive1Phase(),
+          _buildActive2Phase(),
+          _buildInactive1Phase(),
+          _buildInactive2Phase(),
+        ],
+      ),
+    ]));
+  }
 
-          }),
-          TklKeyboard(
-            currentTime: shootingTime1,
-            onChange: (double time) {
-              setState(() {
-                shootingTime1 = time;
-              });
-            },
-            doChange: () {
+  Widget _buildTransitionPhase() {
+    return Column(
+      children: [
+        TklKeyboard(
+          currentTime: shootingTime1,
+          onChange: (double time) {
+            shootingTime1 = time;
+          },
+          doChange: () {
+            amount1++;
+            UpdateData();
+          },
+          doChangeResetter: () {
+            amount1 = 0;
+            shootingTime1 = 0.0;
+            UpdateData();
+          },
+          doChangenakedversion: () {
+            UpdateData();
+          },
+        ),
+        buildCounterShelf([
+          CounterSettings((number) {
+            setState(() {
               amount1++;
               UpdateData();
-            },
-            doChangeResetter: () {
-              amount1 = 0;
-              shootingTime1 = 0.0;
+            });
+          }, (number) {
+            setState(() {
+              amount1--;
               UpdateData();
-            },
-            doChangenakedversion: () {
-              UpdateData();
-            },
-          ),
-          buildCounterShelf([
-            CounterSettings((number) {
-              setState(() {
-                amount1++;
-                UpdateData();
-              });
-            }, (number) {
-              setState(() {
-                amount1--;
-                UpdateData();
-              });
-            },
-                icon: Icons.import_contacts,
-                number: amount1,
-                counterText: 'Total Shooting Cycles',
-                color: Colors.black12)
-          ]),
-          buildCounter(
-            "Trips to Neutral Zone",
-            neutralTrips,
-                (int value) {
-              setState(() {
-                neutralTrips = value;
-              });
-            },
-            color: Colors.amber,
-          ),
+            });
+          },
+              icon: Icons.import_contacts,
+              number: amount1,
+              counterText: 'Total Shooting Cycles',
+              color: Colors.black12)
+        ]),
+        buildCounter(
+          "Trips to Neutral Zone",
+          neutralTrips,
+          (int value) {
+            setState(() {
+              neutralTrips = value;
+            });
+          },
+          color: Colors.amber,
+        ),
+      ],
+    );
+  }
 
-    ]));
+  Widget _buildActive1Phase() {
+    return _buildPhasePlaceholder("Active 1");
+  }
+
+  Widget _buildActive2Phase() {
+    return _buildPhasePlaceholder("Active 2");
+  }
+
+  Widget _buildInactive1Phase() {
+    return _buildPhasePlaceholder("Inactive 1");
+  }
+
+  Widget _buildInactive2Phase() {
+    return _buildPhasePlaceholder("Inactive 2");
+  }
+
+  Widget _buildPhasePlaceholder(String label) {
+    return Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+        decoration: BoxDecoration(
+          color: const Color(0xFF222222),
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.35),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Text(
+          label,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            color: Colors.white70,
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ),
+    );
   }
 }

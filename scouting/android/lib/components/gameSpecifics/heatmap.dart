@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:scouting_app/main.dart';
 
 enum Alliance { blue, red }
 
@@ -40,43 +41,60 @@ class SinglePointSelectorState extends State<SinglePointSelector> {
 
   @override
   Widget build(BuildContext context) {
-    return AspectRatio(
-      aspectRatio: 1.8,
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          return GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTapDown: (details) {
-              setState(() => _selectedPoint = details.localPosition);
-              final imageSize =
-                  Size(constraints.maxWidth, constraints.maxHeight);
-              widget.onPointSelected?.call(imageSize, details.localPosition);
-            },
-            child: ClipRect(
-              child: Stack(
-                children: [
-                  Positioned.fill(
-                    child: Image.asset(
-                      _currentImagePath,
-                      fit: BoxFit.contain,
-                    ),
-                  ),
-                  Positioned.fill(
-                    child: IgnorePointer(
-                      child: CustomPaint(
-                        painter: _SelectionPainter(
-                          point: _selectedPoint,
-                          color: _allianceColor,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        double screenWidth = MediaQuery.of(context).size.width;
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Container(
+              width: screenWidth,
+              decoration: BoxDecoration(
+                color: islightmode()
+                    ? const Color.fromARGB(255, 255, 255, 255)
+                    : const Color.fromARGB(255, 34, 34, 34),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: AspectRatio(
+                aspectRatio: 1.8,
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    return GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTapDown: (details) {
+                        setState(() => _selectedPoint = details.localPosition);
+                        final imageSize =
+                            Size(constraints.maxWidth, constraints.maxHeight);
+                        widget.onPointSelected
+                            ?.call(imageSize, details.localPosition);
+                      },
+                      child: ClipRect(
+                        child: Stack(
+                          children: [
+                            Positioned.fill(
+                              child: Image.asset(
+                                _currentImagePath,
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                            Positioned.fill(
+                              child: IgnorePointer(
+                                child: CustomPaint(
+                                  painter: _SelectionPainter(
+                                    point: _selectedPoint,
+                                    color: _allianceColor,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      ),
+                    );
+                  },
+                ),
+              )),
+        );
+      },
     );
   }
 }
@@ -95,7 +113,7 @@ class _SelectionPainter extends CustomPainter {
       ..color = color
       ..style = PaintingStyle.fill;
 
-    canvas.drawCircle(point!, 9.0, paint);
+    canvas.drawCircle(point!, 19.0, paint);
   }
 
   @override
