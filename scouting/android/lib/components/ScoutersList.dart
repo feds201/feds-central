@@ -570,7 +570,11 @@ class _ScouterListState extends State<ScouterList>
                                     Text(
                                       name,
                                       style: GoogleFonts.museoModerno(
-                                        fontSize: 16, color: Colors.white),
+                                          fontSize: 16,
+                                          color: islightmode() &&
+                                                  _selectedChip != name
+                                              ? Colors.black
+                                              : Colors.white),
                                     ),
                                   ],
                                 ),
@@ -585,7 +589,9 @@ class _ScouterListState extends State<ScouterList>
                                   });
                                 },
                                 selectedColor: color.withAlpha(80),
-                                backgroundColor: Colors.black,
+                                backgroundColor: islightmode()
+                                    ? Colors.grey[300]
+                                    : Colors.black,
                                 labelPadding: EdgeInsets.symmetric(
                                     horizontal: 12, vertical: 8),
                                 shape: RoundedRectangleBorder(

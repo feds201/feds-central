@@ -26,7 +26,7 @@ class AutonState extends State<Auton> {
   late bool outPost;
   late bool zone;
   late bool autoClimb;
-  // late BotLocation startingBotLocations;
+  late BotLocation startingBotLocations;
   late String winAfterAuton;
   late double shootingTime;
   late AutonPoints autonPoints;
@@ -57,7 +57,12 @@ class AutonState extends State<Auton> {
       mapcolor = Alliance.red;
     }
     matchNumber = widget.matchRecord.matchNumber;
-    // startingBotLocations = BotLocation(Offset(200, 200), Size(2000, 2000), 45);
+    startingBotLocations =
+        widget.matchRecord.autonPoints.starting_location; // Load saved location
+
+    // Fallback if needed (BotLocation handles defaults in fromJson however)
+    // If saving/loading logic is robust, this is fine.
+
     left_startingLocation =
         widget.matchRecord.autonPoints.left_starting_position;
     depot = widget.matchRecord.autonPoints.fuel_pickup_from_Depot;
@@ -70,11 +75,9 @@ class AutonState extends State<Auton> {
     left_startingLocation = false;
 
     autonPoints = AutonPoints(depot, outPost, zone, shootingTime, amount,
-        autoClimb, winAfterAuton, left_startingLocation);
+        autoClimb, winAfterAuton, startingBotLocations, left_startingLocation);
   }
 
-  // startingBotLocations,
-  // left_startingLocation,
   void UpdateData() {
     autonPoints = AutonPoints(
       depot,
@@ -84,8 +87,8 @@ class AutonState extends State<Auton> {
       amount,
       autoClimb,
       winAfterAuton,
+      startingBotLocations,
       left_startingLocation,
-      // startingBotLocations,
     );
 
     widget.matchRecord.autonPoints = autonPoints;
@@ -98,7 +101,7 @@ class AutonState extends State<Auton> {
     widget.matchRecord.autonPoints.amountOfShooting = amount;
     widget.matchRecord.autonPoints.winAfterAuton = winAfterAuton;
     widget.matchRecord.autonPoints.climb = autoClimb;
-    // widget.matchRecord.autonPoints.starting_location = startingBotLocations;
+    widget.matchRecord.autonPoints.starting_location = startingBotLocations;
     widget.matchRecord.scouterName =
         Hive.box('settings').get('deviceName', defaultValue: '');
 
@@ -148,8 +151,15 @@ class AutonState extends State<Auton> {
             blueAllianceImagePath: 'assets/2026/BlueAlliance_StartPosition.png',
             redAllianceImagePath: 'assets/2026/RedAlliance_StartPosition.png',
             alliance: mapcolor,
+            initialPoint: startingBotLocations.size.width > 0
+                ? startingBotLocations.position
+                : null,
             onPointSelected: (imageSize, point) {
               log('Tap at x=${point.dx}, y=${point.dy} on image width=${imageSize.width}, height=${imageSize.height}');
+              setState(() {
+                startingBotLocations = BotLocation(point, imageSize, 0);
+              });
+              UpdateData();
             },
           ),
           SizedBox(
@@ -194,18 +204,24 @@ class AutonState extends State<Auton> {
           TklKeyboard(
             currentTime: shootingTime,
             onChange: (double time) {
+
               shootingTime = time;
             },
             doChange: () {
-              amount++;
+              setState(() {
+                amount++;
+              });
+
               UpdateData();
             },
             doChangeResetter: () {
-              amount = 0;
-              shootingTime = 0.0;
+              setState(() {
+                amount = 0;
+                shootingTime = 0.0;
+              });
               UpdateData();
             },
-            doChangeNoIncrement : () {
+            doChangeNoIncrement: () {
               UpdateData();
             },
           ),
@@ -253,6 +269,9 @@ class AutonState extends State<Auton> {
             });
             UpdateData();
           }, winAfterAuton),
+          SizedBox(
+            height: 20,
+          )
         ],
       ),
     );

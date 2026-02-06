@@ -99,6 +99,16 @@ class QrCoder extends State<Qrgenerator> {
                   vibrationFlag: true,
                   width: MediaQuery.of(context).size.width - 40,
                   action: () async {
+                    await showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (context) => const SavingProgressDialog());
+
+                    // Save to local database
+                    MatchDataBase.PutData(
+                        widget.matchRecord.matchKey, widget.matchRecord);
+                    MatchDataBase.SaveAll();
+
                     await InititiateTransactions(widget.matchRecord.toString());
                     return true;
                   },
@@ -235,5 +245,73 @@ class QrCoder extends State<Qrgenerator> {
         (Route<dynamic> route) => false,
       );
     }
+  }
+}
+
+class SavingProgressDialog extends StatefulWidget {
+  const SavingProgressDialog({super.key});
+
+  @override
+  State<SavingProgressDialog> createState() => _SavingProgressDialogState();
+}
+
+class _SavingProgressDialogState extends State<SavingProgressDialog> {
+  double _progress = 0.0;
+  String _message = "Saving everything...";
+
+  @override
+  void initState() {
+    super.initState();
+    _startAnimation();
+  }
+
+  void _startAnimation() async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    if (mounted) {
+      setState(() {
+        _progress = 0.33;
+        _message = "Logging match...";
+      });
+    }
+    await Future.delayed(const Duration(milliseconds: 700));
+    if (mounted) {
+      setState(() {
+        _progress = 0.66;
+        _message = "Getting ready for next match...";
+      });
+    }
+    await Future.delayed(const Duration(milliseconds: 800));
+    if (mounted) {
+      setState(() {
+        _progress = 1.0;
+      });
+      Navigator.of(context).pop();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      backgroundColor: islightmode() ? Colors.white : Colors.black,
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          LinearProgressIndicator(
+            value: _progress,
+            color: const Color(0xFFFFD700),
+            backgroundColor:
+                islightmode() ? Colors.grey[200] : Colors.grey[800],
+          ),
+          const SizedBox(height: 20),
+          Text(
+            _message,
+            textAlign: TextAlign.center,
+            style: GoogleFonts.museoModerno(
+                fontSize: 18.0,
+                color: islightmode() ? Colors.black : Colors.white),
+          ),
+        ],
+      ),
+    );
   }
 }

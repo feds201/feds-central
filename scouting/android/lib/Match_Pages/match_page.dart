@@ -643,57 +643,77 @@ class MatchPageState extends State<MatchPage>
     // Get actual battery percentage
     int batteryPercentage = await _getBatteryPercentage();
 
-    MatchRecord matchRecord = MatchRecord(
-      AutonPoints(false, false, false, 0.0, 0, false, "", false),
-      TeleOpPoints(
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          false,
-          false,
-          false,
-          false,
-          false,
-          0,
-          0,
-          0,
-          0,
-          0,
-          false,
-          false,
-          false,
-          false,
-          false,
-          false,
-          false,
-          false,
-          false,
-          false),
-      EndPoints(0, false, false, false, "", 0.0, ""),
-      teamNumber: teamNNumber.replaceAll('frc', ''),
-      scouterName: _scouterName,
-      matchKey: match['key'].toString(),
-      allianceColor: _allianceColor,
-      station: int.parse(_station),
-      matchNumber: match['match_number'],
-      eventKey: match['event_key'],
-      batteryPercentage: batteryPercentage,
-    );
+    // Check if match is already scouted
+    String matchKey = match['key'].toString();
+    var existingData = MatchDataBase.GetData(matchKey);
+
+    MatchRecord matchRecord;
+
+    if (existingData != null) {
+      matchRecord = MatchRecord.fromJson(existingData);
+      // Ensure we have a valid battery percentage even if loaded from disk
+      // matchRecord.batteryPercentage = batteryPercentage; // matchRecord is final fields though?
+      // MatchRecord fields are final. So we accept the saved one, or we interpret fromJson.
+      // The existing MatchRecord has all fields final except scouterName and auton/tele/end points.
+    } else {
+      matchRecord = MatchRecord(
+        AutonPoints(false, false, false, 0.0, 0, false, "",
+            BotLocation(const Offset(0, 0), const Size(0, 0), 0), false),
+        TeleOpPoints(
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            false,
+            false,
+            false,
+            false,
+            false,
+            0,
+            0,
+            0,
+            0,
+            0,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false),
+        EndPoints(0, false, false, false, "", 0.0, 0),
+        teamNumber: teamNNumber.replaceAll('frc', ''),
+        scouterName: _scouterName,
+        matchKey: match['key'].toString(),
+        allianceColor: _allianceColor,
+        station: int.parse(_station),
+        matchNumber: match['match_number'],
+        eventKey: match['event_key'],
+        batteryPercentage: batteryPercentage,
+      );
+    }
 
     Navigator.push(
       context,
       MaterialPageRoute(
           builder: (context) => Match(matchRecord: matchRecord),
           fullscreenDialog: true),
-    ).then((_) => print('Returned to Match Page'));
+    ).then((_) {
+      print('Returned to Match Page');
+      setState(() {
+        // Refresh to update Scouted status icons
+      });
+    });
   }
 
   Widget _buildSettingsView(List<dynamic> allMatches) {

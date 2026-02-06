@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../main.dart';
 
 Widget buildPhaseSelection(
   BuildContext context,
@@ -39,7 +40,9 @@ Widget buildPhaseSelection(
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.45),
+              color: islightmode()
+                  ? Colors.grey.withOpacity(0.3)
+                  : Colors.black.withOpacity(0.45),
               blurRadius: 10,
               offset: const Offset(0, 6),
             ),
@@ -83,11 +86,13 @@ Widget buildPhaseSelection(
       width: double.infinity,
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
-        color: const Color(0xFF2A2A2A),
+        color: islightmode() ? Colors.white : const Color(0xFF2A2A2A),
         borderRadius: BorderRadius.circular(25),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.6),
+            color: islightmode()
+                ? Colors.grey.withOpacity(0.3)
+                : Colors.black.withOpacity(0.6),
             blurRadius: 14,
             offset: const Offset(0, 8),
           ),
@@ -98,17 +103,17 @@ Widget buildPhaseSelection(
           Padding(
             padding: const EdgeInsets.fromLTRB(6, 0, 6, 10),
             child: Row(
-              children: const [
+              children: [
                 Icon(
                   Icons.view_in_ar,
                   size: 18,
-                  color: Colors.white70,
+                  color: islightmode() ? Colors.black54 : Colors.white70,
                 ),
                 SizedBox(width: 8),
                 Text(
                   "Phase Selection",
                   style: TextStyle(
-                    color: Colors.white70,
+                    color: islightmode() ? Colors.black54 : Colors.white70,
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
                   ),

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:scouting_app/components/CheckBox.dart';
 import 'package:scouting_app/components/CounterShelf.dart';
@@ -6,6 +8,7 @@ import 'package:scouting_app/components/gameSpecifics/climb.dart';
 // import 'package:scouting_app/components/gameSpecifics/climb.dart';
 import 'package:scouting_app/main.dart';
 
+import '../../components/TeamInfo.dart';
 import '../../components/gameSpecifics/timer.dart';
 import '../../components/slider.dart';
 import '../../services/DataBase.dart';
@@ -59,6 +62,8 @@ class EndGameState extends State<EndGame> {
 
     commentController.text = widget.matchRecord.endPoints.Comments;
     neutralTrips = 0;
+    endgameTime = widget.matchRecord.endPoints.endgameTime;
+    endgameActions = widget.matchRecord.endPoints.endgameActions;
   }
 
   void UpdateData() {
@@ -74,6 +79,7 @@ class EndGameState extends State<EndGame> {
 
     // Timer and endgame actions
     widget.matchRecord.endPoints.endgameTime = endgameTime;
+    widget.matchRecord.endPoints.endgameActions = endgameActions;
 
     endPoints = widget.matchRecord.endPoints;
     saveState();
@@ -81,7 +87,7 @@ class EndGameState extends State<EndGame> {
 
   void saveState() {
     LocalDataBase.putData('endPoints', endPoints.toJson());
-    // log('EndGame state saved: $endPoints');
+    log('EndGame state saved: ${endPoints.toCsv()}');
   }
 
   @override
@@ -98,6 +104,14 @@ class EndGameState extends State<EndGame> {
     return SingleChildScrollView(
       child: Column(
         children: [
+          MatchInfo(
+            assignedTeam: assignedTeam,
+            assignedStation: assignedStation,
+            allianceColor: allianceColor,
+            onPressed: () {
+              // print('Team Info START button pressed');
+            },
+          ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Row(
@@ -147,7 +161,9 @@ class EndGameState extends State<EndGame> {
               ],
             ),
           ),
-          SizedBox(height: 9,),
+          SizedBox(
+            height: 9,
+          ),
           TklKeyboard(
             currentTime: endgameTime,
             onChange: (double time) {
@@ -321,9 +337,9 @@ class EndGameState extends State<EndGame> {
                             fullscreenDialog: true));
                     return null;
                   },
-                  label: const Text("Slide to Complete Event",
+                  label: Text("Slide to Complete Event",
                       style: TextStyle(
-                          color: Colors.white,
+                          color: islightmode() ? Colors.black : Colors.white,
                           fontWeight: FontWeight.w500,
                           fontSize: 17),
                       textAlign: TextAlign.start),

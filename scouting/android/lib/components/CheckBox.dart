@@ -42,13 +42,6 @@ Widget buildCheckBox(String title, bool value, Function(bool) onChanged,
                       Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
-                          gradient: RadialGradient(
-                            radius: 1.0,
-                            colors: [
-                              islightmode() ? Colors.red : Color.fromARGB(255, 34, 34, 34),
-                              islightmode() ? Colors.white.withOpacity(0.45) : Colors.black.withOpacity(0.45),
-                            ],
-                          ),
                         ),
                       ),
                       Center(
@@ -131,13 +124,6 @@ Widget buildCheckBoxFull(String title, bool value, Function(bool) onChanged,
                         Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(12),
-                            gradient: RadialGradient(
-                              radius: 1.0,
-                              colors: [
-                                Color.fromARGB(255, 34, 34, 34),
-                                Colors.black.withOpacity(0.45),
-                              ],
-                            ),
                           ),
                         ),
                         Center(
@@ -219,13 +205,6 @@ Widget buildCheckBoxHalf(String title, bool value, Function(bool) onChanged,
                       Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
-                          gradient: RadialGradient(
-                            radius: 1.0,
-                            colors: [
-                              Color.fromARGB(255, 34, 34, 34),
-                              Colors.black.withOpacity(0.45),
-                            ],
-                          ),
                         ),
                       ),
                       Center(

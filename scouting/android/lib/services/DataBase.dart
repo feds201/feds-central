@@ -677,7 +677,7 @@ class AutonPoints {
   int amountOfShooting = 0;
   bool climb = false;
   String winAfterAuton = "";
-  // BotLocation starting_location;
+  BotLocation starting_location;
 
   AutonPoints(
     this.fuel_pickup_from_Depot,
@@ -687,7 +687,7 @@ class AutonPoints {
     this.amountOfShooting,
     this.climb,
     this.winAfterAuton,
-    // this.starting_location,
+    this.starting_location,
     this.left_starting_position,
   );
 
@@ -699,13 +699,13 @@ class AutonPoints {
       "TotalShootingTime": total_shooting_time,
       "Climb": climb,
       "WinAfterAuton": winAfterAuton,
-      // "RobotLocation": starting_location,
+      "RobotLocation": starting_location.toJson(),
       "LeftStartingPosition": left_starting_position
     };
   }
 
   String toCsv() {
-    return '{${left_starting_position},${fuel_pickup_from_Depot},${fuel_pickup_from_Outpost},${fuel_pickup_from_Neutral_Zone},${total_shooting_time},${amountOfShooting},${climb},${winAfterAuton}}';
+    return '$left_starting_position,$fuel_pickup_from_Depot,$fuel_pickup_from_Outpost,$fuel_pickup_from_Neutral_Zone,$total_shooting_time,$amountOfShooting,$climb,$winAfterAuton,${starting_location.toCsv()}';
   }
 
   static AutonPoints fromJson(Map<String, dynamic> json) {
@@ -717,16 +717,21 @@ class AutonPoints {
       json["Amount of Shooting"] ?? 0,
       json['Climb'] ?? false,
       json['WinAfterAuton'] ?? "",
-      // BotLocation.fromJson(
-      //   json['RobotLocation'] ?? {},
-      // ),
+      BotLocation.fromJson(
+        json['RobotLocation'] ??
+            {
+              'position': {'x': 0.0, 'y': 0.0},
+              'size': {'width': 0.0, 'height': 0.0},
+              'angle': 0.0
+            },
+      ),
       json['LeftStartingPosition'] ?? false,
     );
   }
 
   @override
   String toString() {
-    return 'AutonPoints{FuelPickUpFromDepot: $fuel_pickup_from_Depot, FuelPickUpFromOutpost: $fuel_pickup_from_Outpost, FuelPickUpFromNeutralZone: $fuel_pickup_from_Neutral_Zone, TotalShootingTime: $total_shooting_time, Climb: $climb, WinAfterAuton: $winAfterAuton, LeftStartingPosition: $left_starting_position}';
+    return 'AutonPoints{FuelPickUpFromDepot: $fuel_pickup_from_Depot, FuelPickUpFromOutpost: $fuel_pickup_from_Outpost, FuelPickUpFromNeutralZone: $fuel_pickup_from_Neutral_Zone, TotalShootingTime: $total_shooting_time, Climb: $climb, WinAfterAuton: $winAfterAuton, LeftStartingPosition: $left_starting_position, RobotLocation: $starting_location}';
   }
 
   void setFuelPickupFromDepot(bool value) {
@@ -754,7 +759,7 @@ class AutonPoints {
   }
 
   setStartingLocation(BotLocation value) {
-    // starting_location = value;
+    starting_location = value;
   }
 }
 
@@ -1039,7 +1044,7 @@ class EndPoints {
   bool FeedToHP = false;
   bool Passing = false;
   double endgameTime;
-  String endgameActions;
+  int endgameActions;
   String Comments = '';
 
   EndPoints(
@@ -1072,7 +1077,7 @@ class EndPoints {
       json['Passing'] ?? false,
       json['Comments'] ?? '',
       (json['endgameTime'] ?? 0.0).toDouble(),
-      json['endgameActions'] ?? '',
+      json['endgameActions'] ?? 0,
     );
   }
 
@@ -1082,7 +1087,7 @@ class EndPoints {
   }
 
   String toCsv() {
-    return '$ClimbStatus,$Park,$FeedToHP,$Passing,$Comments';
+    return '$ClimbStatus,$Park,$FeedToHP,$Passing,$endgameTime,$endgameActions,$Comments';
   }
 
   @override
@@ -1173,8 +1178,15 @@ class LocalDataBase {
       data['aMOUNT OF SHOOTING'] ?? 0,
       data['Climb'] ?? false,
       data['WinAfterAuton'] ?? "",
-      data['RobotLocation'] ?? Offset.zero,
-      // data['LeftStartingPosition'] ?? false,
+      BotLocation.fromJson(
+        data['RobotLocation'] ??
+            {
+              'position': {'x': 0.0, 'y': 0.0},
+              'size': {'width': 0.0, 'height': 0.0},
+              'angle': 0.0
+            },
+      ),
+      true, // LeftStartingPosition, assuming default true or fetched differently if needed
     );
   }
 
@@ -1222,7 +1234,7 @@ class LocalDataBase {
       data['Passing'] ?? false,
       data['Comments'] ?? "",
       (data['EndgameTime'] ?? 0).toDouble(),
-      data['EndgameActions'] ?? "",
+      data['EndgameActions'] ?? 0,
     );
   }
 
@@ -1267,8 +1279,7 @@ class BotLocation {
   }
 
   String toCsv() {
-    return "null";
-    // return '${position.dx},${position.dy},${size.width},${size.height},$angle';
+    return '${position.dx.toStringAsFixed(1)},${position.dy.toStringAsFixed(1)},${size.width.toStringAsFixed(1)},${size.height.toStringAsFixed(1)},${angle.toStringAsFixed(1)}';
   }
 }
 

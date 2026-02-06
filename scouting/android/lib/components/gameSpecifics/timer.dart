@@ -2,11 +2,12 @@ import 'dart:async';
 
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
+import 'package:scouting_app/main.dart';
 
 class TklKeyboard extends StatefulWidget {
   final Function(double) onChange;
   final Function() doChange;
-  final Function() doChangeNoIncrement ;
+  final Function() doChangeNoIncrement;
   final Function() doChangeResetter;
   double currentTime;
 
@@ -15,7 +16,7 @@ class TklKeyboard extends StatefulWidget {
       required this.onChange,
       required this.currentTime,
       required this.doChange,
-      required this.doChangeNoIncrement ,
+      required this.doChangeNoIncrement,
       required this.doChangeResetter});
 
   @override
@@ -99,7 +100,9 @@ class _TklKeyboardState extends State<TklKeyboard>
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Container(
             decoration: BoxDecoration(
-              color: const Color.fromRGBO(34, 34, 34, 1),
+              color: islightmode()
+                  ? const Color.fromARGB(255, 255, 255, 255)
+                  : const Color.fromRGBO(34, 34, 34, 1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Padding(
@@ -126,14 +129,18 @@ class _TklKeyboardState extends State<TklKeyboard>
                               padding: const EdgeInsets.symmetric(vertical: 10),
                               width: double.infinity,
                               decoration: BoxDecoration(
-                                color: const Color(0xFF181818),
+                                color: islightmode()
+                                    ? Colors.grey.withOpacity(0.1)
+                                    : const Color(0xFF181818),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(
                                 _localTime.toStringAsFixed(2),
                                 textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                  color: Colors.white,
+                                style: TextStyle(
+                                  color: islightmode()
+                                      ? Colors.black
+                                      : Colors.white,
                                   fontSize: 80,
                                   fontWeight: FontWeight.bold,
                                   fontFamily: "monospace",
@@ -154,7 +161,7 @@ class _TklKeyboardState extends State<TklKeyboard>
                                       _localTime -= 0.30;
                                     });
                                     widget.onChange(_localTime);
-                                    widget.doChangeNoIncrement ();
+                                    widget.doChangeNoIncrement();
                                   },
                                 ),
                                 // HOLD button
@@ -203,7 +210,7 @@ class _TklKeyboardState extends State<TklKeyboard>
                                       _localTime += 0.30;
                                     });
                                     widget.onChange(_localTime);
-                                    widget.doChangeNoIncrement ();
+                                    widget.doChangeNoIncrement();
                                   },
                                 ),
                               ],

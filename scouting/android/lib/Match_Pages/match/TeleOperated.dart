@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 // import 'package:scouting_app/components/CheckBox.dart';
 // import 'package:scouting_app/components/CommentBox.dart';
@@ -207,7 +209,7 @@ class _TeleOperatedState extends State<TeleOperated> {
   void saveState() {
     LocalDataBase.putData('TeleOp', teleOpPoints.toJson());
 
-    // log('TeleOp state saved: $teleOpPoints');
+    log('TeleOp state saved: ${teleOpPoints.toCsv()}');
   }
 
   @override
@@ -613,12 +615,12 @@ class _TeleOperatedState extends State<TeleOperated> {
             children: [
               Expanded(
                 child: buildCheckBoxHalf("Feed to HP", feedtoHPStationI2,
-                        (bool value) {
-                      setState(() {
-                        feedtoHPStationI2 = value;
-                      });
-                      UpdateData();
-                    }),
+                    (bool value) {
+                  setState(() {
+                    feedtoHPStationI2 = value;
+                  });
+                  UpdateData();
+                }),
               ),
               Expanded(
                 child: buildCheckBoxHalf("Passing", passingI2, (bool value) {
