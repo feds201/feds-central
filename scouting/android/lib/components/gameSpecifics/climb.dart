@@ -11,7 +11,7 @@ Widget buildClimbImage(int? selectedLevel, bool park, ValueChanged<int?> onLevel
   return Padding(
       padding: const EdgeInsets.all(15.0),
       child: Container(
-          height: 425,
+          height: 500,
           width:  550,
           decoration: BoxDecoration(
               color: const Color(0xFF222222),
@@ -36,6 +36,17 @@ Widget buildClimbImage(int? selectedLevel, bool park, ValueChanged<int?> onLevel
                         color: Colors.white,
                         fontStyle: FontStyle.italic,
                         fontSize: 30,
+                        fontFamily: 'MuseoModerno',
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const Text(
+                      '*If parked, leave blank*',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.yellow,
+                        fontStyle: FontStyle.italic,
+                        fontSize: 15,
                         fontFamily: 'MuseoModerno',
                         fontWeight: FontWeight.w700,
                       ),

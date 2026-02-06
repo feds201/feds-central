@@ -3,4 +3,8 @@
     <option name="filePath" value="$PROJECT_DIR$/lib/main.dart" />
     <method v="2" />
   </configuration>
+  <configuration default="false" name="Run Project" type="FlutterRunConfigurationType" factoryName="Flutter" focusToolWindowBeforeRun="true">
+    <option name="filePath" value="$PROJECT_DIR$/lib/main.dart" />
+    <method v="2" />
+  </configuration>
 </component>
