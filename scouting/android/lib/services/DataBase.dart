@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:developer' as developer;
 import 'dart:io';
 
 import 'package:flutter/painting.dart';
@@ -481,7 +482,7 @@ class MatchDataBase {
   }
 
   static void PrintAll() {
-    print(_storage);
+    log(_storage as String);
   }
 
   static List<int> GetRecorderTeam() {
@@ -1032,17 +1033,20 @@ class TeleOpPoints {
 
 // EndPoints
 class EndPoints {
-  bool Deep_Climb = false;
-  bool Shallow_Climb = false;
+  // 0 = None, 1-9 = Level IDs (L/M/R for Levels 1-3)
+  int ClimbStatus = 0;
   bool Park = false;
+  bool FeedToHP = false;
+  bool Passing = false;
   double endgameTime;
   String endgameActions;
   String Comments = '';
 
   EndPoints(
-    this.Deep_Climb,
-    this.Shallow_Climb,
+    this.ClimbStatus,
     this.Park,
+    this.FeedToHP,
+    this.Passing,
     this.Comments,
     this.endgameTime,
     this.endgameActions,
@@ -1050,9 +1054,10 @@ class EndPoints {
 
   Map<String, dynamic> toJson() {
     return {
-      "Deep_Climb": Deep_Climb,
-      "Shallow_Climb": Shallow_Climb,
+      "ClimbStatus": ClimbStatus,
       "Park": Park,
+      "FeedToHP": FeedToHP,
+      "Passing": Passing,
       "endgameTime": endgameTime,
       "endgameActions": endgameActions,
       "Comments": Comments,
@@ -1061,22 +1066,23 @@ class EndPoints {
 
   static EndPoints fromJson(Map<String, dynamic> json) {
     return EndPoints(
-      json['Deep_Climb'] ?? 0,
-      json['Shallow_Climb'] ?? 0,
-      json['Park'] ?? 0,
-      json['endgameTime'] ?? 0.0,
+      json['ClimbStatus'] ?? 0,
+      json['Park'] ?? false,
+      json['FeedToHP'] ?? false,
+      json['Passing'] ?? false,
+      json['Comments'] ?? '',
+      (json['endgameTime'] ?? 0.0).toDouble(),
       json['endgameActions'] ?? '',
-      json['Comments'] ?? 0,
     );
   }
 
   @override
   String toString() {
-    return 'EndPoints{Deep_Climb: $Deep_Climb, Shallow_Climb: $Shallow_Climb, Park: $Park, endgameTime: $endgameTime, endgameActions: $endgameActions, Comments: $Comments}';
+    return 'EndPoints{ClimbStatus: $ClimbStatus, Park: $Park, FeedToHP: $FeedToHP, Passing: $Passing, endgameTime: $endgameTime, endgameActions: $endgameActions, Comments: $Comments}';
   }
 
   String toCsv() {
-    return '$Deep_Climb,$Shallow_Climb,$Park,$Comments';
+    return '$ClimbStatus,$Park,$FeedToHP,$Passing,$Comments';
   }
 
   @override
@@ -1084,30 +1090,36 @@ class EndPoints {
     if (identical(this, other)) return true;
 
     return other is EndPoints &&
-        other.Deep_Climb == Deep_Climb &&
-        other.Shallow_Climb == Shallow_Climb &&
+        other.ClimbStatus == ClimbStatus &&
         other.Park == Park &&
+        other.FeedToHP == FeedToHP &&
+        other.Passing == Passing &&
         other.Comments == Comments;
   }
 
   @override
   int get hashCode {
-    return Deep_Climb.hashCode ^
-        Shallow_Climb.hashCode ^
+    return ClimbStatus.hashCode ^
         Park.hashCode ^
+        FeedToHP.hashCode ^
+        Passing.hashCode ^
         Comments.hashCode;
   }
 
-  setDeepClimb(bool value) {
-    Deep_Climb = value;
-  }
-
-  setShallowClimb(bool value) {
-    Shallow_Climb = value;
+  setClimbStatus(int value) {
+    ClimbStatus = value;
   }
 
   setPark(bool value) {
     Park = value;
+  }
+
+  setFeedToHP(bool value) {
+    FeedToHP = value;
+  }
+
+  setPassing(bool value) {
+    Passing = value;
   }
 }
 
@@ -1204,9 +1216,10 @@ class LocalDataBase {
 
   static EndPoints mapToEndPoints(Map<dynamic, dynamic> data) {
     return EndPoints(
-      data['Deep_Climb'] ?? false,
-      data['Shallow_Climb'] ?? false,
+      data['ClimbStatus'] ?? 0,
       data['Park'] ?? false,
+      data['FeedToHP'] ?? false,
+      data['Passing'] ?? false,
       data['Comments'] ?? "",
       (data['EndgameTime'] ?? 0).toDouble(),
       data['EndgameActions'] ?? "",

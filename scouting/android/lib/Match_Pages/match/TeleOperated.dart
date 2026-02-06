@@ -531,30 +531,14 @@ class _TeleOperatedState extends State<TeleOperated> {
             UpdateData();
           },
         ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: Row(
-            children: [
-              Expanded(
-                child: buildCounter("Shooting Cycle", amountI1, (int value) {
-                  setState(() {
-                    amountI1 = value;
-                  });
-                  UpdateData();
-                }, color: Colors.yellow),
-              ),
-              Expanded(
-                child:
-                    buildCounter("Neutral Trips", neutralTripsI1, (int value) {
-                  setState(() {
-                    neutralTripsI1 = value;
-                  });
-                  UpdateData();
-                }, color: Colors.yellow),
-              ),
-            ],
-          ),
-        ),
+        SizedBox(height: 8),
+        buildCounterFull("Neutral Trips", neutralTripsI1, (int value) {
+          setState(() {
+            neutralTripsI1 = value;
+          });
+          UpdateData();
+        }, color: Colors.yellow),
+        SizedBox(height: 8),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child: Row(
@@ -615,42 +599,26 @@ class _TeleOperatedState extends State<TeleOperated> {
             UpdateData();
           },
         ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: Row(
-            children: [
-              Expanded(
-                child: buildCounter("Shooting Cycle", amountI2, (int value) {
-                  setState(() {
-                    amountI2 = value;
-                  });
-                  UpdateData();
-                }, color: Colors.yellow),
-              ),
-              Expanded(
-                child:
-                    buildCounter("Neutral Trips", neutralTripsI2, (int value) {
-                  setState(() {
-                    neutralTripsI2 = value;
-                  });
-                  UpdateData();
-                }, color: Colors.yellow),
-              ),
-            ],
-          ),
-        ),
+        SizedBox(height: 8),
+        buildCounterFull("Neutral Trips", neutralTripsI2, (int value) {
+          setState(() {
+            neutralTripsI2 = value;
+          });
+          UpdateData();
+        }, color: Colors.yellow),
+        SizedBox(height: 8),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child: Row(
             children: [
               Expanded(
                 child: buildCheckBoxHalf("Feed to HP", feedtoHPStationI2,
-                    (bool value) {
-                  setState(() {
-                    feedtoHPStationI2 = value;
-                  });
-                  UpdateData();
-                }),
+                        (bool value) {
+                      setState(() {
+                        feedtoHPStationI2 = value;
+                      });
+                      UpdateData();
+                    }),
               ),
               Expanded(
                 child: buildCheckBoxHalf("Passing", passingI2, (bool value) {
@@ -671,36 +639,6 @@ class _TeleOperatedState extends State<TeleOperated> {
           UpdateData();
         }),
       ],
-    );
-  }
-
-  Widget _buildPhasePlaceholder(String label) {
-    return Padding(
-      padding: const EdgeInsets.all(12.0),
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
-        decoration: BoxDecoration(
-          color: const Color(0xFF222222),
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.35),
-              blurRadius: 8,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Text(
-          label,
-          textAlign: TextAlign.center,
-          style: const TextStyle(
-            color: Colors.white70,
-            fontSize: 20,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-      ),
     );
   }
 }

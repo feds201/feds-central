@@ -19,10 +19,12 @@ class EndGame extends StatefulWidget {
 }
 
 class EndGameState extends State<EndGame> {
-  late bool deep_climb;
-  late bool shallow_climb;
+  // late bool feed;
+  // late bool defense;
   late bool park;
-  int? selectedLevel;
+  late bool feedToHP;
+  late bool passing;
+  int? selectedLevel; // Now maps to ClimbStatus: 0=None, 1-9=IDs
 
   late EndPoints endPoints;
 
@@ -48,34 +50,30 @@ class EndGameState extends State<EndGame> {
     allianceColor = widget.matchRecord.allianceColor;
 
     // Load values from endPoints
-    deep_climb = widget.matchRecord.endPoints.Deep_Climb;
-    shallow_climb = widget.matchRecord.endPoints.Shallow_Climb;
+    // ClimbStatus stores the specific ID (1-9) or 0 for none
+    int status = widget.matchRecord.endPoints.ClimbStatus;
+    selectedLevel = status == 0 ? null : status;
     park = widget.matchRecord.endPoints.Park;
-    if (deep_climb) {
-      selectedLevel = 3;
-    } else if (shallow_climb) {
-      selectedLevel = 2;
-    } else {
-      selectedLevel = null;
-    }
+    feedToHP = widget.matchRecord.endPoints.FeedToHP;
+    passing = widget.matchRecord.endPoints.Passing;
+
     commentController.text = widget.matchRecord.endPoints.Comments;
     neutralTrips = 0;
   }
 
   void UpdateData() {
-    deep_climb = selectedLevel == 3;
-    shallow_climb = selectedLevel == 2;
-    park = selectedLevel == null;
+    // Save selectedLevel to ClimbStatus (0 if null)
+    widget.matchRecord.endPoints.ClimbStatus = selectedLevel ?? 0;
 
-    // Use the correct field names from your EndPoints class
-    widget.matchRecord.endPoints.Deep_Climb = deep_climb;
-    widget.matchRecord.endPoints.Shallow_Climb = shallow_climb;
+    // Park is explicitly tracked, usually triggered if level is null and user leaves blank
     widget.matchRecord.endPoints.Park = park;
+    widget.matchRecord.endPoints.FeedToHP = feedToHP;
+    widget.matchRecord.endPoints.Passing = passing;
+
     widget.matchRecord.endPoints.Comments = commentController.text;
 
     // Timer and endgame actions
     widget.matchRecord.endPoints.endgameTime = endgameTime;
-    widget.matchRecord.endPoints.endgameActions = endgameActions as String;
 
     endPoints = widget.matchRecord.endPoints;
     saveState();
@@ -101,38 +99,55 @@ class EndGameState extends State<EndGame> {
       child: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Row(
               children: [
                 Expanded(
-                  child: buildCheckBox("FEED", deep_climb, (bool value) {
+                  child: buildCounter("Shooting Cycle", endgameActions,
+                      (int value) {
                     setState(() {
-                      deep_climb = value;
+                      endgameActions = value;
                     });
+                    UpdateData();
+                  }, color: Colors.yellow),
+                ),
+                Expanded(
+                  child:
+                      buildCounter("Neutral Trips", neutralTrips, (int value) {
+                    setState(() {
+                      neutralTrips = value;
+                    });
+                    UpdateData();
+                  }, color: Colors.yellow),
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child:
+                      buildCheckBoxHalf("Feed to HP", feedToHP, (bool value) {
+                    setState(() {
+                      feedToHP = value;
+                    });
+                    UpdateData();
                   }),
                 ),
                 Expanded(
-                  child: buildCheckBox("DEFENSE", shallow_climb, (bool value) {
+                  child: buildCheckBoxHalf("Passing", passing, (bool value) {
                     setState(() {
-                      shallow_climb = value;
+                      passing = value;
                     });
+                    UpdateData();
                   }),
                 ),
               ],
             ),
           ),
-
-          buildCounter(
-            "Trips to Neutral Zone",
-            neutralTrips,
-            (int value) {
-              setState(() {
-                neutralTrips = value;
-              });
-            },
-            color: Colors.amber,
-          ),
-          // Endgame Timer
+          SizedBox(height: 9,),
           TklKeyboard(
             currentTime: endgameTime,
             onChange: (double time) {
@@ -153,25 +168,14 @@ class EndGameState extends State<EndGame> {
               });
               UpdateData(); // Resets the values in your matchRecord
             },
-            doChangeNoIncrement : () {
+            doChangeNoIncrement: () {
               UpdateData(); // Updates without changing values
             },
           ),
 
           const SizedBox(height: 12), // spacing
 
-// Total Shooting Cycles counter
-          buildCounter(
-            "Total Shooting Cycles",
-            endgameActions,
-            (int value) {
-              setState(() {
-                endgameActions = value;
-              });
-              UpdateData();
-            },
-            color: Colors.amber,
-          ),
+// Total
 
           buildClimbImage(
             selectedLevel,
@@ -308,7 +312,7 @@ class EndGameState extends State<EndGame> {
                     MatchDataBase.PutData(
                         widget.matchRecord.matchKey, widget.matchRecord);
                     MatchDataBase.SaveAll();
-                    MatchDataBase.PrintAll();
+                    // MatchDataBase.PrintAll();
                     await Navigator.push(
                         context,
                         MaterialPageRoute(

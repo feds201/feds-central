@@ -45,8 +45,8 @@ Widget buildCheckBox(String title, bool value, Function(bool) onChanged,
                           gradient: RadialGradient(
                             radius: 1.0,
                             colors: [
-                              Color.fromARGB(255, 34, 34, 34),
-                              Colors.black.withOpacity(0.45),
+                              islightmode() ? Colors.red : Color.fromARGB(255, 34, 34, 34),
+                              islightmode() ? Colors.white.withOpacity(0.45) : Colors.black.withOpacity(0.45),
                             ],
                           ),
                         ),
