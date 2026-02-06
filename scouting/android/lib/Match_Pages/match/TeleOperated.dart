@@ -40,7 +40,7 @@ class _TeleOperatedState extends State<TeleOperated> {
   late int neutralTrips = 0;
   late int neutralTripsA1 = 0;
   late int neutralTripsA2 = 0;
-  late int neutralTripI1 = 0;
+  late int neutralTripsI1 = 0;
   late int neutralTripsI2 = 0;
   late bool feedtoHPStation, feedtoHPStationA1, feedtoHPStationA2, feedtoHPStationI1, feedtoHPStationI2;
   late bool passing, passingA1, passingA2, passingI1, passingI2;
@@ -75,7 +75,7 @@ class _TeleOperatedState extends State<TeleOperated> {
     neutralTrips = widget.matchRecord.teleOpPoints.NeutralTrips;
     neutralTripsA1 = widget.matchRecord.teleOpPoints.NeutralTripsA1;
     neutralTripsA2 = widget.matchRecord.teleOpPoints.NeutralTripsA2;
-    neutralTripI1 = widget.matchRecord.teleOpPoints.NeutralTripsI1;
+    neutralTripsI1 = widget.matchRecord.teleOpPoints.NeutralTripsI1;
     neutralTripsI2 = widget.matchRecord.teleOpPoints.NeutralTripsI2;
     feedtoHPStation = widget.matchRecord.teleOpPoints.FeedToHPStation;
     feedtoHPStationA1 = widget.matchRecord.teleOpPoints.FeedToHPStationA1;
@@ -117,7 +117,7 @@ class _TeleOperatedState extends State<TeleOperated> {
       neutralTrips,
       neutralTripsA1,
       neutralTripsA2,
-      neutralTripI1,
+      neutralTripsI1,
       neutralTripsI2,
       feedtoHPStation,
       feedtoHPStationA1,
@@ -157,7 +157,7 @@ class _TeleOperatedState extends State<TeleOperated> {
       neutralTrips,
       neutralTripsA1,
       neutralTripsA2,
-      neutralTripI1,
+      neutralTripsI1,
       neutralTripsI2,
       feedtoHPStation,
       feedtoHPStationA1,
@@ -188,7 +188,7 @@ class _TeleOperatedState extends State<TeleOperated> {
     widget.matchRecord.teleOpPoints.NeutralTrips = neutralTrips;
     widget.matchRecord.teleOpPoints.NeutralTripsA1 = neutralTripsA1;
     widget.matchRecord.teleOpPoints.NeutralTripsA2 = neutralTripsA2;
-    widget.matchRecord.teleOpPoints.NeutralTripsI1 = neutralTripI1;
+    widget.matchRecord.teleOpPoints.NeutralTripsI1 = neutralTripsI1;
     widget.matchRecord.teleOpPoints.NeutralTripsI2 = neutralTripsI2;
     widget.matchRecord.teleOpPoints.FeedToHPStation = feedtoHPStation;
     widget.matchRecord.teleOpPoints.FeedToHPStationA1 = feedtoHPStationA1;
@@ -358,10 +358,10 @@ class _TeleOperatedState extends State<TeleOperated> {
         ]),
         buildCounter(
           "Trips to Neutral Zone",
-          neutralTrips,
+          neutralTripsA1,
               (int value) {
             setState(() {
-              neutralTrips = value;
+              neutralTripsA1 = value;
             });
           },
           color: Colors.amber,
@@ -433,10 +433,10 @@ class _TeleOperatedState extends State<TeleOperated> {
         ]),
         buildCounter(
           "Trips to Neutral Zone",
-          neutralTrips,
+          neutralTripsA2,
               (int value) {
             setState(() {
-              neutralTrips = value;
+              neutralTripsA2 = value;
             });
           },
           color: Colors.amber,
@@ -473,10 +473,10 @@ class _TeleOperatedState extends State<TeleOperated> {
         _buildPhasePlaceholder("Inactive 1"),
         buildCounter(
           "Trips to Neutral Zone",
-          neutralTrips,
+          neutralTripsI1,
               (int value) {
             setState(() {
-              neutralTrips = value;
+              neutralTripsI1 = value;
             });
           },
           color: Colors.amber,
@@ -512,10 +512,10 @@ class _TeleOperatedState extends State<TeleOperated> {
         _buildPhasePlaceholder("Inactive 2"),
         buildCounter(
           "Trips to Neutral Zone",
-          neutralTrips,
+          neutralTripsI2,
               (int value) {
             setState(() {
-              neutralTrips = value;
+              neutralTripsI2 = value;
             });
           },
           color: Colors.amber,
