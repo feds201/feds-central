@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="codes">
+        <!-- TODO: maybe add time and date into here? -->
+        <item>AA,matchType,String</item>
+        <item>AB,matchNumber,int</item>
+        <item>AC,teamNumber,int</item>
+        <!--<item>AD,teamName,String</item>-->
+        <item>AE,robotAllianceInfo,String</item>
+        <item>AF,autonHighMakes,int</item>
+        <item>AG,autonHighMisses,int</item>
+        <item>AH,autonLowMakes,int</item>
+        <item>AI,autonLowMisses,int</item>
+        <item>AJ,teleopHighMakes,int</item>
+        <item>AK,teleopHighMisses,int</item>
+        <item>AL,teleopLowMakes,int</item>
+        <item>AM,teleopLowMisses,int</item>
+        <item>AN,leavesTarmac,boolean</item>
+        <item>AO,humanScored,boolean</item>
+        <item>AP,playedDefense,boolean</item>
+        <!-- TODO: What is the type for a Timer field? -->
+        <item>AQ,endgameTime,int</item>
+        <item>AR,barClimbed,int</item>
+        <item>AS,overallRating,int</item>
+    </string-array>
+</resources>

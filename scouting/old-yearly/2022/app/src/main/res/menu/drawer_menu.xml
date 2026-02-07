@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="HardcodedText">
+
+    <item
+        android:id="@+id/nav_home"
+        android:title="Home"
+        android:icon="@drawable/home_icon"/>
+
+    <item
+        android:id="@+id/nav_input"
+        android:title="Input"
+        android:icon="@drawable/dashboard_icon"/>
+
+    <item
+        android:id="@+id/nav_setup"
+        android:title="Setup"
+        android:icon="@drawable/setup_icon"/>
+
+    <item
+        android:id="@+id/nav_settings"
+        android:title="Settings"
+        android:icon="@drawable/settings_icon"/>
+
+</menu>

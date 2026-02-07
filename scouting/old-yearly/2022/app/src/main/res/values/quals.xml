@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="quals">
+        <item>Q,1,201,The FEDS,R1</item>
+        <item>Q,2,201,The FEDS,R2</item>
+        <item>Q,3,226,Hammerheads,R1</item>
+        <item>Q,4,3435,The RoboJackets,B1</item>
+        <item>Q,5,201,The FEDS,B2</item>
+        <item>Q,6,201,The FEDS,R1</item>
+        <item>Q,7,201,The FEDS,B2</item>
+        <item>Q,8,201,The FEDS,R2</item>
+        <item>Q,9,226,Hammerheads,R1</item>
+        <item>Q,10,3435,The RoboJackets,B1</item>
+        <item>Q,11,201,The FEDS,B2</item>
+        <item>Q,12,201,The FEDS,R1</item>
+        <item>Q,13,201,The FEDS,R2</item>
+        <item>Q,14,226,Hammerheads,R1</item>
+        <item>Q,15,3435,The RoboJackets,B1</item>
+        <item>Q,16,201,The FEDS,B2</item>
+        <item>PO,1,226,Hammerheads,B2</item>
+        <item>SF,1,256,The Cheesy Poofs,B1</item>
+        <item>F,1,3435,The RoboJackets,R1</item>
+        <item>F,2,201,The FEDS,B3</item>
+    </string-array>
+</resources>
