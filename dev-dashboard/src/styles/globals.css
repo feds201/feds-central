@@ -1,0 +1,133 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  @apply transition-colors duration-200;
+}
+
+html {
+  @apply scroll-smooth;
+}
+
+body {
+  @apply bg-slate-950 text-slate-100 font-sans;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-slate-900;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-700 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-slate-600;
+}
+
+/* Glassmorphism effects */
+.glass {
+  @apply bg-white/10 backdrop-blur-md border border-white/20;
+}
+
+.glass-dark {
+  @apply bg-slate-900/60 backdrop-blur-xl border border-slate-700/50 shadow-2xl;
+}
+
+.glass-card {
+  @apply bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-xl border border-slate-700/50 shadow-xl;
+}
+
+/* Gradient effects */
+.gradient-text {
+  @apply bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent;
+  background-size: 200% auto;
+  animation: gradient 3s ease infinite;
+}
+
+.gradient-border {
+  position: relative;
+  background: linear-gradient(to right, rgb(99 102 241), rgb(236 72 153));
+  border-radius: 1rem;
+  padding: 2px;
+}
+
+.gradient-border-content {
+  @apply bg-slate-900 rounded-[calc(1rem-2px)];
+}
+
+@keyframes gradient {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.glow-effect {
+  box-shadow: 0 0 20px rgba(99, 102, 241, 0.3), 0 0 40px rgba(99, 102, 241, 0.1);
+}
+
+/* Smooth animations */
+@layer components {
+  .btn-primary {
+    @apply px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-500 text-white font-semibold hover:from-indigo-700 hover:to-indigo-600 active:scale-95 transition-all duration-200 shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50;
+  }
+
+  .btn-secondary {
+    @apply px-5 py-2.5 rounded-xl bg-slate-700/80 text-slate-100 font-semibold hover:bg-slate-600 active:scale-95 transition-all duration-200 border border-slate-600/50;
+  }
+
+  .btn-ghost {
+    @apply px-4 py-2 rounded-xl text-slate-300 hover:bg-slate-800/50 active:scale-95 transition-all duration-200;
+  }
+
+  .btn-danger {
+    @apply px-5 py-2.5 rounded-xl bg-red-600/90 text-white font-semibold hover:bg-red-700 active:scale-95 transition-all duration-200 shadow-lg shadow-red-500/30;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-3 rounded-xl bg-slate-800/50 border border-slate-700/50 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30 focus:bg-slate-800 transition-all;
+  }
+
+  .card {
+    @apply glass-card rounded-2xl p-6 hover:shadow-2xl transition-shadow duration-300;
+  }
+
+  .card-interactive {
+    @apply card hover:scale-[1.02] hover:border-indigo-500/30 cursor-pointer transition-all duration-300;
+  }
+
+  .badge {
+    @apply px-3 py-1 rounded-full text-xs font-semibold;
+  }
+
+  .badge-primary {
+    @apply badge bg-indigo-500/20 text-indigo-300 border border-indigo-500/30;
+  }
+
+  .badge-success {
+    @apply badge bg-emerald-500/20 text-emerald-300 border border-emerald-500/30;
+  }
+
+  .badge-warning {
+    @apply badge bg-amber-500/20 text-amber-300 border border-amber-500/30;
+  }
+}
