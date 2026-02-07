@@ -1,0 +1,43 @@
+{
+  "name": "scouting_app_win_cli",
+  "version": "1.0.0",
+  "main": "main.js",
+  "scripts": {
+    "test": "npm run dev",
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "build": "electron-packager --out winx64 --overwrite --platform win32 --appname Scout_Ops_Windowsapp . --icon assets/logo.bmp"
+  },
+  "author": "Ritesh Raj AS",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "electron": "^31.3.1",
+    "electron-builder": "^24.13.3",
+    "electron-packager": "^17.1.2",
+    "prettier": "^3.3.3"
+  },
+  "dependencies": {
+    "electron-store": "^10.0.0",
+    "node": "^20.16.0"
+  },
+  "build": {
+    "appId": "com.pyintel.scouting_app",
+    "productName": "scouting_app",
+    "files": [
+      "main.js",
+      "dist/**/*",
+      "node_modules/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": true,
+      "allowToChangeInstallationDirectory": true
+    }
+  }
+}
