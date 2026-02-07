@@ -1,0 +1,51 @@
+<resources>
+    <style name="Theme.Phone" parent="Theme.MaterialComponents.DayNight">
+        <item name="android:statusBarColor">#778DA9</item>
+        <item name="android:navigationBarColor">#000000</item>
+        <item name="colorControlNormal">@color/FEDS_WHITE</item>
+        <item name="colorControlActivated">@color/FEDS_WHITE</item>
+        <item name="actionBarStyle">@style/actionbar</item>
+        <item name="colorPrimary">@color/FEDS_WHITE</item>
+        <item name="actionMenuTextColor">@color/FEDS_WHITE</item>
+        <item name="itemIconTint">@color/FEDS_WHITE</item>
+        <item name="iconTint">@color/FEDS_WHITE</item>
+        <item name="homeAsUpIndicator">@color/FEDS_WHITE</item>
+        <item name="actionBarTheme">@style/ActionBar.theme</item>
+        <item name="android:textCursorDrawable">@null</item>
+        <item name="android:textColor">@color/FEDS_BLACK</item>
+    </style>
+
+    <style name="Theme.Tablet" parent="Theme.MaterialComponents.DayNight">
+        <item name="android:statusBarColor">#778DA9</item>
+        <item name="android:navigationBarColor">#000000</item>
+        <item name="colorControlNormal">@color/FEDS_WHITE</item>
+        <item name="colorControlActivated">@color/FEDS_WHITE</item>
+        <item name="actionBarStyle">@style/actionbar_tablet</item>
+        <item name="colorPrimary">@color/FEDS_WHITE</item>
+        <item name="actionMenuTextColor">@color/FEDS_WHITE</item>
+        <item name="itemIconTint">@color/FEDS_WHITE</item>
+        <item name="iconTint">@color/FEDS_WHITE</item>
+        <item name="homeAsUpIndicator">@color/FEDS_WHITE</item>
+        <item name="actionBarTheme">@style/ActionBar.theme</item>
+        <item name="android:textCursorDrawable">@null</item>
+        <item name="android:textColor">@color/FEDS_BLACK</item>
+    </style>
+
+    <style name="SplashScreen" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:statusBarColor">#14192f</item>
+        <item name="android:navigationBarColor">#333449</item>
+    </style>
+
+    <style name="actionbar" parent="@android:style/Widget.Holo.ActionBar">
+        <item name="android:titleTextStyle">@style/actionbar.text</item>
+        <item name="background">@drawable/actionbarbackground_phone</item>
+    </style>
+
+    <style name="actionbar.text" parent="@android:style/TextAppearance">
+        <item name="android:textColor">@color/FEDS_WHITE</item>
+    </style>
+
+    <style name="ActionBar.theme" parent="@style/ThemeOverlay.AppCompat.ActionBar">
+        <item name="colorControlNormal">@color/FEDS_WHITE</item>
+    </style>
+</resources>

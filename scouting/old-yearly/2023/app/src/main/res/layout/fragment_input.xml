@@ -1,0 +1,1277 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/main_background"
+    android:id="@+id/input_layout"
+    tools:context=".Input">
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="80sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageButton
+                android:id="@+id/autontab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="550sp"
+                android:layout_marginTop="6sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/autontab"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/teleoptab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6sp"
+                android:layout_marginStart="0sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/teleoptabtrans"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/endgametab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="550sp"
+                android:layout_marginTop="6sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/endgametabtrans"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/auton_grid"
+                android:layout_width="980sp"
+                android:layout_height="400sp"
+                android:layout_marginTop="-10sp"
+                android:src="@drawable/thing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/auton_button_high_1"
+                android:layout_width="102sp"
+                android:layout_height="102sp"
+                android:layout_marginEnd="865sp"
+                android:layout_marginTop="43sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/nothing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/auton_grid" />
+
+            <ImageButton
+                android:id="@+id/auton_button_high_2"
+                android:layout_width="102sp"
+                android:layout_height="102sp"
+                android:layout_marginTop="43sp"
+                android:layout_marginEnd="646sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/nothing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/auton_grid" />
+
+            <ImageButton
+                android:id="@+id/auton_button_high_3"
+                android:layout_width="102sp"
+                android:layout_height="102sp"
+                android:layout_marginTop="43sp"
+                android:layout_marginEnd="431sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/nothing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/auton_grid" />
+
+            <ImageButton
+                android:id="@+id/auton_button_high_4"
+                android:layout_width="102sp"
+                android:layout_height="102sp"
+                android:layout_marginTop="43sp"
+                android:layout_marginEnd="212sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/nothing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/auton_grid" />
+
+            <ImageButton
+                android:id="@+id/auton_button_high_5"
+                android:layout_width="102sp"
+                android:layout_height="102sp"
+                android:layout_marginTop="43sp"
+                android:layout_marginEnd="0sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/nothing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/auton_grid" />
+
+            <ImageButton
+                android:id="@+id/auton_button_high_6"
+                android:layout_width="102sp"
+                android:layout_height="102sp"
+                android:layout_marginStart="218sp"
+                android:layout_marginTop="43sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/nothing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/auton_grid" />
+
+            <ImageButton
+                android:id="@+id/auton_button_high_7"
+                android:layout_width="102sp"
+                android:layout_height="102sp"
+                android:layout_marginStart="438sp"
+                android:layout_marginTop="43sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/nothing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/auton_grid" />
+
+            <ImageButton
+                android:id="@+id/auton_button_high_8"
+                android:layout_width="102sp"
+                android:layout_height="102sp"
+                android:layout_marginStart="648sp"
+                android:layout_marginTop="43sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/nothing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/auton_grid" />
+
+            <ImageButton
+                android:id="@+id/auton_button_high_9"
+                android:layout_width="102sp"
+                android:layout_height="102sp"
+                android:layout_marginStart="864sp"
+                android:layout_marginTop="43sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/nothing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/auton_grid" />
+
+            <ImageButton
+                android:id="@+id/auton_button_middle_1"
+                android:layout_width="102sp"
+                android:layout_height="102sp"
+                android:layout_marginTop="147sp"
+                android:layout_marginEnd="864sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/nothing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/auton_grid" />
+
+            <ImageButton
+                android:id="@+id/auton_button_middle_2"
+                android:layout_width="102sp"
+                android:layout_height="102sp"
+                android:layout_marginTop="147sp"
+                android:layout_marginEnd="646sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/nothing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/auton_grid" />
+
+            <ImageButton
+                android:id="@+id/auton_button_middle_3"
+                android:layout_width="102sp"
+                android:layout_height="102sp"
+                android:layout_marginTop="147sp"
+                android:layout_marginEnd="431sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/nothing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/auton_grid" />
+
+            <ImageButton
+                android:id="@+id/auton_button_middle_4"
+                android:layout_width="102sp"
+                android:layout_height="102sp"
+                android:layout_marginTop="147sp"
+                android:layout_marginEnd="212sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/nothing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/auton_grid" />
+
+            <ImageButton
+                android:id="@+id/auton_button_middle_5"
+                android:layout_width="102sp"
+                android:layout_height="102sp"
+                android:layout_marginTop="147sp"
+                android:layout_marginEnd="0sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/nothing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/auton_grid" />
+
+            <ImageButton
+                android:id="@+id/auton_button_middle_6"
+                android:layout_width="102sp"
+                android:layout_height="102sp"
+                android:layout_marginStart="218sp"
+                android:layout_marginTop="147sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/nothing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/auton_grid" />
+
+            <ImageButton
+                android:id="@+id/auton_button_middle_7"
+                android:layout_width="102sp"
+                android:layout_height="102sp"
+                android:layout_marginStart="438sp"
+                android:layout_marginTop="147sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/nothing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/auton_grid" />
+
+            <ImageButton
+                android:id="@+id/auton_button_middle_8"
+                android:layout_width="102sp"
+                android:layout_height="102sp"
+                android:layout_marginStart="648sp"
+                android:layout_marginTop="147sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/nothing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/auton_grid" />
+
+            <ImageButton
+                android:id="@+id/auton_button_middle_9"
+                android:layout_width="102sp"
+                android:layout_height="102sp"
+                android:layout_marginStart="864sp"
+                android:layout_marginTop="147sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/nothing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/auton_grid" />
+
+            <ImageButton
+                android:id="@+id/auton_button_low_1"
+                android:layout_width="102sp"
+                android:layout_height="102sp"
+                android:layout_marginTop="251sp"
+                android:layout_marginEnd="864sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/nothing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/auton_grid" />
+
+            <ImageButton
+                android:id="@+id/auton_button_low_2"
+                android:layout_width="102sp"
+                android:layout_height="102sp"
+                android:layout_marginTop="251sp"
+                android:layout_marginEnd="646sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/nothing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/auton_grid" />
+
+            <ImageButton
+                android:id="@+id/auton_button_low_3"
+                android:layout_width="102sp"
+                android:layout_height="102sp"
+                android:layout_marginTop="251sp"
+                android:layout_marginEnd="431sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/nothing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/auton_grid" />
+
+            <ImageButton
+                android:id="@+id/auton_button_low_4"
+                android:layout_width="102sp"
+                android:layout_height="102sp"
+                android:layout_marginTop="251sp"
+                android:layout_marginEnd="212sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/nothing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/auton_grid" />
+
+            <ImageButton
+                android:id="@+id/auton_button_low_5"
+                android:layout_width="102sp"
+                android:layout_height="102sp"
+                android:layout_marginTop="251sp"
+                android:layout_marginEnd="0sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/nothing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/auton_grid" />
+
+            <ImageButton
+                android:id="@+id/auton_button_low_6"
+                android:layout_width="102sp"
+                android:layout_height="102sp"
+                android:layout_marginStart="218sp"
+                android:layout_marginTop="251sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/nothing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/auton_grid" />
+
+            <ImageButton
+                android:id="@+id/auton_button_low_7"
+                android:layout_width="102sp"
+                android:layout_height="102sp"
+                android:layout_marginStart="438sp"
+                android:layout_marginTop="251sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/nothing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/auton_grid" />
+
+            <ImageButton
+                android:id="@+id/auton_button_low_8"
+                android:layout_width="102sp"
+                android:layout_height="102sp"
+                android:layout_marginStart="648sp"
+                android:layout_marginTop="251sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/nothing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/auton_grid" />
+
+            <ImageButton
+                android:id="@+id/auton_button_low_9"
+                android:layout_width="102sp"
+                android:layout_height="102sp"
+                android:layout_marginStart="864sp"
+                android:layout_marginTop="251sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/nothing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/auton_grid" />
+
+            <CheckBox
+                android:id="@+id/auton_mobility"
+                android:layout_width="90sp"
+                android:layout_height="90sp"
+                android:layout_marginTop="0sp"
+                android:layout_marginEnd="920sp"
+                android:button="@null"
+                android:backgroundTint="@color/FEDS_WHITE"
+                android:background="?android:attr/listChoiceIndicatorMultiple"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/auton_button_low_5" />
+
+            <TextView
+                android:id="@+id/auton_textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/faxsansbeta"
+                android:layout_marginTop="-27sp"
+                android:layout_marginEnd="770sp"
+                android:text="Mobility?"
+                android:textColor="@color/FEDS_WHITE"
+                android:textSize="40sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/auton_mobility"
+                app:layout_constraintTop_toBottomOf="@+id/auton_grid" />
+
+            <TextView
+                android:id="@+id/auton_textView2"
+                android:layout_marginEnd="540sp"
+                android:layout_marginTop="-27sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/faxsansbeta"
+                android:text="Dropped?"
+                android:textColor="@color/FEDS_WHITE"
+                android:textSize="40sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/auton_textView"
+                app:layout_constraintTop_toBottomOf="@+id/auton_grid" />
+
+            <Button
+                android:id="@+id/auton_minus"
+                android:layout_width="60sp"
+                android:layout_height="60sp"
+                android:layout_marginTop="-32sp"
+                android:layout_marginEnd="480sp"
+                android:backgroundTint="@color/FEDS_WHITE"
+                android:text="@string/minus"
+                android:textAlignment="gravity"
+                android:textColor="@color/FEDS_BLACK"
+                android:textSize="30sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/auton_textView2"
+                app:layout_constraintTop_toBottomOf="@+id/auton_grid" />
+
+            <Button
+                android:id="@+id/auton_minus2"
+                android:layout_width="60sp"
+                android:layout_height="60sp"
+                android:layout_marginTop="-32sp"
+                android:layout_marginStart="250sp"
+                android:backgroundTint="@color/FEDS_WHITE"
+                android:text="@string/minus"
+                android:textAlignment="gravity"
+                android:textColor="@color/FEDS_BLACK"
+                android:textSize="30sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/auton_textView2"
+                app:layout_constraintTop_toBottomOf="@+id/auton_grid" />
+
+            <TextView
+                android:id="@+id/auton_tally"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="445sp"
+                android:fontFamily="@font/faxsansbeta"
+                android:text="@string/zero"
+                android:textColor="@color/FEDS_WHITE"
+                android:textSize="50sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/auton_minus"
+                app:layout_constraintTop_toTopOf="@+id/auton_minus" />
+
+            <TextView
+                android:id="@+id/auton_tally2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="280sp"
+                android:fontFamily="@font/faxsansbeta"
+                android:text="@string/zero"
+                android:textColor="@color/FEDS_WHITE"
+                android:textSize="50sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/auton_minus"
+                app:layout_constraintTop_toTopOf="@+id/auton_minus" />
+
+            <Button
+                android:id="@+id/auton_plus"
+                android:layout_width="60sp"
+                android:layout_height="60sp"
+                android:backgroundTint="@color/FEDS_WHITE"
+                android:text="@string/plus"
+                android:textAlignment="gravity"
+                android:textColor="@color/FEDS_BLACK"
+                android:textSize="30sp"
+                android:layout_marginEnd="380sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/auton_tally"
+                app:layout_constraintTop_toTopOf="@+id/auton_tally"
+                tools:ignore="HardcodedText" />
+
+            <Button
+                android:id="@+id/auton_plus2"
+                android:layout_width="60sp"
+                android:layout_height="60sp"
+                android:layout_marginStart="345sp"
+                android:backgroundTint="@color/FEDS_WHITE"
+                android:text="@string/plus"
+                android:textAlignment="gravity"
+                android:textColor="@color/FEDS_BLACK"
+                android:textSize="30sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/auton_tally"
+                app:layout_constraintTop_toTopOf="@+id/auton_tally"
+                tools:ignore="HardcodedText" />
+
+            <TextView
+                android:id="@+id/auton_textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-27sp"
+                android:layout_marginEnd="170sp"
+                android:fontFamily="@font/faxsansbeta"
+                android:text="Acquired?"
+                android:textColor="@color/FEDS_WHITE"
+                android:textSize="40sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/auton_plus"
+                app:layout_constraintTop_toBottomOf="@+id/auton_grid" />
+
+            <ImageButton
+                android:id="@+id/auton_green"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="450sp"
+                android:layout_marginTop="440sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/green_trans"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/auton_yellow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="300sp"
+                android:layout_marginTop="440sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/yellow_trans"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/auton_red"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="150sp"
+                android:layout_marginTop="440sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/red_trans"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/auton_textView4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="55sp"
+                android:layout_marginEnd="250sp"
+                android:fontFamily="@font/faxsansbeta"
+                android:text="Charge Station?"
+                android:textColor="@color/FEDS_WHITE"
+                android:textSize="40sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/auton_grid" />
+
+            <ImageView
+                android:id="@+id/teleop_grid"
+                android:layout_width="980sp"
+                android:layout_height="400sp"
+                android:layout_marginTop="-10sp"
+                android:src="@drawable/thing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/teleop_button_high_1"
+                android:layout_width="102sp"
+                android:layout_height="102sp"
+                android:layout_marginTop="43sp"
+                android:layout_marginEnd="865sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/nothing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/teleop_grid" />
+
+            <ImageButton
+                android:id="@+id/teleop_button_high_2"
+                android:layout_width="102sp"
+                android:layout_height="102sp"
+                android:layout_marginTop="43sp"
+                android:layout_marginEnd="646sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/nothing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/teleop_grid" />
+
+            <ImageButton
+                android:id="@+id/teleop_button_high_3"
+                android:layout_width="102sp"
+                android:layout_height="102sp"
+                android:layout_marginTop="43sp"
+                android:layout_marginEnd="431sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/nothing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/teleop_grid" />
+
+            <ImageButton
+                android:id="@+id/teleop_button_high_4"
+                android:layout_width="102sp"
+                android:layout_height="102sp"
+                android:layout_marginTop="43sp"
+                android:layout_marginEnd="212sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/nothing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/teleop_grid" />
+
+            <ImageButton
+                android:id="@+id/teleop_button_high_5"
+                android:layout_width="102sp"
+                android:layout_height="102sp"
+                android:layout_marginTop="43sp"
+                android:layout_marginEnd="0sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/nothing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/teleop_grid" />
+
+            <ImageButton
+                android:id="@+id/teleop_button_high_6"
+                android:layout_width="102sp"
+                android:layout_height="102sp"
+                android:layout_marginStart="218sp"
+                android:layout_marginTop="43sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/nothing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/teleop_grid" />
+
+            <ImageButton
+                android:id="@+id/teleop_button_high_7"
+                android:layout_width="102sp"
+                android:layout_height="102sp"
+                android:layout_marginStart="438sp"
+                android:layout_marginTop="43sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/nothing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/teleop_grid" />
+
+            <ImageButton
+                android:id="@+id/teleop_button_high_8"
+                android:layout_width="102sp"
+                android:layout_height="102sp"
+                android:layout_marginStart="648sp"
+                android:layout_marginTop="43sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/nothing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/teleop_grid" />
+
+            <ImageButton
+                android:id="@+id/teleop_button_high_9"
+                android:layout_width="102sp"
+                android:layout_height="102sp"
+                android:layout_marginStart="864sp"
+                android:layout_marginTop="43sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/nothing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/teleop_grid" />
+
+            <ImageButton
+                android:id="@+id/teleop_button_middle_1"
+                android:layout_width="102sp"
+                android:layout_height="102sp"
+                android:layout_marginTop="147sp"
+                android:layout_marginEnd="864sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/nothing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/teleop_grid" />
+
+            <ImageButton
+                android:id="@+id/teleop_button_middle_2"
+                android:layout_width="102sp"
+                android:layout_height="102sp"
+                android:layout_marginTop="147sp"
+                android:layout_marginEnd="646sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/nothing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/teleop_grid" />
+
+            <ImageButton
+                android:id="@+id/teleop_button_middle_3"
+                android:layout_width="102sp"
+                android:layout_height="102sp"
+                android:layout_marginTop="147sp"
+                android:layout_marginEnd="431sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/nothing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/teleop_grid" />
+
+            <ImageButton
+                android:id="@+id/teleop_button_middle_4"
+                android:layout_width="102sp"
+                android:layout_height="102sp"
+                android:layout_marginTop="147sp"
+                android:layout_marginEnd="212sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/nothing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/teleop_grid" />
+
+            <ImageButton
+                android:id="@+id/teleop_button_middle_5"
+                android:layout_width="102sp"
+                android:layout_height="102sp"
+                android:layout_marginTop="147sp"
+                android:layout_marginEnd="0sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/nothing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/teleop_grid" />
+
+            <ImageButton
+                android:id="@+id/teleop_button_middle_6"
+                android:layout_width="102sp"
+                android:layout_height="102sp"
+                android:layout_marginStart="218sp"
+                android:layout_marginTop="147sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/nothing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/teleop_grid" />
+
+            <ImageButton
+                android:id="@+id/teleop_button_middle_7"
+                android:layout_width="102sp"
+                android:layout_height="102sp"
+                android:layout_marginStart="438sp"
+                android:layout_marginTop="147sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/nothing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/teleop_grid" />
+
+            <ImageButton
+                android:id="@+id/teleop_button_middle_8"
+                android:layout_width="102sp"
+                android:layout_height="102sp"
+                android:layout_marginStart="648sp"
+                android:layout_marginTop="147sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/nothing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/teleop_grid" />
+
+            <ImageButton
+                android:id="@+id/teleop_button_middle_9"
+                android:layout_width="102sp"
+                android:layout_height="102sp"
+                android:layout_marginStart="864sp"
+                android:layout_marginTop="147sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/nothing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/teleop_grid" />
+
+            <ImageButton
+                android:id="@+id/teleop_button_low_1"
+                android:layout_width="102sp"
+                android:layout_height="102sp"
+                android:layout_marginTop="251sp"
+                android:layout_marginEnd="864sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/nothing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/teleop_grid" />
+
+            <ImageButton
+                android:id="@+id/teleop_button_low_2"
+                android:layout_width="102sp"
+                android:layout_height="102sp"
+                android:layout_marginTop="251sp"
+                android:layout_marginEnd="646sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/nothing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/teleop_grid" />
+
+            <ImageButton
+                android:id="@+id/teleop_button_low_3"
+                android:layout_width="102sp"
+                android:layout_height="102sp"
+                android:layout_marginTop="251sp"
+                android:layout_marginEnd="431sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/nothing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/teleop_grid" />
+
+            <ImageButton
+                android:id="@+id/teleop_button_low_4"
+                android:layout_width="102sp"
+                android:layout_height="102sp"
+                android:layout_marginTop="251sp"
+                android:layout_marginEnd="212sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/nothing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/teleop_grid" />
+
+            <ImageButton
+                android:id="@+id/teleop_button_low_5"
+                android:layout_width="102sp"
+                android:layout_height="102sp"
+                android:layout_marginTop="251sp"
+                android:layout_marginEnd="0sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/nothing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/teleop_grid" />
+
+            <ImageButton
+                android:id="@+id/teleop_button_low_6"
+                android:layout_width="102sp"
+                android:layout_height="102sp"
+                android:layout_marginStart="218sp"
+                android:layout_marginTop="251sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/nothing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/teleop_grid" />
+
+            <ImageButton
+                android:id="@+id/teleop_button_low_7"
+                android:layout_width="102sp"
+                android:layout_height="102sp"
+                android:layout_marginStart="438sp"
+                android:layout_marginTop="251sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/nothing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/teleop_grid" />
+
+            <ImageButton
+                android:id="@+id/teleop_button_low_8"
+                android:layout_width="102sp"
+                android:layout_height="102sp"
+                android:layout_marginStart="648sp"
+                android:layout_marginTop="251sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/nothing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/teleop_grid" />
+
+            <ImageButton
+                android:id="@+id/teleop_button_low_9"
+                android:layout_width="102sp"
+                android:layout_height="102sp"
+                android:layout_marginStart="864sp"
+                android:layout_marginTop="251sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/nothing"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/teleop_grid" />
+
+            <SeekBar
+                android:id="@+id/teleop_strategybar"
+                android:layout_width="200sp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18sp"
+                android:layout_marginEnd="350sp"
+                android:max="3"
+                android:scaleX="2"
+                android:scaleY="2"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/teleop_strategytitle"
+                app:layout_constraintTop_toTopOf="@+id/teleop_strategytitle" />
+
+            <TextView
+                android:id="@+id/teleop_strategytitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-20sp"
+                android:layout_marginEnd="780sp"
+                android:fontFamily="@font/faxsansbeta"
+                android:text="Strategy?"
+                android:textColor="@color/FEDS_WHITE"
+                android:textSize="40sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/teleop_grid" />
+
+            <CheckBox
+                android:id="@+id/teleop_coopertition"
+                android:layout_width="90sp"
+                android:layout_height="90sp"
+                android:layout_marginTop="-42sp"
+                android:layout_marginStart="300sp"
+                android:button="@null"
+                android:backgroundTint="@color/FEDS_WHITE"
+                android:background="?android:attr/listChoiceIndicatorMultiple"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/teleop_grid" />
+
+            <TextView
+                android:id="@+id/teleop_coopertitiontitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/faxsansbeta"
+                android:text="Coopertition?"
+                android:textColor="@color/FEDS_WHITE"
+                android:layout_marginTop="-20sp"
+                android:layout_marginStart="620sp"
+                android:textSize="40sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/teleop_grid" />
+
+            <TextView
+                android:id="@+id/teleop_strategyviewtext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="150sp"
+                android:layout_marginTop="-30sp"
+                android:textSize="20sp"
+                android:textColor="@color/FEDS_WHITE"
+                android:fontFamily="@font/faxsansbeta"
+                android:text="Please Select An Option!"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/teleop_grid"/>
+
+            <TextView
+                android:id="@+id/teleop_defensetitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40sp"
+                android:layout_marginEnd="450sp"
+                android:text="Played Defense?"
+                android:textSize="40sp"
+                android:textColor="@color/FEDS_WHITE"
+                android:fontFamily="@font/faxsansbeta"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/teleop_grid"/>
+
+            <RadioGroup
+                android:id="@+id/teleop_radiogroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="45sp"
+                android:layout_marginEnd="100sp"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/teleop_defensetitle"
+                app:layout_constraintTop_toBottomOf="@+id/teleop_grid" >
+                <RadioButton
+                    android:id="@+id/radioButton1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="20sp"
+                    android:textColor="@color/FEDS_WHITE"
+                    android:fontFamily="@font/faxsansbeta"
+                    android:text="Team 1" />
+                <RadioButton
+                    android:id="@+id/radioButton2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="20sp"
+                    android:textColor="@color/FEDS_WHITE"
+                    android:fontFamily="@font/faxsansbeta"
+                    android:text="Team 2" />
+                <RadioButton
+                    android:id="@+id/radioButton3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="20sp"
+                    android:textColor="@color/FEDS_WHITE"
+                    android:fontFamily="@font/faxsansbeta"
+                    android:text="Team 3" />
+                <RadioButton
+                    android:id="@+id/radioButton4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="20sp"
+                    android:textColor="@color/FEDS_WHITE"
+                    android:fontFamily="@font/faxsansbeta"
+                    android:text="No Defense" />
+
+            </RadioGroup>
+
+            <ImageButton
+                android:id="@+id/endgame_green"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="60sp"
+                android:layout_marginTop="50sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/green_trans"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/endgame_changestationtitle"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/endgame_yellow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="-90sp"
+                android:layout_marginTop="50sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/yellow_trans"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/endgame_changestationtitle"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/endgame_red"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="-240sp"
+                android:layout_marginTop="50sp"
+                android:background="@color/TRANSPARENT"
+                android:src="@drawable/red_trans"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/endgame_changestationtitle"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/endgame_changestationtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="55sp"
+                android:layout_marginEnd="530sp"
+                android:fontFamily="@font/faxsansbeta"
+                android:text="Charge Station?"
+                android:textColor="@color/FEDS_WHITE"
+                android:textSize="40sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/endgame_disabledtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/FEDS_WHITE"
+                android:fontFamily="@font/faxsansbeta"
+                android:layout_marginTop="55sp"
+                android:layout_marginStart="650sp"
+                android:textSize="40sp"
+                android:text="Disabled?"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <CheckBox
+                android:id="@+id/endgame_disabled"
+                android:layout_width="90sp"
+                android:layout_height="90sp"
+                android:layout_marginTop="35sp"
+                android:layout_marginStart="400sp"
+                android:button="@null"
+                android:backgroundTint="@color/FEDS_WHITE"
+                android:background="?android:attr/listChoiceIndicatorMultiple"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/endgame_minus"
+                android:layout_width="60sp"
+                android:layout_height="60sp"
+                android:layout_marginTop="142sp"
+                android:layout_marginEnd="530sp"
+                android:backgroundTint="@color/FEDS_WHITE"
+                android:text="@string/minus"
+                android:textAlignment="gravity"
+                android:textColor="@color/FEDS_BLACK"
+                android:textSize="30sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/endgame_linkstitle"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/endgame_tally"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="510sp"
+                android:fontFamily="@font/faxsansbeta"
+                android:text="@string/zero"
+                android:textColor="@color/FEDS_WHITE"
+                android:textSize="50sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/endgame_minus"
+                app:layout_constraintTop_toTopOf="@+id/endgame_minus" />
+
+            <Button
+                android:id="@+id/endgame_plus"
+                android:layout_width="60sp"
+                android:layout_height="60sp"
+                android:layout_marginEnd="450sp"
+                android:backgroundTint="@color/FEDS_WHITE"
+                android:text="@string/plus"
+                android:textAlignment="gravity"
+                android:textColor="@color/FEDS_BLACK"
+                android:textSize="30sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/endgame_tally"
+                app:layout_constraintTop_toTopOf="@+id/endgame_tally"
+                tools:ignore="HardcodedText" />
+
+            <TextView
+                android:id="@+id/endgame_linkstitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="150sp"
+                android:textColor="@color/FEDS_WHITE"
+                android:fontFamily="@font/faxsansbeta"
+                android:textSize="40sp"
+                android:layout_marginEnd="380sp"
+                android:text="Links?"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+            <Button
+                android:id="@+id/endgame_finish"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="220sp"
+                android:text="Finish"
+                android:textColor="@color/FEDS_BLACK"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <CheckBox
+                android:id="@+id/endgame_parked"
+                android:layout_width="90sp"
+                android:layout_height="90sp"
+                android:layout_marginStart="200sp"
+                android:layout_marginTop="128sp"
+                android:background="?android:attr/listChoiceIndicatorMultiple"
+                android:backgroundTint="@color/FEDS_WHITE"
+                android:button="@null"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/endgame_parkedtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="430sp"
+                android:layout_marginTop="150sp"
+                android:fontFamily="@font/faxsansbeta"
+                android:text="Parked?"
+                android:textColor="@color/FEDS_WHITE"
+                android:textSize="40sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/coolookingthing"
+            android:layout_width="match_parent"
+            android:layout_height="80sp"
+            android:src="@drawable/dashboard_static"
+            android:background="@color/TRANSPARENT"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/Team_color_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20sp"
+            android:layout_marginEnd="260sp"
+            android:fontFamily="@font/faxsansbeta"
+            android:text="Blue"
+            android:textColor="@color/FEDS_WHITE"
+            android:textSize="30sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/Match_title"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/Match_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/faxsansbeta"
+            android:text="Quals 1"
+            android:textColor="@color/FEDS_WHITE"
+            android:textSize="60sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/Team_number_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="260dp"
+            android:layout_marginTop="20sp"
+            android:fontFamily="@font/faxsansbeta"
+            android:text="201"
+            android:textColor="@color/FEDS_WHITE"
+            android:textSize="30sp"
+            app:layout_constraintEnd_toStartOf="@+id/Match_title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

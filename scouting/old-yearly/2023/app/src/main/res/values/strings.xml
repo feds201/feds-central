@@ -1,0 +1,142 @@
+<resources>
+    <string name="app_name">FEDS Scouting</string>
+    <string name="menu_home_title">Home</string>
+    <string name="menu_dashboard_title">Input</string>
+    <string name="menu_history_title">History</string>
+    <string name="menu_settings_title">Settings</string>
+    <string name="home_matches_title">Matches</string>
+    <string name="dashboard_title">Title</string>
+    <string name="dashboard_teamNum">Team #</string>
+    <string name="dashboard_color">Color</string>
+    <string name="dashboard_autonomous_title">Autonomous</string>
+    <string name="dashboard_high_title">High</string>
+    <string name="dashboard_makes_title">Makes</string>
+    <string name="dashboard_misses_title">Misses</string>
+    <string name="dashboard_low_title">Low</string>
+    <string name="dashboard_teleop_title">Teleop</string>
+    <string name="dashboard_endgame_title">Endgame</string>
+    <string name="plus">+</string>
+    <string name="minus">-</string>
+    <string name="zero">0</string>
+    <string name="leaves_tarmac_title">Leaves Tarmac?</string>
+    <string name="human_scored_title">Human Scored?</string>
+    <string name="played_defence_title">Played Defence?</string>
+    <string name="bar_climbed_title">Bar Climbed:</string>
+    <string name="overall_rating_title">Overall Rating:</string>
+    <string name="finish_title">Finish</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
+    <string name="nav_open">Open</string>
+    <string name="nav_close">Close</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string-array name="Manual">
+        <item>Q 1</item>
+        <item>Q 2</item>
+        <item>Q 3</item>
+        <item>Q 4</item>
+        <item>Q 5</item>
+        <item>Q 6</item>
+        <item>Q 7</item>
+        <item>Q 8</item>
+        <item>Q 9</item>
+        <item>Q 10</item>
+        <item>Q 11</item>
+        <item>Q 12</item>
+        <item>Q 13</item>
+        <item>Q 14</item>
+        <item>Q 15</item>
+        <item>Q 16</item>
+        <item>Q 17</item>
+        <item>Q 18</item>
+        <item>Q 19</item>
+        <item>Q 20</item>
+        <item>Q 21</item>
+        <item>Q 22</item>
+        <item>Q 23</item>
+        <item>Q 24</item>
+        <item>Q 25</item>
+        <item>Q 26</item>
+        <item>Q 27</item>
+        <item>Q 28</item>
+        <item>Q 29</item>
+        <item>Q 30</item>
+        <item>Q 31</item>
+        <item>Q 32</item>
+        <item>Q 33</item>
+        <item>Q 34</item>
+        <item>Q 35</item>
+        <item>Q 36</item>
+        <item>Q 37</item>
+        <item>Q 38</item>
+        <item>Q 39</item>
+        <item>Q 40</item>
+        <item>Q 41</item>
+        <item>Q 42</item>
+        <item>Q 43</item>
+        <item>Q 44</item>
+        <item>Q 45</item>
+        <item>Q 46</item>
+        <item>Q 47</item>
+        <item>Q 48</item>
+        <item>Q 49</item>
+        <item>Q 50</item>
+        <item>Q 51</item>
+        <item>Q 52</item>
+        <item>Q 53</item>
+        <item>Q 54</item>
+        <item>Q 55</item>
+        <item>Q 56</item>
+        <item>Q 57</item>
+        <item>Q 58</item>
+        <item>Q 59</item>
+        <item>Q 60</item>
+        <item>Q 61</item>
+        <item>Q 62</item>
+        <item>Q 63</item>
+        <item>Q 64</item>
+        <item>Q 65</item>
+        <item>Q 66</item>
+        <item>Q 67</item>
+        <item>Q 68</item>
+        <item>Q 69</item>
+        <item>Q 70</item>
+        <item>Q 71</item>
+        <item>Q 72</item>
+        <item>Q 73</item>
+        <item>Q 74</item>
+        <item>Q 75</item>
+        <item>Q 76</item>
+        <item>Q 77</item>
+        <item>Q 78</item>
+        <item>Q 79</item>
+        <item>Q 80</item>
+        <item>Q 81</item>
+        <item>Q 82</item>
+        <item>Q 83</item>
+        <item>Q 84</item>
+        <item>Q 85</item>
+        <item>Q 86</item>
+        <item>Q 87</item>
+        <item>Q 88</item>
+        <item>Q 89</item>
+        <item>Q 90</item>
+        <item>Q 91</item>
+        <item>Q 92</item>
+        <item>Q 93</item>
+        <item>Q 94</item>
+        <item>Q 95</item>
+        <item>Q 96</item>
+        <item>Q 97</item>
+        <item>Q 98</item>
+        <item>Q 99</item>
+        <item>Q 100</item>
+    </string-array>
+</resources>
