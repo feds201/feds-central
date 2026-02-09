@@ -10,7 +10,7 @@ import {
 import { MarkdownTextPrimitive } from '@assistant-ui/react-markdown'
 import remarkGfm from 'remark-gfm'
 import '@assistant-ui/react-markdown/styles/dot.css'
-import { MessageCircle, Plus, Trash2, Pencil, Check, X } from 'lucide-react'
+import { MessageCircle, Plus, Trash2, Pencil, Check, X, Menu } from 'lucide-react'
 import { createChatAdapter } from '@/lib/chat/chatAdapter'
 import { onThreadsChanged } from '@/lib/chat/chatManager'
 import {
@@ -90,7 +90,7 @@ function ThinkingSpinner() {
 
 // --- Thread component (inner, wrapped by runtime provider) ---
 
-function ChatThread() {
+function ChatThread({ onToggleSidebar }) {
   const messagesEndRef = useRef(null)
 
   // Auto-scroll on new messages
@@ -100,6 +100,17 @@ function ChatThread() {
 
   return (
     <ThreadPrimitive.Root className="flex flex-col h-full">
+      {/* Mobile Header */}
+      <div className="md:hidden flex items-center justify-between p-4 pl-20 border-b border-slate-700/50 bg-slate-900/40 backdrop-blur-md sticky top-0 z-10">
+        <span className="font-semibold text-slate-200">Chat</span>
+        <button
+          onClick={onToggleSidebar}
+          className="p-2 -mr-2 rounded-lg text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 transition-colors"
+        >
+          <Menu size={20} />
+        </button>
+      </div>
+
       <ThreadPrimitive.Viewport className="flex-1 overflow-y-auto p-4">
         <ThreadPrimitive.Empty>
           <div className="flex flex-col items-center justify-center h-full text-slate-500">
@@ -136,7 +147,7 @@ function ChatThread() {
 
 // --- Thread Sidebar ---
 
-function ThreadSidebar({ threads, activeThreadId, onSelect, onCreate, onDelete, onRename }) {
+function ThreadSidebar({ threads, activeThreadId, onSelect, onCreate, onDelete, onRename, isOpen, onClose }) {
   const [editingId, setEditingId] = useState(null)
   const [editValue, setEditValue] = useState('')
 
@@ -152,31 +163,53 @@ function ThreadSidebar({ threads, activeThreadId, onSelect, onCreate, onDelete, 
     setEditingId(null)
   }
 
-  return (
-    <div className="flex flex-col h-full w-60 border-r border-slate-700/50 bg-slate-900/40">
-      <div className="p-3 border-b border-slate-700/50">
-        <button
-          onClick={onCreate}
-          className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-indigo-600/20 border border-indigo-500/30 text-indigo-300 hover:bg-indigo-600/30 transition-colors text-sm font-medium"
-        >
-          <Plus size={16} />
-          New Chat
-        </button>
-      </div>
+  const sidebarClasses = `
+    flex flex-col h-full border-r border-slate-700/50 bg-slate-900/95 md:bg-slate-900/40 backdrop-blur-xl md:backdrop-blur-none
+    fixed inset-y-0 left-0 z-40 w-72 md:w-60 md:relative md:z-0
+    transition-transform duration-300 ease-in-out
+    ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+  `
 
-      <div className="flex-1 overflow-y-auto p-2 space-y-1">
-        {threads.map((thread) => (
-          <div
-            key={thread.threadId}
-            className={`group flex items-center gap-1 rounded-lg px-3 py-2 cursor-pointer transition-colors text-sm ${
-              thread.threadId === activeThreadId
-                ? 'bg-indigo-600/20 text-indigo-200'
-                : 'text-slate-400 hover:bg-slate-800/50 hover:text-slate-200'
-            }`}
-            onClick={() => onSelect(thread.threadId)}
+  return (
+    <>
+      {/* Mobile Backdrop */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black/60 z-30 md:hidden backdrop-blur-sm transition-opacity"
+          onClick={onClose}
+        />
+      )}
+
+      <div className={sidebarClasses}>
+        <div className="p-3 border-b border-slate-700/50 flex items-center gap-2">
+          <button
+            onClick={() => { onCreate(); onClose(); }}
+            className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-indigo-600/20 border border-indigo-500/30 text-indigo-300 hover:bg-indigo-600/30 transition-colors text-sm font-medium"
           >
-            {editingId === thread.threadId ? (
-              <>
+            <Plus size={16} />
+            New Chat
+          </button>
+          <button
+            onClick={onClose}
+            className="md:hidden p-2 rounded-xl hover:bg-slate-800/50 text-slate-400 transition-colors"
+          >
+            <X size={20} />
+          </button>
+        </div>
+
+        <div className="flex-1 overflow-y-auto p-2 space-y-1">
+          {threads.map((thread) => (
+            <div
+              key={thread.threadId}
+              className={`group flex items-center gap-1 rounded-lg px-3 py-2 cursor-pointer transition-colors text-sm ${
+                thread.threadId === activeThreadId
+                  ? 'bg-indigo-600/20 text-indigo-200'
+                  : 'text-slate-400 hover:bg-slate-800/50 hover:text-slate-200'
+              }`}
+              onClick={() => { onSelect(thread.threadId); onClose(); }}
+            >
+              {editingId === thread.threadId ? (
+                <>
                 <input
                   value={editValue}
                   onChange={(e) => setEditValue(e.target.value)}
@@ -228,12 +261,13 @@ function ThreadSidebar({ threads, activeThreadId, onSelect, onCreate, onDelete, 
         )}
       </div>
     </div>
+    </>
   )
 }
 
 // --- Thread runtime (reads from localStorage, delegates streaming to chatManager) ---
 
-function ThreadRuntime({ threadId }) {
+function ThreadRuntime({ threadId, onToggleSidebar }) {
   const adapter = useMemo(
     () =>
       createChatAdapter({
@@ -252,7 +286,7 @@ function ThreadRuntime({ threadId }) {
 
   return (
     <AssistantRuntimeProvider runtime={runtime}>
-      <ChatThread />
+      <ChatThread onToggleSidebar={onToggleSidebar} />
     </AssistantRuntimeProvider>
   )
 }
@@ -268,6 +302,7 @@ export default function Chat({ session }) {
     const t = getThreads()
     return t.length > 0 ? t[0].threadId : null
   })
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   // Refresh sidebar when chatManager finishes a background stream
   useEffect(() => {
@@ -314,7 +349,7 @@ export default function Chat({ session }) {
   }, [])
 
   return (
-    <div className="flex h-full rounded-2xl overflow-hidden glass-card">
+    <div className="flex h-full rounded-2xl overflow-hidden glass-card relative">
       <ThreadSidebar
         threads={threads}
         activeThreadId={activeThreadId}
@@ -322,6 +357,8 @@ export default function Chat({ session }) {
         onCreate={createThread}
         onDelete={handleDelete}
         onRename={handleRename}
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
       />
 
       <div className="flex-1 flex flex-col min-w-0">
@@ -329,10 +366,21 @@ export default function Chat({ session }) {
           <ThreadRuntime
             key={activeThreadId}
             threadId={activeThreadId}
+            onToggleSidebar={() => setIsSidebarOpen(true)}
           />
         ) : (
-          <div className="flex items-center justify-center h-full text-slate-500">
-            <p>Select or create a chat to get started.</p>
+          <div className="flex flex-col h-full relative">
+            <div className="md:hidden absolute top-4 right-4 z-10">
+              <button
+                onClick={() => setIsSidebarOpen(true)}
+                className="p-2 rounded-lg text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 transition-colors"
+              >
+                <Menu size={20} />
+              </button>
+            </div>
+            <div className="flex items-center justify-center h-full text-slate-500">
+              <p>Select or create a chat to get started.</p>
+            </div>
           </div>
         )}
       </div>
