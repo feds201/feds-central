@@ -8,26 +8,11 @@ export function AuthProvider({ children }) {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const initAuth = async () => {
-            // Check if mock auth is enabled (dev-only)
-            const useMockAuth = import.meta.env.VITE_DEV_MOCK_AUTH === 'true';
-            
-            if (useMockAuth) {
-                console.warn('⚠️ Mock authentication is enabled - this should only be used in development!');
-                setUser({ id: 'mock', email: 'mock@example.com' });
-                setLoading(false);
-                return;
-            }
-
-            // Normal flow: load persisted session
-            const session = api.getSession();
-            if (session) {
-                setUser(session.user);
-            }
-            setLoading(false);
-        };
-
-        initAuth();
+        const session = api.getSession();
+        if (session) {
+            setUser(session.user);
+        }
+        setLoading(false);
     }, []);
 
     const login = async (email, password) => {
