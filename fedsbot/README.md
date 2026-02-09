@@ -82,11 +82,14 @@ AI assistant Discord bot for The FEDS (FRC Team 201). Uses the Claude Agent SDK 
 
 ## GitHub Webhook Setup
 
-1. Go to repo Settings > Webhooks > Add webhook
-2. Payload URL: `http://<your-server-ip>:<PORT>/webhook/github`
-3. Content type: `application/json`
-4. Secret: same value as `GITHUB_WEBHOOK_SECRET` in `.env`
-5. Events: just "Pushes"
+Configure at: https://github.com/feds201/feds-central/settings/hooks/595491205
+
+1. Payload URL: `http://<your-server-ip>:<PORT>/webhook/github`
+2. Content type: `application/json`
+3. Secret: same value as `GITHUB_WEBHOOK_SECRET` in `.env`
+4. Events: just "Pushes"
+
+> **If you change `PORT`, the server IP, or `GITHUB_WEBHOOK_SECRET` in `.env`, you must also update the corresponding fields in the GitHub webhook settings above.**
 
 ## Environment Variables
 
