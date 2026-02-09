@@ -4,11 +4,15 @@ import { api } from '@/lib/api';
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-    const [user, setUser] = useState({ id: 'mock', email: 'mock@example.com' });
-    const [loading, setLoading] = useState(false);
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Mock auth enabled
+        const session = api.getSession();
+        if (session) {
+            setUser(session.user);
+        }
+        setLoading(false);
     }, []);
 
     const login = async (email, password) => {
