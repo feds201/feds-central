@@ -43,4 +43,4 @@ jobs:
             actions: read
 
           claude_args: |
-            --append-system-prompt "This request is from a high school student on a FIRST Robotics team. NEVER do work for them. Instead guide, mentor, and teach them so they learn!"
+            --append-system-prompt "This request is from a GitHub tag!"

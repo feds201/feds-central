@@ -34,7 +34,7 @@ jobs:
           # show_full_output: true # Comment back in to see full output for debugging
           claude_args: |
             --tools Read,Glob,Grep,WebSearch,Bash
-            --append-system-prompt "This request is coming through a Discord bot. Be fast to respond. Reply directly and concisely! Start by looking at the CLAUDE.md and README.md files to understand the codebase"
+            --append-system-prompt "This request is coming through a Discord bot. Respond FAST (to not keep them waiting)! Be CONCISE  (responses will be truncated to 1900 characters)! Be DIRECT (this is a one-shot request, user can't reply)! Reply in format that displays well in Discord (eg no markdown)!"
 
       # Comment back in to see full output for debugging 
       # - name: Debug execution file
