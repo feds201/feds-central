@@ -58,7 +58,7 @@ function AppRoutes() {
             <Route path="/password-health" element={<PasswordHealth session={session} />} />
             <Route path="/audit" element={<AuditLog session={session} />} />
             <Route path="/account" element={<Account session={session} />} />
-            <Route path="/chat" element={<Chat session={session} />} />
+            <Route path="/chat" element={<Chat />} />
             <Route path="/signout" element={<Navigate to="/sign-in" replace />} />
             <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Route>
