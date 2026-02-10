@@ -32,4 +32,8 @@ public final class RobotMap {
             return TunerConstants.createDrivetrain();
         }
     }
+
+    public static class SpindexerConstants {
+        public static final int kSpindexerMotorId = 0;
+    }
 }
