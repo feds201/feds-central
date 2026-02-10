@@ -8,8 +8,8 @@ export function AuthProvider({ children }) {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Skip auth if running in dev mode (ie `npm run dev`) 
-        if (import.meta.env.DEV) {
+        // Skip auth in dev mode
+        if (!import.meta.env.PROD) {
             setUser({ id: 'dev', email: 'dev@feds201.com' });
             setLoading(false);
             return;

@@ -12,8 +12,8 @@ const databaseUrl = process.env.VITE_DATABASE_URL;
 
 let sql;
 
-if (!databaseUrl) {
-    console.warn('⚠️  VITE_DATABASE_URL is not set — running with mock database (dev mode)');
+if (process.env.NODE_ENV !== 'production') {
+    console.warn('⚠️  Running with mock database (dev mode)');
     // Mock sql tagged template that returns empty arrays
     sql = () => Promise.resolve([]);
 } else {
