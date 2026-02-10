@@ -36,25 +36,31 @@ AI assistant Discord bot for The FEDS (FRC Team 201). Uses the Claude Agent SDK 
 
 ### Installation
 
-1. Clone the feds-central repository:
+1. Install system dependencies (Alpine Linux):
+   ```bash
+   apk add git npm bash
+   ```
+   > `bash` is required by the Claude Agent SDK's Bash tool. Alpine doesn't include it by default.
+
+2. Clone the feds-central repository:
    ```bash
    cd /root
    git clone https://github.com/feds201/feds-central.git
    ```
 
-2. Install dependencies:
+3. Install dependencies:
    ```bash
    cd /root/feds-central/fedsbot
    npm install
    ```
 
-3. Create `.env` file (see `.env.example` for all variables and descriptions):
+4. Create `.env` file (see `.env.example` for all variables and descriptions):
    ```bash
    cp .env.example .env
    nano .env  # Fill in your tokens
    ```
 
-4. Test the bot:
+5. Test the bot:
    ```bash
    npm start
    ```
