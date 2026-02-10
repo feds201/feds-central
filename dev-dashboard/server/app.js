@@ -135,6 +135,12 @@ app.post('/api/auth/login', async (req, res) => {
 // --- Middleware ---
 
 const authenticateToken = (req, res, next) => {
+    // Skip auth in dev mode (no database configured)
+    if (!process.env.VITE_DATABASE_URL) {
+        req.user = { userId: 'dev', email: 'dev@feds201.com' };
+        return next();
+    }
+
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
 
