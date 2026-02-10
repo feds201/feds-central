@@ -13,6 +13,9 @@ const repoRoot = path.resolve(__dirname, '..', '..');
 // Clear NODE_OPTIONS so tsx hooks don't leak into the SDK subprocess
 delete process.env.NODE_OPTIONS;
 
+// SDK needs SHELL to find a Posix shell for Bash tool
+if (!process.env.SHELL) process.env.SHELL = '/bin/sh';
+
 // V2 SDK ignores the cwd option, so chdir to repo root instead
 process.chdir(repoRoot);
 console.log(`[agent] Working directory set to: ${process.cwd()}`);
