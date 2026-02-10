@@ -10,11 +10,18 @@ dotenv.config({ path: path.join(__dirname, '.env') });
 delete process.env.NODE_OPTIONS;
 
 // SDK needs SHELL to find a Posix shell for Bash tool
-if (!process.env.SHELL) process.env.SHELL = '/bin/sh';
+process.env.SHELL = '/bin/sh';
 
 const repoRoot = path.resolve(__dirname, '..');
 process.chdir(repoRoot);
 console.log(`cwd: ${process.cwd()}`);
+console.log(`SHELL: ${process.env.SHELL}`);
+
+// Check if the shell actually exists on this machine
+import { existsSync } from 'fs';
+for (const sh of ['/bin/sh', '/bin/bash', '/bin/ash', '/usr/bin/bash', '/usr/bin/sh']) {
+  console.log(`  ${sh} exists: ${existsSync(sh)}`);
+}
 
 const session = unstable_v2_createSession({
   model: 'claude-sonnet-4-5',
