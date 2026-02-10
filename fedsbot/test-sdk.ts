@@ -9,9 +9,6 @@ dotenv.config({ path: path.join(__dirname, '.env') });
 // Same as agent.ts: clear tsx hooks so SDK subprocess is clean
 delete process.env.NODE_OPTIONS;
 
-// SDK needs SHELL to find a Posix shell for Bash tool
-process.env.SHELL = '/bin/sh';
-
 const repoRoot = path.resolve(__dirname, '..');
 process.chdir(repoRoot);
 console.log(`cwd: ${process.cwd()}`);
