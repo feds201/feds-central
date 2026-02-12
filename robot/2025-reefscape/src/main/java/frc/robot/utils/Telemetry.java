@@ -3,6 +3,8 @@ package frc.robot.utils;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -91,6 +93,11 @@ public class Telemetry {
         driveModulePositions.set(state.ModulePositions);
         driveTimestamp.set(state.Timestamp);
         driveOdometryFrequency.set(1.0 / state.OdometryPeriod);
+
+        /* Publish via AdvantageKit for AdvantageScope 3D view */
+        Logger.recordOutput("Odometry/Robot", state.Pose);
+        Logger.recordOutput("Odometry/ModuleStates", state.ModuleStates);
+        Logger.recordOutput("Odometry/ModuleTargets", state.ModuleTargets);
 
         /* Also write to log file */
         m_poseArray[0] = state.Pose.getX();
