@@ -1,6 +1,7 @@
 package frc.robot.utils;
 
 import com.ctre.phoenix6.SignalLogger;
+import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 
 import org.littletonrobotics.junction.Logger;
@@ -98,6 +99,12 @@ public class Telemetry {
         Logger.recordOutput("Odometry/Robot", state.Pose);
         Logger.recordOutput("Odometry/ModuleStates", state.ModuleStates);
         Logger.recordOutput("Odometry/ModuleTargets", state.ModuleTargets);
+
+        /* In sim, also publish the maple-sim ground truth pose (no odometry drift) */
+        if (Utils.isSimulation()) {
+            Logger.recordOutput("Simulator/Robot",
+                DrivetrainConstants.drivetrain.getSimulatedPose());
+        }
 
         /* Also write to log file */
         m_poseArray[0] = state.Pose.getX();

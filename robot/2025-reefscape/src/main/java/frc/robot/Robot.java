@@ -33,6 +33,9 @@ import edu.wpi.first.wpilibj.RobotController;
 import frc.robot.commands.swerve.ConfigureHologenicDrive;
 import frc.robot.constants.ComandCenter;
 import frc.robot.constants.RobotMap;
+import frc.robot.sim.SimulationManager;
+import org.ironmaple.simulation.SimulatedArena;
+import org.ironmaple.simulation.seasonspecific.reefscape2025.Arena2025Reefscape;
 import frc.robot.utils.AutonTester;
 import frc.robot.utils.DrivetrainConstants;
 import frc.robot.utils.LocalADStarAK;
@@ -51,6 +54,7 @@ public class Robot extends LoggedRobot
     private Command autonomousCommand;
     private RobotContainer robotContainer;
     private boolean voltageBelow10 = false;
+    private SimulationManager simulationManager;
 
     public Robot(){
         CameraServer.startAutomaticCapture();
@@ -84,6 +88,11 @@ public class Robot extends LoggedRobot
         Logger.addDataReceiver(new NT4Publisher());       // publish to NT for AdvantageScope live view
         Logger.addDataReceiver(new WPILOGWriter());       // save .wpilog files for replay
         Logger.start();
+
+        // Override arena BEFORE drivetrain creation (which registers with the arena)
+        if (com.ctre.phoenix6.Utils.isSimulation()) {
+            SimulatedArena.overrideInstance(new Arena2025Reefscape());
+        }
 
         Pathfinding.setPathfinder(new LocalADStarAK());
 
@@ -216,10 +225,15 @@ public class Robot extends LoggedRobot
 
     /** This method is called once when the robot is first started up. */
     @Override
-    public void simulationInit() {}
-
+    public void simulationInit() {
+        simulationManager = new SimulationManager();
+    }
 
     /** This method is called periodically whilst in simulation. */
     @Override
-    public void simulationPeriodic() {}
+    public void simulationPeriodic() {
+        if (simulationManager != null) {
+            simulationManager.periodic();
+        }
+    }
 }
