@@ -16,9 +16,11 @@ CommandXboxController controller = new CommandXboxController(0);
 IntakeSubsystem intake = new IntakeSubsystem();
 LedsSubsystem leds = new LedsSubsystem();
   public RobotContainer() {
-      controller.x().onTrue(intake.runIntakeMotors()).onFalse(intake.stopIntakeMotors());
-      controller.a().onTrue(intake.runIntakeMasterMotors()).onFalse(intake.stopIntakeMotors());
-      
+      controller.x().onTrue(intake.runIntakeMotors().alongWith(leds.shootingSignal())).onFalse(intake.stopIntakeMotors());
+      controller.a().onTrue(intake.runIntakeMasterMotors().alongWith(leds.intakeSignal())).onFalse(intake.stopIntakeMotors());
+      controller.b().onTrue(leds.climbingSignal());
+       controller.y().onTrue(leds.hasGamePieceSignal());
+
 
 
   }

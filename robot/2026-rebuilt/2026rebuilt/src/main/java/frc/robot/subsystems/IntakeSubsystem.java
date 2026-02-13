@@ -61,7 +61,7 @@ public class IntakeSubsystem extends SubsystemBase {
     intakeMasterMotor.setControl(new VoltageOut(0.5));
   }
   public Command runIntakeMotors () {
-    return new RunCommand(()->setAllMotorSpeed(0.05), this);
+    return new RunCommand(()->setAllMotorSpeed(0.5), this);
   }
   public Command runIntakeMasterMotors () {
     return new RunCommand(()->setintakeMasterMotorSpeed(0.05), this);

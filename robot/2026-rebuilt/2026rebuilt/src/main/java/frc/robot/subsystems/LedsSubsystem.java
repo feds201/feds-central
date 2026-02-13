@@ -4,10 +4,13 @@
 
 package frc.robot.subsystems;
 
+import java.lang.ModuleLayer.Controller;
+
 import com.lumynlabs.connection.usb.USBPort;
 import com.lumynlabs.devices.ConnectorXAnimate;
 import com.lumynlabs.domain.led.Animation;
 
+import edu.wpi.first.hal.simulation.AnalogInDataJNI;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.util.Color;
@@ -36,13 +39,15 @@ public class LedsSubsystem extends SubsystemBase {
   private boolean m_wasAuto = false;
 
   // Configuration
-  private static final String ZONE_ALL = "3"; 
+  private static final String ZONE_ALL = "3";
+  private static final String ZONE_BACK67 = "heelo";
 
   // Colors
   private static final Color COLOR_ORANGE = new Color(new Color8Bit(255, 100, 0));
   private static final Color COLOR_GREEN = new Color(new Color8Bit(0, 255, 0));
   private static final Color COLOR_RED = new Color(new Color8Bit(255, 0, 0));
   private static final Color COLOR_WHITE = new Color(new Color8Bit(255, 255, 255));
+  private static final Color COLOR_YELLOW = new Color(new Color8Bit(255, 255, 0));
   private static final Color COLOR_FEDS_BLUE = new Color(new Color8Bit(0, 168, 255)); // Team color
 
   /** Creates a new LedsSubsystem. */
@@ -97,14 +102,19 @@ public class LedsSubsystem extends SubsystemBase {
         
       case INTAKING:
         m_leds.leds.SetAnimation(Animation.Blink)
-            .ForZone(ZONE_ALL)
+            .ForZone(ZONE_BACK67)
             .WithColor(COLOR_ORANGE)
             .WithDelay(Units.Milliseconds.of(200))
             .RunOnce(false);
         break;
         
       case HAS_GAME_PIECE:
-        m_leds.leds.SetColor(ZONE_ALL, COLOR_GREEN);
+        m_leds.leds.SetAnimation(Animation.Comet)
+            .ForZone(ZONE_ALL)
+            .WithColor(COLOR_GREEN)
+            .WithDelay(Units.Milliseconds.of(2))
+            .Reverse(false)
+            .RunOnce(false);
         break;
         
       case SHOOTING:
@@ -139,7 +149,7 @@ public class LedsSubsystem extends SubsystemBase {
         // Disabled: Breathe Red indicating standby/disabled
         m_leds.leds.SetAnimation(Animation.Breathe)
           .ForZone(ZONE_ALL)
-          .WithColor(COLOR_RED)
+          .WithColor(COLOR_YELLOW)
           .WithDelay(Units.Milliseconds.of(20))
           .RunOnce(false);
     } else if (DriverStation.isAutonomous()) {
