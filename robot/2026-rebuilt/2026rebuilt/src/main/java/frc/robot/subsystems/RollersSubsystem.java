@@ -26,7 +26,7 @@ public class RollersSubsystem extends SubsystemBase {
   private final TalonFX motor;
   private final LinearSystem<N2, N1, N2> plant;
   private final DCMotorSim motorSim;
-
+  LedsSubsystem leds = LedsSubsystem.getInstance();
   // Visualization
   private final Mechanism2d mech2d = new Mechanism2d(3, 3);
   private final MechanismRoot2d mechRoot = mech2d.getRoot("RollerRoot", 1.5, 1.5);
@@ -45,7 +45,7 @@ public class RollersSubsystem extends SubsystemBase {
   }
 
   private RollersSubsystem() {
-    motor = new TalonFX(1, "rio");
+    motor = new TalonFX(23, "rio");
     plant = LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60(1), 0.001, 1.0);
     motorSim = new DCMotorSim(plant, DCMotor.getKrakenX60(1));
     
@@ -57,8 +57,9 @@ public class RollersSubsystem extends SubsystemBase {
     this.currentState = targetState;
     switch (targetState) {
       case ON:
-        motor.set(0.5);
-        motorSim.setInput(0.5);
+        motor.set(0.1);
+        motorSim.setInput(0.1);
+        leds.intakeSignal();
         break;
       case OFF:
         motor.stopMotor();

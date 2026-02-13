@@ -15,7 +15,7 @@ import frc.robot.subsystems.RollersSubsystem.RollerState;
 
 public class RobotContainer {
   CommandXboxController controller = new CommandXboxController(0);
-  RollersSubsystem rollers = RollersSubsystem.getInstance();
+  //RollersSubsystem rollers = RollersSubsystem.getInstance();
   LedsSubsystem leds = new LedsSubsystem();
   IntakeSubsystem intake = new IntakeSubsystem();
 
@@ -26,11 +26,12 @@ public class RobotContainer {
 
   private void configureBindings() {
     controller.x()
-        .onTrue(intake.setIntakeStateCommand(IntakeState.EXTENDED))
-        .onFalse(intake.setIntakeStateCommand(IntakeState.DEFAULT));
-    controller.y()
-        .onTrue(rollers.RollersCommand(RollerState.ON))
-        .onFalse(rollers.RollersCommand(RollerState.OFF));
+        .onTrue((leds.intakeSignal())).onFalse(leds.climbingSignal());
+      
+
+    // controller.y()
+    //     .onTrue(rollers.RollersCommand(RollerState.ON))
+    //     .onFalse(rollers.RollersCommand(RollerState.OFF));
   }
 
   public Command getAutonomousCommand() {

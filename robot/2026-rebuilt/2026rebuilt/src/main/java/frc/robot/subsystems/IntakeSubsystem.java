@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
+import frc.robot.subsystems.RollersSubsystem.RollerState;
+import frc.robot.utils.LimelightHelpers;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
@@ -23,8 +25,8 @@ public class IntakeSubsystem extends SubsystemBase {
 
   private final TalonFX motor;
   private final DigitalInput limit_switch_r;
-  private final NetworkTable limelight;
   private final DigitalInput limit_switch_l;
+  private final RollersSubsystem rollers; 
 
   // Simulation
   private final DCMotorSim motorSim;
@@ -81,8 +83,8 @@ public class IntakeSubsystem extends SubsystemBase {
   public IntakeSubsystem() {
     motor = new TalonFX(RobotMap.IntakeSubsystemConstants.kMotorID, "rio");
     limit_switch_r = new DigitalInput(RobotMap.IntakeSubsystemConstants.kLimit_switch_rID);
-    limelight = NetworkTableInstance.getDefault().getTable("limelight");
-    limit_switch_l = new DigitalInput(RobotMap.IntakeSubsystemConstants.kLimit_switch_lID);
+    limit_switch_l = new DigitalInput(RobotMap.IntakeSubsystemConstants.kLimit_switch_lID); 
+    rollers = RollersSubsystem.getInstance();
 
     // Simulation Setup
     var intakePlant = LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60(1), 0.004, 100.0);
@@ -99,6 +101,15 @@ public class IntakeSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+
+    if (LimelightHelpers.getTV("limelight-one")) {
+      System.out.println("Limelight found target.");
+      rollers.setState(RollerState.ON);
+    }
+
+    else {
+      rollers.setState(RollerState.OFF);
+    }
 
     switch(targetState) { // -> Extended
       case EXTENDED: extendIntake();
