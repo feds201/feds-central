@@ -3,15 +3,15 @@ import 'dart:core';
 import 'dart:developer' as developer;
 import 'dart:math';
 
+import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:scouting_app/components/CameraComposit.dart';
+import 'package:scouting_app/components/TextBox.dart';
 import 'package:scouting_app/main.dart';
 import 'package:scouting_app/services/Colors.dart';
 import 'package:scouting_app/services/DataBase.dart';
-import 'package:scouting_app/components/TextBox.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter/services.dart';
-import 'package:confetti/confetti.dart';
 
 class Checklist_record extends StatefulWidget {
   final PitChecklistItem list_item;
@@ -70,7 +70,9 @@ class _Checklist_recordState extends State<Checklist_record> {
   late bool elevator_motors;
   late bool elevator_wires;
   late bool elevator_nuts_and_bolts;
-  late List<String> elevator;
+  late List<String> elevator, drivetrain;
+
+  late bool drive_motors, drive_wheels, drive_gearboxes, drive_wires;
 
   late bool trapdoor_panels;
   late bool trapdoor_supports;
@@ -98,6 +100,24 @@ class _Checklist_recordState extends State<Checklist_record> {
   late bool gooseneck_nuts_and_bolts;
   late bool gooseneck_wires;
   late List<String> gooseneck;
+
+  late bool shooter_Placeholder1;
+  late bool shooter_Placeholder2;
+  late bool shooter_Placeholder3;
+  late bool shooter_Placeholder4;
+  late List<String> shooter;
+
+  late bool spindexerPH1;
+  late bool spindexerPH2;
+  late bool spindexerPH3;
+  late bool spindexerPH4;
+  late List<String> spinDexer;
+
+  late bool intakePH1;
+  late bool intakePH2;
+  late bool intakePH3;
+  late bool intakePH4;
+  late List<String> intake;
 
   late double outgoing_number;
   late double outgoing_battery_voltage;
@@ -203,7 +223,24 @@ class _Checklist_recordState extends State<Checklist_record> {
     elevator_wires = false;
     elevator_nuts_and_bolts = false;
 
+    drive_motors = false;
+    drive_wheels = false;
+    drive_gearboxes = false;
+    drive_wires = false;
+    drivetrain = [];
     elevator = [];
+
+    shooter_Placeholder1 = false;
+    shooter_Placeholder2 = false;
+    shooter_Placeholder3 = false;
+    shooter_Placeholder4 = false;
+    shooter = [];
+
+    spindexerPH1 = false;
+    spindexerPH2 = false;
+    spindexerPH3 = false;
+    spindexerPH4 = false;
+    spinDexer = [];
 
     trapdoor_panels = false;
     trapdoor_supports = false;
@@ -231,6 +268,12 @@ class _Checklist_recordState extends State<Checklist_record> {
     gooseneck_gears = false;
     gooseneck_wires = false;
     gooseneck = [];
+
+    intakePH1 = false;
+    intakePH2 = false;
+    intakePH3 = false;
+    intakePH4 = false;
+    intake = [];
 
     returning_battery_voltage = 0;
     returning_battery_cca = 0;
@@ -395,6 +438,12 @@ class _Checklist_recordState extends State<Checklist_record> {
           if (elevator_string) elevator.add("String");
           if (elevator_limit_switch) elevator.add("Limit Switch");
 
+          drivetrain = [];
+          if (drive_motors) drivetrain.add("Motors");
+          if (drive_wheels) drivetrain.add("Wheels");
+          if (drive_wires) drivetrain.add("Wires");
+          if (drive_gearboxes) drivetrain.add("Gearboxes");
+
           // Trapdoor list
           trapdoor = [];
           if (trapdoor_panels) trapdoor.add("Panels");
@@ -424,6 +473,23 @@ class _Checklist_recordState extends State<Checklist_record> {
           if (gooseneck_gears) gooseneck.add("Gears");
           if (gooseneck_wires) gooseneck.add("Wires");
           if (gooseneck_nuts_and_bolts) gooseneck.add("Nuts and Bolts");
+
+          // Shooter List
+          shooter = [];
+          if (shooter_Placeholder1) shooter.add("value1");
+          if (shooter_Placeholder2) shooter.add("value2");
+          if (shooter_Placeholder3) shooter.add("value3");
+          if (shooter_Placeholder4) shooter.add("value4");
+
+          if (spindexerPH1) spinDexer.add("spinD_value1");
+          if (spindexerPH2) spinDexer.add("spinD_value2");
+          if (spindexerPH3) spinDexer.add("spinD_value3");
+          if (spindexerPH4) spinDexer.add("spinD_value4");
+
+          if (intakePH1) intake.add("intake_value1");
+          if (intakePH2) intake.add("intake_value2");
+          if (intakePH3) intake.add("intake_value3");
+          if (intakePH4) intake.add("intake_value4");
 
           // Set matchkey from existing record
           matchkey = existingRecord.matchkey;
@@ -473,6 +539,14 @@ class _Checklist_recordState extends State<Checklist_record> {
     return SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Column(children: [
+          // MatchInfo(
+          //   assignedTeam: assignedTeam,
+          //   assignedStation: assignedStation,
+          //   allianceColor: alliance_color,
+          //   onPressed: () {
+          //     // print('Team Info START button pressed');
+          //   },
+          // ),
           CameraPhotoCapture(
               title: "Robot Photos",
               description: "Take photos of the robot",
@@ -529,25 +603,17 @@ class _Checklist_recordState extends State<Checklist_record> {
             });
           }),
           buildMultiChoiceBox(
-              "Elevator",
+              "DriveTrain",
               Icon(Icons.star_outline, size: 30, color: Colors.blue),
               [
-                "Rod of Doom",
-                "Stage 0",
-                "Stage 1",
-                "Stage 2",
-                "Chain",
-                "Belts",
-                "String",
-                "Gearbox",
-                "Limit Switch",
-                "Motors",
-                "Wires",
-                "Nuts and Bolts",
+                "motors",
+                "wheels",
+                "gearboxes",
+                "wirews",
               ],
-              elevator, (value) {
+              drivetrain, (value) {
             setState(() {
-              elevator = value;
+              drivetrain = value;
             });
           }),
           buildMultiChoiceBox(
@@ -571,34 +637,27 @@ class _Checklist_recordState extends State<Checklist_record> {
             });
           }),
           buildMultiChoiceBox(
-              "Trapdoor",
+              "Shooter",
               Icon(Icons.star_outline, size: 30, color: Colors.blue),
               [
-                "Panels",
-                "Supports",
-                "Hinges",
-                "Tensioners",
-                "Wires",
-                "Nuts and Bolts",
-                "Reset",
+                "shooterPlaceholder1",
+                "shooterPlaceholder2",
+                "shooterPlaceholder3",
+                "shooterPlaceholder4",
               ],
-              trapdoor, (value) {
+              shooter, (value) {
             setState(() {
-              trapdoor = value;
+              shooter = value;
             });
           }),
           buildMultiChoiceBox(
-              "Carriage",
+              "SpinDexer",
               Icon(Icons.star_outline, size: 30, color: Colors.blue),
               [
-                "Carriage",
-                "Gearbox",
-                "Beltbox",
-                "Motors",
-                "Coral Slide",
-                "Wires",
-                "Nuts and Bolts",
-                "Reset"
+                "spindexerValue1",
+                "spindexerValue2",
+                "spindexerValue3",
+                "spindexerValue4",
               ],
               carriage, (value) {
             setState(() {
@@ -606,15 +665,13 @@ class _Checklist_recordState extends State<Checklist_record> {
             });
           }),
           buildMultiChoiceBox(
-              "Gooseneck",
+              "Intake",
               Icon(Icons.star_outline, size: 30, color: Colors.blue),
               [
-                "Panels",
-                "Wheels",
-                "Belts",
-                "Gears",
-                "Wires",
-                "Nuts and Bolts",
+                "IntakeValue1",
+                "IntakeValue2",
+                "IntakeValue3",
+                "IntakeValue4",
               ],
               gooseneck, (value) {
             setState(() {
