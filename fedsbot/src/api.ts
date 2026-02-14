@@ -42,8 +42,10 @@ export function createServer(port: number, webhookSecret: string, apiKey: string
       try {
         const oldHead = execSync('git rev-parse HEAD').toString().trim();
         execSync('git fetch origin main');
-        execSync('git reset --hard origin/main');
+        execSync('git reset --hard');
         execSync('git clean -fd');
+        execSync('git checkout main');
+        execSync('git reset --hard origin/main');
         const newHead = execSync('git rev-parse HEAD').toString().trim();
 
         if (oldHead !== newHead) {

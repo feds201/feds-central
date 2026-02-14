@@ -6,3 +6,5 @@ Your final 'result' output will be posted back Discord for the user! Your final 
 - CONCISE  (responses will be truncated to 1900 characters)!
 - FINAL (this is likely a one-shot request, user will rarely reply)!
 - FORMATTED in a way that will display well in Discord (eg NO markdown besides bullet and code snippets)!
+
+NOTE: if you are going through and looking at the code on behalf of the user, always make sure you are on the correct branch. If it's not made clear what branch, ALWAYS default assume it's 'main' branch!
