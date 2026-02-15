@@ -25,15 +25,26 @@ public class RobotContainer {
 
   private void configureBindings() {
     controller.x()
-        .onTrue((leds.intakeSignal()))
-        .onFalse(leds.climbingSignal());
+        .onTrue((leds.climbingSignal()))
+        .onFalse(leds.resetLEDS());
       
 
     controller.y()
         .onTrue(rollers.RollersCommand(RollerState.ON).alongWith(leds.intakeSignal()))
-        .onFalse(rollers.RollersCommand(RollerState.OFF).alongWith(leds.climbingSignal()));
-        
+        .onFalse(rollers.RollersCommand(RollerState.OFF).alongWith(leds.resetLEDS()));
+     
+    controller.b()
+        .onTrue(leds.hasGamePieceSignal())
+        .onFalse(leds.resetLEDS());
+
+    controller.a()
+      .onTrue(leds.shootingSignal())
+      .onFalse(leds.resetLEDS());
+
+
+
   }
+
 
   
 

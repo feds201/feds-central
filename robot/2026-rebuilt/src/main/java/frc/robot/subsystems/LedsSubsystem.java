@@ -5,11 +5,9 @@
 package frc.robot.subsystems;
 
 import java.lang.ModuleLayer.Controller;
-
 import com.lumynlabs.connection.usb.USBPort;
 import com.lumynlabs.devices.ConnectorXAnimate;
 import com.lumynlabs.domain.led.Animation;
-
 import edu.wpi.first.hal.simulation.AnalogInDataJNI;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -17,6 +15,7 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 
 public class LedsSubsystem extends SubsystemBase {
   public ConnectorXAnimate m_leds = new ConnectorXAnimate();
@@ -71,7 +70,7 @@ public class LedsSubsystem extends SubsystemBase {
   }
 
   @Override
-  public void periodic() {
+  public void periodic() {  
     // Handle IDLE state dynamic changes based on Robot Mode (Disabled/Enabled/Auto)
     if (m_currentState == LEDState.IDLE) {
       boolean isDisabled = DriverStation.isDisabled();
@@ -113,13 +112,13 @@ public class LedsSubsystem extends SubsystemBase {
       case INTAKING:
         m_leds.leds.SetAnimation(Animation.Blink)
             .ForZone(ZONE_ALL)
-            .WithColor(COLOR_GREEN)
+            .WithColor(COLOR_ORANGE)
             .WithDelay(Units.Milliseconds.of(200))
             .RunOnce(false);
         break;
         
       case HAS_GAME_PIECE:
-        m_leds.leds.SetAnimation(Animation.Comet)
+        m_leds.leds.SetAnimation(Animation.Fill)
             .ForZone(ZONE_ALL)
             .WithColor(COLOR_GREEN)
             .WithDelay(Units.Milliseconds.of(2))
@@ -136,9 +135,9 @@ public class LedsSubsystem extends SubsystemBase {
         break;
         
       case CLIMBING:
-        m_leds.leds.SetAnimation(Animation.RainbowRoll)
+        m_leds.leds.SetAnimation(Animation.Heartbeat)
             .ForZone(ZONE_ALL)
-            .WithColor(COLOR_WHITE)
+            .WithColor(COLOR_YELLOW)
             .WithDelay(Units.Milliseconds.of(10))
             .Reverse(false)
             .RunOnce(false);
