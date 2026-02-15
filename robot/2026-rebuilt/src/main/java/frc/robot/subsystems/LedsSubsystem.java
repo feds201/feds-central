@@ -4,10 +4,13 @@
 
 package frc.robot.subsystems;
 
+import java.lang.ModuleLayer.Controller;
+
 import com.lumynlabs.connection.usb.USBPort;
 import com.lumynlabs.devices.ConnectorXAnimate;
 import com.lumynlabs.domain.led.Animation;
 
+import edu.wpi.first.hal.simulation.AnalogInDataJNI;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.util.Color;
@@ -46,7 +49,7 @@ public class LedsSubsystem extends SubsystemBase {
 
   // Configuration
   private static final String ZONE_ALL = "strip1"; 
-  private static final String ZONE_2= "strip2"; 
+  
 
 
   // Colors
@@ -55,8 +58,7 @@ public class LedsSubsystem extends SubsystemBase {
   private static final Color COLOR_RED = new Color(new Color8Bit(255, 0, 0));
   private static final Color COLOR_WHITE = new Color(new Color8Bit(255, 255, 255));
   private static final Color COLOR_YELLOW = new Color(new Color8Bit(255, 255, 0));
-  private static final Color COLOR_FEDS_BLUE = new Color(new Color8Bit(0, 168, 255));
-   // Team color
+  private static final Color COLOR_FEDS_BLUE = new Color(new Color8Bit(0, 168, 255)); // Team color
 
   /** Creates a new LedsSubsystem. */
   public LedsSubsystem() {
