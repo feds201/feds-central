@@ -63,7 +63,7 @@ public class SampleSubsystem extends SubsystemBase {
   public SampleSubsystem() {
     currentState = turret_state.HOME;
     sampleMotor = new TalonFX(1);
-    sampleLimelight = new LimelightWrapper("limelight");
+    sampleLimelight = new LimelightWrapper("limelight", true);
     sampleLimelight.getSettings()
          .withLimelightLEDMode(LEDMode.PipelineControl)
          .withCameraOffset(Pose3d.kZero)

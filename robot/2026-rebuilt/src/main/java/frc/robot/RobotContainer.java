@@ -9,21 +9,21 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.RobotMap.DrivetrainConstants;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import frc.robot.utils.LimelightWrapper;
+import limelight.networktables.LimelightSettings.ImuMode;
 
 public class RobotContainer {
 
   private final CommandSwerveDrivetrain drivetrain = DrivetrainConstants.createDrivetrain();
-  private final LimelightWrapper ll4 = new LimelightWrapper("limelight-four-localization");
-  private final LimelightWrapper ll3 = new LimelightWrapper("limelight-three-localization");
-
+   private final LimelightWrapper ll4 = new LimelightWrapper("limelight-two", true);
+   
   public RobotContainer() {
+    ll4.getSettings().withImuMode(ImuMode.ExternalImu).save();
     configureBindings();
   }
 
-  public void updateLocalization() {
-    LimelightWrapper.updateLocalizationLimelight(ll3, false, drivetrain);
-    LimelightWrapper.updateLocalizationLimelight(ll4, true, drivetrain);
-  }
+  public void updateLocalizationLL4() {
+          ll4.updateLocalizationLimelight(drivetrain);
+    }
   
   private void configureBindings() {}
 
