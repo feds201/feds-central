@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class LedsSubsystem extends SubsystemBase {
-  public ConnectorXAnimate m_leds = new ConnectorXAnimate();
+  public static ConnectorXAnimate m_leds = new ConnectorXAnimate();
   private static LedsSubsystem instance;
 
   
@@ -28,7 +28,7 @@ public class LedsSubsystem extends SubsystemBase {
   }
 
 
-  public enum LEDState {
+  public static enum LEDState {
     OFF,
     IDLE,           // Depends on Robot Mode (Disabled, Auto, Teleop)
     INTAKING,       // Flashing Orange
@@ -38,12 +38,11 @@ public class LedsSubsystem extends SubsystemBase {
     ERROR           // Strobe Red
   }
 
-  private LEDState m_currentState = LEDState.IDLE;
-  private LEDState m_lastState = LEDState.OFF; // Force initial update
+  private static LEDState m_currentState = LEDState.IDLE;
+  private static LEDState m_lastState = LEDState.OFF; // Force initial update
 
-  private boolean m_wasDisabled = false;
-  private boolean m_wasAuto = false;
-
+  private static boolean m_wasDisabled = false;
+  private static boolean m_wasAuto = false;
   // Configuration
   private static final String ZONE_ALL = "3"; 
   private static final String ZONE_BACK67 = "heelo";
@@ -95,7 +94,7 @@ public class LedsSubsystem extends SubsystemBase {
     m_currentState = state;
   }
 
-  private void applyState(LEDState state) {
+  private static void applyState(LEDState state) {
     switch (state) {
       case OFF:
         m_leds.leds.SetColor(ZONE_ALL, new Color(0, 0, 0));
@@ -144,7 +143,7 @@ public class LedsSubsystem extends SubsystemBase {
     }
   }
 
-  private void applyIdlePattern() {
+  private static void applyIdlePattern() {
     if (DriverStation.isDisabled()) {
         // Disabled: Breathe Red indicating standby/disabled
         m_leds.leds.SetAnimation(Animation.Breathe)
