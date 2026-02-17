@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:scouting_app/components/CameraComposit.dart';
+import 'package:scouting_app/components/CheckBox.dart';
 import 'package:scouting_app/components/TextBox.dart';
 import 'package:scouting_app/main.dart';
 import 'package:scouting_app/services/Colors.dart';
@@ -37,6 +38,7 @@ class _Checklist_recordState extends State<Checklist_record> {
   late bool chassis_bumpers;
   late bool chassis_limelight_protectors;
   late List<String> chassis;
+  late bool chassis_select_all;
 
   late bool ethernet_front_left_limelight;
   late bool ethernet_front_right_limelight;
@@ -197,6 +199,7 @@ class _Checklist_recordState extends State<Checklist_record> {
     chassis_bumpers = false;
     chassis_limelight_protectors = false;
     chassis = [];
+    chassis_select_all = false;
 
     alliance_color = "";
 
@@ -636,7 +639,7 @@ class _Checklist_recordState extends State<Checklist_record> {
                 "motors",
                 "wheels",
                 "gearboxes",
-                "wirews",
+                "wires",
               ],
               drivetrain, (value) {
             setState(() {
