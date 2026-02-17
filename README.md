@@ -13,8 +13,8 @@ Here's what lives where:
   - `old-years/` - scouting app code from back when we made a new copy every year
 - **`dev-dashboard/`** - Dashboard for programmers, live at: [developer.feds201.com](https://developer.feds201.com/)
 - **`operations-manual/`** - Team documentation, live at [operational-manual.feds201.com](https://operational-manual.feds201.com/)
+- **`fedsbot/`** - Server running on Linode. Implements @FEDSBot Discord bot, and the backend used by the FEDSBot chat in dev-dashboard/
 - **`game-manuals/`** - FRC game manuals and resources (useful for AI bot/code review to understand this year's game)
-- **`discord/`** - Discord bots
 
 ---
 

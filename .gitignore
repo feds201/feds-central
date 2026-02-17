@@ -24,3 +24,4 @@ Thumbs.db
 # TEMP
 check-source-updates.sh
 sync-source-repos.sh
+.sync-cache/

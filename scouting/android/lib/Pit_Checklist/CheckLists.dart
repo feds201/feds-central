@@ -3,15 +3,16 @@ import 'dart:core';
 import 'dart:developer' as developer;
 import 'dart:math';
 
+import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:scouting_app/components/CameraComposit.dart';
+import 'package:scouting_app/components/CheckBox.dart';
+import 'package:scouting_app/components/TextBox.dart';
 import 'package:scouting_app/main.dart';
 import 'package:scouting_app/services/Colors.dart';
 import 'package:scouting_app/services/DataBase.dart';
-import 'package:scouting_app/components/TextBox.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter/services.dart';
-import 'package:confetti/confetti.dart';
 
 class Checklist_record extends StatefulWidget {
   final PitChecklistItem list_item;
@@ -37,6 +38,7 @@ class _Checklist_recordState extends State<Checklist_record> {
   late bool chassis_bumpers;
   late bool chassis_limelight_protectors;
   late List<String> chassis;
+  late bool chassis_select_all;
 
   late bool ethernet_front_left_limelight;
   late bool ethernet_front_right_limelight;
@@ -70,7 +72,9 @@ class _Checklist_recordState extends State<Checklist_record> {
   late bool elevator_motors;
   late bool elevator_wires;
   late bool elevator_nuts_and_bolts;
-  late List<String> elevator;
+  late List<String> elevator, drivetrain;
+
+  late bool drive_motors, drive_wheels, drive_gearboxes, drive_wires;
 
   late bool trapdoor_panels;
   late bool trapdoor_supports;
@@ -98,6 +102,32 @@ class _Checklist_recordState extends State<Checklist_record> {
   late bool gooseneck_nuts_and_bolts;
   late bool gooseneck_wires;
   late List<String> gooseneck;
+
+  late bool shooter_hood;
+  late bool shooter_motors;
+  late bool shooter_gears;
+  late bool shooter_gearboxes;
+  late bool shooter_space;
+  late bool shooter_rollers;
+  late bool shooter_fuel_pusher;
+  late bool shooter_belts;
+  late List<String> shooter;
+
+  late bool spinD_gears;
+  late bool spinD_belts;
+  late bool spinD_gearboxes;
+  late bool spinD_combinedWheels;
+  late bool spinD_motor;
+  late bool spinD_feederBar;
+  late bool spinD_nuts;
+  late List<String> spinDexer;
+
+  late bool intake_rollers;
+  late bool intake_rollerMotor;
+  late bool intake_iMotors;
+  late bool intake_gears;
+  late bool intake_limelight;
+  late List<String> intake;
 
   late double outgoing_number;
   late double outgoing_battery_voltage;
@@ -169,6 +199,7 @@ class _Checklist_recordState extends State<Checklist_record> {
     chassis_bumpers = false;
     chassis_limelight_protectors = false;
     chassis = [];
+    chassis_select_all = false;
 
     alliance_color = "";
 
@@ -203,7 +234,32 @@ class _Checklist_recordState extends State<Checklist_record> {
     elevator_wires = false;
     elevator_nuts_and_bolts = false;
 
+    drive_motors = false;
+    drive_wheels = false;
+    drive_gearboxes = false;
+    drive_wires = false;
+    drivetrain = [];
     elevator = [];
+
+   shooter_hood = false;
+   shooter_motors = false;
+   shooter_gears = false;
+   shooter_gearboxes = false;
+   shooter_space = false;
+    shooter_rollers = false;
+    shooter_fuel_pusher = false;
+    shooter_belts = false;
+    shooter = [];
+
+    spinD_gears = false;
+    spinD_belts = false;
+    spinD_gearboxes = false;
+    spinD_combinedWheels = false;
+    spinD_motor = false;
+    spinD_feederBar = false;
+    spinD_nuts = false;
+
+    spinDexer = [];
 
     trapdoor_panels = false;
     trapdoor_supports = false;
@@ -231,6 +287,13 @@ class _Checklist_recordState extends State<Checklist_record> {
     gooseneck_gears = false;
     gooseneck_wires = false;
     gooseneck = [];
+
+    intake_rollers = false;
+    intake_rollerMotor = false;
+    intake_iMotors = false;
+    intake_gears = false;
+    intake_limelight = false;
+    intake = [];
 
     returning_battery_voltage = 0;
     returning_battery_cca = 0;
@@ -395,6 +458,12 @@ class _Checklist_recordState extends State<Checklist_record> {
           if (elevator_string) elevator.add("String");
           if (elevator_limit_switch) elevator.add("Limit Switch");
 
+          drivetrain = [];
+          if (drive_motors) drivetrain.add("Motors");
+          if (drive_wheels) drivetrain.add("Wheels");
+          if (drive_wires) drivetrain.add("Wires");
+          if (drive_gearboxes) drivetrain.add("Gearboxes");
+
           // Trapdoor list
           trapdoor = [];
           if (trapdoor_panels) trapdoor.add("Panels");
@@ -424,6 +493,33 @@ class _Checklist_recordState extends State<Checklist_record> {
           if (gooseneck_gears) gooseneck.add("Gears");
           if (gooseneck_wires) gooseneck.add("Wires");
           if (gooseneck_nuts_and_bolts) gooseneck.add("Nuts and Bolts");
+
+          // Shooter List
+          shooter = [];
+          if (shooter_hood) shooter.add("Hood");
+          if (shooter_motors) shooter.add("Motors");
+          if (shooter_gears) shooter.add("Gears");
+          if (shooter_gearboxes) shooter.add("Gearboxes");
+          if(shooter_space) shooter.add("Space");
+          if(shooter_rollers) shooter.add("Rollers");
+          if(shooter_fuel_pusher) shooter.add("Fuelpusher");
+          if(shooter_belts) shooter.add("Belts");
+
+          // Spindexer List
+          if (spinD_gears) spinDexer.add("Gears");
+          if (spinD_belts) spinDexer.add("Belts");
+          if (spinD_gearboxes) spinDexer.add("Gearboxes");
+          if (spinD_combinedWheels) spinDexer.add("Combined Wheels");
+          if (spinD_motor) spinDexer.add("Motor");
+          if (spinD_feederBar) spinDexer.add("Feeder Bar");
+          if (spinD_nuts) spinDexer.add("Nuts");
+
+          // Intake List
+          if (intake_rollers) intake.add("Rollers");
+          if (intake_rollerMotor) intake.add("Roller Motors");
+          if (intake_iMotors) intake.add("Intake Motors");
+          if (intake_gears) intake.add("Gears");
+          if (intake_limelight) spinDexer.add("Limelight");
 
           // Set matchkey from existing record
           matchkey = existingRecord.matchkey;
@@ -473,6 +569,14 @@ class _Checklist_recordState extends State<Checklist_record> {
     return SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Column(children: [
+          // MatchInfo(
+          //   assignedTeam: assignedTeam,
+          //   assignedStation: assignedStation,
+          //   allianceColor: alliance_color,
+          //   onPressed: () {
+          //     // print('Team Info START button pressed');
+          //   },
+          // ),
           CameraPhotoCapture(
               title: "Robot Photos",
               description: "Take photos of the robot",
@@ -529,25 +633,17 @@ class _Checklist_recordState extends State<Checklist_record> {
             });
           }),
           buildMultiChoiceBox(
-              "Elevator",
+              "DriveTrain",
               Icon(Icons.star_outline, size: 30, color: Colors.blue),
               [
-                "Rod of Doom",
-                "Stage 0",
-                "Stage 1",
-                "Stage 2",
-                "Chain",
-                "Belts",
-                "String",
-                "Gearbox",
-                "Limit Switch",
-                "Motors",
-                "Wires",
-                "Nuts and Bolts",
+                "motors",
+                "wheels",
+                "gearboxes",
+                "wires",
               ],
-              elevator, (value) {
+              drivetrain, (value) {
             setState(() {
-              elevator = value;
+              drivetrain = value;
             });
           }),
           buildMultiChoiceBox(
@@ -571,34 +667,34 @@ class _Checklist_recordState extends State<Checklist_record> {
             });
           }),
           buildMultiChoiceBox(
-              "Trapdoor",
+              "Shooter",
               Icon(Icons.star_outline, size: 30, color: Colors.blue),
               [
-                "Panels",
-                "Supports",
-                "Hinges",
-                "Tensioners",
-                "Wires",
-                "Nuts and Bolts",
-                "Reset",
+                "Hood",
+                "Motors",
+                "Gears",
+                "Gearboxes",
+                "Space",
+                "Rollers",
+                "Fuel Pusher",
+                "Belts",
               ],
-              trapdoor, (value) {
+              shooter, (value) {
             setState(() {
-              trapdoor = value;
+              shooter = value;
             });
           }),
           buildMultiChoiceBox(
-              "Carriage",
+              "SpinDexer",
               Icon(Icons.star_outline, size: 30, color: Colors.blue),
               [
-                "Carriage",
-                "Gearbox",
-                "Beltbox",
-                "Motors",
-                "Coral Slide",
-                "Wires",
-                "Nuts and Bolts",
-                "Reset"
+                "Gears",
+                "Belts",
+                "Gearboxes",
+                "Combined Wheels",
+                "Motor",
+                "Feeder Bar",
+                "Nuts",
               ],
               carriage, (value) {
             setState(() {
@@ -606,15 +702,14 @@ class _Checklist_recordState extends State<Checklist_record> {
             });
           }),
           buildMultiChoiceBox(
-              "Gooseneck",
+              "Intake",
               Icon(Icons.star_outline, size: 30, color: Colors.blue),
               [
-                "Panels",
-                "Wheels",
-                "Belts",
+                "Rollers",
+                "Roller Motor",
+                "Intake Motors",
                 "Gears",
-                "Wires",
-                "Nuts and Bolts",
+                "Limelight",
               ],
               gooseneck, (value) {
             setState(() {

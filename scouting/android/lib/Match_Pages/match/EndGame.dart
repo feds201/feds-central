@@ -40,8 +40,7 @@ class EndGameState extends State<EndGame> {
   //timer
   double endgameTime = 0.0;
   int endgameActions = 0;
-  String drawingData = '';
-  List<List<Offset>> initialStrokes = [];
+  List<int> drawingData = [];
   Alliance mapcolor = Alliance.blue;
   bool isPageScrollable = true;
 
@@ -74,7 +73,6 @@ class EndGameState extends State<EndGame> {
     endgameTime = widget.matchRecord.endPoints.endgameTime;
     endgameActions = widget.matchRecord.endPoints.endgameActions;
     drawingData = widget.matchRecord.endPoints.drawingData;
-    initialStrokes = _parseDrawingData(drawingData);
   }
 
   void UpdateData() {
@@ -95,47 +93,6 @@ class EndGameState extends State<EndGame> {
 
     endPoints = widget.matchRecord.endPoints;
     saveState();
-  }
-
-  // Minimalist serialization: "x,y,x,y;x,y"
-  String _serializeStrokes(List<List<Offset>> strokes) {
-    if (strokes.isEmpty) return "";
-    StringBuffer buffer = StringBuffer();
-    for (int i = 0; i < strokes.length; i++) {
-      if (i > 0) buffer.write(";");
-      List<Offset> stroke = strokes[i];
-      for (int j = 0; j < stroke.length; j++) {
-        if (j > 0) buffer.write(",");
-        // Truncate to 1 decimal place to save space
-        buffer.write(
-            "${stroke[j].dx.toStringAsFixed(1)},${stroke[j].dy.toStringAsFixed(1)}");
-      }
-    }
-    return buffer.toString();
-  }
-
-  List<List<Offset>> _parseDrawingData(String data) {
-    if (data.isEmpty) return [];
-    List<List<Offset>> strokes = [];
-    try {
-      List<String> strokeStrings = data.split(';');
-      for (String s in strokeStrings) {
-        if (s.isEmpty) continue;
-        List<String> coords = s.split(',');
-        List<Offset> stroke = [];
-        for (int i = 0; i < coords.length; i += 2) {
-          if (i + 1 < coords.length) {
-            double x = double.parse(coords[i]);
-            double y = double.parse(coords[i + 1]);
-            stroke.add(Offset(x, y));
-          }
-        }
-        if (stroke.isNotEmpty) strokes.add(stroke);
-      }
-    } catch (e) {
-      log("Error parsing drawing data: $e");
-    }
-    return strokes;
   }
 
   void saveState() {
@@ -348,10 +305,10 @@ class EndGameState extends State<EndGame> {
             blueAllianceImagePath: 'assets/2026/BlueAlliance_StartPosition.png',
             redAllianceImagePath: 'assets/2026/RedAlliance_StartPosition.png',
             alliance: mapcolor,
-            initialStrokes: initialStrokes,
-            onStrokesChanged: (strokes) {
+            initialData: drawingData,
+            onDataChanged: (data) {
               setState(() {
-                drawingData = _serializeStrokes(strokes);
+                drawingData = data;
               });
               UpdateData();
             },

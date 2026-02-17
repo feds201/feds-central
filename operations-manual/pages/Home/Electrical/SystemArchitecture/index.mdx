@@ -1,0 +1,257 @@
+import { Callout, Tabs, Tab } from 'nextra/components';
+import { GenericGrid } from '../../../../Components/index';
+
+# System Architecture Overview
+
+The 2025 REEFSCAPES robot electrical system represents our most advanced integration of power distribution, motor control, sensor feedback, and communication networks. This section provides comprehensive documentation of our system architecture.
+
+## 🔋 Power Distribution Architecture
+
+Our power management system is built around the REV Power Distribution Hub (PDH), providing centralized control and monitoring of all electrical loads.
+
+<Tabs items={['PDH Channel Layout', 'Fuse Configuration', 'Power Budget']}>
+  <Tab>
+    ### Power Distribution Hub Channel Assignments
+    
+    **High Current Channels (ATO Fuses):**
+    - **Channels 0-3**: Swerve Drive Motors (Front Left, Front Right, Back Left, Back Right)
+    - **Channels 4-7**: Swerve Steer Motors (Front Left, Front Right, Back Left, Back Right) 
+    - **Channels 8-9**: Reserved for additional drivetrain
+    - **Channels 10-11**: Elevator Gearbox Motors (Kraken X60 pair)
+    - **Channels 12-13**: Climb Gearbox Motors (Kraken X60 pair)
+    - **Channels 14-15**: Carriage Motors (Kraken X60 pair)
+    - **Channels 16-19**: Reserved for mechanism expansion
+    
+    **Low Current Channels (ATM Fuses):**
+    - **Channel 20**: RoboRIO (5V rail and logic power)
+    - **Channel 21**: Robot Radio (OM5P-AN or similar)
+    - **Channel 22**: Vision Processing (Limelight units × 4)
+    - **Channel 23**: Pneumatic Hub (if equipped)
+  </Tab>
+  <Tab>
+    ### Fuse Selection and Protection
+    
+    **ATO Type Fuses (High Current Applications):**
+    - **10A**: Light loads, LED systems, low-power accessories
+    - **20A**: Single motor channels (standard motor loads)
+    - **30A**: Heavy-duty single motors, high-torque applications
+    - **40A**: Dual motor channels, peak power applications
+    
+    **ATM Type Fuses (Low Current Applications):**
+    - **10A**: Control electronics, sensor power
+    - **15A**: Vision systems, computing modules
+    - **20A**: Pneumatic systems, solenoid banks
+    - **30A**: High-power accessories, lighting systems
+    
+    <Callout type="warning">
+      **Critical**: Fuse ratings must be selected according to FRC Game Manual specifications and individual motor requirements. Over-fusing can lead to wire damage; under-fusing causes nuisance trips.
+    </Callout>
+  </Tab>
+  <Tab>
+    ### Power Consumption Analysis
+    
+    **Peak Power Scenarios:**
+    - **Drivetrain (8 × Kraken X60)**: ~800W peak
+    - **Elevator System (2 × Kraken X60)**: ~200W peak  
+    - **Climb System (2 × Kraken X60)**: ~200W peak
+    - **Carriage System (2 × Kraken X60)**: ~200W peak
+    - **Control Systems**: ~50W continuous
+    - **Vision Processing**: ~100W continuous
+    
+    **Total System**: 1550W peak demand
+    **Battery Capacity**: 18Ah @ 12V nominal = 216Wh
+    **Operating Time**: 15-20 minutes under mixed load
+  </Tab>
+</Tabs>
+
+## 🌐 Communication Network Architecture
+
+Our robot employs a dual-CAN bus architecture to ensure reliable, high-speed communication between all intelligent devices while maintaining proper load distribution.
+
+<GenericGrid 
+  layout="masonry"
+  variant="cards"
+  items={[
+    {
+      title: "CAN Bus 1 (RoboRIO)",
+      description: "Primary control network for essential robot systems and safety-critical components",
+      icon: "🔗",
+      color: "blue",
+      details: "PDH, Pneumatic Hub, Pigeon IMU, Critical sensors"
+    },
+    {
+      title: "CAN Bus 2 (CANivore)",
+      description: "High-speed motor control network optimized for real-time drivetrain and mechanism control",
+      icon: "⚡",
+      color: "orange", 
+      details: "All Kraken X60 controllers, CANcoders, Through-bore encoders"
+    },
+    {
+      title: "Network Termination",
+      description: "Proper 120Ω termination resistors at both ends of each CAN bus prevent signal reflections",
+      icon: "🔚",
+      color: "green",
+      details: "Essential for reliable high-speed communication"
+    }
+  ]}
+/>
+
+### CAN ID Assignment Strategy
+
+**CAN Bus 1 (RoboRIO) - Device IDs 1-30:**
+- ID 1: Power Distribution Hub
+- ID 2: Pneumatic Hub  
+- ID 3: Pigeon IMU
+- IDs 4-10: Reserved for additional control devices
+- IDs 11-20: Sensor devices (limit switches, beam breaks)
+- IDs 21-30: Auxiliary systems
+
+**CAN Bus 2 (CANivore) - Device IDs 31-60:**
+- IDs 31-34: Swerve Drive Motors (FL, FR, BL, BR)
+- IDs 35-38: Swerve Steer Motors (FL, FR, BL, BR)  
+- IDs 39-42: Swerve CANcoders (FL, FR, BL, BR)
+- IDs 43-44: Elevator Motors
+- IDs 45-46: Climb Motors
+- IDs 47-48: Carriage Motors
+- IDs 49-55: Mechanism encoders
+- IDs 56-60: Reserved for expansion
+
+## 🎛️ Motor Control Architecture
+
+Our motor control strategy balances performance, reliability, and maintainability across all robot subsystems.
+
+<Tabs items={['Drivetrain', 'Mechanisms', 'Control Strategy']}>
+  <Tab>
+    ### Swerve Drive System
+    
+    **Drive Motors (4x Kraken X60):**
+    - Gear Ratio: 6.75:1 (L2 configuration)
+    - Wheel Size: 4" diameter
+    - Free Speed: ~16 ft/s theoretical
+    - Control Mode: Velocity closed-loop with feedforward
+    
+    **Steer Motors (4x Kraken X60):**
+    - Gear Ratio: 150/7:1 (~21.43:1)
+    - Control Mode: Position closed-loop
+    - Feedback: Integrated magnetic encoder + CANCoder absolute
+    - Range: Continuous 360° rotation
+    
+    **Optimization Features:**
+    - Current limiting to prevent brownouts
+    - Temperature monitoring and thermal protection
+    - Predictive maintenance based on current draw patterns
+  </Tab>
+  <Tab>
+    ### Mechanism Control Systems
+    
+    **Elevator System:**
+    - 2x Kraken X60 in synchronized control
+    - Through-bore encoder for absolute position
+    - Software limit switches and gravity compensation
+    - Emergency stop on position sensor failure
+    
+    **Climb System:**
+    - 2x Kraken X60 with independent control capability
+    - Synchronized operation for balanced lifting
+    - Current monitoring for contact detection
+    - Manual override capabilities
+    
+    **Carriage System:**
+    - 2x Kraken X60 for precise positioning
+    - Encoder feedback for closed-loop control
+    - Soft limits to prevent mechanical damage
+    - Coordinated motion with elevator system
+  </Tab>
+  <Tab>
+    ### Control Philosophy
+    
+    **Safety First:**
+    - All motors have software and hardware limits
+    - Current monitoring prevents mechanical damage
+    - Graceful degradation on sensor failures
+    - Emergency stop functionality on all systems
+    
+    **Performance Optimization:**
+    - Feedforward control for smooth motion
+    - Closed-loop feedback for precision
+    - Anti-windup protection on integral terms
+    - Dynamic current limiting based on battery voltage
+    
+    **Reliability:**
+    - Redundant sensor systems where critical
+    - Fallback modes for partial system failures
+    - Comprehensive error logging and diagnostics
+    - Predictive maintenance indicators
+  </Tab>
+</Tabs>
+
+## 📡 Vision and Sensor Integration
+
+Our robot incorporates multiple vision systems and sensors for autonomous operation and enhanced driver control.
+
+### Vision Processing Network
+
+**Limelight Configuration:**
+- **4x Limelight 3**: Distributed around robot perimeter
+- **Network**: Dedicated Ethernet switch for vision traffic
+- **Power**: Isolated 12V supply with noise filtering
+- **Mounting**: Vibration-isolated with protective covers
+
+**BrainBox Integration:**
+- **Purpose**: Additional computation for complex vision tasks
+- **Connectivity**: Ethernet network integration
+- **Power**: Dedicated supply with UPS capability
+- **Cooling**: Active thermal management
+
+### Sensor Network Architecture
+
+**Critical Sensors:**
+- **Pigeon IMU**: Primary navigation and balance feedback
+- **4x CANcoders**: Absolute position feedback for swerve modules
+- **Through-bore Encoders**: Mechanism position feedback
+- **Limit Switches**: End-of-travel protection
+- **Beam Breaks**: Object detection and positioning
+
+**Sensor Power Management:**
+- Dedicated 5V and 3.3V power rails
+- Noise filtering and isolation
+- Individual sensor protection fuses
+- Redundant power paths for critical sensors
+
+<Callout type="info" emoji="🔍">
+    **Vision System Redundancy**: Multiple Limelight units provide overlapping fields of view, ensuring reliable target tracking even if individual units fail or are obstructed.
+</Callout>
+
+## 🔗 Integration Standards
+
+### Signal Integrity Requirements
+
+**High-Speed Digital:**
+- Proper impedance matching for CAN signals
+- Twisted pair wiring for differential signals
+- EMI shielding in high-noise environments
+- Ground plane continuity
+
+**Power Distribution:**
+- Separate power and signal grounds
+- Star grounding topology for sensitive circuits
+- Power supply filtering and regulation
+- Inrush current limiting
+
+### Physical Integration
+
+**Connector Strategy:**
+- Standardized connector types by application
+- Color coding for different signal types
+- Keying to prevent incorrect connections
+- Environmental sealing where required
+
+**Wire Management:**
+- Service loops at connection points
+- Strain relief for all connections
+- Cable routing away from moving parts
+- Accessibility for maintenance and troubleshooting
+
+<Callout type="warning" emoji="⚠️">
+    **EMI Considerations**: High-current motor drives can generate significant electromagnetic interference. Proper shielding, grounding, and cable routing are essential for reliable sensor and communication system operation.
+</Callout>

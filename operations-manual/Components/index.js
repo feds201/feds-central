@@ -173,7 +173,6 @@ export const ModernCard = (props) => (
   <GenericCard
     variant="modern"
     size="lg"
-    bgPattern='dots'
     interactive={true}
     animation={{ enabled: true, hover: true }}
     {...props}

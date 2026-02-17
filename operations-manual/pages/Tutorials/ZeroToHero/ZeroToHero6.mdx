@@ -1,0 +1,138 @@
+import Head from 'next/head';
+import { Callout } from 'nextra/components';
+import { GenericHero, GenericWidget, GenericTimeline, ModernCard } from '../../../Components/index';
+
+<Head>
+    <title>Zero to Hero Episode 6: PID Control - FEDS</title>
+</Head>
+
+<GenericHero
+    title="Zero to Hero #6"
+    titleColor="linear-gradient(135deg, #ec4899 0%, #db2777 100%)"
+    subtitle="The Brain: PID Control 🧠"
+    description="How do you make an arm stop EXACTLY at 45 degrees without jittering? How does a shooter hold EXACTLY 3000 RPM? The answer is Math. Specifically, Proportional-Integral-Derivative control."
+    backgroundType="gradient"
+    backgroundValue="linear-gradient(135deg, #831843 0%, #9d174d 100%)"
+    particles={[
+        { symbol: '🎯', transform: 'translate(0,0)' },
+        { symbol: '📈', transform: 'translate(10px,10px)' }
+    ]}
+    buttons={[
+        { text: '⬅️ Back to Ep 4', style: 'secondary', href: '/Tutorials/ZeroToHero/ZeroToHero4' }
+    ]}
+    height="md"
+    textAlign="center"
+/>
+
+## 🎯 What is PID?
+
+PID is a feedback loop. It looks at **Error** (Where I want to be - Where I am) and calculates motor power.
+
+<GenericTimeline orientation="vertical" variant="cards" items={[
+    { title: "P - Proportional", description: "The Present. 'I am far away, go fast! I am close, go slow!' Main driving force.", icon: "1️⃣", date: "kP" },
+    { title: "I - Integral", description: "The Past. 'I have been stuck slightly below target for a while... push harder!' Fixes steady-state error.", icon: "2️⃣", date: "kI" },
+    { title: "D - Derivative", description: "The Future. 'I am approaching too fast! Slow down!' dampens motion to prevent overshoot.", icon: "3️⃣", date: "kD" }
+]}
+/>
+
+---
+
+## 🧪 Chapter 1: The Tuning Process
+
+How do you find the magic numbers?
+
+1.  **Set kF (Feedforward) first**: If it's a flywheel, find the voltage needed to hold the speed. If it's an arm, calculate holding voltage against gravity.
+2.  **Increase kP**: Until it oscillates (wiggles back and forth).
+3.  **Add kD**: To stop the wiggle (dampen it).
+4.  **Add kI (Rarely)**: Only if you are consistently off by a tiny bit. *Warning: kI causes instability easily.*
+
+---
+
+## 💻 Chapter 2: Implementation (WPILib vs Vendor)
+
+### Option A: WPILib `PIDController` (Runs on RIO)
+Good for learning, but runs in the main loop (20ms latency).
+
+```java
+PIDController m_pid = new PIDController(0.1, 0, 0); // kP, kI, kD
+
+public void periodic() {
+    double output = m_pid.calculate(
+        m_encoder.getPosition(), // Measurement
+        m_targetPosition         // Setpoint
+    );
+    m_motor.set(output);
+}
+```
+
+### Option B: Vendor On-Board PID (TalonFX/SparkMax)
+**Preferred Method**. Runs on the motor controller (1ms latency = 20x faster!).
+
+```java
+// Setup (In Constructor)
+TalonFXConfiguration config = new TalonFXConfiguration();
+config.Slot0.kP = 0.1;
+config.Slot0.kI = 0.0;
+config.Slot0.kD = 0.01;
+m_motor.getConfigurator().apply(config);
+
+// Usage
+// "Go to 50 rotations using Slot 0"
+m_motor.setControl(new PositionVoltage(50).withSlot(0));
+```
+
+---
+
+## 🚀 Chapter 3: Feedforward (The Secret Sauce)
+
+PID reacts to error. **Feedforward** predicts it.
+If you know your arm weighs 10lbs, you know you *always* need 2V to hold it up. Why wait for PID to figure that out?
+
+```java
+ArmFeedforward m_feedforward = new ArmFeedforward(
+    0,    // kS (Static friction)
+    1.5,  // kG (Gravity voltage)
+    2.1   // kV (Velocity)
+);
+
+// Calculate output
+double ff = m_feedforward.calculate(targetAngleRadians, targetVelocity);
+double pid = m_pid.calculate(currentAngle, targetAngle);
+
+m_motor.setVoltage(ff + pid);
+```
+
+<Callout type="info" emoji="✅">
+    **Rule of Thumb**: Feedforward gets you 90% of the way there. PID cleans up the last 10% error.
+</Callout>
+
+---
+
+## 🏁 Summary
+
+You have mastered the Math of Motion!
+* **P** pushes you there.
+* **D** slows you down.
+* **Feedforward** fights gravity/friction.
+
+In **Episode 7**, we will combine all of this to make the robot drive itself in Autonomous mode!
+
+---
+
+## 📞 Need Help? We've Got Your Back!
+
+- **Email**: feds.programming@gmail.com
+
+**Keep coding, keep learning, and remember: every expert was once a beginner who refused to give up!** 🚀
+
+*P.S. - If your robot starts talking back, that's either very advanced AI or you need more sleep. Probably more sleep.* 🤖💤
+
+---
+
+*This documentation is part of the Zero to Hero programming series. For the complete learning experience, watch the accompanying video and practice with real robot code. Remember: the only way to get good at programming is to write lots of bad code first! 😄*
+
+<Callout type="info" emoji="💝">
+    **Special Thanks**: To all the students who asked "Why doesn't this work?" and inspired us to create better documentation. Your questions make us better teachers, and your curiosity drives innovation. You're the real MVPs! 🏆
+
+    *Remember: Every expert was once a beginner who refused to give up. Keep coding, keep learning, and most importantly - keep having fun! 🚀*
+</Callout>

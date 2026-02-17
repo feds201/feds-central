@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/painting.dart';
 import 'package:hive/hive.dart';
@@ -1045,7 +1046,7 @@ class EndPoints {
   double endgameTime;
   int endgameActions;
   String Comments = '';
-  String drawingData = ''; // Format: "s:x,y,x,y;s:x,y..."
+  List<int> drawingData = [];
 
   EndPoints(
     this.ClimbStatus,
@@ -1080,7 +1081,8 @@ class EndPoints {
       json['Comments'] ?? '',
       (json['endgameTime'] ?? 0.0).toDouble(),
       json['endgameActions'] ?? 0,
-      json['DrawingData'] ?? '',
+      // Handle both list and legacy string/migration
+      (json['DrawingData'] is List) ? List<int>.from(json['DrawingData']) : [],
     );
   }
 
@@ -1090,7 +1092,11 @@ class EndPoints {
   }
 
   String toCsv() {
-    return '$ClimbStatus,$Park,$FeedToHP,$Passing,$endgameTime,$endgameActions,$Comments,$drawingData';
+    return '$ClimbStatus,$Park,$FeedToHP,$Passing,$endgameTime,$endgameActions,$Comments,${_encodeDrawingData()}';
+  }
+
+  String _encodeDrawingData() {
+    return DrawingBitmaskCodec.encode(drawingData);
   }
 
   @override
@@ -1128,6 +1134,47 @@ class EndPoints {
 
   setPassing(bool value) {
     Passing = value;
+  }
+}
+
+class DrawingBitmaskCodec {
+  static const int _rows = 33;
+  static const int _cols = 58;
+  static const int _totalCells = _rows * _cols; // 1914
+
+  static String encode(List<int> ids) {
+    if (ids.isEmpty) return '';
+
+    int byteLength = (_totalCells + 7) >> 3;
+    Uint8List bytes = Uint8List(byteLength);
+
+    for (final id in ids) {
+      if (id < 1 || id > _totalCells) continue;
+      int index = id - 1;
+      int byteIndex = index >> 3;
+      int bitIndex = index & 7;
+      bytes[byteIndex] |= (1 << bitIndex);
+    }
+
+    return base64Url.encode(bytes);
+  }
+
+  static List<int> decode(String encoded) {
+    if (encoded.isEmpty) return [];
+    Uint8List bytes = base64Url.decode(encoded);
+    List<int> ids = [];
+
+    int maxBits = _totalCells;
+    for (int index = 0; index < maxBits; index++) {
+      int byteIndex = index >> 3;
+      int bitIndex = index & 7;
+      if (byteIndex >= bytes.length) break;
+      if ((bytes[byteIndex] & (1 << bitIndex)) != 0) {
+        ids.add(index + 1);
+      }
+    }
+
+    return ids;
   }
 }
 
@@ -1238,7 +1285,7 @@ class LocalDataBase {
       data['Comments'] ?? "",
       (data['EndgameTime'] ?? 0).toDouble(),
       data['EndgameActions'] ?? 0,
-      data['DrawingData'] ?? '',
+      (data['DrawingData'] is List) ? List<int>.from(data['DrawingData']) : [],
     );
   }
 

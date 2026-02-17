@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dr. Faraday's Motor Control System Configurator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+
+        .draggable-item {
+            cursor: grab;
+        }
+
+        .draggable-item:active {
+            cursor: grabbing;
+        }
+
+        .draggable-item.dragging {
+            opacity: 0.5;
+            border: 2px dashed #3b82f6;
+        }
+
+        canvas {
+            background-image: radial-gradient(#334155 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-200 font-sans h-screen flex flex-col overflow-hidden">
+
+<!-- Navbar -->
+<nav class="bg-slate-900 border-b border-slate-800 px-6 h-16 flex items-center justify-between shrink-0">
+    <div class="flex items-center gap-3">
+        <div class="h-8 w-8 bg-gradient-to-br from-purple-600 to-blue-600 rounded flex items-center justify-center font-bold text-white shadow-lg shadow-purple-500/30">
+            <i class="fa-solid fa-atom"></i>
+        </div>
+        <span class="font-bold text-xl tracking-tight text-white">Dr. Faraday's <span class="text-blue-500">Motor Control System</span> Configurator</span>
+    </div>
+    <div class="flex gap-4">
+        <button onclick="copyCode()"
+                class="text-sm bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded border border-slate-700 transition flex items-center gap-2">
+            <i class="fa-solid fa-copy"></i> Copy Java Code
+        </button>
+    </div>
+</nav>
+
+<!-- Main Layout -->
+<div class="flex flex-1 overflow-hidden">
+
+    <!-- Left Sidebar: Configuration List (Draggable) -->
+    <div class="w-80 bg-slate-900 border-r border-slate-800 flex flex-col z-10">
+        <div class="p-4 border-b border-slate-800 bg-slate-900/50 backdrop-blur">
+            <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Experiment Stack</h3>
+            <p class="text-xs text-slate-400">Drag to reorder apply() sequence</p>
+        </div>
+
+        <div id="configList" class="flex-1 overflow-y-auto p-3 space-y-2">
+            <!-- Items injected by JS -->
+        </div>
+    </div>
+
+    <!-- Center: Visualization & Physics -->
+    <div class="flex-1 flex flex-col bg-slate-950 relative">
+
+        <!-- Toolbar -->
+        <div class="h-12 border-b border-slate-800 flex items-center justify-between px-4 bg-slate-900/50">
+            <div class="flex gap-2">
+                <button onclick="setSimMode('arm')" id="btnArm"
+                        class="px-3 py-1 rounded text-sm bg-blue-600 text-white font-medium">Arm Simulation
+                </button>
+                <button onclick="setSimMode('turret')" id="btnTurret"
+                        class="px-3 py-1 rounded text-sm hover:bg-slate-800 text-slate-400">Turret Simulation
+                </button>
+            </div>
+            <div class="text-xs text-slate-500">
+                <i class="fa-solid fa-circle-info mr-1"></i> Visual approximates PID behavior
+            </div>
+        </div>
+
+        <!-- Canvas Container -->
+        <div class="flex-1 relative group">
+            <canvas id="simCanvas" class="w-full h-full block"></canvas>
+
+            <!-- Overlay Controls for Testing -->
+            <div class="absolute bottom-6 left-1/2 -translate-x-1/2 bg-slate-800/90 backdrop-blur border border-slate-700 rounded-full px-6 py-3 flex items-center gap-4 shadow-2xl opacity-100 transition-opacity">
+                <div class="flex flex-col">
+                    <label class="text-[10px] uppercase text-slate-400 font-bold">Target</label>
+                    <span id="targetDisplay" class="font-mono text-blue-400">0.00</span>
+                </div>
+                <input type="range" id="targetSlider" min="-0.5" max="0.5" step="0.01" value="0"
+                       class="w-48 accent-blue-500">
+                <button onclick="resetSim()" class="text-slate-400 hover:text-white"><i
+                        class="fa-solid fa-rotate-right"></i></button>
+            </div>
+        </div>
+
+        <!-- Physics Properties Panel (Bottom) -->
+        <div class="h-48 bg-slate-900 border-t border-slate-800 p-6 flex gap-8 overflow-x-auto shrink-0">
+            <div class="w-64 shrink-0">
+                <h4 class="text-sm font-bold text-slate-300 mb-3 flex items-center gap-2">
+                    <i class="fa-solid fa-flask text-purple-400"></i> Physics Properties
+                </h4>
+                <p class="text-xs text-slate-500 mb-4">Define the physical variables for your experiment.</p>
+            </div>
+
+            <div class="grid grid-cols-4 gap-6 flex-1">
+                <div class="space-y-1">
+                    <label class="text-xs text-slate-400">Mass (kg)</label>
+                    <input type="number" id="physMass" value="5.0" step="0.1"
+                           class="w-full bg-slate-800 border border-slate-700 rounded px-2 py-1 text-sm focus:border-blue-500 outline-none">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-xs text-slate-400">Length/Radius (m)</label>
+                    <input type="number" id="physLength" value="0.5" step="0.05"
+                           class="w-full bg-slate-800 border border-slate-700 rounded px-2 py-1 text-sm focus:border-blue-500 outline-none">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-xs text-slate-400">Gear Ratio</label>
+                    <input type="number" id="physGear" value="20.0" step="0.1"
+                           class="w-full bg-slate-800 border border-slate-700 rounded px-2 py-1 text-sm focus:border-blue-500 outline-none">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-xs text-slate-400">Gravity (m/s²)</label>
+                    <input type="number" id="physGravity" value="9.81" step="0.01"
+                           class="w-full bg-slate-800 border border-slate-700 rounded px-2 py-1 text-sm focus:border-blue-500 outline-none">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Config Window -->
+<div id="configModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center">
+    <div class="bg-slate-800 border border-slate-700 rounded-xl shadow-2xl w-[600px] max-h-[90vh] flex flex-col transform transition-all scale-95 opacity-0"
+         id="modalContent">
+
+        <!-- Modal Header -->
+        <div class="p-4 border-b border-slate-700 flex justify-between items-center bg-slate-900/50 rounded-t-xl">
+            <div class="flex items-center gap-3">
+                <div id="modalIcon"
+                     class="w-8 h-8 rounded flex items-center justify-center text-white bg-slate-700"></div>
+                <div>
+                    <h3 id="modalTitle" class="text-lg font-bold text-white">Configuration</h3>
+                    <p class="text-xs text-slate-400">Edit parameters for this configuration block</p>
+                </div>
+            </div>
+            <button onclick="closeModal()" class="text-slate-400 hover:text-white transition"><i
+                    class="fa-solid fa-xmark text-xl"></i></button>
+        </div>
+
+        <!-- Modal Body (Dynamic Form) -->
+        <div id="modalBody" class="p-6 overflow-y-auto space-y-6">
+            <!-- Injected via JS -->
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="p-4 border-t border-slate-700 bg-slate-900/50 rounded-b-xl flex justify-end gap-3">
+            <button onclick="closeModal()"
+                    class="px-4 py-2 rounded text-sm text-slate-300 hover:bg-slate-700 transition">Cancel
+            </button>
+            <button onclick="saveModal()"
+                    class="px-4 py-2 rounded text-sm bg-blue-600 hover:bg-blue-500 text-white font-medium shadow-lg shadow-blue-500/20 transition">
+                Save Changes
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Copy Toast -->
+<div id="toast"
+     class="fixed bottom-8 right-8 bg-green-600 text-white px-6 py-3 rounded shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 flex items-center gap-3 z-50">
+    <i class="fa-solid fa-check-circle"></i>
+    <span>Java Code Copied to Clipboard</span>
+</div>
+
+<script>
+    // --- DATA STATE ---
+    const appState = {
+        simMode: 'arm', // 'arm' or 'turret'
+        activeSlot: 0, // Currently simulated slot
+        items: [
+            {
+                id: 'slot0',
+                type: 'slot',
+                name: 'Slot 0 (Position)',
+                kP: 2.4,
+                kI: 0,
+                kD: 0.1,
+                kS: 0.25,
+                kV: 0.12,
+                kA: 0.01,
+                kG: 0.2,
+                gravityType: 'Arm_Cosine'
+            },
+            {
+                id: 'slot1',
+                type: 'slot',
+                name: 'Slot 1 (Velocity)',
+                kP: 0.11,
+                kI: 0,
+                kD: 0,
+                kS: 0.25,
+                kV: 0.12,
+                kA: 0.01,
+                kG: 0,
+                gravityType: 'Elevator_Static'
+            },
+            {
+                id: 'slot2',
+                type: 'slot',
+                name: 'Slot 2 (Unused)',
+                kP: 0,
+                kI: 0,
+                kD: 0,
+                kS: 0,
+                kV: 0,
+                kA: 0,
+                kG: 0,
+                gravityType: 'Elevator_Static'
+            },
+            {
+                id: 'slot3',
+                type: 'slot',
+                name: 'Slot 3 (Unused)',
+                kP: 0,
+                kI: 0,
+                kD: 0,
+                kS: 0,
+                kV: 0,
+                kA: 0,
+                kG: 0,
+                gravityType: 'Elevator_Static'
+            },
+            {
+                id: 'slot4',
+                type: 'slot',
+                name: 'Slot 4 (Unused)',
+                kP: 0,
+                kI: 0,
+                kD: 0,
+                kS: 0,
+                kV: 0,
+                kA: 0,
+                kG: 0,
+                gravityType: 'Elevator_Static'
+            },
+            {id: 'mm', type: 'mm', name: 'Motion Magic', cruise: 80, accel: 160, jerk: 1600}
+        ]
+    };
+
+    // --- DRAG AND DROP LIST ---
+    function renderList() {
+        const container = document.getElementById('configList');
+        container.innerHTML = '';
+
+        appState.items.forEach((item, index) => {
+            const el = document.createElement('div');
+            el.className = 'draggable-item bg-slate-800 hover:bg-slate-750 border border-slate-700 p-3 rounded-lg flex items-center gap-3 transition-colors group';
+            el.draggable = true;
+            el.dataset.index = index;
+
+            // Color coding
+            const iconColor = item.type === 'slot' ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-pink-500/10 text-pink-400 border-pink-500/20';
+            const iconClass = item.type === 'slot' ? 'fa-sliders' : 'fa-wand-magic-sparkles';
+
+            el.innerHTML = `
+                    <div class="text-slate-600 cursor-grab"><i class="fa-solid fa-grip-vertical"></i></div>
+                    <div class="w-8 h-8 rounded border ${iconColor} flex items-center justify-center text-sm">
+                        <i class="fa-solid ${iconClass}"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="text-sm font-medium text-slate-200">${item.name}</div>
+                        <div class="text-[10px] text-slate-500 font-mono truncate">
+                            ${getPreviewText(item)}
+                        </div>
+                    </div>
+                    <button onclick="openModal(${index})" class="opacity-0 group-hover:opacity-100 p-2 text-slate-400 hover:text-white transition">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                    </button>
+                `;
+
+            // DnD Events
+            el.addEventListener('dragstart', handleDragStart);
+            el.addEventListener('dragover', handleDragOver);
+            el.addEventListener('drop', handleDrop);
+            el.addEventListener('click', (e) => {
+                if (!e.target.closest('button')) {
+                    // Set active slot for simulation visualization if it's a slot
+                    if (item.type === 'slot') {
+                        appState.activeSlot = index;
+                        document.querySelectorAll('.draggable-item').forEach(d => d.classList.remove('ring-2', 'ring-blue-500'));
+                        el.classList.add('ring-2', 'ring-blue-500');
+                    }
+                }
+            });
+
+            container.appendChild(el);
+        });
+    }
+
+    function getPreviewText(item) {
+        if (item.type === 'slot') return `kP:${item.kP}, kD:${item.kD}, kS:${item.kS}`;
+        return `Vel:${item.cruise}, Acc:${item.accel}`;
+    }
+
+    // DnD Logic
+    let dragSrcEl = null;
+
+    function handleDragStart(e) {
+        this.classList.add('dragging');
+        dragSrcEl = this;
+        e.dataTransfer.effectAllowed = 'move';
+    }
+
+    function handleDragOver(e) {
+        if (e.preventDefault) e.preventDefault();
+        return false;
+    }
+
+    function handleDrop(e) {
+        if (e.stopPropagation) e.stopPropagation();
+        const dragIdx = parseInt(dragSrcEl.dataset.index);
+        const dropIdx = parseInt(this.dataset.index);
+
+        if (dragIdx !== dropIdx) {
+            // Swap items in array
+            const item = appState.items.splice(dragIdx, 1)[0];
+            appState.items.splice(dropIdx, 0, item);
+            renderList();
+        }
+        this.classList.remove('dragging');
+        return false;
+    }
+
+    // --- MODAL LOGIC ---
+    let currentEditIndex = -1;
+
+    function openModal(index) {
+        currentEditIndex = index;
+        const item = appState.items[index];
+        const modal = document.getElementById('configModal');
+        const content = document.getElementById('modalContent');
+        const body = document.getElementById('modalBody');
+
+        document.getElementById('modalTitle').textContent = item.name;
+        const iconColor = item.type === 'slot' ? 'bg-green-500' : 'bg-pink-500';
+        const iconClass = item.type === 'slot' ? 'fa-sliders' : 'fa-wand-magic-sparkles';
+        document.getElementById('modalIcon').className = `w-8 h-8 rounded flex items-center justify-center text-white ${iconColor}`;
+        document.getElementById('modalIcon').innerHTML = `<i class="fa-solid ${iconClass}"></i>`;
+
+        if (item.type === 'slot') {
+            body.innerHTML = `
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="space-y-1">
+                            <label class="text-xs uppercase font-bold text-slate-500">kP (Proportional)</label>
+                            <input type="number" id="inp_kP" step="0.01" value="${item.kP}" class="w-full bg-slate-700 border border-slate-600 rounded p-2 focus:border-green-500 outline-none">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-xs uppercase font-bold text-slate-500">kI (Integral)</label>
+                            <input type="number" id="inp_kI" step="0.01" value="${item.kI}" class="w-full bg-slate-700 border border-slate-600 rounded p-2 focus:border-green-500 outline-none">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-xs uppercase font-bold text-slate-500">kD (Derivative)</label>
+                            <input type="number" id="inp_kD" step="0.01" value="${item.kD}" class="w-full bg-slate-700 border border-slate-600 rounded p-2 focus:border-green-500 outline-none">
+                        </div>
+                    </div>
+                    <div class="h-px bg-slate-700 my-2"></div>
+                    <div class="grid grid-cols-4 gap-4">
+                        <div class="space-y-1">
+                            <label class="text-xs uppercase font-bold text-slate-500">kS (Static)</label>
+                            <input type="number" id="inp_kS" step="0.01" value="${item.kS}" class="w-full bg-slate-700 border border-slate-600 rounded p-2 focus:border-purple-500 outline-none">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-xs uppercase font-bold text-slate-500">kV (Velocity)</label>
+                            <input type="number" id="inp_kV" step="0.01" value="${item.kV}" class="w-full bg-slate-700 border border-slate-600 rounded p-2 focus:border-purple-500 outline-none">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-xs uppercase font-bold text-slate-500">kA (Accel)</label>
+                            <input type="number" id="inp_kA" step="0.01" value="${item.kA}" class="w-full bg-slate-700 border border-slate-600 rounded p-2 focus:border-purple-500 outline-none">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-xs uppercase font-bold text-slate-500">kG (Gravity)</label>
+                            <input type="number" id="inp_kG" step="0.01" value="${item.kG}" class="w-full bg-slate-700 border border-slate-600 rounded p-2 focus:border-purple-500 outline-none">
+                        </div>
+                    </div>
+                    <div class="space-y-1">
+                         <label class="text-xs uppercase font-bold text-slate-500">Gravity Type</label>
+                         <select id="inp_gType" class="w-full bg-slate-700 border border-slate-600 rounded p-2 focus:border-purple-500 outline-none">
+                            <option value="Arm_Cosine" ${item.gravityType === 'Arm_Cosine' ? 'selected' : ''}>Arm Cosine (Horizontal = 0)</option>
+                            <option value="Elevator_Static" ${item.gravityType === 'Elevator_Static' ? 'selected' : ''}>Elevator Static (Constant)</option>
+                         </select>
+                    </div>
+                `;
+        } else {
+            body.innerHTML = `
+                    <div class="space-y-4">
+                        <div class="space-y-1">
+                            <label class="text-xs uppercase font-bold text-slate-500">Cruise Velocity (RPS)</label>
+                            <input type="number" id="inp_cruise" step="1" value="${item.cruise}" class="w-full bg-slate-700 border border-slate-600 rounded p-2 focus:border-pink-500 outline-none">
+                            <p class="text-[10px] text-slate-500">Max speed the mechanism will reach during the profile.</p>
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-xs uppercase font-bold text-slate-500">Acceleration (RPS²)</label>
+                            <input type="number" id="inp_accel" step="1" value="${item.accel}" class="w-full bg-slate-700 border border-slate-600 rounded p-2 focus:border-pink-500 outline-none">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-xs uppercase font-bold text-slate-500">Jerk (RPS³)</label>
+                            <input type="number" id="inp_jerk" step="1" value="${item.jerk}" class="w-full bg-slate-700 border border-slate-600 rounded p-2 focus:border-pink-500 outline-none">
+                             <p class="text-[10px] text-slate-500">Derivative of acceleration. Higher = smoother starts/stops (S-Curve).</p>
+                        </div>
+                    </div>
+                `;
+        }
+
+        modal.classList.remove('hidden');
+        // Small timeout for animation
+        setTimeout(() => {
+            content.classList.remove('scale-95', 'opacity-0');
+        }, 10);
+    }
+
+    function closeModal() {
+        const content = document.getElementById('modalContent');
+        content.classList.add('scale-95', 'opacity-0');
+        setTimeout(() => {
+            document.getElementById('configModal').classList.add('hidden');
+        }, 200);
+    }
+
+    function saveModal() {
+        const item = appState.items[currentEditIndex];
+        if (item.type === 'slot') {
+            item.kP = parseFloat(document.getElementById('inp_kP').value);
+            item.kI = parseFloat(document.getElementById('inp_kI').value);
+            item.kD = parseFloat(document.getElementById('inp_kD').value);
+            item.kS = parseFloat(document.getElementById('inp_kS').value);
+            item.kV = parseFloat(document.getElementById('inp_kV').value);
+            item.kA = parseFloat(document.getElementById('inp_kA').value);
+            item.kG = parseFloat(document.getElementById('inp_kG').value);
+            item.gravityType = document.getElementById('inp_gType').value;
+        } else {
+            item.cruise = parseFloat(document.getElementById('inp_cruise').value);
+            item.accel = parseFloat(document.getElementById('inp_accel').value);
+            item.jerk = parseFloat(document.getElementById('inp_jerk').value);
+        }
+        renderList();
+        closeModal();
+    }
+
+    // --- SIMULATION & VISUALIZATION ---
+    const canvas = document.getElementById('simCanvas');
+    const ctx = canvas.getContext('2d');
+
+    let physState = {
+        angle: 0, // Radians. 0 = Horizontal right
+        velocity: 0, // Rad/s
+        time: 0
+    };
+
+    function resizeCanvas() {
+        canvas.width = canvas.parentElement.clientWidth;
+        canvas.height = canvas.parentElement.clientHeight;
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    function setSimMode(mode) {
+        appState.simMode = mode;
+        document.getElementById('btnArm').className = mode === 'arm' ? 'px-3 py-1 rounded text-sm bg-blue-600 text-white font-medium' : 'px-3 py-1 rounded text-sm hover:bg-slate-800 text-slate-400';
+        document.getElementById('btnTurret').className = mode === 'turret' ? 'px-3 py-1 rounded text-sm bg-blue-600 text-white font-medium' : 'px-3 py-1 rounded text-sm hover:bg-slate-800 text-slate-400';
+        resetSim();
+    }
+
+    function resetSim() {
+        physState.angle = 0;
+        physState.velocity = 0;
+        document.getElementById('targetSlider').value = 0;
+    }
+
+    // Update target display
+    document.getElementById('targetSlider').addEventListener('input', (e) => {
+        document.getElementById('targetDisplay').textContent = parseFloat(e.target.value).toFixed(2);
+    });
+
+    function physicsLoop() {
+        // Fetch Physics Properties
+        const mass = parseFloat(document.getElementById('physMass').value) || 5;
+        const length = parseFloat(document.getElementById('physLength').value) || 0.5;
+        const gearRatio = parseFloat(document.getElementById('physGear').value) || 20;
+        const gravityAcc = parseFloat(document.getElementById('physGravity').value) || 9.81;
+
+        // Fetch Controller Gains from Active Item (Finding the first slot or using specific logic)
+        // For now, we use the slot the user last clicked or the first slot
+        let activeItem = appState.items[appState.activeSlot];
+        if (!activeItem || activeItem.type !== 'slot') {
+            // Fallback to first slot found
+            activeItem = appState.items.find(i => i.type === 'slot') || appState.items[0];
+        }
+
+        const dt = 0.02; // 20ms loop
+
+        // 1. Calculate Error
+        const targetRotations = parseFloat(document.getElementById('targetSlider').value);
+        const targetRad = targetRotations * (Math.PI * 2);
+        const error = targetRad - physState.angle;
+
+        // 2. PID Control (Simplified)
+        // Note: Gains in Phoenix are typically output/units.
+        // We scale roughly to Voltage (-12 to 12) for simulation.
+        // kP in Phoenix 6 is usually V/rot.
+
+        const errorRot = error / (Math.PI * 2);
+        let pidOutput = (activeItem.kP * errorRot) + (activeItem.kD * (0 - physState.velocity));
+
+        // Add Feedforward
+        // kG: Arm Cosine (Max at horizontal 0, 0 at vertical 90)
+        let ff = 0;
+        if (activeItem.gravityType === 'Arm_Cosine') {
+            ff += activeItem.kG * Math.cos(physState.angle);
+        } else {
+            ff += activeItem.kG;
+        }
+        // kS: Static Friction direction
+        if (Math.abs(errorRot) > 0.001) {
+            ff += Math.sign(errorRot) * activeItem.kS;
+        }
+
+        let voltage = pidOutput + ff;
+        // Clamp Voltage
+        voltage = Math.max(-12, Math.min(12, voltage));
+
+        // 3. Physics Model (Simple Single Joint)
+        // Torque = (Kt * Current * GearRatio)
+        // Current = (Voltage - BackEMF) / Resistance
+        // This is a rough approximation of a Kraken X60
+        const kT = 0.018; // Nm/A approx
+        const resistance = 0.05; // Ohms
+        const kV_motor = 500; // RPM/V approx -> Rad/s/V
+
+        // Simple approach: Torque = Voltage * Capacity * GearRatio
+        // Moment of Inertia = 1/3 * m * L^2 (rod end)
+        const MOI = (1 / 3) * mass * (length * length);
+
+        // Gravity Torque
+        let gravityTorque = 0;
+        if (appState.simMode === 'arm') {
+            // Torque = m * g * (L/2) * cos(theta)
+            gravityTorque = mass * gravityAcc * (length / 2) * Math.cos(physState.angle);
+        }
+
+        // Motor Torque (Simple model)
+        const availableTorque = (voltage * 0.5) * gearRatio; // Arbitrary scaler for visual feel
+
+        const netTorque = availableTorque - gravityTorque - (physState.velocity * 0.1); // Damping
+
+        const alpha = netTorque / MOI;
+
+        physState.velocity += alpha * dt;
+        physState.angle += physState.velocity * dt;
+
+        // Draw
+        draw(length);
+
+        requestAnimationFrame(physicsLoop);
+    }
+
+    function draw(lengthMeter) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        const cx = canvas.width / 2;
+        const cy = canvas.height / 2 + 100;
+        const scale = 200; // Pixels per meter
+
+        // Draw Base
+        ctx.fillStyle = "#64748b";
+        ctx.beginPath();
+        if (appState.simMode === 'arm') {
+            ctx.arc(cx, cy, 20, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillRect(cx - 30, cy, 60, 20);
+        } else {
+            // Turret Base
+            ctx.arc(cx, cy - 100, 100, 0, Math.PI * 2);
+            ctx.strokeStyle = "#475569";
+            ctx.lineWidth = 4;
+            ctx.stroke();
+        }
+
+        // --- Draw Target Indicator (Green Dot) ---
+        const targetRot = parseFloat(document.getElementById('targetSlider').value);
+        const targetAngle = targetRot * Math.PI * 2;
+
+        ctx.save();
+        let tCx = cx;
+        let tCy = cy;
+        if (appState.simMode !== 'arm') tCy -= 100; // Turret offset
+
+        ctx.translate(tCx, tCy);
+        // Rotate negative because canvas positive angle is clockwise (drawing commands)
+        // but our simulation angle logic treats positive as CCW (math standard)
+        ctx.rotate(-targetAngle);
+
+        // Glow
+        ctx.fillStyle = "rgba(74, 222, 128, 0.3)";
+        ctx.beginPath();
+        ctx.arc(lengthMeter * scale, 0, 25, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Center Dot
+        ctx.fillStyle = "#22c55e";
+        ctx.beginPath();
+        ctx.arc(lengthMeter * scale, 0, 8, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+        // -----------------------------------------
+
+        // Draw Moving Part
+        ctx.save();
+        if (appState.simMode === 'arm') {
+            ctx.translate(cx, cy);
+            ctx.rotate(-physState.angle); // Negative because canvas Y is down
+
+            // Arm
+            ctx.fillStyle = "#3b82f6";
+            ctx.fillRect(0, -10, lengthMeter * scale, 20);
+
+            // Mass at end
+            ctx.fillStyle = "#60a5fa";
+            ctx.beginPath();
+            ctx.arc(lengthMeter * scale, 0, 15, 0, Math.PI * 2);
+            ctx.fill();
+        } else {
+            ctx.translate(cx, cy - 100);
+            ctx.rotate(-physState.angle);
+
+            // Turret Head
+            ctx.fillStyle = "#3b82f6";
+            ctx.beginPath();
+            ctx.rect(-40, -40, 80, 80);
+            ctx.rect(40, -10, lengthMeter * scale, 20); // Gun/Arm
+            ctx.fill();
+        }
+        ctx.restore();
+
+        // Stats
+        ctx.fillStyle = "white";
+        ctx.font = "12px monospace";
+        ctx.fillText(`Mode: ${appState.simMode.toUpperCase()}`, 10, 20);
+        ctx.fillText(`Angle: ${(physState.angle * 180 / Math.PI).toFixed(1)}°`, 10, 35);
+        ctx.fillText(`Target: ${(targetRot * 360).toFixed(1)}°`, 10, 50);
+        ctx.fillText(`Active: ${appState.items[appState.activeSlot].name}`, 10, 65);
+    }
+
+    // --- JAVA GENERATION (Internal Only) ---
+    function getJavaCode() {
+        const mass = document.getElementById('physMass').value;
+        const length = document.getElementById('physLength').value;
+        const gear = document.getElementById('physGear').value;
+        const simType = appState.simMode === 'arm' ? 'SingleJointedArmSim' : 'DCMotorSim'; // Basic mapping
+
+        let configCode = "";
+        let mmCode = "";
+
+        appState.items.forEach(item => {
+            if (item.type === 'slot') {
+                // Extract slot number from ID (slot0 -> 0)
+                const slotNum = item.id.replace('slot', '');
+                configCode += `
+        // ${item.name}
+        var slot${slotNum} = configs.Slot${slotNum};
+        slot${slotNum}.kP = ${item.kP};
+        slot${slotNum}.kI = ${item.kI};
+        slot${slotNum}.kD = ${item.kD};
+        slot${slotNum}.kS = ${item.kS};
+        slot${slotNum}.kV = ${item.kV};
+        slot${slotNum}.kA = ${item.kA};
+        slot${slotNum}.kG = ${item.kG};
+        slot${slotNum}.GravityType = GravityTypeValue.${item.gravityType};
+                    `;
+            } else if (item.type === 'mm') {
+                mmCode = `
+        // Motion Magic
+        var mm = configs.MotionMagic;
+        mm.MotionMagicCruiseVelocity = ${item.cruise};
+        mm.MotionMagicAcceleration = ${item.accel};
+        mm.MotionMagicJerk = ${item.jerk};
+                    `;
+            }
+        });
+
+        const java = `package frc.robot;
+
+import com.ctre.phoenix6.configs.*;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.*;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.wpilibj.simulation.*;
+
+public class TalonFXSetup {
+    private final TalonFX m_fx;
+    // Physics Simulation: Mass ${mass}kg, Length ${length}m, Ratio ${gear}:1
+    private final ${simType} m_sim;
+
+    public TalonFXSetup(int canId) {
+        m_fx = new TalonFX(canId);
+
+        TalonFXConfiguration configs = new TalonFXConfiguration();
+        ${configCode}
+        ${mmCode}
+
+        // Apply Configs
+        m_fx.getConfigurator().apply(configs);
+
+        // Initialize Sim
+        // Note: Approximation based on UI inputs
+        m_sim = new ${simType}(
+            DCMotor.getKrakenX60(1),
+            ${gear},
+            ${mass} * (${length} * ${length}),
+            ${length},
+            0,
+            Math.PI * 2,
+            true,
+            0
+        );
+    }
+}`;
+        return java;
+    }
+
+    function copyCode() {
+        const java = getJavaCode();
+
+        // Try standard clipboard API first
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(java).then(() => {
+                showToast();
+            }).catch(err => {
+                // console.error("Clipboard API failed, trying fallback", err);
+                fallbackCopy(java);
+            });
+        } else {
+            fallbackCopy(java);
+        }
+    }
+
+    function fallbackCopy(text) {
+        // Fallback for iframe/permissions issues
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+
+        // Avoid scrolling to bottom
+        textArea.style.top = "0";
+        textArea.style.left = "0";
+        textArea.style.position = "fixed";
+
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+
+        try {
+            const successful = document.execCommand('copy');
+            if (successful) {
+                showToast();
+            } else {
+                console.error('Fallback: Copying text command unsuccessful');
+            }
+        } catch (err) {
+            console.error('Fallback: Oops, unable to copy', err);
+        }
+
+        document.body.removeChild(textArea);
+    }
+
+    function showToast() {
+        const toast = document.getElementById('toast');
+        toast.classList.remove('translate-y-20', 'opacity-0');
+        setTimeout(() => {
+            toast.classList.add('translate-y-20', 'opacity-0');
+        }, 3000);
+    }
+
+    // Init
+    renderList();
+    requestAnimationFrame(physicsLoop);
+
+</script>
+</body>
+</html>

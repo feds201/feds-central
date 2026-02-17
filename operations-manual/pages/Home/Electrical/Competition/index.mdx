@@ -1,0 +1,899 @@
+import { Callout, Tabs, Tab } from 'nextra/components';
+import { GenericGrid, GenericStats } from '../../../../Components/index';
+
+# Competition Resources
+
+This section provides essential resources for effective competition preparation, pit organization, and match-day operations to ensure optimal electrical system performance under pressure.
+
+## 🎯 Competition Readiness Overview
+
+<GenericStats 
+  variant="modern"
+  items={[
+    {
+      icon: "⚡",
+      number: "3",
+      label: "Batteries per Competition",
+      description: "Fully charged and load-tested"
+    },
+    {
+      icon: "🔧",
+      number: "15",
+      label: "Essential Tools",
+      description: "Minimum pit toolbox requirement"
+    },
+    {
+      icon: "📦",
+      number: "50+",
+      label: "Spare Parts",
+      description: "Categorized inventory system"
+    },
+    {
+      icon: "⏱️",
+      number: "5",
+      label: "Minutes",
+      description: "Maximum pit repair time target"
+    }
+  ]}
+/>
+
+## 🧰 Pit Organization System
+
+### Essential Tool Categories
+
+<GenericGrid 
+  layout="masonry"
+  variant="cards"
+  items={[
+    {
+      title: "Measurement Tools",
+      description: "Digital multimeter, battery tester, cable tester, thermal gun",
+      icon: "📏",
+      color: "blue",
+      details: "Calibrated and verified before each competition"
+    },
+    {
+      title: "Hand Tools",
+      description: "Screwdrivers, hex keys, wire strippers, crimpers, knife",
+      icon: "🔨",
+      color: "orange",
+      details: "Quality tools with secure organization system"
+    },
+    {
+      title: "Electrical Supplies",
+      description: "Wire, connectors, fuses, tape, heat shrink, solder",
+      icon: "⚡",
+      color: "yellow",
+      details: "Pre-cut lengths and organized by type"
+    },
+    {
+      title: "Fasteners & Hardware",
+      description: "Screws, nuts, bolts, washers, cable ties, mounting hardware",
+      icon: "⚙️",
+      color: "gray",
+      details: "Sorted by size and thread type"
+    },
+    {
+      title: "Safety Equipment",
+      description: "Safety glasses, first aid, fire extinguisher, emergency shutoff",
+      icon: "🛡️",
+      color: "red",
+      details: "Easily accessible and clearly marked"
+    },
+    {
+      title: "Documentation",
+      description: "Circuit diagrams, troubleshooting guides, inspection checklists",
+      icon: "📋",
+      color: "green",
+      details: "Laminated and organized in binders"
+    }
+  ]}
+/>
+
+### Toolbox Organization Strategy
+
+<Tabs items={['Layout System', 'Inventory Management', 'Accessibility Design']}>
+  <Tab>
+    ## Physical Organization Layout
+    
+    ### Primary Tool Chest (Large Items)
+    ```
+    Top Drawer: Daily Use Tools
+    - Digital multimeter with leads
+    - Battery tester and load
+    - Ethernet cable tester
+    - Basic hand tools (screwdrivers, hex keys)
+    
+    Middle Drawer: Electrical Supplies
+    - Organized connector bins by type
+    - Wire spools by gauge and color
+    - Fuses sorted by amperage
+    - Electrical tape and heat shrink
+    
+    Bottom Drawer: Hardware & Fasteners
+    - Metric and Imperial fasteners
+    - Cable ties and mounting hardware
+    - Spare mechanical components
+    - Emergency repair materials
+    ```
+    
+    ### Secondary Storage (Specialized Items)
+    ```
+    Case 1: Advanced Diagnostics
+    - Oscilloscope and probes
+    - CAN bus analyzer
+    - Network analysis tools
+    - Specialized test equipment
+    
+    Case 2: Repair Supplies
+    - Soldering station and supplies
+    - Heat gun and shrink tubing
+    - Wire repair materials
+    - Connector replacement parts
+    
+    Case 3: Safety & Emergency
+    - First aid supplies
+    - Personal protective equipment
+    - Emergency tools and lights
+    - Communication devices
+    ```
+    
+    ### Accessibility Principles
+    - **5-Second Rule**: Most used items accessible within 5 seconds
+    - **One-Hand Operation**: Tool access with single hand
+    - **Clear Labeling**: Everything labeled with description and location
+    - **Logical Grouping**: Related items stored together
+    - **Emergency Access**: Critical items marked and easily located
+  </Tab>
+  <Tab>
+    ## Inventory Management System
+    
+    ### Pre-Competition Inventory
+    ```
+    Battery Management:
+    □ Battery 1: Voltage ___V, Load Test: Pass/Fail
+    □ Battery 2: Voltage ___V, Load Test: Pass/Fail  
+    □ Battery 3: Voltage ___V, Load Test: Pass/Fail
+    □ Spare Battery: Available (Y/N)
+    □ Charger: Functional (Y/N)
+    
+    Essential Spares:
+    □ SB50 Connectors: Qty ___
+    □ Powerpole Connectors: Red ___ Black ___
+    □ Molex SL Connectors: Qty ___
+    □ Ethernet Cables: 1ft ___ 3ft ___ 6ft ___
+    □ Fuses: 20A ___ 30A ___ 40A ___
+    ```
+    
+    ### During Competition Tracking
+    ```
+    Match Preparation:
+    □ Battery voltage check: ___V
+    □ Main breaker operation: OK/Issues
+    □ Radio communication: OK/Issues
+    □ Vision system: OK/Issues
+    □ All connections secure: Y/N
+    
+    Post-Match Assessment:
+    □ Battery voltage: ___V
+    □ Any error messages: Y/N (List: ___)
+    □ Physical damage observed: Y/N
+    □ Repairs needed: Y/N (List: ___)
+    □ Spare parts used: (List: ___)
+    ```
+    
+    ### Continuous Inventory
+    **Real-Time Updates**:
+    - Parts used immediately logged
+    - Quantity thresholds for reordering
+    - Critical item status clearly marked
+    - Runner assignments for resupply
+    
+    **End-of-Day Review**:
+    - Complete inventory reconciliation
+    - Identify needed replenishment
+    - Plan next day preparation tasks
+    - Update emergency contact list
+  </Tab>
+  <Tab>
+    ## Accessibility and Efficiency Design
+    
+    ### Rapid Access Systems
+    ```
+    Color Coding:
+    Red - Emergency/Safety items
+    Orange - Daily use tools
+    Yellow - Electrical supplies
+    Green - Spare parts
+    Blue - Documentation
+    
+    Location Mapping:
+    Zone A - Active work area (most frequent)
+    Zone B - Secondary tools (moderate use)
+    Zone C - Spare parts (as needed)
+    Zone D - Emergency supplies (rarely used)
+    ```
+    
+    ### Workflow Optimization
+    **Standard Repair Setup (Under 2 Minutes)**:
+    1. Clear work surface and lay out protective mat
+    2. Position task lighting for optimal visibility
+    3. Gather basic tool set: multimeter, hand tools, supplies
+    4. Have documentation ready for reference
+    5. Establish communication with pit crew coordinator
+    
+    **Emergency Response Setup (Under 30 Seconds)**:
+    1. Power isolation tools immediately accessible
+    2. Safety equipment (first aid, fire suppressor) clearly marked
+    3. Emergency contact list posted prominently
+    4. Backup communication method available
+    5. Clear evacuation path maintained
+    
+    ### Team Coordination
+    **Role Assignments**:
+    - **Lead Technician**: Diagnosis and complex repairs
+    - **Assistant**: Tool fetching and documentation
+    - **Runner**: Parts procurement and communication
+    - **Safety Monitor**: Oversight and emergency response
+    - **Coordinator**: Schedule management and team liaison
+    
+    **Communication Protocols**:
+    - Clear, concise status updates
+    - Immediate escalation of safety concerns
+    - Regular coordination with drive team
+    - Documentation of all activities
+  </Tab>
+</Tabs>
+
+## 📦 Spare Parts Inventory
+
+### Critical Spare Parts (Must Have)
+
+<Tabs items={['Power Components', 'Control Systems', 'Communications', 'Sensors & Actuators']}>
+  <Tab>
+    ## Power System Spare Parts
+    
+    ### Primary Power Components
+    ```
+    Batteries:
+    - 1x Spare competition battery (fully charged)
+    - 1x Practice battery (backup)
+    - Battery charger with status indicator
+    - Battery maintenance supplies
+    
+    Main Distribution:
+    - 1x Spare main breaker (120A)
+    - 2x SB50 connector sets (red/black)
+    - 2x Ring terminals (large gauge)
+    - 1x Battery post cleaning kit
+    ```
+    
+    ### Power Distribution Hub (PDH)
+    ```
+    Fuses (Minimum Quantities):
+    - 20A: 4 pieces
+    - 30A: 4 pieces  
+    - 40A: 2 pieces
+    - Custom ratings: As specified in documentation
+    
+    Connectors:
+    - Anderson Powerpole: 10x Red, 10x Black, 20x Housings
+    - Ring terminals: Various sizes for direct connections
+    - Wire nuts: Assorted sizes for emergency repairs
+    - Electrical tape: Professional grade, multiple colors
+    ```
+    
+    ### Wiring Supplies
+    ```
+    Wire (Pre-cut Lengths):
+    - 12 AWG: Red, Black (2ft, 6ft, 10ft lengths)
+    - 14 AWG: Red, Black, various colors (1ft, 3ft, 6ft)
+    - 16 AWG: Multiple colors (1ft, 2ft, 4ft)
+    - 18 AWG: Signal wires, various colors
+    
+    Protection & Insulation:
+    - Heat shrink tubing: Multiple diameters
+    - Wire looms and spiral wrap
+    - Cable ties: Various lengths
+    - Electrical tape: Black, red, blue, yellow
+    ```
+  </Tab>
+  <Tab>
+    ## Control System Spare Parts
+    
+    ### Motor Controllers
+    ```
+    Spark Max Controllers:
+    - 1x Spare controller (configured as backup)
+    - 2x CAN connectors (Weidmuller style)
+    - 2x Power connectors (Powerpole sets)
+    - 1x Data cable (CAN bus)
+    
+    Configuration Items:
+    - Backup configuration files on laptop
+    - USB-C programming cable
+    - REV Hardware Client software
+    - Motor controller mounting hardware
+    ```
+    
+    ### RoboRIO System
+    ```
+    Essential Spares:
+    - 1x Ethernet cable (RoboRIO to Radio)
+    - 1x USB cable (programming)
+    - 2x PWM cables (various lengths)
+    - 4x Digital I/O connectors
+    
+    Power & Communication:
+    - 1x RoboRIO power cable
+    - 2x CAN termination resistors
+    - 1x Spare fuse (RoboRIO circuit)
+    - Various jumper wires and headers
+    ```
+    
+    ### Programming & Configuration
+    ```
+    Software Backup:
+    - Complete robot code on multiple USB drives
+    - Configuration files for all devices
+    - Driver station configuration backup
+    - Network configuration documentation
+    
+    Hardware:
+    - Programming laptop with all software
+    - USB hub for multiple connections
+    - Network switch for pit network
+    - Backup keyboard and mouse
+    ```
+  </Tab>
+  <Tab>
+    ## Communication System Spares
+    
+    ### Wireless Communication
+    ```
+    Radio System:
+    - 1x Spare radio (configured and tested)
+    - 2x Ethernet cables (1ft and 3ft)
+    - 1x Power cable (12V to radio)
+    - 1x Antenna (properly tuned)
+    
+    Mounting & Protection:
+    - Radio mounting hardware
+    - Antenna mounting bracket
+    - Weather protection (if needed)
+    - Cable strain relief components
+    ```
+    
+    ### Wired Networking
+    ```
+    Ethernet Infrastructure:
+    - Ethernet cables: 1ft (4x), 3ft (4x), 6ft (2x)
+    - RJ45 connectors: 12 pieces
+    - Network switch (5-port minimum)
+    - Cable tester with tone generator
+    
+    Installation Supplies:
+    - Crimping tool for RJ45
+    - Wire strippers for Cat5/Cat6
+    - Cable management supplies
+    - Mounting hardware for switches
+    ```
+    
+    ### CAN Bus Network
+    ```
+    Physical Layer:
+    - CAN cable: 6ft and 10ft lengths
+    - Weidmuller connectors: 8 pieces
+    - Termination resistors: 4x 120 ohm
+    - Splitter/junction connectors: 2 pieces
+    
+    Diagnostic Tools:
+    - CAN bus analyzer (laptop software)
+    - Multimeter with continuity testing
+    - Wire labels for identification
+    - Documentation with device IDs
+    ```
+  </Tab>
+  <Tab>
+    ## Sensors & Actuators Spares
+    
+    ### Position Feedback
+    ```
+    Encoders:
+    - 1x Spare encoder (most common type)
+    - 2x Encoder cables (various lengths)
+    - 4x Encoder connectors (if removable)
+    - 1x Coupling hardware for mounting
+    
+    Limit Switches:
+    - 2x Normally Open switches  
+    - 2x Normally Closed switches
+    - 4x Switch cables (pre-wired)
+    - Mounting hardware and brackets
+    ```
+    
+    ### Vision System
+    ```
+    Camera System:
+    - 1x Spare camera (configured)
+    - 2x USB cables (camera to processing unit)
+    - 1x Ethernet cable (processing to network)
+    - LED lighting (if used for vision)
+    
+    Processing Hardware:
+    - 1x Spare processing unit (configured)
+    - Power supplies for processing unit
+    - Mounting hardware for cameras
+    - Lens cleaning supplies
+    ```
+    
+    ### Pneumatic Controls (If Used)
+    ```
+    Pneumatic Components:
+    - 2x Solenoid valves (most common type)
+    - 4x Pneumatic fittings (push-connect)
+    - 6ft Pneumatic tubing
+    - Pressure switch (backup)
+    
+    Electrical Connections:
+    - Solenoid connector sets
+    - Pressure switch connectors
+    - Compressor relay (if used)
+    - Fuses for pneumatic circuits
+    ```
+  </Tab>
+</Tabs>
+
+## 🏁 Competition Day Procedures
+
+### Pre-Competition Setup Checklist
+
+<Tabs items={['Pit Setup', 'Robot Preparation', 'Team Coordination']}>
+  <Tab>
+    ## Pit Area Organization
+    
+    ### Physical Setup (30 Minutes)
+    ```
+    Space Allocation:
+    □ Tool storage positioned for easy access
+    □ Work surface cleared and prepared
+    □ Power outlets identified and tested
+    □ Lighting arranged for optimal visibility
+    □ Safety equipment positioned and marked
+    
+    Communication Setup:
+    □ Radio communication tested
+    □ Cell phone contacts verified
+    □ Team communication plan reviewed
+    □ Emergency contact list posted
+    □ Backup communication method available
+    
+    Documentation Organization:
+    □ Circuit diagrams accessible
+    □ Troubleshooting guides available
+    □ Inspection checklists ready
+    □ Spare parts inventory updated
+    □ Match schedule posted prominently
+    ```
+    
+    ### Pit Safety Protocols
+    ```
+    Safety Zone Establishment:
+    - Clear walkways maintained at all times
+    - Emergency equipment clearly marked
+    - Fire extinguisher location known by all
+    - First aid kit accessible and stocked
+    - Safety officer assigned and identified
+    
+    Electrical Safety:
+    - All power tools inspected before use
+    - Extension cords and outlets checked
+    - Personal protective equipment available
+    - Battery handling procedures reviewed
+    - Emergency shutoff procedures practiced
+    ```
+    
+    ### Workflow Organization
+    ```
+    Work Area Zones:
+    Zone 1: Active repair and diagnostics
+    Zone 2: Parts preparation and organization  
+    Zone 3: Documentation and communication
+    Zone 4: Storage and backup equipment
+    Zone 5: Safety and emergency response
+    
+    Traffic Flow:
+    - Entry/exit paths clearly defined
+    - Robot movement routes established
+    - Team member circulation managed
+    - Visitor/official access controlled
+    ```
+  </Tab>
+  <Tab>
+    ## Robot Electrical Preparation
+    
+    ### Pre-Match Inspection (15 Minutes)
+    ```
+    Battery System:
+    □ Battery voltage: ___V (Greater than 12.0V)
+    □ Battery terminals: Clean and tight
+    □ Main breaker: Operation test passed
+    □ SB connector: Secure engagement verified
+    □ Power indicator LEDs: All functional
+    
+    Power Distribution:
+    □ All fuses: Continuity verified
+    □ PDH indicators: Normal status
+    □ Wire connections: Visual inspection passed
+    □ No signs of overheating: Confirmed
+    □ Emergency stop: Functional test passed
+    
+    Motor Control Systems:
+    □ CAN bus: All devices responding
+    □ Motor controllers: Status lights normal
+    □ Current limits: Properly configured
+    □ Control response: Test movements OK
+    □ Encoder feedback: Position readings accurate
+    ```
+    
+    ### Communication Systems Check
+    ```
+    Wireless Communication:
+    □ Radio power: 12V confirmed
+    □ Radio network: Connection established
+    □ Driver station: Communication verified
+    □ Network latency: Less than 10ms average
+    □ Signal strength: Adequate for competition
+    
+    CAN Bus Network:
+    □ Bus termination: 60 ohm verified
+    □ All devices: Enumerated correctly
+    □ Error counters: Zero or acceptable levels
+    □ Message timing: Within specifications
+    □ Diagnostic tools: Ready for troubleshooting
+    
+    Vision System (If Used):
+    □ Camera power: Stable 12V or 5V
+    □ Network connection: Bandwidth adequate
+    □ Processing unit: Normal operation
+    □ Target detection: Functional in current lighting
+    □ Latency measurement: Acceptable levels
+    ```
+    
+    ### Final Systems Integration
+    ```
+    Autonomous Function Test:
+    □ Sensor readings: All inputs responding
+    □ Actuator control: All outputs functional
+    □ Safety interlocks: Emergency stop working
+    □ Autonomous routine: Basic functionality verified
+    □ Driver override: Manual control available
+    
+    Teleoperated Function Test:
+    □ Drive system: All motors responding correctly
+    □ Manipulation systems: Full range of motion
+    □ User interface: All controls mapped properly
+    □ Feedback systems: Driver station updates
+    □ Performance metrics: Within expected ranges
+    ```
+  </Tab>
+  <Tab>
+    ## Team Coordination Protocols
+    
+    ### Role Assignments & Responsibilities
+    ```
+    Electrical Lead:
+    - Overall electrical system responsibility
+    - Final approval for electrical modifications
+    - Interface with inspection officials
+    - Coordination with drive team on system status
+    
+    Pit Crew Electrical:
+    - Hands-on diagnostics and repairs
+    - Parts management and inventory
+    - Tool organization and maintenance
+    - Documentation of all activities
+    
+    Safety Officer:
+    - Monitor all safety protocols
+    - Emergency response coordination
+    - Incident reporting and documentation
+    - Interface with event safety officials
+    
+    Team Coordinator:
+    - Match schedule management
+    - Communication with alliance partners
+    - Resource allocation and prioritization
+    - Interface with team leadership
+    ```
+    
+    ### Communication Protocols
+    ```
+    Internal Team Communication:
+    - Regular status updates every 30 minutes
+    - Immediate escalation of critical issues
+    - Clear documentation of all activities
+    - Coordination with other subteams
+    
+    External Communication:
+    - Alliance partner updates as needed
+    - Inspector communication for approvals
+    - Event official coordination for issues
+    - Emergency services if required
+    
+    Information Management:
+    - Match data collection and analysis
+    - Issue tracking and resolution status
+    - Parts usage and inventory updates
+    - Performance metrics and improvements
+    ```
+    
+    ### Decision Making Process
+    ```
+    Priority Classification:
+    Critical: Safety issues, complete system failure
+    High: Major system degradation, competition impact
+    Medium: Minor issues, reduced performance
+    Low: Cosmetic issues, non-essential features
+    
+    Escalation Process:
+    Level 1: Pit crew attempts resolution (10 minutes)
+    Level 2: Electrical lead assessment and direction
+    Level 3: Team leadership involvement for major issues
+    Level 4: External expert consultation if available
+    
+    Go/No-Go Decision Criteria:
+    Safety: All safety systems must be functional
+    Mobility: Robot must be able to move safely
+    Competition: Basic scoring capability required
+    Alliance: Impact on alliance partners considered
+    ```
+  </Tab>
+</Tabs>
+
+## ⏱️ Match Day Timeline
+
+### Competition Day Schedule Template
+
+<GenericGrid 
+  layout="masonry"
+  variant="cards"
+  items={[
+    {
+      title: "Pre-Competition (2 Hours Before)",
+      description: "Complete system inspection, battery preparation, pit organization",
+      icon: "🌅",
+      color: "blue",
+      details: "Full electrical inspection, documentation review, team briefing"
+    },
+    {
+      title: "Match Preparation (30 Minutes Before)",
+      description: "Final system check, battery installation, communication test",
+      icon: "⚡",
+      color: "orange",
+      details: "Battery voltage verification, quick systems test, driver briefing"
+    },
+    {
+      title: "Queue Period (15 Minutes Before)",
+      description: "Robot delivery, final inspection, team coordination",
+      icon: "🚦",
+      color: "yellow",
+      details: "Last-minute checks, inspector interface, alliance coordination"
+    },
+    {
+      title: "Post-Match (Immediately After)",
+      description: "Quick assessment, battery check, priority repairs identification",
+      icon: "🔍",
+      color: "green",
+      details: "Rapid damage assessment, battery swap if needed, next match prep"
+    },
+    {
+      title: "Between Matches (Variable Time)",
+      description: "Repairs, improvements, system optimization",
+      icon: "🔧",
+      color: "purple",
+      details: "Address issues found, implement improvements, prepare for next match"
+    },
+    {
+      title: "End of Day (After Last Match)",
+      description: "Complete inspection, battery management, next day preparation",
+      icon: "🌙",
+      color: "gray",
+      details: "Full system review, documentation update, preparation for next day"
+    }
+  ]}
+/>
+
+### Critical Timing Checkpoints
+
+```
+T-120 minutes: Pit setup complete, tools organized
+T-90 minutes: Robot inspection preparation begins
+T-60 minutes: First complete electrical system check
+T-30 minutes: Final battery installation and test
+T-15 minutes: Robot queued, documentation complete
+T-0 minutes: Match begins, pit crew on standby
+T+5 minutes: Post-match assessment begins
+T+15 minutes: Priority repairs identified and started
+```
+
+## 📋 Documentation and Compliance
+
+### Required Documentation Package
+
+<Tabs items={['Technical Documentation', 'Safety Documentation', 'Competition Records']}>
+  <Tab>
+    ## Technical Documentation Requirements
+    
+    ### Circuit Documentation
+    ```
+    Electrical Schematic:
+    - Complete system diagram
+    - Component specifications
+    - Wire gauge and color coding
+    - Fuse and breaker ratings
+    - Connector types and pinouts
+    
+    Wiring Diagrams:
+    - Physical wire routing
+    - Connection details
+    - Termination specifications
+    - Testing procedures
+    - Troubleshooting guides
+    ```
+    
+    ### Component Specifications
+    ```
+    Bill of Materials:
+    - All electrical components listed
+    - Part numbers and manufacturers
+    - Quantities and specifications
+    - Vendor information
+    - Cost tracking for budgeting
+    
+    Device Configuration:
+    - Motor controller settings
+    - CAN device IDs
+    - Network configurations
+    - Sensor calibrations
+    - Software parameters
+    ```
+    
+    ### Test and Validation Records
+    ```
+    System Testing:
+    - Functional test procedures
+    - Performance measurements
+    - Safety system verification  
+    - Compliance check results
+    - Acceptance criteria and results
+    
+    Quality Assurance:
+    - Inspection checklists completed
+    - Verification signatures
+    - Test equipment calibration
+    - Documentation review approvals
+    - Change control records
+    ```
+  </Tab>
+  <Tab>
+    ## Safety Documentation Package
+    
+    ### Risk Assessment Documentation
+    ```
+    Hazard Analysis:
+    - Electrical shock hazards identified
+    - Fire and explosion risks assessed
+    - Mechanical hazards from electrical systems
+    - Environmental hazards considered
+    - Human factors and ergonomics
+    
+    Risk Mitigation:
+    - Safety measures implemented
+    - Protective equipment specified
+    - Emergency procedures developed
+    - Training requirements defined
+    - Incident response plans
+    ```
+    
+    ### Safety Compliance Records
+    ```
+    Code Compliance:
+    - FRC electrical rules verification
+    - National Electrical Code compliance
+    - Local electrical code requirements
+    - Safety standard adherence (UL, etc.)
+    - Insurance requirements met
+    
+    Certification Records:
+    - Component safety certifications
+    - Installation compliance verification
+    - Inspection reports and approvals
+    - Testing certificates
+    - Professional sign-offs where required
+    ```
+    
+    ### Training and Competency
+    ```
+    Personnel Qualifications:
+    - Training records for all team members
+    - Competency assessments completed
+    - Safety training certificates
+    - Specialized training (e.g., electrical safety)
+    - Continuing education records
+    
+    Operating Procedures:
+    - Standard operating procedures documented
+    - Emergency response procedures
+    - Maintenance procedures
+    - Safety protocols
+    - Incident reporting procedures
+    ```
+  </Tab>
+  <Tab>
+    ## Competition Records Management
+    
+    ### Match Performance Data
+    ```
+    Electrical System Performance:
+    - Battery voltage throughout matches
+    - System current draw measurements
+    - Communication performance metrics
+    - Error logs and fault records
+    - Performance degradation trends
+    
+    Maintenance Activities:
+    - Preventive maintenance completed
+    - Repairs performed and parts used
+    - System modifications implemented
+    - Configuration changes documented
+    - Improvement opportunities identified
+    ```
+    
+    ### Inspection and Compliance
+    ```
+    Official Inspections:
+    - Inspection checklist results
+    - Inspector comments and requirements
+    - Non-conformance items and resolutions
+    - Re-inspection results
+    - Final approval documentation
+    
+    Rule Compliance:
+    - FRC rule adherence verification
+    - Regional/championship specific requirements
+    - Alliance partner coordination records
+    - Official clarifications received
+    - Rule interpretation documentation
+    ```
+    
+    ### Continuous Improvement
+    ```
+    Lessons Learned:
+    - Issues encountered and resolutions
+    - System performance analysis
+    - Design improvement recommendations
+    - Process improvement opportunities
+    - Knowledge transfer documentation
+    
+    Future Planning:
+    - Post-season evaluation results
+    - Design requirements for next season
+    - Training needs assessment
+    - Resource planning recommendations
+    - Strategic improvement planning
+    ```
+  </Tab>
+</Tabs>
+
+<Callout type="info" emoji="💡">
+    **Documentation Best Practice**: All documentation should be maintained in both digital and physical formats, with key documents laminated for pit use and backup copies stored safely.
+</Callout>
+
+<Callout type="warning" emoji="⚠️">
+    **Compliance Reminder**: Competition rules and requirements can change. Always verify current requirements with official sources and update documentation accordingly.
+</Callout>
+
+<Callout type="tip" emoji="🎯">
+    **Efficiency Tip**: Use standardized templates and checklists to ensure consistency and completeness while reducing preparation time and potential oversights.
+</Callout>

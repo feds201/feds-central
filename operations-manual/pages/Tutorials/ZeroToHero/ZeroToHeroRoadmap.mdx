@@ -1,0 +1,117 @@
+import Head from 'next/head';
+import { GenericHero, GenericTimeline } from '../../../Components/index';
+
+<Head>
+    <title>Zero to Hero Roadmap - FEDS Handbook</title>
+</Head>
+
+<GenericHero
+    title="Zero to Hero: The Roadmap"
+    titleColor="linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)"
+    subtitle="From 'Hello World' to Einstein 🏆"
+    description="This series is designed to take you from knowing nothing about FRC programming to writing competitive, award-winning robot code. Here is the complete journey."
+    backgroundType="gradient"
+    backgroundValue="linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%)"
+    particles={[
+        { symbol: '🗺️', transform: 'translate(0,0)' },
+        { symbol: '🏁', transform: 'translate(10px,10px)' }
+    ]}
+    buttons={[
+        { text: 'Start Episode 1', style: 'primary', href: '/Tutorials/ZeroToHero/ZeroToHero1' }
+    ]}
+    height="md"
+    textAlign="center"
+/>
+
+## 👶 Phase 1: The Foundation (Competent)
+
+The basics you need to get a robot moving.
+
+<GenericTimeline orientation="vertical" variant="cards" items={[
+    {
+        title: "Episode 1: Introduction to WPILib",
+        description: "Setting up VS Code, understanding the project structure, and deploying code to the RoboRIO.",
+        icon: "👋",
+        date: "The Basics"
+    },
+    {
+        title: "Episode 2: Command-Based Framework",
+        description: "Stop writing spaghetti code. Learn the Subsystem-Command architecture used by 99% of top teams.",
+        icon: "🏗️",
+        date: "Architecture"
+    },
+    {
+        title: "Episode 3: Advanced Subsystems",
+        description: "Motor controllers (SparkMax/TalonFX), pneumatics, and writing clean hardware classes.",
+        icon: "⚙️",
+        date: "Hardware"
+    },
+    {
+        title: "Episode 4: Sensors & Perception",
+        description: "Encoders, Gyros, and Limit Switches. How the robot knows where it is.",
+        icon: "🧭",
+        date: "Sensing"
+    },
+    {
+        title: "Episode 5: Vision & Limelight",
+        description: "Using cameras to track AprilTags and reflective tape. The robot's eyes.",
+        icon: "👁️",
+        date: "Vision"
+    },
+    {
+        title: "Episode 6: PID Control",
+        description: "The math behind smooth movement. P, I, D, and Feedforward explained simply.",
+        icon: "📈",
+        date: "Control Theory"
+    }
+]} />
+
+## 🚀 Phase 2: The Advanced Series (Competitive)
+
+Moving from 'it works' to 'it wins'.
+
+<GenericTimeline orientation="vertical" variant="cards" items={[
+    {
+        title: "Episode 7: Advanced Commands",
+        description: "Composition, Factories, and Triggers. Writing complex auto routines that read like English.",
+        icon: "🎼",
+        date: "Composition"
+    },
+    {
+        title: "Episode 8: Advanced Simulation",
+        description: "The Matrix Reloaded. Using AdvantageKit and IO Layers to replay matches and simulate physics.",
+        icon: "🦁",
+        date: "AdvantageKit"
+    },
+    {
+        title: "Episode 9: The Concept Robot",
+        description: "Integration Day. We design and code a complete virtual robot from scratch to practice putting it all together.",
+        icon: "🏗️",
+        date: "Integration"
+    },
+    {
+        title: "Episode 10: Project Spyder",
+        description: "A deep dive into the FEDS 2024 Robot. Swerve Drive, State Machines, and real-world complexity.",
+        icon: "🕷️",
+        date: "Real World"
+    },
+    {
+        title: "Episode 11: Optimization & Logging",
+        description: "DataLogManager, AdvantageScope, and loop time optimization. Debugging like a pro.",
+        icon: "⚡",
+        date: "Optimization"
+    },
+    {
+        title: "Episode 12: Superstructures",
+        description: "Managing complex mechanism interactions and preventing self-destruction.",
+        icon: "🧠",
+        date: "Logic"
+    }
+]} />
+
+## 📞 Need Help?
+
+Email: feds.programming@gmail.com
+
+Keep coding, keep learning, and remember: every expert was once a beginner who refused to give up! 🚀
+

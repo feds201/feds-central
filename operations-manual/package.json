@@ -15,7 +15,7 @@
     "@vercel/speed-insights": "^1.2.0",
     "codemirror": "^6.0.1",
     "monaco-editor": "^0.49.0",
-    "next": "~15.3.9",
+    "next": "15.3.8",
     "nextra": "^2.13.4",
     "nextra-theme-docs": "^2.13.4",
     "react": "^18.3.1",

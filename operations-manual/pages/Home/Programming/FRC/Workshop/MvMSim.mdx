@@ -1,0 +1,29 @@
+import MotorVsMechanismSimulator from "../../../../../Components/Programming/MotorVsMechanismSimulator";
+
+# Motor vs Mechanism Ratio Simulator
+
+This interactive simulator helps you understand the relationship between rotor speed, sensor speed, and mechanism speed through gear ratios.
+
+## Understanding the Chain
+
+In FRC mechanisms, power flows through multiple reduction stages:
+
+1. **Rotor (Motor)** - The motor shaft spinning at full speed
+2. **Sensor** - An encoder that reads rotor position, reduced by the first gear ratio
+3. **Mechanism** - The actual output (arm, elevator, etc.), further reduced by the second ratio
+
+## Key Concepts
+
+- **RotorToSensorRatio**: How much the motor speed is reduced before the sensor sees it
+- **SensorToMechanismRatio**: How much the sensor speed is reduced to produce the final mechanism output
+- **Total Reduction**: The product of both ratios
+
+## How to Use
+
+1. **Choose a motion mode**: Oscillate for back-and-forth motion, or Continuous for spinning
+2. **Adjust the gear ratios** using the sliders or number inputs
+3. **Watch the visualization** to see how each component rotates
+4. **View the graph** to compare position traces over time
+
+<MotorVsMechanismSimulator />
+

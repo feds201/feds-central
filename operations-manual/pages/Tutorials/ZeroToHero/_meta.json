@@ -1,6 +1,6 @@
 {
-  "ZeroToHero1": { 
-    "title": "Episode 1: Introduction to WPILib" ,
+  "ZeroToHeroRoadmap": {
+    "title": "Roadmap: Zero to Hero",
     "theme": {
       "breadcrumb": true,
       "footer": true,
@@ -8,9 +8,9 @@
       "toc": true,
       "pagination": true
     }
-},
-"ZeroToHero2": { 
-    "title": "Episode 2: Command-Based Programming & Subsystems" ,
+  },
+  "ZeroToHero1": {
+    "title": "Episode 1: Introduction to WPILib",
     "theme": {
       "breadcrumb": true,
       "footer": true,
@@ -18,5 +18,76 @@
       "toc": true,
       "pagination": true
     }
+  },
+  "ZeroToHero2": {
+    "title": "Episode 2: The Command-Based Framework",
+    "theme": {
+      "breadcrumb": true,
+      "footer": true,
+      "sidebar": true,
+      "toc": true,
+      "pagination": true
+    }
+  },
+  "ZeroToHero3": {
+    "title": "Episode 3: Advanced Subsystems",
+    "theme": {
+      "breadcrumb": true,
+      "footer": true,
+      "sidebar": true,
+      "toc": true,
+      "pagination": true
+    }
+  },
+  "ZeroToHero4": {
+    "title": "Episode 4: Sensors & Perception",
+    "theme": {
+      "breadcrumb": true,
+      "footer": true,
+      "sidebar": true,
+      "toc": true,
+      "pagination": true
+    }
+  },
+  "ZeroToHero5": {
+    "title": "Episode 5: Vision & Limelight",
+    "theme": {
+      "breadcrumb": true,
+      "footer": true,
+      "sidebar": true,
+      "toc": true,
+      "pagination": true
+    }
+  },
+  "ZeroToHero6": {
+    "title": "Episode 6: PID Control",
+    "theme": {
+      "breadcrumb": true,
+      "footer": true,
+      "sidebar": true,
+      "toc": true,
+      "pagination": true
+    }
+  },
+  "ZeroToHero7": {
+    "title": "Episode 7: Advanced Commands",
+    "theme": {
+      "breadcrumb": true,
+      "footer": true,
+      "sidebar": true,
+      "toc": true,
+      "pagination": true
+    }
+  },
+  "ZeroToHero8": {
+    "title": "Episode 8: Advanced Simulation",
+    "theme": {
+      "breadcrumb": true,
+      "footer": true,
+      "sidebar": true,
+      "toc": true,
+      "pagination": true
+    }
+  }
 }
-}
+
