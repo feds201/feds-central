@@ -1,5 +1,9 @@
 package frc.robot;
 
+import java.security.KeyStore.Entry;
+import java.util.Map;
+
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.utils.SwerveModuleStatusUtil;
@@ -36,4 +40,19 @@ public final class RobotMap {
     public static class SpindexerConstants {
         public static final int kSpindexerMotorId = 0;
     }
+
+
+    public static class ShooterConstants {
+        public static final int kShooterLeaderId = 0;
+        public static final int kShooterFollower1Id = 1;
+        public static final int kShooterFollower2Id = 2;
+        public static final int kShooterFollower3Id = 3;
+
+        public static final InterpolatingDoubleTreeMap kVelocityMap = InterpolatingDoubleTreeMap.ofEntries(
+            Map.entry(0.0, 0.0)
+        );
 }
+}
+
+
+    
