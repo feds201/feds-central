@@ -75,7 +75,7 @@ public final class RobotMap {
         public static final int kSpindexerMotorId = 0;
     }
 
-
+    //All values subject to change, just placeholders for now
     public static class ShooterConstants {
         public static final int kShooterLeaderId = 0;
         public static final int kShooterFollower1Id = 1;

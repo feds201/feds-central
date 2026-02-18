@@ -115,13 +115,13 @@ public class ShooterHood extends SubsystemBase {
   public Angle getTargetPositionShooting()
   {
      Distance d = dt.getDistanceToHub();
-      return Rotations.of(RobotMap.ShooterConstants.kPassingPositionMap.get(d.in(Meters)));
+      return Rotations.of(RobotMap.ShooterConstants.kShootingPositionMap.get(d.in(Meters)));
   }
 
    public Angle getTargetPositionPassing()
   {
      Distance d = dt.getDistanceToHub();
-      return Rotations.of(RobotMap.ShooterConstants.kShootingPositionMap.get(d.in(Meters)));
+      return Rotations.of(RobotMap.ShooterConstants.kPassingPositionMap.get(d.in(Meters)));
   }
 
   public Command setStateCommand(shooterhood_state state) {
