@@ -19,6 +19,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -28,6 +29,7 @@ import frc.robot.RobotMap;
 import frc.robot.RobotMap.ShooterConstants;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 
+@Logged
 public class ShooterWheels extends SubsystemBase {
 
     public enum shooter_state {
