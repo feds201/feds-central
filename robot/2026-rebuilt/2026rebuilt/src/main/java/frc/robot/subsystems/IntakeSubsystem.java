@@ -181,5 +181,15 @@ public class IntakeSubsystem extends SubsystemBase {
   public double getmotorVelocity() {
     return motor.getVelocity().getValue().in(Units.RotationsPerSecond);
   }
+
+  public boolean testIntakeExtend() {
+     extendIntake();
+
+     if (limit_switch_l.get()) {
+      return true;
+     }
+    return false; 
+    }
+
 }
 
