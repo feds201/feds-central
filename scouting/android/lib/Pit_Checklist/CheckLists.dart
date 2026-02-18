@@ -621,9 +621,8 @@ class _Checklist_recordState extends State<Checklist_record> {
               "Ethernet",
               Icon(Icons.star_outline, size: 30, color: Colors.blue),
               [
-                "FL Limelight",
-                "FR Limelight",
-                "BR Limelight",
+                "Limelight 3",
+                "Limelight 4",
                 "Ethernet Switch",
                 "Radio",
               ],
@@ -653,7 +652,7 @@ class _Checklist_recordState extends State<Checklist_record> {
                 "Bumper",
                 "Hooks",
                 "Clips",
-                "String",
+                // "String",
                 "Springs",
                 "Gearbox",
                 "Motors",
@@ -674,10 +673,10 @@ class _Checklist_recordState extends State<Checklist_record> {
                 "Motors",
                 "Gears",
                 "Gearboxes",
-                "Space",
+                // "Space",
                 "Rollers",
                 "Fuel Pusher",
-                "Belts",
+                // "Belts",
               ],
               shooter, (value) {
             setState(() {
@@ -689,7 +688,7 @@ class _Checklist_recordState extends State<Checklist_record> {
               Icon(Icons.star_outline, size: 30, color: Colors.blue),
               [
                 "Gears",
-                "Belts",
+                // "Belts",
                 "Gearboxes",
                 "Combined Wheels",
                 "Motor",
