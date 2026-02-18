@@ -12,12 +12,45 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.join(__dirname, '../.env') });
 
+import cookieParser from 'cookie-parser';
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-do-not-use-in-prod';
+const REFRESH_SECRET = process.env.REFRESH_SECRET || 'dev-refresh-secret-do-not-use-in-prod';
 
-app.use(cors());
+app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
+app.use(cookieParser());
+
+// --- Token Utils ---
+
+/**
+ * Issues a short-lived access token (15m) and a long-lived refresh token (30d).
+ * The access token is returned directly; the refresh token is set as an httpOnly cookie.
+ * Called from signup, login, and passkey auth, as well as the /api/auth/refresh endpoint.
+ */
+function issueTokens(res, user) {
+    const accessToken = jwt.sign(
+        { userId: user.id, email: user.email },
+        JWT_SECRET,
+        { expiresIn: '15m' }
+    );
+    const refreshToken = jwt.sign(
+        { userId: user.id, email: user.email },
+        REFRESH_SECRET,
+        { expiresIn: '30d' }
+    );
+
+    res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+    });
+
+    return accessToken;
+}
 
 // --- Database Init (Auto-run migration for dev convenience) ---
 const initDb = async () => {
@@ -91,7 +124,7 @@ app.post('/api/auth/signup', async (req, res) => {
     `;
 
         const user = result[0];
-        const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, { expiresIn: '7d' });
+        const token = issueTokens(res, user);
 
         res.json({ token, user });
     } catch (err) {
@@ -121,10 +154,9 @@ app.post('/api/auth/login', async (req, res) => {
             return res.status(401).json({ error: 'Invalid credentials' });
         }
 
-        const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, { expiresIn: '7d' });
-
         // Return user info (excluding hash)
         const { password_hash, ...userInfo } = user;
+        const token = issueTokens(res, user);
         res.json({ token, user: userInfo });
     } catch (err) {
         console.error('Login error:', err);
@@ -152,6 +184,22 @@ const authenticateToken = (req, res, next) => {
         next();
     });
 };
+
+// --- Refresh Token ---
+
+// Exchanges a valid refresh token cookie for a new access token + rotated refresh token.
+// Called automatically by the client when the access token expires (401/403).
+app.post('/api/auth/refresh', (req, res) => {
+    const refreshToken = req.cookies?.refreshToken;
+    if (!refreshToken) return res.sendStatus(401);
+
+    jwt.verify(refreshToken, REFRESH_SECRET, (err, payload) => {
+        if (err) return res.sendStatus(403);
+
+        const accessToken = issueTokens(res, { id: payload.userId, email: payload.email });
+        res.json({ token: accessToken });
+    });
+});
 
 // --- WebAuthn Config ---
 import {
@@ -458,9 +506,9 @@ app.post('/api/auth/passkey/auth-verify', async (req, res) => {
                 await sql`UPDATE app_users SET current_challenge = NULL WHERE id = ${user.id}`;
             }
 
-            // Issue JWT
-            const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, { expiresIn: '7d' });
+            // Issue tokens
             const { password_hash, ...userInfo } = user;
+            const token = issueTokens(res, user);
 
             res.json({ verified: true, token, user: userInfo });
         } else {
