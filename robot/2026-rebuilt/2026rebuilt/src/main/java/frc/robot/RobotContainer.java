@@ -6,15 +6,22 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LedsSubsystem;
+import frc.robot.subsystems.TestSubsystem;
 
 public class RobotContainer {
   CommandXboxController controller = new CommandXboxController(0);
   //RollersSubsystem rollers = RollersSubsystem.getInstance();
-  LedsSubsystem leds = new LedsSubsystem();
-  IntakeSubsystem intake = new IntakeSubsystem();
+  // LedsSubsystem leds = new LedsSubsystem();
+  // IntakeSubsystem intake = new IntakeSubsystem();
+  TestSubsystem testSubsystem = new TestSubsystem();
+  IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
+
+  
 
   public RobotContainer() {
     configureBindings();
@@ -22,8 +29,28 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    controller.x()
-        .onTrue((leds.intakeSignal())).onFalse(leds.climbingSignal());
+
+    // controller.a() 
+    //   .onTrue(IntakeSubsystem.dyanmicCommand(Direction.kReverse));
+    // controller.b() 
+    //   .onTrue(IntakeSubsystem.dyanmicCommand(Direction.kForward));
+    // controller.x()
+    //   .onTrue(IntakeSubsystem.quatsiCommand(Direction.kReverse));
+    // controller.y()
+    //   .onTrue(IntakeSubsystem.quatsiCommand(Direction.kForward)); 
+      
+      controller.leftTrigger()
+      .onTrue(intakeSubsystem.extendIntake());
+
+      controller.leftBumper()
+      .onTrue(intakeSubsystem.retractIntake());
+      
+
+
+
+
+    // controller.x()
+    //     .onTrue((leds.intakeSignal())).onFalse(leds.climbingSignal());
       
 
     // controller.y()

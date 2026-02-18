@@ -38,11 +38,12 @@ public class Robot extends LoggedRobot {
 
       switch (RobotMap.getRobotMode()) {
       case REAL:
-        Logger.addDataReceiver(new WPILOGWriter());
+        Logger.addDataReceiver(new WPILOGWriter("logs"));
         Logger.addDataReceiver(new NT4Publisher());
         break;
 
       case SIM:
+        Logger.addDataReceiver(new WPILOGWriter("log"));
         Logger.addDataReceiver(new NT4Publisher());
         break;
 
