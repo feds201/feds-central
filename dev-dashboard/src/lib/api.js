@@ -97,7 +97,7 @@ export const api = {
     signOut: () => {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-        window.location.reload();
+        window.location.href = '/sign-in';
     },
 
     // Get Session

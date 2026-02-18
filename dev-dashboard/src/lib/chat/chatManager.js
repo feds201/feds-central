@@ -137,7 +137,15 @@ export function sendMessage(threadId, messageText, { getToken }) {
             }
           }
         } catch {
-          // refresh failed, fall through to error handling below
+          // refresh failed
+        }
+
+        // If still unauthorized after refresh, session is dead — log out
+        if (res.status === 401 || res.status === 403) {
+          localStorage.removeItem('token')
+          localStorage.removeItem('user')
+          window.location.href = '/sign-in'
+          return
         }
       }
 

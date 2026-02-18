@@ -26,7 +26,7 @@ app.use(cookieParser());
 // --- Token Utils ---
 
 /**
- * Issues a short-lived access token (15m) and a long-lived refresh token (30d).
+ * Issues a short-lived access token (15m) and a non-expiring refresh token.
  * The access token is returned directly; the refresh token is set as an httpOnly cookie.
  * Called from signup, login, and passkey auth, as well as the /api/auth/refresh endpoint.
  */
@@ -38,15 +38,14 @@ function issueTokens(res, user) {
     );
     const refreshToken = jwt.sign(
         { userId: user.id, email: user.email },
-        REFRESH_SECRET,
-        { expiresIn: '30d' }
+        REFRESH_SECRET
     );
 
     res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
-        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+        maxAge: 365 * 24 * 60 * 60 * 1000, // 1 year
     });
 
     return accessToken;
