@@ -42,5 +42,9 @@ jobs:
           additional_permissions: |
             actions: read
 
+          # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
+          # or https://code.claude.com/docs/en/cli-reference for available options
           claude_args: |
             --append-system-prompt "This request is from a GitHub tag!"
+            --model claude-sonnet-4-6
+
