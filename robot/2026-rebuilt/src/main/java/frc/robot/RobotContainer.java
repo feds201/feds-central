@@ -10,7 +10,9 @@ import java.util.Optional;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.RobotMap.DrivetrainConstants;
+import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import limelight.networktables.AngularVelocity3d;
 import limelight.networktables.Orientation3d;
@@ -20,6 +22,8 @@ public class RobotContainer {
 
   private final CommandSwerveDrivetrain drivetrain = DrivetrainConstants.createDrivetrain();
   private final LimelightWrapper sampleLocalizationLimelight = new LimelightWrapper("limelight-localization");
+  private final CommandXboxController controller = new CommandXboxController(0);
+  private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
 
   public RobotContainer() {
     configureBindings();
@@ -45,9 +49,24 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
+    // controller.a()
+    //   .onTrue(IntakeSubsystem.dyanmicCommand(Direction.kReverse));
+    // controller.b()
+    //   .onTrue(IntakeSubsystem.dyanmicCommand(Direction.kForward));
+    // controller.x()
+    //   .onTrue(IntakeSubsystem.quatsiCommand(Direction.kReverse));
+    // controller.y()
+    //   .onTrue(IntakeSubsystem.quatsiCommand(Direction.kForward));
+
+    controller.leftTrigger()
+        .onTrue(intakeSubsystem.extendIntake());
+
+    controller.leftBumper()
+        .onTrue(intakeSubsystem.retractIntake());
+
     // controller.x()
     //     .onTrue((leds.intakeSignal())).onFalse(leds.climbingSignal());
-      
+
     // controller.y()
     //     .onTrue(rollers.RollersCommand(RollerState.ON))
     //     .onFalse(rollers.RollersCommand(RollerState.OFF));
