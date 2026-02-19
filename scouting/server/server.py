@@ -14,8 +14,11 @@ from gevent.pywsgi import WSGIServer
 from flask import Flask, request, jsonify, send_file, render_template
 import json
 import psutil
+import requests
 
 app = Flask(__name__)
+
+TBA_API_KEY = os.environ.get('TBA_API_KEY')
 
 
 # Function to take input and save it
@@ -574,6 +577,26 @@ def clear_event_data():
 def get_health():
     server_info = json.loads(get_server_info())
     return jsonify(server_info)
+
+
+@app.route('/api/tba/team/<int:team_number>', methods=['GET'])
+def get_tba_team_data(team_number):
+    if not TBA_API_KEY:
+        return jsonify({"error": "TBA_API_KEY environment variable is not set"}), 500
+
+    url = f"https://www.thebluealliance.com/api/v3/team/frc{team_number}"
+    headers = {"X-TBA-Auth-Key": TBA_API_KEY}
+    try:
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+            data = response.json()
+            resp = jsonify(data)
+            resp.headers.add('Access-Control-Allow-Origin', '*')
+            return resp
+        else:
+            return jsonify({"error": "Failed to fetch data from TBA", "status_code": response.status_code}), response.status_code
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 # Main function
