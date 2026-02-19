@@ -18,7 +18,7 @@ public class Shooter extends SubsystemBase {
 
     /** Flywheel surface speed (placeholder, m/s). Maps directly to launch velocity in sim.
      *  On the real robot this will come from flywheel RPM × wheel radius. */
-    private static final double FLYWHEEL_SPEED_MPS = 10.0;
+    private static final double FLYWHEEL_SPEED_MPS = 20.0;
 
     /** Hood adjustment rate when button is held (placeholder, rad/s = 30°/s). */
     private static final double HOOD_ADJUST_RATE = Math.toRadians(30);

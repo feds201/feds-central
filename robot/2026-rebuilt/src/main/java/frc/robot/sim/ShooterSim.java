@@ -32,7 +32,7 @@ public class ShooterSim {
      *  Should match the physical shooter exit point on the robot CAD. */
     private static final double LAUNCH_HEIGHT = 0.6;
 
-    // Cooldown between shots (to avoid launching 50 balls per second)
+    // Cooldown between shots (to avoid launching too many balls per second)
     private static final double SHOT_COOLDOWN = 0.1; // seconds
     private double cooldownTimer = 0;
 
