@@ -30,7 +30,7 @@ function getInitMessagePrefix(ui: UIType): string {
 
 function getSessionOptions() {
   return {
-    model: 'claude-sonnet-4-5',
+    model: 'claude-sonnet-4-6',
     // `tools` restricts which tools the agent can use
     tools: ['Read', 'Glob', 'Grep', 'WebSearch', 'WebFetch', 'Bash', 'Task'],
     // `allowedTools` auto-approves them so they don't hang waiting for permission
