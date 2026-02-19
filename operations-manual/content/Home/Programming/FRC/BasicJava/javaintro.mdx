@@ -1,0 +1,71 @@
+---
+title: Introduction to Java
+---
+
+# Introduction to Java - Hello, World!
+
+**Java** is a versatile and powerful programming language widely used in a variety of applications, from web development to mobile apps. In the context of **FIRST Robotics Competition (FRC)**,
+ Java plays a critical role in programming robots. Java is the primary language used for writing control code that drives the behavior of FRC robots, thanks to its ease of use,
+  object-oriented design, and integration with powerful libraries and frameworks.
+
+FRC teams **(Like the FEDS!)** choose Java because:
+- **Cross-Platform Compatibility**: Java can run on different systems, meaning the same code can be developed and tested on a wide variety of machines.
+- **Robust Libraries**: Java offers extensive libraries to handle everything from sensors to motors and communication, making it perfect for controlling complex robot systems.
+- **Support and Documentation**: Java has been used for FRC programming for many years, and there is a large community providing support and resources to help teams.
+- **Object-Oriented Design**: Java's object-oriented nature helps structure code in a manageable and reusable way, which is crucial when building and maintaining complex robot programs.
+
+In this guide, we'll start with a simple introduction to Java and explain how to write a basic "Hello, World!" program to get you started.
+
+### What is Java?
+
+Java is a high-level, object-oriented programming language designed to be simple, secure, and portable. 
+
+### Why Java for FRC?
+
+FRC teams use Java to program their robots primarily because of the **WPILib** library, which provides everything needed to control robot hardware (such as motors, sensors, and cameras). 
+Java is integrated with this library, making it the go-to choice for teams who want to develop software for controlling their robots.
+
+## Your First Java Program: "Hello, World!"
+
+Before diving into complex robot programming, let’s take a look at a basic Java program that outputs "Hello, World!" to the screen. This will help you get familiar with Java’s syntax.
+
+### Code Example
+
+```java
+public class HelloWorld {
+    public static void main(String[] args) {
+        System.out.println("Hello, World!");
+    }
+}
+```
+
+### Code Explanation
+
+1. **`public class HelloWorld`**: 
+   - This line defines a class named `HelloWorld`. In Java, every program must be inside a class, which serves as a blueprint for creating objects.
+   - `public` means the class is accessible to other parts of the program.
+
+2. **`public static void main(String[] args)`**:
+   - This is the **main method**, the entry point of any Java application. When you run a Java program, the execution starts from the `main` method.
+   - `public`: The method is accessible from anywhere.
+   - `static`: The method can be called without creating an instance of the class.
+   - `void`: The method does not return any value.
+   - `String[] args`: This allows the program to accept arguments from the command line (we won’t use them in this simple program).
+
+3. **`System.out.println("Hello, World!");`**:
+   - This line prints the text `"Hello, World!"` to the console. `System.out` refers to the output stream (the console in this case), and `println()` is used to print a line of text.
+   
+ 
+### Conclusion
+
+Congratulations! You’ve just written your first Java program. While this example is simple, it demonstrates the basic structure of a Java program, including how to define classes and methods, as well as how to print output to the screen.
+
+In FRC programming, Java is used in a similar way to control robot behavior, but with added complexity such as motor control, sensor integration, and autonomous routines.
+ Now that you've gotten a quick introduction of Java, you're ready to move onto more java concepts and code.
+
+
+## Onwards in Java
+
+We **HIGHLY** recommend that you take a java tutorial online like [w3 School's Java Tutorial](https://www.w3schools.com/java/java_intro.asp). This is going to help you **GREATLY** when learning and understanding the FRC Java code we sample throughout the Programming documentation.
+
+Most of all, Happy coding!
