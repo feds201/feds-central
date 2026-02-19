@@ -5,6 +5,12 @@ import 'dart:typed_data';
 
 import 'package:flutter/painting.dart';
 import 'package:hive/hive.dart';
+import 'dart:convert';
+import 'dart:developer';
+import 'dart:io';
+
+import 'package:flutter/painting.dart';
+import 'package:hive/hive.dart';
 
 class Settings {
   static void setApiKey(String key) {
@@ -1043,6 +1049,7 @@ class EndPoints {
   bool Park = false;
   bool FeedToHP = false;
   bool Passing = false;
+  int ShootingAccuracy;
   double endgameTime;
   int endgameActions;
   String Comments = '';
@@ -1054,6 +1061,7 @@ class EndPoints {
     this.FeedToHP,
     this.Passing,
     this.Comments,
+    this.ShootingAccuracy,
     this.endgameTime,
     this.endgameActions,
     this.drawingData,
@@ -1065,6 +1073,7 @@ class EndPoints {
       "Park": Park,
       "FeedToHP": FeedToHP,
       "Passing": Passing,
+      "ShootingAccuracy": ShootingAccuracy,
       "endgameTime": endgameTime,
       "endgameActions": endgameActions,
       "Comments": Comments,
@@ -1079,6 +1088,7 @@ class EndPoints {
       json['FeedToHP'] ?? false,
       json['Passing'] ?? false,
       json['Comments'] ?? '',
+      json['ShootingAccuracy'] ?? 3,
       (json['endgameTime'] ?? 0.0).toDouble(),
       json['endgameActions'] ?? 0,
       // Handle both list and legacy string/migration
@@ -1088,15 +1098,19 @@ class EndPoints {
 
   @override
   String toString() {
-    return 'EndPoints{ClimbStatus: $ClimbStatus, Park: $Park, FeedToHP: $FeedToHP, Passing: $Passing, endgameTime: $endgameTime, endgameActions: $endgameActions, Comments: $Comments, DrawingData: $drawingData}';
+    return 'EndPoints{ClimbStatus: $ClimbStatus, Park: $Park, FeedToHP: $FeedToHP, Passing: $Passing, shootingAccuracy: $ShootingAccuracy, endgameTime: $endgameTime, endgameActions: $endgameActions, Comments: $Comments, DrawingData: $drawingData}';
   }
 
   String toCsv() {
+<<<<<<< HEAD
+    return '$ClimbStatus,$Park,$FeedToHP,$Passing,$ShootingAccuracy,$endgameTime,$endgameActions,$Comments,$drawingData';
+=======
     return '$ClimbStatus,$Park,$FeedToHP,$Passing,$endgameTime,$endgameActions,$Comments,${_encodeDrawingData()}';
   }
 
   String _encodeDrawingData() {
     return DrawingBitmaskCodec.encode(drawingData);
+>>>>>>> origin/main
   }
 
   @override
@@ -1108,6 +1122,7 @@ class EndPoints {
         other.Park == Park &&
         other.FeedToHP == FeedToHP &&
         other.Passing == Passing &&
+        other.ShootingAccuracy == ShootingAccuracy &&
         other.Comments == Comments;
   }
 
@@ -1117,6 +1132,7 @@ class EndPoints {
         Park.hashCode ^
         FeedToHP.hashCode ^
         Passing.hashCode ^
+        ShootingAccuracy.hashCode ^
         Comments.hashCode;
   }
 
@@ -1283,6 +1299,7 @@ class LocalDataBase {
       data['FeedToHP'] ?? false,
       data['Passing'] ?? false,
       data['Comments'] ?? "",
+      data['ShootingAccuracy'] ?? 3,
       (data['EndgameTime'] ?? 0).toDouble(),
       data['EndgameActions'] ?? 0,
       (data['DrawingData'] is List) ? List<int>.from(data['DrawingData']) : [],

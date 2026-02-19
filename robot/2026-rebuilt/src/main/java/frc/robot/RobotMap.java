@@ -20,19 +20,14 @@ import frc.robot.utils.SwerveModuleStatusUtil;
  */
 public final class RobotMap {
 
-    //Used for FieldConstants File
-    public class Constants {
+    public static class Constants {
     public static boolean disableHAL = false;
 
     public static void disableHAL() {
         disableHAL = true;
     }
     }
-    public static final Mode currentMode = Mode.SIM;
 
-    public enum Mode {
-        REAL, SIM, REPLAY
-    }
     public enum robotState{
         SIM,REAL,REPLAY;
     }
@@ -42,7 +37,9 @@ public final class RobotMap {
         public static final int kLimit_switch_lID = 3; 
 
     }
-    
+
+
+
     public static robotState getRobotMode() {
         return Robot.isReal() ? robotState.REAL : robotState.SIM;
     }
@@ -110,8 +107,7 @@ public final class RobotMap {
         );
 
         
+    }
 }
 
-
-}
-    
+  

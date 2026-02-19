@@ -1,5 +1,8 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.intake;
 
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -7,8 +10,9 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.RobotMap;
-import frc.robot.subsystems.RollersSubsystem.RollerState;
+import frc.robot.subsystems.intake.RollersSubsystem.RollerState;
 import frc.robot.utils.LimelightHelpers;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -23,15 +27,18 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 
 public class IntakeSubsystem extends SubsystemBase {
 
-  private final TalonFX motor;
+  private TalonFX motor;
   private final DigitalInput limit_switch_r;
   private final DigitalInput limit_switch_l;
   private final RollersSubsystem rollers; 
+  private final double wheelRadius = 2.0; 
+  private final double extendedLength = 14.43; 
 
   // Simulation
   private final DCMotorSim motorSim;
   private final DIOSim limitSwitchRSim;
   private final DIOSim limitSwitchLSim;
+   private SysIdRoutine sysID;
   
   // Visualization
   private final Mechanism2d mech2d = new Mechanism2d(3, 3);
@@ -51,21 +58,12 @@ public class IntakeSubsystem extends SubsystemBase {
     this.currentState = targetState;
   }
 
-  private void extendIntake(){
-    if (limit_switch_l.get() == true) { //-> If the limit switch is pressed, extend the intake
-      motor.set(0.1);
-    } else {
-      stopmotor();
-    }
+  public Command extendIntake(){
+    return run(()-> motor.setControl(new PositionVoltage(0).withPosition(extendedLength/(wheelRadius*2*Math.PI))));
   }
 
-  private void retractIntake() {
-    if (limit_switch_l.get() == false) {
-      motor.set(-0.1);
-    }
-      else {
-        stopmotor(); 
-      }
+  public Command retractIntake() {
+     return run(()-> motor.setControl(new PositionVoltage(0).withPosition(0)));
     }
 
   
@@ -81,6 +79,22 @@ public class IntakeSubsystem extends SubsystemBase {
 
 
   public IntakeSubsystem() {
+     var config = new TalonFXConfiguration();
+    config.Slot0.kP = 0.1;
+    config.Slot0.kI = 0.0;
+    config.Slot0.kD = 0.0;
+    motor.getConfigurator().apply(config);
+
+    sysID = new SysIdRoutine(
+      new SysIdRoutine.Config(), new SysIdRoutine.Mechanism((voltage)-> motor.setControl(new VoltageOut(0).withOutput(voltage)), (log)-> {
+        log.motor("motor1")
+        .voltage(motor.getMotorVoltage().asSupplier().get())
+        .angularVelocity(motor.getVelocity().asSupplier().get())
+        .angularPosition(motor.getPosition().asSupplier().get());
+      }, this));
+
+
+
     motor = new TalonFX(RobotMap.IntakeSubsystemConstants.kMotorID, "rio");
     limit_switch_r = new DigitalInput(RobotMap.IntakeSubsystemConstants.kLimit_switch_rID);
     limit_switch_l = new DigitalInput(RobotMap.IntakeSubsystemConstants.kLimit_switch_lID); 
@@ -167,5 +181,15 @@ public class IntakeSubsystem extends SubsystemBase {
   public double getmotorVelocity() {
     return motor.getVelocity().getValue().in(Units.RotationsPerSecond);
   }
+
+  public boolean testIntakeExtend() {
+     extendIntake();
+
+     if (limit_switch_l.get()) {
+      return true;
+     }
+    return false; 
+    }
+
 }
 

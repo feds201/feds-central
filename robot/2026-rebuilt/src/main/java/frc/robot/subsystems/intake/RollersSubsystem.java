@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.intake;
 
 // Removed VelocityVoltage usage; using simple motor set calls instead
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -6,6 +6,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.led.LedsSubsystem;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N2  ;
 import edu.wpi.first.math.system.LinearSystem;
