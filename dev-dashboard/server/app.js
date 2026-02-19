@@ -12,12 +12,44 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.join(__dirname, '../.env') });
 
+import cookieParser from 'cookie-parser';
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-do-not-use-in-prod';
+const REFRESH_SECRET = process.env.REFRESH_SECRET || 'dev-refresh-secret-do-not-use-in-prod';
 
-app.use(cors());
+app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
+app.use(cookieParser());
+
+// --- Token Utils ---
+
+/**
+ * Issues a short-lived access token (15m) and a non-expiring refresh token.
+ * The access token is returned directly; the refresh token is set as an httpOnly cookie.
+ * Called from signup, login, and passkey auth, as well as the /api/auth/refresh endpoint.
+ */
+function issueTokens(res, user) {
+    const accessToken = jwt.sign(
+        { userId: user.id, email: user.email },
+        JWT_SECRET,
+        { expiresIn: '15m' }
+    );
+    const refreshToken = jwt.sign(
+        { userId: user.id, email: user.email },
+        REFRESH_SECRET
+    );
+
+    res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 365 * 24 * 60 * 60 * 1000, // 1 year
+    });
+
+    return accessToken;
+}
 
 // --- Database Init (Auto-run migration for dev convenience) ---
 const initDb = async () => {
@@ -91,7 +123,7 @@ app.post('/api/auth/signup', async (req, res) => {
     `;
 
         const user = result[0];
-        const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, { expiresIn: '7d' });
+        const token = issueTokens(res, user);
 
         res.json({ token, user });
     } catch (err) {
@@ -121,10 +153,9 @@ app.post('/api/auth/login', async (req, res) => {
             return res.status(401).json({ error: 'Invalid credentials' });
         }
 
-        const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, { expiresIn: '7d' });
-
         // Return user info (excluding hash)
         const { password_hash, ...userInfo } = user;
+        const token = issueTokens(res, user);
         res.json({ token, user: userInfo });
     } catch (err) {
         console.error('Login error:', err);
@@ -135,6 +166,12 @@ app.post('/api/auth/login', async (req, res) => {
 // --- Middleware ---
 
 const authenticateToken = (req, res, next) => {
+    // Skip auth in dev mode
+    if (process.env.NODE_ENV !== 'production') {
+        req.user = { userId: 'dev', email: 'dev@feds201.com' };
+        return next();
+    }
+
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
 
@@ -146,6 +183,22 @@ const authenticateToken = (req, res, next) => {
         next();
     });
 };
+
+// --- Refresh Token ---
+
+// Exchanges a valid refresh token cookie for a new access token + rotated refresh token.
+// Called automatically by the client when the access token expires (401/403).
+app.post('/api/auth/refresh', (req, res) => {
+    const refreshToken = req.cookies?.refreshToken;
+    if (!refreshToken) return res.sendStatus(401);
+
+    jwt.verify(refreshToken, REFRESH_SECRET, (err, payload) => {
+        if (err) return res.sendStatus(403);
+
+        const accessToken = issueTokens(res, { id: payload.userId, email: payload.email });
+        res.json({ token: accessToken });
+    });
+});
 
 // --- WebAuthn Config ---
 import {
@@ -452,9 +505,9 @@ app.post('/api/auth/passkey/auth-verify', async (req, res) => {
                 await sql`UPDATE app_users SET current_challenge = NULL WHERE id = ${user.id}`;
             }
 
-            // Issue JWT
-            const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, { expiresIn: '7d' });
+            // Issue tokens
             const { password_hash, ...userInfo } = user;
+            const token = issueTokens(res, user);
 
             res.json({ verified: true, token, user: userInfo });
         } else {
@@ -501,6 +554,64 @@ app.delete('/api/auth/passkey/:id', authenticateToken, async (req, res) => {
     } catch (err) {
         console.error('Delete passkey error:', err);
         res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// --- Chat SSE Proxy ---
+
+const FEDSBOT_URL = process.env.FEDSBOT_URL;
+const FEDSBOT_API_KEY = process.env.FEDSBOT_API_KEY;
+
+app.post('/api/chat', authenticateToken, async (req, res) => {
+    if (!FEDSBOT_URL || !FEDSBOT_API_KEY) {
+        return res.status(503).json({ error: 'Chat service not configured' });
+    }
+
+    try {
+        const upstream = await fetch(`${FEDSBOT_URL}/api/chat`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': FEDSBOT_API_KEY,
+            },
+            body: JSON.stringify({
+                message: req.body.message,
+                sessionId: req.body.sessionId,
+            }),
+        });
+
+        if (!upstream.ok) {
+            const err = await upstream.text();
+            return res.status(upstream.status).json({ error: err });
+        }
+
+        // Pipe SSE back to client
+        res.setHeader('Content-Type', 'text/event-stream');
+        res.setHeader('Cache-Control', 'no-cache');
+        res.setHeader('Connection', 'keep-alive');
+        res.flushHeaders();
+
+        const reader = upstream.body.getReader();
+        const decoder = new TextDecoder();
+
+        try {
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                res.write(decoder.decode(value, { stream: true }));
+            }
+        } catch {
+            // Client disconnected or upstream closed
+        }
+
+        res.end();
+    } catch (err) {
+        console.error('Chat proxy error:', err);
+        if (!res.headersSent) {
+            res.status(502).json({ error: 'Failed to reach chat service' });
+        } else {
+            res.end();
+        }
     }
 });
 

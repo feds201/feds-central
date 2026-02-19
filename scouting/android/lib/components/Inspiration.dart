@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:material_symbols_icons/symbols.dart';
 
 Widget ShowInsiration() {
   return Card(
@@ -24,7 +23,7 @@ Widget ShowInsiration() {
         children: [
           Row(
             children: [
-              Icon(Symbols.ecg_heart, color: Colors.white, size: 24),
+              Icon(Icons.monitor_heart, color: Colors.white, size: 24),
               const SizedBox(width: 10),
               Text(
                 'Every Second Inspiration',

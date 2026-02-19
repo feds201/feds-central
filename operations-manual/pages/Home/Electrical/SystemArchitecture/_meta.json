@@ -1,0 +1,8 @@
+{
+  "index": "Overview",
+  "PowerDistribution": "Power Distribution",
+  "CANNetworks": "CAN Networks", 
+  "MotorControllers": "Motor Controllers",
+  "SensorIntegration": "Sensor Integration",
+  "CommunicationSystems": "Communication Systems"
+}

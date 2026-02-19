@@ -1,0 +1,33 @@
+import MotorControlConfigurator from "../../../../../Components/Programming/MotorControlConfigurator";
+
+# Motor Control System Configurator
+
+Configure and simulate PID, feedforward, and gravity compensation gains for FRC motor controllers.
+
+## Understanding Motor Control Gains
+
+### PID Gains
+
+- **kP (Proportional)**: Responds to position error. Higher values = faster response
+- **kI (Integral)**: Accumulates error over time. Helps eliminate steady-state errors
+- **kD (Derivative)**: Responds to rate of change. Reduces overshoot
+
+### Feedforward Gains
+
+- **kS (Static Friction)**: Voltage to overcome static friction
+- **kV (Velocity)**: Voltage per unit velocity
+- **kA (Acceleration)**: Voltage per unit acceleration
+
+### Gravity Compensation
+
+- **kG (Gravity)**: Voltage needed to hold position against gravity
+
+## How to Use
+
+1. Select "Arm" or "Turret" simulation mode
+2. Choose an active slot (0-1)
+3. Adjust gains with sliders
+4. Move target control to see system response
+
+<MotorControlConfigurator />
+

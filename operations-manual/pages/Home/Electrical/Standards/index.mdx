@@ -1,0 +1,489 @@
+import { Callout, Tabs, Tab } from 'nextra/components';
+import { GenericGrid } from '../../../../Components/index';
+
+# Standards & Specifications
+
+This section defines the technical standards, specifications, and requirements that govern all electrical work on FEDS 201 robots.
+
+## 🔌 Connector Standards
+
+Our standardized connector approach ensures reliability, maintainability, and team efficiency across all robot systems.
+
+<Tabs items={['High Current', 'Low Current', 'Communication', 'Power']}>
+  <Tab>
+    ## High Current Connections (12-14 AWG)
+    
+    ### Anderson Powerpole Connectors
+    **Primary Application**: Motor power connections, high-current distribution
+    
+    **Specifications**:
+    - Contact Rating: 45A continuous
+    - Voltage Rating: 600V DC
+    - Contact Material: Silver-plated brass
+    - Housing Material: High-temperature nylon
+    
+    **Standard Configuration**:
+    - **Positive (Red)**: Right side when viewed from insertion point
+    - **Negative (Black)**: Left side when viewed from insertion point
+    - **Housing Color**: Red for positive, black for negative
+    
+    **Crimping Requirements**:
+    - Strip length: 6mm (1/4 inch)
+    - Crimp tool: Anderson PP-15/30/45 or equivalent
+    - Pull force: Minimum 50 lbf retention
+    - No exposed conductor beyond crimp
+    
+    **Applications**:
+    - PDH to motor controller power feeds
+    - Motor controller to motor connections
+    - Power distribution extensions
+    - Battery jumper cables
+    
+    ### Ring Terminal Connections
+    **Primary Application**: Direct PDH connections, battery terminals
+    
+    **Specifications**:
+    - Material: Tin-plated copper
+    - Insulation: Heat-resistant vinyl (600V rating)
+    - Stud Size: #10 or #8 as appropriate
+    
+    **Installation Requirements**:
+    - Strip length: Exactly to crimp barrel
+    - No insulation in crimp area
+    - Proper torque specifications (typically 10-15 in-lbs)
+    - Star washer or locking hardware required
+    
+    **Quality Control**:
+    - Visual inspection for proper crimp
+    - Pull test: 50 lbf minimum retention
+    - Insulation resistance: >10MΩ at 500V
+  </Tab>
+  <Tab>
+    ## Low Current Connections (22-24 AWG)
+    
+    ### Molex SL Connector System
+    **Primary Application**: Sensor connections, CAN bus, low-power control
+    
+    **Connector Types**:
+    - **2-Pin**: Simple power/signal pairs
+    - **4-Pin**: CAN bus connections (Power, Ground, CAN-H, CAN-L)
+    - **6-Pin**: Complex sensor interfaces
+    
+    **Pin Assignment Standards**:
+    ```
+    2-Pin Configuration:
+    Pin 1: Power (+5V, +12V, or signal)
+    Pin 2: Ground or return signal
+    
+    4-Pin CAN Configuration:
+    Pin 1: Ground (Black)
+    Pin 2: +12V or +5V (Red) 
+    Pin 3: CAN-L (Green)
+    Pin 4: CAN-H (Yellow)
+    
+    6-Pin Sensor Configuration:
+    Pin 1: Ground
+    Pin 2: +5V Power
+    Pin 3: Signal A
+    Pin 4: Signal B  
+    Pin 5: Shield/Ground
+    Pin 6: Data/Clock
+    ```
+    
+    **Crimping Procedure**:
+    1. Strip wire 3mm (1/8 inch)
+    2. Insert terminal in crimp tool
+    3. Position tool for 2-click engagement
+    4. Insert wire to terminal stop
+    5. Complete crimp with full handle compression
+    6. Verify wire retention with gentle pull test
+    
+    **Gender Convention**:
+    - **Female Connectors**: Component interconnects, extensions
+    - **Male Connectors**: Device leads, sensor outputs
+    
+    ### JST PH Connectors
+    **Primary Application**: REV Through Bore Encoders, compact sensors
+    
+    **Specifications**:
+    - Pitch: 2.0mm
+    - Current Rating: 2A per contact
+    - Voltage Rating: 100V AC/DC
+    - Operating Temperature: -25°C to +85°C
+    
+    **Standard Configurations**:
+    - 2-Pin: Power connections
+    - 3-Pin: Sensor with separate power/ground/signal
+    - 4-Pin: Differential signals or dual sensors
+  </Tab>
+  <Tab>
+    ## Communication Connections
+    
+    ### Ethernet (RJ45) Standards
+    **Wiring Standard**: T-568B (mandatory for all installations)
+    
+    **T-568B Pin Assignment**:
+    ```
+    Pin 1: White/Orange
+    Pin 2: Orange  
+    Pin 3: White/Green
+    Pin 4: Blue
+    Pin 5: White/Blue
+    Pin 6: Green
+    Pin 7: White/Brown
+    Pin 8: Brown
+    ```
+    
+    **Cable Requirements**:
+    - Category: Cat5e minimum, Cat6 preferred
+    - Conductor: 24 AWG solid copper
+    - Impedance: 100Ω ±15Ω
+    - Maximum Length: 100 meters per segment
+    
+    **Termination Requirements**:
+    - Untwist length: Maximum 13mm (0.5 inch)
+    - Jacket strip: 25mm (1 inch)
+    - Conductor strip: None (cut to length)
+    - Boot installation: Before crimping
+    
+    **Quality Standards**:
+    - Continuity: All 8 conductors
+    - Wire map: Correct per T-568B
+    - Impedance: 100Ω ±10%
+    - Return loss: Less than 10dB at 100MHz
+    
+    ### USB Connections
+    **Standard Types**: USB-A, USB-B, USB-C as specified
+    
+    **Cable Requirements**:
+    - Length: Minimum required for application
+    - Quality: USB-IF certified preferred
+    - Shielding: Required for high-EMI environments
+    - Connectors: Gold-plated contacts
+    
+    **Installation Guidelines**:
+    - 90-degree adapters in space-constrained areas
+    - Strain relief at both ends
+    - No sharp bends (minimum 4x cable diameter)
+    - Secure retention at both ends
+    
+    ### CAN Bus Physical Layer
+    **Topology**: Linear bus with termination
+    
+    **Cable Requirements**:
+    - Type: Twisted pair, 120Ω characteristic impedance
+    - Gauge: 24 AWG minimum for signal, 22 AWG for power
+    - Length: Maximum 40 meters total network length
+    - Shielding: Recommended in high-EMI environments
+    
+    **Termination Requirements**:
+    - Resistor Value: 120Ω ±1%
+    - Location: Both ends of bus
+    - Power Rating: 1/4W minimum
+    - Connection: Between CAN-H and CAN-L
+  </Tab>
+  <Tab>
+    ## Power Connections
+    
+    ### Battery Connections
+    **SB50/SB120 Connector System** (as per FRC requirements)
+    
+    **SB50 Specifications** (6 AWG applications):
+    - Current Rating: 50A continuous
+    - Voltage Rating: 600V DC
+    - Contact Resistance: Less than 0.1mΩ
+    - Insertion Force: Less than 45 lbf
+    
+    **SB120 Specifications** (4 AWG applications):
+    - Current Rating: 120A continuous  
+    - Voltage Rating: 600V DC
+    - Contact Resistance: Less than 0.05mΩ
+    - Insertion Force: Less than 80 lbf
+    
+    **Installation Requirements**:
+    - Proper contact crimping per manufacturer specifications
+    - Contact inspection before assembly
+    - Housing keying to prevent reverse connection
+    - Retention clip engagement verification
+    
+    ### Main Breaker Connections
+    **Terminal Type**: Ring terminals or direct wire connection
+    
+    **Requirements**:
+    - Torque: Per manufacturer specification (typically 35-50 in-lbs)
+    - Wire preparation: Clean, oxide-free copper
+    - Terminal material: Tin-plated copper
+    - Insulation: Heat-shrink tubing over connection
+    
+    **Safety Requirements**:
+    - Insulation boot over live terminals
+    - Strain relief on wire entrance
+    - Clear labeling of voltage and current
+    - Emergency disconnect accessibility
+  </Tab>
+</Tabs>
+
+## 📏 Wire and Cable Specifications
+
+### Wire Gauge Selection Guide
+
+Our wire gauge selection follows FRC requirements and best engineering practices for safety and performance.
+
+<GenericGrid 
+  layout="masonry"
+  variant="cards"
+  items={[
+    {
+      title: "4-6 AWG",
+      description: "Battery main power, highest current applications",
+      icon: "🔋",
+      color: "red",
+      details: "Battery connections, main breaker feeds, 100A+ applications"
+    },
+    {
+      title: "12-14 AWG", 
+      description: "Motor power feeds, high current distribution",
+      icon: "⚡",
+      color: "orange",
+      details: "PDH to motor controllers, 20-40A applications"
+    },
+    {
+      title: "18 AWG",
+      description: "Control power, solenoid feeds, medium current",
+      icon: "🔌",
+      color: "yellow", 
+      details: "12V accessories, solenoids, 5-15A applications"
+    },
+    {
+      title: "22-24 AWG",
+      description: "Sensor power, low current control signals",
+      icon: "📡",
+      color: "green",
+      details: "5V sensors, control signals, less than 5A applications"
+    },
+    {
+      title: "26 AWG",
+      description: "PWM signals, digital I/O, very low current",
+      icon: "📶",
+      color: "blue",
+      details: "PWM outputs, digital signals, less than 1A applications"
+    },
+    {
+      title: "28 AWG",
+      description: "CAN bus, communication signals, minimal current",
+      icon: "🌐",
+      color: "purple",
+      details: "CAN-H/CAN-L, I2C, SPI, data communications"
+    }
+  ]}
+/>
+
+### Color Coding Standards
+
+**Power Distribution**:
+- **Red**: Positive 12V, battery positive
+- **Black**: Ground, battery negative  
+- **White**: Neutral (AC applications only)
+- **Green**: Safety ground, chassis ground
+
+**Communication Signals**:
+- **Yellow**: CAN-H (CAN bus high)
+- **Green**: CAN-L (CAN bus low)
+- **Blue**: Clock signals, SPI CLK
+- **Purple**: Data signals, SPI MOSI/MISO
+
+**Control Signals**:
+- **Orange**: PWM outputs, servo signals
+- **Brown**: Analog inputs, potentiometer signals
+- **Gray**: Digital I/O, limit switch signals
+- **Pink**: Special functions, custom applications
+
+### Insulation and Temperature Ratings
+
+**Standard Applications**:
+- Temperature Rating: 105°C minimum
+- Voltage Rating: 600V minimum for power, 300V for control
+- Insulation Type: PVC or XLPE
+- Flame Rating: VW-1 or better
+
+**High-Temperature Applications**:
+- Temperature Rating: 125°C minimum
+- Insulation Type: XLPE or Silicone
+- Applications: Motor compartments, engine bay routing
+- Color Retention: UV-stable compounds
+
+**Flexible Applications**:
+- Strand Count: 19x30 AWG minimum for 12 AWG
+- Flexibility: Greater than 1000 flex cycles at rated current
+- Jacket Material: TPE or equivalent
+- Applications: Moving mechanisms, service loops
+
+## 📋 Documentation Requirements
+
+### Wiring Diagram Standards
+
+**Mandatory Elements**:
+1. **Complete Circuit Representation**
+   - All power and signal connections
+   - Component identification and part numbers
+   - Wire gauge and color specifications
+   - Connector types and pin assignments
+
+2. **Current and Voltage Ratings**
+   - Fuse/breaker ratings and locations
+   - Expected current draw for each circuit
+   - Voltage levels at key test points
+   - Power consumption calculations
+
+3. **Physical Layout Information**
+   - Approximate wire routing paths
+   - Connector locations and orientations
+   - Service access requirements
+   - Maintenance clearances
+
+**Drawing Standards**:
+- **Format**: PDF with editable source files
+- **Scale**: Not to scale, schematic representation
+- **Symbols**: IEEE/ANSI standard electrical symbols
+- **Line Weights**: Power (thick), Signal (medium), Reference (thin)
+
+### Labeling and Identification
+
+**Wire Labeling Format**:
+```
+[Source Component]-[Destination Component]-[Signal Type]-[Wire Number]
+
+Examples:
+PDH-01-MOTOR-FL-PWR    (PDH Channel 1 to Front Left Motor Power)
+RIO-PIGEON-CAN-H       (RoboRIO to Pigeon CAN High)  
+LIMELIGHT-01-ETH       (Limelight Unit 1 Ethernet)
+```
+
+**Component Labeling**:
+- **Unique Identifier**: Sequential numbering by type
+- **QR Code**: Links to documentation and specifications
+- **Maintenance Log**: Attachment point for service records
+- **Emergency Info**: Critical safety or operational notes
+
+**Cable Management Labels**:
+- **Bundle Identification**: Route and destination
+- **Service Date**: Last inspection or modification
+- **Installer Initials**: Responsibility tracking
+- **Revision Level**: Version control for modifications
+
+### Revision Control
+
+**Document Versioning**:
+- **Major Revisions**: Component additions/removals, topology changes
+- **Minor Revisions**: Wire routing changes, connector updates
+- **Patch Revisions**: Corrections, clarifications, cosmetic updates
+
+**Change Documentation**:
+- **Change Log**: Date, author, description of changes
+- **Approval Process**: Technical review and sign-off required
+- **Distribution**: Updated copies to all team members
+- **Archive**: Previous versions maintained for reference
+
+<Callout type="info" emoji="📝">
+    **Living Documentation**: All electrical documentation must be updated immediately when changes are made to the robot. Outdated documentation is a safety hazard and competition liability.
+</Callout>
+
+## ⚖️ FRC Compliance Requirements
+
+### Mandatory Safety Requirements
+
+**Robot Signal Light (RSL)**:
+- **Device**: FRC-approved RSL only
+- **Wiring**: Direct connection to RSL terminals on RoboRIO
+- **Operation**: Steady when enabled, blinking when disabled
+- **Mounting**: Visible from multiple angles, protected from damage
+
+**Main Breaker**:
+- **Rating**: 120A maximum, appropriate for robot power consumption
+- **Type**: Snap-action circuit breaker (not fuse)
+- **Mounting**: Accessible for emergency disconnect
+- **Wiring**: Proper gauge for full load current
+
+**Battery and Power**:
+- **Battery Type**: 12V lead-acid, FRC-approved models only
+- **Connections**: SB50 or SB120 connectors as appropriate
+- **Protection**: Main breaker, individual circuit protection
+- **Mounting**: Secure retention, accessible for service
+
+### Electrical Safety Standards
+
+**Wire Protection**:
+- All circuits must have appropriate overcurrent protection
+- Wire gauge must be appropriate for circuit current and length
+- Insulation must be rated for application voltage and temperature
+- No exposed conductors in areas of mechanical contact
+
+**Grounding Requirements**:
+- All metallic robot structure must be bonded to electrical ground
+- Ground fault protection where required by FRC rules
+- Separate signal and power grounds where appropriate
+- Ground loop prevention in sensitive circuits
+
+**EMI/EMC Compliance**:
+- Proper shielding of sensitive circuits
+- Separation of power and signal cables
+- Common-mode choke installation where required
+- Compliance with FRC radio frequency restrictions
+
+### Inspection and Testing Requirements
+
+**Pre-Competition Inspection**:
+- Complete electrical inspection by qualified inspector
+- Documentation review and verification
+- Functional testing of all safety systems
+- Compliance with current FRC electrical rules
+
+**Ongoing Compliance**:
+- Regular inspection and maintenance schedule
+- Documentation of all modifications
+- Re-inspection after major changes
+- Compliance verification before each competition
+
+<Callout type="warning" emoji="⚠️">
+    **Rule Changes**: FRC electrical rules can change between seasons. Always verify current requirements with the official FRC Manual before beginning electrical work.
+</Callout>
+
+## 🎯 Quality Assurance Standards
+
+### Workmanship Standards
+
+**Mechanical Assembly**:
+- All connections must be mechanically secure before electrical connection
+- Proper torque specifications for all threaded connections
+- No stress on electrical connections from mechanical loading
+- Adequate service loops and strain relief
+
+**Electrical Assembly**:
+- Clean, bright electrical connections
+- Proper crimp quality per connector manufacturer specifications
+- No cold solder joints or poor electrical connections
+- Insulation integrity maintained throughout installation
+
+**Documentation Quality**:
+- All modifications documented immediately
+- Clear, legible labeling throughout
+- Up-to-date wiring diagrams and specifications
+- Complete bill of materials and spare parts lists
+
+### Testing and Verification
+
+**Acceptance Testing**:
+- Continuity verification of all connections
+- Insulation resistance testing where appropriate
+- Functional testing under simulated load conditions
+- Integration testing with complete robot systems
+
+**Periodic Verification**:
+- Regular inspection schedule based on usage
+- Performance monitoring and trending
+- Predictive maintenance based on measured parameters
+- Proactive replacement of wear items
+
+<Callout type="success" emoji="✅">
+    **Continuous Improvement**: Our standards evolve based on field experience, new technologies, and lessons learned. All team members are encouraged to suggest improvements to our processes and standards.
+</Callout>

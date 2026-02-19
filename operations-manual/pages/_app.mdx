@@ -20,28 +20,26 @@ export default function MyApp({ Component, pageProps }) {
       <Analytics/>
       <SpeedInsights />
 
-      {/* Google Analytics */}
-      <Script
-        strategy="afterInteractive"
-        src="https://www.googletagmanager.com/gtag/js?id=G-N3TT9XBHV0"
-      />
-      <Script
-        id="google-analytics"
-        strategy="afterInteractive"
-        dangerouslySetInnerHTML={{
-          __html: `
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-N3TT9XBHV0');
-          `,
-        }}
-      />
 
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="google-site-verification" content="I7N03ZJUU7O6piTRRawvhXpkn8ueQbj_93K4i7j88vE" />
       </Head>
+      {/* Google tag (gtag.js) */}
+      <Script src="https://www.googletagmanager.com/gtag/js?id=G-6MLHZ8LFC0" strategy="afterInteractive" />
+      <Script id="google-analytics" strategy="afterInteractive">
+        {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-6MLHZ8LFC0');
+        `}
+      </Script>
+
       <Component {...pageProps} />
+
+
     </>
   );
 }

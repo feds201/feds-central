@@ -8,19 +8,12 @@
 
 ### 1️⃣ Environment Setup
 
-Copy `.env.example` to `.env.local` and fill in your Supabase credentials:
+Copy `.env.example` to `.env.local` and fill in your values (see `.env.example` for the full list with descriptions):
 
 ```bash
 cp .env.example .env.local
+nano .env.local
 ```
-
-Then edit `.env.local`:
-```
-VITE_SUPABASE_URL=your_supabase_project_url
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-```
-
-You can find these in your Supabase project settings → API.
 
 ### 2️⃣ Install Dependencies
 
