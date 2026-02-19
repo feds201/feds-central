@@ -1080,7 +1080,7 @@ class EndPoints {
       json['FeedToHP'] ?? false,
       json['Passing'] ?? false,
       json['Comments'] ?? '',
-      json['ShootingAccuracy'] ?? 3,
+      (json['ShootingAccuracy'] as int?) ?? 3,
       (json['endgameTime'] ?? 0.0).toDouble(),
       json['endgameActions'] ?? 0,
       json['DrawingData'] ?? '',
