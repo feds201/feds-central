@@ -104,12 +104,18 @@ pieces.update();                                  // update piece states
 
 Java 17 required.
 
-## Running Tests
+## Gradle Commands
 
-```bash
-cd robot/sim-core
-./gradlew test
-```
+Run from the `robot/sim-core/` directory.
+
+| Command | What it does |
+|---|---|
+| `./gradlew build` | Compile and run all tests |
+| `./gradlew test` | Run tests only |
+| `./gradlew clean` | Delete the build directory |
+| `./gradlew jar` | Build the jar artifact |
+| `./gradlew javadoc` | Generate Javadoc API documentation |
+| `./gradlew dependencies` | Display all project dependencies |
 
 Test report is generated at `build/reports/tests/test/index.html`.
 
