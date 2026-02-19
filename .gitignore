@@ -20,6 +20,12 @@ Thumbs.db
 .vscode/
 *.iml
 
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
 
 # TEMP
 check-source-updates.sh

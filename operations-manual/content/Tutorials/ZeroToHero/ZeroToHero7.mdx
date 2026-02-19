@@ -1,0 +1,171 @@
+import { Callout } from 'nextra/components';
+import { Cards } from 'nextra/components';
+import {
+    GenericHero,
+    GenericWidget,
+    GenericTimeline,
+    ZeroToHero7Grid
+} from '../../../Components/index';
+
+
+<GenericHero
+    title="Zero to Hero #7"
+    titleColor="linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)"
+    subtitle="The Symphony: Advanced Commands 🎼"
+    description="In Episode 2, we learned to play a single note. Now, we compose a symphony. Learn how to chain commands together, run them at the same time, and use 'Factories' to write cleaner, faster code."
+    backgroundType="gradient"
+    backgroundValue="linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%)"
+    particles={[
+        { symbol: '🎼', transform: 'translate(0,0)' },
+        { symbol: '🔗', transform: 'translate(10px,10px)' }
+    ]}
+    buttons={[
+        { text: '⬅️ Back to Ep 6', style: 'secondary', href: '/Tutorials/ZeroToHero/ZeroToHero6' }
+    ]}
+    height="md"
+    textAlign="center"
+/>
+
+<Callout type="info" emoji="🎼">
+    **Analogy**:
+    * **InstantCommand**: A single drum hit.
+    * **SequentialCommandGroup**: A melody (Note A, then B, then C).
+    * **ParallelCommandGroup**: A chord (Notes A, B, and C at the same time).
+    We use these to build complex autonomous routines and automated teleop actions!
+</Callout>
+
+## 🎯 Learning Objectives
+<br></br><br></br>
+<GenericWidget title="The Command Group Types" variant="gradient" size="lg">
+    <ZeroToHero7Grid />
+</GenericWidget>
+
+---
+
+## 🔗 Chapter 1: SequentialCommandGroup (The "And Then")
+
+Runs commands **one after another**. The next command starts only when the previous one finishes ( returns true).
+
+```java
+// Drive forward 2 meters, THEN Aim at speaker, THEN Shoot
+new SequentialCommandGroup(
+    new DriveDistanceCommand(2.0),
+    new AimAtSpeakerCommand(),
+    new ShootCommand()
+);
+```
+
+---
+
+## 🤝 Chapter 2: ParallelCommandGroup (The "All Together")
+
+Runs commands **at the same time**. It ends when **ALL** commands in the group are finished.
+
+```java
+// Raise the elevator AND Deploy the intake at the same time.
+// We wait for BOTH to finish before moving on.
+new ParallelCommandGroup(
+    new ElevatorToHeightCommand(50),
+    new IntakeDeployCommand()
+);
+```
+
+---
+
+## 🏁 Chapter 3: ParallelRaceGroup (The "First One Wins")
+
+Runs commands at the same time. It ends when **ANY ONE** command finishes. The others are interrupted (cancelled).
+
+```java
+// "Run Intake" UNTIL "Beam Break Sensor is Triggered"
+// If the sensor sees a note, the whole group ends, and the intake stops.
+new ParallelRaceGroup(
+    new RunIntakeCommand(),
+    new WaitUntilCommand(() -> intakeSensor.get())
+);
+```
+
+---
+
+## 👑 Chapter 4: ParallelDeadlineGroup (The "Leader")
+
+Runs commands at the same time. It ends when the **DEADLINE** (the first command listed) finishes. The others are interrupted.
+
+```java
+// "Follow Path" is the deadline.
+// "Run Intake" happens while driving.
+// When the path is finished, the intake stops (even if it wasn't done).
+new ParallelDeadlineGroup(
+    new FollowPathCommand(), // <--- The Boss
+    new RunIntakeCommand()
+);
+```
+
+---
+
+## 🏭 Chapter 5: Command Factories (The Pro Way)
+
+Instead of , we write methods in our Subsystems that **return** Commands. This is cleaner and requires less typing.
+
+### Why?
+1.  **Readability**:  is easier to read than .
+2.  **Encapsulation**: The Subsystem knows best how to control itself.
+3.  **Imports**: You don't need to import 50 command classes in RobotContainer.
+
+### How to write a Factory
+
+```java
+// In IntakeSubsystem.java
+public Command eatNoteCommand() {
+    // Return a composition or a new command object
+    return this.runOnce(() -> System.out.println("Eating!"))
+               .andThen(new RunIntakeCmd(this))
+               .until(() -> hasNote())
+               .andThen(stopCommand());
+}
+
+public Command stopCommand() {
+    return this.runOnce(() -> setSpeed(0));
+}
+```
+
+### Using Factories (Triggers & Composition)
+
+```java
+// In RobotContainer.java
+// When 'A' is pressed, Run Intake until sensor trips, then Rumble controller.
+driver.a().onTrue(
+    intake.eatNoteCommand()
+          .andThen(
+              new InstantCommand(() -> driver.getHID().setRumble(RumbleType.kBothRumble, 1))
+          )
+);
+```
+
+---
+
+## 🧠 Checkpoint
+
+You have unlocked the full power of the Command-Based framework. You aren't just controlling motors anymore; you are choreographing complex robot behaviors with elegant, readable logic.
+
+Next Episode: **Episode 8: The Grand Finale (Putting it all together)**. We will build a complete, competition-ready robot code structure from scratch!
+
+---
+
+## 📞 Need Help? We've Got Your Back!
+
+- **Email**: feds.programming@gmail.com
+
+**Keep coding, keep learning, and remember: every expert was once a beginner who refused to give up!** 🚀
+
+*P.S. - If your robot starts talking back, that's either very advanced AI or you need more sleep. Probably more sleep.* 🤖💤
+
+---
+
+*This documentation is part of the Zero to Hero programming series. For the complete learning experience, watch the accompanying video and practice with real robot code. Remember: the only way to get good at programming is to write lots of bad code first! 😄*
+
+<Callout type="info" emoji="💝">
+    **Special Thanks**: To all the students who asked "Why doesn't this work?" and inspired us to create better documentation. Your questions make us better teachers, and your curiosity drives innovation. You're the real MVPs! 🏆
+
+    *Remember: Every expert was once a beginner who refused to give up. Keep coding, keep learning, and most importantly - keep having fun! 🚀*
+</Callout>

@@ -1,0 +1,276 @@
+import { Cards, Callout, Steps, Tabs } from 'nextra/components';
+import { FaCode, FaExpeditedssl, FaPlug, FaCube, FaRegLightbulb, FaBuildingShield, FaRocket, FaChartLine, FaHistory, FaClipboardCheck } from "react-icons/fa";
+import { ImCogs } from "react-icons/im";
+import { FaRobot, FaTrophy, FaTools, FaChartPie, FaTabletAlt, FaServer, FaExclamationTriangle } from "react-icons/fa";
+import { SiTableau } from "react-icons/si";
+import { BsFillClipboardDataFill, BsQrCodeScan } from "react-icons/bs";
+import { MdTimeline, MdAutoGraph, MdOutlineRocketLaunch } from "react-icons/md";
+
+# Scouting & Strategy: History
+
+Comprehensive documentation of FEDS 201's scouting systems evolution
+
+[Scouting Google Drive](https://drive.google.com/drive/folders/0AKXGXsQLqHA-Uk9PVA)
+
+---
+
+## Evolution of Our Scouting Systems
+
+### Pre-2021: The Paper Era
+
+Before 2021, our team relied on a paper-based scouting system where team members specialized in monitoring specific robots and their capabilities.
+
+- **Documentation:** Contact Luis for historical information
+- **Archive:** [Scouting Programs on GitHub](https://github.com/feds201/Scouting-Programs-)
+
+---
+
+## 2021-2022 Season: Foundation Building
+
+<Tabs items={['Mk1: Google Sheets', 'Mk2: SPAMalytics']}>
+  <Tabs.Tab>
+    #### System Components
+    - Google Sheets for data storage
+    - Paper-based field scouting
+    - WIFI connectivity
+
+    #### Advantages
+    - Collaborative editing capabilities
+    - Accessible to all team members
+
+    #### Challenges
+    - Performance issues with large datasets
+    - Reliability concerns
+    - Significant data loss incidents
+    - Limited practical application beyond pick lists
+
+    💡 **Development Needs Identified:**
+    - Faster data collection methods
+    - Improved data visualization tools
+
+    #### Implementation Experience
+    Our first digital scouting system began at Stoney Creek competition with paper-based data collection. The system suffered from accuracy issues and the manual data entry process was time-consuming. Despite having RCS WIFI access, we ultimately had to prioritize high-performing robots due to time constraints. The slow reference capabilities negatively impacted our picklist development process.
+
+    This experience highlighted the need for automation, inspired by observations of other teams using technology-enhanced scouting methods.
+  </Tabs.Tab>
+  <Tabs.Tab>
+    #### System Components
+    - Excel-based SPAMalytics platform
+    - Paper data collection
+    - Offline functionality
+
+    #### Improvements
+    - Significantly enhanced processing speed
+    - Improved data reliability
+    - Better synchronization with match progression
+
+    #### Implementation Experience
+    At the Lansing competition, we discovered and implemented team 180 S.P.A.M's Excel-based scouting system. This improved our data entry efficiency considerably, allowing near real-time match data updates. While data accuracy remained a concern, we successfully identified underrated teams for alliance selection. Our limited ability to assess defensive capabilities meant we relied on observation-based assessments for defensive robot selection.
+
+    The scouting system contributed significantly to our success at Lansing, though we recognized the need for further automation and reduction in paper usage. At the State competition, we were unable to manage the data volume with our existing system.
+
+    - [SPAMalytics Excel Sheet Resource](https://www.spamrobotics.com/spamalytics/)
+  </Tabs.Tab>
+</Tabs>
+
+---
+
+## 2022-2023 Season: Digital Transformation
+
+#### System Development Team
+**Development Team:** Zayn, Sukhesh, Adit, Timothy, and Andrew Salmonson designed the system architecture. Multiple approaches were considered, including Michael Kaatz's bitfield/bitmask method for data compartmentalization, though this was ultimately not implemented in favor of a solution supporting textual data alongside numerical information.
+
+<Cards>
+  <Cards.Card icon={<FaTabletAlt />} title="Mk3: First Digital Implementation" href='https://www.thebluealliance.com/event/2023michs'>
+    - Android Studio
+    - Python QR
+    - Tableau
+    Initial app development and field testing at Girls' Competition
+  </Cards.Card>
+  
+  <Cards.Card icon={<MdAutoGraph />} title="Mk4: Wayne State Refinement" href='https://www.thebluealliance.com/event/2023micmp'>
+    Enhanced QR scanner with data relay improvements
+  </Cards.Card>
+
+  <Cards.Card icon={<FaExclamationTriangle />} title="Mk5: Troy Challenge" href='https://www.thebluealliance.com/event/2023michs'>
+    Critical QR scanner failure highlighted backup importance
+  </Cards.Card>
+  
+  <Cards.Card icon={<FaTrophy />} title="Mk5.5: FIM States Success" href='https://www.thebluealliance.com/event/2023mifim'>
+    Reliable application supporting effective strategy development
+  </Cards.Card>
+</Cards>
+
+🚀 **Technical Implementation Highlights:**
+- **Front-End Development**
+  - UI Development by Sukhesh
+  - Core functionality by Zayn
+  - Hamburger menu navigation
+  - Match listing with detail views
+- **Back-End Implementation**
+  - JSON-based Shared Preferences
+  - Dynamic UI generation
+  - Blue Alliance API integration
+  - QR code data transfer system
+
+#### Strategic Innovations (2022-2023)
+We developed several effective strategic approaches:
+- **Penalty Zone Tactics:** Methodically forcing opponents into penalty areas
+- **Charge Station Management:** Consistent performance creating additional driving lanes
+
+---
+
+## 2023-2024 Season: Refinement & Planning
+
+#### Bloomfield Off-Season Implementation
+**Strengths**
+- Reliable application performance
+- Efficient data transfer processes
+- Rapid Tableau integration
+
+**Areas for Improvement**
+- Data availability timing (potential Wi-Fi upload solution)
+- User input accuracy (interface enhancements needed)
+- Mode confusion between Autonomous and Teleoperated periods
+
+#### Strategic Preparation (Kickoff 2024)
+Our scouting team conducted a dedicated retreat to prepare for the season, reviewing resources from successful teams including 1678 Citrus Circuits and Karthik K's presentation.
+
+**Key Outcomes**
+- Strategic design framework
+- Defined scouting objectives
+- Leadership role assignments
+- Resource allocation plan
+
+[Retreat Documentation](https://docs.google.com/presentation/d/1Z7nvr7H0BCiZ4MzO2r3jO8Y8GbXoR8SS3ddACSCpWn0/edit#slide=id.g2a854d0a270_1_358)
+
+#### New Application Architecture (2024)
+
+**Core Objective**
+Develop a sustainable scouting system requiring minimal specialized knowledge, featuring a template-based design compatible with Tableau visualization.
+
+**Data Flow Design**
+- **Template Categories:** Match, pit, and alliance scouting
+- **Transfer Mechanism:** QR-encoded CSV files
+- **Analysis Platform:** Tableau processing
+
+**Conceptual Model**
+Application inspired by [FRC Scouter](https://play.google.com/store/apps/details?id=com.supercilex.robotscouter) with customizable template functionality.
+
+**Development Lead:** Ritesh Raj
+
+---
+
+## Season Performance Review
+
+#### Organizational Strengths
+- Effective drive team communication
+- Strategic pre-planning capabilities
+- Tactical adaptability
+- Respected position among peer teams
+
+#### Development Opportunities
+- Enhanced data utilization
+- Formalized strategic playbooks
+- Improved inter-team relationships
+
+#### Organizational Challenges
+- Scouting-strategy communication gaps
+- Resource concentration (strategic responsibilities)
+
+#### Risk Factors
+- Limited strategic role training
+
+**Strategic Achievements**
+Our game analysis produced highly effective strategies that we thoroughly tested before competition implementation, ensuring reliability and adaptability.
+
+---
+
+## 2024-2025 Season: Integrated Systems
+
+#### Bloomfield Off-Season Training
+
+**Achievements**
+- New member training with application
+- Skill development for incoming students
+
+**Areas for Review**
+Documentation pending
+
+### Strategic Planning Framework
+
+<Tabs items={['Tableau Improvements', 'Scouting Enhancements']}>
+  <Tabs.Tab>
+    #### Reliability Metrics Implementation
+    **Unreliability Calculation Formula**
+    ```
+    [Dead Bot Count] * -2 +
+    [Red Card Count] * -20 +
+    [Yellow Card Count] * -5 +
+    [No Show Count] * -5 +
+    [20 Point Fouls] * -20 +
+    [3 Point Fouls] * -3
+    ```
+
+    #### Visualization Enhancements
+    - **Playoffs Screen:** Quickly compare teams with a playoff bracket visualization
+    - **Alliance Information:** Track which robot is in which alliance per match with separate Tableau pages
+      - Compare scouting data accuracy with Blue Alliance
+      - Analyze alliance compatibility
+    - **Notes Storage:** Include a section to store all notes within Tableau
+
+    [Penfield Robotics Strategy Presentation](https://penfieldrobotics.com/wp-content/uploads/2021/02/Intro-to-FRC-Strategy_-The-1511-Structure.pptx.pdf)
+  </Tabs.Tab>
+  <Tabs.Tab>
+    #### Knowledge Assessment
+    - **Game Rule Tests:** Implement tests for drive team members on seasonal game rules
+      - Include common rules and game-specific regulations
+      - Consider during try-outs
+    - **Team Knowledge Tests:** Create tests on team names and numbers to assess scouting team's knowledge
+      - Ensure scouts are familiar with participating teams
+
+    #### Analysis Enhancement
+    - **Weighted Robot Capabilities:** Analyze and prioritize robot capabilities based on scoring and defense effectiveness
+    - **Data Accuracy Improvements**
+      - Measure scout accuracy before competitions
+      - Compare collected data with Blue Alliance data
+      - Calculate percentage deviation
+      - Address inattentional blindness factors
+
+    #### Strategic Tools
+    - **Strategy Board Enhancements:** Include autonomous options and maximize scoring calculations
+    - **Robot Specialists:** Assign scouts to specialize in specific teams for comprehensive data collection
+      - Address challenges with multiple specialized teams in same match
+      - *Note: This approach was considered but not implemented*
+
+    #### Logistical Improvements
+    - Additional bleacher seating **(COMPLETED)**
+    - Structured scouting meeting schedule
+    - Comprehensive duty allocation
+    - Regular training sessions
+    - Multiple match schedulers
+    - Team identification system
+    - Enhanced defensive scouting
+  </Tabs.Tab>
+</Tabs>
+
+---
+
+## 2024-2025 Technical Infrastructure
+
+#### Scout-Ops Platform
+
+- **Web Application:** For scouting team data management, real-time monitoring, and Excel export functionality
+- **Mobile Application:** For scout data collection in the field
+- **Backend Server:** For data storage, strategy team access, and match simulation capabilities
+
+📱 **Connectivity Notice:** Match simulations require stable Wi-Fi connectivity and backend server access. Ensure connectivity before operation.
+
+#### Scout-Ops-Android Configuration
+
+The Scout-Ops-Android application (available via Amazon App Store) requires proper configuration:
+
+<Steps>
+1. Locate and select the Amazon App Store icon. Click on the icon to launch the Amazon App Store application.
+2. Access settings through the settings icon. Navigate to the settings menu to configure the application parameters.
+</Steps>
