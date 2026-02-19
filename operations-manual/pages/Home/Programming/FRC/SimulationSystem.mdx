@@ -1,0 +1,486 @@
+import Head from 'next/head';
+import {Callout} from 'nextra/components';
+
+<Head>
+    <title>Simulation System Design - FEDS201</title>
+    <meta property="og:title" content="Simulation System Design - FEDS201" key="title" />
+    <meta property="og:description" content="Understand the robot simulation architecture used by FEDS 201" />
+</Head>
+
+# Simulation System Design
+
+## Why Simulate?
+
+Before you can drive a physical robot, you need working code. But testing code on real hardware is slow,
+risky (walls do not forgive), and limited by shop hours. Our simulation system lets you:
+
+- **Run your full robot code** on your laptop, no hardware required
+- **Test autonomous routines** without burning through battery cycles
+- **See game pieces react** to your intake and shooter in real time
+- **Catch bugs early** before they become "why is the robot driving into the wall" moments at competition
+
+The simulation runs the exact same `Robot.java` and subsystem code that deploys to the real robot.
+The only difference is that instead of talking to real motors and sensors, the code talks to
+simulated physics engines that model how those motors and sensors would behave.
+
+<Callout type="info">
+    The simulation is not a video game. It uses the same physics equations (Newton's laws, motor curves, friction models)
+    that govern the real robot. When your simulated auto works, there is a very good chance the real auto will too.
+</Callout>
+
+---
+
+## General Architecture
+
+Our simulation system has two layers:
+
+1. **sim-core** (`robot/sim-core/`) -- a reusable physics library that is **not tied to any game year**. It provides rigid body physics, field collision, game piece management, and chassis simulation.
+2. **Year-specific sim code** (e.g., `robot/2026-rebuilt/src/main/java/frc/robot/sim/`) -- game-specific configuration that uses sim-core to model a particular year's field, game pieces, and robot mechanisms.
+
+This separation means that when a new game is announced, you only need to write the year-specific layer. The physics engine, game piece lifecycle, scoring, and telemetry are all handled by sim-core.
+
+<Callout type="info">
+    Simulation was introduced in the 2025 Reefscape season and significantly expanded for 2026 REBUILT.
+    Robot projects before 2025 do not have simulation support.
+</Callout>
+
+---
+
+## sim-core: The Reusable Framework
+
+sim-core lives in `robot/sim-core/` and provides everything a year-specific sim needs. It is built on
+[ODE4J](https://github.com/tzaeschke/ode4j) (Open Dynamics Engine for Java), a general-purpose rigid body
+physics engine.
+
+### What sim-core Handles
+
+- **Physics world** -- gravity, ground plane, collision detection, adaptive sub-stepping
+- **Field collision geometry** -- loads OBJ mesh files as collision surfaces (walls, ramps, field elements)
+- **Terrain surfaces** -- contact material presets (CARPET, WALL, RUBBER, POLYCARBONATE) that control friction and bounce
+- **Chassis simulation** -- an ODE4J rigid body for the robot, with three control modes (force-based, kinematic velocity, pose override)
+- **Game piece physics** -- rigid bodies for game pieces (spheres, cylinders, boxes) with gravity, bouncing, rolling, and collisions
+- **Intake and launching** -- detecting when a piece enters an intake zone, launching pieces with 3D velocity
+- **Scoring detection** -- sensor zones that detect when pieces pass through without blocking them
+- **Proximity sleep/wake** -- only simulates game pieces near the robot, keeping CPU usage low even with hundreds of pieces
+- **Telemetry** -- collects robot pose, component poses, and ground clearance for AdvantageScope
+
+### sim-core Class Reference
+
+Located at `robot/sim-core/src/main/java/frc/sim/`:
+
+| Class | Package | Purpose |
+|---|---|---|
+| `PhysicsWorld` | `frc.sim.core` | ODE4J world wrapper. Gravity, ground plane, adaptive sub-stepping, sensor API, terrain surfaces. |
+| `FieldGeometry` | `frc.sim.core` | Loads OBJ mesh files as collision geometry (walls, ramps, field elements). |
+| `TerrainSurface` | `frc.sim.core` | Contact material presets: CARPET, WALL, RUBBER, POLYCARBONATE. Controls friction and bounce. |
+| `SimMath` | `frc.sim.core` | ODE4J to WPILib type conversions (Euler angles, Pose3d). |
+| `ChassisSimulation` | `frc.sim.chassis` | ODE4J rigid body for the robot chassis. Three modes: force-based, kinematic velocity, pose override. |
+| `ChassisConfig` | `frc.sim.chassis` | Builder pattern for chassis parameters (mass, dimensions, wheel positions). |
+| `SwerveModuleSim` | `frc.sim.chassis` | DC motor model (voltage to wheel force). Not used when MapleSim handles the drivetrain. |
+| `GamePiece` | `frc.sim.gamepiece` | Single game piece rigid body with state tracking. |
+| `GamePieceConfig` | `frc.sim.gamepiece` | Builder for game piece properties (shape, mass, radius, bounce). |
+| `GamePieceManager` | `frc.sim.gamepiece` | Manages all pieces: spawn, intake (counter-based), launch, proximity sleep/wake. |
+| `IntakeZone` | `frc.sim.gamepiece` | Robot-relative bounding box for intake overlap detection. |
+| `LaunchParameters` | `frc.sim.gamepiece` | Computes 3D launch velocity from hood angle, heading, and robot velocity. |
+| `ScoringTracker` | `frc.sim.scoring` | Accumulates score when balls hit scoring sensor zones. |
+| `SimTelemetry` | `frc.sim.telemetry` | Publishes all simulation data to AdvantageKit. |
+| `GroundClearance` | `frc.sim.telemetry` | Computes chassis height above the field surface. |
+
+### Key sim-core Concepts
+
+#### Adaptive Sub-stepping
+
+Fast objects (e.g., a ball shot at 30 m/s) can tunnel through thin walls in a single 20ms step.
+`PhysicsWorld.step()` automatically detects the fastest body and subdivides the timestep so no object
+moves more than 0.1m per sub-step. Most frames use 1 sub-step (zero overhead); extra sub-steps only
+kick in during fast events like shooter launches.
+
+#### Proximity Sleep/Wake
+
+With hundreds of game pieces on the field, simulating every one each tick is expensive.
+`GamePieceManager.updateProximity()` only enables bodies near the robot (within a configurable wake radius).
+Distant settled pieces are disabled and cost nearly zero CPU. Fast-moving pieces (like a launched shot) also
+become wake zones, so pieces near the landing area wake up for collision response.
+
+#### Sensor Geoms
+
+Scoring zones use ODE4J sensors -- they detect overlap with game piece bodies without creating contact
+joints. This lets pieces pass through the scoring trigger while the system records the score event.
+
+#### Terrain Surfaces
+
+Four built-in contact material presets control friction, bounce, and softness:
+
+- **CARPET** -- high friction, low bounce, soft contacts (prevents jitter in ball clusters)
+- **WALL** -- hard contacts, moderate bounce
+- **RUBBER** -- high friction, moderate bounce
+- **POLYCARBONATE** -- low friction, moderate bounce
+
+Per-geom surface overrides let you assign different materials to different field elements.
+
+#### Chassis Control Modes
+
+`ChassisSimulation` supports three modes:
+
+- **Velocity-follow** (`setVelocity`) -- kinematic follower for an external drivetrain sim (e.g., MapleSim). Applies corrective forces to match desired velocity. ODE4J still handles Z/pitch/roll from ramp contacts.
+- **Force-based** (`applyForces`) -- apply pre-computed world-frame forces directly.
+- **Standalone motor model** (`SwerveModuleSim`) -- DC motor voltage-to-force model for running without MapleSim.
+
+### Game Piece Lifecycle
+
+Understanding how a game piece moves through the simulation is key to understanding sim-core.
+This lifecycle is the same regardless of game year:
+
+```
+SPAWN                 Piece is created on the field (by a year-specific field layout class)
+  |
+  v
+DISABLED              Immediately disabled for performance (moved underground, no physics cost)
+  |
+  v  (robot drives within wake radius)
+AWAKE                 Proximity system enables physics for this piece
+  |
+  v  (piece overlaps intake zone + intake active)
+CONSUMED              Piece body is disabled, moved underground. Hopper counter increments.
+  |
+  v  (mechanism fires, cooldown expired, hopper > 0)
+LAUNCHED              New piece body spawned at mechanism exit with 3D velocity
+  |                   Velocity = f(launch angle, robot heading, robot speed)
+  |
+  v  (piece flies under gravity, bounces off field/walls)
+IN FLIGHT             Normal rigid body physics
+  |
+  v  (piece enters scoring sensor zone)
+SCORED                Piece is removed. Score increments.
+```
+
+---
+
+## The Dual-Engine Pattern
+
+Year-specific sim code typically pairs sim-core with [MapleSim](https://github.com/IronMaple) (the IronMaple library),
+creating a **dual-engine architecture**. Each engine handles what it does best:
+
+### Engine 1: MapleSim (Drivetrain)
+
+MapleSim is purpose-built for FRC swerve drivetrain simulation. It handles:
+
+- **Motor models** (voltage in, torque out, with current limits)
+- **Tire dynamics** (slip, traction, carpet friction)
+- **Gear ratios** (drive and steer reductions)
+- **Encoder feedback** (simulated TalonFX encoder positions and velocities)
+- **Gyro feedback** (simulated Pigeon2 IMU yaw, pitch, roll)
+
+MapleSim answers: *"Given these voltage commands to the drive motors, where does the robot end up and how fast is it going?"*
+
+### Engine 2: ODE4J via sim-core (Everything Else)
+
+ODE4J answers: *"Given the robot's position and velocity, what happens to all the game pieces and how does the robot interact with the field?"*
+
+### Why Two Engines?
+
+| Concern | MapleSim | ODE4J (sim-core) |
+|---|---|---|
+| Swerve motor physics | Excellent (built for it) | Not designed for FRC motors |
+| Tire slip / traction | Realistic carpet model | Generic friction only |
+| Encoder / gyro sim | Direct CTRE device integration | No hardware API |
+| Rigid body collisions | Not supported | Excellent |
+| Hundreds of game pieces | Not supported | Optimized with sleep/wake |
+| 3D terrain (ramps, bumps) | 2D only | Full 3D mesh collision |
+
+<Callout type="warning">
+    MapleSim owns the robot's **position and velocity**. ODE4J is a "follower" for the chassis -- it mirrors MapleSim's
+    pose so that game pieces can collide with the robot body, but it does not drive the robot. Never try to drive the
+    robot from both engines simultaneously.
+</Callout>
+
+---
+
+## Architecture Diagram
+
+```
+                    Your Robot Code
+                   (Robot.java, subsystems, commands)
+                          |
+                          | motor voltages, sensor reads
+                          v
+              +-----------+-----------+
+              |                       |
+              v                       v
+         MapleSim                 sim-core (ODE4J)
+     (Drivetrain Engine)       (Game Piece Engine)
+              |                       |
+              | pose, velocity        | collisions, intake,
+              | encoders, gyro        | scoring, terrain
+              |                       |
+              v                       v
+         Year-Specific SimManager (orchestrator)
+              |
+              | telemetry data
+              v
+         AdvantageKit Logger
+              |
+              v
+         AdvantageScope 3D Viewer
+```
+
+---
+
+## Running the Simulation
+
+These instructions apply to any game year that has simulation support.
+
+**From VS Code (Recommended):**
+
+1. Open the robot project folder (e.g., `robot/2026-rebuilt/`) in VS Code
+2. Open the WPILib command palette (Ctrl+Shift+P, then type "WPILib")
+3. Select **"Simulate Robot Code"**
+4. Choose **"Sim GUI"** when prompted
+
+**From Terminal:**
+
+```bash
+cd robot/<year-project>
+./gradlew simulateJava
+```
+
+**Viewing in AdvantageScope:**
+
+1. Open [AdvantageScope](https://github.com/Mechanical-Advantage/AdvantageScope)
+2. Connect via **NetworkTables 4 (AdvantageKit)** to `localhost`
+3. You will see the 3D field with the robot and game pieces
+4. Use the Driver Station sim GUI to enable the robot in Teleop mode
+
+**Keyboard Controls:**
+
+| Key | Action |
+|---|---|
+| W / A / S / D | Drive forward / strafe left / drive backward / strafe right |
+| Q / E | Rotate left / rotate right |
+| M | Intake |
+| , / . | Change shooter angle (down / up) |
+| / | Shoot |
+
+**What to Expect:**
+
+- The robot appears on the field with game pieces in their starting positions
+- You can drive using a connected gamepad or the keyboard controls above
+- Game pieces react to the robot: intake picks them up, the shooter launches them
+- Scoring happens automatically when game pieces enter the scoring zones
+- All telemetry is live: pose, scores, held piece count, component positions
+
+---
+
+## Year-Specific Simulations
+
+Each game year gets its own sim code that configures sim-core for that year's field, game pieces, and robot mechanisms. Below is the status of each year.
+
+### 2026 REBUILT
+
+**Status: Active** | Code: `robot/2026-rebuilt/src/main/java/frc/robot/sim/`
+
+The 2026 REBUILT simulation models the full game environment: a 16.54m x 8.07m field with two hubs, ramps, hundreds of fuel balls, intake, and a shooter.
+
+#### REBUILT-Specific Classes
+
+| Class | Purpose |
+|---|---|
+| `RebuiltSimManager` | The main orchestrator. Runs a 12-step sim loop every 20ms. Bridges MapleSim and ODE4J. |
+| `RebuiltField` | REBUILT field layout: hub positions, ramp geometry, scoring zones, fuel spawn locations. |
+| `RebuiltGamePieces` | Fuel ball configuration (sphere, 0.075m radius, 0.2kg, bounce 0.15). |
+| `ShooterSim` | Bridges the shooter subsystem to game piece launches. 100ms cooldown between shots. |
+
+#### The REBUILT Sim Loop
+
+Every 20ms (50 Hz), `RebuiltSimManager` runs this sequence:
+
+```
+1. MapleSim steps the drivetrain
+   - Reads motor voltage commands
+   - Computes tire forces, chassis acceleration
+   - Updates encoder positions/velocities and gyro yaw
+
+2. Read robot pose + velocity from MapleSim
+   - Position: (x, y) on the field in meters
+   - Velocity: (vx, vy) in robot-relative frame
+
+3. Convert velocity to world frame
+   - MapleSim reports robot-relative speeds
+   - Multiply by rotation matrix using robot heading
+   - Now we have field-relative (vx, vy) for ODE4J
+
+4. Update ODE4J chassis body
+   - Apply corrective force: F = mass * (desired_velocity - current_velocity) / dt
+   - ODE4J contact constraints naturally prevent wall penetration
+
+5. Wake nearby game pieces
+   - Only pieces within 1.5m of the robot get physics simulation
+   - Distant settled pieces cost ~0 CPU (they are disabled)
+
+6. Check intake zone
+   - A bounding box attached to the robot checks for ball overlap
+   - If intake rollers are active and a ball overlaps, consume it
+   - Done BEFORE the physics step to prevent re-consuming launched balls
+
+7. ODE4J physics step
+   - Advances all enabled bodies by 20ms
+   - Uses adaptive sub-stepping: if any body moves > 0.1m in one sub-step,
+     the timestep is subdivided to prevent balls tunneling through walls
+
+8. Sync gyro
+   - Writes MapleSim's yaw into the Pigeon2 sim state
+
+9. Update game piece states
+   - Check for auto-disabled pieces (settled, below velocity threshold)
+
+10. Check scoring zones
+    - Sensor geometries at each hub detect ball contacts
+    - Scored balls are removed from the field and the score increments
+
+11. Update shooter
+    - If shooting + cooldown expired + hopper has balls:
+      launch a ball with 3D velocity based on hood angle + heading + robot velocity
+
+12. Publish telemetry
+    - Robot pose, piece poses, score, ground clearance, component animations
+    - All sent via AdvantageKit to AdvantageScope 3D viewer
+```
+
+#### REBUILT Game Piece Details
+
+Each fuel ball is a sphere with these properties:
+- **Radius**: 0.075m (about 6 inches diameter)
+- **Mass**: 0.2 kg
+- **Bounce coefficient**: 0.15 (low bounce, like a real foam ball)
+
+The field spawns **360-400 balls** in the neutral zone and **24 per depot** at the start of a match.
+
+<Callout type="info">
+    Even with 400 balls on the field, only 20-30 are actively simulated at any time.
+    The proximity system keeps CPU usage low by only enabling physics for balls near the robot.
+    A full sim loop typically takes less than 2ms on modern hardware.
+</Callout>
+
+#### REBUILT Telemetry
+
+All simulation data flows through AdvantageKit's `Logger` so you can view it in AdvantageScope:
+
+| Key | Type | What It Shows |
+|---|---|---|
+| `Sim/Robot/Pose3d` | Pose3d | Full 6-DOF robot pose (x, y, z, roll, pitch, yaw) |
+| `Sim/GamePieces/Fuel` | Pose3d[] | Array of all active fuel ball positions |
+| `Sim/Robot/ComponentPoses` | Pose3d[] | Animated component positions (hood, intake, feeder, climber) |
+| `Sim/Score/Total` | int | Accumulated match score |
+| `Sim/Intake/HeldCount` | int | Number of balls currently in the hopper |
+| `Sim/Robot/GroundClearance` | double | Height of chassis above field surface (meters) |
+| `Sim/Robot/IsAirborne` | boolean | Whether the robot has left the ground (ramp driving) |
+
+---
+
+### 2025 Reefscape
+
+**Status: Experimental** | Code: `robot/2025-reefscape/src/main/java/frc/robot/sim/`
+
+The 2025 Reefscape robot has simulation code that was developed alongside sim-core. It includes
+a field layout (`ReefscapeField`), game piece configuration (`ReefscapeGamePieces`), and mechanism
+simulations for the elevator, climber, and swan neck. This was the first year sim-core was used and
+served as the proving ground for the framework.
+
+---
+
+### 2024 and Earlier
+
+No simulation support exists for robot projects before 2025. The sim-core framework did not exist
+prior to the 2025 season.
+
+---
+
+## How to Build a Sim for a New Game Year
+
+When a new FRC game is announced, here is how to add simulation support using sim-core:
+
+### 1. Define Game Piece Properties
+
+Create a config class with the correct shape, mass, and bounce for the new game's pieces:
+
+```java
+GamePieceConfig fuel = new GamePieceConfig.Builder()
+    .shape(GamePieceConfig.Shape.SPHERE)
+    .radius(0.075)          // meters
+    .mass(0.2)              // kg
+    .bounce(0.15)           // coefficient of restitution
+    .build();
+```
+
+### 2. Build the Field Layout
+
+Create a field class that loads collision geometry and spawns game pieces:
+
+1. Export your field CAD as a simplified OBJ mesh
+2. Use `robot/sim-core/scripts/simplify_field.py` to reduce polygon count
+3. Load it with `FieldGeometry` and add boundary walls
+4. Spawn game pieces at their starting positions
+
+<Callout type="warning">
+    Keep field meshes simple. Every triangle in the OBJ is a collision surface that ODE4J checks against.
+    A 500-triangle mesh is fine. A 50,000-triangle mesh will destroy your frame rate. Use the simplify script.
+</Callout>
+
+### 3. Set Up Robot Parameters
+
+Configure the chassis to match your robot's physical properties:
+
+```java
+ChassisConfig config = new ChassisConfig.Builder()
+    .mass(55.0)             // kg, including bumpers and battery
+    .width(0.66)            // meters, frame width
+    .length(0.66)           // meters, frame length
+    .build();
+```
+
+### 4. Write the SimManager
+
+Create an orchestrator class that:
+- Initializes MapleSim for drivetrain simulation
+- Initializes sim-core for game piece physics
+- Runs the sim loop each tick (read MapleSim pose, update ODE4J chassis, step physics, check scoring, publish telemetry)
+
+Use `RebuiltSimManager` as a reference implementation.
+
+### 5. Add Scoring Zones
+
+Define sensor geometries at scoring locations in your field class and register them with `ScoringTracker`.
+
+### 6. Add Mechanism Sims
+
+Bridge your robot's mechanisms (intake, shooter, etc.) to sim-core's intake zones and launch parameters.
+
+---
+
+## Troubleshooting
+
+**Sim starts but robot does not move:**
+Check that the Driver Station sim GUI shows the robot as "Enabled" in "Teleop" mode. You also need a gamepad connected or the keyboard inputs configured.
+
+**Balls are falling through the floor:**
+The ground plane may not be initialized. Check that `PhysicsWorld` is created with gravity enabled. Also verify the OBJ mesh is loaded without errors in the console.
+
+**Balls tunnel through walls at high speed:**
+Adaptive sub-stepping should prevent this. If it still happens, the launch velocity may be too high for the sub-step threshold (0.1m). Check `LaunchParameters` and consider lowering the launch speed or decreasing the sub-step threshold.
+
+**Performance is slow:**
+Check how many pieces are active. If the proximity radius is too large, too many balls get simulated at once. The default 1.5m radius should keep active pieces under 30. Also make sure you ran the mesh simplify script on your field OBJ.
+
+**Encoder values do not match expected behavior:**
+MapleSim handles encoder simulation. Check that the gear ratios in your swerve configuration match the physical robot. Mismatched ratios will cause the simulated encoders to report incorrect distances.
+
+---
+
+## Further Reading
+
+- **sim-core README** (`robot/sim-core/README.md`) -- API reference and usage examples
+- **sim-core tests** (`robot/sim-core/src/test/java/`) -- unit tests that demonstrate how each component works
+- **MapleSim documentation** -- see the [IronMaple GitHub repository](https://github.com/IronMaple)
+- **ODE4J documentation** -- see the [ode4j GitHub repository](https://github.com/tzaeschke/ode4j)
+- **AdvantageKit docs** -- for understanding telemetry logging
+- **AdvantageScope docs** -- for 3D visualization setup

@@ -5,12 +5,12 @@
   "InstallingNi": "FRC Game Tools Installation",
   "Subsystems":"Crescendo Code Dive",
   "StingrayCode":"Reefscape Code Dive",
-    "PID_control":"PID Control",
+  "PID_control":"PID Control",
   "Vision": "Video Processing",
   "Autonomous": "Autonomous",
+  "SimulationSystem": "Simulation System Design",
   "Examples": "Examples",
   "UsingInterijIdea": "Resources",
   "Workshop": "Workshop",
   "PastProblems+Solutions": "Past Problems and Solutions"
-
 }
