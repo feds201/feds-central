@@ -131,7 +131,7 @@ $RECYCLE.BIN/
 *.msix
 *.msm
 *.msp
-
+*.wpilogs
 # Windows shortcuts
 *.lnk
 
