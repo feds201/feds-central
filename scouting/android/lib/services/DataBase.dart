@@ -1087,11 +1087,7 @@ class EndPoints {
       json['FeedToHP'] ?? false,
       json['Passing'] ?? false,
       json['Comments'] ?? '',
-<<<<<<< HEAD
       (json['ShootingAccuracy'] as int?) ?? 3,
-=======
-      json['ShootingAccuracy'] ?? 3,
->>>>>>> origin/main
       (json['endgameTime'] ?? 0.0).toDouble(),
       json['endgameActions'] ?? 0,
       // Handle both list and legacy string/migration
@@ -1105,19 +1101,11 @@ class EndPoints {
   }
 
   String toCsv() {
-<<<<<<< HEAD
-    return '$ClimbStatus,$Park,$FeedToHP,$Passing,$ShootingAccuracy,$endgameTime,$endgameActions,$Comments,$drawingData';
-=======
-<<<<<<< HEAD
-    return '$ClimbStatus,$Park,$FeedToHP,$Passing,$ShootingAccuracy,$endgameTime,$endgameActions,$Comments,$drawingData';
-=======
     return '$ClimbStatus,$Park,$FeedToHP,$Passing,$endgameTime,$endgameActions,$Comments,${_encodeDrawingData()}';
   }
 
   String _encodeDrawingData() {
     return DrawingBitmaskCodec.encode(drawingData);
->>>>>>> origin/main
->>>>>>> origin/main
   }
 
   @override
