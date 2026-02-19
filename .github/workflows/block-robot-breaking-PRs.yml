@@ -1,0 +1,85 @@
+# =============================================================================
+# Robot Subproject Build & Test CI
+# =============================================================================
+#
+# When someone opens a PR to main, this workflow:
+#   1. Detects which folders inside robot/ were changed
+#   2. Runs ./gradlew build && ./gradlew test ONLY on those projects
+#   3. Blocks the PR if any build/test fails
+#
+# Adding a new robot project? Just create a new folder under robot/ with
+# a Gradle setup. This workflow picks it up automatically.
+# =============================================================================
+
+name: Robot Subproject Builds
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+
+  # Figures out which robot/ subfolders have changes in this PR.
+  # Outputs a JSON list like ["2026-rebuilt", "2025-offseason"], or [] if none.
+  detect-robot-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      projects: ${{ steps.find.outputs.projects }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Need full history to compare against main
+      - id: find
+        name: Find changed robot projects
+        run: |
+          # Get unique folder names under robot/ that have changed files
+          projects=$(git diff --name-only origin/main...HEAD \
+            | grep '^robot/' \
+            | cut -d'/' -f2 \
+            | sort -u \
+            | jq -R -s -c 'split("\n") | map(select(length > 0))')
+          echo "Detected changed projects: $projects"
+          echo "projects=$projects" >> "$GITHUB_OUTPUT"
+
+  # Runs build & test for each changed project in parallel.
+  # Uses a "matrix" — basically a for-each loop where each iteration
+  # is its own independent job.
+  build:
+    needs: detect-robot-changes
+    if: needs.detect-robot-changes.outputs.projects != '[]'
+    strategy:
+      matrix:
+        project: ${{ fromJson(needs.detect-robot-changes.outputs.projects) }}
+      fail-fast: false # Show ALL failures, not just the first one
+    name: "Build & Test: ${{ matrix.project }}"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Build
+        working-directory: robot/${{ matrix.project }}
+        run: ./gradlew build
+      - name: Test
+        working-directory: robot/${{ matrix.project }}
+        run: ./gradlew test
+
+  # Gate job — this is the ONLY required status check you set in repo settings.
+  # It always runs, and passes as long as no builds failed.
+  # We need this because if no robot/ files changed, the build job gets
+  # skipped, and GitHub would block the PR if the build job itself were required.
+  merge-ready:
+    if: always()
+    needs: [build]
+    runs-on: ubuntu-latest
+    name: "Merge Ready"
+    steps:
+      - name: Check build results
+        run: |
+          if [[ "${{ needs.build.result }}" == "failure" ]]; then
+            echo "❌ A robot build/test failed."
+            exit 1
+          fi
+          echo "✅ All good!"

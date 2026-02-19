@@ -1,0 +1,15 @@
+# GitHub CODEOWNERS file
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+#
+# Everyone in the "team" below is automatically requested to review every PR.
+# At least one of them must approve before the PR can be merged.
+#
+# To change who can review/approve code:
+#   Update the @feds201/mentors team on GitHub: https://github.com/orgs/feds201/teams/mentors
+#
+# To add owners for specific folders (e.g. robot/, scouting/):
+#   Create a new GitHub team and add a line like:
+#   /robot/ @feds201/robot-owners
+#   /scouting/ @feds201/scouring-owners
+
+* @feds201/mentors

@@ -1,0 +1,46 @@
+# =============================================================================
+# Do Not Submit Check
+# =============================================================================
+#
+# When someone opens a PR to main, this workflow checks the diff for
+# "DO NOT SUBMIT" or "DO NOT SHIP" markers. If found, the PR is blocked.
+#
+# Why? Learning branches (like learning-*) have a README with "DO NOT SUBMIT"
+# in them. This prevents those branches from ever being accidentally merged
+# into main — the marker in the diff automatically fails this check.
+#
+# You can also drop "DO NOT SUBMIT" into any file as a reminder to yourself
+# that something isn't ready yet. This check will catch it.
+# =============================================================================
+
+name: Do Not Submit Check
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  check-do-not-submit:
+    runs-on: ubuntu-latest
+    name: "Do Not Submit Check"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Check for DO NOT SUBMIT markers
+        run: |
+          # Search the actual diff for forbidden markers
+          matches=$(git diff origin/main...HEAD | grep -niE "DO NOT SUBMIT|DO NOT SHIP" || true)
+          if [ -n "$matches" ]; then
+            echo "$matches"
+            echo ""
+            echo "❌ PR contains a 'DO NOT SUBMIT' or 'DO NOT SHIP' marker."
+            echo ""
+            echo "This means one of two things:"
+            echo "  1. This branch is a learning/practice branch and is NOT meant to be merged."
+            echo "     Close this PR — learning branches should stay separate from main."
+            echo "  2. Someone left a DO NOT SUBMIT marker in the code as a reminder."
+            echo "     Find and fix/remove the marker, then push again."
+            exit 1
+          fi
+          echo "✅ No blocking markers found."
