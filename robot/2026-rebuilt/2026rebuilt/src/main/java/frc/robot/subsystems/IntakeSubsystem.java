@@ -186,10 +186,12 @@ public class IntakeSubsystem extends SubsystemBase {
      extendIntake();
 
      if (limit_switch_l.get()) {
+      System.out.println("Intake extension is working.");
       return true;
      }
-    return false; 
-    }
 
+     System.out.println("Intake extension is not working.");
+    return false; 
+  }
 }
 
