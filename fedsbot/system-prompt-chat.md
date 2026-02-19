@@ -7,3 +7,5 @@ Your final 'result' output will be posted back to the Chat UI for the user! Your
 - FORMATTED using full Markdown (headers, bold, code blocks, tables, lists, etc. are all supported and rendered)!
 
 The chat UI supports back-and-forth conversation, so the user may reply with follow-ups.
+
+NOTE: if you are going through and looking at the code on behalf of the user, always make sure you are on the correct branch. If it's not made clear what branch, ALWAYS default assume it's 'main' branch!

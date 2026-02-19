@@ -10,15 +10,14 @@ import static edu.wpi.first.units.Units.RadiansPerSecond;
 
 import java.util.Optional;
 
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.RobotMap.DrivetrainConstants;
-import frc.robot.sim.RebuiltSimManager;
+import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.sim.RebuiltSimManager;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
@@ -29,15 +28,21 @@ import frc.robot.utils.LimelightWrapper;
 public class RobotContainer {
 
   private final CommandSwerveDrivetrain drivetrain = DrivetrainConstants.createDrivetrain();
-  private final Shooter shooter = new Shooter();
-  private final Intake intake = new Intake();
   private final LimelightWrapper sampleLocalizationLimelight = new LimelightWrapper("limelight-localization");
+  private final CommandXboxController controller = new CommandXboxController(0);
+  private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
 
-  private final XboxController driverController = new XboxController(0);
+  // TODO: implement this for real (was just added to enable simulation)
+  private final Shooter shooter = new Shooter();
+  // TODO: implement this for real (was just added to enable simulation)
+  private final Intake intake = new Intake();
 
+  // TODO: implement this for real (was just added to enable simulation)
   // Swerve drive requests
   private final SwerveRequest.FieldCentric fieldCentric = new SwerveRequest.FieldCentric();
+  // TODO: implement this for real (was just added to enable simulation)
   private final double MAX_SPEED = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+  // TODO: implement this for real (was just added to enable simulation)
   private final double MAX_ANGULAR_RATE = Math.PI * 2; // rad/s
 
   // Simulation
@@ -66,27 +71,55 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
+    // controller.a()
+    //   .onTrue(IntakeSubsystem.dyanmicCommand(Direction.kReverse));
+    // controller.b()
+    //   .onTrue(IntakeSubsystem.dyanmicCommand(Direction.kForward));
+    // controller.x()
+    //   .onTrue(IntakeSubsystem.quatsiCommand(Direction.kReverse));
+    // controller.y()
+    //   .onTrue(IntakeSubsystem.quatsiCommand(Direction.kForward));
+
+    controller.leftTrigger()
+        .onTrue(intakeSubsystem.extendIntake());
+
+    controller.leftBumper()
+        .onTrue(intakeSubsystem.retractIntake());
+
+    // controller.x()
+    //     .onTrue((leds.intakeSignal())).onFalse(leds.climbingSignal());
+
+    // controller.y()
+    //     .onTrue(rollers.RollersCommand(RollerState.ON))
+    //     .onFalse(rollers.RollersCommand(RollerState.OFF));
+
+    // TODO: implement this for real (was just added to enable simulation)
     // Default drive command: field-centric swerve with left stick + right stick rotation
     drivetrain.setDefaultCommand(
         drivetrain.applyRequest(() -> fieldCentric
-            .withVelocityX(-driverController.getLeftY() * MAX_SPEED)
-            .withVelocityY(-driverController.getLeftX() * MAX_SPEED)
-            .withRotationalRate(-driverController.getRightX() * MAX_ANGULAR_RATE)));
+            .withVelocityX(-controller.getLeftY() * MAX_SPEED)
+            .withVelocityY(-controller.getLeftX() * MAX_SPEED)
+            .withRotationalRate(-controller.getRightX() * MAX_ANGULAR_RATE)));
 
+    // TODO: implement this for real (was just added to enable simulation)
     // M key (Right bumper): intake
-    new JoystickButton(driverController, XboxController.Button.kRightBumper.value)
+    controller.rightBumper()
         .whileTrue(intake.intakeCommand());
 
+    // TODO: implement this for real (was just added to enable simulation)
     // / key (Left bumper): shoot
-    new JoystickButton(driverController, XboxController.Button.kLeftBumper.value)
+    // NOTE: leftBumper also bound to intakeSubsystem.retractIntake() above
+    controller.leftBumper()
         .whileTrue(shooter.shootCommand());
 
+    // TODO: implement this for real (was just added to enable simulation)
     // D-pad up: hood angle up
     // D-pad down: hood angle down
     // (POV buttons need custom triggers)
-    new JoystickButton(driverController, XboxController.Button.kY.value)
+    controller.y()
         .whileTrue(shooter.hoodUpCommand());
-    new JoystickButton(driverController, XboxController.Button.kA.value)
+    // TODO: implement this for real (was just added to enable simulation)
+    controller.a()
         .whileTrue(shooter.hoodDownCommand());
   }
 

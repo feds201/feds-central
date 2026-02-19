@@ -108,15 +108,46 @@ export function sendMessage(threadId, messageText, { getToken }) {
       const body = { message: messageText }
       if (agentSessionId) body.sessionId = agentSessionId
 
-      const token = getToken()
-      const headers = { 'Content-Type': 'application/json' }
-      if (token) headers.Authorization = `Bearer ${token}`
+      const chatFetch = async (token) => {
+        const headers = { 'Content-Type': 'application/json' }
+        if (token) headers.Authorization = `Bearer ${token}`
+        return fetch('/api/chat', {
+          method: 'POST',
+          headers,
+          credentials: 'include',
+          body: JSON.stringify(body),
+        })
+      }
 
-      const res = await fetch('/api/chat', {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(body),
-      })
+      let token = getToken()
+      let res = await chatFetch(token)
+
+      // Auto-refresh on 401/403
+      if (res.status === 401 || res.status === 403) {
+        try {
+          const refreshRes = await fetch('/api/auth/refresh', {
+            method: 'POST',
+            credentials: 'include',
+          })
+          if (refreshRes.ok) {
+            const data = await refreshRes.json()
+            if (data.token) {
+              localStorage.setItem('token', data.token)
+              res = await chatFetch(data.token)
+            }
+          }
+        } catch {
+          // refresh failed
+        }
+
+        // If still unauthorized after refresh, session is dead — log out
+        if (res.status === 401 || res.status === 403) {
+          localStorage.removeItem('token')
+          localStorage.removeItem('user')
+          window.location.href = '/sign-in'
+          return
+        }
+      }
 
       if (!res.ok) {
         const errText = await res.text()
