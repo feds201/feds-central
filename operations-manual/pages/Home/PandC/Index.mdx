@@ -1,68 +1,236 @@
-import Head from 'next/head';
-import { Cards, Card, Callout } from 'nextra/components';
+import { Callout } from 'nextra/components';
+import { GenericHero, GenericStats, ModernCard } from '../../../Components/index';
+import { 
+    FaChartSimple, FaTrophy, FaUserTie, FaShareNodes, FaRocket, 
+    FaHandHoldingDollar, FaCalendarDays, FaBullseye, FaHandshake, 
+    FaGlobe, FaBolt, FaUsers, FaStar 
+} from 'react-icons/fa6';
 
-<Head>
-    <title>People & Culture - FEDS Handbook</title>
-    <meta property="og:title" content="People & Culture - FEDS Handbook" key="title" />
-    <meta name="description" content="FRC Team 201's People & Culture Tools and Resources" />
-    <link rel="icon" type="image/x-icon" href="https://i.imgur.com/GmdZ72B.png" />
-</Head>
 
-# Welcome to People & Culture!
 
-Welcome to the People & Culture section of the FEDS Handbook! Here, you will find all the resources and tools you need to understand the culture, community, and STEM initiatives of FRC Team 201. The People & Culture subgroup encompasses the FEDS FRC 201's Safety, Business, Advocacy, Outreach, Fundraising, Social-Media, and Impact initiatives, all of which are further described in upcoming sections.
 
-The **Tools & Resources** section covers the important resources we use including our **Sponsor Scouting Tool / Sponsor Acquisition Resources**, **Email drafts to contact companies and other FIRST teams**, and **Impact Award Resources**. The **FEDS' Projects** section covers our events, marketing, and team-building aspects of our team, in addition to going over our team's Impact Award portfolio and our efforts towards advancing our team's mission in 4 categories: **Operation FIRST**, **Operation Outreach**, **Operation Global**, and **OPEX** (Operation: Performance & Excellence).
+<GenericHero 
+  title="People & Culture"
+  backgroundType='pattern'
+  height="sm"
+  subtitle="Fostering Team Sustainability and Driving Community Impact"
+  variant="gradient"
+  size="large"
+  textAlign='center'
+/>
 
-## Tools and Resources
+<div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 20px' }}>
 
-<Cards>
-  <Card title="Business Plan" href="/PandC/ToolsAndResources/BusinessPlan/businessPlanIntro">
-    Discover our team's award-winning business plan ensuring long-term sustainability.
-  </Card>
-  <Card title="Impact Award Resources" href="/PandC/ToolsAndResources/ImpactResources/ImpactIntro">
-    Learn how to become competitve when it comes to the Impact Award.
-  </Card>
-  <Card title="Leadership Training" href="/PandC/ToolsAndResources/LeadershipTraining/leadershipTrainingIntro">
-    Learn effective ways to promote leadership and train aspiring team-leads.
-  </Card>
-  <Card title="Social Media Planning & Management" href="ToolsAndResources/SocialMediaManagement/SocialMediaIntro">
-    Learn about Social Media Management, Photography, Videography, and content planning.
-  </Card>
-  <Card title="Special Project System and Management" href="/PandC/ToolsAndResources/SpecialProjects/SpecialProjectsIntro">
-    Learn about our Special Project's system and how it promotes student-involvement.
-  </Card>
-  <Card title="Sponsorship Acquisition & Fundraising Resources" href="/PandC/ToolsAndResources/SponsorshipsAndFundraising/SponsorsAndFundsIntro">
-    Learn how to effectively contact companies or to fundraise for your team.
-  </Card>
-  <Card title="Team Calendar Structure & Maintenance" href="/PandC/ToolsAndResources/TeamCalendar/CalendarIntro">
-    Find out how we effectively use a Team Calendar.
-  </Card>
-</Cards>
+# People & Culture Subgroup Overview
 
-## FEDS Projects
+Welcome to the People & Culture section of the FEDS Operational Manual. This subgroup serves as the strategic core of FRC Team 201, managing the initiatives that ensure the team's long-term viability, community presence, and internal health.
 
-<Cards>
-  <Card title="Operation FIRST" href="/PandC/FedsProjects/OperationFirst/OperationFirstIntro">
-    Learn about what we do to advance the mission of FIRST in our FIRST-based operation.
-  </Card>
-  <Card title="Operation Outreach" href="/PandC/FedsProjects/OperationOutreach/OperationOutreachIntro">
-    Learn about our team's outreach with local companies, teams, and beyond.
-  </Card>
-  <Card title="Operation Global" href="/PandC/FedsProjects/OperationGlobal/GlobalIntro">
-    Discover our initiatives on a global scale.
-  </Card>
-  <Card title="OPEX" href="/PandC/FedsProjects/Opex/OpexIntro">
-    Explore our team's mission towards sustainability and eficiency and our work to share it with others.
-  </Card>
-  <Card title="Team-Building Events" href="/PandC/FedsProjects/TeamBuildingEvents/FedsDay">
-    Learn how we initiate team-building on our team and make it a lasting impact on students.
-  </Card>
-  <Card title="Additional FEDS Events" href="/PandC/FedsProjects/AdditionalFedsEvents/TeamWebsiteUpdateGuide">
-    Discover our additional events / projects that are not otherwise mentioned in previous documents.
-  </Card>
-</Cards>
+The People & Culture subgroup is responsible for bridging the gap between our technical objectives and our mission to inspire STEM engagement. We develop and execute the strategies that support our team's growth, professional image, and impact within the *FIRST* community and beyond.
+
+<br />
+<strong>Core Responsibilities</strong> 
+
+<p>This subgroup's responsibilities are multifaceted, focusing on both internal team development and external relations. We cultivate leadership, manage communications, secure financial resources, and direct the team's outreach and advocacy efforts. Our work ensures that the team operates efficiently and sustainably.</p>
+
+We do not simply manage administrative tasks; we build the foundational structure that enables team-wide success and amplifies our impact year after year.
+
+<br />
+
+---
+### Operational Scope & Metrics
+
+The effectiveness of the People & Culture subgroup can be quantified by the scope and structure of our initiatives. The following metrics represent the foundational pillars of our operations, from strategic planning resources to the execution of our community-facing projects.
+
+Each number reflects a deliberate component of our system, designed to create a well-organized, sustainable, and impactful robotics team.
+
+<GenericStats
+  layout="grid"
+  variant="cards"
+  countUp={true}
+  animation={{ enabled: true, duration: 2000, delay: 100 }}
+ stats={[
+  {
+    value: 7,
+    label: 'Core Initiatives',
+    icon: '🎯',
+    description: 'From Safety and Business to Advocacy and Impact, our initiatives cover every aspect of team culture and community engagement.'
+  },
+  {
+    value: 7,
+    label: 'Essential Tools',
+    icon: '🛠️',
+    description: 'Business plans, leadership training resources, social media guides, and more — all designed to empower our team.'
+  },
+  {
+    value: 6,
+    label: 'Key Projects',
+    icon: '🌍',
+    description: 'Our portfolio of projects including our four Operations, team-building, and other essential events.'
+  },
+  {
+    value: 4,
+    label: 'Operational Pillars',
+    icon: '🏛️',
+    description: 'Our mission is advanced through four key categories: Operation FIRST, Outreach, Global, and OPEX.'
+  },
+  {
+    value: 100,
+    label: 'Student-Involvement Focus',
+    icon: '🤝',
+    description: 'Every initiative, like our Special Projects system, is designed to promote and maximize student involvement.',
+    suffix: '%'
+  },
+  {
+    value: 2,
+    label: 'Major Sections',
+    icon: '📚',
+    description: 'Our manual is structured into two main parts: "Tools & Resources" and "FEDS Projects" for clarity and guidance.'
+  }
+]}
+/>
+
+## 🛠️ Tools and Resources
+
+<div style={{
+  display: 'grid',
+  gridTemplateColumns: 'repeat(auto-fit, minmax(min(300px, 100%), 1fr))',
+  gap: 'clamp(16px, 4vw, 32px)',
+  margin: 'clamp(30px, 8vw, 60px) 0',
+  padding: '0 clamp(16px, 4vw, 0px)'
+}}>
+  <ModernCard
+    icon={<FaChartSimple />}
+    bgPattern="waves"
+    title="Business Plan"
+    description="Discover our team's award-winning business plan ensuring long-term sustainability."
+    href="/Home/PandC/ToolsAndResources/BusinessPlan/businessPlanIntro"
+    gradient="linear-gradient(135deg, #22c55e 0%, #16a34a 100%)"
+    customStyles={{backgroundColor: "rgba(123, 54, 180, 0.13)", color: 'white', boxShadow: '0 -10px 20px rgba(255, 255, 255, 0.3)' }}
+  />
+  <ModernCard
+    icon={<FaTrophy />}
+    bgPattern="waves"
+    title="Impact Award Resources"
+    description="Learn how to become competitive when it comes to the Impact Award."
+    href="/Home/PandC/ToolsAndResources/ImpactResources/ImpactIntro"
+    gradient="linear-gradient(135deg, #f59e0b 0%, #d97706 100%)"
+    customStyles={{backgroundColor: "rgba(123, 54, 180, 0.13)", color: 'white', boxShadow: '0 -10px 20px rgba(255, 255, 255, 0.3)' }}
+  />
+  <ModernCard
+    icon={<FaUserTie />}
+    bgPattern="waves"
+    title="Leadership Training"
+    description="Learn effective ways to promote leadership and train aspiring team-leads."
+    href="/Home/PandC/ToolsAndResources/LeadershipTraining/leadershipTrainingIntro"
+    gradient="linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)"
+    customStyles={{backgroundColor: "rgba(123, 54, 180, 0.13)", color: 'white', boxShadow: '0 -10px 20px rgba(255, 255, 255, 0.3)' }}
+  />
+  <ModernCard
+    icon={<FaShareNodes />}
+    bgPattern="waves"
+    title="Social Media Planning & Management"
+    description="Learn about Social Media Management, Photography, Videography, and content planning."
+    href="/Home/PandC/ToolsAndResources/SocialMediaManagement/SocialMediaIntro"
+    gradient="linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)"
+    customStyles={{
+      backgroundColor: "rgba(123, 54, 180, 0.13)", color: 'white', boxShadow: '0 -10px 20px rgba(255, 255, 255, 0.3)' }}
+  />
+  <ModernCard
+    icon={<FaRocket />}
+    bgPattern="waves"
+    title="Special Project System and Management"
+    description="Learn about our Special Project's system and how it promotes student-involvement."
+    href="/Home/PandC/ToolsAndResources/SpecialProjects/SpecialProjectsIntro"
+    gradient="linear-gradient(135deg, #ef4444 0%, #dc2626 100%)"
+    customStyles={{backgroundColor: "rgba(123, 54, 180, 0.13)", color: 'white', boxShadow: '0 -10px 20px rgba(255, 255, 255, 0.3)' }}
+  />
+  <ModernCard
+    icon={<FaHandHoldingDollar />}
+    bgPattern="waves"
+    title="Sponsorship Acquisition & Fundraising"
+    description="Learn how to effectively contact companies or to fundraise for your team."
+    href="/Home/PandC/ToolsAndResources/SponsorshipsAndFundraising/SponsorsAndFundsIntro"
+    gradient="linear-gradient(135deg, #14b8a6 0%, #0d9488 100%)"
+    customStyles={{backgroundColor: "rgba(123, 54, 180, 0.13)", color: 'white', boxShadow: '0 -10px 20px rgba(255, 255, 255, 0.3)' }}
+  />
+  <ModernCard
+    icon={<FaCalendarDays />}
+    bgPattern="waves"
+    title="Team Calendar Structure & Maintenance"
+    description="Find out how we effectively use a Team Calendar."
+    href="/Home/PandC/ToolsAndResources/TeamCalendar/CalendarIntro"
+    gradient="linear-gradient(135deg, #64748b 0%, #475569 100%)"
+    customStyles={{backgroundColor: "rgba(123, 54, 180, 0.13)", color: 'white', boxShadow: '0 -10px 20px rgba(255, 255, 255, 0.3)' }}
+  />
+</div>
+
+## 🌍 FEDS Projects
+
+<div style={{
+  display: 'grid',
+  gridTemplateColumns: 'repeat(auto-fit, minmax(min(300px, 100%), 1fr))',
+  gap: 'clamp(16px, 4vw, 32px)',
+  margin: 'clamp(30px, 8vw, 60px) 0',
+  padding: '0 clamp(16px, 4vw, 0px)'
+}}>
+  <ModernCard
+    icon={<FaBullseye />}
+    bgPattern="waves"
+    title="Operation FIRST"
+    description="Learn about what we do to advance the mission of FIRST in our FIRST-based operation."
+    href="/Home/PandC/FedsProjects/OperationFirst/OperationFirstIntro"
+    gradient="linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)"
+    customStyles={{backgroundColor: "rgba(123, 54, 180, 0.13)", color: 'white', boxShadow: '0 -10px 20px rgba(255, 255, 255, 0.3)' }}
+  />
+  <ModernCard
+    icon={<FaHandshake />}
+    bgPattern="waves"
+    title="Operation Outreach"
+    description="Learn about our team's outreach with local companies, teams, and beyond."
+    href="/Home/PandC/FedsProjects/OperationOutreach/OperationOutreachIntro"
+    gradient="linear-gradient(135deg, #22c55e 0%, #16a34a 100%)"
+    customStyles={{backgroundColor: "rgba(123, 54, 180, 0.13)", color: 'white', boxShadow: '0 -10px 20px rgba(255, 255, 255, 0.3)' }}
+  />
+  <ModernCard
+    icon={<FaGlobe />}
+    bgPattern="waves"
+    title="Operation Global"
+    description="Discover our initiatives on a global scale."
+    href="/Home/PandC/FedsProjects/OperationGlobal/GlobalIntro"
+    gradient="linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)"
+    customStyles={{backgroundColor: "rgba(123, 54, 180, 0.13)", color: 'white', boxShadow: '0 -10px 20px rgba(255, 255, 255, 0.3)' }}
+  />
+  <ModernCard
+    icon={<FaBolt />}
+    bgPattern="waves"
+    title="OPEX"
+    description="Explore our team's mission towards sustainability and efficiency and our work to share it with others."
+    href="/Home/PandC/FedsProjects/Opex/OpexIntro"
+    gradient="linear-gradient(135deg, #f59e0b 0%, #d97706 100%)"
+    customStyles={{backgroundColor: "rgba(123, 54, 180, 0.13)", color: 'white', boxShadow: '0 -10px 20px rgba(255, 255, 255, 0.3)' }}
+  />
+  <ModernCard
+    icon={<FaUsers />}
+    bgPattern="waves"
+    title="Team-Building Events"
+    description="Learn how we initiate team-building on our team and make it a lasting impact on students."
+    href="/Home/PandC/FedsProjects/TeamBuildingEvents/FedsDay"
+    gradient="linear-gradient(135deg, #ec4899 0%, #db2777 100%)"
+    customStyles={{backgroundColor: "rgba(123, 54, 180, 0.13)", color: 'white', boxShadow: '0 -10px 20px rgba(255, 255, 255, 0.3)' }}
+  />
+  <ModernCard
+    icon={<FaStar />}
+    bgPattern="waves"
+    title="Additional FEDS Events"
+    description="Discover our additional events / projects that are not otherwise mentioned in previous documents."
+    href="/Home/PandC/FedsProjects/AdditionalFedsEvents/TeamWebsiteUpdateGuide"
+    gradient="linear-gradient(135deg, #64748b 0%, #475569 100%)"
+    customStyles={{backgroundColor: "rgba(123, 54, 180, 0.13)", color: 'white', boxShadow: '0 -10px 20px rgba(255, 255, 255, 0.3)' }}
+  />
+</div>
+
+</div>
 
 <Callout type="info" emoji="💡">
-    If you have any questions or suggestions, feel free to reach out to the People & Culture team.
+    For further inquiries or suggestions, please contact the People & Culture subgroup.
 </Callout>

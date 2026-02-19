@@ -1,0 +1,594 @@
+import { Callout, Tabs, Tab } from 'nextra/components';
+import { GenericGrid } from '../../../../Components/index';
+
+# Troubleshooting Guide
+
+This section provides systematic approaches to diagnosing and resolving electrical issues quickly and effectively, particularly under competition conditions.
+
+## 🎯 Rapid Diagnosis Framework
+
+Our troubleshooting approach prioritizes speed and accuracy through systematic elimination of potential causes.
+
+### Priority-Based Triage System
+
+<GenericGrid 
+  layout="masonry"
+  variant="cards"
+  items={[
+    {
+      title: "Critical Issues",
+      description: "Complete robot power loss, safety system failures, fire/smoke",
+      icon: "🚨",
+      color: "red",
+      details: "Immediate isolation, safety assessment, emergency protocols"
+    },
+    {
+      title: "Major Issues", 
+      description: "Drivetrain failure, key mechanism non-responsive, brownout conditions",
+      icon: "⚠️",
+      color: "orange",
+      details: "Rapid diagnosis, competition impact assessment, workaround evaluation"
+    },
+    {
+      title: "Minor Issues",
+      description: "Single sensor failure, cosmetic problems, redundant system issues",
+      icon: "⚡",
+      color: "yellow",
+      details: "Time-permitting fixes, post-match resolution, performance optimization"
+    }
+  ]}
+/>
+
+## 🔍 Systematic Diagnosis Procedures
+
+<Tabs items={['Power Issues', 'Communication Failures', 'Motor Control Problems', 'Sensor Issues']}>
+  <Tab>
+    ## Power System Troubleshooting
+    
+    ### Complete Power Loss
+    **Symptoms**: No robot response, no LED indicators, complete electrical silence
+    
+    **Diagnosis Steps**:
+    1. **Battery Voltage Check**
+       ```
+       Expected: >11.5V under no load
+       Tools: Digital multimeter
+       Test Points: Battery terminals
+       Red Flag: <11.0V indicates battery failure
+       ```
+    
+    2. **Main Breaker Verification**
+       ```
+       Check: Physical position (ON/OFF)
+       Test: Continuity across breaker
+       Look For: Visible damage, burning, corrosion
+       Action: Cycle breaker if necessary
+       ```
+    
+    3. **SB Connector Inspection**
+       ```
+       Visual: Connector engagement and condition
+       Physical: Push/pull test for security
+       Electrical: Voltage at robot side of connector
+       Clean: Remove oxidation/corrosion if present
+       ```
+    
+    ### Partial Power Loss
+    **Symptoms**: Some systems work, others don't, intermittent operation
+    
+    **Isolation Strategy**:
+    ```
+    Step 1: Identify affected circuits
+    Step 2: Check individual fuses/breakers
+    Step 3: Measure voltage at load end
+    Step 4: Check connection security
+    Step 5: Measure current draw
+    ```
+    
+    **Common Causes & Solutions**:
+    - **Blown Fuse**: Replace with same rating, investigate cause
+    - **Loose Connection**: Re-torque to specification, apply thread locker
+    - **Wire Damage**: Inspect for pinch points, chafing, cuts
+    - **Overload**: Check current draw, compare to fuse rating
+    
+    ### Brownout Conditions
+    **Symptoms**: Intermittent resets, performance degradation, voltage warnings
+    
+    **Investigation Process**:
+    1. **Battery Load Test**
+       - Apply 200A load for 10 seconds
+       - Voltage should remain above 10.5V
+       - If fails, replace battery immediately
+    
+    2. **Connection Resistance Check**
+       - Measure voltage drop under load
+       - Should be less than 0.5V total from battery to PDH
+       - Clean and retorque high-resistance connections
+    
+    3. **Load Analysis**
+       - Monitor current draw during operation
+       - Compare to fuse ratings and wire capacity
+       - Identify unexpectedly high current draws
+  </Tab>
+  <Tab>
+    ## Communication System Troubleshooting
+    
+    ### CAN Bus Failures
+    **Symptoms**: Devices not responding, intermittent communication, error messages
+    
+    **Physical Layer Diagnostics**:
+    ```
+    Test 1: CAN-H and CAN-L Continuity
+    Expected: Continuous path from end to end
+    Tools: Multimeter in continuity mode
+    
+    Test 2: Bus Termination
+    Expected: 60Ω ±5% between CAN-H and CAN-L
+    Tools: Multimeter in resistance mode
+    Note: All devices disconnected for accurate reading
+    
+    Test 3: Ground Continuity  
+    Expected: <1Ω between all device grounds
+    Tools: Multimeter in resistance mode
+    ```
+    
+    **Network Layer Issues**:
+    - **Device ID Conflicts**: Use diagnostic tool to scan for duplicates
+    - **Baud Rate Mismatch**: Verify all devices configured for same rate
+    - **Message Timing**: Check for excessive bus loading
+    
+    **Application Layer Problems**:
+    - **Firmware Compatibility**: Ensure all devices have compatible versions
+    - **Parameter Conflicts**: Review configuration for conflicting settings
+    - **Error Recovery**: Check device error logs and recovery mechanisms
+    
+    ### Ethernet Network Issues
+    **Symptoms**: Vision system offline, driver station disconnects, network timeouts
+    
+    **Cable Testing Procedure**:
+    ```
+    Physical Inspection:
+    - Check connector engagement
+    - Look for cable damage or stress
+    - Verify proper strain relief
+    
+    Electrical Testing:
+    - Use cable tester for wire map
+    - Check for opens/shorts/miswires
+    - Verify proper T-568B termination
+    
+    Network Testing:
+    - Ping test for basic connectivity
+    - Bandwidth test for performance
+    - Packet loss measurement under load
+    ```
+    
+    ### Radio Communication Problems
+    **Symptoms**: Driver station disconnects, poor signal strength, intermittent control
+    
+    **Systematic Approach**:
+    1. **Power Supply Check**: 12V ±10% at radio
+    2. **Ethernet Connection**: Cable integrity and connection
+    3. **Antenna System**: Connection security and orientation
+    4. **Network Configuration**: IP settings and subnet mask
+    5. **Environmental Factors**: Interference sources, physical obstructions
+  </Tab>
+  <Tab>
+    ## Motor Control Troubleshooting
+    
+    ### Motor Non-Responsive
+    **Symptoms**: Motor doesn't move despite commands, no current draw
+    
+    **Power Path Verification**:
+    ```
+    Step 1: PDH Output Voltage
+    Measure: Voltage at PDH terminals under load
+    Expected: 12V ±10%
+    
+    Step 2: Controller Input Voltage  
+    Measure: Voltage at motor controller power input
+    Expected: Same as PDH output ±0.5V
+    
+    Step 3: Motor Power Connections
+    Check: All power connections secure
+    Look For: Burned contacts, loose connections
+    
+    Step 4: Fuse Continuity
+    Test: Fuse/breaker continuity
+    Replace: If open circuit detected
+    ```
+    
+    **Control Signal Verification**:
+    ```
+    CAN Communication:
+    - Device visible on CAN bus
+    - Responds to configuration commands
+    - No error flags in device status
+    
+    Control Mode:
+    - Verify correct control mode selected
+    - Check command value ranges
+    - Confirm enable/disable state
+    ```
+    
+    ### Erratic Motor Behavior
+    **Symptoms**: Unexpected movements, oscillation, poor performance
+    
+    **Feedback System Check**:
+    - **Encoder Connections**: Verify all encoder wires secure
+    - **Signal Quality**: Check for noise or intermittent signals
+    - **Mechanical Coupling**: Ensure encoder properly coupled to motor
+    - **Software Configuration**: Verify encoder resolution and direction
+    
+    **Control Loop Analysis**:
+    - **Gain Settings**: Check P, I, D values for stability  
+    - **Setpoint Limits**: Verify command values within reasonable range
+    - **Feed Forward**: Ensure FF terms appropriate for mechanism
+    - **Current Limiting**: Check if current limits causing issues
+    
+    ### Motor Overheating
+    **Symptoms**: Excessive motor temperature, thermal shutdowns, performance degradation
+    
+    **Investigation Steps**:
+    1. **Current Draw Analysis**
+       - Measure actual vs. expected current
+       - Compare to motor specifications
+       - Check for mechanical binding
+    
+    2. **Thermal Management**
+       - Verify adequate ventilation
+       - Check for blocked cooling paths
+       - Monitor ambient temperature effects
+    
+    3. **Duty Cycle Evaluation**
+       - Assess actual vs. rated duty cycle
+       - Consider peak vs. continuous ratings
+       - Implement current limiting if necessary
+  </Tab>
+  <Tab>
+    ## Sensor System Troubleshooting
+    
+    ### Encoder Issues
+    **Symptoms**: Position feedback errors, velocity calculations incorrect, robot drift
+    
+    **Signal Integrity Check**:
+    ```
+    Power Supply:
+    - Verify 5V ±0.25V at encoder
+    - Check current draw within specifications
+    - Look for power supply noise/ripple
+    
+    Signal Quality:
+    - A/B channel signals clean and square
+    - Proper signal levels (0V/5V for digital)
+    - Phase relationship correct (90° apart)
+    
+    Mechanical System:
+    - Coupling secure and aligned
+    - No mechanical play or backlash
+    - Proper mounting and strain relief
+    ```
+    
+    **Common Encoder Problems**:
+    - **Wire Damage**: Check for pinched or cut wires
+    - **Connector Issues**: Verify proper engagement and contact
+    - **EMI Interference**: Route away from high-current wires
+    - **Power Issues**: Ensure clean, stable power supply
+    
+    ### Limit Switch Failures
+    **Symptoms**: Overtravel, mechanism damage, inconsistent triggering
+    
+    **Testing Procedure**:
+    ```
+    Electrical Test:
+    1. Measure resistance: Open/Closed states
+    2. Check actuator travel and force
+    3. Verify wiring continuity
+    4. Test under vibration conditions
+    
+    Mechanical Test:
+    1. Actuator alignment and engagement
+    2. Mounting security and positioning
+    3. Repeatability of switching point
+    4. Force required for activation
+    ```
+    
+    ### Vision System Issues
+    **Symptoms**: Target detection failures, processing delays, network timeouts
+    
+    **Systematic Diagnosis**:
+    1. **Physical System**
+       - Lens cleanliness and focus
+       - Lighting conditions and consistency
+       - Target visibility and contrast
+       - Camera mounting and stability
+    
+    2. **Network Performance**
+       - Ethernet connection integrity
+       - Network bandwidth utilization
+       - Processing latency measurement
+       - Packet loss under load conditions
+    
+    3. **Software Configuration**
+       - Pipeline settings and thresholds
+       - Target detection parameters
+       - Network table updates and timing
+       - Error logging and diagnostics
+  </Tab>
+</Tabs>
+
+## ⚡ Emergency Repair Procedures
+
+### Time-Critical Situations (Under 15 Minutes)
+
+<Tabs items={['Power Emergencies', 'Connection Failures', 'Quick Bypasses']}>
+  <Tab>
+    ## Power System Emergency Repairs
+    
+    ### Battery Connection Failure
+    **Quick Fix Options**:
+    ```
+    Option 1: SB Connector Cleaning
+    - Disconnect battery immediately
+    - Clean contacts with fine sandpaper/emery cloth
+    - Apply contact cleaner if available
+    - Reassemble with firm engagement
+    
+    Option 2: Bypass Connection
+    - Use jumper cables with ring terminals
+    - Connect directly to breaker terminals
+    - Secure cables to prevent shorts
+    - Label as temporary repair
+    
+    Option 3: Connector Replacement
+    - Cut damaged connector from wire
+    - Strip wire and install ring terminals
+    - Connect directly to breaker or PDH
+    - Insulate connection thoroughly
+    ```
+    
+    ### Fuse/Breaker Failure
+    **Immediate Actions**:
+    ```
+    Step 1: Identify Failed Protection
+    - Visual inspection for blown fuse
+    - Continuity test if time permits
+    - Check for signs of overheating
+    
+    Step 2: Replace Protection Device
+    - Use identical rating replacement
+    - If unavailable, temporarily use next lower rating
+    - Document temporary change
+    
+    Step 3: Address Root Cause
+    - Check for short circuits
+    - Verify load current within limits
+    - Inspect wiring for damage
+    ```
+    
+    ### PDH Emergency Issues
+    **Critical Procedures**:
+    - **Total PDH Failure**: Bypass with fused connections directly from battery
+    - **Individual Channel Failure**: Redistribute loads to working channels
+    - **Communication Loss**: Switch to PWM control if CAN fails
+  </Tab>
+  <Tab>
+    ## Connection Emergency Repairs
+    
+    ### Connector Damage
+    **Field Repair Techniques**:
+    ```
+    Powerpole Connector:
+    1. Cut damaged connector completely off
+    2. Strip wire to appropriate length
+    3. Install ring terminal with crimper
+    4. Connect directly to device terminal
+    5. Insulate with electrical tape/heat shrink
+    
+    Molex SL Connector:
+    1. Cut individual damaged wires
+    2. Strip and tin wire ends
+    3. Use small wire nuts for connections
+    4. Insulate each connection separately
+    5. Bundle and secure against strain
+    
+    Ethernet Connector:
+    1. Cut cable beyond damage point
+    2. Install new RJ45 connector
+    3. Verify T-568B wiring standard
+    4. Test with cable tester if available
+    ```
+    
+    ### Wire Damage Repairs
+    **Priority-Based Approach**:
+    ```
+    Critical Circuits (Power, Safety):
+    - Solder splice with heat shrink
+    - Multiple wrapping layers for insulation
+    - Mechanical strain relief
+    - Test under load before use
+    
+    Important Circuits (Control, Communication):
+    - Twist splice with mechanical connection
+    - Electrical tape insulation minimum
+    - Protect from moisture and vibration
+    - Monitor for degradation
+    
+    Non-Critical Circuits:
+    - Temporary twist connection acceptable
+    - Basic insulation required
+    - Plan permanent repair after competition
+    ```
+  </Tab>
+  <Tab>
+    ## Emergency Bypass Procedures
+    
+    ### CAN Bus Failures
+    **Bypass Strategies**:
+    ```
+    Option 1: PWM Fallback
+    - Reconfigure motor controllers for PWM control
+    - Use RoboRIO PWM outputs
+    - Limited functionality but operational
+    - Monitor for overheating without CAN feedback
+    
+    Option 2: Parallel CAN Bus
+    - Run temporary CAN wires
+    - Use existing spare conductors
+    - Maintain proper termination
+    - Test communication before enabling
+    
+    Option 3: Device Isolation
+    - Disconnect failed device from bus
+    - Maintain termination integrity
+    - Operate with reduced functionality
+    - Document disabled systems
+    ```
+    
+    ### Vision System Bypass
+    **Alternative Approaches**:
+    ```
+    Manual Control Mode:
+    - Disable autonomous vision dependency
+    - Rely on driver skill and practice
+    - Use backup sensors for reference
+    - Communicate limitations to drive team
+    
+    Simplified Vision:
+    - Reduce processing complexity
+    - Lower resolution/frame rate
+    - Basic target detection only
+    - Accept reduced accuracy for reliability
+    ```
+    
+    ### Communication Failures
+    **Redundancy Activation**:
+    ```
+    Radio Backup:
+    - Secondary radio configuration
+    - Alternative network path
+    - Reduced bandwidth operation
+    - Critical control only
+    
+    Ethernet Redundancy:
+    - Backup cable routing
+    - Alternative switch ports
+    - Point-to-point connections
+    - Reduced network functionality
+    ```
+  </Tab>
+</Tabs>
+
+## 📊 Diagnostic Tools and Equipment
+
+### Essential Troubleshooting Tools
+
+<GenericGrid 
+  layout="masonry"
+  variant="cards"
+  items={[
+    {
+      title: "Digital Multimeter",
+      description: "Voltage, current, resistance measurements and continuity testing",
+      icon: "🔌",
+      color: "blue",
+      details: "True RMS, 10A current capability, 1000V safety rating"
+    },
+    {
+      title: "Ethernet Cable Tester",
+      description: "Wire map verification, length measurement, signal quality assessment",
+      icon: "🌐",
+      color: "green",
+      details: "T-568A/B testing, tone generation, PoE detection"
+    },
+    {
+      title: "CAN Bus Analyzer",
+      description: "Network analysis, device enumeration, error detection",
+      icon: "📡",
+      color: "orange",
+      details: "Real-time monitoring, message filtering, error logging"
+    },
+    {
+      title: "Battery Tester",
+      description: "Capacity testing, CCA measurement, internal resistance",
+      icon: "🔋",
+      color: "red",
+      details: "Load testing capability, multiple test standards"
+    },
+    {
+      title: "Oscilloscope",
+      description: "Signal analysis, timing verification, noise investigation",
+      icon: "📈",
+      color: "purple",
+      details: "Digital storage, multiple channels, trigger capabilities"
+    },
+    {
+      title: "Thermal Camera",
+      description: "Hotspot identification, connection quality assessment",
+      icon: "🌡️",
+      color: "yellow",
+      details: "Real-time thermal imaging, temperature measurement"
+    }
+  ]}
+/>
+
+### Software Diagnostic Tools
+
+**RoboRIO Diagnostics**:
+- **DriverStation Log Viewer**: System messages and error codes
+- **RoboRIO Web Interface**: Real-time system monitoring
+- **Phoenix Tuner**: Motor controller configuration and diagnostics
+- **REV Hardware Client**: REV device configuration and monitoring
+
+**Network Analysis Tools**:
+- **Wireshark**: Network packet analysis and troubleshooting
+- **Network Scanner**: Device discovery and connectivity testing
+- **Bandwidth Monitor**: Network utilization and performance
+- **Ping/Traceroute**: Basic connectivity verification
+
+## 🚨 Emergency Response Procedures
+
+### Safety-First Protocols
+
+**Electrical Emergency Response**:
+1. **Immediate Isolation**: Disconnect power source
+2. **Area Clearance**: Remove personnel from danger zone
+3. **Assessment**: Evaluate extent of problem and safety risks
+4. **Communication**: Notify appropriate personnel and officials
+5. **Documentation**: Record incident details for investigation
+
+**Fire/Smoke Protocols**:
+1. **Power Isolation**: Main breaker OFF immediately
+2. **Fire Suppression**: Use appropriate extinguisher (Class C electrical)
+3. **Evacuation**: Clear area of all personnel
+4. **Emergency Services**: Call professional help if needed
+5. **Investigation**: Determine root cause before re-energizing
+
+### Recovery Procedures
+
+**System Restart Protocol**:
+```
+Step 1: Complete visual inspection
+Step 2: Verify all connections secure
+Step 3: Check fuse/breaker continuity
+Step 4: Measure battery voltage
+Step 5: Enable power in stages
+Step 6: Monitor for normal operation
+Step 7: Document any anomalies
+```
+
+**Post-Emergency Checklist**:
+- [ ] All safety systems functional
+- [ ] No signs of damage or overheating
+- [ ] Documentation updated with repairs
+- [ ] Team briefed on incident and resolution
+- [ ] Spare parts inventory replenished
+- [ ] Lessons learned incorporated into procedures
+
+<Callout type="warning" emoji="⚠️">
+    **Safety Priority**: No competition is worth risking personal safety. If there's any doubt about electrical safety, seek expert assistance before proceeding.
+</Callout>
+
+<Callout type="info" emoji="💡">
+    **Documentation Importance**: All troubleshooting activities, temporary repairs, and emergency procedures must be thoroughly documented for safety, compliance, and continuous improvement.
+</Callout>

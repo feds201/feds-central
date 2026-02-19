@@ -12,6 +12,8 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@assistant-ui/react": "~0.12.9",
+    "@assistant-ui/react-markdown": "~0.12.3",
     "@neondatabase/neon-js": "^0.1.0-beta.19",
     "@neondatabase/serverless": "^1.0.2",
     "@radix-ui/react-dialog": "^1.1.1",
@@ -25,6 +27,7 @@
     "buffer": "^6.0.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
+    "cookie-parser": "~1.4.7",
     "cors": "^2.8.5",
     "crypto-browserify": "^3.12.1",
     "date-fns": "^2.30.0",
@@ -42,6 +45,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.21.3",
+    "remark-gfm": "~4.0.1",
     "stream-browserify": "^3.0.0",
     "tailwind-merge": "^2.2.1"
   },

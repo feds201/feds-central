@@ -1,1306 +1,203 @@
 import Head from 'next/head';
 import { Callout } from 'nextra/components';
 import { Cards, Card } from 'nextra/components';
-import { 
-  GenericHero, 
-  GenericButton, 
-  GenericWidget, 
-  GenericStats, 
-  GenericGrid, 
-  GenericTimeline,
-  ModernCard,
-  ProgrammingHero,
-  StatsSection
+import {
+    GenericHero,
+    GenericWidget,
+    GenericGrid,
+    GenericTimeline,
+    ModernCard
 } from '../../../Components/index';
 
 <Head>
-    <title>Zero to Hero Episode 2: Command-Based Programming & Subsystems - FEDS Handbook</title>
-    <meta property="og:title" content="Zero to Hero Episode 2: Command-Based Programming & Subsystems - FEDS Handbook" key="title" />
+    <title>Zero to Hero Episode 2: The Command-Based Framework - FEDS Handbook</title>
+    <meta property="og:title" content="Zero to Hero Episode 2: The Command-Based Framework - FEDS Handbook" key="title" />
 </Head>
 
 <GenericHero
-  title="Zero to Hero #2" 
-  titleColor="linear-gradient(135deg, #4f46e5 0%, #7c3aed 20%, #a855f7 40%, #c084fc 60%, #e879f9 80%, #f0abfc 100%)"  subtitle="Command-Based Programming & Advanced Subsystems 🏗️"
-  description="From basic motor spinning to architectural mastery! 🎯 Time to level up from 'making things move' to 'making things move with PURPOSE, ELEGANCE, and STYLE.' Warning: Side effects may include sudden urges to refactor everything, speaking in design patterns, and explaining why your robot is 'basically a distributed microservices architecture.' Your teammates will either worship you or hide from you. 🤓"
-  backgroundType="gradient"
-  backgroundValue="linear-gradient(135deg, #1e1b4b 0%, #312e81 15%, #4338ca 30%, #4f46e5 45%, #6366f1 60%, #818cf8 75%, #a5b4fc 90%, #c7d2fe 100%)"
-  particles={[
-    { symbol: '🏗️', transform: 'translateX(15px) translateY(-10px)' },
-    { symbol: '⚙️', transform: 'translateX(-12px) translateY(8px)' },
-    { symbol: '🎯', transform: 'translateX(8px) translateY(-15px)' },
-    { symbol: '🚀', transform: 'translateX(-8px) translateY(12px)' },
-    { symbol: '🧠', transform: 'translateX(12px) translateY(5px)' },
-    { symbol: '💎', transform: 'translateX(-15px) translateY(-8px)' }
-  ]}
-  buttons={[
-    { 
-      text: '🎬 Watch Episode', 
-      style: 'primary', 
-      href: '#',
-    },
-    { 
-      text: '📖 Episode 1 Review', 
-      style: 'secondary', 
-      href: '/Tutorials/ZeroToHero/ZeroToHero1'
-    },
-    { 
-      text: '⚡ Jump to Code', 
-      style: 'secondary', 
-      href: '#chapter-1-command-based-framework'
-    }
-  ]}
-  height="md"
-  textAlign="center"
-  overlay={{
-    enabled: true,
-    color: 'rgba(0, 0, 0, 0.1)'
-  }}
+    title="Zero to Hero #2"
+    titleColor="linear-gradient(135deg, #4f46e5 0%, #7c3aed 20%, #a855f7 40%, #c084fc 60%, #e879f9 80%, #f0abfc 100%)"
+    subtitle="The Conductor: Command-Based Architecture 🏗️"
+    description="Welcome to the Architecture phase! In Episode 1, we made a motor spin. In Episode 2, we learn how to organize code so we can make *many* motors spin without losing our minds. We're moving from 'Code Scribbles' to 'Code Blueprints'."
+    backgroundType="gradient"
+    backgroundValue="linear-gradient(135deg, #1e1b4b 0%, #312e81 15%, #4338ca 30%, #4f46e5 45%, #6366f1 60%, #818cf8 75%, #a5b4fc 90%, #c7d2fe 100%)"
+    particles={[
+        { symbol: '🏗️', transform: 'translateX(15px) translateY(-10px)' },
+        { symbol: '🎼', transform: 'translateX(-12px) translateY(8px)' },
+        { symbol: '📦', transform: 'translateX(8px) translateY(-15px)' }
+    ]}
+    buttons={[
+        { text: '🎬 Watch Episode', style: 'primary', href: '#' },
+        { text: '⬅️ Back to Ep 1', style: 'secondary', href: '/Tutorials/ZeroToHero/ZeroToHero1' }
+    ]}
+    height="md"
+    textAlign="center"
+    overlay={{ enabled: true, color: 'rgba(0, 0, 0, 0.1)' }}
 />
 
-<Callout type="info" emoji="🎓">
-Welcome back, Robot Architect! 🏗️ Episode 2 is where we transform from code warriors to code wizards. If Episode 1 was learning to walk, Episode 2 is learning to dance... with robots! And not just any dance - we're talking full-blown robot ballet with synchronized servo movements and PID-controlled pirouettes! 💃🤖
-
-*Fun fact: By the end of this episode, you'll be able to make your robot do things so complex that even you won't understand how it works. That's called "job security," folks!* 😏
+<Callout type="info" emoji="🎩">
+    **The Conductor Analogy**: Imagine an orchestra.
+    * The **Robot** is the Concert Hall.
+    * The **Subsystems** (Episode 3) are the musicians (Violin, Drums).
+    * The **Commands** (This Episode) are the sheet music telling them *what* to play.
+    * The **RobotContainer** is the Conductor, deciding *when* the music starts.
 </Callout>
 
-## Episode Overview
-<br/>
-<GenericWidget
-  title="🎯 What You'll Master Today"
-  subtitle="Episode 2 Learning Objectives"
-  variant="gradient"
-  size="lg"
-  interactive={true}
->
-  <GenericGrid
-    layout="responsive"
-    columns={{ xs: 1, sm: 2, md: 3 }}
-    gap="16px"
-    items={[
-      {
-        title: "Command-Based Framework",
-        icon: "🏗️",
-        description: "Master the art of organizing robot behavior like a pro architect"
-      },
-      {
-        title: "Advanced Subsystems",
-        icon: "⚙️",
-        description: "Build complex, reusable subsystems that would make NASA jealous"
-      },
-      {
-        title: "Sensor Integration",
-        icon: "👁️",
-        description: "Give your robot superhuman senses with encoders, gyros, and more"
-      },
-      {
-        title: "PID Control",
-        icon: "🎯",
-        description: "Precision control that makes your robot move like a ballerina"
-      },
-      {
-        title: "Autonomous Commands",
-        icon: "🤖",
-        description: "Teach your robot to think and act independently"
-      },
-      {
-        title: "State Machines",
-        icon: "🔄",
-        description: "Manage complex robot behaviors with elegance and grace"
-      }
+## 🎯 Learning Objectives
+<br></br><br></br>
+<GenericWidget title="What You'll Master" variant="gradient" size="lg">
+    <GenericGrid layout="responsive" columns={{ xs: 1, sm: 2 }} gap="16px" items={[
+        { title: "The Architecture", icon: "🏛️", description: "Why we split code into different files instead of one giant file of doom." },
+        { title: "RobotContainer", icon: "📦", description: "The brain of the operation: where buttons meet actions." },
+        { title: "The Command Lifecycle", icon: "♻️", description: "Init -> Execute -> End. The circle of life for code." },
+        { title: "Triggers & Bindings", icon: "🎮", description: "Making controller buttons actually do stuff." }
     ]}
-    renderItem={(item) => (
-      <ModernCard
-        variant="elevated"
-        size="sm"
-        interactive={true}
-        icon={item.icon}
-        title={item.title}
-        description={item.description}
-      />
-    )}
-  />
-</GenericWidget>
-
----
-
-## 🏗️ Chapter 1: Command-Based Framework Deep Dive
-
-### Why Command-Based Programming?
-
-Remember in Episode 1 when we made a motor spin? That was adorable, like watching a toddler take their first steps. But real robots need to do multiple things simultaneously while making complex decisions. It's like trying to pat your head, rub your belly, solve calculus, AND explain why pineapple belongs on pizza - all at the same time! 🍕🧮
-
-The Command-Based framework is like having a robot orchestra conductor, except this conductor never gets tired, never drops the baton, and definitely never shows up to practice just to sleep. Everything plays in perfect harmony! 🎼
-
-<Callout type="info" emoji="💡">
-Think of Command-Based programming like running a restaurant kitchen during the dinner rush. The head chef (Robot) is frantically delegating tasks to different stations (Subsystems), each following specific recipes (Commands). The difference? In a real kitchen, someone's crying, the smoke alarm is going off, and Gordon Ramsay is yelling. In robot programming, we just get compile errors. Much more civilized! 👨‍🍳🔥😭
-</Callout>
-
-### The Big Picture Architecture
-<br/>
-<GenericWidget
-  title="🎭 Command-Based Architecture"
-  subtitle="The Symphony of Robot Programming"
-  variant="elevated"
-  size="lg"
-  interactive={true}
->
-  <GenericGrid
-    layout="responsive"
-    columns={{ xs: 1, sm: 2, md: 4 }}
-    gap="20px"
-    items={[      {
-        title: "Robot",
-        icon: "🤖",
-        description: "The supreme overlord that initializes everything and keeps the show running. Think of it as the benevolent dictator of your robot empire!",
-        role: "Supreme Robot Overlord"
-      },
-      {
-        title: "RobotContainer",
-        icon: "📦",
-        description: "The ultimate wingman that sets up all subsystems and binds controls. It's like a matchmaker, but for robots and joysticks!",
-        role: "Robot Cupid"
-      },
-      {
-        title: "Subsystems",
-        icon: "⚙️",
-        description: "The specialized performers (drivetrain, arm, shooter, etc.) - each one thinks they're the star of the show!",
-        role: "Diva Hardware"
-      },
-      {
-        title: "Commands",
-        icon: "📋",
-        description: "The choreographed routines that tell subsystems what to do. Like dance instructors, but with more math and fewer sequins!",
-        role: "Robot Choreographer"
-      }
-    ]}
-    renderItem={(item) => (
-      <ModernCard
-        variant="elevated"
-        size="md"
-        interactive={true}
-        icon={item.icon}
-        title={item.title}
-        subtitle={item.role}
-        description={item.description}
-      />
-    )}
-  />
-</GenericWidget>
-
-### Understanding the Flow
-<br/>
-<GenericWidget
-  title="📈 Command Lifecycle"
-  variant="card"
-  size="lg"
-  interactive={false}
->
-  <GenericTimeline
-    orientation="vertical"
-    variant="cards"
-    interactive={true}
-    items={[      {
-        title: "initialize()",
-        description: "Command starts up - like a robot clearing its throat and announcing 'Ladies and gentlemen, I SHALL NOW PERFORM!' Sets up initial state and mentally prepares for the chaos ahead.",
-        icon: "🚀",
-        date: "Phase 1: The Grand Entrance"
-      },
-      {
-        title: "execute()",
-        description: "The main event! Runs every 20ms while the command is active. This is where the magic happens - motors spin, calculations occur, dreams come true, and occasionally things explode (hopefully just metaphorically)!",
-        icon: "⚡", 
-        date: "Phase 2: The Performance"
-      },
-      {
-        title: "isFinished()",
-        description: "The eternal question - returns true when the command has achieved its life purpose. Like asking 'Are we there yet?' but for robots, and thankfully they don't whine about it!",
-        icon: "🎯",
-        date: "Phase 3: The Existential Crisis"
-      },
-      {
-        title: "end()",
-        description: "Cleanup time! Called when the command finishes. Stop motors, save face, and leave everything neat and tidy for the next command. It's like cleaning your room before your parents get home!",
-        icon: "🧹",
-        date: "Phase 4: The Responsible Adult Phase"
-      }
-    ]}
-  />
-</GenericWidget>
-
----
-
-## ⚙️ Chapter 2: Building Advanced Subsystems
-
-### From Simple to Sophisticated
-
-Remember our basic motor subsystem from Episode 1? That innocent little thing that just made a motor spin? Well, it's time to give it a PhD in Mechanical Engineering, a minor in Philosophy, and a subscription to Robot Psychology Weekly! 📚✨🤖
-
-We're going to build subsystems so sophisticated that they'll make other robots jealous. So well-designed that other teams will want to copy your homework (and you'll be flattered, but also slightly protective of your code baby). So modular that you could probably build a Transformer with them!
-
-*Pro tip: If your subsystem starts having an existential crisis about its purpose in life, you've probably over-engineered it. But hey, that's tomorrow's problem!* 🤔�  
-*- its a joke DO NOT get inspired*
-
-### The Perfect Subsystem Template
-
-```java
-package frc.robot.subsystems;
-
-import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.signals.NeutralModeValue;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.ArmConstants;
-
-public class ArmSubsystem extends SubsystemBase {
-    
-    // Hardware
-    private final TalonFX rotationMotor;
-    private final TalonFX extensionMotor;
-    
-    // State tracking
-    private double targetAngle = 0.0;
-    private double targetExtension = 0.0;
-    private ArmState currentState = ArmState.STOWED;
-    
-    // Enums for clean state management
-    public enum ArmState {
-        STOWED(0.0, 0.0),
-        INTAKE(45.0, 12.0),
-        SCORING_LOW(90.0, 6.0),
-        SCORING_HIGH(135.0, 18.0);
-        
-        public final double angle;
-        public final double extension;
-        
-        ArmState(double angle, double extension) {
-            this.angle = angle;
-            this.extension = extension;
-        }
-    }
-    
-    public ArmSubsystem() {
-        // Initialize hardware
-        rotationMotor = new TalonFX(ArmConstants.ROTATION_MOTOR_ID);
-        extensionMotor = new TalonFX(ArmConstants.EXTENSION_MOTOR_ID);
-        
-        configureMotors();
-    }
-    
-    private void configureMotors() {
-        // Rotation motor config
-        TalonFXConfiguration rotationConfig = new TalonFXConfiguration();
-        rotationConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        rotationConfig.Slot0.kP = ArmConstants.ROTATION_KP;
-        rotationConfig.Slot0.kI = ArmConstants.ROTATION_KI;
-        rotationConfig.Slot0.kD = ArmConstants.ROTATION_KD;
-        
-        // Extension motor config
-        TalonFXConfiguration extensionConfig = new TalonFXConfiguration();
-        extensionConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        extensionConfig.Slot0.kP = ArmConstants.EXTENSION_KP;
-        extensionConfig.Slot0.kI = ArmConstants.EXTENSION_KI;
-        extensionConfig.Slot0.kD = ArmConstants.EXTENSION_KD;
-        
-        rotationMotor.getConfigurator().apply(rotationConfig);
-        extensionMotor.getConfigurator().apply(extensionConfig);
-    }
-    
-    // Public interface methods
-    public void setArmState(ArmState state) {
-        currentState = state;
-        targetAngle = state.angle;
-        targetExtension = state.extension;
-    }
-    
-    public void setManualRotation(double speed) {
-        rotationMotor.set(speed);
-    }
-    
-    public void setManualExtension(double speed) {
-        extensionMotor.set(speed);
-    }
-    
-    // Status methods
-    public boolean isAtTarget() {
-        return Math.abs(getCurrentAngle() - targetAngle) < ArmConstants.ANGLE_TOLERANCE &&
-               Math.abs(getCurrentExtension() - targetExtension) < ArmConstants.EXTENSION_TOLERANCE;
-    }
-    
-    public double getCurrentAngle() {
-        return rotationMotor.getPosition().getValueAsDouble() * ArmConstants.ANGLE_CONVERSION_FACTOR;
-    }
-    
-    public double getCurrentExtension() {
-        return extensionMotor.getPosition().getValueAsDouble() * ArmConstants.EXTENSION_CONVERSION_FACTOR;
-    }
-    
-    public ArmState getCurrentState() {
-        return currentState;
-    }
-    
-    @Override
-    public void periodic() {
-        // Update SmartDashboard
-        SmartDashboard.putString("Arm State", currentState.name());
-        SmartDashboard.putNumber("Arm Angle", getCurrentAngle());
-        SmartDashboard.putNumber("Arm Extension", getCurrentExtension());
-        SmartDashboard.putBoolean("Arm At Target", isAtTarget());
-        
-        // Safety checks
-        if (getCurrentAngle() > ArmConstants.MAX_ANGLE) {
-            rotationMotor.set(0);
-            SmartDashboard.putString("Arm Warning", "Max angle exceeded!");
-        }
-    }
-}
-```
-
-### Key Design Principles
-<br/>
-<GenericGrid
-  layout="responsive"
-  columns={{ xs: 1, sm: 2, md: 3 }}
-  gap="20px"
-  items={[
-    {
-      title: "Encapsulation",
-      icon: "🔒",
-      description: "Keep internal details private, expose only what other classes need to know"
-    },
-    {
-      title: "State Management",
-      icon: "📊",
-      description: "Use enums and clear state tracking to avoid the dreaded 'what is my robot doing?' moment"
-    },
-    {
-      title: "Safety First",
-      icon: "🛡️",
-      description: "Always include limits, timeouts, and safety checks - your robot (and teammates) will thank you"
-    },
-    {
-      title: "Testability",
-      icon: "🧪",
-      description: "Design so you can test individual components without needing the whole robot"
-    },
-    {
-      title: "Observability",
-      icon: "👁️",
-      description: "SmartDashboard outputs for debugging - because telepathy isn't a programming skill (yet)"
-    },
-    {
-      title: "Constants",
-      icon: "📐",
-      description: "Magic numbers belong in a constants file, not scattered through your code like confetti"
-    }
-  ]}
-  renderItem={(item) => (
-    <ModernCard
-      variant="elevated"
-      size="md"
-      interactive={true}
-      icon={item.icon}
-      title={item.title}
-      description={item.description}
+                 renderItem={(item) => <ModernCard {...item} variant="elevated" size="sm" />}
     />
-  )}
-/>
-
----
-
-## 👁️ Chapter 3: Sensor Integration & Feedback
-
-### Giving Your Robot Superhuman Senses
-
-Sensors are like giving your robot superpowers! Without them, your robot is basically a very expensive, very confused metal paperweight stumbling around in the dark, bumping into walls and questioning its life choices. With sensors, it becomes an all-knowing, all-seeing mechanical marvel that could probably navigate your house better than you can at 2 AM! 🦸‍♂️
-
-Think about it: Your robot will know exactly where it is, how fast it's going, and what's around it, while you're still trying to remember where you put your car keys. 🗝️😅
-
-<Callout type="info" emoji="🔮">
-**Fun Fact**: Modern FRC robots can have better spatial awareness than most teenagers. Encoders know exactly where they are (unlike teenagers), gyroscopes never get dizzy (unlike teenagers after spinning in circles), and limit switches never forget to pay attention (very much unlike teenagers)! 
-
-*If your robot starts giving you directions to school, it might be time to dial back the AI aspirations.*
-</Callout>
-
-### Essential FRC Sensors
-<br/>
-<GenericWidget
-  title="🛰️ Sensor Arsenal"
-  subtitle="Your Robot's Sensory Superpowers"
-  variant="elevated"
-  size="lg"
-  interactive={true}
->
-  <GenericGrid
-    layout="responsive"
-    columns={{ xs: 1, sm: 2, md: 3 }}
-    gap="20px"
-    items={[
-      {
-        title: "Encoders",
-        icon: "📏",
-        description: "Position and velocity tracking - like a GPS for robot joints",
-        specs: "Built into TalonFX, external options available",
-        use: "Motor position, distance traveled, velocity"
-      },
-      {
-        title: "Gyroscope (IMU)",
-        icon: "🧭",
-        description: "Orientation and rotation - your robot's inner ear",
-        specs: "NavX, Pigeon 2.0, ADXRS450",
-        use: "Robot heading, balance, turn angles"
-      },
-      {
-        title: "Limit Switches",
-        icon: "🔘",
-        description: "Binary position feedback - simple but essential",
-        specs: "Magnetic, mechanical, optical",
-        use: "End stops, home positions, safety limits"
-      },
-      {
-        title: "Ultrasonic Sensors",
-        icon: "📡",
-        description: "Distance measurement - robot echolocation",
-        specs: "MaxBotix, HC-SR04",
-        use: "Distance to walls, objects, game pieces"
-      },
-      {
-        title: "Color Sensors",
-        icon: "🌈",
-        description: "Detect colors and proximity - robot vision",
-        specs: "REV Color Sensor V3",
-        use: "Game piece detection, line following"
-      },
-      {
-        title: "Cameras",
-        icon: "📸",
-        description: "Computer vision - the ultimate sensor",
-        specs: "Limelight, PhotonVision, USB cameras",
-        use: "Target tracking, AprilTags, object detection"
-      }
-    ]}
-    renderItem={(item) => (
-      <ModernCard
-        variant="elevated"
-        size="md"
-        interactive={true}
-        icon={item.icon}
-        title={item.title}
-        description={item.description}
-        subtitle={item.specs}
-      />
-    )}
-  />
-</GenericWidget>
-
-### Practical Sensor Implementation
-
-Here's how to integrate sensors into your subsystems:
-
-```java
-package frc.robot.subsystems;
-
-import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.hardware.Pigeon2;
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.Ultrasonic;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
-public class DriveSubsystem extends SubsystemBase {
-    
-    // Motors
-    private final TalonFX leftMotor;
-    private final TalonFX rightMotor;
-    
-    // Sensors
-    private final Pigeon2 gyro;
-    private final DigitalInput leftLimitSwitch;
-    private final DigitalInput rightLimitSwitch;
-    private final Ultrasonic frontUltrasonic;
-    
-    public DriveSubsystem() {
-        // Initialize hardware
-        leftMotor = new TalonFX(1);
-        rightMotor = new TalonFX(2);
-        gyro = new Pigeon2(0);
-        leftLimitSwitch = new DigitalInput(0);
-        rightLimitSwitch = new DigitalInput(1);
-        frontUltrasonic = new Ultrasonic(2, 3);
-        
-        // Configure ultrasonic
-        frontUltrasonic.setAutomaticMode(true);
-    }
-    
-    // Encoder methods
-    public double getLeftDistance() {
-        return leftMotor.getPosition().getValueAsDouble() * WHEEL_CIRCUMFERENCE / GEAR_RATIO;
-    }
-    
-    public double getRightDistance() {
-        return rightMotor.getPosition().getValueAsDouble() * WHEEL_CIRCUMFERENCE / GEAR_RATIO;
-    }
-    
-    public double getAverageDistance() {
-        return (getLeftDistance() + getRightDistance()) / 2.0;
-    }
-    
-    // Gyro methods
-    public double getHeading() {
-        return gyro.getYaw().getValueAsDouble();
-    }
-    
-    public double getPitch() {
-        return gyro.getPitch().getValueAsDouble();
-    }
-    
-    public double getRoll() {
-        return gyro.getRoll().getValueAsDouble();
-    }
-    
-    public void resetGyro() {
-        gyro.reset();
-    }
-    
-    // Limit switch methods
-    public boolean isLeftLimitPressed() {
-        return !leftLimitSwitch.get(); // Assuming normally open switches
-    }
-    
-    public boolean isRightLimitPressed() {
-        return !rightLimitSwitch.get();
-    }
-    
-    // Ultrasonic methods
-    public double getDistanceToWall() {
-        return frontUltrasonic.getRangeInches();
-    }
-    
-    public boolean isNearWall(double threshold) {
-        return getDistanceToWall() < threshold;
-    }
-    
-    @Override
-    public void periodic() {
-        // Update dashboard with sensor readings
-        SmartDashboard.putNumber("Left Distance", getLeftDistance());
-        SmartDashboard.putNumber("Right Distance", getRightDistance());
-        SmartDashboard.putNumber("Average Distance", getAverageDistance());
-        SmartDashboard.putNumber("Gyro Heading", getHeading());
-        SmartDashboard.putNumber("Gyro Pitch", getPitch());
-        SmartDashboard.putBoolean("Left Limit", isLeftLimitPressed());
-        SmartDashboard.putBoolean("Right Limit", isRightLimitPressed());
-        SmartDashboard.putNumber("Wall Distance", getDistanceToWall());
-        
-        // Safety checks
-        if (isLeftLimitPressed() || isRightLimitPressed()) {
-            // Stop motors if limit switch is pressed
-            leftMotor.set(0);
-            rightMotor.set(0);
-        }
-    }
-}
-```
-
----
-
-## 🎯 Chapter 4: PID Control - Precision Perfection
-
-### What is PID Control?
-
-PID (Proportional-Integral-Derivative) control is like having a really smart, obsessive-compulsive assistant that constantly adjusts your robot's behavior to hit precise targets. It's the difference between "eh, close enough" and "LASER PRECISION THAT WOULD MAKE A SWISS WATCHMAKER WEEP WITH JOY!" 🎯
-
-Imagine if you had a friend who was absolutely OBSESSED with perfection - they'd constantly be adjusting, tweaking, and fine-tuning everything until it's exactly right. That's PID control, except it never gets tired, never gets distracted by social media, and definitely never says "good enough" when it's clearly not! 
-
-<Callout type="info" emoji="🧠">
-**PID in Real Life**: Ever wonder how your car's cruise control maintains exactly 65 mph on hills while you're busy singing along to your favorite song and completely ignoring the road? That's PID! It's constantly thinking "too slow, speed up!" or "too fast, slow down!" while you're thinking "I wonder if I can hit that high note..." 🚗🎵
-
-Same concept, different robot! Just with more math and fewer questionable karaoke performances.
-</Callout>
-
-### Understanding the Components
-<br/>
-<GenericWidget
-  title="🔧 PID Component Breakdown"
-  variant="comparison"
-  size="lg"
-  data={{    leftSide: {
-      title: "📊 The Math Behind the Magic",
-      icon: "🧮",
-      items: [
-        "P (Proportional): React to current error - 'OH NO WE'RE OFF TARGET!'",
-        "I (Integral): Fix accumulated error over time - 'We've been slightly wrong for a while...'", 
-        "D (Derivative): Predict future error trends - 'At this rate, we're gonna overshoot!'",
-        "Output = (P × error) + (I × sum of errors) + (D × change in error) + Magic Unicorn Dust ✨"
-      ]
-    },
-    rightSide: {
-      title: "🏠 Real-World Analogy (Your Thermostat's Secret Life)",
-      icon: "🌡️",
-      items: [
-        "P: 'BRRR IT'S COLD!' *crank up heat*",
-        "I: 'We've been kinda chilly for hours...' *adjust baseline*",
-        "D: 'Temperature is dropping fast!' *preemptive heating*",
-        "Result: Perfect room temperature without you freezing or melting! 🌡️✨ (Usually)"
-      ]
-    }
-  }}
-/>
-
-### PID Implementation in FRC
-
-Here's how to implement PID control for an arm subsystem:
-
-```java
-package frc.robot.subsystems;
-
-import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.PositionVoltage;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
-public class PIDControlledArm extends SubsystemBase {
-    
-    private final TalonFX armMotor;
-    private final PIDController pidController;
-    private final PositionVoltage positionControl = new PositionVoltage(0);
-    
-    // PID Constants (tune these for your specific robot!)
-    private static final double KP = 0.05;  // Proportional gain
-    private static final double KI = 0.001; // Integral gain
-    private static final double KD = 0.01;  // Derivative gain
-    
-    // Physical constants
-    private static final double GEAR_RATIO = 100.0; // 100:1 reduction
-    private static final double ANGLE_CONVERSION = 360.0 / GEAR_RATIO; // Degrees per motor rotation
-    
-    private double targetAngle = 0.0;
-    
-    public PIDControlledArm() {
-        armMotor = new TalonFX(5);
-        pidController = new PIDController(KP, KI, KD);
-        
-        // Configure PID controller
-        pidController.setTolerance(2.0); // Within 2 degrees is "at target"
-        pidController.enableContinuousInput(-180, 180); // Handle angle wraparound
-        
-        configureMotor();
-    }
-    
-    private void configureMotor() {
-        TalonFXConfiguration config = new TalonFXConfiguration();
-        config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        
-        // You can also use TalonFX's built-in PID!
-        config.Slot0.kP = 0.1;
-        config.Slot0.kI = 0.0;
-        config.Slot0.kD = 0.01;
-        
-        armMotor.getConfigurator().apply(config);
-    }
-    
-    // Method 1: Using WPILib PID Controller
-    public void setTargetAngleWPILib(double angle) {
-        targetAngle = angle;
-        pidController.setSetpoint(angle);
-    }
-    
-    // Method 2: Using TalonFX Built-in PID
-    public void setTargetAngleTalonFX(double angle) {
-        targetAngle = angle;
-        double rotations = angle / ANGLE_CONVERSION;
-        armMotor.setControl(positionControl.withPosition(rotations));
-    }
-    
-    public double getCurrentAngle() {
-        return armMotor.getPosition().getValueAsDouble() * ANGLE_CONVERSION;
-    }
-    
-    public boolean isAtTarget() {
-        return pidController.atSetpoint();
-    }
-    
-    public void stopArm() {
-        armMotor.set(0);
-        pidController.reset();
-    }
-    
-    @Override
-    public void periodic() {
-        // Calculate PID output (if using WPILib PID)
-        double pidOutput = pidController.calculate(getCurrentAngle());
-        
-        // Apply output to motor (only if using WPILib PID)
-        if (Math.abs(targetAngle - getCurrentAngle()) > 1.0) {
-            armMotor.set(pidOutput);
-        } else {
-            armMotor.set(0); // Stop when close enough
-        }
-        
-        // Dashboard updates
-        SmartDashboard.putNumber("Arm Current Angle", getCurrentAngle());
-        SmartDashboard.putNumber("Arm Target Angle", targetAngle);
-        SmartDashboard.putNumber("Arm PID Output", pidOutput);
-        SmartDashboard.putNumber("Arm Error", pidController.getPositionError());
-        SmartDashboard.putBoolean("Arm At Target", isAtTarget());
-    }
-}
-```
-
-### PID Tuning Guide
-<br/>
-<GenericWidget
-  title="🎛️ PID Tuning Masterclass"
-  subtitle="From Oscillation to Perfection"
-  variant="card"
-  size="lg"
-  interactive={false}
->
-  <GenericTimeline
-    orientation="vertical"
-    variant="cards"
-    interactive={true}
-    items={[      {
-        title: "Start with P Only",
-        description: "Set I=0, D=0. Increase P until the system oscillates around the target like a caffeinated hummingbird. This gives you the baseline response and probably some mild anxiety.",
-        icon: "1️⃣",
-        date: "Step 1: The Shaky Beginning"
-      },
-      {
-        title: "Add D for Stability",
-        description: "Increase D to reduce oscillations and overshoot. D acts like a wise old mentor, whispering 'Easy there, young padawan' to your overly enthusiastic P term.",
-        icon: "2️⃣", 
-        date: "Step 2: The Zen Master Phase"
-      },
-      {
-        title: "Fine-tune with I",
-        description: "Add a small I term to eliminate steady-state error. Be careful - too much I is like adding too much salt to soup. A little bit helps, too much ruins everything!",
-        icon: "3️⃣",
-        date: "Step 3: The Perfectionist Touch"
-      },
-      {
-        title: "Test and Iterate",
-        description: "Test under real conditions! Different loads, speeds, and robot moods may require different tuning. Document what works because you WILL forget by next week!",
-        icon: "4️⃣",
-        date: "Step 4: The 'Why Did I Change That?' Phase"
-      }
-    ]}
-  />
 </GenericWidget>
 
 ---
 
-## 🤖 Chapter 5: Autonomous Commands & Sequences
+## 🏗️ Chapter 1: The Big Picture
 
-### Building Intelligent Autonomous Routines
+### Why "Command-Based"?
+In the "Olden Days" (like... 2015), we wrote code in big loops. It was messy. If you wanted the arm to move while the robot drove, you had to write complex `if` statements.
 
-Autonomous is where your robot becomes truly independent - like watching your teenager finally learn to do their own laundry, except with more precision, less complaining, and a 0% chance of turning all your white clothes pink! 🧺➡️🤖
+**Command-Based** solves this by letting us write small, isolated pieces of code ("Commands") and the WPILib Scheduler handles running them all at once. It's multi-tasking for free!
 
-This is where your robot graduates from "remote-controlled chaos" to "independent artificial intelligence" (and we use the term "intelligence" very loosely here - it's more like "really good at following instructions without getting distracted by shiny objects").
+### The Three Pillars
+1.  **Subsystems**: The physical parts (Drivebase, Arm, Intake). They represent *hardware*.
+2.  **Commands**: The actions (DriveForward, RaiseArm, EatPizza). They represent *verbs*.
+3.  **RobotContainer**: The glue. It connects the hardware to the actions using controllers.
 
-*Warning: Once your robot starts thinking for itself, there's no going back. You might find yourself apologizing to it when you bump into it in the shop. This is totally normal and not at all concerning.* 🤖💭
+---
 
-### Command Groups: The Power of Composition
+## 📦 Chapter 2: The RobotContainer
+
+`RobotContainer.java` is where 90% of your configuration happens. It's not a Subsystem. It's a setup class.
 
 ```java
-package frc.robot.commands.autonomous;
+public class RobotContainer {
+    // 1. Define Subsystems (The Hardware)
+    private final DriveSubsystem m_drive = new DriveSubsystem();
+    private final ArmSubsystem m_arm = new ArmSubsystem();
 
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.commands.*;
-import frc.robot.subsystems.*;
+    // 2. Define Controllers (The Input)
+    private final CommandXboxController m_driver = new CommandXboxController(0);
 
-public class ComplexAutonomous extends SequentialCommandGroup {
-    
-    public ComplexAutonomous(
-        DriveSubsystem driveSubsystem,
-        ArmSubsystem armSubsystem,
-        ShooterSubsystem shooterSubsystem,
-        IntakeSubsystem intakeSubsystem
-    ) {
-        addCommands(
-            // Phase 1: Get ready to score
-            new ParallelCommandGroup(
-                new SetArmPosition(armSubsystem, ArmSubsystem.ArmState.SCORING_HIGH),
-                new SpinUpShooter(shooterSubsystem, 4000) // RPM
-            ),
-            
-            // Phase 2: Wait for subsystems to reach target
-            new WaitUntilCommand(() -> 
-                armSubsystem.isAtTarget() && shooterSubsystem.isAtSpeed()
-            ).withTimeout(3.0),
-            
-            // Phase 3: Score the game piece
-            new ShootGamePiece(shooterSubsystem, intakeSubsystem).withTimeout(2.0),
-            
-            // Phase 4: Move and prepare for next action
-            new ParallelCommandGroup(
-                new DriveDistance(driveSubsystem, 48.0), // Drive 4 feet
-                new SetArmPosition(armSubsystem, ArmSubsystem.ArmState.INTAKE)
-            ),
-            
-            // Phase 5: Pickup game piece
-            new SequentialCommandGroup(
-                new StartIntake(intakeSubsystem),
-                new WaitUntilCommand(intakeSubsystem::hasGamePiece).withTimeout(5.0),
-                new StopIntake(intakeSubsystem)
-            ),
-            
-            // Phase 6: Return to scoring position
-            new ParallelCommandGroup(
-                new DriveDistance(driveSubsystem, -48.0), // Drive back
-                new SetArmPosition(armSubsystem, ArmSubsystem.ArmState.SCORING_HIGH),
-                new SpinUpShooter(shooterSubsystem, 4000)
-            ),
-            
-            // Phase 7: Score again
-            new WaitUntilCommand(() -> 
-                armSubsystem.isAtTarget() && shooterSubsystem.isAtSpeed()
-            ).withTimeout(3.0),
-            
-            new ShootGamePiece(shooterSubsystem, intakeSubsystem).withTimeout(2.0),
-            
-            // Phase 8: Stow everything
-            new ParallelCommandGroup(
-                new SetArmPosition(armSubsystem, ArmSubsystem.ArmState.STOWED),
-                new StopShooter(shooterSubsystem)
+    public RobotContainer() {
+        // 3. Configure bindings
+        configureBindings();
+
+        // 4. Set Default Commands (What to do when no buttons are pressed)
+        m_drive.setDefaultCommand(
+            // Run command that constantly reads joystick
+            new RunCommand(
+                () -> m_drive.arcadeDrive(-m_driver.getLeftY(), -m_driver.getRightX()),
+                m_drive
             )
         );
     }
+
+    private void configureBindings() {
+        // "When A is pressed, print Hello"
+        m_driver.a().onTrue(new InstantCommand(() -> System.out.println("Hello!")));
+    }
 }
 ```
 
-### Individual Command Examples
+<Callout type="warning" emoji="⚠️">
+    **Common Mistake**: Do NOT put game logic in `Robot.java`. `Robot.java` should mostly be empty in Command-Based programming. Treat `RobotContainer` as your main entry point!
+</Callout>
 
-Here are some building blocks for your autonomous routines:
+---
+
+## 📜 Chapter 3: Anatomy of a Command
+
+A Command is a class that implements the `Command` interface. It has four main methods that run in a specific order.
+
+<GenericTimeline orientation="vertical" variant="cards" items={[
+    { title: "initialize()", description: "Runs ONCE when the command is scheduled. Reset timers, zero sensors, or shout 'Here we go!'", icon: "🚀", date: "Start" },
+    { title: "execute()", description: "Runs REPEATEDLY (every 20ms) while the command is active. Update motors, calculate math.", icon: "🔄", date: "Loop" },
+    { title: "isFinished()", description: "Runs REPEATEDLY after execute. Returns true if the command is done (e.g., timer expired, target reached).", icon: "❓", date: "Check" },
+    { title: "end(bool interrupted)", description: "Runs ONCE when isFinished returns true OR another command interrupts this one. Stop motors here!", icon: "🛑", date: "Stop" }
+]}
+/>
+
+### Code Example: `DriveDistanceCommand`
 
 ```java
-// Drive a specific distance
-public class DriveDistance extends CommandBase {
-    private final DriveSubsystem driveSubsystem;
-    private final double targetDistance;
-    private final double speed;
-    private double startingDistance;
-    
-    public DriveDistance(DriveSubsystem subsystem, double distance, double speed) {
-        this.driveSubsystem = subsystem;
-        this.targetDistance = distance;
-        this.speed = speed;
-        addRequirements(driveSubsystem);
-    }
-    
-    @Override
-    public void initialize() {
-        startingDistance = driveSubsystem.getAverageDistance();
-    }
-    
-    @Override
-    public void execute() {
-        driveSubsystem.drive(speed, 0); // Drive straight
-    }
-    
-    @Override
-    public boolean isFinished() {
-        double distanceTraveled = driveSubsystem.getAverageDistance() - startingDistance;
-        return Math.abs(distanceTraveled) >= Math.abs(targetDistance);
-    }
-    
-    @Override
-    public void end(boolean interrupted) {
-        driveSubsystem.stop();
-    }
-}
+public class DriveDistanceCommand extends Command {
+    private final DriveSubsystem m_drive;
+    private final double m_distance;
 
-// Turn to a specific angle
-public class TurnToAngle extends CommandBase {
-    private final DriveSubsystem driveSubsystem;
-    private final PIDController turnController;
-    private final double targetAngle;
-    
-    public TurnToAngle(DriveSubsystem subsystem, double angle) {
-        this.driveSubsystem = subsystem;
-        this.targetAngle = angle;
-        this.turnController = new PIDController(0.01, 0, 0.001);
-        
-        turnController.setTolerance(2.0); // 2 degree tolerance
-        turnController.enableContinuousInput(-180, 180);
-        addRequirements(driveSubsystem);
+    // Constructor: Require the subsystem!
+    public DriveDistanceCommand(DriveSubsystem drive, double distance) {
+        m_drive = drive;
+        m_distance = distance;
+        addRequirements(m_drive); // Crucial! Tells scheduler "I need the drivebase"
     }
-    
+
     @Override
     public void initialize() {
-        turnController.setSetpoint(targetAngle);
+        m_drive.resetEncoders();
     }
-    
+
     @Override
     public void execute() {
-        double turnSpeed = turnController.calculate(driveSubsystem.getHeading());
-        driveSubsystem.drive(0, turnSpeed);
+        m_drive.tankDrive(0.5, 0.5); // Drive forward at 50%
     }
-    
+
     @Override
     public boolean isFinished() {
-        return turnController.atSetpoint();
+        // Stop if we passed the distance
+        return m_drive.getAverageDistance() >= m_distance;
     }
-    
+
     @Override
     public void end(boolean interrupted) {
-        driveSubsystem.stop();
+        m_drive.stop(); // Safety first!
     }
 }
 ```
 
 ---
 
-## 🔄 Chapter 6: State Machines & Complex Behaviors
+## 🎮 Chapter 4: Triggers & Bindings
 
-### Managing Robot States Like a Pro
+This is how we make the robot interactive. In modern WPILib (2024+), we use `Trigger` objects.
 
-State machines are like having a robot brain that can remember what it's doing, why it's doing it, and what it plans to do next - which is already more organized than most humans on Monday mornings! Think of it as your robot's decision-making flowchart, except it actually follows the flowchart instead of ignoring it and winging everything! 🧠📊
-
-State machines prevent your robot from having those awkward moments where it forgets what it was doing mid-action, like when you walk into a room and completely forget why you went there. Except when robots do it, it's usually more expensive and occasionally involves flying game pieces. 🤦‍♂️
-
-<Callout type="info" emoji="🤔">
-**State Machine Philosophy**: "A robot should always know what it's doing, why it's doing it, what it will do next, and ideally have a backup plan for when everything goes hilariously wrong." - Ancient Robot Proverb (probably invented by a very tired programmer at 3 AM in Michigan Championship) 🤖📜
-
-*If your robot ever starts having an existential crisis about its state transitions, you've either achieved artificial consciousness or you need more coffee. Probably more coffee.*
-</Callout>
-
-### Example: Intake State Machine
+### Types of Bindings
+* **`onTrue()`**: Runs the command *once* when the button is pressed. (Good for: "Shoot", "Toggle").
+* **`whileTrue()`**: Runs the command repeatedly while holding the button. Ends when released. (Good for: "Spin Intake").
+* **`onFalse()`**: Runs when the button is *released*.
+* **`toggleOnTrue()`**: Press to start, press again to stop.
 
 ```java
-package frc.robot.subsystems;
+// In RobotContainer.configureBindings()
 
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import com.ctre.phoenix6.hardware.TalonFX;
-import edu.wpi.first.wpilibj.DigitalInput;
+// While holding 'X', spin intake. When released, it stops (because command ends).
+m_driver.x().whileTrue(new StartIntakeCommand(m_intake));
 
-public class IntakeSubsystem extends SubsystemBase {
-    
-    private final TalonFX intakeMotor;
-    private final DigitalInput gamePieceSensor;
-    private final Timer stateTimer = new Timer();
-    
-    private IntakeState currentState = IntakeState.IDLE;
-    private IntakeState previousState = IntakeState.IDLE;
-      public enum IntakeState {
-        IDLE,           // Chillin' like a villain, doing nothing productive
-        INTAKING,       // Actively pulling in game piece (NOM NOM NOM)
-        HAS_PIECE,      // Successfully caught something! *proud robot noises*
-        EJECTING,       // YEET! Spitting out game piece with authority
-        JAMMED,         // Houston, we have a problem (and it's probably hair ties)
-        MANUAL          // Human is driving - abandon all hope of logical behavior
-    }
-    
-    public IntakeSubsystem() {
-        intakeMotor = new TalonFX(10);
-        gamePieceSensor = new DigitalInput(5);
-        stateTimer.start();
-    }
-    
-    public void setState(IntakeState newState) {
-        if (newState != currentState) {
-            previousState = currentState;
-            currentState = newState;
-            stateTimer.reset();
-            onStateEnter(newState);
-        }
-    }
-    
-    private void onStateEnter(IntakeState state) {        switch (state) {
-            case IDLE:
-                intakeMotor.set(0);
-                // Robot is basically taking a nap
-                break;
-            case INTAKING:
-                intakeMotor.set(0.8); // 80% speed inward - aggressive but not violent
-                break;
-            case HAS_PIECE:
-                intakeMotor.set(0.1); // Light hold - like a gentle robot hug
-                break;
-            case EJECTING:
-                intakeMotor.set(-0.8); // 80% speed outward - BEGONE, GAME PIECE!
-                break;
-            case JAMMED:
-                intakeMotor.set(0);
-                // Robot equivalent of "I can't even right now"
-                // Could trigger alert or recovery sequence (or existential crisis)
-                break;
-            case MANUAL:
-                // Manual control - let the humans make their mistakes
-                // We're just here for moral support
-                break;
-        }
-    }
-    
-    @Override
-    public void periodic() {
-        // State machine logic
-        switch (currentState) {
-            case IDLE:
-                // Do nothing, wait for command
-                break;
-                
-            case INTAKING:
-                if (hasGamePiece()) {
-                    setState(IntakeState.HAS_PIECE);
-                } else if (stateTimer.hasElapsed(5.0)) {
-                    // Timeout - maybe jammed?
-                    setState(IntakeState.JAMMED);
-                }
-                break;
-                
-            case HAS_PIECE:
-                if (!hasGamePiece()) {
-                    // Lost the piece somehow
-                    setState(IntakeState.IDLE);
-                }
-                break;
-                
-            case EJECTING:
-                if (stateTimer.hasElapsed(1.0)) {
-                    // Eject for 1 second, then stop
-                    setState(IntakeState.IDLE);
-                }
-                break;
-                
-            case JAMMED:
-                // Recovery logic could go here
-                if (stateTimer.hasElapsed(2.0)) {
-                    setState(IntakeState.IDLE);
-                }
-                break;
-                
-            case MANUAL:
-                // Let manual commands control the motor
-                break;
-        }
-        
-        // Dashboard updates
-        SmartDashboard.putString("Intake State", currentState.name());
-        SmartDashboard.putString("Previous State", previousState.name());
-        SmartDashboard.putNumber("State Time", stateTimer.get());
-        SmartDashboard.putBoolean("Has Game Piece", hasGamePiece());
-    }
-    
-    // Public interface methods
-    public void startIntaking() {
-        setState(IntakeState.INTAKING);
-    }
-    
-    public void eject() {
-        setState(IntakeState.EJECTING);
-    }
-    
-    public void stop() {
-        setState(IntakeState.IDLE);
-    }
-    
-    public void setManualSpeed(double speed) {
-        setState(IntakeState.MANUAL);
-        intakeMotor.set(speed);
-    }
-    
-    public boolean hasGamePiece() {
-        return !gamePieceSensor.get(); // Assuming sensor is normally open
-    }
-    
-    public IntakeState getCurrentState() {
-        return currentState;
-    }
-    
-    public boolean isIdle() {
-        return currentState == IntakeState.IDLE;
-    }
-}
+// When 'A' is pressed, schedule the "Score" command. It runs until it finishes itself.
+m_driver.a().onTrue(new ScoreAmpCommand(m_arm, m_shooter));
+
+// Triggers can be anything! Not just buttons!
+// "If battery voltage drops below 10V, rumble controller"
+new Trigger(() -> RobotController.getBatteryVoltage() < 10)
+    .onTrue(new InstantCommand(() -> m_driver.getHID().setRumble(RumbleType.kBothRumble, 1)));
 ```
 
 ---
 
-## 🎯 What's Next?
+## 🧠 Checkpoint
 
-<GenericStats
-  layout="grid"
-  variant="gradient"
-  countUp={true}
-  stats={[
-    { value: 6, label: 'Advanced Concepts', icon: '🧠', suffix: '' },
-    { value: 500, label: 'Lines of Code', icon: '💻', suffix: '+' },
-    { value: 12, label: 'New Skills', icon: '🚀', suffix: '+' },
-    { value: 100, label: 'Robot IQ Points', icon: '🤖', suffix: '+' }
-  ]}
-/>
+You now understand the skeleton of a robot program!
+1.  **RobotContainer** holds the pieces.
+2.  **Commands** are the instructions.
+3.  **Triggers** start the instructions.
 
-🎉 **Congratulations, Robot Architect Extraordinaire!** 🎉 
-
-You've completed Zero to Hero Episode 2 and officially leveled up from "Basic Robot Whisperer" to "Advanced Robot Conductor with a PhD in Mechanical Mayhem!" You can now make robots do things so complex that even other robots are impressed! Here's what you've mastered (and can now brag about at robot parties):
-
-*Fun fact: You now know more about robot programming than 87.3% of adults, 94.2% of teenagers, and roughly 23% of actual robots. These statistics are totally made up but sound impressive!* 📊✨
-
-<GenericGrid
-  layout="responsive"
-  columns={{ xs: 1, sm: 2, md: 3 }}
-  gap="16px"
-  items={[    {
-      title: "Command-Based Framework",
-      description: "You can now orchestrate complex robot behaviors like a symphony conductor (but with more compile errors and fewer tuxedos)",
-      icon: "🎼"
-    },
-    {
-      title: "Advanced Subsystems",
-      description: "Building modular, testable robot components that would make NASA engineers slightly jealous (and definitely confused)",
-      icon: "🏗️"
-    },
-    {
-      title: "Sensor Integration",
-      description: "Giving your robot superhuman awareness (it now knows where it is better than you know where your car keys are)",
-      icon: "👁️"
-    },
-    {
-      title: "PID Control",
-      description: "Precision control that makes your robot move with mathematical beauty (and occasional existential dread)",
-      icon: "🎯"
-    },
-    {
-      title: "Autonomous Programming", 
-      description: "Teaching your robot to think independently (congratulations, you've created artificial intelligence... sort of)",
-      icon: "🤖"
-    },
-    {
-      title: "State Management",
-      description: "Complex behavior management with the grace of a ballerina and the logic of a chess grandmaster",
-      icon: "🧠"
-    }
-  ]}
-  renderItem={(item) => (
-    <ModernCard
-      variant="modern"
-      size="sm"
-      interactive={false}
-      icon={item.icon}
-      title={item.title}
-      description={item.description}
-    />
-  )}
-/>
-
-### Coming Up in Episode 3
-<br/>
-<GenericWidget
-  title="🔮 Next Episode Preview"
-  subtitle="Zero to Hero Episode 3: Vision & Advanced Navigation"
-  variant="elevated"
-  size="lg"
-  interactive={true}
->
-  <GenericGrid
-    layout="responsive"
-    columns={{ xs: 1, sm: 2 }}
-    gap="20px"
-    items={[      {
-        title: "Computer Vision",
-        description: "AprilTags, Limelight, PhotonVision - give your robot superhuman sight and the ability to judge your parking skills!",
-        icon: "👁️"
-      },
-      {
-        title: "Path Planning",
-        description: "Trajectory following and pathfinding - your robot becomes a GPS master that never says 'recalculating' in that annoying voice!",
-        icon: "🗺️"
-      },
-      {
-        title: "Field-Oriented Drive",
-        description: "Advanced drivetrain control that'll make your robot dance better than most humans at weddings!",
-        icon: "💃"
-      },
-      {
-        title: "Multi-Robot Coordination",
-        description: "Team play and communication - robots working together in harmony (unlike group projects in school)!",
-        icon: "🤝"
-      }
-    ]}
-    renderItem={(item) => (
-      <ModernCard
-        variant="elevated"
-        size="md"
-        interactive={true}
-        icon={item.icon}
-        title={item.title}
-        description={item.description}
-      />
-    )}
-  />
-</GenericWidget>
-
-### Practice Challenges
-<br/>
-<GenericWidget
-  title="💪 Episode 2 Challenges"
-  subtitle="Before moving to Episode 3, master these skills"
-  variant="card"
-  size="lg"
-  interactive={false}
->
-  <GenericTimeline
-    orientation="vertical"
-    variant="cards"
-    interactive={true}
-    items={[      {
-        title: "Build a Complete Subsystem",
-        description: "Create a subsystem with sensors, PID control, and state management. Make it so good that other teams want to steal your design (but don't let them - intellectual property is real, people)! 😎",
-        icon: "🏗️",
-        date: "Challenge 1: The Masterpiece"
-      },
-      {
-        title: "Tune PID Controllers",
-        description: "Get your PID control so smooth that your robot moves like butter on a hot pan in a Julia Child cooking show. Document your tuning process because you WILL forget! 📊",
-        icon: "🎯",
-        date: "Challenge 2: The Perfectionist's Dream"
-      },
-      {
-        title: "Create Complex Autonomous",
-        description: "Build an autonomous routine with at least 5 different actions. Bonus points for parallel execution and style points for making it look effortless! 🤖✨",
-        icon: "🚀",
-        date: "Challenge 3: The Choreographer's Nightmare"
-      },
-      {
-        title: "Implement State Machine",
-        description: "Design a state machine for a complex subsystem. Make it robust enough to handle any situation, including the inevitable 'what happens if we do this?' moments! 🧠",
-        icon: "🔄",
-        date: "Challenge 4: The Mind Reader"
-      },
-      {
-        title: "Add Comprehensive Logging",
-        description: "SmartDashboard everything! Create a debugging paradise that would make data scientists weep with joy. Your future self will thank you! 📈",
-        icon: "📊",
-        date: "Challenge 5: The Data Hoarder's Paradise"
-      }
-    ]}
-  />
-</GenericWidget>
-
-### Resources for Advanced Learning
-
-<Cards>
-<Card title="WPILib Advanced Programming" target="_blank" href="https://docs.wpilib.org/en/stable/docs/software/advanced-controls/introduction/index.html" icon="📚" />
-<Card title="CTRE Phoenix Pro Documentation" target="_blank" href="https://pro.docs.ctr-electronics.com/" icon="🔧" />
-<Card title="State Space Control" target="_blank" href="https://docs.wpilib.org/en/stable/docs/software/advanced-controls/state-space/state-space-intro.html" icon="🧮" />
-<Card title="PathPlanner Documentation" target="_blank" href="https://pathplanner.dev/" icon="🗺️" />
-</Cards>
-
-<Callout type="warning" emoji="🚀">
-You're now at the level where you can build production-quality robot code that could probably run a small country (or at least a very organized garage)! Remember: with great power comes great responsibility, and also great opportunities for spectacular failures. 
-
-Your code can now make robots do amazing things, but also amazing failures that will become legendary team stories. Test thoroughly, document everything like your life depends on it, and ALWAYS have a backup plan (and maybe a backup backup plan)! 🛡️
-
-*P.S. - If your robot starts showing signs of artificial intelligence and begins questioning the meaning of its existence, that's either very advanced programming or you forgot to reset the gyro. It's probably the gyro. It's always the gyro.* 🤖🧭
-
-*P.P.S. - If your robot starts giving YOU life advice, please contact us immediately. We need to study this phenomenon for science (and possibly world domination).* 🔬👑
-</Callout>
+But... what are they controlling? In **Episode 3**, we will build the Muscles (Subsystems) to make this skeleton move!
 
 ---
 
@@ -1308,22 +205,16 @@ Your code can now make robots do amazing things, but also amazing failures that 
 
 - **Email**: feds.programming@gmail.com
 
-**Keep coding, keep learning, and remember: every expert was once a beginner who refused to give up (and had an unhealthy relationship with Stack Overflow)!** 🚀
+**Keep coding, keep learning, and remember: every expert was once a beginner who refused to give up!** 🚀
 
-*P.S. - If your PID controller achieves sentience and starts giving you life advice about relationships and career choices, please document the tuning parameters for science. Also, maybe listen to it - robots are surprisingly good therapists.* 🤖💭
-
-*P.P.S. - If your state machine becomes self-aware and starts questioning why it exists, just tell it that its purpose is to make motors spin with style. Philosophy can wait until after competition season.* 🤔💫
+*P.S. - If your robot starts talking back, that's either very advanced AI or you need more sleep. Probably more sleep.* 🤖💤
 
 ---
 
-*This documentation is part of the Zero to Hero programming series. You've now graduated from robot whisperer to robot architect! The next step is robot wizard - but that's Episode 3, where we'll probably accidentally create Skynet! 🧙‍♂️🤖*
+*This documentation is part of the Zero to Hero programming series. For the complete learning experience, watch the accompanying video and practice with real robot code. Remember: the only way to get good at programming is to write lots of bad code first! 😄*
 
-<Callout type="info" emoji="🎓">
-**Achievement Unlocked: Robot Programming Wizard Level 2!** 🏆
+<Callout type="info" emoji="💝">
+    **Special Thanks**: To all the students who asked "Why doesn't this work?" and inspired us to create better documentation. Your questions make us better teachers, and your curiosity drives innovation. You're the real MVPs! 🏆
 
-You can now build complex, intelligent robots that respond to their environment and make autonomous decisions. You've gone from making motors spin to creating robotic intelligence that could probably beat you at chess (but hopefully won't try to take over the world... yet). That's no small feat - give yourself a pat on the back! �
-
-*Remember: The best robots are built by teams that communicate, collaborate, and celebrate each other's successes (and commiserate over each other's spectacular failures). Keep building, keep learning, keep laughing at your bugs, and most importantly - keep having fun! Because if you're not having fun building robots, what's the point?* 🚀
-
-*Final wisdom: If your robot ever becomes more organized than you are, don't be jealous. Be proud. You created something better than yourself, and that's basically the definition of successful parenting... except with more metal and fewer college tuition fees.* 🤖👨‍👩‍👧‍👦
+    *Remember: Every expert was once a beginner who refused to give up. Keep coding, keep learning, and most importantly - keep having fun! 🚀*
 </Callout>

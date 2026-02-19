@@ -63,7 +63,6 @@ dependencies:
   timeline_tile: ^2.0.0
   open_file: ^3.5.10
   camera: 0.11.0+1
-  material_symbols_icons: ^4.2810.1
   battery_plus: ^6.2.2
 
 

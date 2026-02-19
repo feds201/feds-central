@@ -1,0 +1,420 @@
+import { Callout, Tabs, Tab } from 'nextra/components';
+import { GenericGrid } from '../../../../Components/index';
+
+# Operating Procedures
+
+This section outlines the systematic procedures used by the FEDS 201 Electrical Subgroup to ensure reliable robot operation from build season through competition.
+
+## 🔍 Pre-Competition Inspection Protocol
+
+Our comprehensive inspection protocol ensures that all electrical systems meet FRC standards and will perform reliably under competition conditions.
+
+<Tabs items={['Power Systems', 'Control Networks', 'Safety Verification', 'Performance Testing']}>
+  <Tab>
+    ## Battery and Power Distribution Inspection
+    
+    ### Battery Assessment
+    1. **Voltage Measurement**
+       - Minimum acceptable: 12.0V under no load
+       - Optimal range: 12.4V - 12.8V
+       - Record voltage and timestamp
+    
+    2. **Capacity Testing**
+       - CCA rating verification: 280-300 CCA on SEAL/SAE setting
+       - Load test at 200A for 10 seconds (voltage should stay >10.5V)
+       - Internal resistance measurement if available
+    
+    3. **Physical Inspection**
+       - Terminal corrosion check and cleaning
+       - Case integrity and vent cap security
+       - Electrolyte level (if serviceable type)
+    
+    ### Power Distribution Hub (PDH)
+    1. **Connection Verification**
+       - All power connections torqued to specification
+       - Wire gauge appropriate for current rating
+       - No signs of overheating or discoloration
+    
+    2. **Fuse/Breaker Testing**
+       - Visual inspection for cracks or damage
+       - Continuity testing when possible
+       - Proper amp rating verification
+    
+    3. **Voltage Rail Testing**
+       - 12V main rail under load
+       - 5V regulated output (4.75V - 5.25V)
+       - 3.3V regulated output (3.15V - 3.45V)
+  </Tab>
+  <Tab>
+    ## Communication Network Verification
+    
+    ### CAN Bus Testing
+    1. **Physical Layer**
+       - Continuity testing of CAN-H and CAN-L
+       - Termination resistance: 60Ω ±5% across network
+       - Shield continuity and grounding
+    
+    2. **Network Layer**
+       - Device enumeration on each bus
+       - Response time testing for critical devices
+       - Error frame monitoring during operation
+    
+    3. **Application Layer**
+       - Command/response validation
+       - Periodic message timing verification
+       - Emergency stop propagation testing
+    
+    ### Ethernet Network
+    1. **Cable Testing**
+       - Continuity testing of all 8 conductors
+       - Proper T-568B termination verification
+       - Cable length within specifications (less than 100m)
+    
+    2. **Network Functionality**
+       - Link status verification on all ports
+       - IP address assignment and connectivity
+       - Bandwidth and latency testing
+    
+    ### Radio Communication
+    1. **Physical Connection**
+       - Ethernet cable integrity
+       - Power supply voltage (12V ±10%)
+       - Antenna connection and orientation
+    
+    2. **Network Performance**
+       - Driver station connectivity
+       - Signal strength measurement
+       - Packet loss testing under load
+  </Tab>
+  <Tab>
+    ## Safety and Compliance Verification
+    
+    ### Robot Signal Light (RSL)
+    1. **Physical Installation**
+       - Proper mounting and visibility
+       - Secure connector engagement
+       - Wire routing and strain relief
+    
+    2. **Functional Testing**
+       - Steady on when robot enabled
+       - Blinking when robot disabled
+       - Proper response to emergency stop
+    
+    3. **Compliance Check**
+       - FRC-approved RSL device
+       - Proper wiring per game manual
+       - No modifications to standard operation
+    
+    ### Emergency Stop Systems
+    1. **Main Breaker Operation**
+       - Smooth operation without binding
+       - Complete circuit interruption
+       - Proper mounting and accessibility
+    
+    2. **Software E-Stop**
+       - Driver station emergency stop response
+       - Autonomous mode emergency procedures
+       - Recovery and restart procedures
+    
+    ### Wire Routing and Protection
+    1. **Mechanical Protection**
+       - No pinch points or sharp edges
+       - Proper strain relief at connections
+       - Adequate service loops
+    
+    2. **Electrical Protection**
+       - Proper fuse protection for all circuits
+       - No exposed high-voltage connections
+       - Proper grounding of all metallic enclosures
+  </Tab>
+  <Tab>
+    ## Performance and Load Testing
+    
+    ### Motor Performance Verification
+    1. **No-Load Testing**
+       - Free running current measurement
+       - Speed verification against specifications
+       - Noise and vibration assessment
+    
+    2. **Load Testing**
+       - Stall current verification
+       - Thermal performance under load
+       - Control response and accuracy
+    
+    3. **System Integration**
+       - Coordinated motion testing
+       - Emergency stop response
+       - Fault condition handling
+    
+    ### Power System Load Testing
+    1. **Peak Load Scenarios**
+       - All systems operating simultaneously
+       - Battery voltage under peak load
+       - Temperature monitoring of connections
+    
+    2. **Brownout Protection**
+       - Voltage threshold verification
+       - System response to low voltage
+       - Recovery procedures
+    
+    ### Communication System Performance
+    1. **Latency Testing**
+       - Control command to response time
+       - Vision processing delays
+       - Network congestion handling
+    
+    2. **Reliability Testing**
+       - Extended operation without errors
+       - Recovery from communication faults
+       - Degraded mode operation
+  </Tab>
+</Tabs>
+
+## 🔧 Competition Day Pit Procedures
+
+When the robot enters the pit area, systematic procedures ensure rapid diagnosis and resolution of any issues.
+
+### Initial Assessment Protocol
+
+**Step 1: Power Isolation and Safety**
+```
+1. Disconnect main battery IMMEDIATELY
+2. Verify all stored energy is discharged (capacitors, pneumatics)
+3. Engage mechanical locks/supports if robot was moving
+4. Document time of pit entry and initial conditions
+```
+
+**Step 2: Issue Documentation**
+Record all reported problems from drive team:
+- **Power Issues**: Complete loss, intermittent loss, brownout conditions
+- **Control Issues**: Unresponsive subsystems, erratic behavior
+- **Communication Issues**: Driver station disconnects, sensor dropouts
+- **Mechanical Issues**: Unusual sounds, vibrations, binding
+
+**Step 3: Priority Assessment**
+Categorize issues by impact on robot functionality:
+- **Critical**: Prevents robot operation (power, safety systems)
+- **Major**: Reduces robot capability (drive, key mechanisms)  
+- **Minor**: Cosmetic or redundant system issues
+
+### Systematic Diagnosis Procedure
+
+<Tabs items={['Power Issues', 'Control Issues', 'Communication Issues']}>
+  <Tab>
+    ## Power System Diagnosis
+    
+    ### Complete Power Loss
+    1. **Battery Check**
+       - Voltage measurement (should be >11.5V)
+       - Connection security at terminals
+       - SB connector inspection and cleaning
+    
+    2. **Main Breaker**
+       - Visual inspection for damage
+       - Operation test (on/off cycling)
+       - Connection torque verification
+    
+    3. **PDH Inspection**
+       - LED status indicators
+       - Connection security
+       - Signs of overheating
+    
+    ### Partial Power Loss
+    1. **Individual Circuit Testing**
+       - Fuse continuity testing
+       - Load isolation testing
+       - Wire harness inspection
+    
+    2. **Load Analysis**
+       - Current draw measurement
+       - Comparison to baseline values
+       - Thermal imaging if available
+    
+    ### Brownout Conditions
+    1. **Battery Load Test**
+       - Voltage under simulated load
+       - Internal resistance calculation
+       - Capacity verification
+    
+    2. **Connection Resistance**
+       - Voltage drop measurements
+       - Connection torque verification
+       - Corrosion inspection and cleaning
+  </Tab>
+  <Tab>
+    ## Control System Diagnosis
+    
+    ### Unresponsive Subsystems
+    1. **CAN Communication**
+       - Device enumeration check
+       - CAN bus voltage levels
+       - Termination resistance verification
+    
+    2. **Power Supply**
+       - Motor controller power connections
+       - Control voltage levels (5V, 3.3V)
+       - Fuse continuity
+    
+    3. **Configuration Verification**
+       - CAN ID conflicts
+       - Firmware version compatibility
+       - Control loop parameters
+    
+    ### Erratic Behavior
+    1. **Sensor Feedback**
+       - Encoder signal quality
+       - Sensor power supply stability
+       - Mechanical coupling integrity
+    
+    2. **EMI/Noise Issues**
+       - Cable routing inspection
+       - Shielding effectiveness
+       - Grounding continuity
+    
+    3. **Software/Firmware**
+       - Error log analysis
+       - Configuration backup/restore
+       - Firmware reinstallation if needed
+  </Tab>
+  <Tab>
+    ## Communication System Diagnosis
+    
+    ### Driver Station Connectivity
+    1. **Radio System**
+       - Power supply verification
+       - Ethernet cable integrity
+       - Antenna connection and orientation
+    
+    2. **Network Configuration**
+       - IP address settings
+       - Subnet mask verification
+       - Gateway configuration
+    
+    3. **Physical Layer**
+       - Cable continuity testing
+       - Connector inspection
+       - EMI source identification
+    
+    ### Vision System Issues
+    1. **Limelight Connectivity**
+       - Power supply verification
+       - Ethernet connection testing
+       - LED status indicator interpretation
+    
+    2. **Network Performance**
+       - Bandwidth utilization
+       - Packet loss measurement
+       - Processing latency
+    
+    3. **Optical System**
+       - Lens cleanliness
+       - Lighting conditions
+       - Target visibility verification
+  </Tab>
+</Tabs>
+
+## 🔄 Repair and Maintenance Procedures
+
+### Connector Repair Procedures
+
+**Damaged Connector Housing**
+1. **Assessment**
+   - Evaluate extent of damage
+   - Determine if repair or replacement needed
+   - Check availability of replacement parts
+
+2. **Repair Process**
+   - Cut damaged connector from wire
+   - Strip wire to appropriate length
+   - Crimp new terminal (follow connector-specific procedures)
+   - Insert terminal into new housing
+   - Verify proper engagement and retention
+
+3. **Testing**
+   - Continuity verification
+   - Insertion/retention force testing
+   - Connection security under vibration
+
+**Wire Damage Repair**
+1. **Minor Damage (Insulation Only)**
+   - Clean damaged area
+   - Apply appropriate insulation (heat shrink preferred)
+   - Verify no conductor damage
+   - Test for proper insulation resistance
+
+2. **Major Damage (Conductor Affected)**
+   - Cut out damaged section
+   - Strip wire ends appropriately
+   - Solder connection with proper flux
+   - Apply heat shrink insulation
+   - Verify electrical and mechanical integrity
+
+3. **Complete Wire Replacement**
+   - Remove old wire completely
+   - Install new wire of same gauge and type
+   - Route properly with strain relief
+   - Test all connections thoroughly
+
+### Emergency Repair Procedures
+
+**Time-Critical Repairs (< 15 minutes)**
+- Use pre-made patch cables when possible
+- Apply temporary insulation with electrical tape
+- Use quick-connect terminals for rapid connections
+- Document all temporary repairs for later permanent fix
+
+**Competition-Legal Temporary Fixes**
+- Wire nuts for conductor splicing (where accessible)
+- Electrical tape for insulation (temporary only)
+- Zip ties for strain relief
+- Wagos for quick connections (where appropriate)
+
+<Callout type="warning" emoji="⚠️">
+    **Temporary Repair Policy**: All temporary repairs must be replaced with permanent solutions at the earliest opportunity. Temporary repairs are only acceptable when they maintain safety and do not violate FRC rules.
+</Callout>
+
+## 📊 Quality Assurance and Testing
+
+### Post-Repair Verification
+
+**Electrical Testing**
+1. Continuity testing of all connections
+2. Insulation resistance verification
+3. Proper voltage levels under load
+4. Current draw comparison to baseline
+
+**Functional Testing**
+1. System operation verification
+2. Performance comparison to specifications
+3. Integration testing with other subsystems
+4. Stress testing under competition conditions
+
+**Documentation Requirements**
+1. Record all repairs in maintenance log
+2. Update wiring diagrams if routing changed
+3. Note any deviations from standard procedures
+4. Schedule follow-up inspections if needed
+
+### Preventive Maintenance Schedule
+
+**Daily (During Competition)**
+- Visual inspection of all connections
+- Battery voltage and capacity check
+- RSL functionality verification
+- Major system operational check
+
+**Weekly (During Build Season)**
+- Detailed connection inspection and retorquing
+- Wire routing and strain relief verification
+- Comprehensive system performance testing
+- Documentation update and backup
+
+**Monthly (Off-Season)**
+- Complete system teardown and inspection
+- Connector replacement schedule
+- Wire harness refurbishment
+- Component inventory and restocking
+
+<Callout type="info" emoji="📋">
+    **Inspection Documentation**: All inspections and maintenance activities must be recorded in the robot's electrical logbook with date, inspector name, findings, and actions taken.
+</Callout>

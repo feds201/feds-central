@@ -467,9 +467,9 @@ Widget buildMultiChoiceBox(
     String question,
     Icon titleIcon,
     List<String> choices,
-    List<String>
-        selectedValues, // Change to List<String> to track multiple selected choices
-    Function(List<String>) onchange) {
+    List<String> selectedValues,
+    Function(List<String>) onchange,
+    ) {
   return Padding(
     padding: const EdgeInsets.all(8.0),
     child: Container(
@@ -490,30 +490,73 @@ Widget buildMultiChoiceBox(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+
+            // -------------------------------
+            // TOP ROW WITH TITLE + SELECT ALL
+            // -------------------------------
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                titleIcon,
-                const SizedBox(width: 2),
-                Text("MULTIPLE CHOICE",
-                    style: GoogleFonts.museoModerno(
+                Row(
+                  children: [
+                    titleIcon,
+                    const SizedBox(width: 2),
+                    Text(
+                      "MULTIPLE CHOICE",
+                      style: GoogleFonts.museoModerno(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
-                        color: Colors.grey)),
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ],
+                ),
+
+                // SELECT ALL CHECKBOX (top right)
+                Row(
+                  children: [
+                    Text(
+                      "Select All",
+                      style: GoogleFonts.museoModerno(
+                        fontSize: 20,
+                        color: Colors.grey,
+                      ),
+                    ),
+
+                    Transform.scale(
+                      scale: 1.8, // <— THIS makes the checkbox itself bigger
+                      child: Checkbox(
+                        value: selectedValues.length == choices.length,
+                        onChanged: (bool? checked) {
+                          if (checked == true) {
+                            onchange(List.from(choices));
+                          } else {
+                            onchange([]);
+                          }
+                        },
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
+
             Wrap(
               children: [
                 const SizedBox(width: 8),
-                Text(question,
-                    style: GoogleFonts.museoModerno(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: islightmode() ? Colors.black : lightColors.white,
-                    )),
+                Text(
+                  question,
+                  style: GoogleFonts.museoModerno(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: islightmode() ? Colors.black : lightColors.white,
+                  ),
+                ),
               ],
             ),
+
             const SizedBox(height: 16),
-            // Fixed structure and selection logic
+
             Column(
               children: choices.map((String choice) {
                 return Padding(
@@ -537,12 +580,14 @@ Widget buildMultiChoiceBox(
                         ),
                       ),
                       selectedColor: const Color.fromARGB(147, 0, 122, 248),
-                      backgroundColor: islightmode() ? lightColors.white : lightColors.light_grey,
+                      backgroundColor: islightmode()
+                          ? lightColors.white
+                          : lightColors.light_grey,
                       selected: selectedValues.contains(choice),
                       side: const BorderSide(color: Colors.black),
                       onSelected: (bool selected) {
                         List<String> newSelectedValues =
-                            List.from(selectedValues);
+                        List.from(selectedValues);
                         if (selected) {
                           newSelectedValues.add(choice);
                         } else {
@@ -561,3 +606,5 @@ Widget buildMultiChoiceBox(
     ),
   );
 }
+
+

@@ -1,0 +1,189 @@
+import Head from 'next/head';
+import { Callout } from 'nextra/components';
+import { GenericHero, GenericWidget, GenericGrid, ModernCard } from '../../../Components/index';
+
+<Head>
+    <title>Zero to Hero Episode 7: Advanced Commands - FEDS Handbook</title>
+</Head>
+
+<GenericHero
+    title="Zero to Hero #7"
+    titleColor="linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)"
+    subtitle="The Symphony: Advanced Commands 🎼"
+    description="In Episode 2, we learned to play a single note. Now, we compose a symphony. Learn how to chain commands together, run them at the same time, and use 'Factories' to write cleaner, faster code."
+    backgroundType="gradient"
+    backgroundValue="linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%)"
+    particles={[
+        { symbol: '🎼', transform: 'translate(0,0)' },
+        { symbol: '🔗', transform: 'translate(10px,10px)' }
+    ]}
+    buttons={[
+        { text: '⬅️ Back to Ep 6', style: 'secondary', href: '/Tutorials/ZeroToHero/ZeroToHero6' }
+    ]}
+    height="md"
+    textAlign="center"
+/>
+
+## 🎯 The Problem with "New"
+In the old days, if you wanted to do three things, you had to write three separate classes.
+* `RaiseArmCommand.java`
+* `ExtendIntakeCommand.java`
+* `ShootCommand.java`
+
+Then you had to awkwardly glue them together.
+**Modern WPILib (2024+)** lets us compose these behaviors instantly using **Command Groups** and **Factories**.
+
+---
+
+## 🏗️ Chapter 1: The Command Zoo (Groups)
+
+Sometimes you want to do things in order. Sometimes you want to do them all at once. WPILib has a command for that.
+<br></br>
+<GenericWidget title="Types of Command Groups" variant="gradient">
+    <GenericGrid layout="responsive" columns={{ xs: 1, sm: 2 }} gap="16px" items={[
+        { title: "SequentialCommandGroup", icon: "⬇️", description: "The To-Do List. Runs A, then B, then C. (e.g., Drive -> Aim -> Shoot)." },
+        { title: "ParallelCommandGroup", icon: "🤝", description: "The Multitasker. Runs A and B at the same time. Ends when ALL are done." },
+        { title: "ParallelRaceGroup", icon: "🏁", description: "The Race. Runs A and B. Ends when the FIRST one finishes. (e.g., 'Run Intake' vs '5 Second Timer')." },
+        { title: "ParallelDeadlineGroup", icon: "👑", description: "The Leader. Runs A and B. Ends when the LEADER (A) finishes. (e.g., 'Follow Path' while 'Spinning Intake')." }
+    ]}
+    renderItem={(item) => <ModernCard {...item} variant="elevated" size="sm" />}
+    />
+</GenericWidget>
+
+### usage in Code
+You don't usually make these classes manually anymore. You use **Decorators** (see Chapter 2).
+
+---
+
+## 🎨 Chapter 2: Decorators (Coding Sentences)
+
+**Decorators** allow you to modify a command or chain it to another one using standard English methods.
+
+### The "And Then" (Sequential)
+```java
+// Old Way (Messy)
+new SequentialCommandGroup(
+    new DriveForwardCommand(),
+    new ShootCommand()
+);
+
+// New Way (Clean)
+m_drive.driveForwardCommand()
+       .andThen(m_shooter.shootCommand());
+```
+
+### The "Race" (Timeouts)
+How do you stop a command that runs forever?
+
+```java
+// Run intake, but stop after 3 seconds if it hasn't finished
+m_intake.runIntakeCommand()
+        .withTimeout(3.0);
+```
+
+### The "Until" (Triggers)
+```java
+// Spin the intake UNTIL the sensor sees a note
+m_intake.runIntakeCommand()
+        .until(() -> m_sensor.hasNote());
+```
+
+## 🏭 Chapter 3: Subsystem Factories (The Modern Way)
+Stop writing `new Command()` in your RobotContainer. Instead, ask the Subsystem to give you the command. This is called a **Command Factory**.
+
+### Why?
+* **Encapsulation**: The Subsystem knows best how to use its motors.
+* **Readability**: `m_arm.moveToHome()` is easier to read than `new MoveArmToPositionCommand(m_arm, 0)`.
+
+### How to Write a Factory
+Inside your Subsystem (`ArmSubsystem.java`):
+
+```java
+// 1. The "Run" Factory (Runs repeatedly)
+public Command runIntake() {
+    // Note: We use 'run' (lowercase) to indicate it's a factory method
+    return this.run(() -> m_motor.set(0.5));
+    // implicitly requires 'this' subsystem!
+}
+
+// 2. The "Run Once" Factory (Runs once, then ends)
+public Command stopIntake() {
+    return this.runOnce(() -> m_motor.set(0));
+}
+
+// 3. The "Start End" Factory (Run A, wait, Run B when interrupted)
+public Command extendAndRetract() {
+    return this.startEnd(
+        () -> m_solenoid.set(true),  // Start: Extend
+        () -> m_solenoid.set(false)  // End: Retract
+    );
+}
+```
+
+## 🧩 Chapter 4: Putting It Together
+Let's build a full "Score Note" routine using everything we learned.
+
+**Goal:**
+1. Verify we have a note.
+2. Rev the flywheel.
+3. Wait until flywheel is at speed.
+4. Feed the note.
+5. Stop everything.
+
+```java
+// inside RobotContainer.java
+
+public Command getScoreCommand() {
+    return Commands.sequence(
+        // Step 1: Check if we have a note (Print warning if not)
+        Commands.runOnce(() -> {
+            if (!m_intake.hasNote()) System.out.println("⚠️ No Note!");
+        }),
+
+        // Step 2: Run Flywheel & Wait (Parallel Race)
+        // Run flywheel forever, but race it against a "WaitUntil"
+        m_shooter.runFlywheel(3000)
+                 .raceWith(
+                     Commands.waitUntil(() -> m_shooter.isAtSpeed())
+                 ),
+
+        // Step 3: Feed the note (Sequential)
+        m_intake.feedNote(),
+
+        // Step 4: Stop (Everything stops when command ends)
+        Commands.parallel(
+            m_shooter.stop(),
+            m_intake.stop()
+        )
+    );
+}
+```
+
+<Callout type="info" emoji="💡"> Pro Tip: `Commands.none()` is a command that does nothing. Useful as a placeholder! Also, `Commands.print("Message")` is great for debugging your auto sequences. </Callout>
+
+## 🏁 Summary
+You have graduated from "Single Actions" to "Complex Behaviors"!
+
+* **Sequential**: One after another.
+* **Parallel**: All together.
+* **Factories**: Let the Subsystem build the command.
+* **Decorators**: `.andThen()`, `.until()`, `.withTimeout()`.
+
+In **Episode 8**, we will enter the Matrix. We will learn how to Simulate these commands on your laptop so you can test your auto routines while sitting in a coffee shop! ☕
+
+## 📞 Need Help? We've Got Your Back!
+Email: feds.programming@gmail.com
+
+Keep coding, keep learning, and remember: every expert was once a beginner who refused to give up! 🚀
+
+*P.S. If your code compiles on the first try, buy a lottery ticket immediately. Actually, don't. Use that luck to debug the CAN bus errors you're about to get.* 🤖💥
+
+This documentation is part of the Zero to Hero programming series. For the complete learning experience, watch the accompanying video and practice with real robot code. Remember: the only way to get good at programming is to write lots of bad code first! 😄
+
+<Callout type="info" emoji="💝">
+    Special Thanks: To all the students who asked "Why doesn't this work?" and inspired us to create better documentation. Your questions make us better teachers, and your curiosity drives innovation. You're the real MVPs! 🏆
+
+    *Remember: Every expert was once a beginner who refused to give up.
+    Keep coding, keep learning, and most importantly - keep having fun! 🚀*
+</Callout>
+
