@@ -1,11 +1,8 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.intake;
 
-<<<<<<< HEAD:robot/2026-rebuilt/2026rebuilt/src/main/java/frc/robot/subsystems/IntakeSubsystem.java
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
-=======
->>>>>>> origin/main:robot/2026-rebuilt/src/main/java/frc/robot/subsystems/IntakeSubsystem.java
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -13,12 +10,9 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-<<<<<<< HEAD:robot/2026-rebuilt/2026rebuilt/src/main/java/frc/robot/subsystems/IntakeSubsystem.java
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-=======
->>>>>>> origin/main:robot/2026-rebuilt/src/main/java/frc/robot/subsystems/IntakeSubsystem.java
 import frc.robot.RobotMap;
-import frc.robot.subsystems.RollersSubsystem.RollerState;
+import frc.robot.subsystems.intake.RollersSubsystem.RollerState;
 import frc.robot.utils.LimelightHelpers;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -33,28 +27,18 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 
 public class IntakeSubsystem extends SubsystemBase {
 
-<<<<<<< HEAD:robot/2026-rebuilt/2026rebuilt/src/main/java/frc/robot/subsystems/IntakeSubsystem.java
   private TalonFX motor;
   private final DigitalInput limit_switch_r;
   private final DigitalInput limit_switch_l;
   private final RollersSubsystem rollers; 
   private final double wheelRadius = 2.0; 
   private final double extendedLength = 14.43; 
-=======
-  private final TalonFX motor;
-  private final DigitalInput limit_switch_r;
-  private final DigitalInput limit_switch_l;
-  private final RollersSubsystem rollers; 
->>>>>>> origin/main:robot/2026-rebuilt/src/main/java/frc/robot/subsystems/IntakeSubsystem.java
 
   // Simulation
   private final DCMotorSim motorSim;
   private final DIOSim limitSwitchRSim;
   private final DIOSim limitSwitchLSim;
-<<<<<<< HEAD:robot/2026-rebuilt/2026rebuilt/src/main/java/frc/robot/subsystems/IntakeSubsystem.java
    private SysIdRoutine sysID;
-=======
->>>>>>> origin/main:robot/2026-rebuilt/src/main/java/frc/robot/subsystems/IntakeSubsystem.java
   
   // Visualization
   private final Mechanism2d mech2d = new Mechanism2d(3, 3);
@@ -74,30 +58,12 @@ public class IntakeSubsystem extends SubsystemBase {
     this.currentState = targetState;
   }
 
-<<<<<<< HEAD:robot/2026-rebuilt/2026rebuilt/src/main/java/frc/robot/subsystems/IntakeSubsystem.java
   public Command extendIntake(){
     return run(()-> motor.setControl(new PositionVoltage(0).withPosition(extendedLength/(wheelRadius*2*Math.PI))));
   }
 
   public Command retractIntake() {
      return run(()-> motor.setControl(new PositionVoltage(0).withPosition(0)));
-=======
-  private void extendIntake(){
-    if (limit_switch_l.get() == true) { //-> If the limit switch is pressed, extend the intake
-      motor.set(0.1);
-    } else {
-      stopmotor();
-    }
-  }
-
-  private void retractIntake() {
-    if (limit_switch_l.get() == false) {
-      motor.set(-0.1);
-    }
-      else {
-        stopmotor(); 
-      }
->>>>>>> origin/main:robot/2026-rebuilt/src/main/java/frc/robot/subsystems/IntakeSubsystem.java
     }
 
   
@@ -113,7 +79,6 @@ public class IntakeSubsystem extends SubsystemBase {
 
 
   public IntakeSubsystem() {
-<<<<<<< HEAD:robot/2026-rebuilt/2026rebuilt/src/main/java/frc/robot/subsystems/IntakeSubsystem.java
      var config = new TalonFXConfiguration();
     config.Slot0.kP = 0.1;
     config.Slot0.kI = 0.0;
@@ -130,8 +95,6 @@ public class IntakeSubsystem extends SubsystemBase {
 
 
 
-=======
->>>>>>> origin/main:robot/2026-rebuilt/src/main/java/frc/robot/subsystems/IntakeSubsystem.java
     motor = new TalonFX(RobotMap.IntakeSubsystemConstants.kMotorID, "rio");
     limit_switch_r = new DigitalInput(RobotMap.IntakeSubsystemConstants.kLimit_switch_rID);
     limit_switch_l = new DigitalInput(RobotMap.IntakeSubsystemConstants.kLimit_switch_lID); 
@@ -218,7 +181,6 @@ public class IntakeSubsystem extends SubsystemBase {
   public double getmotorVelocity() {
     return motor.getVelocity().getValue().in(Units.RotationsPerSecond);
   }
-<<<<<<< HEAD:robot/2026-rebuilt/2026rebuilt/src/main/java/frc/robot/subsystems/IntakeSubsystem.java
 
   public boolean testIntakeExtend() {
      extendIntake();
@@ -229,7 +191,5 @@ public class IntakeSubsystem extends SubsystemBase {
     return false; 
     }
 
-=======
->>>>>>> origin/main:robot/2026-rebuilt/src/main/java/frc/robot/subsystems/IntakeSubsystem.java
 }
 

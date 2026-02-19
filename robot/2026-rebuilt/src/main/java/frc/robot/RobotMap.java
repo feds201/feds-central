@@ -1,7 +1,5 @@
 package frc.robot;
 
-<<<<<<< HEAD:robot/2026-rebuilt/2026rebuilt/src/main/java/frc/robot/RobotMap.java
-=======
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
@@ -16,29 +14,20 @@ import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.utils.FieldConstants;
 import frc.robot.utils.SwerveModuleStatusUtil;
 
->>>>>>> origin/main:robot/2026-rebuilt/src/main/java/frc/robot/RobotMap.java
 /**
  * The RobotMap is a mapping from the ports sensors and actuators are wired into
  * to a variable name. This provides flexibility changing wiring.
  */
 public final class RobotMap {
 
-<<<<<<< HEAD:robot/2026-rebuilt/2026rebuilt/src/main/java/frc/robot/RobotMap.java
-=======
-    //Used for FieldConstants File
-    public class Constants {
+    public static class Constants {
     public static boolean disableHAL = false;
 
     public static void disableHAL() {
         disableHAL = true;
     }
     }
-    public static final Mode currentMode = Mode.SIM;
 
-    public enum Mode {
-        REAL, SIM, REPLAY
-    }
->>>>>>> origin/main:robot/2026-rebuilt/src/main/java/frc/robot/RobotMap.java
     public enum robotState{
         SIM,REAL,REPLAY;
     }
@@ -48,14 +37,9 @@ public final class RobotMap {
         public static final int kLimit_switch_lID = 3; 
 
     }
-<<<<<<< HEAD:robot/2026-rebuilt/2026rebuilt/src/main/java/frc/robot/RobotMap.java
 
-    public static robotState getRobotMode() {
-        return Robot.isReal() ? robotState.REAL : robotState.SIM;
-    }
-}
-=======
-    
+
+
     public static robotState getRobotMode() {
         return Robot.isReal() ? robotState.REAL : robotState.SIM;
     }
@@ -123,9 +107,7 @@ public final class RobotMap {
         );
 
         
+    }
 }
 
-
-}
-    
->>>>>>> origin/main:robot/2026-rebuilt/src/main/java/frc/robot/RobotMap.java
+  
