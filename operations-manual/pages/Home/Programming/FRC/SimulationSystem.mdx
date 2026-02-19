@@ -226,6 +226,51 @@ ODE4J answers: *"Given the robot's position and velocity, what happens to all th
 
 ---
 
+## Running the Simulation
+
+These instructions apply to any game year that has simulation support.
+
+**From VS Code (Recommended):**
+
+1. Open the robot project folder (e.g., `robot/2026-rebuilt/`) in VS Code
+2. Open the WPILib command palette (Ctrl+Shift+P, then type "WPILib")
+3. Select **"Simulate Robot Code"**
+4. Choose **"Sim GUI"** when prompted
+
+**From Terminal:**
+
+```bash
+cd robot/<year-project>
+./gradlew simulateJava
+```
+
+**Viewing in AdvantageScope:**
+
+1. Open [AdvantageScope](https://github.com/Mechanical-Advantage/AdvantageScope)
+2. Connect via **NetworkTables 4 (AdvantageKit)** to `localhost`
+3. You will see the 3D field with the robot and game pieces
+4. Use the Driver Station sim GUI to enable the robot in Teleop mode
+
+**Keyboard Controls:**
+
+| Key | Action |
+|---|---|
+| W / A / S / D | Drive forward / strafe left / drive backward / strafe right |
+| Q / E | Rotate left / rotate right |
+| M | Intake |
+| , / . | Change shooter angle (down / up) |
+| / | Shoot |
+
+**What to Expect:**
+
+- The robot appears on the field with game pieces in their starting positions
+- You can drive using a connected gamepad or the keyboard controls above
+- Game pieces react to the robot: intake picks them up, the shooter launches them
+- Scoring happens automatically when game pieces enter the scoring zones
+- All telemetry is live: pose, scores, held piece count, component positions
+
+---
+
 ## Year-Specific Simulations
 
 Each game year gets its own sim code that configures sim-core for that year's field, game pieces, and robot mechanisms. Below is the status of each year.
@@ -329,37 +374,6 @@ All simulation data flows through AdvantageKit's `Logger` so you can view it in 
 | `Sim/Intake/HeldCount` | int | Number of balls currently in the hopper |
 | `Sim/Robot/GroundClearance` | double | Height of chassis above field surface (meters) |
 | `Sim/Robot/IsAirborne` | boolean | Whether the robot has left the ground (ramp driving) |
-
-#### Running the REBUILT Simulation
-
-**From VS Code (Recommended):**
-
-1. Open the `robot/2026-rebuilt/` project in VS Code
-2. Open the WPILib command palette (Ctrl+Shift+P, then type "WPILib")
-3. Select **"Simulate Robot Code"**
-4. Choose **"Sim GUI"** when prompted
-
-**From Terminal:**
-
-```bash
-cd robot/2026-rebuilt
-./gradlew simulateJava
-```
-
-**Viewing in AdvantageScope:**
-
-1. Open [AdvantageScope](https://github.com/Mechanical-Advantage/AdvantageScope)
-2. Connect to `localhost` (File > Connect to Simulator)
-3. You will see the 3D field with the robot and all fuel balls
-4. Use the Driver Station sim GUI to enable the robot and drive it around
-
-**What to Expect:**
-
-- The robot appears on the REBUILT field with hundreds of fuel balls
-- You can drive using a connected gamepad or the on-screen driver station
-- Fuel balls react to the robot: intake picks them up, shooter launches them
-- Scoring happens automatically when balls enter the hub zones
-- All telemetry is live: pose, scores, held ball count, component positions
 
 ---
 
