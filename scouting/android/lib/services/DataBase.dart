@@ -4,13 +4,6 @@ import 'dart:io';
 
 import 'package:flutter/painting.dart';
 import 'package:hive/hive.dart';
-import 'dart:convert';
-import 'dart:developer';
-import 'dart:io';
-
-import 'package:flutter/painting.dart';
-import 'package:hive/hive.dart';
-
 class Settings {
   static void setApiKey(String key) {
     LocalDataBase.putData('Settings.apiKey', key);
