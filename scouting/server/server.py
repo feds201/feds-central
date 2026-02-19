@@ -555,10 +555,8 @@ def post_match():
     cursor = conn.cursor()
 
     try:
-        for match in data:
-            match_id = match.get('key')
-            match_data = json.dumps(match)
-            cursor.execute('INSERT INTO event (match_id, match_data) VALUES (?, ?)', (match_id, match_data))
+        insert_data = ((match.get('key'), json.dumps(match)) for match in data)
+        cursor.executemany('INSERT INTO event (match_id, match_data) VALUES (?, ?)', insert_data)
 
         conn.commit()
         conn.close()
