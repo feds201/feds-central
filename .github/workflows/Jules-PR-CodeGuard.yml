@@ -11,7 +11,7 @@ jobs:
       contents: read
       pull-requests: write
     steps:
-      - uses: google-labs-code/jules-invoke@v1
+      - uses: google-labs-code/jules-invoke@v1.0.0
         with:
           prompt: |
             Act as a Code Guard with deep knowledge of software development. 
