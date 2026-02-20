@@ -1,4 +1,79 @@
 document.addEventListener('DOMContentLoaded', function() {
+    let activeModule;
+    let modules = {
+    '1': [
+           {
+            section: "I. Shipping and Packaging of Products",
+            question: "What was the total weight (in lbs) of the packages that you transported?",
+            hint: "Enter an integer value",
+            type: "int",
+            min: 0,
+            max: 1500,
+            eco_tip: "Every lbs of package weight contributes to carbon emissions.",
+            eco_impact: "high",
+            category: "materials"
+        },
+        {
+            section: "I. Shipping and Packaging of Products",
+            question: "How many parts did you have to order again?",
+            type: "multiple-choice",
+             options: [
+        { label: "A lot", eco_impact: "high", value: 3 },
+        { label: "A good amount", eco_impact: "medium", value: 2 },
+        { label: "A little", eco_impact: "low", value: 1 },
+    ],
+                eco_tip: "if you buy without reusing somehow, you adding more to the pile of waste",
+            category: "materials",
+        },
+        {
+            section: "I. Shipping and Packaging of Products",
+            question: "How much do you bulk order?",
+            type: "multiple-choice",
+             options: [
+        { label: "A lot", eco_impact: "high", value: 3 },
+        { label: "A good amount", eco_impact: "medium", value: 2 },
+        { label: "A little", eco_impact: "low", value: 1 },
+    ],
+                eco_tip: "if you buy without reusing somehow, you adding more to the pile of waste",
+            category: "materials",
+        },
+        {
+            section: "I. Shipping and Packaging of Products",
+            question: "Where do you order from?",
+            type: "multiple-choice",
+             options: [
+        { label: "Local", eco_impact: "high", value: 2 },
+        { label: "Non-Local", eco_impact: "medium", value: 1 },
+    ],
+                eco_tip: "if you buy without reusing somehow, you adding more to the pile of waste",
+            category: "materials",
+        },
+    ],
+    '2': [
+        {
+            section: "II. Disposable Meal Items",
+            question: "How many boxes of paper plates did you use?",
+            hint: "Enter an integer value",
+            type: "int",
+            min: 0,
+            max: 1500,
+            eco_tip: "",
+            eco_impact: "high",
+            category: "materials"
+        },
+        {
+        section: "II. Disposable Meal Items",
+        question: "Did you use reusable plates?",
+        type: "choice",
+        choices: ["Yes, always", "Sometimes", "No"],
+        eco_tip: "...",
+        eco_impact: "medium",
+        category: "materials"
+        },
+    ],
+    '3': [/* question objects */],
+    '4': [/* question objects */]
+};
     // Get DOM elements
     const questionElement = document.getElementById('question');
     const sectionHeadingElement = document.getElementById('section-heading');
@@ -29,161 +104,28 @@ document.addEventListener('DOMContentLoaded', function() {
     const htmlElement = document.documentElement;
     const themeIcon = themeToggle.querySelector('i');
     const unitToggle = document.getElementById('unit-toggle');
+    const startButtons = document.querySelectorAll('.start-btn');
+    
+startButtons.forEach((btn) => {
+    btn.addEventListener('click', function() {
+        const module = btn.closest('.module');
+        const moduleNumber = [...module.classList]
+            .find(c => c.startsWith('module') && c !== 'module')
+            ?.replace('module', '');
 
-    // Define questions
-    const questions = [
-        {
-            section: "I. Shipping and Packaging of Products",
-            question: "What was the total weight (in lbs) of the packages that you transported?",
-            hint: "Enter an integer value",
-            type: "int",
-            min: 0,
-            max: 1500,
-            eco_tip: "Every lbs of package weight contributes to carbon emissions during transport.",
-            eco_impact: "high",
-            category: "materials",
-            videoLink: "https://www.youtube.com/watch?v=5qx2WFpNTPs" // Sustainable packaging video
-        },
-        {
-            section: "II. Disposable Meal Items",
-            question: "How many boxes of 50 paper plates did you use?",
-            hint: "Enter an integer value",
-            type: "int",
-            min: 0,           
-            max: 1500,
-            eco_tip: "Paper plates can be composted, but reusable dishes are more eco-friendly.",
-            eco_impact: "medium",
-            category: "materials",
-            videoLink: "https://www.youtube.com/watch?v=NBnihk6Fq3U" // Eco-friendly dining materials
-        },
-        {
-            section: "II. Disposable Meal Items",
-            question: "How many boxes of 150 plastic forks did you use?",
-            hint: "Enter an integer value",
-            type: "int",
-            min: 0,
-            max: 1500,
-            eco_tip: "Plastic utensils are difficult to recycle. Consider bamboo or other biodegradable alternatives.",
-            eco_impact: "high",
-            category: "materials",
-            videoLink: "https://www.youtube.com/watch?v=NMAeRTJA_xQ" // Alternative to plastic utensils
-        },
-        {
-            section: "II. Disposable Meal Items",
-            question: "How many packets of 75 napkins did you use?",
-            hint: "Enter an integer value",
-            type: "int",
-            min: 0,
-            max: 1500,
-            eco_tip: "Paper napkins have a high environmental cost. Consider cloth napkins for team events.",
-            eco_impact: "medium",
-            category: "materials",
-            videoLink: "https://www.youtube.com/watch?v=KD_sDi_Omw4" // Sustainable napkin alternatives
-        },
-        {
-            section: "II. Disposable Meal Items",
-            question: "How many cartons of 50 water bottles did you use?",
-            hint: "Enter an integer value",
-            type: "int",
-            min: 0,
-            max: 1500,
-            eco_tip: "Single-use plastic bottles have a significant environmental impact. Reusable bottles are much better.",
-            eco_impact: "high",
-            category: "materials",
-            videoLink: "https://www.youtube.com/watch?v=jTYkzGpP3WQ" // Reusable water bottle options
-        },
-        {
-            section: "III. Robot Components",
-            question: "How much old wires (in lbs) did you waste?",
-            hint: "Enter a decimal value",
-            type: "double",
-            min: 0,
-            max: 1500,
-            eco_tip: "Electronic waste contains valuable materials that can be recycled properly.",
-            eco_impact: "medium",
-            category: "materials"
-        },
-        {
-            section: "III. Robot Components",
-            question: "How many cardboard boxes/pieces did you use for prototyping?",
-            hint: "Enter an integer value",
-            type: "int",
-            min: 0,
-            max: 1500,
-            eco_tip: "Cardboard is recyclable, but try to reuse it for multiple prototypes when possible.",
-            eco_impact: "low",
-            category: "materials"
-        },
-        {
-            section: "III. Robot Components",
-            question: "How many 20 by 20 aluminum bars and parts did you use in total?",
-            hint: "Enter an integer value",
-            type: "int",
-            min: 0,
-            max: 1500,
-            eco_tip: "Aluminum has a high environmental cost to produce, but is highly recyclable.",
-            eco_impact: "medium",
-            category: "materials"
-        },
-        {
-            section: "III. Robot Components",
-            question: "How much lumber (in lbs) did you use?",
-            hint: "Enter a decimal value",
-            type: "double",
-            min: 0,
-            max: 1500,
-            eco_tip: "Sustainable lumber is a renewable resource but still has environmental impact.",
-            eco_impact: "medium",
-            category: "materials"
-        },
-        {
-            section: "III. Robot Components",
-            question: "How many batteries died in total?",
-            hint: "Enter an integer value",
-            type: "int",
-            min: 0,
-            max: 1500,
-            eco_tip: "Batteries contain harmful chemicals and should be properly recycled.",
-            eco_impact: "high",
-            category: "energy",
-            videoLink: "https://www.youtube.com/watch?v=wEXG0o6A0bA" // Battery recycling video
-        },
-        {
-            section: "IV. 3-D Printing Materials",
-            question: "How much filament waste (in lbs) did you waste in total?",
-            hint: "Enter a decimal value",
-            type: "double",
-            min: 0,
-            max: 1500,
-            eco_tip: "3D printing filament is often made from plastics that are difficult to recycle.",
-            eco_impact: "medium",
-            category: "materials"
-        },
-        {
-            section: "V. Transportation to/from comps",
-            question: "What was your milage from your vehicle in total through trips?",
-            hint: "Enter an integer value",
-            type: "int",
-            min: 0,
-            max: 1500,
-            eco_tip: "Transportation is a major contributor to carbon emissions.",
-            eco_impact: "high",
-            category: "transport",
-            videoLink: "https://www.youtube.com/watch?v=17xh_VRrnMU" // Eco-friendly transportation video
-        },
-        {
-            section: "V. Transportation to/from comps",
-            question: "How much fuel (in gallons) did you use in total while pulling a trailer or during a trip?",
-            hint: "Enter a decimal value",
-            type: "double",
-            min: 0,
-            max: 1500,
-            eco_tip: "Every gallon of fuel burned produces CO2 emissions that contribute to climate change.",
-            eco_impact: "high",
-            category: "transport",
-            videoLink: "https://www.youtube.com/watch?v=ZS_4Htwj0OQ" // Fuel efficiency video
-        }
-    ];
+        activeModule = moduleNumber;
+
+        document.querySelector('.modules-wrapper').classList.add('hidden');
+        document.querySelector('.question-card').classList.remove('hidden');  // ← this
+        document.querySelector('.actions').classList.remove('hidden');         // ← and this
+
+        initQuiz();
+    });
+});
+
+
+    // Define questions no
+     
 
     let currentQuestionIndex = 0;
     let answers = [];
@@ -191,27 +133,46 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize quiz
     function initQuiz() {
-        currentQuestionIndex = 0;
-        answers = [];
-        currentEcoScore = 100; // Start with perfect score
-        ecoScore.textContent = currentEcoScore;
-        displayQuestion();
-        totalQuestionsElement.textContent = questions.length;
-        totalQuestionsDisplayElement.textContent = questions.length;
-        resultContainer.classList.add('hidden');
-        questionCard.classList.remove('hidden');
-        actionsContainer.classList.remove('hidden');
-        updateProgressBar();
-        
-        // Hide back button on first question
-        backButton.classList.add('hidden');
-    }
+    currentQuestionIndex = 0;
+    answers = [];
+    currentEcoScore = 100;
+    ecoScore.textContent = currentEcoScore;
+
+    // Use the active module's questions instead of the flat array
+     questions = modules[activeModule];
+
+    totalQuestionsElement.textContent = questions.length;
+    totalQuestionsDisplayElement.textContent = questions.length;
+    resultContainer.classList.add('hidden');
+    questionCard.classList.remove('hidden');
+    actionsContainer.classList.remove('hidden');
+    displayQuestion();
+    updateProgressBar();
+    backButton.classList.add('hidden');
+}
     
     // Display current question
     function displayQuestion() {
-        const question = questions[currentQuestionIndex];
-        sectionHeadingElement.textContent = question.section;
-        questionElement.textContent = question.question;
+          const question = questions[currentQuestionIndex]; // ← FIRST line
+
+    const mcContainer = document.getElementById('mc-container');
+
+    if (question.type === 'multiple-choice') {
+        answerInput.classList.add('hidden');
+        mcContainer.classList.remove('hidden');
+        mcContainer.innerHTML = question.options.map((opt, i) => `
+            <label class="mc-option">
+                <input type="radio" name="mc-answer" value="${i}">
+                ${opt.label}
+            </label>
+        `).join('');
+    } else {
+        answerInput.classList.remove('hidden');
+        mcContainer.classList.add('hidden');
+    }
+
+    sectionHeadingElement.textContent = question.section;
+    questionElement.textContent = question.question;
         currentQuestionElement.textContent = currentQuestionIndex + 1;
         currentQuestionDisplayElement.textContent = currentQuestionIndex + 1;
         
@@ -273,6 +234,15 @@ document.addEventListener('DOMContentLoaded', function() {
             errorMessage.textContent = 'Please enter an integer value';
             return false;
         }
+        if (question.type === 'multiple-choice') {
+    const selected = document.querySelector('input[name="mc-answer"]:checked');
+    if (!selected) {
+        errorMessage.textContent = 'Please select an option';
+        return false;
+    }
+    return true;
+}
+         
         
         if (numValue < question.min || numValue > question.max) {
             errorMessage.textContent = `Value must be between ${question.min} and ${question.max}`;
@@ -332,11 +302,11 @@ document.addEventListener('DOMContentLoaded', function() {
         // Move to next question or finish quiz
         currentQuestionIndex++;
         
-        if (currentQuestionIndex < questions.length) {
+if (currentQuestionIndex < questions.length) {
             displayQuestion();
-        } else {
-            finishQuiz();
-        }
+    } else {
+        finishQuiz(); // or return to module select
+    }
     });
     
     // Handle back button click
@@ -600,7 +570,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // Initialize the quiz
-    initQuiz();
 
     // Dark mode toggle functionality
     const savedTheme = localStorage.getItem('theme') || 'light';

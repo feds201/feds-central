@@ -20,6 +20,8 @@
     --progress-bg: #dfe6e9;
 }
 
+
+
 /* Dark mode variables - more cohesive dark theme */
 [data-theme="dark"] {
     --background: linear-gradient(135deg, #1e272e 0%, #2d3436 50%, #0a0a0a 100%);
@@ -55,6 +57,7 @@
 
 /* Add Poppins font for better typography */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+@import url('');
 body {
     position: relative;
     display: flex;
@@ -115,7 +118,53 @@ body::after {
 }
 
 
+.modules-wrapper {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px;
+  padding: 22px;
+}
 
+.module {
+  background-color: var(--card-bg);
+  border-radius: 12px;
+  padding: 18px;
+  text-align: center;
+  border: 2px solid var(--border-color);
+  box-shadow: 0 10px 25px var(--shadow-color);
+}
+
+.module-header h2 {
+  margin: 0 0 8px;
+  font-size: 18px;
+  color: var(--accent-color);
+}
+
+.module-body p {
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+
+.start-btn {
+  background: var(--accent-gradient);
+  color: #fff;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.start-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+}
+
+.module1 { border-color: #0984e3; }
+.module2 { border-color: #e74c3c; }
+.module3 { border-color: #0984e3; }
+.module4 { border-color: #e74c3c; }
 
 @keyframes container-appear {
     0% {
@@ -128,12 +177,30 @@ body::after {
     }
 }
 
+.mc-option {
+    display: block;
+    padding: 10px 15px;
+    margin: 8px 0;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.mc-option:hover {
+    border-color: var(--eco-friendly-color);
+}
+
+.mc-option input[type="radio"] {
+    margin-right: 10px;
+}
+
 /* Enhanced header styles */
 .quiz-header {
     background: var(--header-gradient);
     color: white;
     padding: 25px;
     text-align: center;
+    vertical-align: top;
     position: relative;
     overflow: hidden;
 }
