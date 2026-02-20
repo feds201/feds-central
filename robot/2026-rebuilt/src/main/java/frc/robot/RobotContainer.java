@@ -24,8 +24,9 @@ import limelight.networktables.LimelightSettings.ImuMode;
 public class RobotContainer {
 
   private final CommandSwerveDrivetrain drivetrain = DrivetrainConstants.createDrivetrain();
-   private final LimelightWrapper ll4 = new LimelightWrapper("limelight-two", true);
-   
+  private final LimelightWrapper ll4 = new LimelightWrapper("limelight-two", true);
+  private final LimelightWrapper ll3 = new LimelightWrapper("limelight-five", false);
+
   private final CommandXboxController controller = new CommandXboxController(0);
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
 
@@ -50,8 +51,13 @@ public class RobotContainer {
     configureBindings();
   }
 
-  public void updateLocalizationLL4() {
-          ll4.updateLocalizationLimelight(drivetrain);
+      public void updateLocalization() {
+        if(ll4.getNTTable().containsKey("tv")){
+            ll4.updateLocalizationLimelight(drivetrain);
+        }else
+        {
+            ll3.updateLocalizationLimelight(drivetrain);
+        }
     }
   
 

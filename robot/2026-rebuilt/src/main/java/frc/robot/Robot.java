@@ -88,7 +88,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void robotPeriodic() {
-    m_robotContainer.updateLocalizationLL4();
+    m_robotContainer.updateLocalization();
     CommandScheduler.getInstance().run();
   }
 
