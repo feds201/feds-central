@@ -4,11 +4,8 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.RadiansPerSecond;
 
-import java.util.Optional;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -21,8 +18,6 @@ import frc.robot.sim.RebuiltSimManager;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
-import limelight.networktables.AngularVelocity3d;
-import limelight.networktables.Orientation3d;
 import frc.robot.utils.LimelightWrapper;
 import limelight.networktables.LimelightSettings.ImuMode;
 
@@ -31,7 +26,6 @@ public class RobotContainer {
   private final CommandSwerveDrivetrain drivetrain = DrivetrainConstants.createDrivetrain();
    private final LimelightWrapper ll4 = new LimelightWrapper("limelight-two", true);
    
-  private final LimelightWrapper sampleLocalizationLimelight = new LimelightWrapper("limelight-localization");
   private final CommandXboxController controller = new CommandXboxController(0);
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
 
@@ -60,24 +54,6 @@ public class RobotContainer {
           ll4.updateLocalizationLimelight(drivetrain);
     }
   
-  private void configureBindings() {}
-  public void updateLocalization() {
-    sampleLocalizationLimelight.getSettings()
-        .withRobotOrientation(new Orientation3d(drivetrain.getRotation3d(),
-            new AngularVelocity3d(DegreesPerSecond.of(0),
-                DegreesPerSecond.of(0),
-                DegreesPerSecond.of(0))))
-        .save();
-
-    // Get MegaTag2 pose
-    Optional<limelight.networktables.PoseEstimate> visionEstimate = sampleLocalizationLimelight.getPoseEstimator(true)
-        .getPoseEstimate();
-    // If the pose is present
-    visionEstimate.ifPresent((limelight.networktables.PoseEstimate poseEstimate) -> {
-      // Add it to the pose estimator.
-      drivetrain.addVisionMeasurement(poseEstimate.pose.toPose2d(), poseEstimate.timestampSeconds);
-    });
-  }
 
   private void configureBindings() {
     // controller.a()

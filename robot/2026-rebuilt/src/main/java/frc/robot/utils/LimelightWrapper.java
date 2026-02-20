@@ -12,7 +12,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.RobotMap.VisionConstants;
+import frc.robot.RobotMap;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import limelight.Limelight;
 import limelight.networktables.AngularVelocity3d;
@@ -49,7 +49,7 @@ public class LimelightWrapper extends Limelight{
    * @return the estimated standard deviations
    */
   public Matrix<N3, N1> getEstimationStdDevsLimelightMT1(limelight.networktables.PoseEstimate poseEstimate){
-    var estStdDevs = VisionConstants.MT1_STDDEV;
+    var estStdDevs = frc.robot.RobotMap.MT1_STDDEV;
 
     // Calculate the number of tags, average distance and average ambiguity
     int numTags = 0; 
@@ -100,7 +100,7 @@ public class LimelightWrapper extends Limelight{
    * @return the estimated standard deviations
    */
   public Matrix<N3, N1> getEstimationStdDevsLimelightMT2(limelight.networktables.PoseEstimate poseEstimate) {
-    var estStdDevs =VisionConstants.MT2_STDDEV;
+    var estStdDevs =RobotMap.MT2_STDDEV;
     
     int numTags = 0;
     double avgDist = 0;
