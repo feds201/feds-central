@@ -10,6 +10,6 @@
 # To add owners for specific folders (e.g. robot/, scouting/):
 #   Create a new GitHub team and add a line like:
 #   /robot/ @feds201/robot-owners
-#   /scouting/ @feds201/scouring-owners
+#   /scouting/ @feds201/scouting-owners
 
 * @feds201/programming-mentors-leads

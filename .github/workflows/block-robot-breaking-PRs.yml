@@ -34,7 +34,7 @@ jobs:
         run: |
           # Get unique folder names under robot/ that have changed files
           projects=$(git diff --name-only origin/main...HEAD \
-            | grep '^robot/' \
+            | { grep '^robot/' || true; } \
             | cut -d'/' -f2 \
             | sort -u \
             | jq -R -s -c 'split("\n") | map(select(length > 0))')

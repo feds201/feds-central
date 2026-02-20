@@ -1,4 +1,4 @@
-# Robot Teamplate Code -- FEDS Team 201 Robot Code
+# Robot Template Code -- FEDS Team 201 Robot Code
 
 Template robot code 20XX FIRST Robotics Competition game **GAME_NAME_HERE**. Built with WPILib and GradleRIO, using CTRE Phoenix 6 for swerve drive and AdvantageKit for logging.
 

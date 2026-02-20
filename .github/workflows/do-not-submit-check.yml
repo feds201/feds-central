@@ -29,8 +29,8 @@ jobs:
           fetch-depth: 0
       - name: Check for DO NOT SUBMIT markers
         run: |
-          # Search the actual diff for forbidden markers
-          matches=$(git diff origin/main...HEAD | grep -niE "DO NOT SUBMIT|DO NOT SHIP" || true)
+          # Search only added lines in the diff for forbidden markers (ignore removals and headers)
+          matches=$(git diff origin/main...HEAD | grep -E '^\+[^+]' | grep -niE "DO NOT SUBMIT|DO NOT SHIP" || true)
           if [ -n "$matches" ]; then
             echo "$matches"
             echo ""
