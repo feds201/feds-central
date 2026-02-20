@@ -20,3 +20,7 @@ YES or NO
 ## Did You Update From `main`?
 (This is super important! If your branch is behind `main`, your PR might have merge conflicts or silently break things that were recently fixed. Always pull the latest `main` into your branch BEFORE requesting review.)
 YES or NO
+
+## Did You Add a Reviewer?
+(Add one of these people to review your code: https://github.com/orgs/feds201/teams/programming-mentors-leads)
+YES or NO
