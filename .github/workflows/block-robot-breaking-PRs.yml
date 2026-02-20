@@ -51,7 +51,7 @@ jobs:
       matrix:
         project: ${{ fromJson(needs.detect-robot-changes.outputs.projects) }}
       fail-fast: false # Show ALL failures, not just the first one
-    name: "Build & Test: ${{ matrix.project }}"
+    name: "robot/${{ matrix.project }}"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
