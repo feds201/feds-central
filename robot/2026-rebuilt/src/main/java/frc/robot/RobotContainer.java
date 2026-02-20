@@ -51,16 +51,13 @@ public class RobotContainer {
     configureBindings();
   }
 
-      public void updateLocalization() {
-        if(ll4.getNTTable().containsKey("tv")){
-            ll4.updateLocalizationLimelight(drivetrain);
-        }else
-        {
-            ll3.updateLocalizationLimelight(drivetrain);
-        }
+  public void updateLocalization() {
+    if (ll4.getNTTable().containsKey("tv")) {
+      ll4.updateLocalizationLimelight(drivetrain);
+    } else {
+      ll3.updateLocalizationLimelight(drivetrain);
     }
-  
-
+  }
   private void configureBindings() {
     // controller.a()
     //   .onTrue(IntakeSubsystem.dyanmicCommand(Direction.kReverse));
