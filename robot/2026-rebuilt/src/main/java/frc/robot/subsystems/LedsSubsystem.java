@@ -153,13 +153,13 @@ public class LedsSubsystem extends SubsystemBase {
             .RunOnce(false);
         break;
         
-      case ERROR:
-          m_leds.leds.SetAnimation(Animation.Blink)
-            .ForGroup(GR_300)
-            .WithColor(COLOR_RED)
-            .WithDelay(Units.Milliseconds.of(100))
-            .RunOnce(false);
-        break;
+      // case ERROR:
+      //     m_leds.leds.SetAnimation(Animation.Blink)
+      //       .ForGroup(GR_300)
+      //       .WithColor(COLOR_RED)
+      //       .WithDelay(Units.Milliseconds.of(100))
+      //       .RunOnce(false);
+      //   break;
     }
   }
 
@@ -207,7 +207,7 @@ public class LedsSubsystem extends SubsystemBase {
 
   public Command shootingSignal() { return runStateCommand(LEDState.SHOOTING); }
   public Command climbingSignal() { return runStateCommand(LEDState.CLIMBING); }
-  public Command errorSignal() { return runStateCommand(LEDState.ERROR); }
+ // public Command errorSignal() { return runStateCommand(LEDState.ERROR); }
   public Command resetLEDS() { return setStateCommand(LEDState.IDLE); }
 
   @Deprecated
