@@ -6,7 +6,16 @@ import java.util.function.Supplier;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.hardware.Pigeon2;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
+import com.ctre.phoenix6.sim.CANcoderSimState;
+import com.ctre.phoenix6.sim.Pigeon2SimState;
+import com.ctre.phoenix6.sim.TalonFXSimState;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
+import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -18,17 +27,20 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-
+import frc.robot.RobotMap;
 import frc.robot.subsystems.swerve.generated.TunerConstants.TunerSwerveDrivetrain;
 
 /**
@@ -131,7 +143,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         SwerveDrivetrainConstants drivetrainConstants,
         SwerveModuleConstants<?, ?, ?>... modules
     ) {
-        super(drivetrainConstants, modules);
+        super(drivetrainConstants, regulateModuleConstantsForSimulation(modules));
         if (Utils.isSimulation()) {
             startSimThread();
         }
@@ -156,7 +168,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         double odometryUpdateFrequency,
         SwerveModuleConstants<?, ?, ?>... modules
     ) {
-        super(drivetrainConstants, odometryUpdateFrequency, modules);
+        super(drivetrainConstants, odometryUpdateFrequency, regulateModuleConstantsForSimulation(modules));
         if (Utils.isSimulation()) {
             startSimThread();
         }
@@ -189,7 +201,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         Matrix<N3, N1> visionStandardDeviation,
         SwerveModuleConstants<?, ?, ?>... modules
     ) {
-        super(drivetrainConstants, odometryUpdateFrequency, odometryStandardDeviation, visionStandardDeviation, modules);
+        super(drivetrainConstants, odometryUpdateFrequency, odometryStandardDeviation, visionStandardDeviation,
+            regulateModuleConstantsForSimulation(modules));
         if (Utils.isSimulation()) {
             startSimThread();
         }
@@ -278,6 +291,31 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         }
     }
 
+    /**
+     * Adjusts SwerveModuleConstants for MapleSim compatibility in simulation.
+     * Zeros encoder offsets, disables motor inversions, and tunes steer PID.
+     * No-op on real robot.
+     */
+    private static SwerveModuleConstants<?, ?, ?>[] regulateModuleConstantsForSimulation(
+            SwerveModuleConstants<?, ?, ?>... moduleConstants) {
+        if (RobotBase.isReal()) return moduleConstants;
+        for (SwerveModuleConstants<?, ?, ?> mc : moduleConstants) {
+            mc.withEncoderOffset(0)
+                .withDriveMotorInverted(false)
+                .withSteerMotorInverted(false)
+                .withEncoderInverted(false)
+                .withSteerMotorGains(new Slot0Configs()
+                    .withKP(70).withKI(0).withKD(4.5)
+                    .withKS(0).withKV(1.91).withKA(0)
+                    .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign))
+                .withSteerMotorGearRatio(16.0)
+                .withDriveFrictionVoltage(Volts.of(0.2))
+                .withSteerFrictionVoltage(Volts.of(0.2))
+                .withSteerInertia(KilogramSquareMeters.of(0.05));
+        }
+        return moduleConstants;
+    }
+
     private void startSimThread() {
         m_lastSimTime = Utils.getCurrentTimeSeconds();
 
@@ -291,6 +329,58 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             updateSimState(deltaTime, RobotController.getBatteryVoltage());
         });
         m_simNotifier.startPeriodic(kSimLoopPeriod);
+    }
+
+    // --- Sim state accessors (for RebuiltSimManager to wire ODE4J physics) ---
+
+    /** Get the drive motor TalonFXSimState for module i. */
+    public TalonFXSimState getDriveMotorSimState(int moduleIndex) {
+        return getModule(moduleIndex).getDriveMotor().getSimState();
+    }
+
+    /** Get the steer motor TalonFXSimState for module i. */
+    public TalonFXSimState getSteerMotorSimState(int moduleIndex) {
+        return getModule(moduleIndex).getSteerMotor().getSimState();
+    }
+
+    /** Get the CANcoder SimState for module i. */
+    public CANcoderSimState getEncoderSimState(int moduleIndex) {
+        return getModule(moduleIndex).getEncoder().getSimState();
+    }
+
+    /** Get the Pigeon2 SimState. */
+    public Pigeon2SimState getPigeonSimState() {
+        return getPigeon2().getSimState();
+    }
+
+    /** Get the steer angle of module i in rotations (from the CANcoder). */
+    public double getSteerAngleRotations(int moduleIndex) {
+        return getModule(moduleIndex).getEncoder().getPosition().getValueAsDouble();
+    }
+
+    // --- Hardware accessors for MapleSim motor controller adapters ---
+
+    /** Get the drive motor TalonFX for module i. */
+    public TalonFX getDriveMotor(int moduleIndex) {
+        return getModule(moduleIndex).getDriveMotor();
+    }
+
+    /** Get the steer motor TalonFX for module i. */
+    public TalonFX getSteerMotor(int moduleIndex) {
+        return getModule(moduleIndex).getSteerMotor();
+    }
+
+    /** Get the CANcoder for module i. */
+    public CANcoder getModuleEncoder(int moduleIndex) {
+        return getModule(moduleIndex).getEncoder();
+    }
+
+    /** Stop the CTRE sim thread so MapleSim can control encoder state. */
+    public void stopSimNotifier() {
+        if (m_simNotifier != null) {
+            m_simNotifier.stop();
+            m_simNotifier = null;
+        }
     }
 
     /**
@@ -325,5 +415,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         Matrix<N3, N1> visionMeasurementStdDevs
     ) {
         super.addVisionMeasurement(visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds), visionMeasurementStdDevs);
+    }
+
+    public Distance getDistanceToHub()
+    {
+        Translation2d hubCenter = RobotMap.ShooterConstants.hubCenter;
+        Translation2d pose = getState().Pose.getTranslation();
+        return Meters.of(pose.getDistance(hubCenter));
     }
 }

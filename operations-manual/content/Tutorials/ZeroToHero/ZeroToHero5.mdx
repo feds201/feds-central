@@ -1,0 +1,168 @@
+import { Callout } from 'nextra/components';
+import { GenericHero, GenericWidget, GenericGrid, ModernCard } from '../../../Components/index';
+
+
+<GenericHero
+    title="Zero to Hero #5"
+    titleColor="linear-gradient(135deg, #14b8a6 0%, #0d9488 100%)"
+    subtitle="The Eyes: Vision & Limelight 💚"
+    description="Encoders tell you where you *think* you are. Vision tells you where you *actually* are. In this episode, we learn how to use the Limelight to track AprilTags and aim at targets automatically using simple 2D geometry."
+    backgroundType="gradient"
+    backgroundValue="linear-gradient(135deg, #0f766e 0%, #115e59 100%)"
+    particles={[
+        { symbol: '👁️', transform: 'translate(0,0)' },
+        { symbol: '🟩', transform: 'translate(10px,10px)' }
+    ]}
+    buttons={[
+        { text: '⬅️ Back to Ep 4', style: 'secondary', href: '/Tutorials/ZeroToHero/ZeroToHero4' }
+    ]}
+    height="md"
+    textAlign="center"
+/>
+
+## 🎯 What is the Limelight?
+
+The Limelight is a smart camera that does all the hard work for you. Instead of writing complex OpenCV code, the Limelight just sends you numbers over the network:
+* **tv**: Whether a target is visible (0 or 1).
+* **tx**: Horizontal Offset (-27° to +27°). "Am I aimed left or right?"
+* **ty**: Vertical Offset. "Am I too far or too close?"
+* **ta**: Target Area. "How big is the target?"
+
+<Callout type="info" emoji="🟩">
+    **Why AprilTags?**: Unlike retro-reflective tape, AprilTags have IDs. The robot knows the difference between "Tag 3" (Speaker) and "Tag 4" (Amp).
+</Callout>
+
+---
+
+## 📡 Chapter 1: NetworkTables (The Nervous System)
+
+The Limelight talks to the RoboRIO using **NetworkTables**. It's like a shared whiteboard where the camera writes numbers and the robot reads them.
+
+```java
+// LimelightSubsystem.java
+public class LimelightSubsystem extends SubsystemBase {
+
+    public double getTx() {
+        return LimelightHelpers.getTX("limelight");
+    }
+
+    public double getTy() {
+        return LimelightHelpers.getTY("limelight");
+    }
+
+    public boolean hasTarget() {
+        return LimelightHelpers.getTV("limelight");
+    }
+
+    // Simple helper to turn lights on/off (if using tape)
+    public void setLED(boolean on) {
+        LimelightHelpers.setLEDMode_ForceOn("limelight");
+    }
+}
+```
+
+---
+
+## 📐 Chapter 2: The "Aim" Command (2D Targeting)
+
+The simplest vision command is **"Turn until tx is 0"**.
+If `tx` is positive (target is to the right), turn right. If negative, turn left.
+
+```java
+public class AimAtTargetCommand extends Command {
+    private final DriveSubsystem m_drive;
+    private final LimelightSubsystem m_vision;
+
+    public AimAtTargetCommand(DriveSubsystem drive, LimelightSubsystem vision) {
+        m_drive = drive;
+        m_vision = vision;
+        addRequirements(drive); // Don't require vision, just read it
+    }
+
+    @Override
+    public void execute() {
+        double turningSpeed = 0;
+
+        if (m_vision.hasTarget()) {
+            double tx = m_vision.getTx();
+
+            // Simple Proportional Control (Kp)
+            // "If error is big, turn fast. If error is small, turn slow."
+            double kP = 0.03;
+            turningSpeed = tx * kP;
+        }
+
+        // Apply to drivebase
+        m_drive.arcadeDrive(0, turningSpeed);
+    }
+}
+```
+
+<Callout type="warning" emoji="⚠️">
+    **Safety Check**: Always check `hasTarget()` (tv) before trusting `tx`. If the camera sees nothing, `tx` might stay at the last known value or 0!
+</Callout>
+
+---
+
+## 📏 Chapter 3: Distance Estimation (Trigonometry)
+
+How do we know how far away the Speaker is? We use the angle!
+Since the camera is mounted at a fixed height and angle, `ty` tells us the distance.
+
+$$
+\text{Distance} = \frac{\text{TargetHeight} - \text{CameraHeight}}{\tan(\text{CameraAngle} + \text{ty})}
+$$
+
+```java
+public double getDistanceToTag() {
+    double targetOffsetAngle_Vertical = LimelightHelpers.getTY("limelight");
+
+    // How many degrees back is your camera tilted?
+    double limelightMountAngleDegrees = 25.0;
+
+    // Distance from the center of the Limelight lens to the floor
+    double limelightLensHeightInches = 20.0;
+
+    // Height of the target (AprilTag)
+    double goalHeightInches = 60.0;
+
+    double angleToGoalDegrees = limelightMountAngleDegrees + targetOffsetAngle_Vertical;
+    double angleToGoalRadians = Math.toRadians(angleToGoalDegrees);
+
+    // Calculate distance
+    double distanceFromLimelightToGoalInches = (goalHeightInches - limelightLensHeightInches) / Math.tan(angleToGoalRadians);
+
+    return distanceFromLimelightToGoalInches;
+}
+```
+
+---
+
+## 🏁 Summary
+
+You can now:
+1.  **See** targets using NetworkTables.
+2.  **Turn** to face them using `tx`.
+3.  **Measure** distance using `ty`.
+
+This "Turn to Target" logic is actually a simple **P-Controller**. In **Episode 6**, we will formalize this into full **PID Control** so we can aim faster and smoother!
+
+---
+
+## 📞 Need Help? We've Got Your Back!
+
+- **Email**: feds.programming@gmail.com
+
+**Keep coding, keep learning, and remember: every expert was once a beginner who refused to give up!** 🚀
+
+*P.S. - If your robot starts talking back, that's either very advanced AI or you need more sleep. Probably more sleep.* 🤖💤
+
+---
+
+*This documentation is part of the Zero to Hero programming series. For the complete learning experience, watch the accompanying video and practice with real robot code. Remember: the only way to get good at programming is to write lots of bad code first! 😄*
+
+<Callout type="info" emoji="💝">
+    **Special Thanks**: To all the students who asked "Why doesn't this work?" and inspired us to create better documentation. Your questions make us better teachers, and your curiosity drives innovation. You're the real MVPs! 🏆
+
+    *Remember: Every expert was once a beginner who refused to give up. Keep coding, keep learning, and most importantly - keep having fun! 🚀*
+</Callout>

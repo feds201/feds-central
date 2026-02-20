@@ -1,0 +1,214 @@
+import { Callout } from 'nextra/components';
+import { Cards } from 'nextra/components';
+import {
+    GenericHero,
+    GenericWidget,
+    GenericTimeline,
+    ZeroToHero4Grid
+} from '../../../Components/index';
+
+
+<GenericHero
+    title="Zero to Hero #4"
+    titleColor="linear-gradient(135deg, #f59e0b 0%, #d97706 100%)"
+    subtitle="The Senses: Sensors & Perception 👁️"
+    description="A robot without sensors is just a remote-controlled car. To be autonomous, it needs to see, feel, and measure the world. In this episode, we master Encoders, Gyros, and Limit Switches."
+    backgroundType="gradient"
+    backgroundValue="linear-gradient(135deg, #78350f 0%, #92400e 100%)"
+    particles={[
+        { symbol: '👁️', transform: 'translate(0,0)' },
+        { symbol: '📡', transform: 'translate(10px,10px)' }
+    ]}
+    buttons={[
+        { text: '⬅️ Back to Ep 3', style: 'secondary', href: '/Tutorials/ZeroToHero/ZeroToHero3' }
+    ]}
+    height="md"
+    textAlign="center"
+/>
+
+<Callout type="info" emoji="🧠">
+    **Analogy Time**:
+    * **Motors** are the muscles.
+    * **The RoboRIO** is the brain.
+    * **Sensors** are the eyes and ears.
+    Without sensors, the robot is flying blind!
+</Callout>
+
+## 🎯 Learning Objectives
+<br></br><br></br>
+<GenericWidget title="Sensor Types" variant="gradient" size="lg">
+    <ZeroToHero4Grid />
+</GenericWidget>
+
+---
+
+## 🔘 Chapter 1: Digital Inputs (The Basics)
+
+A **Digital Input** is the simplest sensor. It has two states:  (On) or  (Off).
+Common uses:
+* **Limit Switch**: "Am I hitting the wall?"
+* **Beam Break**: "Is a game piece inside the intake?"
+
+### Wiring
+Connect to the **DIO** (Digital Input/Output) ports on the RoboRIO.
+* Signal (White/Yellow)
+* Power (Red - usually not needed for simple switches)
+* Ground (Black)
+
+### Code Example
+
+```java
+public class IntakeSubsystem extends SubsystemBase {
+    // 1. Define the sensor
+    private final DigitalInput m_noteSensor = new DigitalInput(0); // DIO Port 0
+
+    // 2. Create a method to read it
+    public boolean hasNote() {
+        // DigitalInputs are often "Pull Up", meaning they are TRUE when open
+        // and FALSE when pressed/blocked.
+        // We usually invert it so "True" means "I have something".
+        return !m_noteSensor.get();
+    }
+}
+```
+
+---
+
+## 📏 Chapter 2: Encoders (Measuring Motion)
+
+Encoders measure **rotation**. They tell you:
+1.  **Position**: How far have I gone?
+2.  **Velocity**: How fast am I going?
+
+### Types of Encoders
+1.  **Quadrature Encoders**: External sensors (like the REV Through Bore). Plug into DIO.
+2.  **Motor Controllers (Internal)**: Most modern motors (NEO, Kraken, Falcon) have built-in encoders. WE LOVE THESE.
+
+### Using SparkMax Encoders (NEOs)
+
+```java
+public class ElevatorSubsystem extends SubsystemBase {
+    private final CANSparkMax m_motor = new CANSparkMax(9, MotorType.kBrushless);
+    private final RelativeEncoder m_encoder;
+
+    public ElevatorSubsystem() {
+        m_encoder = m_motor.getEncoder();
+
+        // Convert "Rotations" to "Inches"
+        // Gear Ratio: 10:1
+        // Spool Diameter: 2 inches (Circumference = 2 * PI)
+        // Factor = (1 / 10.0) * (2 * Math.PI)
+        m_encoder.setPositionConversionFactor((1.0/10.0) * (Math.PI * 2.0));
+    }
+
+    public double getHeightInches() {
+        return m_encoder.getPosition();
+    }
+}
+```
+
+---
+
+## 🧭 Chapter 3: Gyroscopes (Heading)
+
+A Gyroscope measures **rotation rate** and calculates **angle**.
+Crucial for:
+* Driving straight
+* Field-Oriented Swerve Drive
+* Auto-balancing
+
+We use the **Pigeon 2.0** (CTRE) or **NavX**.
+
+### Pigeon 2.0 Example
+
+```java
+public class DriveSubsystem extends SubsystemBase {
+    private final WPI_Pigeon2 m_gyro = new WPI_Pigeon2(13); // CAN ID 13
+
+    public double getHeading() {
+        // Returns 0 to 360 degrees
+        return m_gyro.getAngle();
+    }
+
+    public Rotation2d getRotation2d() {
+        // Returns a fancy geometry object used by PathPlanner
+        return m_gyro.getRotation2d();
+    }
+
+    public void resetHeading() {
+        m_gyro.reset();
+    }
+}
+```
+
+---
+
+## 🎮 Chapter 4: Using Sensors in Commands
+
+Now that we have data, let's use it!
+
+### Example: `RunElevatorToHeight` Command
+
+```java
+public class RunElevatorToHeight extends Command {
+    private final ElevatorSubsystem m_elevator;
+    private final double m_targetHeight;
+
+    public RunElevatorToHeight(ElevatorSubsystem elevator, double height) {
+        m_elevator = elevator;
+        m_targetHeight = height;
+        addRequirements(elevator);
+    }
+
+    @Override
+    public void execute() {
+        if (m_elevator.getHeightInches() < m_targetHeight) {
+            m_elevator.setSpeed(0.5); // Go Up
+        } else {
+            m_elevator.setSpeed(-0.5); // Go Down
+        }
+    }
+
+    @Override
+    public boolean isFinished() {
+        // Stop when we are close (within 1 inch)
+        return Math.abs(m_elevator.getHeightInches() - m_targetHeight) < 1.0;
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        m_elevator.stop();
+    }
+}
+```
+
+---
+
+## 🧠 Checkpoint
+
+You can now:
+1.  Detect objects with **Digital Inputs**.
+2.  Measure distance with **Encoders**.
+3.  Know your direction with **Gyros**.
+
+Next Episode: **PID Control**. We will stop "banging" motors on and off and learn smooth, precise control!
+
+---
+
+## 📞 Need Help? We've Got Your Back!
+
+- **Email**: feds.programming@gmail.com
+
+**Keep coding, keep learning, and remember: every expert was once a beginner who refused to give up!** 🚀
+
+*P.S. - If your robot starts talking back, that's either very advanced AI or you need more sleep. Probably more sleep.* 🤖💤
+
+---
+
+*This documentation is part of the Zero to Hero programming series. For the complete learning experience, watch the accompanying video and practice with real robot code. Remember: the only way to get good at programming is to write lots of bad code first! 😄*
+
+<Callout type="info" emoji="💝">
+    **Special Thanks**: To all the students who asked "Why doesn't this work?" and inspired us to create better documentation. Your questions make us better teachers, and your curiosity drives innovation. You're the real MVPs! 🏆
+
+    *Remember: Every expert was once a beginner who refused to give up. Keep coding, keep learning, and most importantly - keep having fun! 🚀*
+</Callout>

@@ -12,6 +12,7 @@ import {
   User,
   KeyRound,
   ShieldCheck,
+  MessageCircle,
 } from 'lucide-react'
 import { authClient } from '@/auth'
 
@@ -21,6 +22,7 @@ const navItems = [
   { label: 'Credentials', path: '/credentials', icon: Shield },
   { label: 'Authenticator', path: '/authenticator', icon: KeyRound },
   { label: 'Password Health', path: '/password-health', icon: ShieldCheck },
+  { label: 'FEDSBot Chat', path: '/chat', icon: MessageCircle },
   { label: 'Activity', path: '/audit', icon: Activity },
   { label: 'Account', path: '/account', icon: User },
 ]

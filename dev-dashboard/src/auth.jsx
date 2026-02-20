@@ -8,11 +8,39 @@ export function AuthProvider({ children }) {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const session = api.getSession();
-        if (session) {
-            setUser(session.user);
+        // Skip auth in dev mode
+        if (!import.meta.env.PROD) {
+            setUser({ id: 'dev', email: 'dev@feds201.com' });
+            setLoading(false);
+            return;
         }
-        setLoading(false);
+
+        const session = api.getSession();
+        if (!session) {
+            setLoading(false);
+            return;
+        }
+
+        // Validate the session by refreshing the access token.
+        // If this fails, the stored session is dead — log out.
+        fetch('/api/auth/refresh', { method: 'POST', credentials: 'include' })
+            .then(async (res) => {
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.token) {
+                        localStorage.setItem('token', data.token);
+                    }
+                    setUser(session.user);
+                } else {
+                    api.signOut();
+                }
+            })
+            .catch(() => {
+                api.signOut();
+            })
+            .finally(() => {
+                setLoading(false);
+            });
     }, []);
 
     const login = async (email, password) => {

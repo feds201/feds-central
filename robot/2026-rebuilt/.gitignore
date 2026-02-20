@@ -9,7 +9,6 @@
 *.slo
 *.lo
 *.o
-*.obj
 
 # Precompiled Headers
 *.gch
@@ -131,7 +130,7 @@ $RECYCLE.BIN/
 *.msix
 *.msm
 *.msp
-
+*.wpilogs
 # Windows shortcuts
 *.lnk
 

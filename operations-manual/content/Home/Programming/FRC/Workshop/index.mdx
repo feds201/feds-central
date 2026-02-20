@@ -1,0 +1,110 @@
+# FRC Workshop Simulators
+
+Welcome to the FRC Programming Workshop! This folder contains interactive simulators to help you understand critical FRC concepts.
+
+## Available Simulators
+
+### 1. **Absolute Sensor Discontinuity Simulator** (`ASDSim`)
+Learn about absolute encoder wrap points and how to safely configure them.
+
+- **Explore**: Where sensors "wrap" around in their range
+- **Visualize**: Physical turret position vs software output
+- **Understand**: Hard stops and discontinuity points
+- **Optimize**: Find the safe configuration for your mechanism
+
+**Key Files**: `ASDSim.mdx` → `Components/Programming/ASDSimulator.jsx`
+
+---
+
+### 2. **Motor vs Mechanism Ratio Simulator** (`MotorVsMechanism` or `MvMSim`)
+Understand gear reduction and its effects on speed, torque, and control.
+
+- **Explore**: How rotor, sensor, and mechanism speeds relate
+- **Visualize**: Multi-stage gear train animations
+- **Graph**: Position traces for all three components
+- **Experiment**: Adjust ratios to see real-time effects
+
+**Key Files**: `MotorVsMechanism.mdx` / `MvMSim.mdx` → `Components/Programming/MotorVsMechanismSimulator.jsx`
+
+---
+
+### 3. **Motor Control System Configurator** (`MotorControlConfigurator` or `PIDSim`)
+Tune PID, feedforward, and gravity compensation gains.
+
+- **Configure**: PID coefficients (kP, kI, kD)
+- **Feedforward**: Static friction (kS), velocity (kV), and acceleration (kA) gains
+- **Gravity**: Compensation for different mechanism types
+- **Simulate**: Arm or Turret control modes
+- **Slots**: Store 4 different configurations for different control modes
+
+**Key Files**: `MotorControlConfigurator.mdx` / `PIDSim.mdx` → `Components/Programming/MotorControlConfigurator.jsx`
+
+---
+
+## Workshop Structure
+
+```
+Workshop/
+├── ASDSim.mdx                      (Sensor Discontinuity)
+├── MotorVsMechanism.mdx            (Primary Motor vs Mechanism)
+├── MvMSim.mdx                      (Alias for above)
+├── MotorControlConfigurator.mdx    (Primary Motor Control)
+├── PIDSim.mdx                      (Alias for above)
+└── _meta.json                      (Navigation configuration)
+
+Components/Programming/
+├── ASDSimulator.jsx                (Default export)
+├── MotorVsMechanismSimulator.jsx   (Default export)
+└── MotorControlConfigurator.jsx    (Default export)
+```
+
+---
+
+## How to Use the Simulators
+
+### Starting Out
+1. Begin with **Motor vs Mechanism Ratio** to understand gear reduction
+2. Move to **Motor Control System** to see how gains affect behavior
+3. Finally, **Sensor Discontinuity** to ensure safe configurations
+
+### For Competition
+- Use **Motor Control System** to quickly test different gain sets
+- Reference the gains that work best in your code
+- Use **Sensor Discontinuity** when configuring absolute encoders
+
+### For Learning
+- Experiment with extreme values to see effects
+- Try oscillate vs continuous modes
+- Compare different slot configurations
+- Test both Arm and Turret modes
+
+---
+
+## Technical Notes
+
+- All simulators are **interactive React components**
+- Canvas-based rendering for performance
+- Real-time physics approximation
+- No external dependencies (uses React hooks only)
+- Dark theme optimized for learning environments
+
+---
+
+## File Organization
+
+Each simulator follows this pattern:
+- **MDX File** in `Workshop/` - Contains documentation and imports component
+- **React Component** in `Components/Programming/` - Interactive simulator logic
+- **Default exports** - Compatible with Nextra MDX system
+
+---
+
+## Next Steps
+
+- Read the documentation for each simulator
+- Experiment with different parameters
+- Export your preferred configurations
+- Compare results between simulators
+
+Happy learning! 🚀
+

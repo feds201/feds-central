@@ -1,0 +1,23 @@
+#!/sbin/openrc-run
+
+name="Fedsbot"
+description="FEDS FRC Team 201 AI Discord Bot"
+
+command="/root/feds-central/fedsbot/node_modules/.bin/tsx"
+command_args="fedsbot/src/index.ts"
+command_background=true
+pidfile="/run/${RC_SVCNAME}.pid"
+directory="/root/feds-central"
+output_log="/var/log/fedsbot.log"
+error_log="/var/log/fedsbot.log"
+
+depend() {
+    need net
+    after firewall
+}
+
+start_pre() {
+    if [ -f "${directory}/fedsbot/.env" ]; then
+        export $(cat "${directory}/fedsbot/.env" | grep -v '^#' | xargs)
+    fi
+}
