@@ -15,9 +15,11 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
+import com.google.flatbuffers.Constants;
 
 import edu.wpi.first.hal.AllianceStationID;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -88,7 +90,6 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void robotPeriodic() {
-    m_robotContainer.updateLocalization();
     CommandScheduler.getInstance().run();
   }
 

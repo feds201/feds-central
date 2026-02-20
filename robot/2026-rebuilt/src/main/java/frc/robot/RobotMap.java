@@ -5,12 +5,8 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import java.util.Map;
 
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
@@ -23,10 +19,6 @@ import frc.robot.utils.SwerveModuleStatusUtil;
  * to a variable name. This provides flexibility changing wiring.
  */
 public final class RobotMap {
-    public static final Matrix<N3, N1> MT1_STDDEV = VecBuilder.fill(1e6, 1e6, Math.PI/60);
-        //Use only x/y from MT2
-    public static final Matrix<N3, N1> MT2_STDDEV = VecBuilder.fill(0.5, 0.5, 1e6);
-
 
     public static class Constants {
     public static boolean disableHAL = false;
@@ -118,5 +110,4 @@ public final class RobotMap {
     }
 }
 
-
-
+  
