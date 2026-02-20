@@ -1,0 +1,28 @@
+name: Jules PR CodeGuard
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: google-labs-code/jules-invoke@v1.0.0
+        with:
+          prompt: |
+            Act as a Code Guard with deep knowledge of software development. 
+            Do NOT push code changes or create a new branch.
+            
+            Instead, review the files changed in this pull request (PR #${{ github.event.pull_request.number }}).
+            Identify areas to make the code more readable, maintainable, and secure.
+            
+            For every issue you find, use the GitHub CLI (`gh pr review`) or the GitHub REST API to post an INLINE comment directly on the specific line of code in the PR.
+            Always start your suggestions with 'As a CodeGuard, here are my suggestions' and explain your reasoning clearly.
+          jules_api_key: ${{ secrets.JULES_API_KEY }}
+        env:
+          # Jules needs the GitHub token to authenticate its CLI commands
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
