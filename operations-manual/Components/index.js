@@ -1,57 +1,10 @@
 'use client';
+
 // ============================================================================
 // FEDS-Handbook Components Library
 // ============================================================================
-// A comprehensive, parameter-driven components library for creating
-// any widget or UI element needed across the FEDS Handbook.
-//
-// Components are organized into logical categories:
-// - Base: Fundamental building blocks (Button, Card, Hero)
-// - Core: Essential widgets and containers
-// - Layout: Grid systems and layout components
-// - Data: Data visualization and stats components
-// - Interactive: Interactive elements and timelines
-// - Navigation: Navigation and menu components
-// ============================================================================
 
-// ============================================================================
-// BASE COMPONENTS - Fundamental building blocks
-// ============================================================================
-export { GenericButton } from './Library/Base/GenericButton';
-export { GenericCard } from './Library/Base/GenericCard';
-export { GenericHero } from './Library/Base/GenericHero';
-
-// ============================================================================
-// CORE COMPONENTS - Essential widgets and containers
-// ============================================================================
-export { GenericWidget } from './Library/Core/GenericWidget';
-
-// ============================================================================
-// LAYOUT COMPONENTS - Grid systems and layout
-// ============================================================================
-export { GenericGrid } from './Library/Layout/GenericGrid';
-
-// ============================================================================
-// DATA COMPONENTS - Data visualization and statistics
-// ============================================================================
-export { GenericStats } from './Library/Data/GenericStats';
-
-// ============================================================================
-// INTERACTIVE COMPONENTS - Interactive elements
-// ============================================================================
-export { GenericTimeline } from './Library/Interactive/GenericTimeline';
-
-// ============================================================================
-// NAVIGATION COMPONENTS - Navigation and menus
-// ============================================================================
-export { GenericNavigation } from './Library/Navigation/GenericNavigation';
-
-// ============================================================================
-// CONVENIENCE EXPORTS - Pre-configured generic components
-// ============================================================================
-// These are the generic components configured for common use cases
-
-import React from 'react';
+import React, { useState } from 'react';
 import { GenericCard } from './Library/Base/GenericCard';
 import { GenericHero } from './Library/Base/GenericHero';
 import { GenericWidget } from './Library/Core/GenericWidget';
@@ -60,81 +13,38 @@ import { GenericStats } from './Library/Data/GenericStats';
 import { GenericTimeline } from './Library/Interactive/GenericTimeline';
 import { GenericNavigation } from './Library/Navigation/GenericNavigation';
 
-// Simple working slider component
-const WorkingSlider = ({ label, min, max, step, defaultValue, icon, onChange }) => {
-  const [value, setValue] = useState(defaultValue);
-  
-  const handleChange = (e) => {
-    const newValue = parseFloat(e.target.value);
-    setValue(newValue);
-    if (onChange) onChange(newValue);
-  };
+// Re-export Base Components
+export { GenericButton } from './Library/Base/GenericButton';
+export { GenericCard } from './Library/Base/GenericCard';
+export { GenericHero } from './Library/Base/GenericHero';
 
-  return (
-    <div style={{ 
-      padding: '16px', 
-      background: 'rgba(255,255,255,0.1)', 
-      borderRadius: '8px', 
-      marginBottom: '16px' 
-    }}>
-      <div style={{ 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'space-between', 
-        marginBottom: '12px' 
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <span style={{ fontSize: '20px', marginRight: '8px' }}>{icon}</span>
-          <label style={{ fontWeight: 'bold', fontSize: '14px', color: 'white' }}>{label}</label>
-        </div>
-        <span style={{ 
-          fontSize: '18px', 
-          fontWeight: 'bold', 
-          color: '#667eea',
-          backgroundColor: 'rgba(255,255,255,0.2)',
-          padding: '4px 8px',
-          borderRadius: '4px'
-        }}>
-          {value.toFixed(1)}
-        </span>
-      </div>
-      
-      <input
-        type="range"
-        min={min}
-        max={max}
-        step={step}
-        value={value}
-        onChange={handleChange}
-        style={{
-          width: '100%',
-          height: '6px',
-          borderRadius: '3px',
-          background: '#ddd',
-          outline: 'none',
-          opacity: '0.7',
-          transition: 'opacity 0.2s',
-          cursor: 'pointer'
-        }}
-        onMouseOver={(e) => e.target.style.opacity = '1'}
-        onMouseOut={(e) => e.target.style.opacity = '0.7'}
-      />
-      
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        fontSize: '12px', 
-        marginTop: '8px', 
-        opacity: 0.7,
-        color: 'white'
-      }}>
-        <span>{min}</span>
-        <span>Current: {value.toFixed(1)}</span>
-        <span>{max}</span>
-      </div>
-    </div>
-  );
-};
+// Re-export Core Components
+export { GenericWidget } from './Library/Core/GenericWidget';
+
+// Re-export Layout Components
+export { GenericGrid } from './Library/Layout/GenericGrid';
+
+// Re-export Data Components
+export { GenericStats } from './Library/Data/GenericStats';
+
+// Re-export Interactive Components
+export { GenericTimeline } from './Library/Interactive/GenericTimeline';
+
+// Re-export Navigation Components
+export { GenericNavigation } from './Library/Navigation/GenericNavigation';
+
+// New Components
+export { ValuesGrid } from './ValuesGrid';
+export { ZeroToHero2Grid } from './ZeroToHero2Grid';
+export { SubgroupsGrid } from './SubgroupsGrid';
+export { CompetitionGrid } from './CompetitionGrid';
+export { KnowledgeBaseGrid } from './KnowledgeBaseGrid';
+export { SustainabilitySection } from './SustainabilitySection';
+export { BuildKnowledgeSection } from './BuildKnowledgeSection';
+
+// ============================================================================
+// CONVENIENCE EXPORTS - Pre-configured generic components
+// ============================================================================
 
 // Pre-configured Hero components
 export const ProgrammingHero = (props) => (
@@ -691,76 +601,7 @@ export const VDESDashboard = (props) => {
     </GenericGrid>
   );
 };
-
-// ============================================================================
-// EXAMPLE USAGE PATTERNS
-// ============================================================================
-/*
-
-// Creating a custom hero section:
-<GenericHero
-  title="My Custom Title"
-  subtitle="Custom subtitle"
-  backgroundType="gradient"
-  backgroundValue="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
-  buttons={[
-    { text: 'Get Started', style: 'primary', onClick: () => {} },
-    { text: 'Learn More', style: 'secondary', href: '/learn' }
-  ]}
-  particles={[
-    { symbol: '🚀', transform: 'translateX(10px)' },
-    { symbol: '⚡', transform: 'translateX(-10px)' }
-  ]}
-  height="lg"
-/>
-
-// Creating a stats section:
-<GenericStats
-  layout="horizontal"
-  variant="cards"
-  countUp={true}
-  stats={[
-    { value: 100, label: 'Projects', icon: '📊', suffix: '+' },
-    { value: 50, label: 'Students', icon: '👥' },
-    { value: 25, label: 'Awards', icon: '🏆' }
-  ]}
-/>
-
-// Creating a timeline:
-<GenericTimeline
-  orientation="vertical"
-  variant="cards"
-  interactive={true}
-  items={[
-    {
-      title: 'Event 1',
-      date: '2024',
-      description: 'Description of event',
-      icon: '🎯'
-    }
-  ]}
-/>
-
-// Creating a grid of cards:
-<GenericGrid
-  layout="responsive"
-  columns={{ xs: 1, sm: 2, md: 3 }}
-  items={cardData}
-  renderItem={(item) => (
-    <GenericCard variant="modern" {...item} />
-  )}
-/>
-
-// Creating a custom widget:
-<GenericWidget
-  title="Custom Widget"
-  icon="🔧"
-  variant="glass"
-  size="md"
-  interactive={true}
-  link="/custom-page"
->
-  <p>Custom content goes here</p>
-</GenericWidget>
-
-*/
+export * from './ZeroToHero1Grids';
+export { ZeroToHero4Grid } from './ZeroToHero4Grid';
+export { ZeroToHero7Grid } from './ZeroToHero7Grid';
+export * from './ZeroToHero8Grids';

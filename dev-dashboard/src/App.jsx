@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, Link } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from '@/auth'
 import AuthLayout from '@/components/layout/AuthLayout'
 import DashboardLayout from '@/components/layout/DashboardLayout'

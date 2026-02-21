@@ -16,16 +16,21 @@ import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.sim.MapleSimSwerveDrivetrain;
+import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.subsystems.swerve.generated.TunerConstants.TunerSwerveDrivetrain;
 
 
@@ -37,7 +42,7 @@ import frc.robot.subsystems.swerve.generated.TunerConstants.TunerSwerveDrivetrai
 public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Subsystem {
     private static final double kSimLoopPeriod = 0.005; // 5 ms
     private Notifier m_simNotifier = null;
-    private double m_lastSimTime;
+    private MapleSimSwerveDrivetrain mapleSimSwerveDrivetrain = null;
 
     /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
     private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
@@ -131,7 +136,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         SwerveDrivetrainConstants drivetrainConstants,
         SwerveModuleConstants<?, ?, ?>... modules
     ) {
-        super(drivetrainConstants, modules);
+        super(drivetrainConstants,
+            MapleSimSwerveDrivetrain.regulateModuleConstantsForSimulation(modules));
         if (Utils.isSimulation()) {
             startSimThread();
         }
@@ -156,7 +162,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         double odometryUpdateFrequency,
         SwerveModuleConstants<?, ?, ?>... modules
     ) {
-        super(drivetrainConstants, odometryUpdateFrequency, modules);
+        super(drivetrainConstants, odometryUpdateFrequency,
+            MapleSimSwerveDrivetrain.regulateModuleConstantsForSimulation(modules));
         if (Utils.isSimulation()) {
             startSimThread();
         }
@@ -189,7 +196,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         Matrix<N3, N1> visionStandardDeviation,
         SwerveModuleConstants<?, ?, ?>... modules
     ) {
-        super(drivetrainConstants, odometryUpdateFrequency, odometryStandardDeviation, visionStandardDeviation, modules);
+        super(drivetrainConstants, odometryUpdateFrequency, odometryStandardDeviation, visionStandardDeviation,
+            MapleSimSwerveDrivetrain.regulateModuleConstantsForSimulation(modules));
         if (Utils.isSimulation()) {
             startSimThread();
         }
@@ -278,19 +286,48 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         }
     }
 
+    // Blue alliance starting position: center of leftmost starting zone, facing field
+    private static final Pose2d kSimStartingPose = new Pose2d(1.2, 6.0, Rotation2d.kZero);
+
     private void startSimThread() {
-        m_lastSimTime = Utils.getCurrentTimeSeconds();
+        mapleSimSwerveDrivetrain = new MapleSimSwerveDrivetrain(
+            Seconds.of(kSimLoopPeriod),
+            Pounds.of(115),
+            Inches.of(33), Inches.of(33), // frame (~26") + bumpers (~3.5" each side)
+            DCMotor.getKrakenX60(1),    // drive motor model
+            DCMotor.getFalcon500(1),    // steer motor model
+            1.2,                        // wheel coefficient of friction
+            getModuleLocations(),
+            kSimStartingPose,
+            getPigeon2(),
+            getModules(),
+            TunerConstants.FrontLeft, TunerConstants.FrontRight,
+            TunerConstants.BackLeft, TunerConstants.BackRight);
 
-        /* Run simulation at a faster rate so PID gains behave more reasonably */
-        m_simNotifier = new Notifier(() -> {
-            final double currentTime = Utils.getCurrentTimeSeconds();
-            double deltaTime = currentTime - m_lastSimTime;
-            m_lastSimTime = currentTime;
-
-            /* use the measured time delta, get battery voltage from WPILib */
-            updateSimState(deltaTime, RobotController.getBatteryVoltage());
-        });
+        m_simNotifier = new Notifier(mapleSimSwerveDrivetrain::update);
         m_simNotifier.startPeriodic(kSimLoopPeriod);
+
+        // Let sim run a few cycles so encoder states reflect the starting pose,
+        // THEN sync CTRE odometry — otherwise odometry double-counts the offset
+        Timer.delay(0.1);
+        super.resetPose(kSimStartingPose);
+    }
+
+    @Override
+    public void resetPose(Pose2d pose) {
+        if (mapleSimSwerveDrivetrain != null) {
+            mapleSimSwerveDrivetrain.mapleSimDrive.setSimulationWorldPose(pose);
+            Timer.delay(0.1);
+        }
+        super.resetPose(pose);
+    }
+
+    /** Returns the maple-sim ground truth pose (sim only). Falls back to odometry. */
+    public Pose2d getSimulatedPose() {
+        if (mapleSimSwerveDrivetrain != null) {
+            return mapleSimSwerveDrivetrain.mapleSimDrive.getSimulatedDriveTrainPose();
+        }
+        return getState().Pose;
     }
 
     public boolean isHealthy() {

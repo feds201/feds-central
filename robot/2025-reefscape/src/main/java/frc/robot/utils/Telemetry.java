@@ -1,7 +1,10 @@
 package frc.robot.utils;
 
 import com.ctre.phoenix6.SignalLogger;
+import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
+
+import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -91,6 +94,17 @@ public class Telemetry {
         driveModulePositions.set(state.ModulePositions);
         driveTimestamp.set(state.Timestamp);
         driveOdometryFrequency.set(1.0 / state.OdometryPeriod);
+
+        /* Publish via AdvantageKit for AdvantageScope 3D view */
+        Logger.recordOutput("Odometry/Robot", state.Pose);
+        Logger.recordOutput("Odometry/ModuleStates", state.ModuleStates);
+        Logger.recordOutput("Odometry/ModuleTargets", state.ModuleTargets);
+
+        /* In sim, also publish the maple-sim ground truth pose (no odometry drift) */
+        if (Utils.isSimulation()) {
+            Logger.recordOutput("Simulator/Robot",
+                DrivetrainConstants.drivetrain.getSimulatedPose());
+        }
 
         /* Also write to log file */
         m_poseArray[0] = state.Pose.getX();

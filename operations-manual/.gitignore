@@ -1,8 +1,0 @@
-node_modules
-.github
-.idea
-.next
-.vscode
-.env
-docs
-out

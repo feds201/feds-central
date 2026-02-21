@@ -1,7 +1,7 @@
 // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
-  
+
 package frc.robot;
 
 import java.util.HashMap;
@@ -15,11 +15,9 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
-import com.google.flatbuffers.Constants;
 
 import edu.wpi.first.hal.AllianceStationID;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -34,7 +32,11 @@ public class Robot extends LoggedRobot {
 
 
   public Robot() {
-    m_robotContainer = new RobotContainer();
+    Logger.recordMetadata("ProjectName", "2026-Rebuilt");
+    Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
+    Logger.recordMetadata("GitBranch", BuildConstants.GIT_BRANCH);
+    Logger.recordMetadata("GitDirty", BuildConstants.DIRTY == 1 ? "UNCOMMITTED CHANGES" : "clean");
+    Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
 
       switch (RobotMap.getRobotMode()) {
       case REAL:
@@ -43,6 +45,7 @@ public class Robot extends LoggedRobot {
         break;
 
       case SIM:
+        Logger.addDataReceiver(new WPILOGWriter("log"));
         Logger.addDataReceiver(new NT4Publisher());
         break;
 
@@ -84,12 +87,12 @@ public class Robot extends LoggedRobot {
       DriverStationSim.notifyNewData();
     }
 
-
-
+    m_robotContainer = new RobotContainer();
   }
 
   @Override
   public void robotPeriodic() {
+    m_robotContainer.updateLocalization();
     CommandScheduler.getInstance().run();
   }
 
@@ -141,4 +144,14 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void testExit() {}
+
+  @Override
+  public void simulationInit() {
+    m_robotContainer.initSimulation();
+  }
+
+  @Override
+  public void simulationPeriodic() {
+    m_robotContainer.updateSimulation();
+  }
 }

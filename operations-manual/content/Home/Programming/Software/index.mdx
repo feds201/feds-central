@@ -1,0 +1,74 @@
+import {Callout} from 'nextra/components';
+import { Cards } from 'nextra/components';
+import { GenericHero, GenericStats, GenericGrid, GenericWidget} from '../../../../Components/index';
+
+    <meta property="og:description" content="Master FRC robot programming with our comprehensive guide - from Java fundamentals to advanced autonomous systems" />
+<GenericHero 
+  title="FRC Wing"
+  backgroundType='gradient'
+  height="sm"
+  description='Master FRC robot programming with our comprehensive guide - from Java fundamentals to advanced autonomous systems'
+  backgroundValue='linear-gradient(to right,rgb(0, 55, 128), rgba(255, 0, 0, 0.62))'
+  textAlign='center'
+/>
+
+<div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 20px' }}>
+
+# Welcome to FRC Wing
+<strong> Where Code Meets Competition</strong>
+
+FRC programming isn’t just about writing code. It’s about breathing life into machines, making decisions faster than your Wi-Fi, and building a robot that doesn’t just move—but flexes on the competition. At FEDS 201, our programmers are the unsung heroes, turning caffeine into code, bugs into features, and chaos into (mostly) functional robots.
+
+<br />
+
+<GenericStats
+  layout="grid"
+  variant="gradient"
+  countUp={true}
+  animation={{ enabled: true, duration: 2000, delay: 100 }}
+  stats={[
+    { value: 14, label: "Days to Full Subsystem Code 🧠 — Fueled by coffee and questionable life choices." },
+    { value: 500, label: "Programming Hours Logged 💻 — Grass was touched (virtually).", suffix: "+" },
+    { value: 1200, label: "Lines of Handwritten Code ✍️ — Every semicolon tells a story.", suffix: "+" },
+    { value: 8, label: "Subsystems Integrated 🔧 — Like duct-taping lawnmowers into a spaceship." },
+    { value: 3, label: "Reusable Code Templates ♻️ — Ctrl+C, Ctrl+V, engineering at its finest." },
+    { value: 1, label: "Swerve Generator Used ⚙️ — Because reinventing the wheel is overrated." },
+    { value: 100, label: "CAD-Based Code Tweaks 📐 — Mechanical team: the gift that keeps on giving (plot twists).", suffix: "+" },
+    { value: 20, label: "Late Nights Debugging 🌙 — Staring into the void until the robot obeys.", suffix: "+" },
+    { value: 7, label: "Auto Modes Created 🤖 — The robot now dreams in trajectories." },
+    { value: 42, label: "Merge Conflicts Resolved 🔀 — Git turned coding into boss fights." },
+    { value: 69, label: "Build Errors Caused by One Missing Bracket 🧱 — Still blaming the compiler." },
+    { value: 1337, label: "Debug Prints Deployed 🐞 — Console.log: the unsung MVP.", suffix: "+" },
+    { value: 1, label: "Programmers Who Swore Never to Touch Code Again 😤 — Until next season." },
+    { value: 6, label: "Panic Deploys Before Matches 🚨 — Ctrl+S, Ctrl+B, Ctrl+Pray." },
+    { value: 2, label: "Robots Possessed by Gremlins 👻 — We don’t talk about Week 3." }
+  ]}
+/>
+
+## 🔥 What You'll Learn in the FRC Wing
+<p>
+  Welcome, brave coder. If you're reading this, congratulations — you're officially in too deep. But hey, here's the good news: by the end of this, you'll be the reason the robot actually moves (and maybe even in the right direction).
+</p>
+
+<GenericStats
+  layout="grid"
+  variant="compact"
+  countUp={true}
+  stats={[
+    { value: "🚀", label: "Java for FRC", description: "Learn to code in Java. You’ll write methods, classes, and accidentally create infinite loops at 3AM." },
+    { value: "🧠", label: "Subsystem Architecture", description: "Split your code like a modular pizza. Subsystems, commands, triggers — it’s object-oriented programming on steroids." },
+    { value: "🎮", label: "Controller Mapping", description: "Map buttons to actions, and occasionally to chaos. Left bumper will probably do something you didn’t expect." },
+    { value: "🛠", label: "Debugging Strategies", description: "Cry into `System.out.println()`. Stack traces, null pointers, and 'why does it only fail when the judges are watching?'" },
+    { value: "🤖", label: "Autonomous Routines", description: "Make the robot do cool stuff without touching it. When it works, it’s magic. When it doesn’t, it’s a feature." },
+    { value: "📦", label: "Git & Version Control", description: "Learn how to git push --force and pray. Also, how to recover from that prayer." },
+    { value: "🧪", label: "Simulation & Tuning", description: "Run your robot in simulation because driving into walls IRL is frowned upon." },
+    { value: "📐", label: "CAD-Driven Adaptation", description: "Turn last-minute mechanical changes into last-minute code commits. We stay flexible. Like spaghetti." }
+  ]}
+/>
+
+<Callout type="info" title="Pro Tip">
+  Programming on an FRC team is 20% Java, 30% teamwork, and 50% convincing the robot it’s not haunted.
+</Callout>
+
+
+</div>
