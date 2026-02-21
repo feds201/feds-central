@@ -24,6 +24,7 @@ import limelight.networktables.LimelightSettings.ImuMode;
 public class RobotContainer {
 
   private final CommandSwerveDrivetrain drivetrain = DrivetrainConstants.createDrivetrain();
+  //Limelight naming conventions are based on physical inventory system, hence "limelight-two" and "limelight-five" represent our second and fifth limelights respectively.
   private final LimelightWrapper ll4 = new LimelightWrapper("limelight-two", true);
   private final LimelightWrapper ll3 = new LimelightWrapper("limelight-five", false);
 
@@ -51,16 +52,13 @@ public class RobotContainer {
     configureBindings();
   }
 
-      public void updateLocalization() {
-        if(ll4.getNTTable().containsKey("tv")){
-            ll4.updateLocalizationLimelight(drivetrain);
-        }else
-        {
-            ll3.updateLocalizationLimelight(drivetrain);
-        }
+  public void updateLocalization() {
+    if (ll4.getNTTable().containsKey("tv")) {
+      ll4.updateLocalizationLimelight(drivetrain);
+    } else {
+      ll3.updateLocalizationLimelight(drivetrain);
     }
-  
-
+  }
   private void configureBindings() {
     // controller.a()
     //   .onTrue(IntakeSubsystem.dyanmicCommand(Direction.kReverse));

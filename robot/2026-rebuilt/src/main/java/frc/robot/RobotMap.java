@@ -23,10 +23,20 @@ import frc.robot.utils.SwerveModuleStatusUtil;
  * to a variable name. This provides flexibility changing wiring.
  */
 public final class RobotMap {
-    public static final Matrix<N3, N1> MT1_STDDEV = VecBuilder.fill(1e6, 1e6, Math.PI/60);
-        //Use only x/y from MT2
-    public static final Matrix<N3, N1> MT2_STDDEV = VecBuilder.fill(0.5, 0.5, 1e6);
-
+   
+    public static class VisionConstants {
+        // MT1 is configured to be effectively ignored for X/Y position (very large stddev)
+        // while still being trusted for rotation. The 1e6 X/Y values indicate extremely
+        // high uncertainty in translation so pose estimators will down‑weight MT1's
+        // position contribution, but the relatively small rotational stddev (~3 degrees)
+        // allows MT1 to meaningfully contribute to heading estimation.
+        public static final Matrix<N3, N1> MT1_STDDEV = VecBuilder.fill(1e6, 1e6, Math.PI / 60);
+        // MT2 is the complementary measurement source: it is trusted for X/Y translation
+        // (small stddevs) and effectively ignored for rotation (very large stddev).
+        // Together, these settings implement "use only x/y from MT2" and "use only
+        // rotation from MT1" when fusing measurements.
+        public static final Matrix<N3, N1> MT2_STDDEV = VecBuilder.fill(0.5, 0.5, 1e6);
+    }
 
     public static class Constants {
     public static boolean disableHAL = false;
@@ -118,5 +128,4 @@ public final class RobotMap {
     }
 }
 
-
-
+  
