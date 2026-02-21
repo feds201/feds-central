@@ -154,13 +154,14 @@ public class ShooterWheels extends SubsystemBase {
 
   public AngularVelocity getTargetVelocityShooting()
   {
-     Distance d = dt.getDistanceToHub();
+     Distance d = dt.getDistanceToVirtualHub();
       return RotationsPerSecond.of(RobotMap.ShooterConstants.kShootingVelocityMap.get(d.in(Meters)));
   }
 
+  //METHOD DYSFUNCTIONAL: Passing doesnt shoot to hub, find position on field to pass to.
    public AngularVelocity getTargetVelocityPassing()
   {
-     Distance d = dt.getDistanceToHub();
+     Distance d = dt.getDistanceToCorner();
       return RotationsPerSecond.of(RobotMap.ShooterConstants.kPassingVelocityMap.get(d.in(Meters)));
   }
 
