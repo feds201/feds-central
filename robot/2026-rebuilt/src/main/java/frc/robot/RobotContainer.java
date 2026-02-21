@@ -12,8 +12,12 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.RobotMap.DrivetrainConstants;
 import frc.robot.subsystems.intake.IntakeSubsystem;
+import frc.robot.subsystems.intake.RollersSubsystem;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterHood;
+import frc.robot.subsystems.shooter.ShooterWheels;
+import frc.robot.subsystems.spindexer.Spindexer;
 import frc.robot.sim.RebuiltSimManager;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -29,12 +33,22 @@ public class RobotContainer {
   private final LimelightWrapper ll3 = new LimelightWrapper("limelight-five", false);
 
   private final CommandXboxController controller = new CommandXboxController(0);
+
+
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
+  
+  private final RollersSubsystem rollersSubsystem = RollersSubsystem.getInstance();
 
   // TODO: implement this for real (was just added to enable simulation)
   private final Shooter shooter = new Shooter();
+  private final ShooterHood shooterHood = new ShooterHood(drivetrain);
+  private final ShooterWheels shooterWheels = new ShooterWheels(drivetrain);
+
   // TODO: implement this for real (was just added to enable simulation)
   private final Intake intake = new Intake();
+
+  private final Spindexer spinDexer = new Spindexer();
+ 
 
   // TODO: implement this for real (was just added to enable simulation)
   // Swerve drive requests
