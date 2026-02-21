@@ -84,7 +84,7 @@ public class IntakeSubsystem extends SubsystemBase {
     limit_switch_l = new DigitalInput(RobotMap.IntakeSubsystemConstants.kLimit_switch_lID);
     rollers = RollersSubsystem.getInstance();
 
-     var config = new TalonFXConfiguration();
+    var config = new TalonFXConfiguration();
     config.Slot0.kP = 0.1;
     config.Slot0.kI = 0.0;
     config.Slot0.kD = 0.0;
