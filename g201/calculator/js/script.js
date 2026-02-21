@@ -15,22 +15,23 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         {
             section: "I. Shipping and Packaging of Products",
-            question: "How many parts did you have to order again?",
+            question: "How many parts did you have to order again in a weekly basis?",
+            hint: "Pick the option that best describes your situation",
             type: "multiple-choice",
              options: [
-        { label: "A lot", eco_impact: "high", value: 3 },
-        { label: "A good amount", eco_impact: "medium", value: 2 },
-        { label: "A little", eco_impact: "low", value: 1 },
+        { label: "A lot (10-15)", eco_impact: "high", value: 3 },
+        { label: "A good amount (5-8)", eco_impact: "medium", value: 2 },
+        { label: "A little (2-3)", eco_impact: "low", value: 1 },
     ],
                 eco_tip: "if you buy without reusing somehow, you adding more to the pile of waste",
             category: "materials",
         },
         {
             section: "I. Shipping and Packaging of Products",
-            question: "How much do you bulk order?",
+            question: "How much do you bulk order during the season?",
+            hint: "Pick the option that best describes your situation",
             type: "multiple-choice",
              options: [
-        { label: "A lot", eco_impact: "high", value: 3 },
         { label: "A good amount", eco_impact: "medium", value: 2 },
         { label: "A little", eco_impact: "low", value: 1 },
     ],
@@ -40,10 +41,11 @@ document.addEventListener('DOMContentLoaded', function() {
         {
             section: "I. Shipping and Packaging of Products",
             question: "Where do you order from?",
+            hint: "Pick the option that best describes your situation",
             type: "multiple-choice",
              options: [
-        { label: "Local", eco_impact: "high", value: 2 },
-        { label: "Non-Local", eco_impact: "medium", value: 1 },
+        { label: "Local", eco_impact: "low", value: 1 },
+        { label: "Non-Local", eco_impact: "high", value: 3 },
     ],
                 eco_tip: "if you buy without reusing somehow, you adding more to the pile of waste",
             category: "materials",
@@ -52,27 +54,179 @@ document.addEventListener('DOMContentLoaded', function() {
     '2': [
         {
             section: "II. Disposable Meal Items",
-            question: "How many boxes of paper plates did you use?",
-            hint: "Enter an integer value",
-            type: "int",
-            min: 0,
-            max: 1500,
-            eco_tip: "",
-            eco_impact: "high",
-            category: "materials"
+            question: "How many boxes of 50 paper plates did you use?",
+            hint: "Pick the option that best describes your situation",
+         type: "multiple-choice",
+        options: [
+        { label: "12-16", eco_impact: "high", value: 3 },
+        { label: "5-10", eco_impact: "medium", value: 2 },
+        { label: "1-3", eco_impact: "low", value: 1 },
+        ],
+        eco_tip: "...",
+        eco_impact: "medium",
+        category: "materials"
         },
         {
         section: "II. Disposable Meal Items",
-        question: "Did you use reusable plates?",
-        type: "choice",
-        choices: ["Yes, always", "Sometimes", "No"],
+        question: "How many boxes of 50 plastic forks did you use in a average competion?",
+        hint: "Pick the option that best describes your situation",
+         type: "multiple-choice",
+        options: [
+        { label: "10-15", eco_impact: "high", value: 3 },
+        { label: "5-8", eco_impact: "medium", value: 2 },
+        { label: "1-3", eco_impact: "low", value: 1 },
+        ],
+        eco_tip: "...",
+        eco_impact: "medium",
+        category: "materials"
+        },
+        {
+        section: "II. Disposable Meal Items",
+        question: "How many packets of napkins did you use?",
+        type: "multiple-choice",
+        options: [
+        { label: "5-8", eco_impact: "high", value: 3 },
+        { label: "3-5", eco_impact: "medium", value: 2 },
+        { label: "1-3", eco_impact: "low", value: 1 },
+        ],
+        eco_tip: "...",
+        eco_impact: "medium",
+        category: "materials"
+        },
+        {
+        section: "II. Disposable Meal Items",
+        question: "What's your most purchased kind of water bottle pack?",
+        type: "multiple-choice",
+        options: [
+        { label: "Aqua Fina", eco_impact: "high", value: 3 },
+        { label: "", eco_impact: "medium", value: 2 },
+        { label: "A little", eco_impact: "low", value: 1 },
+        ],
+        eco_tip: "Choose what kind of pack you use",
+        eco_impact: "medium",
+        category: "materials"
+        },{
+        section: "II. Disposable Meal Items",
+        question: "How many packs of these water bottles did you use during build seasons and competitions.",
+        type: "multiple-choice",
+        options: [
+        { label: "A lot", eco_impact: "high", value: 3 },
+        { label: "A good amount", eco_impact: "medium", value: 2 },
+        { label: "A little", eco_impact: "low", value: 1 },
+        ],
         eco_tip: "...",
         eco_impact: "medium",
         category: "materials"
         },
     ],
-    '3': [/* question objects */],
-    '4': [/* question objects */]
+    '3': [
+             {
+            section: "III. Mechanical",
+            question: "How do you use Drills?",
+            hint: "Select an option",
+            type: "multiple-choice",
+            options: [
+            { label: "For Robot", eco_impact: "medium", value: 2 },
+            { label: "Own purpose", eco_impact: "medium", value: 2 },
+            ],
+            eco_tip: "",
+            eco_impact: "medium",
+            category: "materials"
+            },
+            {
+            section: "III. Mechanical",
+            question: " How many Drills do you use?",
+            hint: "Enter an integer value",
+            type: "int",
+            min: 0,
+            max: 67,
+            eco_tip: "",
+            eco_impact: "medium",
+            category: "materials"
+            },
+            {
+            section: "III. Programming",
+            question: " How do you use Laptops?",
+            hint: "Select an option",
+            type: "multiple-choice",
+            options :[
+                        { label: "For Robot", eco_impact: "medium", value: 2 },
+                        { label: "Own purpose", eco_impact: "medium", value: 2 },   
+                     ],
+            eco_tip: "",
+            eco_impact: "medium",
+            category: "materials"
+            },
+            {
+            section: "III. Programming",
+            question: " How many Laptops do you use?",
+            hint: "Enter an integer value",
+            type: "int",
+            min: 0,
+            max: 30,
+            eco_tip: "",
+            eco_impact: "medium",
+            category: "materials"
+            },
+            {
+            section: "III. Elictrical",
+            question: " How many Batteries/tools do you recharge",
+            hint: "Enter an integer value",
+            type: "multiple-choice",
+            options :[
+                        { label: "For Robot", eco_impact: "High", value: 2 },
+                        { label: "Own purpose", eco_impact: "High", value: 2 },   
+                     ],
+            eco_tip: "",
+            eco_impact: "High",
+            category: "materials"
+            },
+           {
+            section: "III. Elictrical",
+            question: " How often do you charge your batteries? ",
+            hint: "Enter an integer value",
+            type: "multiple-choice",
+           options: [
+                        { label: "A lot", eco_impact: "high", value: 3 },
+                        { label: "A good amount", eco_impact: "medium", value: 2 },
+                        { label: "A little", eco_impact: "low", value: 1 },
+                    ],
+            eco_tip: "",
+            eco_impact: "High",
+            category: "materials"
+            },
+            {
+            section: "III. Fabrics",
+            question: " How often do you buy filaments ",
+            hint: "Enter an integer value",
+            type: "multiple-choice",
+           options: [
+                        { label: "Every day", eco_impact: "high", value:2 },
+                        { label: "Once in a week", eco_impact: "medium", value: 9 },
+                        { label: "Once in a week", eco_impact: "low", value: 5 },
+                    ],
+            eco_tip: "",
+            eco_impact: "High",
+            category: "materials"
+            }
+         ],
+    '4': [
+            {
+            section: "IV. Transpotation",
+            question: " Why do you use transportation ",
+            hint: "Enter an integer value",
+            
+            type: "multiple-choice",
+           options: [
+                        { label: "Every day", eco_impact: "high", value:2 },
+                        { label: "Once in a week", eco_impact: "medium", value: 9 },
+                        { label: "Once in a week", eco_impact: "low", value: 5 },
+                    ],
+            eco_tip: "",
+            eco_impact: "High",
+            category: "materials"
+            }
+         ]
 };
     // Get DOM elements
     const questionElement = document.getElementById('question');
@@ -218,14 +372,14 @@ startButtons.forEach((btn) => {
         const question = questions[currentQuestionIndex];
         const value = answerInput.value.trim();
         
-        if (value === '') {
+        if (question.type === 'int'&& value === '') {
             errorMessage.textContent = 'Please enter a value';
             return false;
         }
         
         const numValue = parseFloat(value);
         
-        if (isNaN(numValue)) {
+        if (question.type === 'int' && isNaN(numValue)) {
             errorMessage.textContent = 'Please enter a valid number';
             return false;
         }
@@ -275,39 +429,79 @@ startButtons.forEach((btn) => {
     }
     
     // Update eco score based on current answer
-    function updateEcoScore() {
-        const question = questions[currentQuestionIndex];
-        const value = parseFloat(answerInput.value);
-        
-        const impact = calculateEcoImpact(question, value);
-        currentEcoScore = Math.max(0, Math.min(100, currentEcoScore + impact ));
-        ecoScore.textContent = Math.round(currentEcoScore);
+   function updateEcoScore() {
+    const question = questions[currentQuestionIndex];
+    let value;
+
+    if (question.type === 'multiple-choice') {
+        const selected = document.querySelector('input[name="mc-answer"]:checked');
+        const selectedIndex = parseInt(selected.value);
+        value = question.options[selectedIndex].value;  // 1, 2, or 3
+    } else {
+        value = parseFloat(answerInput.value);
     }
+
+    // Impact factor based on eco_impact
+    let impactFactor;
+    switch (question.eco_impact) {
+        case 'high': impactFactor = -20; break;
+        case 'medium': impactFactor = -12; break;
+        case 'low': impactFactor = -6; break;
+        default: impactFactor = -10;
+    }
+
+    // Normalize MC values (1–3 → 0–1)
+    let normalizedValue;
+    if (question.type === 'multiple-choice') {
+        normalizedValue = (value - 1) / (3 - 1);  // 0, 0.5, 1
+    } else {
+        normalizedValue = (value - question.min) / (question.max - question.min);
+    }
+
+    const curvedImpact = Math.pow(normalizedValue, 1.5);
+    const impact = curvedImpact * impactFactor;
+
+    currentEcoScore = Math.max(0, Math.min(100, currentEcoScore + impact));
+    ecoScore.textContent = Math.round(currentEcoScore);
+}
+
     
     // Handle next button click
-    nextButton.addEventListener('click', function() {
-        if (!validateAnswer()) return;
-        
-        // Update eco score BEFORE saving the answer
-        updateEcoScore();
-        
-        // Save answer
-        answers[currentQuestionIndex] = {
-            question: questions[currentQuestionIndex].question,
-            answer: answerInput.value,
-            section: questions[currentQuestionIndex].section,
-            category: questions[currentQuestionIndex].category
-        };
-        
-        // Move to next question or finish quiz
-        currentQuestionIndex++;
-        
-if (currentQuestionIndex < questions.length) {
-            displayQuestion();
+nextButton.addEventListener('click', function() {
+    if (!validateAnswer()) return;
+
+    const question = questions[currentQuestionIndex];
+    let savedAnswer;
+
+    if (question.type === 'multiple-choice') {
+        const selected = document.querySelector('input[name="mc-answer"]:checked');
+        const selectedIndex = selected.value;
+savedAnswer = question.options[selectedIndex].value;
     } else {
-        finishQuiz(); // or return to module select
+        savedAnswer = answerInput.value;
     }
-    });
+
+    // Update eco score BEFORE saving the answer
+    updateEcoScore();
+
+    // Save answer
+    answers[currentQuestionIndex] = {
+        question: question.question,
+        answer: savedAnswer,
+        section: question.section,
+        category: question.category
+    };
+    console.log(answers);
+    // Move to next question or finish quiz
+    currentQuestionIndex++;
+
+    if (currentQuestionIndex < questions.length) {
+        displayQuestion();
+    } else {
+        finishQuiz();
+    }
+});
+
     
     // Handle back button click
     backButton.addEventListener('click', function() {
