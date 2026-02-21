@@ -220,76 +220,83 @@ class EndGameState extends State<EndGame> {
             },
           ),
           const SizedBox(height: 12),
-        Container(
-          height: 250,
-          width: double.infinity,
-          constraints: const BoxConstraints(maxWidth: 600),
-          decoration: BoxDecoration(
-            color: Color.fromARGB(255, 34, 34, 34),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: DottedBorder(
-              borderType: BorderType.RRect,
-              radius: const Radius.circular(12),
-              dashPattern: const [10, 4],
-              strokeWidth: 3,
-              color: Color(0xBF254EEA),
-              child: Column(
-                children: [ Row(
+          Container(
+            height: 250,
+            width: double.infinity,
+            constraints: const BoxConstraints(maxWidth: 600),
+            decoration: BoxDecoration(
+              color: Color.fromARGB(255, 34, 34, 34),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: DottedBorder(
+                borderType: BorderType.RRect,
+                radius: const Radius.circular(12),
+                dashPattern: const [10, 4],
+                strokeWidth: 3,
+                color: Color(0xBF254EEA),
+                child: Column(
                   children: [
-                    SizedBox(
-                      height: 67,
-                      width: 20,
-                    ),
-                    Icon(
-                      Icons.thumbs_up_down,
-                      color: Colors.blueAccent,
-                      size: 30,
-                    ),
-                    SizedBox( width: 12,),
-                    Text('Shooter Accuracy', textAlign: TextAlign.center, style: TextStyle( color: Colors.white, fontSize: 20,  fontWeight: FontWeight.w600,),),
-
-                  ],
-                ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      height: 135,
-                      decoration: BoxDecoration(
-                        color: Colors.grey,
-                        borderRadius:BorderRadius.circular(12),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(1.5),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Color.fromARGB(255, 34, 34, 34),
-                            borderRadius:BorderRadius.circular(12),
+                    Row(
+                      children: [
+                        SizedBox(
+                          height: 67,
+                          width: 20,
+                        ),
+                        Icon(
+                          Icons.thumbs_up_down,
+                          color: Colors.blueAccent,
+                          size: 30,
+                        ),
+                        SizedBox(
+                          width: 12,
+                        ),
+                        Text(
+                          'Shooter Accuracy',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
                           ),
-                          child:StarRating(
-                            initialRating: shootingAccuracy,
-                            onRatingChanged: (rating) {
-                              setState(() {
-                                shootingAccuracy = rating;
-                                if (kDebugMode) {
+                        ),
+                      ],
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Container(
+                        height: 135,
+                        decoration: BoxDecoration(
+                          color: Colors.grey,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(1.5),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Color.fromARGB(255, 34, 34, 34),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: StarRating(
+                              initialRating: shootingAccuracy,
+                              onRatingChanged: (rating) {
+                                setState(() {
+                                  shootingAccuracy = rating;
+
                                   log('shootingAccuracy: $shootingAccuracy');
-                                }
-                              });
-                            },
+                                });
+                              },
+                            ),
                           ),
-
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-
             ),
           ),
-        ),
           const SizedBox(height: 12),
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -302,7 +309,6 @@ class EndGameState extends State<EndGame> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
                 Padding(
                   padding: const EdgeInsets.only(left: 16, top: 16, bottom: 8),
                   child: Row(
