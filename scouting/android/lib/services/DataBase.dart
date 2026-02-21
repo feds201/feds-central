@@ -710,7 +710,7 @@ class AutonPoints {
   }
 
   String toCsv() {
-    return '$left_starting_position,$fuel_pickup_from_Depot,$fuel_pickup_from_Outpost,$fuel_pickup_from_Neutral_Zone,$total_shooting_time,$amountOfShooting,$climb,$winAfterAuton,${starting_location.toCsv()}';
+    return '${left_starting_position ? 1 : 0},${fuel_pickup_from_Depot ? 1 : 0},${fuel_pickup_from_Outpost ? 1 : 0},${fuel_pickup_from_Neutral_Zone ? 1 : 0},$total_shooting_time,$amountOfShooting,${climb ? 1 : 0},$winAfterAuton,${starting_location.toCsv()}';
   }
 
   static AutonPoints fromJson(Map<String, dynamic> json) {
@@ -773,8 +773,8 @@ class TeleOpPoints {
   double TotalShootingTime1 = 0;
   double TotalShootingTimeA1 = 0;
   double TotalShootingTimeA2 = 0;
-  double TotalShootingTimeI1 = 0;
-  double TotalShootingTimeI2 = 0;
+  bool ShootingI1 = false;
+  bool ShootingI2 = false;
   int TotalAmount1 = 0;
   int TotalAmountA1 = 0;
   int TotalAmountA2 = 0;
@@ -806,8 +806,8 @@ class TeleOpPoints {
       this.TotalShootingTime1,
       this.TotalShootingTimeA1,
       this.TotalShootingTimeA2,
-      this.TotalShootingTimeI1,
-      this.TotalShootingTimeI2,
+      this.ShootingI1,
+      this.ShootingI2,
       this.TotalAmount1,
       this.TotalAmountA1,
       this.TotalAmountA2,
@@ -840,8 +840,8 @@ class TeleOpPoints {
       "TotalShootingTime1": TotalShootingTime1,
       "TotalShootingTimeA1": TotalShootingTimeA1,
       "TotalShootingTimeA2": TotalShootingTimeA2,
-      "TotalShootingTimeI1": TotalShootingTimeI1,
-      "TotalShootingTimeI2": TotalShootingTimeI2,
+      "ShootingI1": ShootingI1,
+      "ShootingI2": ShootingI2,
       "TotalAmount1": TotalAmount1,
       "TotalAmountA1": TotalAmountA1,
       "TotalAmountA2": TotalAmountA2,
@@ -872,7 +872,7 @@ class TeleOpPoints {
   }
 
   String toCsv() {
-    return '${TotalShootingTime1},${TotalShootingTimeA1},${TotalShootingTimeA2},${TotalShootingTimeI1},${TotalShootingTimeI2},${TotalAmount1}, ${TotalAmountA1}, ${TotalAmountA2}, ${TotalAmountI1}, ${TotalAmountI2}, ${TripAmount1}, ${NeutralTrips}, ${NeutralTripsA1}, ${NeutralTripsA2}, ${NeutralTripsI1}, ${NeutralTripsI2}, ${Defense} ${DefenseA1} ${DefenseA2} ${DefenseI1} ${DefenseI2}, ${FeedToHPStation} ${FeedToHPStationA1} ${FeedToHPStationA2} ${FeedToHPStationI1} ${FeedToHPStationI2}, ${passing} ${passingA1} ${passingA2} ${passingI1} ${passingI2}';
+    return '${TotalShootingTime1},${TotalShootingTimeA1},${TotalShootingTimeA2},${ShootingI1 ? 1 : 0},${ShootingI2 ? 1 : 0},${TotalAmount1},${TotalAmountA1},${TotalAmountA2},${TotalAmountI1},${TotalAmountI2},${TripAmount1},${NeutralTrips},${NeutralTripsA1},${NeutralTripsA2},${NeutralTripsI1},${NeutralTripsI2},${Defense ? 1 : 0},${DefenseA1 ? 1 : 0},${DefenseA2 ? 1 : 0},${DefenseI1 ? 1 : 0},${DefenseI2 ? 1 : 0},${FeedToHPStation ? 1 : 0},${FeedToHPStationA1 ? 1 : 0},${FeedToHPStationA2 ? 1 : 0},${FeedToHPStationI1 ? 1 : 0},${FeedToHPStationI2 ? 1 : 0},${passing ? 1 : 0},${passingA1 ? 1 : 0},${passingA2 ? 1 : 0},${passingI1 ? 1 : 0},${passingI2 ? 1 : 0}';
   }
 
   static TeleOpPoints fromJson(Map<String, dynamic> json) {
@@ -880,8 +880,8 @@ class TeleOpPoints {
       (json['TotalShootingTime1'] ?? json['TotalShootingTime'] ?? 0).toDouble(),
       (json['TotalShootingTimeA1'] ?? 0).toDouble(),
       (json['TotalShootingTimeA2'] ?? 0).toDouble(),
-      (json['TotalShootingTimeI1'] ?? 0).toDouble(),
-      (json['TotalShootingTimeI2'] ?? 0).toDouble(),
+      json['ShootingI1'] ?? false,
+      json['ShootingI2'] ?? false,
       json['TotalAmount1'] ?? 0,
       json['TotalAmountA1'] ?? 0,
       json['TotalAmountA2'] ?? 0,
@@ -913,7 +913,7 @@ class TeleOpPoints {
 
   @override
   String toString() {
-    return 'TeleOpPoints{TotalShootingTime1: $TotalShootingTime1, TotalShootingTimeA1: $TotalShootingTimeA1, TotalShootingTimeA2: $TotalShootingTimeA2, TotalShootingTimeI1: $TotalShootingTimeI1, TotalShootingTimeI2: $TotalShootingTimeI2, TotalAmount1 $TotalAmount1, TotalAmountA1 $TotalAmountA1, TotalAmountA2 $TotalAmountA2, TotalAmountI1 $TotalAmountI1, TotalAmountI2 $TotalAmountI2, TripAmount1 $TripAmount1, NeutralTips $NeutralTrips, NeutralTipsA1 $NeutralTripsA1, NeutralTipsA2 $NeutralTripsA2, NeutralTipsI1 $NeutralTripsI1, NeutralTipsI2 $NeutralTripsI2, Defense: $Defense DefenseA1: $DefenseA1, DefenseA2: $DefenseA2, DefenseI1: $DefenseI1, DefenseI2: $DefenseI2, FeedToHPStation: $FeedToHPStation FeedToHPStationA1: $FeedToHPStationA1, FeedToHPStationA2: $FeedToHPStationA2 FeedToHPStationI1: $FeedToHPStationI1, FeedToHPStationI2: $FeedToHPStationI2, passing: $passing, passingA1: $passingA1, passingA2: $passingA2, passingI1: $passingI1 passingI2: $passingI2}';
+    return 'TeleOpPoints{TotalShootingTime1: $TotalShootingTime1, TotalShootingTimeA1: $TotalShootingTimeA1, TotalShootingTimeA2: $TotalShootingTimeA2, ShootingI1: $ShootingI1, ShootingI2: $ShootingI2, TotalAmount1 $TotalAmount1, TotalAmountA1 $TotalAmountA1, TotalAmountA2 $TotalAmountA2, TotalAmountI1 $TotalAmountI1, TotalAmountI2 $TotalAmountI2, TripAmount1 $TripAmount1, NeutralTips $NeutralTrips, NeutralTipsA1 $NeutralTripsA1, NeutralTipsA2 $NeutralTripsA2, NeutralTipsI1 $NeutralTripsI1, NeutralTipsI2 $NeutralTripsI2, Defense: $Defense DefenseA1: $DefenseA1, DefenseA2: $DefenseA2, DefenseI1: $DefenseI1, DefenseI2: $DefenseI2, FeedToHPStation: $FeedToHPStation FeedToHPStationA1: $FeedToHPStationA1, FeedToHPStationA2: $FeedToHPStationA2 FeedToHPStationI1: $FeedToHPStationI1, FeedToHPStationI2: $FeedToHPStationI2, passing: $passing, passingA1: $passingA1, passingA2: $passingA2, passingI1: $passingI1 passingI2: $passingI2}';
   }
 
   setTotalShootingTime1(double value) {
@@ -928,12 +928,12 @@ class TeleOpPoints {
     TotalShootingTimeA2 = value;
   }
 
-  setTotalShootingTimeI1(double value) {
-    TotalShootingTimeI1 = value;
+  setShootingI1(bool value) {
+    ShootingI1 = value;
   }
 
-  setTotalShootingTimeI2(double value) {
-    TotalShootingTimeI2 = value;
+  setShootingI2(bool value) {
+    ShootingI2 = value;
   }
 
   setTotalAmount1(int value) {
@@ -1101,11 +1101,12 @@ class EndPoints {
   }
 
   String toCsv() {
-    return '$ClimbStatus,$Park,$FeedToHP,$Passing,$endgameTime,$endgameActions,$Comments,${_encodeDrawingData()}';
+    return '$ClimbStatus,${Park ? 1 : 0},${FeedToHP ? 1 : 0},${Passing ? 1 : 0},$ShootingAccuracy,$endgameTime,$endgameActions,$Comments,$drawingData';
   }
 
   String _encodeDrawingData() {
     return DrawingBitmaskCodec.encode(drawingData);
+>>>>>>> origin/main
   }
 
   @override
@@ -1817,4 +1818,5 @@ class PitCheckListDatabase {
       return false;
     }
   }
+
 }
