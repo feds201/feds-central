@@ -60,29 +60,25 @@ class _HomePageState extends State<HomePage>
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        scaffoldBackgroundColor:
-            islightmode() ? lightColors.white : darkColors.goodblack,
+    return Scaffold(
+      drawer: const NavBar(),
+      backgroundColor: Theme.of(context).brightness == Brightness.dark
+          ? darkColors.goodblack
+          : lightColors.white,
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: WaveGrid(isDark: Theme.of(context).brightness == Brightness.dark),
+          ),
+          Column(
+            children: [
+              _buildCustomAppBar(context),
+              Expanded(child: homePage()),
+            ],
+          ),
+        ],
       ),
-      home: Scaffold(
-        drawer: const NavBar(),
-        body: Stack(
-          children: [
-            const Positioned.fill(
-              child: WaveGrid(),
-            ),
-            Column(
-              children: [
-                _buildCustomAppBar(context),
-                Expanded(child: homePage()),
-              ],
-            ),
-          ],
-        ),
-        bottomSheet: _buildPersistentBottomSheet(),
-      ),
+      bottomSheet: _buildPersistentBottomSheet(),
     );
   }
 

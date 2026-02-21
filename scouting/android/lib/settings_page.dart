@@ -168,10 +168,13 @@ class SettingsPageState extends State<SettingsPage> {
         actions: [
           IconButton(
               icon: Icon(isDarkMode ? Icons.dark_mode : Icons.light_mode),
-              onPressed: () {
-                toggle();
-                Navigator.of(context).pop();
-              }),
+        onPressed: () {
+          toggle();
+          Hive.box('settings').put('isDarkMode', isDarkMode);
+          setState(() {});
+          Navigator.of(context).pop();
+        },
+          ),
         ],
         title: ShaderMask(
             shaderCallback: (bounds) => const LinearGradient(
