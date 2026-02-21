@@ -1,0 +1,115 @@
+:root {
+  --primary-hue: 210;
+  --primary-saturation: 65%;
+  --primary-lightness: 45%;
+  --gradient-primary: linear-gradient(
+    135deg,
+    #667eea 0%,
+    #764ba2 100%
+  );
+  --gradient-secondary: linear-gradient(
+    135deg,
+    #f093fb 0%,
+    #f5576c 100%
+  );
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1),
+    0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.nextra-nav-container {
+  backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.85);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dark .nextra-nav-container {
+  background: rgba(17, 24, 39, 0.85);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.nextra-sidebar {
+  border-right: 1px solid rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(8px);
+}
+
+.dark .nextra-sidebar {
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.nextra-sidebar a {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 8px;
+  margin: 2px 0;
+}
+
+.nextra-sidebar a:hover {
+  background: rgba(99, 102, 241, 0.1);
+  transform: translateX(2px);
+}
+
+.nextra-toc a {
+  transition: all 0.2s ease;
+  border-radius: 4px;
+  padding: 2px 8px;
+}
+
+.nextra-toc a:hover {
+  background: rgba(99, 102, 241, 0.1);
+  color: #6366f1;
+}
+
+/* Enhanced code blocks */
+pre {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-sm);
+  border-radius: 12px;
+  font-family: "JetBrains Mono", monospace;
+}
+
+.dark pre {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Beautiful search */
+.nextra-search input {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.nextra-search input:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+/* Smooth animations */
+* {
+  transition: color 0.2s ease, background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+/* Enhanced buttons */
+button {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+button:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}

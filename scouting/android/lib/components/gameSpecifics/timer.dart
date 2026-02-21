@@ -90,7 +90,7 @@ class _TklKeyboardState extends State<TklKeyboard>
     super.build(context);
 
     // Fixed height prevents unbounded constraints while allowing full width.
-    const double designHeight = 450;
+    const double designHeight = 500;
 
     return Center(
       child: SizedBox(

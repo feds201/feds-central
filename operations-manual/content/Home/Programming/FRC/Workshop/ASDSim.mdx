@@ -1,0 +1,23 @@
+import ASDSimulator from "../../../../../Components/Programming/ASDSimulator";
+
+# Absolute Sensor Discontinuity Simulator
+
+This interactive tool helps you understand and visualize how absolute encoder discontinuity points work in FRC robotics, specifically following the CTRE sensor discontinuity pattern.
+
+## What is Sensor Discontinuity?
+
+When using absolute rotational sensors (like CANcoders), the sensor output wraps around at a configured "discontinuity point". This tool lets you explore:
+
+- **Physical Turret** - The actual mechanical rotation (0-360°)
+- **Hard Stop** - The mechanical constraint region where the turret cannot rotate
+- **Wrap Point** - The software discontinuity where sensor readings "jump" from 1.0 to 0.0
+- **Safety Check** - Whether your wrap point is safely inside the hard stop
+
+## How to Use
+
+1. **Drag the blue dot** on the Physical Turret to rotate the sensor manually
+2. **Adjust the Discontinuity slider** to move where the sensor wraps around
+3. **Watch the Software Output graph** to see how the sensor value changes
+4. **Aim for SAFE** - The red dashed line (wrap point) should be inside the grey hard stop zone
+
+<ASDSimulator />

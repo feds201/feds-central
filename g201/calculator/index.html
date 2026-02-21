@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FRC Eco-Friendly Calculator | G201</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="assets/G201 logo.png" type="image/png">
+    <link rel="apple-touch-icon" href="assets/G201 logo.png" type="image/png">
+    <meta name="description" content="FRC Eco-Friendly Calculator - Measure your team's environmental impact and get personalized recommendations for improvement.">
+    <meta name="keywords" content="FRC, Eco-Friendly, Calculator, Environmental Impact, Sustainability, Recommendations">
+    <meta name="author" content="FRC Team 201">
+    <meta property="og:title" content="FRC Eco-Friendly Calculator">
+    <meta property="og:description" content="Measure your team's environmental impact and get personalized recommendations for improvement.">
+    <meta property="og:image" content="https://feds201.github.io/G201-Calulator/assets/G201 logo.png">
+    <meta property="og:image:alt" content="FRC Eco-Friendly Calculator">
+    <meta property="og:url" content="https://feds201.github.io/G201-Calulator/">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="FRC Team 201">
+</head>
+
+<body>
+    <!-- Theme toggle button -->
+    <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
+        <i class="fas fa-moon"></i>
+    </button>
+    
+    <!-- Unit toggle button -->
+    <button id="unit-toggle" class="unit-toggle" aria-label="Convert to kg">
+        <i class="fa-scale-unbalanced-flip fa-scale-unbalanced"></i>
+    </button>
+
+    <div class="quiz-container">
+    
+        <header class="quiz-header">
+            <div class="logo-container">
+                <a href="https://feds201.com/#g201-page-1" target="_blank" rel="noopener noreferrer">
+                    <img src="./assets/G201 logo.png" alt="FRC Team 201 Logo" class="team-logo" loading="eager">
+                </a>
+            </div>
+            <h1>FRC Eco-Friendly Calculator</h1>
+            <div class="quiz-subtitle">Measure your team's environmental impact</div>
+            <div class="quiz-info">
+                <div class="eco-score"><i class="fas fa-leaf"></i> Eco Score: <span id="eco-score">0</span></div>
+                <div class="questions-completed"><i class="fas fa-check-circle"></i> <span id="current-question">1</span>/<span id="total-questions">13</span></div>
+            </div>
+        </header>
+        
+        <div class="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+        <<div class="question-card hidden">
+    <span class="question-number">Question <span id="current-question-display">1</span>/<span id="total-questions-display">13</span></span>
+    <h2 class="section-heading" id="section-heading"></h2>
+    <h3 class="question-text" id="question"></h3>
+
+    <div class="input-container">
+        <input type="number" id="answer-input" placeholder="Enter value">
+        <div class="mc-container hidden" id="mc-container"></div>
+        <div class="input-hint"><i class="fas fa-info-circle"></i></div>
+        <div class="error-message" id="error-message"></div>
+    </div>
+</div>
+
+<div class="actions hidden">
+    <div class="eco-tip" id="eco-tip"></div>
+    <div class="button-group">
+        <button class="back-btn hidden" id="back-btn"><i class="fas fa-arrow-left"></i> Previous</button>
+        <button class="next-btn" id="next-btn">Next <i class="fas fa-arrow-right"></i></button>
+    </div>
+</div>
+
+        
+        <div class="modules-wrapper">
+            <div class="module module1">
+                <div class="module-header"><h2>Module 1</h2></div>
+                <div class="module-body">
+                    <p>Overview and initial questions.</p>
+                    <button class="start-btn">Open</button>
+                </div>
+            </div>
+
+            <div class="module module2">
+                <div class="module-header"><h2>Module 2</h2></div>
+                <div class="module-body">
+                    <p>Materials &amp; Packaging questions.</p>
+                    <button class="start-btn">Open</button>
+                </div>
+            </div>
+
+            <div class="module module3">
+                <div class="module-header"><h2>Module 3</h2></div>
+                <div class="module-body">
+                    <p>Transportation &amp; travel questions.</p>
+                    <button class="start-btn">Open</button>
+                </div>
+            </div>
+
+            <div class="module module4">
+                <div class="module-header"><h2>Module 4</h2></div>
+                <div class="module-body">
+                    <p>Energy, recycling, and recommendations.</p>
+                    <button class="start-btn">Open</button>
+                </div>
+            </div>
+        </div>
+            
+ 
+        </div>
+        
+         <!--
+        <div class="question-card">
+            <span class="question-number">Question <span id="current-question-display">1</span>/<span id="total-questions-display">13</span></span>
+            <h2 class="section-heading" id="section-heading">I. Shipping and Packaging of Products</h2>
+            <h3 class="question-text" id="question">What was the total weight (in lbs) of the packages that you transported?</h3>
+            
+        <div class="question-card">
+            <span class="question-number">Question <span id="current-question-display">1</span>/<span id="total-questions-display">13</span></span>
+            <h2 class="section-heading" id="section-heading">I. Shipping and Packaging of Products</h2>
+            <h3 class="question-text" id="question">What was the total weight (in lbs) of the packages that you transported?</h3>
+
+        <div class="question-card">
+            <span class="question-number">Question <span id="current-question-display">1</span>/<span id="total-questions-display">13</span></span>
+            <h2 class="section-heading" id="section-heading">I. Shipping and Packaging of Products</h2>
+            <h3 class="question-text" id="question">What was the total weight (in lbs) of the packages that you transported?</h3>
+        
+            <div class="input-container">
+                <input type="number" id="answer-input" min="500" max="1500" placeholder="Enter value (500-1500)">
+                <div class="input-hint"><i class="fas fa-info-circle"></i> Enter an integer between 500-1500 lbs</div>
+                <div class="error-message" id="error-message"></div>
+            </div>
+        </div> -->
+        
+        <!-- <div class="actions">s
+            <div class="eco-tip" id="eco-tip">Every lbs of package weight contributes to carbon emissions during transport.</div>
+            <div class="button-group">
+                <button class="back-btn hidden" id="back-btn"><i class="fas fa-arrow-left"></i> Previous</button>
+                <button class="next-btn" id="next-btn">Next <i class="fas fa-arrow-right"></i></button>
+            </div>
+        </div> -->
+        
+        <div class="result hidden" id="result">
+            <div class="result-header">
+                <div class="result-icon"><i class="fas fa-leaf"></i></div>
+                <h2 class="Eco-Friendly-text">Eco Assessment Complete!</h2>
+                <div class="result-score">Your Eco Score: <span id="final-eco-score">75</span>/100</div>
+            </div>
+            <div class="eco-meter">
+                <div class="meter-scale">
+                    <div class="meter-pointer" id="meter-pointer"></div>
+                </div>
+                <div class="meter-labels">
+                    <div>High Impact</div>
+                    <div>Moderate</div>
+                    <div>Eco-Friendly</div>
+                </div>
+            </div>
+            
+            <div class="result-message" id="result-message">Your team is making good progress toward sustainability, but there's room for improvement.</div>
+
+            <!-- Add a visual separator -->
+            <div class="visual-separator">
+                <div class="separator-line"></div>
+                <div style="height: 10px;"  class="separator-line"></div>
+                <div class="separator-line"></div>
+            </div>
+            
+            <div class="eco-impact">
+                <h3>Your Environmental Impact</h3>
+                <div class="impact-item">
+                    <div class="impact-icon"><i class="fas fa-box"></i></div>
+                    <div class="impact-content">
+                        <h4>Materials Usage</h4>
+                        <p id="materials-impact">Your team used a moderate amount of disposable items. Consider reducing single-use plastics.</p>
+                    </div>
+                </div>
+                
+                <div class="impact-item">
+                    <div class="impact-icon"><i class="fas fa-car"></i></div>
+                    <div class="impact-content">
+                        <h4>Transportation Impact</h4>
+                        <p id="transport-impact">Your travel resulted in carbon emissions that could be reduced with more efficient planning.</p>
+                    </div>
+                </div>
+                
+                <div class="impact-item">
+                    <div class="impact-icon"><i class="fas fa-bolt"></i></div>
+                    <div class="impact-content">
+                        <h4>Energy Consumption</h4>
+                        <p id="energy-impact">Battery usage is within reasonable limits, but proper disposal and recycling are essential.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="result-summary" id="result-summary"></div>
+            
+            <div class="eco-recommendations">
+                <h3>Recommendations for Improvement</h3>
+                <div class="recommendation-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Replace single-use plastic items with biodegradable alternatives</span>
+                </div>
+                <div class="recommendation-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Implement a carpooling system for team travel to competitions</span>
+                </div>
+                <div class="recommendation-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Set up a recycling station for scrap materials from robot building</span>
+                </div>
+                <div class="recommendation-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Explore renewable energy options for powering practice sessions</span>
+                </div>
+                <div id="custom-recommendations"></div>
+                <p id="video-note" style="font-style: italic; color: var(--text-secondary);"><i class="fas fa-info-circle"></i> Click on "Watch tutorial" buttons to learn more about each recommendation.</p>
+            </div>
+            
+            <button class="restart-btn" id="restart-btn"><i class="fas fa-redo"></i> Start Again</button>
+        </div>         
+    </div>
+
+   
+    <script src="js/script.js"></script>
+</body>
+</html>

@@ -4,6 +4,8 @@ let filteredData = [];
 const modal = document.getElementById("team-modal");
 const closeBtn = document.getElementsByClassName("close")[0];
 const apiUrl = "https://script.google.com/macros/s/AKfycbxMEwVi_j2-9FZrAAfet6x4bTtMfvN3VAc8R9j-3ZrgrnatDfw24q2Z7fFZaMk-Tv7n_w/exec";
+// Base URL for the ScoutOps Server. Change this if the server is running on a different host.
+const SCOUT_OPS_SERVER_URL = "http://localhost:201";
 let teamPerformanceMetrics = {};
 
 // Event listeners
@@ -1687,15 +1689,19 @@ async function fetchStatboticsData(teamNumber) {
 
 // Function to fetch data from The Blue Alliance API
 async function fetchBlueAllianceData(teamNumber) {
-    const blueAllianceUrl = `https://www.thebluealliance.com/api/v3/team/frc${teamNumber}`;
-    const headers = {
-        "X-TBA-Auth-Key": "2ujRBcLLwzp008e9TxIrLYKG6PCt2maIpmyiWtfWGl2bT6ddpqGLoLM79o56mx3W" // Replace with your API key
-    };
-    const response = await fetch(blueAllianceUrl, { headers });
-    if (!response.ok) {
-        throw new Error(`The Blue Alliance API error: ${response.statusText}`);
+    // Use server proxy
+    const proxyUrl = `${SCOUT_OPS_SERVER_URL}/api/tba/team/${teamNumber}`;
+    try {
+        const response = await fetch(proxyUrl);
+        if (!response.ok) {
+            throw new Error(`Server proxy error: ${response.statusText}`);
+        }
+        return await response.json();
+    } catch (error) {
+        console.error("Error fetching TBA data via proxy:", error);
+        alert(`Failed to fetch data. Please ensure the ScoutOps Server is running at ${SCOUT_OPS_SERVER_URL}.`);
+        throw error;
     }
-    return response.json();
 }
 
 // Function to display the fetched research data

@@ -1,0 +1,296 @@
+---
+title: Developer Guide
+---
+
+# Scout-Ops-Android Developer Guide
+
+This guide is intended for developers who want to understand, modify, or extend the Scout-Ops-Android application. It covers the technical architecture, development environment setup, and contribution guidelines.
+
+## Technical Architecture
+
+Scout-Ops-Android is built using the Flutter framework for cross-platform mobile development. The application follows a modular architecture with several key components:
+
+### Core Components
+
+1. **Data Layer**
+   - Uses Hive for local storage
+   - Models for match data, team data, and scouting templates
+   - Repository pattern for data access
+
+2. **UI Layer**
+   - Material Design components
+   - Custom widgets for scouting interfaces
+   - Responsive layouts for different device sizes
+
+3. **Business Logic**
+   - Service classes for data processing
+   - Bluetooth communication handlers
+   - QR code generation utilities
+
+4. **Integration Layer**
+   - The Blue Alliance API client
+   - Bluetooth PAN connectivity
+   - CSV data export functionality
+
+## Development Environment Setup
+
+### Prerequisites
+
+- Flutter SDK (latest stable version)
+- Android Studio or Visual Studio Code
+- Git
+- Android device or emulator for testing
+
+### Setting Up the Development Environment
+
+1. **Clone the Repository**
+   ```bash
+   git clone https://github.com/feds201/Scout-Ops-Android.git
+   cd Scout-Ops-Android
+   ```
+
+2. **Install Dependencies**
+   ```bash
+   flutter pub get
+   ```
+
+3. **Configure IDE**
+   - For Android Studio: Open the project folder and ensure Flutter plugin is installed
+   - For VS Code: Install Flutter and Dart extensions
+
+4. **Run the Project**
+   ```bash
+   flutter run
+   ```
+
+## Project Structure
+
+```
+lib/
+├── api/                  # API clients and services
+├── models/               # Data models
+├── repositories/         # Data access layer
+├── screens/              # UI screens
+│   ├── autonomous/       # Autonomous phase screens
+│   ├── teleop/           # Teleop phase screens
+│   ├── endgame/          # Endgame phase screens
+│   └── settings/         # Settings screens
+├── services/             # Business logic services
+├── utils/                # Utility functions
+├── widgets/              # Reusable UI components
+└── main.dart             # Application entry point
+```
+
+## Key Features Implementation
+
+### Scouting Flow Implementation
+
+The scouting flow is implemented as a series of pages managed by a `PageView` widget:
+
+```dart
+// Example of page navigation controller
+final PageController _pageController = PageController(initialPage: 0);
+
+// Navigate to next phase
+void goToNextPhase() {
+  _pageController.nextPage(
+    duration: Duration(milliseconds: 300),
+    curve: Curves.easeInOut,
+  );
+}
+```
+
+### Data Storage with Hive
+
+Match data is stored using Hive boxes:
+
+```dart
+// Example of Hive data storage
+@HiveType(typeId: 0)
+class MatchData extends HiveObject {
+  @HiveField(0)
+  late String matchNumber;
+  
+  @HiveField(1)
+  late String teamNumber;
+  
+  @HiveField(2)
+  late String allianceColor;
+  
+  // Other fields...
+}
+```
+
+### QR Code Generation
+
+QR codes are generated using the `qr_flutter` package:
+
+```dart
+// Example of QR code generation
+QrImage(
+  data: jsonEncode(matchData.toJson()),
+  version: QrVersions.auto,
+  size: 200.0,
+)
+```
+
+### Bluetooth PAN Integration
+
+Bluetooth communication uses the `flutter_bluetooth_serial` package:
+
+```dart
+// Example of Bluetooth connection setup
+BluetoothConnection connection = await BluetoothConnection.toAddress(address);
+connection.input!.listen((data) {
+  // Process incoming data
+});
+
+// Send data
+connection.output.add(Uint8List.fromList(utf8.encode(jsonEncode(matchData) + "\n")));
+```
+
+## Extending the Application
+
+### Adding New Scouting Metrics
+
+To add a new metric to track during matches:
+
+1. Add the field to the appropriate data model
+2. Update the Hive adapters
+3. Add UI components to collect the data
+4. Modify data export to include the new field
+
+Example of adding a new field:
+
+```dart
+@HiveField(10)
+late int defensiveActions;
+
+// In the UI
+NumberStepper(
+  initialValue: 0,
+  minValue: 0,
+  maxValue: 50,
+  onChanged: (value) => setState(() => matchData.defensiveActions = value),
+)
+```
+
+### Creating Custom Templates
+
+The template system allows for customization of scouting forms:
+
+```dart
+@HiveType(typeId: 1)
+class ScoutingTemplate extends HiveObject {
+  @HiveField(0)
+  late String templateName;
+  
+  @HiveField(1)
+  late List<ScoutingField> fields;
+}
+
+@HiveType(typeId: 2)
+class ScoutingField extends HiveObject {
+  @HiveField(0)
+  late String fieldName;
+  
+  @HiveField(1)
+  late FieldType fieldType;
+  
+  @HiveField(2)
+  late bool isRequired;
+}
+```
+
+## Testing the Application
+
+### Unit Tests
+
+Write unit tests for business logic and data models:
+
+```dart
+void main() {
+  group('MatchData', () {
+    test('should convert to and from JSON correctly', () {
+      final matchData = MatchData()
+        ..matchNumber = '1'
+        ..teamNumber = '201'
+        ..allianceColor = 'red';
+      
+      final json = matchData.toJson();
+      final fromJson = MatchData.fromJson(json);
+      
+      expect(fromJson.matchNumber, equals('1'));
+      expect(fromJson.teamNumber, equals('201'));
+      expect(fromJson.allianceColor, equals('red'));
+    });
+  });
+}
+```
+
+### Integration Tests
+
+Test integration with The Blue Alliance API:
+
+```dart
+void main() {
+  group('TBA API Client', () {
+    test('should fetch event details correctly', () async {
+      final client = TBAApiClient(apiKey: 'YOUR_API_KEY');
+      final event = await client.getEvent('2025MITRY');
+      
+      expect(event, isNotNull);
+      expect(event.name, contains('Michigan'));
+    });
+  });
+}
+```
+
+## Deployment Process
+
+### Building the APK
+
+To build a release APK:
+
+```bash
+flutter build apk --release
+```
+
+### Publishing to Amazon App Store
+
+1. Create a developer account on the Amazon App Store
+2. Prepare promotional materials and screenshots
+3. Upload the APK file
+4. Complete the listing information
+5. Submit for review
+
+## Contributing Guidelines
+
+### Code Style
+
+Follow Flutter's official style guide:
+- Use `dart format` to maintain consistent formatting
+- Follow the [Effective Dart](https://dart.dev/guides/language/effective-dart) guidelines
+
+### Pull Request Process
+
+1. Fork the repository
+2. Create a feature branch
+3. Implement your changes with appropriate tests
+4. Submit a pull request with detailed description
+5. Ensure CI checks pass
+
+### Version Control
+
+- Use semantic versioning for releases
+- Include descriptive commit messages
+- Reference issue numbers in commits when applicable
+
+## Resources
+
+- [Flutter Documentation](https://flutter.dev/docs)
+- [Dart Language Tour](https://dart.dev/guides/language/language-tour)
+- [Hive Documentation](https://docs.hivedb.dev/)
+- [The Blue Alliance API Documentation](https://www.thebluealliance.com/apidocs)
+
+By understanding the technical architecture and development workflow, you can effectively contribute to or modify the Scout-Ops-Android application to meet your team's specific scouting needs.

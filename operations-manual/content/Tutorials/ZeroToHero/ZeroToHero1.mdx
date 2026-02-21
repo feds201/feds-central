@@ -1,0 +1,215 @@
+import { Callout } from 'nextra/components';
+import { Cards } from 'nextra/components';
+import {
+  GenericHero,
+  GenericWidget,
+  GenericTimeline,
+  ZTH1Grid1,
+  ZTH1Grid2,
+  ZTH1Grid3,
+  ZTH1Grid4,
+  ZTH1Grid5,
+  ZTH1Grid6
+} from '../../../Components/index';
+
+
+<GenericHero
+  title="Zero to Hero #1"
+  titleColor="linear-gradient(135deg, #ffd700 0%, #ffb347 20%, #ff8c69 40%, #f4a460 60%, #daa520 80%, #b8860b 100%)"
+  subtitle="Introduction to WPILib 🚀"
+  description="From 'What's a robot?' to 'I AM THE ROBOT WHISPERER!' 🤖 This guide will transform you from a programming newbie into someone who can make motors spin with the power of your mind (and Java). Warning: Side effects may include uncontrollable urge to name your robots."
+  backgroundType="gradient"
+  backgroundValue="linear-gradient(135deg, #2d5016 0%, #3d6b1c 15%, #4a7c23 30%, #6b8e3d 45%, #8ca85a 60%, #b8c89a 75%, #ddbea9 90%, #e9c46a 100%)"
+  particles={[
+    { symbol: '🌱', transform: 'translateX(15px) translateY(-10px)' },
+    { symbol: '🤖', transform: 'translateX(-12px) translateY(8px)' },
+    { symbol: '⚡', transform: 'translateX(8px) translateY(-15px)' },
+    { symbol: '🚀', transform: 'translateX(-8px) translateY(12px)' },
+    { symbol: '💻', transform: 'translateX(12px) translateY(5px)' },
+    { symbol: '🔧', transform: 'translateX(-15px) translateY(-8px)' }
+  ]}
+  buttons={[
+    {
+      text: '🎬 Watch Episode',
+      style: 'primary',
+      href: '#',
+    },
+    {
+      text: '📚 Programming Guide',
+      style: 'secondary',
+      href: '/Home/Programming'
+    },
+    {
+      text: '⚡ Quick Start',
+      style: 'secondary',
+      href: '#chapter-2-creating-a-robot-project'
+    }
+  ]}
+  height="md"
+  textAlign="center"  overlay={{
+    enabled: true,
+    color: 'rgba(0, 0, 0, 0.1)'
+  }}
+/>
+
+<Callout type="info" emoji="💡">
+  **Before We Begin**: You don't need to be a math genius or a computer wizard. You just need curiosity and a willingness to break things (digitally, please not the physical robot... mentors get sad when the robot breaks).
+</Callout>
+
+## 🎯 Learning Objectives
+
+<GenericWidget title="What You'll Master" variant="gradient" size="lg">
+  <ZTH1Grid1 />
+</GenericWidget>
+
+---
+
+## 🏗️ Chapter 1: The Tools of the Trade
+
+Before we code, we need... well, code editors. And libraries. And maybe a snack.
+
+### Essential Installations
+
+<ZTH1Grid2 />
+
+---
+
+## 🎨 Chapter 2: Creating a Robot Project
+
+Open VS Code (hit the W icon).
+Press the magic WPILib button (top right, looks like a W).
+Type "Create a new project".
+Select "Template" -> "Java" -> "Command Robot".
+**STOP!** Why "Command Robot"?
+Because "Timed Robot" is like writing an essay in one long paragraph. "Command Robot" is like organizing it with headers, bullet points, and memes. It's just better.
+
+---
+
+## 📝 Chapter 3: Naming Conventions (Or: How to Not Get Yelled At)
+
+In programming, names matter. If you name a motor , nobody will know what it does. If you name it , everyone is happy.
+
+<ZTH1Grid3 />
+
+---
+
+## 💻 Chapter 4: Writing Your First Code
+
+We will start with the most exciting thing in robotics: **Making a motor spin!**
+
+### Step 1: Define the Subsystem
+A "Subsystem" is a physical part of the robot (Drivebase, Arm, Intake).
+
+```java
+public class DriveSubsystem extends SubsystemBase {
+    // 1. Define hardware
+    private final PWMSparkMax leftMotor = new PWMSparkMax(0);
+    private final PWMSparkMax rightMotor = new PWMSparkMax(1);
+
+    // 2. Define methods (actions)
+    public void setMotors(double leftSpeed, double rightSpeed) {
+        leftMotor.set(leftSpeed);
+        rightMotor.set(rightSpeed);
+    }
+
+    public void stop() {
+        leftMotor.set(0);
+        rightMotor.set(0);
+    }
+}
+```
+
+### Step 2: Create a Command
+A "Command" is an action (Drive Forward, Shoot Note).
+
+```java
+public class DriveForwardCmd extends Command {
+    private final DriveSubsystem driveSubsystem;
+
+    public DriveForwardCmd(DriveSubsystem subsystem) {
+        this.driveSubsystem = subsystem;
+        addRequirements(subsystem); // Important! Tells robot "I am using the wheels!"
+    }
+
+    @Override
+    public void execute() {
+        driveSubsystem.setMotors(0.5, 0.5); // Drive at 50% speed
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        driveSubsystem.stop();
+    }
+}
+```
+
+---
+
+## 🎮 Chapter 5: Controller Input
+
+Robots are cool. Robots you can control with an Xbox controller are cooler.
+
+```java
+// In RobotContainer.java
+private final CommandXboxController driverController = new CommandXboxController(0);
+
+private void configureBindings() {
+    // When 'A' button is held, run the intake
+    driverController.a().whileTrue(new RunIntakeCmd());
+
+    // Default command: Drive with joysticks
+    driveSubsystem.setDefaultCommand(
+        new RunCommand(
+            () -> driveSubsystem.arcadeDrive(
+                -driverController.getLeftY(),
+                -driverController.getRightX()
+            ),
+            driveSubsystem
+        )
+    );
+}
+```
+
+---
+
+## 🤝 Chapter 6: Team Programming Etiquette
+
+Coding on a team is different from coding alone. You can't just delete everything because you feel like it.
+
+<ZTH1Grid4 />
+
+---
+
+## 🧠 Checkpoint
+
+You've survived Episode 1! You now know:
+
+<ZTH1Grid5 />
+
+In **Episode 2**, we'll dive deeper into the Command-Based framework and learn how to make the robot do multiple things at once (without exploding).
+
+---
+
+## 🔮 What's Next?
+
+<ZTH1Grid6 />
+
+---
+
+## 📞 Need Help? We've Got Your Back!
+
+- **Email**: feds.programming@gmail.com
+
+**Keep coding, keep learning, and remember: every expert was once a beginner who refused to give up!** 🚀
+
+*P.S. - If your robot starts talking back, that's either very advanced AI or you need more sleep. Probably more sleep.* 🤖💤
+
+---
+
+*This documentation is part of the Zero to Hero programming series. For the complete learning experience, watch the accompanying video and practice with real robot code. Remember: the only way to get good at programming is to write lots of bad code first! 😄*
+
+<Callout type="info" emoji="💝">
+  **Special Thanks**: To all the students who asked "Why doesn't this work?" and inspired us to create better documentation. Your questions make us better teachers, and your curiosity drives innovation. You're the real MVPs! 🏆
+
+  *Remember: Every expert was once a beginner who refused to give up. Keep coding, keep learning, and most importantly - keep having fun! 🚀*
+</Callout>
