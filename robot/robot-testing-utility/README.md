@@ -22,9 +22,38 @@ src/main/java/frc/rtu/
 
 ---
 
-## Quick Start (3 steps)
+## Installation
 
-### 1. Add the dependency
+### Option 1: GitHub Packages (Recommended)
+
+1.  **Add credentials to `~/.gradle/gradle.properties`** (one-time setup per machine):
+
+    ```properties
+    gpr.user=YOUR_GITHUB_USERNAME
+    gpr.key=YOUR_GITHUB_PAT
+    ```
+    > **Note:** Your Personal Access Token (PAT) needs `read:packages` scope. Generate one at [GitHub Settings → Developer settings → Personal access tokens](https://github.com/settings/tokens).
+
+2.  **Add the repository and dependency to your project's `build.gradle`**:
+
+    ```groovy
+    repositories {
+        maven {
+            name = 'GitHubPackages'
+            url  = uri('https://maven.pkg.github.com/feds201/feds-central')
+            credentials {
+                username = project.findProperty('gpr.user') ?: System.getenv('GITHUB_ACTOR')
+                password = project.findProperty('gpr.key')  ?: System.getenv('GITHUB_TOKEN')
+            }
+        }
+    }
+
+    dependencies {
+        implementation 'frc.rtu:robot-testing-utility:1.0.1'
+    }
+    ```
+
+### Option 2: Local Subproject (Development)
 
 In your robot project's `settings.gradle`, include the library:
 
@@ -41,7 +70,9 @@ dependencies {
 }
 ```
 
-### 2. Write `@RobotAction` methods in your subsystems
+## Writing Tests
+
+### 1. Write `@RobotAction` methods in your subsystems
 
 ```java
 import frc.rtu.RobotAction;
