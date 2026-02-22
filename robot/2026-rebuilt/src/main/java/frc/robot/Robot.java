@@ -137,10 +137,13 @@ public class Robot extends LoggedRobot {
   @Override
   public void testInit() {
     CommandScheduler.getInstance().cancelAll();
+    m_robotContainer.runRootTests();
   }
 
   @Override
-  public void testPeriodic() {}
+  public void testPeriodic() {
+    m_robotContainer.updateRootTests();
+  }
 
   @Override
   public void testExit() {}

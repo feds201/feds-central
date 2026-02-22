@@ -16,11 +16,14 @@ import frc.robot.commands.swerve.TeleopSwerve;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.testing.TestingSubsystem;
 import frc.robot.sim.RebuiltSimManager;
+import org.littletonrobotics.junction.Logger;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.utils.LimelightWrapper;
+import frc.robot.utils.RTU.RootTestingUtility;
 import limelight.networktables.LimelightSettings.ImuMode;
 
 public class RobotContainer {
@@ -37,6 +40,8 @@ public class RobotContainer {
   private final Shooter shooter = new Shooter();
   // TODO: implement this for real (was just added to enable simulation)
   private final Intake intake = new Intake();
+  // Local testing subsystem (contains @RobotAction tests used by RootTestingUtility)
+  private final TestingSubsystem testingSubsystem = new TestingSubsystem();
 
   // TODO: implement this for real (was just added to enable simulation)
   // Swerve drive requests
@@ -49,9 +54,12 @@ public class RobotContainer {
   // Simulation
   private RebuiltSimManager simManager;
 
+  private final RootTestingUtility rootTester = new RootTestingUtility();
+
   public RobotContainer() {
     ll4.getSettings().withImuMode(ImuMode.ExternalImu).save();
     configureBindings();
+    configureRootTests();
   }
 
   public void updateLocalization() {
@@ -113,7 +121,25 @@ public class RobotContainer {
 
   /** Called from Robot.simulationInit(). */
   public void initSimulation() {
-    simManager = new RebuiltSimManager(drivetrain, shooter, intake);
+    try {
+      // RebuiltSimManager depends on optional simulation libraries. Guard against
+      // missing simulation classes so entering simulation/test mode doesn't crash
+      // the robot when those libraries are not present on the classpath.
+      simManager = new RebuiltSimManager(drivetrain, shooter, intake);
+      // Signal simulation enabled for dashboards
+      Logger.recordOutput("Sim/Enabled", true);
+    } catch (LinkageError e) {
+      // Missing simulation dependency (e.g. frc.sim.core.PhysicsWorld) or link error
+      Logger.recordOutput("Sim/Error", "Simulation libraries not found or failed to link: " + e.toString());
+      Logger.recordOutput("Sim/Enabled", false);
+      simManager = null;
+    } catch (Throwable t) {
+      // Any other error during simulation init should not kill the robot program.
+      Logger.recordOutput("Sim/Error", "Failed to initialize simulation: " + t.toString());
+      t.printStackTrace();
+      Logger.recordOutput("Sim/Enabled", false);
+      simManager = null;
+    }
     drivetrain.resetPose(new Pose2d(.5, .5, new Rotation2d(0)));
   }
 
@@ -126,5 +152,51 @@ public class RobotContainer {
 
   public Command getAutonomousCommand() {
     return Commands.print("No autonomous command configured");
+  }
+
+  // ── Root Testing Utility ──────────────────────────────────
+
+  /**
+   * Register every subsystem that contains @RobotAction methods.
+   * Called once from the constructor.
+   */
+  private void configureRootTests() {
+    rootTester.registerSubsystem(
+        intakeSubsystem,
+        shooter,
+        intake
+    ,
+    testingSubsystem
+        // Add more subsystems here as they're wired in:
+        // feeder, climber, spindexer, etc.
+    );
+
+    rootTester.setSafetyCheck(() -> {
+      if (!controller.getHID().isConnected()) {
+        return "Joystick is not connected";
+      }
+
+      // Primary start command: both triggers held past threshold
+      boolean triggersOk = controller.getLeftTriggerAxis() >= 0.5 && controller.getRightTriggerAxis() >= 0.5;
+
+      // Alternate start command: X + Y buttons pressed simultaneously (convenience for some controllers)
+      boolean xyOk = controller.getHID().getXButton() && controller.getHID().getYButton();
+
+      if (!triggersOk && !xyOk) {
+        return "Did not receive start command from gamepads, please press both triggers to continue the tests";
+      }
+
+      return null; // Safe to run
+    });
+  }
+
+  /** Called from Robot.testInit(). Discovers and runs all @RobotAction tests. */
+  public void runRootTests() {
+    rootTester.runAll();
+  }
+
+  /** Called from Robot.testPeriodic(). Keeps dashboard data fresh. */
+  public void updateRootTests() {
+    rootTester.periodic();
   }
 }

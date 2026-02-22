@@ -1,3 +1,7 @@
+---
+title: Simulation System Design
+---
+
 import {Callout} from 'nextra/components';
 
     <meta property="og:description" content="Understand the robot simulation architecture used by FEDS 201" />
@@ -462,6 +466,39 @@ The ground plane may not be initialized. Check that `PhysicsWorld` is created wi
 
 **Balls tunnel through walls at high speed:**
 Adaptive sub-stepping should prevent this. If it still happens, the launch velocity may be too high for the sub-step threshold (0.1m). Check `LaunchParameters` and consider lowering the launch speed or decreasing the sub-step threshold.
+
+**Missing simulation classes at runtime (ClassNotFoundException: frc.sim.core.PhysicsWorld):**
+
+If the simulation fails during initialization with a stacktrace complaining about `frc.sim.core.PhysicsWorld` (or other `frc.sim.*` classes), the most likely cause is that the `sim-core` project is not on the runtime classpath for the robot program. In this repository the fix is to include the local `sim-core` Gradle project in your robot build:
+
+- In `robot/<year>/settings.gradle` (example: `robot/2026-rebuilt/settings.gradle`):
+
+```gradle
+include ':sim-core'
+project(':sim-core').projectDir = new File(settingsDir, '../sim-core')
+```
+
+- In `robot/<year>/build.gradle` replace any published artifact dependency with the project dependency:
+
+```gradle
+// before
+// implementation 'frc.sim:sim-core'
+
+// after
+implementation project(':sim-core')
+```
+
+Then rebuild and run the simulation from the robot project directory. Example (PowerShell):
+
+```powershell
+# build (skip tests for speed)
+p:\feds-central\robot\2026-rebuilt\gradlew.bat -p p:\feds-central\robot\2026-rebuilt build -x test
+
+# start the Java sim
+p:\feds-central\robot\2026-rebuilt\gradlew.bat -p p:\feds-central\robot\2026-rebuilt simulateJava
+```
+
+If you still see linkage errors, check `Sim/Error` (logged via AdvantageKit) for the exact problem. Missing native JNI libraries or incompatible versions of vendor libs (MapleSim) can also produce LinkageError at init; the log will contain the failure details.
 
 **Performance is slow:**
 Check how many pieces are active. If the proximity radius is too large, too many balls get simulated at once. The default 1.5m radius should keep active pieces under 30. Also make sure you ran the mesh simplify script on your field OBJ.
