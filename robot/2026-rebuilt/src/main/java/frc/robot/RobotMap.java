@@ -129,8 +129,19 @@ public final class RobotMap {
             Map.entry(0.0, 0.0)
         );
 
-        public static final InterpolatingDoubleTreeMap kFlightTimeMap = InterpolatingDoubleTreeMap.ofEntries(
-            Map.entry(0.0, 0.0)
+        //TODO: tune
+        public static final InterpolatingDoubleTreeMap kFlightTimeMap =
+        InterpolatingDoubleTreeMap.ofEntries(
+            Map.entry(1.0, 0.35),
+            Map.entry(2.0, 0.45),
+            Map.entry(3.0, 0.55),
+            Map.entry(4.0, 0.65),
+            Map.entry(5.0, 0.78),
+            Map.entry(6.0, 0.90),
+            Map.entry(7.0, 1.02),
+            Map.entry(8.0, 1.15),
+            Map.entry(9.0, 1.28),
+            Map.entry(10.0, 1.40)
         );
 
         

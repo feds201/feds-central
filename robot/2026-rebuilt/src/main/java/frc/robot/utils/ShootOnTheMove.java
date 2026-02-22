@@ -5,13 +5,15 @@
 //cliffy wiffy diffy miffy tiffy giiffy aiffy qiffy liffy miffy kiffy
 package frc.robot.utils;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import frc.robot.RobotMap;
 import frc.robot.RobotMap.ShooterConstants;
 
 public class ShootOnTheMove {
-
+//DO NOT SUBMIT -- remove akit debug logging
     /**
      * Get the field-relative position of the virtual goal
      * 
@@ -28,10 +30,12 @@ public class ShootOnTheMove {
 
         // Compute approximate flight time
         double distToGoal = shooterFieldPosition.getDistance(RobotMap.ShooterConstants.hubCenter);
-        double flightTime = ShooterConstants.kFlightTimeMap.get(distToGoal);
 
         // Adjust goal position for motion
-        return ShooterConstants.hubCenter.minus(shooterVelocity.times(flightTime));
+        double flightTime = ShooterConstants.kFlightTimeMap.get(distToGoal);
+        Translation2d virtualGoal = ShooterConstants.hubCenter.minus(shooterVelocity.times(flightTime));
+
+        return virtualGoal;
 
     }
 
@@ -49,8 +53,11 @@ public class ShootOnTheMove {
         Translation2d shooterFieldPosition = getShooterFieldPosition(robotPose);
 
         // Compute field-relative angle shooter must point
-        Translation2d shooterToGoal = calculateVirtualGoal(robotPose, chassisSpeeds).minus(shooterFieldPosition);
-
+        Translation2d virtualGoal = calculateVirtualGoal(robotPose, chassisSpeeds);
+        Translation2d shooterToGoal = virtualGoal.minus(shooterFieldPosition);
+        Logger.recordOutput("shooterToGoal", new Pose2d(shooterToGoal.getX(), shooterToGoal.getY(), shooterToGoal.getAngle()));
+        Logger.recordOutput("VirtualGoal", new Pose2d(virtualGoal.getX(), virtualGoal.getY(), virtualGoal.getAngle()));
+        
         Rotation2d shooterFieldAngle = new Rotation2d(
                 shooterToGoal.getX(),
                 shooterToGoal.getY());
@@ -70,9 +77,10 @@ public class ShootOnTheMove {
 
         Transform2d robotToShooter = new Transform2d(ShooterConstants.robotShooterOffset,
                 RobotMap.ShooterConstants.robotToShooterRotation);
-
+                //robotPose.getRotation());
+        
         Pose2d shooterPose = robotPose.plus(robotToShooter);
-
+        Logger.recordOutput("shooterPose", shooterPose);
         return shooterPose.getTranslation();
     }
 
