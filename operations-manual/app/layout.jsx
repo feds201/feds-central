@@ -285,7 +285,7 @@ export default async function RootLayout({ children }) {
           }}
         />
       </Head>
-      <body>
+      <body suppressHydrationWarning>
         <StyledComponentsRegistry>
             <Layout
               navbar={
