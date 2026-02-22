@@ -1,0 +1,75 @@
+plugins {
+    id 'java-library'
+}
+
+group = 'frc.rtu'
+version = project.findProperty('gpr.version') ?: '0.0.0-SNAPSHOT'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+    withSourcesJar()
+}
+
+repositories {
+    mavenCentral()
+
+    // Local WPILib installation — same maven repo that GradleRIO uses
+    // Populated by the WPILib installer at ~/wpilib/2026/maven (or Public/wpilib/2026/maven on Windows)
+    if (gradle.ext.has('frcHomeMaven') && gradle.ext.frcHomeMaven.exists()) {
+        maven {
+            name = 'frcHome'
+            url = gradle.ext.frcHomeMaven
+        }
+    }
+
+    // Public WPILib release artifacts (fallback / CI)
+    maven { url "https://frcmaven.wpi.edu/artifactory/release/" }
+
+    // AdvantageKit
+    maven { url "https://frcmaven.wpi.edu/artifactory/littletonrobotics-mvn-release/" }
+}
+
+dependencies {
+    // WPILib — SubsystemBase lives in wpilibNewCommands-java (the WPILib command-based framework)
+    // compileOnly because robot projects that consume this library already have
+    // WPILib on their classpath via GradleRIO.
+    compileOnly 'edu.wpi.first.wpilibNewCommands:wpilibNewCommands-java:2026.1.1'
+    // Sendable, WPISerializable etc. — transitively required by SubsystemBase
+    compileOnly 'edu.wpi.first.wpiutil:wpiutil-java:2026.1.1'
+    compileOnly 'edu.wpi.first.wpilibj:wpilibj-java:2026.1.1'
+
+    // AdvantageKit — compileOnly so teams without AK can still use the library.
+    // Logger calls in RootTestingUtility degrade gracefully when AK is absent.
+    compileOnly 'org.littletonrobotics.akit:akit-java:26.0.0'
+
+    // Testing
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+test {
+    useJUnitPlatform()
+    // Skip tests that depend on wpilibj2 at runtime — those run on the robot
+    jvmArgs '-Djava.awt.headless=true'
+}
+
+jar {
+    // Include only the library's own classes — not WPILib classes
+    // Robot projects bring WPILib separately via GradleRIO
+    manifest {
+        attributes(
+            'Implementation-Title':   'FEDS 201 Robot Testing Utility',
+            'Implementation-Version': version,
+            'Built-By':               'FEDS 201'
+        )
+    }
+}
+
+// Convenience task to print the JAR location after building
+task printJarPath {
+    dependsOn jar
+    doLast {
+        println "\n==> JAR ready: ${jar.archiveFile.get().asFile.absolutePath}"
+    }
+}
