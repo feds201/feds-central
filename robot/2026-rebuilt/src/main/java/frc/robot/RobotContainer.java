@@ -19,6 +19,7 @@ import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.utils.LimelightWrapper;
+import frc.robot.utils.RootTestingUtility;
 import limelight.networktables.LimelightSettings.ImuMode;
 
 public class RobotContainer {
@@ -47,9 +48,13 @@ public class RobotContainer {
   // Simulation
   private RebuiltSimManager simManager;
 
+  // Root Testing Utility — runs @RobotAction methods during Test mode
+  private final RootTestingUtility rootTester = new RootTestingUtility();
+
   public RobotContainer() {
     ll4.getSettings().withImuMode(ImuMode.ExternalImu).save();
     configureBindings();
+    configureRootTests();
   }
 
   public void updateLocalization() {
@@ -126,5 +131,31 @@ public class RobotContainer {
 
   public Command getAutonomousCommand() {
     return Commands.print("No autonomous command configured");
+  }
+
+  // ── Root Testing Utility ──────────────────────────────────
+
+  /**
+   * Register every subsystem that contains @RobotAction methods.
+   * Called once from the constructor.
+   */
+  private void configureRootTests() {
+    rootTester.registerSubsystem(
+        intakeSubsystem,
+        shooter,
+        intake
+        // Add more subsystems here as they're wired in:
+        // feeder, climber, spindexer, etc.
+    );
+  }
+
+  /** Called from Robot.testInit(). Discovers and runs all @RobotAction tests. */
+  public void runRootTests() {
+    rootTester.runAll();
+  }
+
+  /** Called from Robot.testPeriodic(). Keeps dashboard data fresh. */
+  public void updateRootTests() {
+    rootTester.periodic();
   }
 }
