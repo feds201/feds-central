@@ -1,13 +1,13 @@
-package frc.robot.utils;
+package frc.robot.utils.RTU;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import frc.robot.utils.TestResult.Alert;
-import frc.robot.utils.TestResult.AlertLevel;
-import frc.robot.utils.TestResult.DataSample;
+import frc.robot.utils.RTU.TestResult.Alert;
+import frc.robot.utils.RTU.TestResult.AlertLevel;
+import frc.robot.utils.RTU.TestResult.DataSample;
 
 /**
  * Mutable context object passed into {@code @RobotAction} methods that accept

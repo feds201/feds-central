@@ -1,4 +1,4 @@
-package frc.robot.utils;
+package frc.robot.utils.RTU;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -73,6 +73,18 @@ public final class RootTestingUtility {
     private boolean hasRun = false;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private DiagnosticServer diagServer;
+
+    public interface SafetyCheck {
+        /** Returns an error message if safety check fails, or null if it passes. */
+        String checkSafety();
+    }
+
+    private SafetyCheck safetyCheck;
+
+    /** Set a safety check that must pass before and during test execution. */
+    public void setSafetyCheck(SafetyCheck check) {
+        this.safetyCheck = check;
+    }
 
     // ── Registration ─────────────────────────────────────────
 
@@ -150,13 +162,11 @@ public final class RootTestingUtility {
     // ── Execution ────────────────────────────────────────────
 
     /**
-     * Runs every discovered action sequentially, records
+     * Runs every discovered action sequentially in a background thread, records
      * {@link TestResult}s, publishes to AK Logger, and updates
      * the diagnostic server.
-     *
-     * @return unmodifiable list of results
      */
-    public List<TestResult> runAll() {
+    public void runAll() {
         if (actions.isEmpty()) {
             discoverActions();
         }
@@ -168,34 +178,56 @@ public final class RootTestingUtility {
         }
 
         results.clear();
-
-        System.out.println("\n+==========================================+");
-        System.out.println("|      ROOT TESTING UTILITY -- START        |");
-        System.out.println("+==========================================+");
-        System.out.println("| Diagnostic dashboard:                     |");
-        System.out.println("|   " + diagServer.getUrl());
-        System.out.println("+==========================================+");
-
-        for (DiscoveredAction action : actions) {
-            TestResult result = executeAction(action);
-            results.add(result);
-            System.out.println(result);
-        }
-
-        int passed = (int) results.stream().filter(TestResult::isPassed).count();
-        int failed = results.size() - passed;
-
-        System.out.println("+==========================================+");
-        System.out.printf("|  TOTAL: %d  |  PASSED: %d  |  FAILED: %d%n", results.size(), passed, failed);
-        System.out.println("+==========================================+");
-        System.out.println("| Dashboard: " + diagServer.getUrl());
-        System.out.println("+==========================================+\n");
-
-        publishResults();
-        diagServer.updateResults(results);
         hasRun = true;
 
-        return Collections.unmodifiableList(results);
+        new Thread(() -> {
+            System.out.println("\n+==========================================+");
+            System.out.println("|      ROOT TESTING UTILITY -- START        |");
+            System.out.println("+==========================================+");
+            System.out.println("| Diagnostic dashboard:                     |");
+            System.out.println("|   " + diagServer.getUrl());
+            System.out.println("+==========================================+");
+
+            for (DiscoveredAction action : actions) {
+                // Wait for safety check before starting the test
+                while (safetyCheck != null) {
+                    String safetyError = safetyCheck.checkSafety();
+                    if (safetyError == null) {
+                        diagServer.setSafetyMessage(null);
+                        break;
+                    }
+                    diagServer.setSafetyMessage(safetyError);
+                    try {
+                        Thread.sleep(50);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        return;
+                    }
+                }
+
+                TestResult result = executeAction(action);
+                results.add(result);
+                System.out.println(result);
+
+                // If safety check failed during execution, stop tests
+                if (safetyCheck != null && safetyCheck.checkSafety() != null) {
+                    System.out.println("[RootTestingUtility] Safety check failed, stopping tests.");
+                    break;
+                }
+            }
+
+            int passed = (int) results.stream().filter(TestResult::isPassed).count();
+            int failed = results.size() - passed;
+
+            System.out.println("+==========================================+");
+            System.out.printf("|  TOTAL: %d  |  PASSED: %d  |  FAILED: %d%n", results.size(), passed, failed);
+            System.out.println("+==========================================+");
+            System.out.println("| Dashboard: " + diagServer.getUrl());
+            System.out.println("+==========================================+\n");
+
+            publishResults();
+            diagServer.updateResults(results);
+        }).start();
     }
 
     /**
@@ -226,10 +258,33 @@ public final class RootTestingUtility {
 
         try {
             Future<Object> future = executor.submit(task);
-            Object returnValue;
-            try {
-                returnValue = future.get(timeoutMs, TimeUnit.MILLISECONDS);
-            } catch (TimeoutException te) {
+            Object returnValue = null;
+            boolean finished = false;
+            long startMs = System.currentTimeMillis();
+
+            while (System.currentTimeMillis() - startMs < timeoutMs) {
+                if (safetyCheck != null) {
+                    String safetyError = safetyCheck.checkSafety();
+                    if (safetyError != null) {
+                        future.cancel(true);
+                        diagServer.setSafetyMessage(safetyError);
+                        double durationMs = (System.nanoTime() - startNs) / 1_000_000.0;
+                        return new TestResult(subsystemName, actionName, description,
+                            TestResult.Status.FAILED,
+                            new RuntimeException("Safety check failed: " + safetyError),
+                            durationMs, ctx.getAlerts(), ctx.getDataProfiles());
+                    }
+                }
+                try {
+                    returnValue = future.get(20, TimeUnit.MILLISECONDS);
+                    finished = true;
+                    break;
+                } catch (TimeoutException te) {
+                    // continue waiting
+                }
+            }
+
+            if (!finished) {
                 future.cancel(true);
                 double durationMs = (System.nanoTime() - startNs) / 1_000_000.0;
                 return new TestResult(subsystemName, actionName, description,

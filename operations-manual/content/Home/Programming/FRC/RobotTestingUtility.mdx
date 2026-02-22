@@ -144,6 +144,40 @@ public boolean testMotorProfile(DiagnosticContext ctx) {
 
 ---
 
+## Safety Checks
+
+Because automated tests can move mechanisms unexpectedly, the Root Testing Utility includes a safety check system. You can configure a condition that must be met before tests start and must remain true while tests are running.
+
+If the safety check fails before a test starts, the test sequence pauses and waits for the condition to be met. If it fails *during* a test, the current test is immediately cancelled and marked as `FAILED`, and the sequence pauses.
+
+### Configuring the Safety Check
+
+You configure the safety check in `RobotContainer` by passing a `SafetyCheck` lambda to the `RootTestingUtility`. The lambda should return `null` if it's safe to run, or a `String` error message if it's not.
+
+```java
+rootTester.setSafetyCheck(() -> {
+    if (!controller.getHID().isConnected()) {
+        return "Joystick is not connected";
+    }
+
+    // Primary start command: require both triggers held down
+    boolean triggersOk = controller.getLeftTriggerAxis() >= 0.5 && controller.getRightTriggerAxis() >= 0.5;
+
+    // Alternate start command: X + Y pressed together (convenience for some controllers)
+    boolean xyOk = controller.getHID().getXButton() && controller.getHID().getYButton();
+
+    if (!triggersOk && !xyOk) {
+        return "Did not receive start command from gamepads, please press both triggers (or X+Y) to continue the tests";
+    }
+
+    return null; // Safe to run
+});
+```
+
+When a safety check fails, the error message is prominently displayed on the live web dashboard so the drive team knows why the tests aren't running.
+
+---
+
 ## DiagnosticContext
 
 When a `@RobotAction` method declares a `DiagnosticContext` parameter, the utility automatically creates one and passes it in. This gives the test two capabilities:

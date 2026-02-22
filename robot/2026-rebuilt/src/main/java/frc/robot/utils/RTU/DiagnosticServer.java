@@ -1,4 +1,5 @@
-package frc.robot.utils;
+package frc.robot.utils.RTU;
+
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -12,8 +13,10 @@ import java.util.UUID;
 
 import com.sun.net.httpserver.HttpServer;
 
-import frc.robot.utils.TestResult.Alert;
-import frc.robot.utils.TestResult.DataSample;
+import frc.robot.utils.RTU.TestResult.Alert;
+import frc.robot.utils.RTU.TestResult.DataSample;
+
+
 
 /**
  * Lightweight embedded HTTP server that serves a diagnostic dashboard for
@@ -35,6 +38,7 @@ public final class DiagnosticServer {
     private HttpServer server;
     private List<TestResult> latestResults = List.of();
     private final String sessionId = UUID.randomUUID().toString().substring(0, 8);
+    private String safetyMessage = null;
 
     private static final DateTimeFormatter TIME_FMT =
         DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
@@ -79,6 +83,11 @@ public final class DiagnosticServer {
         this.latestResults = List.copyOf(results);
     }
 
+    /** Set a safety message to display on the dashboard. Thread-safe. */
+    public synchronized void setSafetyMessage(String message) {
+        this.safetyMessage = message;
+    }
+
     /** @return the full URL to the diagnostic dashboard. */
     public String getUrl() {
         return "http://localhost:" + port + "/diag/" + sessionId;
@@ -112,6 +121,11 @@ public final class DiagnosticServer {
         // Header
         sb.append("<h1>FEDS 201 Root Test Diagnostics</h1>");
         sb.append("<p class='session'>Session: <code>").append(sessionId).append("</code></p>");
+
+        if (safetyMessage != null) {
+            sb.append("<div class='safety-alert'><b>Safety Alert:</b> ");
+            sb.append(esc(safetyMessage)).append("</div>");
+        }
 
         if (latestResults.isEmpty()) {
             sb.append("<p class='waiting'>Waiting for test results...</p>");
@@ -209,7 +223,11 @@ public final class DiagnosticServer {
 
     private synchronized String buildJson() {
         var sb = new StringBuilder();
-        sb.append("{\"session\":\"").append(sessionId).append("\",\"results\":[");
+        sb.append("{\"session\":\"").append(sessionId).append("\"");
+        if (safetyMessage != null) {
+            sb.append(",\"safetyMessage\":\"").append(jsonEsc(safetyMessage)).append("\"");
+        }
+        sb.append(",\"results\":[");
         for (int i = 0; i < latestResults.size(); i++) {
             if (i > 0) sb.append(",");
             TestResult r = latestResults.get(i);
@@ -309,6 +327,10 @@ public final class DiagnosticServer {
         .alert-info { color: #38bdf8; }
         .alert-warning { color: #fbbf24; }
         .alert-error { color: #f87171; }
+
+        .safety-alert { background: #7f1d1d; border: 2px solid #ef4444; color: #fca5a5;
+                        padding: 16px; border-radius: 8px; margin-bottom: 24px;
+                        font-size: 1.2rem; text-align: center; font-weight: bold; }
 
         .chart-container { background: #0f172a; border-radius: 6px; padding: 12px;
                            margin-bottom: 12px; max-height: 300px; }

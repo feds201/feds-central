@@ -1,4 +1,4 @@
-package frc.robot.utils;
+package frc.robot.utils.RTU;
 
 import java.time.Instant;
 import java.util.Collections;
@@ -10,16 +10,20 @@ import java.util.Map;
  * Immutable record that captures the outcome of a single {@link RobotAction}
  * test executed by the {@link RootTestingUtility}.
  *
- * <p>Now also carries:
+ * <p>
+ * Now also carries:
  * <ul>
- *   <li><b>Alerts</b> -- human-readable messages attached by the test (info / warning / error).</li>
- *   <li><b>Data profiles</b> -- named series of timestamped numeric samples
- *       (e.g. motor velocity over time) for anomaly detection / charting.</li>
+ * <li><b>Alerts</b> -- human-readable messages attached by the test (info /
+ * warning / error).</li>
+ * <li><b>Data profiles</b> -- named series of timestamped numeric samples
+ * (e.g. motor velocity over time) for anomaly detection / charting.</li>
  * </ul>
  */
 public final class TestResult {
 
-    public enum Status { PASSED, FAILED, TIMED_OUT }
+    public enum Status {
+        PASSED, FAILED, TIMED_OUT
+    }
 
     // ── Core fields ──────────────────────────────────────────
 
@@ -31,7 +35,6 @@ public final class TestResult {
     private final double durationMs;
     private final Instant timestamp;
 
-    // ── Extended fields ──────────────────────────────────────
 
     /** Alerts attached by the test via {@link DiagnosticContext}. */
     private final List<Alert> alerts;
@@ -42,72 +45,103 @@ public final class TestResult {
     // ── Nested types ─────────────────────────────────────────
 
     /** Severity for diagnostic alerts. */
-    public enum AlertLevel { INFO, WARNING, ERROR }
+    public enum AlertLevel {
+        INFO, WARNING, ERROR
+    }
 
     /** A single alert message. */
-    public record Alert(AlertLevel level, String message) {}
+    public record Alert(AlertLevel level, String message) {
+    }
 
     /** A single timestamped numeric sample. */
-    public record DataSample(double timestampMs, double value) {}
+    public record DataSample(double timestampMs, double value) {
+    }
 
-    // ── Constructor ──────────────────────────────────────────
 
     public TestResult(String subsystemName,
-                      String actionName,
-                      String description,
-                      Status status,
-                      Throwable error,
-                      double durationMs,
-                      List<Alert> alerts,
-                      Map<String, List<DataSample>> dataProfiles) {
+            String actionName,
+            String description,
+            Status status,
+            Throwable error,
+            double durationMs,
+            List<Alert> alerts,
+            Map<String, List<DataSample>> dataProfiles) {
         this.subsystemName = subsystemName;
-        this.actionName    = actionName;
-        this.description   = description;
-        this.status        = status;
-        this.error         = error;
-        this.durationMs    = durationMs;
-        this.timestamp     = Instant.now();
-        this.alerts        = alerts != null ? List.copyOf(alerts) : List.of();
-        this.dataProfiles  = dataProfiles != null
-            ? deepCopyProfiles(dataProfiles)
-            : Map.of();
+        this.actionName = actionName;
+        this.description = description;
+        this.status = status;
+        this.error = error;
+        this.durationMs = durationMs;
+        this.timestamp = Instant.now();
+        this.alerts = alerts != null ? List.copyOf(alerts) : List.of();
+        this.dataProfiles = dataProfiles != null
+                ? deepCopyProfiles(dataProfiles)
+                : Map.of();
     }
 
     /** Backwards-compatible constructor (no alerts / profiles). */
     public TestResult(String subsystemName,
-                      String actionName,
-                      String description,
-                      Status status,
-                      Throwable error,
-                      double durationMs) {
+            String actionName,
+            String description,
+            Status status,
+            Throwable error,
+            double durationMs) {
         this(subsystemName, actionName, description, status, error, durationMs, null, null);
     }
 
     // ── Getters ──────────────────────────────────────────────
 
-    public String  getSubsystemName() { return subsystemName; }
-    public String  getActionName()    { return actionName;    }
-    public String  getDescription()   { return description;   }
-    public Status  getStatus()        { return status;        }
-    public boolean isPassed()         { return status == Status.PASSED; }
-    public Throwable getError()       { return error;         }
-    public double  getDurationMs()    { return durationMs;    }
-    public Instant getTimestamp()      { return timestamp;     }
+    public String getSubsystemName() {
+        return subsystemName;
+    }
 
-    public List<Alert> getAlerts()                           { return alerts; }
-    public Map<String, List<DataSample>> getDataProfiles()   { return dataProfiles; }
+    public String getActionName() {
+        return actionName;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public boolean isPassed() {
+        return status == Status.PASSED;
+    }
+
+    public Throwable getError() {
+        return error;
+    }
+
+    public double getDurationMs() {
+        return durationMs;
+    }
+
+    public Instant getTimestamp() {
+        return timestamp;
+    }
+
+    public List<Alert> getAlerts() {
+        return alerts;
+    }
+
+    public Map<String, List<DataSample>> getDataProfiles() {
+        return dataProfiles;
+    }
 
     // ── Display ──────────────────────────────────────────────
 
     @Override
     public String toString() {
         String icon = switch (status) {
-            case PASSED    -> "PASS";
-            case FAILED    -> "FAIL";
+            case PASSED -> "PASS";
+            case FAILED -> "FAIL";
             case TIMED_OUT -> "TIMEOUT";
         };
         String base = String.format("[%s] [%s] %s  (%.1f ms)",
-            icon, subsystemName, actionName, durationMs);
+                icon, subsystemName, actionName, durationMs);
         if (error != null) {
             base += " -- " + error.getMessage();
         }
