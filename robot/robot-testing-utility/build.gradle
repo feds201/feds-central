@@ -1,5 +1,6 @@
 plugins {
     id 'java-library'
+    id 'maven-publish'
 }
 
 group = 'frc.rtu'
@@ -9,6 +10,7 @@ java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
     withSourcesJar()
+    withJavadocJar()
 }
 
 repositories {
@@ -50,13 +52,10 @@ dependencies {
 
 test {
     useJUnitPlatform()
-    // Skip tests that depend on wpilibj2 at runtime — those run on the robot
     jvmArgs '-Djava.awt.headless=true'
 }
 
 jar {
-    // Include only the library's own classes — not WPILib classes
-    // Robot projects bring WPILib separately via GradleRIO
     manifest {
         attributes(
             'Implementation-Title':   'FEDS 201 Robot Testing Utility',
@@ -66,10 +65,39 @@ jar {
     }
 }
 
-// Convenience task to print the JAR location after building
-task printJarPath {
-    dependsOn jar
-    doLast {
-        println "\n==> JAR ready: ${jar.archiveFile.get().asFile.absolutePath}"
+// ── GitHub Packages Publishing ────────────────────────────────────────────────
+publishing {
+    publications {
+        rtu(MavenPublication) {
+            from components.java
+
+            groupId    = 'frc.rtu'
+            artifactId = 'robot-testing-utility'
+            // version comes from gpr.version project property (set by the release workflow)
+
+            pom {
+                name        = 'FEDS 201 Robot Testing Utility'
+                description = 'Standalone FRC test harness — auto-discovers and runs @RobotAction methods on subsystems in Test mode.'
+                url         = 'https://github.com/feds201/feds-central'
+                licenses {
+                    license {
+                        name = 'MIT License'
+                        url  = 'https://opensource.org/licenses/MIT'
+                    }
+                }
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            name = 'GitHubPackages'
+            url  = uri('https://maven.pkg.github.com/feds201/feds-central')
+            credentials {
+                // Injected by the GitHub Actions workflow via secrets / GITHUB_TOKEN
+                username = project.findProperty('gpr.user') ?: System.getenv('GPR_USER') ?: System.getenv('GITHUB_ACTOR')
+                password = project.findProperty('gpr.key')  ?: System.getenv('GPR_KEY')  ?: System.getenv('GITHUB_TOKEN')
+            }
+        }
     }
 }

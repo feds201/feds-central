@@ -6,8 +6,8 @@
 #
 # Steps:
 #   1. Build and test the library
-#   2. Create a GitHub Release named after the tag
-#   3. Upload robot-testing-utility-<version>.jar as a release asset
+#   2. Publish to GitHub Packages Maven (frc.rtu:robot-testing-utility:<version>)
+#   3. Create a GitHub Release and upload the JAR as an asset
 #
 # Tag format:  rtu/v<semver>   (e.g. rtu/v1.0.0, rtu/v1.2.3-beta)
 # =============================================================================
@@ -21,10 +21,11 @@ on:
 
 jobs:
   release:
-    name: Build & Release JAR
+    name: Build, Publish & Release
     runs-on: ubuntu-latest
     permissions:
-      contents: write   # needed to create GitHub Releases and upload assets
+      contents: write    # create GitHub Releases and upload assets
+      packages: write    # publish to GitHub Packages Maven
 
     steps:
       - name: Checkout repository
@@ -49,11 +50,18 @@ jobs:
         working-directory: robot/robot-testing-utility
         run: ./gradlew build -Pgpr.version=${{ steps.version.outputs.version }}
 
+      - name: Publish to GitHub Packages
+        working-directory: robot/robot-testing-utility
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_ACTOR: ${{ github.actor }}
+        run: ./gradlew publish -Pgpr.version=${{ steps.version.outputs.version }}
+
       - name: Find JAR artifact
         id: jar
         working-directory: robot/robot-testing-utility
         run: |
-          jar_path=$(ls build/libs/robot-testing-utility-*.jar | head -1)
+          jar_path=$(ls build/libs/robot-testing-utility-*.jar | grep -v sources | grep -v javadoc | head -1)
           echo "path=$jar_path" >> "$GITHUB_OUTPUT"
           echo "name=$(basename $jar_path)" >> "$GITHUB_OUTPUT"
 
@@ -67,29 +75,37 @@ jobs:
 
             Standalone FRC robot test harness — auto-discovers and runs `@RobotAction` methods on your subsystems in Test mode.
 
-            ### Installing in your robot project
+            ### Installing via GitHub Packages Maven (recommended)
 
-            **`settings.gradle`**
+            **`build.gradle`** — add the repository and dependency:
             ```groovy
-            include ':robot-testing-utility'
-            project(':robot-testing-utility').projectDir = new File(settingsDir, '../robot-testing-utility')
-            ```
+            repositories {
+                maven {
+                    name = 'GitHubPackages'
+                    url  = uri('https://maven.pkg.github.com/feds201/feds-central')
+                    credentials {
+                        username = project.findProperty('gpr.user') ?: System.getenv('GITHUB_ACTOR')
+                        password = project.findProperty('gpr.key')  ?: System.getenv('GITHUB_TOKEN')
+                    }
+                }
+            }
 
-            **`build.gradle`**
-            ```groovy
             dependencies {
-                implementation project(':robot-testing-utility')
+                implementation 'frc.rtu:robot-testing-utility:${{ steps.version.outputs.version }}'
             }
             ```
 
-            Or download the JAR below and add it to your `libs/` folder:
-            ```groovy
-            dependencies {
-                implementation fileTree(dir: 'libs', include: ['*.jar'])
-            }
+            Add your GitHub credentials to `~/.gradle/gradle.properties`:
             ```
+            gpr.user=YOUR_GITHUB_USERNAME
+            gpr.key=YOUR_GITHUB_PAT
+            ```
+            > **Note:** Your PAT needs `read:packages` scope. Generate one at GitHub → Settings → Developer settings → Personal access tokens.
 
-            See the [README](https://github.com/${{ github.repository }}/blob/main/robot/robot-testing-utility/README.md) for full documentation.
+            ### Or download the JAR below
+            Drop it in `libs/` and add `implementation fileTree(dir: 'libs', include: ['*.jar'])`.
+
+            See the [README](https://github.com/${{ github.repository }}/blob/main/robot/robot-testing-utility/README.md) and [Operations Manual](https://github.com/${{ github.repository }}/blob/main/operations-manual/content/Home/Programming/FRC/RobotTestingUtility.mdx) for full documentation.
           files: robot/robot-testing-utility/${{ steps.jar.outputs.path }}
           draft: false
           prerelease: ${{ contains(github.ref_name, '-') }}
