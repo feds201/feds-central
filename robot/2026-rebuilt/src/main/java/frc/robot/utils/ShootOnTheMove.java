@@ -2,7 +2,6 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-//cliffy wiffy diffy miffy tiffy giiffy aiffy qiffy liffy miffy kiffy
 package frc.robot.utils;
 
 import org.littletonrobotics.junction.Logger;
@@ -13,7 +12,6 @@ import frc.robot.RobotMap;
 import frc.robot.RobotMap.ShooterConstants;
 
 public class ShootOnTheMove {
-//DO NOT SUBMIT -- remove akit debug logging
     /**
      * Get the field-relative position of the virtual goal
      * 
@@ -55,7 +53,6 @@ public class ShootOnTheMove {
         // Compute field-relative angle shooter must point
         Translation2d virtualGoal = calculateVirtualGoal(robotPose, chassisSpeeds);
         Translation2d shooterToGoal = virtualGoal.minus(shooterFieldPosition);
-        Logger.recordOutput("shooterToGoal", new Pose2d(shooterToGoal.getX(), shooterToGoal.getY(), shooterToGoal.getAngle()));
         Logger.recordOutput("VirtualGoal", new Pose2d(virtualGoal.getX(), virtualGoal.getY(), virtualGoal.getAngle()));
         
         Rotation2d shooterFieldAngle = new Rotation2d(
@@ -80,7 +77,6 @@ public class ShootOnTheMove {
                 //robotPose.getRotation());
         
         Pose2d shooterPose = robotPose.plus(robotToShooter);
-        Logger.recordOutput("shooterPose", shooterPose);
         return shooterPose.getTranslation();
     }
 
