@@ -1,28 +1,71 @@
+# =============================================================================
+# Jules PR CodeGuard
+# =============================================================================
+#
+# Triggered on every new or updated pull request.
+# Jules reviews the changed files and posts INLINE review comments
+# directly on the specific lines of code using the GitHub REST API.
+#
+# Requirements:
+#   - JULES_API_KEY secret set in repository settings
+#     (generate at jules.google.com → Settings → API Keys)
+# =============================================================================
+
 name: Jules PR CodeGuard
 
 on:
   pull_request:
-    types: [opened, synchronize]
+    types: [opened, synchronize, reopened]
 
 jobs:
   review:
+    name: Jules Code Review
     runs-on: ubuntu-latest
     permissions:
       contents: read
       pull-requests: write
+
     steps:
-      - uses: google-labs-code/jules-invoke@v1.0.0
+      - name: Invoke Jules Code Guard
+        uses: BeksOmega/jules-action@v1
         with:
-          prompt: |
-            Act as a Code Guard with deep knowledge of software development. 
-            Do NOT push code changes or create a new branch.
-            
-            Instead, review the files changed in this pull request (PR #${{ github.event.pull_request.number }}).
-            Identify areas to make the code more readable, maintainable, and secure.
-            
-            For every issue you find, use the GitHub CLI (`gh pr review`) or the GitHub REST API to post an INLINE comment directly on the specific line of code in the PR.
-            Always start your suggestions with 'As a CodeGuard, here are my suggestions' and explain your reasoning clearly.
+          include_last_commit: true
+          include_commit_log: true
           jules_api_key: ${{ secrets.JULES_API_KEY }}
+          prompt: |
+            Act as a Code Guard with deep knowledge of software development.
+            Do NOT push code changes or create a new branch.
+
+            You are reviewing Pull Request #${{ github.event.pull_request.number }}
+            in the repository ${{ github.repository }}.
+            The PR is titled: "${{ github.event.pull_request.title }}"
+            Branch: ${{ github.head_ref }} → ${{ github.base_ref }}
+
+            Your tasks:
+            1. Review all files changed in this PR (visible in the commit log above).
+            2. Identify concrete, specific issues around:
+               - Readability (unclear naming, missing comments, complex logic)
+               - Maintainability (hardcoded values, duplication, missing error handling)
+               - Security (unclosed resources, exposed secrets, unsafe operations)
+            3. For EVERY issue found, post an INLINE comment on the exact line using
+               the GitHub REST API:
+
+            ```bash
+            gh api repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/reviews \
+              -X POST \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              --field event=COMMENT \
+              --field body="Summary of all issues found" \
+              --field 'comments[][path]=<file_path>' \
+              --field 'comments[][line]=<line_number>' \
+              --field 'comments[][body]=As a CodeGuard, here are my suggestions: <your explanation>'
+            ```
+
+            Always start each inline comment body with:
+            "As a CodeGuard, here are my suggestions:"
+
+            Be specific — quote the problematic code, explain WHY it is an issue,
+            and suggest a concrete improvement.
         env:
-          # Jules needs the GitHub token to authenticate its CLI commands
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
