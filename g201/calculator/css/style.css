@@ -184,6 +184,20 @@ body::after {
 .module3 { border-color: #0984e3; }
 .module4 { border-color: #e74c3c; }
 
+.module1:hover { background-color:#e74c3c; filter: brightness(100%); }
+.module2:hover { background-color:#3ce77e; filter: brightness(100%); }
+.module3:hover { background-color:#a53ce7; filter: brightness(100%); }
+.module4:hover { background-color:#e7e73c; filter: brightness(100%); }
+
+.roar{
+    font-size: 14px;
+    color: var(--text-secondary);
+    font-style: italic;
+    font-weight: 300;
+    
+}
+
+
 @keyframes container-appear {
     0% {
         opacity: 0;
