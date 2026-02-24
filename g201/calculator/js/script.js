@@ -198,7 +198,7 @@ document.addEventListener('DOMContentLoaded', function() {
             {
             section: "III. Fabrics",
             question: " How often do you buy filaments ",
-            hint: "Enter an integer value",
+           
             type: "multiple-choice",
            options: [
                         { label: "Every day", eco_impact: "high", value:2 },
@@ -214,8 +214,6 @@ document.addEventListener('DOMContentLoaded', function() {
             {
             section: "IV. Transpotation",
             question: " Why do you use transportation ",
-            hint: "Enter an integer value",
-            
             type: "multiple-choice",
            options: [
                         { label: "Every day", eco_impact: "high", value:2 },
@@ -225,7 +223,34 @@ document.addEventListener('DOMContentLoaded', function() {
             eco_tip: "",
             eco_impact: "High",
             category: "materials"
+            },
+            {
+            section: "IV. Transpotation",
+            question: " What kind of transportation do you use? ",
+            type: "multiple-choice",
+           options: [
+                        { label: "car", eco_impact: "high", value:5 },
+                        { label: "public transport", eco_impact: "medium", value: 3 },
+                        { label: "walking/biking", eco_impact: "low", value: 1 },
+                    ],
+            eco_tip: "",
+            eco_impact: "High",
+            category: "materials"
             }
+            ,{
+                section: "IV. Transpotation",
+                qeustion: " how many miles do you travel during the season? ",
+                type: "multiple-choice",
+                options: [
+                    { label: "5000+ miles", eco_impact: "high", value: 3 },
+                    { label: "500-2500 miles", eco_impact: "medium", value: 2 },
+                    { label: "0-500 miles", eco_impact: "low", value: 1 },
+                ],  
+            eco_tip: "",
+            eco_impact: "High",
+            category: "materials"      
+            }
+
          ]
 };
     // Get DOM elements
