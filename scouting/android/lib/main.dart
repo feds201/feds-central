@@ -8,6 +8,7 @@ import 'about_page.dart';
 import 'Match_Pages/match_page.dart';
 import 'home_page.dart';
 import 'services/Adapters/AutonPoints.dart';
+import 'services/LockdownService.dart';
 import 'settings_page.dart';
 
 const Color themeColor = Color.fromARGB(255, 255, 255, 0);
@@ -49,6 +50,12 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     _isDarkMode = Hive.box('settings').get('isDarkMode', defaultValue: true);
     isDarkMode = _isDarkMode;
+
+    // Check for lockdown mode
+    if (Hive.box('settings').get('isLockdown', defaultValue: false)) {
+      LockdownService.startLockTask();
+    }
+
     // Listen for theme changes
     Hive.box('settings')
         .listenable(keys: ['isDarkMode']).addListener(_onThemeChanged);

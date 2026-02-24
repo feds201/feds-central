@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hive/hive.dart';
 import 'package:scouting_app/Pit_Checklist/Pit_Checklist.dart';
+import 'services/LockdownService.dart';
 import 'package:scouting_app/Qualitative/qualitative.dart';
 import 'services/Colors.dart';
 import 'Experiment/ExpStateManager.dart';
@@ -26,6 +28,7 @@ class _HomePageState extends State<HomePage>
   late Animation<Color?> _colorAnimation;
   bool isExperimentBoxOpen = false;
   bool isCardBuilderOpen = false;
+  int _lockdownTapCount = 0;
 
   @override
   void initState() {
@@ -286,19 +289,38 @@ class _HomePageState extends State<HomePage>
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ).createShader(bounds),
-              child: Text(
-                'Scout-Ops',
-                style: GoogleFonts.chivoMono(
-                  fontSize: 70,
-                  fontWeight: FontWeight.w300,
-                  color: Colors.white,
-                  shadows: [
-                    Shadow(
-                      color: Colors.red.withOpacity(0.3),
-                      blurRadius: 15.0,
-                      offset: const Offset(5, 5),
-                    ),
-                  ],
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _lockdownTapCount++;
+                    if (_lockdownTapCount >= 10) {
+                      _lockdownTapCount = 0;
+                      if (Hive.box('settings')
+                          .get('isLockdown', defaultValue: false)) {
+                        Hive.box('settings').put('isLockdown', false);
+                        LockdownService.stopLockTask();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text('Lockdown Mode Disabled')),
+                        );
+                      }
+                    }
+                  });
+                },
+                child: Text(
+                  'Scout-Ops',
+                  style: GoogleFonts.chivoMono(
+                    fontSize: 70,
+                    fontWeight: FontWeight.w300,
+                    color: Colors.white,
+                    shadows: [
+                      Shadow(
+                        color: Colors.red.withOpacity(0.3),
+                        blurRadius: 15.0,
+                        offset: const Offset(5, 5),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

@@ -10,6 +10,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:scouting_app/main.dart';
 
 import 'services/DataBase.dart';
+import 'services/LockdownService.dart';
 import 'components/MatchSelection.dart';
 import 'components/ScoutersList.dart';
 import 'components/nav.dart';
@@ -399,6 +400,29 @@ class SettingsPageState extends State<SettingsPage> {
                         setState(() {
                           isLocationGranted = newValue;
                         });
+                      });
+                    },
+                    activeTrackColor: const Color.fromARGB(255, 11, 243, 11),
+                    activeColor: const Color.fromARGB(255, 255, 255, 255),
+                  ),
+                  const SizedBox(height: 10),
+                  SwitchListTile(
+                    tileColor: const Color.fromARGB(97, 159, 157, 157),
+                    contentPadding: const EdgeInsets.only(left: 20, right: 20),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                    title: Text("Lockdown Mode",
+                        style: GoogleFonts.museoModerno(fontSize: 20)),
+                    thumbIcon: thumbIcon,
+                    value: Hive.box('settings').get('isLockdown', defaultValue: false),
+                    onChanged: (bool value) {
+                      setState(() {
+                        Hive.box('settings').put('isLockdown', value);
+                        if (value) {
+                          LockdownService.startLockTask();
+                        } else {
+                          LockdownService.stopLockTask();
+                        }
                       });
                     },
                     activeTrackColor: const Color.fromARGB(255, 11, 243, 11),
