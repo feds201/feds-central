@@ -86,7 +86,7 @@ export function calculateCategoryImpact(category, questions, answers) {
             }
 
             let weight;
-switch (question.eco_impact?.toLowerCase()) {
+            switch (question.eco_impact) {
                 case 'high': weight = 3; break;
                 case 'medium': weight = 2; break;
                 default: weight = 1;
