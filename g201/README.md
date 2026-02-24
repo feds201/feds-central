@@ -26,7 +26,18 @@ The project is located in `g201/calculator/` and consists of:
 
 ## How to Run
 
-Simply open `g201/calculator/index.html` in a modern web browser. No build step is required.
+1.  Clone the repository.
+2.  Navigate to the `g201/calculator` directory.
+3.  Serve the files using a local web server (required for ES Modules to work).
+    *   For example, using Python:
+        ```bash
+        python3 -m http.server
+        ```
+    *   Or using `http-server` via npm:
+        ```bash
+        npx http-server
+        ```
+4.  Open the provided local URL (e.g., `http://localhost:8000`) in your web browser.
 
 ## Contributing
 
