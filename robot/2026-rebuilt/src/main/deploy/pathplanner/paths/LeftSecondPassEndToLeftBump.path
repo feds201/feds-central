@@ -3,32 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.636,
-        "y": 4.428
+        "x": 5.709311981020167,
+        "y": 4.277081850533808
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.4320741639325165,
-        "y": 4.752194281539783
+        "x": 6.871304863582444,
+        "y": 5.751091340450771
       },
       "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 5.461578313253011,
-        "y": 5.379108433734939
-      },
-      "prevControl": {
-        "x": 5.695753115938088,
-        "y": 5.291574658611245
-      },
-      "nextControl": {
-        "x": 5.227403510567934,
-        "y": 5.466642208858633
-      },
-      "isLocked": false,
-      "linkedName": null
+      "linkedName": "LeftSecondPassEnd"
     },
     {
       "anchor": {
@@ -36,25 +20,25 @@
         "y": 5.379108433734939
       },
       "prevControl": {
-        "x": 3.3946675376945743,
-        "y": 5.368246451899633
+        "x": 3.6327876631079485,
+        "y": 5.374519572953736
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "LeftBumpShootingPosition"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.0072440944881766,
+      "waypointRelativePos": 0.3461538461538439,
       "rotationDegrees": 135.0
     }
   ],
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 0.8316086547507057,
-      "maxWaypointRelativePos": 1.614299153339615,
+      "minWaypointRelativePos": 0.34430856067733023,
+      "maxWaypointRelativePos": 0.7356538099717722,
       "constraints": {
         "maxVelocity": 2.0,
         "maxAcceleration": 6.0,
@@ -80,10 +64,10 @@
     "rotation": 135.0
   },
   "reversed": false,
-  "folder": "MidIntakeToLeftBump",
+  "folder": "DoublePassTest",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -90.0
+    "rotation": 90.0
   },
   "useDefaultConstraints": true
 }

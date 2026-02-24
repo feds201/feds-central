@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.636,
-        "y": 6.778
+        "x": 8.49594306049822,
+        "y": 6.730177935943061
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.640530386915052,
-        "y": 5.751929129383938
+        "x": 8.456474809133816,
+        "y": 5.827820822318594
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "LeftFarIntakeStart"
     },
     {
       "anchor": {
-        "x": 7.636,
-        "y": 4.428397590361445
+        "x": 8.43,
+        "y": 4.895
       },
       "prevControl": {
-        "x": 7.608207589971197,
-        "y": 5.829174453074991
+        "x": 8.448286351712264,
+        "y": 6.054908415006433
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "LeftFarIntakeEnd"
     }
   ],
   "rotationTargets": [],
@@ -45,9 +45,9 @@
     "rotation": -90.0
   },
   "reversed": false,
-  "folder": "MidIntakeToLeftBump",
+  "folder": "DoublePassTest",
   "idealStartingState": {
-    "velocity": 0,
+    "velocity": 3.0,
     "rotation": -90.0
   },
   "useDefaultConstraints": true

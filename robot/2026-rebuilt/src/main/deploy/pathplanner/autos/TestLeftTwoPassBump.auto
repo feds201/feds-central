@@ -1,0 +1,49 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Copy of LeftTrenchToMid"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Copy of MidIntakeL"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Copy of MidIntakeToLeftBump"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "LeftBumpToSecondPass"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "LeftSecondPassStartToSecondPassEnd"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "LeftSecondPassEndToLeftBump"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

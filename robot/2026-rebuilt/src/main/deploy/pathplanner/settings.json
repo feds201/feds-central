@@ -2,7 +2,10 @@
   "robotWidth": 0.66,
   "robotLength": 0.66,
   "holonomicMode": true,
-  "pathFolders": [],
+  "pathFolders": [
+    "MidIntakeToLeftBump",
+    "DoublePassTest"
+  ],
   "autoFolders": [],
   "defaultMaxVel": 5.0,
   "defaultMaxAccel": 6.0,
@@ -15,7 +18,7 @@
   "driveWheelRadius": 0.048,
   "driveGearing": 8.14,
   "maxDriveSpeed": 5.0,
-  "driveMotorType": "falcon500",
+  "driveMotorType": "krakenX60FOC",
   "driveCurrentLimit": 28.0,
   "wheelCOF": 1.2,
   "flModuleX": 0.267,
