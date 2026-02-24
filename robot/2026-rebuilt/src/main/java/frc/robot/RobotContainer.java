@@ -6,11 +6,13 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
-
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.RobotMap.DrivetrainConstants;
+import frc.robot.commands.swerve.TeleopSwerve;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
@@ -93,10 +95,7 @@ public class RobotContainer {
     // TODO: implement this for real (was just added to enable simulation)
     // Default drive command: field-centric swerve with left stick + right stick rotation
     drivetrain.setDefaultCommand(
-        drivetrain.applyRequest(() -> fieldCentric
-            .withVelocityX(-controller.getLeftY() * MAX_SPEED)
-            .withVelocityY(-controller.getLeftX() * MAX_SPEED)
-            .withRotationalRate(-controller.getRightX() * MAX_ANGULAR_RATE)));
+        new TeleopSwerve(drivetrain, controller));
 
     // TODO: implement this for real (was just added to enable simulation)
     // M key (Right bumper): intake
@@ -141,6 +140,7 @@ public class RobotContainer {
       Logger.recordOutput("Sim/Enabled", false);
       simManager = null;
     }
+    drivetrain.resetPose(new Pose2d(.5, .5, new Rotation2d(0)));
   }
 
   /** Called from Robot.simulationPeriodic(). */
