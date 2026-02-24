@@ -105,4 +105,9 @@ public void setState(spindexer_state state)
   public Command commandStop(){
     return new InstantCommand(() -> setState(spindexer_state.STOP));
   }
+
+  
+public Command setStateCommand(spindexer_state state) {
+    return runOnce(() -> setState(state));
+}
 }
