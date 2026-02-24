@@ -27,7 +27,7 @@ jobs:
 
     steps:
       - name: Invoke Jules Code Guard
-        uses: BeksOmega/jules-action@v1
+        uses: google-labs-code/jules-action@v1
         with:
           include_last_commit: true
           include_commit_log: true
