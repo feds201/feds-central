@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.RobotMap.DrivetrainConstants;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.intake.RollersSubsystem;
+import frc.robot.subsystems.intake.RollersSubsystem.RollerState;
 import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.subsystems.feeder.Feeder.feeder_state;
 import frc.robot.subsystems.intake.Intake;
@@ -100,7 +101,8 @@ public class RobotContainer {
     //   .onTrue(IntakeSubsystem.quatsiCommand(Direction.kForward));
 
     controller.leftTrigger()
-        .onTrue(intakeSubsystem.extendIntake());
+        .onTrue(intakeSubsystem.extendIntake().andThen(rollersSubsystem.RollersCommand(RollerState.ON)))
+        .onFalse(rollersSubsystem.RollersCommand(RollerState.OFF));
 
     controller.leftBumper()
         .onTrue(intakeSubsystem.retractIntake());
@@ -164,10 +166,6 @@ public class RobotContainer {
  
   
 
-  public void getFuelIntoShooter(){
-      feederSubsystem.setState(feeder_state.RUN);
-      spinDexer.setState(spindexer_state.RUN);
-  }
 
   /** Called from Robot.simulationInit(). */
   public void initSimulation() {
