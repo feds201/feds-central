@@ -1,0 +1,31 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "LeftTrenchToMid"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "MidIntakeL"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "MidIntakeToLeftBump"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

@@ -15,7 +15,6 @@ import frc.robot.RobotMap.VisionConstants;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import limelight.Limelight;
 import limelight.networktables.AngularVelocity3d;
-import limelight.networktables.LimelightPoseEstimator.EstimationMode;
 import limelight.networktables.Orientation3d;
 
 public class LimelightWrapper extends Limelight{
@@ -125,23 +124,23 @@ public class LimelightWrapper extends Limelight{
  * @param drivetrain Robot drivetrain
  */
 public static void updateLocalizationLimelight(LimelightWrapper ll, boolean isLL4, CommandSwerveDrivetrain drivetrain){
-    ll.getSettings()
-        .withRobotOrientation(new Orientation3d(drivetrain.getRotation3d(),
-            new AngularVelocity3d(RadiansPerSecond.of(drivetrain.getState().Speeds.omegaRadiansPerSecond),
-                DegreesPerSecond.of(0),
-                DegreesPerSecond.of(0))))
-        .save();
+    // ll.getSettings()
+    //     .withRobotOrientation(new Orientation3d(drivetrain.getRotation3d(),
+    //         new AngularVelocity3d(RadiansPerSecond.of(drivetrain.getState().Speeds.omegaRadiansPerSecond),
+    //             DegreesPerSecond.of(0),
+    //             DegreesPerSecond.of(0))))
+    //     .save();
 
-    // Get MegaTag2 pose
-    Optional<limelight.networktables.PoseEstimate> visionEstimate = ll.createPoseEstimator(EstimationMode.MEGATAG2).getPoseEstimate();
-    // If the pose is present
-    visionEstimate.ifPresent((limelight.networktables.PoseEstimate poseEstimate) -> {
-        // And we see >0 tags and robot rotates <2 rotations per second
-        if(poseEstimate.tagCount > 0 &&  Math.abs(Units.radiansToRotations(drivetrain.getState().Speeds.omegaRadiansPerSecond)) < 2){
-            // Add it to the pose estimator.
-            drivetrain.addVisionMeasurement(poseEstimate.pose.toPose2d(), poseEstimate.timestampSeconds, LimelightWrapper.getEstimationStdDevsLimelightMT2(poseEstimate, isLL4));
-        }
-    });
+    // // Get MegaTag2 pose
+    // Optional<limelight.networktables.PoseEstimate> visionEstimate = ll.createPoseEstimator(EstimationMode.MEGATAG2).getPoseEstimate();
+    // // If the pose is present
+    // visionEstimate.ifPresent((limelight.networktables.PoseEstimate poseEstimate) -> {
+    //     // And we see >0 tags and robot rotates <2 rotations per second
+    //     if(poseEstimate.tagCount > 0 &&  Math.abs(Units.radiansToRotations(drivetrain.getState().Speeds.omegaRadiansPerSecond)) < 2){
+    //         // Add it to the pose estimator.
+    //         drivetrain.addVisionMeasurement(poseEstimate.pose.toPose2d(), poseEstimate.timestampSeconds, LimelightWrapper.getEstimationStdDevsLimelightMT2(poseEstimate, isLL4));
+    //     }
+    // });
 }
 
     
