@@ -6,7 +6,6 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
-
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -21,13 +20,15 @@ import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.utils.LimelightWrapper;
-import frc.robot.utils.RTU.RootTestingUtility;
+import frc.rtu.RootTestingUtility;
 import limelight.networktables.LimelightSettings.ImuMode;
 
 public class RobotContainer {
 
   private final CommandSwerveDrivetrain drivetrain = DrivetrainConstants.createDrivetrain();
-  //Limelight naming conventions are based on physical inventory system, hence "limelight-two" and "limelight-five" represent our second and fifth limelights respectively.
+  // Limelight naming conventions are based on physical inventory system, hence
+  // "limelight-two" and "limelight-five" represent our second and fifth
+  // limelights respectively.
   private final LimelightWrapper ll4 = new LimelightWrapper("limelight-two", true);
   private final LimelightWrapper ll3 = new LimelightWrapper("limelight-five", false);
 
@@ -38,15 +39,13 @@ public class RobotContainer {
   private final Shooter shooter = new Shooter();
   // TODO: implement this for real (was just added to enable simulation)
   private final Intake intake = new Intake();
-  // Local testing subsystem (contains @RobotAction tests used by RootTestingUtility)
+  // Local testing subsystem (contains @RobotAction tests used by
+  // RootTestingUtility)
   private final TestingSubsystem testingSubsystem = new TestingSubsystem();
 
-  // TODO: implement this for real (was just added to enable simulation)
   // Swerve drive requests
   private final SwerveRequest.FieldCentric fieldCentric = new SwerveRequest.FieldCentric();
-  // TODO: implement this for real (was just added to enable simulation)
   private final double MAX_SPEED = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
-  // TODO: implement this for real (was just added to enable simulation)
   private final double MAX_ANGULAR_RATE = Math.PI * 2; // rad/s
 
   // Simulation
@@ -67,15 +66,16 @@ public class RobotContainer {
       ll3.updateLocalizationLimelight(drivetrain);
     }
   }
+
   private void configureBindings() {
     // controller.a()
-    //   .onTrue(IntakeSubsystem.dyanmicCommand(Direction.kReverse));
+    // .onTrue(IntakeSubsystem.dyanmicCommand(Direction.kReverse));
     // controller.b()
-    //   .onTrue(IntakeSubsystem.dyanmicCommand(Direction.kForward));
+    // .onTrue(IntakeSubsystem.dyanmicCommand(Direction.kForward));
     // controller.x()
-    //   .onTrue(IntakeSubsystem.quatsiCommand(Direction.kReverse));
+    // .onTrue(IntakeSubsystem.quatsiCommand(Direction.kReverse));
     // controller.y()
-    //   .onTrue(IntakeSubsystem.quatsiCommand(Direction.kForward));
+    // .onTrue(IntakeSubsystem.quatsiCommand(Direction.kForward));
 
     controller.leftTrigger()
         .onTrue(intakeSubsystem.extendIntake());
@@ -84,14 +84,15 @@ public class RobotContainer {
         .onTrue(intakeSubsystem.retractIntake());
 
     // controller.x()
-    //     .onTrue((leds.intakeSignal())).onFalse(leds.climbingSignal());
+    // .onTrue((leds.intakeSignal())).onFalse(leds.climbingSignal());
 
     // controller.y()
-    //     .onTrue(rollers.RollersCommand(RollerState.ON))
-    //     .onFalse(rollers.RollersCommand(RollerState.OFF));
+    // .onTrue(rollers.RollersCommand(RollerState.ON))
+    // .onFalse(rollers.RollersCommand(RollerState.OFF));
 
     // TODO: implement this for real (was just added to enable simulation)
-    // Default drive command: field-centric swerve with left stick + right stick rotation
+    // Default drive command: field-centric swerve with left stick + right stick
+    // rotation
     drivetrain.setDefaultCommand(
         drivetrain.applyRequest(() -> fieldCentric
             .withVelocityX(-controller.getLeftY() * MAX_SPEED)
@@ -164,11 +165,10 @@ public class RobotContainer {
     rootTester.registerSubsystem(
         intakeSubsystem,
         shooter,
-        intake
-    ,
-    testingSubsystem
-        // Add more subsystems here as they're wired in:
-        // feeder, climber, spindexer, etc.
+        intake,
+        testingSubsystem
+    // Add more subsystems here as they're wired in:
+    // feeder, climber, spindexer, etc.
     );
 
     rootTester.setSafetyCheck(() -> {
@@ -179,7 +179,8 @@ public class RobotContainer {
       // Primary start command: both triggers held past threshold
       boolean triggersOk = controller.getLeftTriggerAxis() >= 0.5 && controller.getRightTriggerAxis() >= 0.5;
 
-      // Alternate start command: X + Y buttons pressed simultaneously (convenience for some controllers)
+      // Alternate start command: X + Y buttons pressed simultaneously (convenience
+      // for some controllers)
       boolean xyOk = controller.getHID().getXButton() && controller.getHID().getYButton();
 
       if (!triggersOk && !xyOk) {

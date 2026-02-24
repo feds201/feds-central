@@ -9,6 +9,8 @@ Run from the `robot/2026-rebuilt/` directory.
 | Command | What it does |
 |---|---|
 | `./gradlew build` | Compile and run all tests |
+| `./gradlew compileJava` | Verify code compiles (useful for checking imports/syntax) |
+| `./gradlew build --stacktrace` | Run build with detailed error logs |
 | `./gradlew test` | Run tests only |
 | `./gradlew deploy` | Deploy robot code to the roboRIO |
 | `./gradlew simulateJava` | Run robot code in simulation (opens Glass + Driver Station) |
@@ -24,3 +26,4 @@ Test report is generated at `build/reports/tests/test/index.html`.
 ## Dependencies
 
 This project includes [sim-core](../sim-core/) as a composite build for physics simulation. See `settings.gradle` for the include.
+
