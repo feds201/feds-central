@@ -26,9 +26,9 @@ public class RobotContainer {
         .onTrue((leds.intakeSignal())).onFalse(leds.climbingSignal());
       
 
-    // controller.y()
-    //     .onTrue(rollers.RollersCommand(RollerState.ON))
-    //     .onFalse(rollers.RollersCommand(RollerState.OFF));
+     controller.leftTrigger()
+         .onTrue(rollers.RollersCommand(RollerState.ON).alongWith(intake.setIntakeStateCommand(extendIntake())))
+         .onFalse(rollers.RollersCommand(RollerState.OFF));
   }
 
   public Command getAutonomousCommand() {
