@@ -20,12 +20,11 @@ import java.util.Optional;
  * real tag visibility from camera FOV and field layout, and add noise
  * based on distance/angle/camera type.
  *
- * <p>The fake metadata values (2 tags, 2m distance, 0.1 ambiguity) are
- * chosen so {@code LimelightWrapper}'s stddev calculations produce low
- * values instead of returning 1e6 (which would cause the estimator to
- * ignore the measurement entirely).
+ * <p>The fake metadata values are chosen so {@code LimelightWrapper}'s stddev 
+ * calculations produce low values instead of returning 1e6 (which would cause
+ * the estimator to ignore the measurement entirely).
  *
- * <p>Publishing is gated by the camera's FPS (from {@link LimelightType}).
+ * <p>Publishing is gated by the camera's FPS (from {@link CameraConfig}).
  * When it's time to publish, the pose is sampled from a shared
  * {@link TimeInterpolatableBuffer} at {@code now - latency}, so the
  * published measurement is realistically stale.
@@ -38,34 +37,27 @@ import java.util.Optional;
  */
 public class LimelightSim {
 
-    // Fake tag metadata — values are tuned for LimelightWrapper's stddev logic:
-    //   2 tags  → avoids the "1 tag + far distance = reject" cutoff
-    //   2m dist → moderate distance scalar (not too close, not too far)
-    //   0.1 amb → well under the 0.3 ambiguity rejection threshold
-    private static final int FAKE_TAG_COUNT = 2;
-    private static final double FAKE_TAG_SPAN = 30.0;   // degrees
-    private static final double FAKE_AVG_DIST = 2.0;    // meters
-    private static final double FAKE_AVG_AREA = 1.5;    // percent of image
-
-    // Total simulated latency (capture + pipeline), in milliseconds.
-    // Real Limelight latency ≈ capture (~11ms) + pipeline (varies by resolution/pipeline).
-    // 25ms is a reasonable estimate for an AprilTag pipeline on LL3/LL4.
-    // Source: https://docs.limelightvision.io/docs/docs-limelight/software-change-log
-    //         https://www.chiefdelphi.com/t/determining-limelight-latency/411597
+    // Fake tag metadata — values are tuned for LimelightWrapper's stddev logic
+    // to produce the tightest stddevs the pipeline allows with perfect sim data:
+    //   4 tags  → triggers multi-tag reduction (×0.65) and avoids single-tag rejection
+    //   0.5m dist → minimal distance scalar (1 + 0.25×0.2 = 1.05)
+    //   0.02 amb → near-zero ambiguity (perfect sim pose has no solve error)
     //
-    // TODO: Add gaussian variation to simulate real-world jitter. Something like:
-    //   latencyMs = MEAN_LATENCY_MS + random.nextGaussian() * LATENCY_STDDEV_MS
-    //   latencyMs = Math.max(latencyMs, MIN_LATENCY_MS)
-    //   with mean=25, stddev=5, min=15.
-    private static final double FAKE_LATENCY_MS = 25.0;
-    private static final double FAKE_LATENCY_SEC = FAKE_LATENCY_MS / 1000.0;
+    // Effective MT2 stddevs:  LL4 ~0.27m  |  LL3 ~0.34m
+    // (floor is ~0.26m because base MT2_STDDEV=(0.5,0.5) × min scalar 0.52)
+    private static final int FAKE_TAG_COUNT = 4;
+    private static final double FAKE_TAG_SPAN = 60.0;   // degrees
+    private static final double FAKE_AVG_DIST = 0.5;    // meters
+    private static final double FAKE_AVG_AREA = 6.0;    // percent of image
 
     // Per-fiducial fake data (7 doubles each)
     // [id, txnc, tync, ta, distToCamera, distToRobot, ambiguity]
-    private static final double[] FAKE_FIDUCIAL_1 = {1, 5.0, 3.0, 0.8, 2.0, 2.1, 0.1};
-    private static final double[] FAKE_FIDUCIAL_2 = {2, -4.0, 2.0, 0.7, 2.0, 2.0, 0.1};
+    private static final double[] FAKE_FIDUCIAL_1 = {1, 5.0, 3.0, 1.5, 0.5, 0.6, 0.02};
+    private static final double[] FAKE_FIDUCIAL_2 = {2, -4.0, 2.0, 1.3, 0.5, 0.5, 0.02};
+    private static final double[] FAKE_FIDUCIAL_3 = {3, 3.0, -2.0, 1.4, 0.5, 0.55, 0.02};
+    private static final double[] FAKE_FIDUCIAL_4 = {4, -3.0, -3.0, 1.2, 0.5, 0.6, 0.02};
 
-    /** Total array length: 11 base + 2 fiducials * 7 each = 25 */
+    /** Total array length: 11 base + 4 fiducials * 7 each = 39 */
     private static final int ARRAY_LENGTH = 11 + FAKE_TAG_COUNT * 7;
 
     private final DoubleArrayEntry botposeMt1;
@@ -74,6 +66,9 @@ public class LimelightSim {
 
     /** Seconds between publishes, derived from camera FPS. */
     private final double publishPeriodSec;
+
+    /** Latency in ms, from the camera's hardware type. */
+    private final double latencyMs;
 
     /** Timestamp of last NT publish (seconds, FPGA clock). */
     private double lastPublishTimeSec = 0.0;
@@ -91,7 +86,8 @@ public class LimelightSim {
         botposeMt2 = table.getDoubleArrayTopic("botpose_orb_wpiblue").getEntry(new double[0]);
         tvEntry = table.getDoubleTopic("tv").getEntry(0.0);
 
-        publishPeriodSec = 1.0 / config.type().fps();
+        publishPeriodSec = 1.0 / config.type().fps;
+        latencyMs = config.type().latencyMs;
     }
 
     /**
@@ -114,7 +110,8 @@ public class LimelightSim {
         // This makes the published measurement realistically stale — the pose
         // estimator will see a pose from FAKE_LATENCY_MS ago, matching the
         // latency value we report in the array metadata.
-        Optional<Pose2d> maybePose = poseHistory.getSample(nowSec - FAKE_LATENCY_SEC);
+        double lookbackSec = nowSec - latencyMs / 1000.0;
+        Optional<Pose2d> maybePose = poseHistory.getSample(lookbackSec);
         if (maybePose.isEmpty()) {
             return; // buffer not populated yet (first few ticks)
         }
@@ -137,21 +134,23 @@ public class LimelightSim {
         data[5] = pose.getRotation().getDegrees();  // yaw (degrees)
 
         // Metadata (indices 6-10)
-        data[6] = FAKE_LATENCY_MS;
+        data[6] = latencyMs;
         data[7] = FAKE_TAG_COUNT;
         data[8] = FAKE_TAG_SPAN;
         data[9] = FAKE_AVG_DIST;
         data[10] = FAKE_AVG_AREA;
 
-        // Raw fiducials (indices 11-24) — must be present and match tagCount,
+        // Raw fiducials (indices 11-38) — must be present and match tagCount,
         // otherwise the YALL LimeLight parser returns an empty rawFiducials array and
         // LimelightWrapper's stddev loop sees 0 tags → returns 1e6 → pose ignored.
         System.arraycopy(FAKE_FIDUCIAL_1, 0, data, 11, 7);
         System.arraycopy(FAKE_FIDUCIAL_2, 0, data, 18, 7);
+        System.arraycopy(FAKE_FIDUCIAL_3, 0, data, 25, 7);
+        System.arraycopy(FAKE_FIDUCIAL_4, 0, data, 32, 7);
 
-        // Write identical data to both MT1 and MT2 — in V0 there's no
-        // difference. Real limelights compute these differently (MT1 = per-tag
-        // PnP, MT2 = MegaTag2 multi-tag solver).
+        // Publish to both MT1 and MT2, matching real Limelight behavior.
+        // Real LLs compute these differently (MT1 = per-tag PnP, MT2 = MegaTag2
+        // multi-tag solver), but V0 writes the same perfect pose to both.
         botposeMt1.set(data);
         botposeMt2.set(data);
         tvEntry.set(1.0);

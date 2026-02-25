@@ -252,6 +252,8 @@ public class RebuiltSimManager {
         telemetry = new SimTelemetry(chassis);
 
         // --- Vision sim (writes true pose to NT in Limelight format) ---
+        // TODO: replace Transform3d() with real camera mount offsets from CAD
+        //       (needed for FOV-based tag visibility when we move past V0)
         visionSimManager = new VisionSimManager(
                 new CameraConfig("limelight-two", LimelightType.LL4, new Transform3d()),
                 new CameraConfig("limelight-five", LimelightType.LL3, new Transform3d()));

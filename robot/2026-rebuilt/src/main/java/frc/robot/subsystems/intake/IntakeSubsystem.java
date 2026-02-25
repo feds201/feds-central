@@ -30,16 +30,14 @@ public class IntakeSubsystem extends SubsystemBase {
   private final DigitalInput limit_switch_r;
   private final DigitalInput limit_switch_l;
   private final RollersSubsystem rollers; 
+  private final SysIdRoutine sysID;
   private final double wheelRadius = 2.0; 
   private final double extendedLength = 14.43; 
 
-  // Simulation (only initialized when running in sim)
+  // Simulation + Visualization values (only initialized when running in sim, can't be final)
   private DCMotorSim motorSim;
   private DIOSim limitSwitchRSim;
   private DIOSim limitSwitchLSim;
-  private SysIdRoutine sysID;
-
-  // Visualization (only initialized when running in sim)
   private Mechanism2d mech2d;
   private MechanismRoot2d mechRoot;
   private MechanismLigament2d intakeLigament;

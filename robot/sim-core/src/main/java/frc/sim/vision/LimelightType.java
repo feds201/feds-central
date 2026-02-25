@@ -1,23 +1,22 @@
 package frc.sim.vision;
 
 /**
- * Hardware type discriminator for Limelight cameras.
- *
- * <p>FPS values represent the AprilTag pipeline frame rate (not raw camera FPS).
- * These are conservative starting points — real hardware may run faster.
+ * Hardware specs for each Limelight type.
+ * Add future per-type values here (e.g. hFovDeg, vFovDeg, noise model params).
  */
 public enum LimelightType {
-    LL3(30),
-    LL4(60);
+    LL3(30, 25.0),
+    LL4(60, 20.0);
 
-    private final int fps;
+    /** AprilTag pipeline frame rate. */
+    public final int fps;
 
-    LimelightType(int fps) {
+    /** Total latency in ms: capture + pipeline.
+     *  https://www.chiefdelphi.com/t/determining-limelight-latency/411597 */
+    public final double latencyMs;
+
+    LimelightType(int fps, double latencyMs) {
         this.fps = fps;
-    }
-
-    /** AprilTag pipeline frame rate (frames per second). */
-    public int fps() {
-        return fps;
+        this.latencyMs = latencyMs;
     }
 }
