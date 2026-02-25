@@ -8,9 +8,15 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.RobotMap.DrivetrainConstants;
+import frc.robot.commands.swerve.TeleopSwerve;
 import frc.robot.subsystems.intake.IntakeSubsystem;
+import frc.robot.subsystems.intake.RollersSubsystem;
+import frc.robot.subsystems.intake.RollersSubsystem.RollerState;
+import frc.robot.subsystems.feeder.Feeder;
+import frc.robot.subsystems.feeder.Feeder.feeder_state;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.testing.TestingSubsystem;
@@ -24,7 +30,7 @@ import frc.rtu.RootTestingUtility;
 import limelight.networktables.LimelightSettings.ImuMode;
 
 public class RobotContainer {
-
+  
   private final CommandSwerveDrivetrain drivetrain = DrivetrainConstants.createDrivetrain();
   // Limelight naming conventions are based on physical inventory system, hence
   // "limelight-two" and "limelight-five" represent our second and fifth
@@ -33,10 +39,19 @@ public class RobotContainer {
   private final LimelightWrapper ll3 = new LimelightWrapper("limelight-five", false);
 
   private final CommandXboxController controller = new CommandXboxController(0);
+
+
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
+  
+  private final RollersSubsystem rollersSubsystem = RollersSubsystem.getInstance();
+
+  private final Feeder feederSubsystem = new Feeder();
 
   // TODO: implement this for real (was just added to enable simulation)
   private final Shooter shooter = new Shooter();
+  private final ShooterHood shooterHood = new ShooterHood(drivetrain);
+  private final ShooterWheels shooterWheels = new ShooterWheels(drivetrain);
+
   // TODO: implement this for real (was just added to enable simulation)
   private final Intake intake = new Intake();
   // Local testing subsystem (contains @RobotAction tests used by
@@ -78,7 +93,8 @@ public class RobotContainer {
     // .onTrue(IntakeSubsystem.quatsiCommand(Direction.kForward));
 
     controller.leftTrigger()
-        .onTrue(intakeSubsystem.extendIntake());
+        .onTrue(intakeSubsystem.extendIntake().andThen(rollersSubsystem.RollersCommand(RollerState.ON)))
+        .onFalse(rollersSubsystem.RollersCommand(RollerState.OFF));
 
     controller.leftBumper()
         .onTrue(intakeSubsystem.retractIntake());
@@ -94,10 +110,7 @@ public class RobotContainer {
     // Default drive command: field-centric swerve with left stick + right stick
     // rotation
     drivetrain.setDefaultCommand(
-        drivetrain.applyRequest(() -> fieldCentric
-            .withVelocityX(-controller.getLeftY() * MAX_SPEED)
-            .withVelocityY(-controller.getLeftX() * MAX_SPEED)
-            .withRotationalRate(-controller.getRightX() * MAX_ANGULAR_RATE)));
+        new TeleopSwerve(drivetrain, controller));
 
     // TODO: implement this for real (was just added to enable simulation)
     // M key (Right bumper): intake
@@ -114,12 +127,35 @@ public class RobotContainer {
     // D-pad up: hood angle up
     // D-pad down: hood angle down
     // (POV buttons need custom triggers)
-    controller.y()
-        .whileTrue(shooter.hoodUpCommand());
-    // TODO: implement this for real (was just added to enable simulation)
-    controller.a()
-        .whileTrue(shooter.hoodDownCommand());
+    // controller.y()
+    //     .whileTrue(shooter.hoodUpCommand());
+    // controller.y().onTrue(new InstantCommand (() -> setShooterToShooting()));
+
+    controller.y().onTrue(
+      Commands.sequence(
+        shooterHood.setStateCommand(shooterhood_state.SHOOTING), 
+        shooterWheels.setStateCommand(shooter_state.SHOOTING)
+      )
+    );
+
+    controller.x().whileTrue(
+      Commands.sequence(
+      feederSubsystem.setStateCommand(feeder_state.RUN),
+      spinDexer.setStateCommand(spindexer_state.RUN)
+      )
+    );
+
+
+
+    // TODO: implement this for real (was just added to enable simulation)-
+
+   // controller.x().whileTrue(new InstantCommand(() -> getFuelIntoShooter()));
+
   }
+
+ 
+  
+
 
   /** Called from Robot.simulationInit(). */
   public void initSimulation() {

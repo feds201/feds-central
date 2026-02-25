@@ -22,6 +22,8 @@ import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.utils.DeviceTempReporter;
+import frc.robot.utils.SubsystemStatusManager;
 
 //comment out the above line if you don't have a LedsSubsystem, and comment out the line in RobotContainer that creates the LedsSubsystem, and comment out the line in RobotContainer that sets the default command for the LedsSubsystem. You can also delete the LedsSubsystem class if you don't have it, but it's easier to just comment out those lines.
 public class Robot extends LoggedRobot {
@@ -45,7 +47,7 @@ public class Robot extends LoggedRobot {
         break;
 
       case SIM:
-        Logger.addDataReceiver(new WPILOGWriter("log"));
+        //Logger.addDataReceiver(new WPILOGWriter("log"));
         Logger.addDataReceiver(new NT4Publisher());
         break;
 
@@ -94,6 +96,8 @@ public class Robot extends LoggedRobot {
   public void robotPeriodic() {
     m_robotContainer.updateLocalization();
     CommandScheduler.getInstance().run();
+    DeviceTempReporter.pollAll();
+    SubsystemStatusManager.pollAll();
   }
 
   @Override

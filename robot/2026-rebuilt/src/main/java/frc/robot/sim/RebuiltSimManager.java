@@ -195,7 +195,7 @@ public class RebuiltSimManager {
                 .withCustomModuleTranslations(modulePositions)
                 .withSwerveModule(moduleSimConfig);
 
-        Pose2d startingPose = new Pose2d(2, 4, Rotation2d.kZero);
+        Pose2d startingPose = new Pose2d(.5, .5, Rotation2d.kZero);
         mapleSimDrive = new SwerveDriveSimulation(driveSimConfig, startingPose);
 
         // MapleSim owns and steps the drivetrain; ODE4J chassis is a kinematic follower
