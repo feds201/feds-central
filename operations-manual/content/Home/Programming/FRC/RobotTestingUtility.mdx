@@ -1,0 +1,637 @@
+import {Callout} from 'nextra/components';
+
+    <meta property="og:description" content="The Root Testing Utility — an automated test harness for FEDS 201 robot subsystems, introduced in 2026 REBUILT" />
+
+# Robot Testing Utility
+
+## What Is It?
+
+The **Root Testing Utility** is an automated test harness built for the 2026 REBUILT robot that discovers and runs test methods on every registered subsystem when the robot enters **Test mode** in the Driver Station. Instead of manually checking each motor, sensor, and mechanism before a match, the utility scans your subsystems for annotated methods, executes them in order, and reports pass/fail results to the console, AdvantageKit logs, and a live web dashboard.
+
+<Callout type="info">
+    This system was introduced during the 2026 REBUILT season. Robot projects before 2026 do not have this testing framework.
+    The full source lives in `robot/2026-rebuilt/src/main/java/frc/robot/utils/`.
+</Callout>
+
+---
+
+## Why Automated Testing?
+
+At competition, you have **limited time** between matches to verify that your robot is working. Manually spinning each motor and checking each sensor is slow and error-prone. The Root Testing Utility solves this by:
+
+- **Auto-discovering** every test method across all subsystems — no manual test list to maintain
+- **Running tests in a defined order** so you get consistent, repeatable checks
+- **Reporting results in three places** — console output, AdvantageKit log keys (viewable in AdvantageScope), and an embedded HTTP dashboard with charts
+- **Timing out** stuck tests so a broken motor doesn't hang your entire test cycle
+- **Injecting diagnostic context** so tests can record alerts and numeric data profiles for later analysis
+
+Think of it like JUnit for your robot, except it runs on the roboRIO during Test mode.
+
+---
+
+## Architecture Overview
+
+The testing system is composed of **six key classes**, all in the `frc.robot.utils` package:
+
+| Class | Purpose |
+|---|---|
+| `@RobotAction` | Annotation you place on subsystem methods to mark them as tests |
+| `RootTestingUtility` | The engine — discovers, executes, and reports on `@RobotAction` methods |
+| `TestResult` | Immutable record capturing the outcome of a single test (status, duration, alerts, data profiles) |
+| `DiagnosticContext` | Mutable context injected into tests — lets them record alerts and numeric samples |
+| `DiagnosticServer` | Embedded HTTP server that serves a live dashboard at `http://<ip>:5800/diag/<session>` |
+| `SubsystemStatusManager` | Separate utility for continuous health polling (CAN device connectivity via Shuffleboard) |
+| `DeviceTempReporter` | Separate utility that tracks motor temperatures and publishes them to Shuffleboard |
+| `SwerveModuleStatusUtil` | Convenience wrapper that registers swerve module motors/encoders with both the status manager and temp reporter |
+
+### How the Pieces Fit Together
+
+```
+Robot.java                    RobotContainer.java
+┌────────────┐               ┌──────────────────────────┐
+│ testInit() ├──────────────►│ runRootTests()            │
+│            │               │   └─► rootTester.runAll() │
+│ testPeriodic()├───────────►│ updateRootTests()         │
+│            │               │   └─► rootTester.periodic()│
+└────────────┘               └──────────────────────────┘
+                                        │
+                                        ▼
+                              RootTestingUtility
+                              ┌──────────────────────┐
+                              │ 1. discoverActions()  │ ◄─ scans subsystems via reflection
+                              │ 2. executeAction()    │ ◄─ runs each method with timeout
+                              │ 3. publishResults()   │ ◄─ logs to AK + console
+                              │ 4. diagServer.update()│ ◄─ updates HTTP dashboard
+                              └──────────────────────┘
+```
+
+---
+
+## The `@RobotAction` Annotation
+
+This is the entry point for defining a test. Place it on any method inside a `SubsystemBase` class, and the Root Testing Utility will find and run it automatically.
+
+### Annotation Properties
+
+| Property | Type | Default | Description |
+|---|---|---|---|
+| `name` | `String` | `""` (uses method name) | Human-readable test name displayed in results |
+| `description` | `String` | `""` | Short description of what this test validates |
+| `order` | `int` | `Integer.MAX_VALUE` | Execution order — lower values run first |
+| `timeoutSeconds` | `double` | `5.0` | Maximum time (seconds) before the test is auto-failed as `TIMED_OUT` |
+
+### Method Contract
+
+A `@RobotAction` method must follow one of these signatures:
+
+```java
+// Option 1: boolean return (true = pass, false = fail)
+@RobotAction(name = "My Test")
+public boolean myTest() { ... }
+
+// Option 2: void return (passes if no exception thrown)
+@RobotAction(name = "My Test")
+public void myTest() { ... }
+
+// Option 3: with DiagnosticContext injection
+@RobotAction(name = "My Test")
+public boolean myTest(DiagnosticContext ctx) { ... }
+```
+
+**Rules:**
+- Return type must be `boolean`, `Boolean`, or `void`. Other return types are skipped.
+- Parameters must be either **zero** or **exactly one** `DiagnosticContext`. Other signatures are skipped.
+- Methods can be `public` or `protected` (the scanner uses `getDeclaredMethods` with `setAccessible(true)`).
+
+### Example: Simple Motor Check
+
+```java
+@RobotAction(name = "Drive Motor Spin", description = "Verify drive motor responds", order = 1)
+public boolean testDriveMotorSpin() {
+    motor.setControl(new VoltageOut(2.0));  // apply 2V
+    Timer.delay(0.5);                       // wait 500ms
+    double velocity = motor.getVelocity().getValueAsDouble();
+    motor.setControl(new VoltageOut(0));     // stop
+    return Math.abs(velocity) > 0.1;        // pass if motor moved
+}
+```
+
+### Example: With DiagnosticContext
+
+```java
+@RobotAction(name = "Motor Profile Test", description = "Ramp motor and profile velocity", order = 2)
+public boolean testMotorProfile(DiagnosticContext ctx) {
+    ctx.info("Starting motor ramp-up");
+    motor.setControl(new VoltageOut(6.0));
+
+    for (int i = 0; i < 50; i++) {
+        double velocity = motor.getVelocity().getValueAsDouble();
+        ctx.sample("Velocity (RPM)", velocity);
+        Timer.delay(0.02);
+    }
+
+    double finalVelocity = motor.getVelocity().getValueAsDouble();
+    motor.setControl(new VoltageOut(0));
+
+    if (finalVelocity < 1000) {
+        ctx.error("Motor did not reach target speed: " + finalVelocity);
+        return false;
+    }
+    ctx.info("Final velocity: " + finalVelocity + " RPM");
+    return true;
+}
+```
+
+---
+
+## Safety Checks
+
+Because automated tests can move mechanisms unexpectedly, the Root Testing Utility includes a safety check system. You can configure a condition that must be met before tests start and must remain true while tests are running.
+
+If the safety check fails before a test starts, the test sequence pauses and waits for the condition to be met. If it fails *during* a test, the current test is immediately cancelled and marked as `FAILED`, and the sequence pauses.
+
+### Configuring the Safety Check
+
+You configure the safety check in `RobotContainer` by passing a `SafetyCheck` lambda to the `RootTestingUtility`. The lambda should return `null` if it's safe to run, or a `String` error message if it's not.
+
+```java
+rootTester.setSafetyCheck(() -> {
+    if (!controller.getHID().isConnected()) {
+        return "Joystick is not connected";
+    }
+
+    // Primary start command: require both triggers held down
+    boolean triggersOk = controller.getLeftTriggerAxis() >= 0.5 && controller.getRightTriggerAxis() >= 0.5;
+
+    // Alternate start command: X + Y pressed together (convenience for some controllers)
+    boolean xyOk = controller.getHID().getXButton() && controller.getHID().getYButton();
+
+    if (!triggersOk && !xyOk) {
+        return "Did not receive start command from gamepads, please press both triggers (or X+Y) to continue the tests";
+    }
+
+    return null; // Safe to run
+});
+```
+
+When a safety check fails, the error message is prominently displayed on the live web dashboard so the drive team knows why the tests aren't running.
+
+---
+
+## DiagnosticContext
+
+When a `@RobotAction` method declares a `DiagnosticContext` parameter, the utility automatically creates one and passes it in. This gives the test two capabilities:
+
+### 1. Alerts
+
+Record human-readable messages at three severity levels:
+
+```java
+ctx.info("Starting ramp-up test");      // informational
+ctx.warn("Velocity lower than expected"); // warning
+ctx.error("Motor stalled at 0 RPM");     // error
+```
+
+Alerts appear on the diagnostic dashboard and in the console output.
+
+### 2. Data Profiles
+
+Record timestamped numeric samples for any named series. These are plotted as charts on the dashboard:
+
+```java
+// Automatic timestamps (relative to test start)
+ctx.sample("Velocity (RPM)", motor.getVelocity().getValueAsDouble());
+
+// Explicit timestamp
+ctx.sample("Current (A)", 150.0, motor.getStatorCurrent().getValueAsDouble());
+```
+
+Data profiles let you visually inspect motor ramp-up curves, PID settling behavior, current draw patterns, and more — all from a web browser pointed at the roboRIO.
+
+---
+
+## RootTestingUtility — The Engine
+
+### Lifecycle
+
+The utility follows a strict lifecycle, wired through `RobotContainer` and `Robot`:
+
+#### 1. Registration (once, in `RobotContainer` constructor)
+
+```java
+private final RootTestingUtility rootTester = new RootTestingUtility();
+
+private void configureRootTests() {
+    rootTester.registerSubsystem(
+        intakeSubsystem,
+        shooter,
+        intake
+        // Add more subsystems here as they're wired in
+    );
+}
+```
+
+#### 2. Discovery + Execution (in `Robot.testInit()`)
+
+When the Driver Station switches to **Test mode**, `Robot.testInit()` calls `m_robotContainer.runRootTests()`, which calls `rootTester.runAll()`. This:
+
+1. Calls `discoverActions()` — scans registered subsystems via reflection for `@RobotAction` methods
+2. Sorts actions by `order()`, then alphabetically for stability
+3. Starts the `DiagnosticServer` on port **5800** (first run only)
+4. Executes each action sequentially with timeout enforcement
+5. Records `TestResult` objects with status, duration, alerts, and data profiles
+6. Publishes results to AdvantageKit Logger and the diagnostic dashboard
+
+#### 3. Periodic Updates (in `Robot.testPeriodic()`)
+
+While in Test mode, `rootTester.periodic()` continuously re-publishes results to keep AdvantageKit and the dashboard data fresh.
+
+### Console Output
+
+When tests run, you'll see output like this in the console:
+
+```
++==========================================+
+|      ROOT TESTING UTILITY -- START        |
++==========================================+
+| Diagnostic dashboard:                     |
+|   http://localhost:5800/diag/a1b2c3d4     |
++==========================================+
+[PASS] [IntakeSubsystem] Drive Motor Spin  (142.3 ms)
+[FAIL] [Shooter] Flywheel Speed Check  (5001.2 ms) -- Timed out after 5000 ms
+[PASS] [Intake] Roller Activation  (87.6 ms) [2 alert(s)]
++==========================================+
+|  TOTAL: 3  |  PASSED: 2  |  FAILED: 1
++==========================================+
+| Dashboard: http://localhost:5800/diag/a1b2c3d4
++==========================================+
+```
+
+### Timeout Handling
+
+Each test runs in a separate thread via `ExecutorService`. If a test exceeds its `timeoutSeconds`, the future is cancelled and a `TIMED_OUT` result is recorded. This prevents a stuck motor or infinite loop from blocking the entire test cycle.
+
+---
+
+## TestResult
+
+Every executed test produces an immutable `TestResult` record containing:
+
+| Field | Type | Description |
+|---|---|---|
+| `subsystemName` | `String` | Name of the subsystem that owns the test |
+| `actionName` | `String` | Human-readable test name (from annotation or method name) |
+| `description` | `String` | Description from the annotation |
+| `status` | `Status` | `PASSED`, `FAILED`, or `TIMED_OUT` |
+| `error` | `Throwable` | The exception if the test failed (null if passed) |
+| `durationMs` | `double` | Execution time in milliseconds |
+| `timestamp` | `Instant` | When the result was recorded |
+| `alerts` | `List<Alert>` | Alerts from DiagnosticContext (info/warning/error messages) |
+| `dataProfiles` | `Map<String, List<DataSample>>` | Named numeric time-series data from DiagnosticContext |
+
+### Nested Types
+
+- **`TestResult.Status`** — enum: `PASSED`, `FAILED`, `TIMED_OUT`
+- **`TestResult.Alert`** — record: `AlertLevel level, String message`
+- **`TestResult.AlertLevel`** — enum: `INFO`, `WARNING`, `ERROR`
+- **`TestResult.DataSample`** — record: `double timestampMs, double value`
+
+---
+
+## DiagnosticServer — Live Web Dashboard
+
+The `DiagnosticServer` is a lightweight embedded HTTP server using the JDK built-in `com.sun.net.httpserver`. No external dependencies are required — it works on both the roboRIO and desktop simulation.
+
+### Endpoints
+
+| URL | Content-Type | Description |
+|---|---|---|
+| `http://<ip>:5800/diag/<session>` | `text/html` | Live HTML dashboard with auto-refresh every 3 seconds |
+| `http://<ip>:5800/diag/<session>/json` | `application/json` | Raw JSON API for programmatic access |
+
+### Dashboard Features
+
+- **Summary bar** — total / passed / failed counts with green (all pass) or red (any fail) background
+- **Per-test cards** — each test gets a card showing:
+  - Status badge (PASSED / FAILED / TIMED_OUT)
+  - Subsystem name, test name, description
+  - Duration and timestamp
+  - Error details (if failed)
+  - Alert list (info/warning/error messages)
+  - **Chart.js line charts** for every data profile series — lets you see motor velocity curves, current draw, etc.
+- **Session ID** — each `runAll()` call generates a unique session so you can distinguish between test runs
+- **Auto-refresh** — the page reloads every 3 seconds so you see results as tests complete
+
+### Accessing the Dashboard
+
+- **On the robot network**: `http://10.2.1.2:5800/diag/<session>` (replace with your team's roboRIO IP)
+- **In simulation**: `http://localhost:5800/diag/<session>`
+- The exact URL is printed in the console output when tests start
+
+<Callout type="warning">
+    Port 5800 is one of the ports allowed through the FRC field firewall, so the dashboard works at competition.
+    If you change the port, make sure it stays within the 5800-5810 range.
+</Callout>
+
+---
+
+## AdvantageKit Integration
+
+All test results are published to AdvantageKit Logger under the `RootTests/` prefix. You can view them in AdvantageScope:
+
+### Log Keys
+
+| Key | Type | Description |
+|---|---|---|
+| `RootTests/<subsystem>/<action>/Passed` | `boolean` | Whether this test passed |
+| `RootTests/<subsystem>/<action>/Status` | `String` | `PASSED`, `FAILED`, or `TIMED_OUT` |
+| `RootTests/<subsystem>/<action>/DurationMs` | `double` | How long the test took |
+| `RootTests/<subsystem>/<action>/Description` | `String` | Test description |
+| `RootTests/<subsystem>/<action>/Error` | `String` | Error message (only if failed) |
+| `RootTests/<subsystem>/<action>/AlertCount` | `int` | Number of alerts recorded |
+| `RootTests/<subsystem>/<action>/Profiles/<series>/Values` | `double[]` | Raw sample values for a data profile |
+| `RootTests/Summary/AllPassed` | `boolean` | True if every test passed |
+| `RootTests/Summary/TotalTests` | `int` | Total number of tests run |
+| `RootTests/Summary/PassedCount` | `int` | Number of passed tests |
+| `RootTests/Summary/FailedCount` | `int` | Number of failed tests |
+| `RootTests/Summary/PassedList` | `String[]` | Names of passed tests |
+| `RootTests/Summary/FailedList` | `String[]` | Names of failed tests |
+| `RootTests/Summary/DashboardUrl` | `String` | URL to the diagnostic dashboard |
+
+This means you can also review test results after the fact by loading a `.wpilog` file in AdvantageScope.
+
+---
+
+## SubsystemStatusManager — Continuous Health Monitoring
+
+Separate from the Root Testing Utility (which runs on-demand in Test mode), the `SubsystemStatusManager` provides **continuous health polling** during all robot modes. It tracks whether CAN devices are connected and publishes status to a Shuffleboard tab called **"Status Manager"**.
+
+### How to Register Subsystems
+
+There are two registration methods:
+
+```java
+// Option 1: Custom boolean supplier (any check you want)
+SubsystemStatusManager.addSubsystem("MySubsystem", () -> {
+    return motor.isConnected() && sensor.isReady();
+});
+
+// Option 2: Pass CTRE ParentDevice instances (auto-checks isConnected())
+SubsystemStatusManager.addSubsystem("Climber", climberMotor);
+SubsystemStatusManager.addSubsystem("Feeder", feederMotor);
+SubsystemStatusManager.addSubsystem("Swerve-FL", driveMotor, steerMotor, encoder);
+```
+
+When using **Option 2**, the manager automatically creates a `BooleanSupplier` that checks `isConnected()` on every device. If any device is disconnected, the subsystem shows as unhealthy and the disconnected device ID is published to Shuffleboard.
+
+### Supported CTRE Devices
+
+The manager tracks and categorizes these device types:
+- `TalonFX` (motors)
+- `CANcoder` (encoders)
+- `Pigeon2` (gyro)
+- `CANdi` (digital I/O)
+- `CANrange` (distance sensor)
+
+### Polling
+
+Call `SubsystemStatusManager.pollAll()` from `Robot.robotPeriodic()` to update all status entries every loop cycle.
+
+### API
+
+| Method | Description |
+|---|---|
+| `addSubsystem(name, BooleanSupplier)` | Register with custom health check |
+| `addSubsystem(name, ParentDevice...)` | Register CTRE devices (auto connection check) |
+| `pollAll()` | Update all statuses and Shuffleboard |
+| `isAllOk()` | Returns true if every registered subsystem is healthy |
+| `clearAll()` | Remove all registrations |
+
+### Real-World Usage (from the 2026 codebase)
+
+The climber, feeder, and spindexer subsystems all register themselves during construction:
+
+```java
+// In Climber constructor:
+SubsystemStatusManager.addSubsystem(getName(), climberMotor);
+
+// In Feeder constructor:
+SubsystemStatusManager.addSubsystem(getName(), spindexerMotor);
+
+// In Spindexer constructor:
+SubsystemStatusManager.addSubsystem(getName(), spindexerMotor);
+```
+
+---
+
+## DeviceTempReporter — Motor Temperature Monitoring
+
+The `DeviceTempReporter` tracks motor temperatures and publishes them to a Shuffleboard tab called **"Device Temp Reporter"**. This is critical at competition — overheating motors can brown out, lose performance, or even damage themselves.
+
+### Registration
+
+```java
+// Register TalonFX motors (uses device ID as the display name)
+DeviceTempReporter.addDevices(driveMotor, steerMotor);
+
+// Register any device with a custom name and temperature supplier
+DeviceTempReporter.addDevice("Limelight", () -> limelightTemp);
+```
+
+### Polling
+
+Call `DeviceTempReporter.pollAll()` from `Robot.robotPeriodic()`.
+
+### Real-World Usage
+
+```java
+// In Climber constructor:
+DeviceTempReporter.addDevices(climberMotor);
+
+// In Feeder constructor:
+DeviceTempReporter.addDevices(spindexerMotor);
+```
+
+Temperatures are displayed in **Fahrenheit** on Shuffleboard.
+
+---
+
+## SwerveModuleStatusUtil — Swerve Convenience Wrapper
+
+Registering all four swerve modules' motors and encoders individually would be repetitive. `SwerveModuleStatusUtil` wraps the registration into a single call per module:
+
+```java
+SwerveModuleStatusUtil.addSwerveModule(ModuleLocation.FL, driveMotorID, steerMotorID, encoderID);
+SwerveModuleStatusUtil.addSwerveModule(ModuleLocation.FR, driveMotorID, steerMotorID, encoderID);
+SwerveModuleStatusUtil.addSwerveModule(ModuleLocation.BL, driveMotorID, steerMotorID, encoderID);
+SwerveModuleStatusUtil.addSwerveModule(ModuleLocation.BR, driveMotorID, steerMotorID, encoderID);
+```
+
+This registers each module with `SubsystemStatusManager` (named `SwerveModule-FL`, etc.) and adds both motors to `DeviceTempReporter`.
+
+### Module Locations
+
+The `ModuleLocation` enum: `FL` (Front Left), `FR` (Front Right), `BL` (Back Left), `BR` (Back Right).
+
+---
+
+## How to Add Tests to Your Subsystem
+
+Here's a step-by-step guide for adding automated tests to a new or existing subsystem.
+
+### Step 1: Import the Annotation
+
+```java
+import frc.robot.utils.RobotAction;
+import frc.robot.utils.DiagnosticContext; // only if you want alerts/profiling
+```
+
+### Step 2: Write Test Methods
+
+Add `@RobotAction` methods to your `SubsystemBase` class:
+
+```java
+public class MySubsystem extends SubsystemBase {
+
+    private final TalonFX motor;
+
+    public MySubsystem() {
+        motor = new TalonFX(42);
+        SubsystemStatusManager.addSubsystem(getName(), motor);
+        DeviceTempReporter.addDevices(motor);
+    }
+
+    @RobotAction(name = "Motor Connected", description = "Verify motor is on CAN bus", order = 1)
+    public boolean testMotorConnected() {
+        return motor.isConnected();
+    }
+
+    @RobotAction(name = "Motor Spins", description = "Apply voltage and check movement", order = 2, timeoutSeconds = 3.0)
+    public boolean testMotorSpins(DiagnosticContext ctx) {
+        ctx.info("Applying 2V to motor");
+        motor.setControl(new VoltageOut(2.0));
+        
+        for (int i = 0; i < 25; i++) {
+            ctx.sample("Velocity", motor.getVelocity().getValueAsDouble());
+            Timer.delay(0.02);
+        }
+        
+        double velocity = motor.getVelocity().getValueAsDouble();
+        motor.setControl(new VoltageOut(0));
+        
+        if (Math.abs(velocity) < 0.1) {
+            ctx.error("Motor did not spin! Velocity: " + velocity);
+            return false;
+        }
+        ctx.info("Motor spinning at " + velocity + " rot/s");
+        return true;
+    }
+}
+```
+
+### Step 3: Register the Subsystem
+
+In `RobotContainer.configureRootTests()`:
+
+```java
+private void configureRootTests() {
+    rootTester.registerSubsystem(
+        intakeSubsystem,
+        shooter,
+        intake,
+        mySubsystem  // ← add your new subsystem here
+    );
+}
+```
+
+### Step 4: Run Tests
+
+1. Deploy code to the robot (or run in simulation)
+2. Open the Driver Station
+3. Switch to **Test** mode and **Enable**
+4. Watch the console for results
+5. Open the dashboard URL in a browser for the full visual report
+
+<Callout type="info">
+    You don't need to modify `Robot.java` at all — the `testInit()` and `testPeriodic()` hooks are already wired up.
+</Callout>
+
+---
+
+## Test Ideas for Common Subsystems
+
+Here are some test ideas based on the 2026 REBUILT robot's subsystems:
+
+### Intake / IntakeSubsystem
+- Motor connected check
+- Extend to position and verify encoder reading
+- Retract to position and verify limit switch activation
+- Roller spin check
+
+### Shooter
+- Hood motor connected check
+- Hood moves to angle and verifies position
+- Flywheel spins up and measures velocity over time (data profile)
+- Flywheel reaches target RPM within timeout
+
+### Feeder / Spindexer
+- Motor connected check
+- Voltage output matches commanded voltage
+- Motor spins at expected speed under load
+
+### Climber
+- Motor connected check
+- Position control reaches target angle within tolerance
+- Current draw stays within safe limits during climb
+
+### Swerve Modules
+- All 8 motors connected (4 drive + 4 steer)
+- All 4 CANcoders connected
+- Pigeon2 connected and returning valid heading
+- Drive motor responds to velocity command
+- Steer motor reaches target angle
+
+---
+
+## Class Reference
+
+All classes are located in `robot/2026-rebuilt/src/main/java/frc/robot/utils/`:
+
+| File | Class | Lines | Description |
+|---|---|---|---|
+| `RobotAction.java` | `@RobotAction` | ~40 | Annotation for marking test methods |
+| `RootTestingUtility.java` | `RootTestingUtility` | ~360 | Discovery, execution, and reporting engine |
+| `TestResult.java` | `TestResult` | ~135 | Immutable result record with alerts and data profiles |
+| `DiagnosticContext.java` | `DiagnosticContext` | ~117 | Mutable context for recording alerts and samples |
+| `DiagnosticServer.java` | `DiagnosticServer` | ~318 | Embedded HTTP dashboard with Chart.js visualization |
+| `SubsystemStatusManager.java` | `SubsystemStatusManager` | ~150 | Continuous CAN device health monitoring via Shuffleboard |
+| `DeviceTempReporter.java` | `DeviceTempReporter` | ~75 | Motor temperature tracking via Shuffleboard |
+| `SwerveModuleStatusUtil.java` | `SwerveModuleStatusUtil` | ~40 | Swerve module registration convenience wrapper |
+
+---
+
+## FAQ
+
+### Q: Do I need to add tests to every subsystem?
+
+No — only subsystems registered with `rootTester.registerSubsystem(...)` are scanned. And only methods with `@RobotAction` are treated as tests. You can add tests incrementally as subsystems mature.
+
+### Q: What happens if a test method has the wrong signature?
+
+The utility prints a warning to `System.err` and skips the method. It will not crash.
+
+### Q: Can I run tests during Teleop or Autonomous?
+
+The Root Testing Utility is only triggered during **Test mode** (`testInit` / `testPeriodic`). The `SubsystemStatusManager` and `DeviceTempReporter` run during all modes via `robotPeriodic`.
+
+### Q: Does the diagnostic dashboard work at competition?
+
+Yes! Port 5800 is within the FRC-allowed firewall range (5800-5810). Connect to the robot network and navigate to the dashboard URL printed in the console.
+
+### Q: Can I view test results after the match?
+
+Yes — all results are logged via AdvantageKit. Load the `.wpilog` file in AdvantageScope and look under the `RootTests/` key prefix.
+
+### Q: What if a test hangs or blocks?
+
+Each test runs with a configurable timeout (default 5 seconds). If a test exceeds its timeout, the executor cancels the future and records a `TIMED_OUT` result. The next test proceeds normally.

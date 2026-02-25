@@ -1,4 +1,4 @@
-// Copyright (c) FIRST and other WPILib contributors.
+ // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
@@ -114,13 +114,13 @@ public class ShooterHood extends SubsystemBase {
 
   public Angle getTargetPositionShooting()
   {
-     Distance d = dt.getDistanceToHub();
+     Distance d = dt.getDistanceToVirtualHub();
       return Rotations.of(RobotMap.ShooterConstants.kShootingPositionMap.get(d.in(Meters)));
   }
 
    public Angle getTargetPositionPassing()
   {
-     Distance d = dt.getDistanceToHub();
+     Distance d = dt.getDistanceToCorner();
       return Rotations.of(RobotMap.ShooterConstants.kPassingPositionMap.get(d.in(Meters)));
   }
 

@@ -1,7 +1,17 @@
 plugins {
     id "java"
-    id "edu.wpi.first.GradleRIO" version "2026.1.1"
+    id "edu.wpi.first.GradleRIO" version "2026.2.1"
     id "com.peterabeles.gversion" version "1.10.2"
+}
+
+// Additional maven repositories used by optional simulation vendor libraries
+repositories {
+    // MapleSim vendor repository (provides org.ironmaple maplesim artifacts)
+    maven {
+        url 'https://shenzhen-robotics-alliance.github.io/maple-sim/vendordep/repos/releases'
+    }
+    // Ensure central is available
+    mavenCentral()
 }
 
 java {
@@ -58,6 +68,9 @@ dependencies {
     implementation wpi.java.deps.wpilib()
     implementation wpi.java.vendor.java()
 
+    // Optional MapleSim Java bindings (provides org.ironmaple and simulation helpers)
+    implementation 'org.ironmaple:maplesim-java:0.4.0-beta'
+
     roborioDebug wpi.java.deps.wpilibJniDebug(wpi.platforms.roborio)
     roborioDebug wpi.java.vendor.jniDebug(wpi.platforms.roborio)
 
@@ -72,7 +85,8 @@ dependencies {
     nativeRelease wpi.java.vendor.jniRelease(wpi.platforms.desktop)
     simulationRelease wpi.sim.enableRelease()
 
-    implementation 'frc.sim:sim-core'
+    // Use the local sim-core project instead of requiring a published artifact.
+    implementation project(':sim-core')
     // Explicit ode4j — composite build doesn't reliably propagate transitive api deps
     implementation 'org.ode4j:core:0.5.4'
 
