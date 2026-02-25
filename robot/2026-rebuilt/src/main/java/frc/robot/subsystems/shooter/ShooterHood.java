@@ -52,7 +52,7 @@ public class ShooterHood extends SubsystemBase {
   /** Creates a new Shooter. */
   public ShooterHood(CommandSwerveDrivetrain dt) {
     this.dt = dt;
-    hoodMotor = new TalonFX(ShooterConstants.kHoodMotorId);
+    hoodMotor = new TalonFX(ShooterConstants.ShooterHood);
     positionVoltage = new PositionVoltage(0.0);
     config = new TalonFXConfiguration();
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
