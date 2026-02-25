@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -33,6 +34,9 @@ import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.sim.chassis.ChassisConfig;
 import frc.sim.chassis.ChassisSimulation;
 import frc.sim.core.PhysicsWorld;
+import frc.sim.vision.CameraConfig;
+import frc.sim.vision.LimelightType;
+import frc.sim.vision.VisionSimManager;
 import frc.sim.gamepiece.GamePiece;
 import frc.sim.gamepiece.GamePieceManager;
 import frc.sim.gamepiece.IntakeZone;
@@ -109,6 +113,7 @@ public class RebuiltSimManager {
     /** Cached origin translation for telemetry component poses. */
     private static final Translation3d ORIGIN = new Translation3d(0, 0, 0);
 
+    private final VisionSimManager visionSimManager;
     private final PhysicsWorld physicsWorld;
     private final ChassisSimulation chassis;
     private final RebuiltField field;
@@ -246,6 +251,11 @@ public class RebuiltSimManager {
         groundClearance = new GroundClearance(chassis.getBody(), chassisConfig.getBumperHeight());
         telemetry = new SimTelemetry(chassis);
 
+        // --- Vision sim (writes true pose to NT in Limelight format) ---
+        visionSimManager = new VisionSimManager(
+                new CameraConfig("limelight-two", LimelightType.LL4, new Transform3d()),
+                new CameraConfig("limelight-five", LimelightType.LL3, new Transform3d()));
+
         // --- Cache gyro sim state ---
         pigeonSimState = drivetrain.getPigeonSimState();
     }
@@ -308,6 +318,9 @@ public class RebuiltSimManager {
         pigeonSimState.setSupplyVoltage(SimulatedBattery.getBatteryVoltage().in(Volts));
         pigeonSimState.setRawYaw(Math.toDegrees(pose.getRotation().getRadians()));
         pigeonSimState.setAngularVelocityZ(Math.toDegrees(robotSpeeds.omegaRadiansPerSecond));
+
+        // 8b. Write true pose to simulated Limelight NT entries
+        visionSimManager.update(pose);
 
         // 9. Update game piece states
         gamePieceManager.update();
