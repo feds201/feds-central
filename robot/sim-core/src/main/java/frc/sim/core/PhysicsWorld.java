@@ -214,13 +214,21 @@ public class PhysicsWorld {
 
         for (int i = 0; i < numContacts; i++) {
             DContact contact = contacts.get(i);
-            contact.surface.mode = OdeConstants.dContactBounce | OdeConstants.dContactApprox1
-                    | OdeConstants.dContactSoftERP | OdeConstants.dContactSoftCFM;
+            if (tireVsGround) {
+                // Hard contacts for chassis vs ground — no soft ERP/CFM.
+                // Soft contacts create a dt-dependent spring, so when adaptive
+                // sub-stepping changes dt (e.g., fast ball triggers more sub-steps),
+                // the equilibrium Z shifts and the chassis "hops".
+                contact.surface.mode = OdeConstants.dContactBounce | OdeConstants.dContactApprox1;
+            } else {
+                contact.surface.mode = OdeConstants.dContactBounce | OdeConstants.dContactApprox1
+                        | OdeConstants.dContactSoftERP | OdeConstants.dContactSoftCFM;
+                contact.surface.soft_erp = surface.getSoftErp();
+                contact.surface.soft_cfm = surface.getSoftCfm();
+            }
             contact.surface.mu = surface.getFriction();
             contact.surface.bounce = surface.getBounce();
             contact.surface.bounce_vel = surface.getBounceVel();
-            contact.surface.soft_erp = surface.getSoftErp();
-            contact.surface.soft_cfm = surface.getSoftCfm();
 
             DJoint joint = OdeHelper.createContactJoint(world, contactGroup, contact);
             joint.attach(b1, b2);
