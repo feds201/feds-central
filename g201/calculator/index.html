@@ -50,100 +50,26 @@
         <div class="progress-container">
             <div class="progress-bar" id="progress-bar"></div>
         </div>
-        <div class="question-card hidden">
-    <span class="question-number">Question <span id="current-question-display">1</span>/<span id="total-questions-display">13</span></span>
-    <h2 class="section-heading" id="section-heading"></h2>
-    <h3 class="question-text" id="question"></h3>
-
-    <div class="input-container">
-        <input type="number" id="answer-input" placeholder="Enter value">
-        <div class="mc-container hidden" id="mc-container"></div>
-        <div class="input-hint"><i class="fas fa-info-circle"></i></div>
-        <div class="error-message" id="error-message"></div>
-    </div>
-</div>
-
-<div class="actions hidden">
-    <div class="eco-tip" id="eco-tip"></div>
-    <div class="button-group">
-        <button class="back-btn hidden" id="back-btn"><i class="fas fa-arrow-left"></i> Previous</button>
-        <button class="next-btn" id="next-btn">Next <i class="fas fa-arrow-right"></i></button>
-    </div>
-</div>
-
         
-        <div class="modules-wrapper">
-            <div class="module module1">
-                <div class="module-header"><h2>Module 1</h2></div>
-                <div class="module-body">
-                    <p>Overview and initial questions.</p>
-                    <button class="start-btn">Open</button>
-                </div>
-            </div>
-
-            <div class="module module2">
-                <div class="module-header"><h2>Module 2</h2></div>
-                <div class="module-body">
-                    <p>Materials &amp; Packaging questions.</p>
-                    <button class="start-btn">Open</button>
-                </div>
-            </div>
-
-            <div class="module module3">
-                <div class="module-header"><h2>Module 3</h2></div>
-                <div class="module-body">
-                    <p>Robot Questions &amp; Robot Materials questions.</p>
-                    <button class="start-btn">Open</button>
-                </div>
-            </div>
-
-            <div class="module module4">
-                <div class="module-header"><h2>Module 4</h2></div>
-                <div class="module-body">
-                    <p >Transportation &amp; travel questions.</p>
-                    <button class="start-btn">Open</button>
-                    <div class="module module5"><p >Regional Questions</p>
-                    <button class="start-btn">Open</button></div>
-                     
-                   
-                </div>
-                </div>
-            </div>
-        </div>
-            
- 
-        </div>
-        
-         <!--
         <div class="question-card">
             <span class="question-number">Question <span id="current-question-display">1</span>/<span id="total-questions-display">13</span></span>
             <h2 class="section-heading" id="section-heading">I. Shipping and Packaging of Products</h2>
             <h3 class="question-text" id="question">What was the total weight (in lbs) of the packages that you transported?</h3>
             
-        <div class="question-card">
-            <span class="question-number">Question <span id="current-question-display">1</span>/<span id="total-questions-display">13</span></span>
-            <h2 class="section-heading" id="section-heading">I. Shipping and Packaging of Products</h2>
-            <h3 class="question-text" id="question">What was the total weight (in lbs) of the packages that you transported?</h3>
-
-        <div class="question-card">
-            <span class="question-number">Question <span id="current-question-display">1</span>/<span id="total-questions-display">13</span></span>
-            <h2 class="section-heading" id="section-heading">I. Shipping and Packaging of Products</h2>
-            <h3 class="question-text" id="question">What was the total weight (in lbs) of the packages that you transported?</h3>
-        
             <div class="input-container">
                 <input type="number" id="answer-input" min="500" max="1500" placeholder="Enter value (500-1500)">
                 <div class="input-hint"><i class="fas fa-info-circle"></i> Enter an integer between 500-1500 lbs</div>
                 <div class="error-message" id="error-message"></div>
             </div>
-        </div> -->
+        </div>
         
-        <!-- <div class="actions">s
+        <div class="actions">
             <div class="eco-tip" id="eco-tip">Every lbs of package weight contributes to carbon emissions during transport.</div>
             <div class="button-group">
                 <button class="back-btn hidden" id="back-btn"><i class="fas fa-arrow-left"></i> Previous</button>
                 <button class="next-btn" id="next-btn">Next <i class="fas fa-arrow-right"></i></button>
             </div>
-        </div> -->
+        </div>
         
         <div class="result hidden" id="result">
             <div class="result-header">
@@ -151,6 +77,7 @@
                 <h2 class="Eco-Friendly-text">Eco Assessment Complete!</h2>
                 <div class="result-score">Your Eco Score: <span id="final-eco-score">75</span>/100</div>
             </div>
+            
             <div class="eco-meter">
                 <div class="meter-scale">
                     <div class="meter-pointer" id="meter-pointer"></div>
@@ -227,6 +154,6 @@
     </div>
 
    
-    <script type="module" src="js/main.js"></script>
+    <script src="js/script.js"></script>
 </body>
 </html>
