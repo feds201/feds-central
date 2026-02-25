@@ -1,0 +1,213 @@
+import { Callout } from 'nextra/components';
+import { Cards } from 'nextra/components';
+import {
+    GenericHero,
+    GenericWidget,
+    GenericTimeline,
+    ZTH8Grid1,
+    ZTH8Grid2
+} from '../../../Components/index';
+
+
+<GenericHero
+    title="Zero to Hero #8"
+    titleColor="linear-gradient(135deg, #f59e0b 0%, #d97706 100%)"
+    subtitle="The Matrix Reloaded: AdvantageKit 🦁"
+    description="Standard simulation is cool. But what if you could replay a real match, change your code, and see if it would have fixed the bug? Welcome to AdvantageKit and the IO Layer architecture."
+    backgroundType="gradient"
+    backgroundValue="linear-gradient(135deg, #451a03 0%, #78350f 100%)"
+    particles={[
+        { symbol: '📼', transform: 'translate(0,0)' },
+        { symbol: '⏪', transform: 'translate(10px,10px)' },
+        { symbol: '🦁', transform: 'translate(-5px,15px)' }
+    ]}
+    buttons={[
+        { text: '⬅️ Back to Ep 7', style: 'secondary', href: '/Tutorials/ZeroToHero/ZeroToHero7' },
+        { text: 'AdvantageKit Docs', style: 'primary', href: 'https://github.com/Mechanical-Advantage/AdvantageKit' }
+    ]}
+    height="md"
+    textAlign="center"
+/>
+
+<Callout type="info" emoji="🦁">
+    **What is AdvantageKit?**
+    It's a library by Team 6328 (Mechanical Advantage) that logs **INPUTS**, not OUTPUTS.
+    * **Traditional Logging**: Logs "Motor Speed = 0.5".
+    * **AdvantageKit**: Logs "Joystick Y = 0.5" and "Battery Voltage = 12.1".
+
+    Why? Because if you have the inputs, you can **replay the code** later and get the exact same outputs. It's like a DVR for your robot logic.
+</Callout>
+
+## 🏗️ Chapter 1: The IO Layer Architecture
+
+To make replay possible, we must separate our **Hardware** from our **Logic**.
+
+### The Problem
+If your code says `motor.set(0.5)`, it talks directly to the SparkMax. You can't simulate that easily, and you can't swap it for a different motor without rewriting code.
+
+### The Solution: The IO Interface
+We create an **Interface** (a contract) that defines *what* data we need, not *how* we get it.
+
+1.  **Subsystem**: The high-level logic ("Run Intake").
+2.  **IO Interface**: The list of inputs/outputs ("Set Voltage", "Get Velocity").
+3.  **IO Implementation**: The actual code for a specific robot ("SparkMaxIO", "SimIO", "ReplayIO").
+
+---
+
+## 💻 Chapter 2: Writing the IO Interface
+
+Let's refactor our  to use this pattern.
+
+### 1. Create the Inputs Class and IO Interface
+
+```java
+public interface IntakeIO {
+    // A data class to hold all sensor readings
+    // AutoLog is an AdvantageKit annotation that magically handles logging!
+    @AutoLog
+    public static class IntakeIOInputs {
+        public double positionRad = 0.0;
+        public double velocityRadPerSec = 0.0;
+        public double appliedVolts = 0.0;
+        public double currentAmps = 0.0;
+    }
+
+    // Methods to update inputs and control hardware
+    public default void updateInputs(IntakeIOInputs inputs) {}
+    public default void setVoltage(double volts) {}
+}
+```
+
+---
+
+## 🔌 Chapter 3: Implementations (Real vs Sim)
+
+Now we write the "Real" version (for the actual robot) and the "Sim" version.
+
+### Real Implementation (SparkMax)
+
+```java
+public class IntakeIOSparkMax implements IntakeIO {
+    private final CANSparkMax motor = new CANSparkMax(1, MotorType.kBrushless);
+    private final RelativeEncoder encoder = motor.getEncoder();
+
+    @Override
+    public void updateInputs(IntakeIOInputs inputs) {
+        inputs.positionRad = encoder.getPosition();
+        inputs.velocityRadPerSec = encoder.getVelocity();
+        inputs.appliedVolts = motor.getAppliedOutput() * motor.getBusVoltage();
+        inputs.currentAmps = motor.getOutputCurrent();
+    }
+
+    @Override
+    public void setVoltage(double volts) {
+        motor.setVoltage(volts);
+    }
+}
+```
+
+### Sim Implementation (Physics)
+
+```java
+public class IntakeIOSim implements IntakeIO {
+    // WPILib Physics Simulation classes
+    private final DCMotorSim sim = new DCMotorSim(DCMotor.getNEO(1), 1.0, 0.001);
+
+    @Override
+    public void updateInputs(IntakeIOInputs inputs) {
+        sim.update(0.02); // Step physics by 20ms
+        inputs.positionRad = sim.getAngularPositionRad();
+        inputs.velocityRadPerSec = sim.getAngularVelocityRadPerSec();
+        inputs.appliedVolts = 0.0; // Ideally tracked
+        inputs.currentAmps = sim.getCurrentDrawAmps();
+    }
+
+    @Override
+    public void setVoltage(double volts) {
+        sim.setInputVoltage(volts);
+    }
+}
+```
+
+---
+
+## 🔄 Chapter 4: The Subsystem (The Consumer)
+
+The Subsystem doesn't know (or care) if it's running on a real robot or a laptop. It just talks to the .
+
+```java
+public class IntakeSubsystem extends SubsystemBase {
+    private final IntakeIO io;
+    private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
+
+    // Constructor accepts the IO implementation!
+    public IntakeSubsystem(IntakeIO io) {
+        this.io = io;
+    }
+
+    @Override
+    public void periodic() {
+        // 1. Update inputs from hardware (Real, Sim, or Replay)
+        io.updateInputs(inputs);
+
+        // 2. Log inputs to AdvantageKit
+        Logger.processInputs("Intake", inputs);
+
+        // 3. Do logic (PID, State Machine, etc.)
+        // We use 'inputs.velocityRadPerSec', NOT 'encoder.getVelocity()'
+    }
+
+    public void runVolts(double volts) {
+        io.setVoltage(volts);
+    }
+}
+```
+
+---
+
+## 🚀 Chapter 5: AdvantageScope (The Viewer)
+
+**AdvantageScope** is the companion app for viewing logs. It is significantly more powerful than the standard dashboards.
+
+### Visualizing Mechanism 2D
+Since we are logging position data, we can visualize our robot in 2D or 3D!
+
+<ZTH8Grid1 />
+
+### Features of AdvantageScope
+
+<ZTH8Grid2 />
+
+---
+
+## 🎓 Conclusion: You Are Now a Hero
+
+Congratulations! You have completed the **Zero to Hero** programming curriculum.
+
+You started by learning what a "Class" was.
+You learned how to structure a command.
+You learned PID, Sensors, State Machines, and even Simulation Architecture.
+
+**You are ready to write code for a World Championship robot.**
+
+Go forth and commit code! (And don't forget to push).
+
+---
+
+## 📞 Need Help? We've Got Your Back!
+
+- **Email**: feds.programming@gmail.com
+
+**Keep coding, keep learning, and remember: every expert was once a beginner who refused to give up!** 🚀
+
+*P.S. - If your robot starts talking back, that's either very advanced AI or you need more sleep. Probably more sleep.* 🤖💤
+
+---
+
+*This documentation is part of the Zero to Hero programming series. For the complete learning experience, watch the accompanying video and practice with real robot code. Remember: the only way to get good at programming is to write lots of bad code first! 😄*
+
+<Callout type="info" emoji="💝">
+    **Special Thanks**: To all the students who asked "Why doesn't this work?" and inspired us to create better documentation. Your questions make us better teachers, and your curiosity drives innovation. You're the real MVPs! 🏆
+
+    *Remember: Every expert was once a beginner who refused to give up. Keep coding, keep learning, and most importantly - keep having fun! 🚀*
+</Callout>

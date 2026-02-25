@@ -1,0 +1,39 @@
+import org.gradle.internal.os.OperatingSystem
+
+pluginManagement {
+    repositories {
+        mavenLocal()
+        gradlePluginPortal()
+        String frcYear = '2026'
+        File frcHome
+        if (OperatingSystem.current().isWindows()) {
+            String publicFolder = System.getenv('PUBLIC')
+            if (publicFolder == null) {
+                publicFolder = "C:\\Users\\Public"
+            }
+            def homeRoot = new File(publicFolder, "wpilib")
+            frcHome = new File(homeRoot, frcYear)
+        } else {
+            def userFolder = System.getProperty("user.home")
+            def homeRoot = new File(userFolder, "wpilib")
+            frcHome = new File(homeRoot, frcYear)
+        }
+        def frcHomeMaven = new File(frcHome, 'maven')
+        maven {
+            name = 'frcHome'
+            url = frcHomeMaven
+        }
+    }
+}
+
+// Prefer including sim-core as a project so IDEs and the Gradle build include its classes
+// directly. The repository also supported composite builds; keep compatibility by leaving
+// includeBuild commented out if needed in the future.
+// includeBuild '../sim-core'
+
+// Include the sim-core project from the mono-repo so it is available as project(':sim-core')
+include ':sim-core'
+project(':sim-core').projectDir = new File(settingsDir, '../sim-core')
+
+Properties props = System.getProperties();
+props.setProperty("org.gradle.internal.native.headers.unresolved.dependencies.ignore", "true");
