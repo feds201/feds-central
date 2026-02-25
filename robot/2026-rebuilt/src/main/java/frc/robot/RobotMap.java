@@ -7,6 +7,7 @@ import java.util.Map;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.numbers.N1;
@@ -103,8 +104,12 @@ public final class RobotMap {
          public static final Angle maxHoodAngle = Rotations.of(0); //tune
          public static final Angle minHoodAngle = Rotations.of(0); //tune
 
-
-        public static final Translation2d hubCenter = FieldConstants.Hub.innerCenterPoint.toTranslation2d();    
+        //offset of the shooter from robot center
+        public static final Translation2d robotShooterOffset = new Translation2d(.25, 0); //TODO: tune
+        //rotation of the shooter relative to robot forward
+        public static final Rotation2d robotToShooterRotation = Rotation2d.fromDegrees(0.0);
+        public static final Translation2d hubCenter = FieldConstants.Hub.innerCenterPoint.toTranslation2d();   
+        public static final Translation2d centerPointOutpost = FieldConstants.Outpost.centerPoint;
         // This map is used to determine the velocity of the shooter based on the distance to the target. 
         //The key is the distance to the target in meters, and the value is the velocity of the shooter in rotations per second.`
         public static final InterpolatingDoubleTreeMap kShootingVelocityMap = InterpolatingDoubleTreeMap.ofEntries(
@@ -122,6 +127,21 @@ public final class RobotMap {
 
          public static final InterpolatingDoubleTreeMap kShootingPositionMap = InterpolatingDoubleTreeMap.ofEntries(
             Map.entry(0.0, 0.0)
+        );
+
+        //TODO: tune
+        public static final InterpolatingDoubleTreeMap kFlightTimeMap =
+        InterpolatingDoubleTreeMap.ofEntries(
+            Map.entry(1.0, 0.35),
+            Map.entry(2.0, 0.45),
+            Map.entry(3.0, 0.55),
+            Map.entry(4.0, 0.65),
+            Map.entry(5.0, 0.78),
+            Map.entry(6.0, 0.90),
+            Map.entry(7.0, 1.02),
+            Map.entry(8.0, 1.15),
+            Map.entry(9.0, 1.28),
+            Map.entry(10.0, 1.40)
         );
 
         

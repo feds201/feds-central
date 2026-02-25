@@ -77,7 +77,7 @@ public class RollersSubsystem extends SubsystemBase {
 
 
   public Command RollersCommand(RollerState desiredState) {
-      return run(() -> setState(desiredState));
+      return runOnce(() -> setState(desiredState));
   }
 
   @Override

@@ -1,6 +1,6 @@
 plugins {
     id "java"
-    id "edu.wpi.first.GradleRIO" version "2026.1.1"
+    id "edu.wpi.first.GradleRIO" version "2026.2.1"
     id "com.peterabeles.gversion" version "1.10.2"
 }
 
@@ -85,6 +85,8 @@ dependencies {
     nativeRelease wpi.java.vendor.jniRelease(wpi.platforms.desktop)
     simulationRelease wpi.sim.enableRelease()
 
+    // Use the local sim-core project instead of requiring a published artifact.
+    implementation project(':sim-core')
     // Explicit ode4j — composite build doesn't reliably propagate transitive api deps
     implementation 'org.ode4j:core:0.5.4'
 
