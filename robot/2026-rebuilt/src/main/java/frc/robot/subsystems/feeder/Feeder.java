@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.RobotMap.SpindexerConstants;
+import frc.robot.subsystems.shooter.ShooterHood.shooterhood_state;
 import frc.robot.utils.DeviceTempReporter;
 import frc.robot.utils.SubsystemStatusManager;
 
@@ -122,7 +123,9 @@ public void setState(feeder_state state)
   setVoltage(state.getVoltage());
   currentState = state;
 }
-
+public Command setStateCommand(feeder_state state) {
+    return runOnce(() -> setState(state));
+  } 
   //move to state commands
   public Command moveToState(feeder_state state){
     return new InstantCommand(() -> setState(state));
