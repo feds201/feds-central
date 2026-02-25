@@ -1,11 +1,5 @@
-import re
 import json
 import os
-
-def fix_to_json_format(data):
-    data = re.sub(r'([a-zA-Z0-9_]+):', r'"\1":', data)
-    data = re.sub(r'(?<![{\[,true|false|null|\d])(?<=:)\s*([^"\d\[{][^,\]}]*)', r' "\1"', data)
-    return data
 
 def flatten_json(y):
     out = {}
@@ -35,14 +29,10 @@ def process_json_input():
             break
 
         try:
-            # Step 1: Fix the input data format
-            fixed_data = fix_to_json_format(input_data)
-            print(f"Fixed top-level JSON: {fixed_data}")
+            # Step 1: Parse the input string into a Python dictionary
+            json_data = json.loads(input_data)
 
-            # Step 2: Parse the fixed string into a Python dictionary
-            json_data = json.loads(fixed_data)
-
-            # Step 3: Flatten the JSON structure
+            # Step 2: Flatten the JSON structure
             flattened_data = flatten_json(json_data)
             print(f"Flattened JSON: {flattened_data}")
 

@@ -4,6 +4,8 @@ This repository contains the code for the FED201 FRC robot, STINGRAY, for 2025. 
 
 ## Key Features
 - 250-Degree Apriltag vision processing
-- Custom Robot Framework optimized for maximum effciency: https://github.com/feds201/Reefscape-2025.git
+- Custom Robot Framework optimized for maximum efficency
 
-
+## Notes
+- Rigged up to do collision simulation with the field (outputting via AdvantageKit)
+- AdvantageScope_robot_config.json is the config file for the robot. Place it under AdvantageScopes Assets folder in a folder called Robot_2025Stingray along with the robot CAD model (name it model.glb)

@@ -1,0 +1,38 @@
+import MotorControlConfigurator from "../../../../../Components/Programming/MotorControlConfigurator";
+
+# PID Motor Control Simulator
+
+Configure and simulate PID, feedforward, and gravity compensation gains for FRC motor controllers.
+
+## Understanding Motor Control
+
+This simulator helps you visualize how different control gains affect system behavior.
+
+### Simulation Modes
+
+- **Arm Simulation**: See how gains affect rotational mechanism with gravity
+- **Turret Simulation**: Control horizontal rotation with no gravity
+
+### Control Types
+
+- **PID**: Proportional, Integral, Derivative feedback control
+- **Feedforward**: Pre-calculated voltage commands (kS, kV, kA)
+- **Gravity Compensation**: kG for holding against gravity
+
+## Getting Started
+
+1. Choose between Arm and Turret simulation
+2. Switch between slots to compare different configurations
+3. Adjust gains incrementally and observe the system response
+4. Use the target control to test tracking performance
+
+<MotorControlConfigurator />
+
+## Tips for Tuning
+
+- Start with kP = 1.0, everything else = 0
+- Increase kP until you get oscillation, then back off
+- Add kD to reduce overshoot
+- Use kS/kV for smooth feedforward
+- Tune kG to hold position
+

@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, Link } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from '@/auth'
 import AuthLayout from '@/components/layout/AuthLayout'
 import DashboardLayout from '@/components/layout/DashboardLayout'
@@ -12,6 +12,7 @@ import Authenticator from '@/pages/Authenticator'
 import AuditLog from '@/pages/AuditLog'
 import Account from '@/pages/Account'
 import PasswordHealth from '@/pages/PasswordHealth'
+import Chat from '@/components/chat/Chat'
 
 function AppRoutes() {
   const { user, loading } = useAuth()
@@ -57,6 +58,7 @@ function AppRoutes() {
             <Route path="/password-health" element={<PasswordHealth session={session} />} />
             <Route path="/audit" element={<AuditLog session={session} />} />
             <Route path="/account" element={<Account session={session} />} />
+            <Route path="/chat" element={<Chat />} />
             <Route path="/signout" element={<Navigate to="/sign-in" replace />} />
             <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Route>

@@ -1,5 +1,3 @@
-import 'dart:ui' as ui;
-
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:scouting_app/main.dart';
@@ -10,8 +8,8 @@ class MultiPointSelector extends StatefulWidget {
   final String blueAllianceImagePath;
   final String redAllianceImagePath;
   final Alliance alliance;
-  final List<List<Offset>>? initialStrokes;
-  final void Function(List<List<Offset>> strokes)? onStrokesChanged;
+  final List<int>? initialData;
+  final void Function(List<int> data)? onDataChanged;
   final void Function(bool isLocked)? onLockStateChanged;
 
   const MultiPointSelector({
@@ -19,8 +17,8 @@ class MultiPointSelector extends StatefulWidget {
     required this.blueAllianceImagePath,
     required this.redAllianceImagePath,
     required this.alliance,
-    this.initialStrokes,
-    this.onStrokesChanged,
+    this.initialData,
+    this.onDataChanged,
     this.onLockStateChanged,
   }) : super(key: key);
 
@@ -29,15 +27,19 @@ class MultiPointSelector extends StatefulWidget {
 }
 
 class MultiPointSelectorState extends State<MultiPointSelector> {
-  List<List<Offset>> _strokes = [];
-  List<Offset>? _currentStroke;
+  Set<int> _selectedCells = {};
   bool _isLocked = true;
+  bool _isErasing = false;
+  final GlobalKey _imageKey = GlobalKey();
+
+  static const int _rows = 33;
+  static const int _cols = 58;
 
   @override
   void initState() {
     super.initState();
-    if (widget.initialStrokes != null) {
-      _strokes = List.from(widget.initialStrokes!);
+    if (widget.initialData != null) {
+      _selectedCells = Set.from(widget.initialData!);
     }
   }
 
@@ -53,30 +55,73 @@ class MultiPointSelectorState extends State<MultiPointSelector> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.alliance != widget.alliance) {
       setState(() {
-        _strokes.clear();
-        _currentStroke = null;
+        _selectedCells.clear();
       });
     }
   }
 
   void _clear() {
     setState(() {
-      _strokes.clear();
+      _selectedCells.clear();
       _notifyChanged();
     });
   }
 
-  void _undo() {
-    if (_strokes.isNotEmpty) {
-      setState(() {
-        _strokes.removeLast();
-        _notifyChanged();
-      });
+  int _calculateCellId(Offset localPosition, Size size) {
+    if (size.width <= 0 || size.height <= 0) return -1;
+    double dx = localPosition.dx.clamp(0.0, size.width - 0.1);
+    double dy = localPosition.dy.clamp(0.0, size.height - 0.1);
+
+    double cellWidth = size.width / _cols;
+    double cellHeight = size.height / _rows;
+
+    int col = (dx / cellWidth).floor();
+    int row = (dy / cellHeight).floor();
+
+    return (row * _cols) + col + 1;
+  }
+
+  void _handleGesture(Offset localPosition) {
+    final RenderBox? renderBox =
+        _imageKey.currentContext?.findRenderObject() as RenderBox?;
+    if (renderBox == null) return;
+
+    Size size = renderBox.size;
+
+    double dx = localPosition.dx.clamp(0.0, size.width - 0.1);
+    double dy = localPosition.dy.clamp(0.0, size.height - 0.1);
+
+    double cellWidth = size.width / _cols;
+    double cellHeight = size.height / _rows;
+
+    int centerCol = (dx / cellWidth).floor();
+    int centerRow = (dy / cellHeight).floor();
+
+    // Radius 2 = 5x5 block.
+    int radius = 2;
+
+    Set<int> cellsMod = {};
+
+    for (int r = centerRow - radius; r <= centerRow + radius; r++) {
+      for (int c = centerCol - radius; c <= centerCol + radius; c++) {
+        if (r >= 0 && r < _rows && c >= 0 && c < _cols) {
+          int id = (r * _cols) + c + 1;
+          cellsMod.add(id);
+        }
+      }
     }
+
+    setState(() {
+      if (_isErasing) {
+        _selectedCells.removeAll(cellsMod);
+      } else {
+        _selectedCells.addAll(cellsMod);
+      }
+    });
   }
 
   void _notifyChanged() {
-    widget.onStrokesChanged?.call(_strokes);
+    widget.onDataChanged?.call(_selectedCells.toList());
   }
 
   @override
@@ -108,27 +153,46 @@ class MultiPointSelectorState extends State<MultiPointSelector> {
                       onPanStart: _isLocked
                           ? null
                           : (details) {
-                              setState(() {
-                                _currentStroke = [details.localPosition];
-                                _strokes.add(_currentStroke!);
-                              });
+                              final RenderBox? renderBox =
+                                  _imageKey.currentContext?.findRenderObject()
+                                      as RenderBox?;
+                              if (renderBox == null) return;
+                              Size size = renderBox.size;
+                              int startId =
+                                  _calculateCellId(details.localPosition, size);
+                              _isErasing = _selectedCells.contains(startId);
+                              _handleGesture(details.localPosition);
                             },
                       onPanUpdate: _isLocked
                           ? null
                           : (details) {
-                              setState(() {
-                                _currentStroke?.add(details.localPosition);
-                              });
+                              _handleGesture(details.localPosition);
                             },
-                      onPanEnd: _isLocked
+                      onPanEnd: _isLocked ? null : (_) => _notifyChanged(),
+                      onTapUp: _isLocked
                           ? null
                           : (details) {
-                              _currentStroke = null;
-                              _notifyChanged();
+                              final RenderBox? renderBox =
+                                  _imageKey.currentContext?.findRenderObject()
+                                      as RenderBox?;
+                              if (renderBox == null) return;
+                              Size size = renderBox.size;
+                              int cellId =
+                                  _calculateCellId(details.localPosition, size);
+                              if (cellId == -1) return;
+                              setState(() {
+                                if (_selectedCells.contains(cellId)) {
+                                  _selectedCells.remove(cellId);
+                                } else {
+                                  _selectedCells.add(cellId);
+                                }
+                                _notifyChanged();
+                              });
                             },
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(10),
                         child: Stack(
+                          key: _imageKey,
                           alignment: Alignment.center,
                           children: [
                             Image.asset(
@@ -138,9 +202,11 @@ class MultiPointSelectorState extends State<MultiPointSelector> {
                             ),
                             Positioned.fill(
                               child: CustomPaint(
-                                painter: _StrokesPainter(
-                                  strokes: _strokes,
+                                painter: _GridPainter(
+                                  selectedCells: _selectedCells,
                                   color: _allianceColor,
+                                  rows: _rows,
+                                  cols: _cols,
                                 ),
                               ),
                             ),
@@ -180,29 +246,14 @@ class MultiPointSelectorState extends State<MultiPointSelector> {
                           islightmode() ? Colors.black : Colors.white,
                     ),
                   ),
-                  Row(
-                    children: [
-                      TextButton.icon(
-                        onPressed: _Undoable ? _undo : null,
-                        icon: const Icon(Icons.undo),
-                        label: const Text("Undo"),
-                        style: TextButton.styleFrom(
-                          foregroundColor:
-                              islightmode() ? Colors.black : Colors.white,
-                          disabledForegroundColor: Colors.grey,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      TextButton.icon(
-                        onPressed: _Clearable ? _clear : null,
-                        icon: const Icon(Icons.delete_outline),
-                        label: const Text("Clear"),
-                        style: TextButton.styleFrom(
-                          foregroundColor: Colors.red,
-                          disabledForegroundColor: Colors.grey,
-                        ),
-                      ),
-                    ],
+                  TextButton.icon(
+                    onPressed: _Clearable ? _clear : null,
+                    icon: const Icon(Icons.delete_outline),
+                    label: const Text("Clear"),
+                    style: TextButton.styleFrom(
+                      foregroundColor: Colors.red,
+                      disabledForegroundColor: Colors.grey,
+                    ),
                   ),
                 ],
               ),
@@ -213,44 +264,53 @@ class MultiPointSelectorState extends State<MultiPointSelector> {
     );
   }
 
-  bool get _Undoable => _strokes.isNotEmpty;
-
-  bool get _Clearable => _strokes.isNotEmpty;
+  bool get _Clearable => _selectedCells.isNotEmpty;
 }
 
-class _StrokesPainter extends CustomPainter {
-  final List<List<Offset>> strokes;
+class _GridPainter extends CustomPainter {
+  final Set<int> selectedCells;
   final Color color;
+  final int rows;
+  final int cols;
 
-  _StrokesPainter({required this.strokes, required this.color});
+  _GridPainter({
+    required this.selectedCells,
+    required this.color,
+    required this.rows,
+    required this.cols,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
-    // If you wanted to scale points, you'd do it here or in the data layer.
-    // Here we assume raw offsets relative to the widget size.
-    final paint = Paint()
-      ..color = color
-      ..strokeWidth = 8.0
-      ..strokeCap = StrokeCap.round
-      ..strokeJoin = StrokeJoin.round
-      ..style = PaintingStyle.stroke;
+    if (selectedCells.isEmpty) return;
 
-    for (final stroke in strokes) {
-      if (stroke.isEmpty) continue;
-      if (stroke.length == 1) {
-        canvas.drawPoints(ui.PointMode.points, stroke, paint);
-      } else {
-        final path = Path()..moveTo(stroke.first.dx, stroke.first.dy);
-        for (int i = 1; i < stroke.length; i++) {
-          path.lineTo(stroke[i].dx, stroke[i].dy);
-        }
-        canvas.drawPath(path, paint);
-      }
+    double cellWidth = size.width / cols;
+    double cellHeight = size.height / rows;
+
+    final paint = Paint()
+      ..color = color.withOpacity(0.5)
+      ..style = PaintingStyle.fill;
+
+    for (int id in selectedCells) {
+      if (id < 1) continue;
+      // 1-based ID -> 0-based index
+      int index = id - 1;
+      int r = index ~/ cols;
+      int c = index % cols;
+
+      Rect rect = Rect.fromLTWH(
+        c * cellWidth,
+        r * cellHeight,
+        cellWidth,
+        cellHeight,
+      );
+      canvas.drawRect(rect, paint);
     }
   }
 
   @override
-  bool shouldRepaint(covariant _StrokesPainter oldDelegate) {
-    return oldDelegate.strokes != strokes || oldDelegate.color != color;
+  bool shouldRepaint(covariant _GridPainter oldDelegate) {
+    return oldDelegate.selectedCells != selectedCells ||
+        oldDelegate.color != color;
   }
 }
