@@ -7,13 +7,13 @@ export const modules = {
             type: "int",
             min: 0,
             max: 1500,
-            eco_tip: "Every lb of package weight contributes to carbon emissions.",
+            eco_tip: "Every lbs of package weight contributes to carbon emissions.",
             eco_impact: "high",
             category: "materials"
         },
         {
             section: "I. Shipping and Packaging of Products",
-            question: "How many parts did you have to order again on a weekly basis?",
+            question: "How many parts did you have to order again in a weekly basis?",
             hint: "Pick the option that best describes your situation",
             type: "multiple-choice",
             options: [
@@ -21,7 +21,7 @@ export const modules = {
                 { label: "A good amount (5-8)", eco_impact: "medium", value: 2 },
                 { label: "A little (2-3)", eco_impact: "low", value: 1 },
             ],
-            eco_tip: "If you buy without reusing somehow, you are adding more to the pile of waste.",
+            eco_tip: "if you buy without reusing somehow, you adding more to the pile of waste",
             category: "materials",
         },
         {
@@ -33,7 +33,7 @@ export const modules = {
                 { label: "A good amount", eco_impact: "medium", value: 2 },
                 { label: "A little", eco_impact: "low", value: 1 },
             ],
-            eco_tip: "Bulk ordering can reduce packaging waste per item.",
+            eco_tip: "if you buy without reusing somehow, you adding more to the pile of waste",
             category: "materials",
         },
         {
@@ -45,7 +45,7 @@ export const modules = {
                 { label: "Local", eco_impact: "low", value: 1 },
                 { label: "Non-Local", eco_impact: "high", value: 3 },
             ],
-            eco_tip: "Ordering locally reduces transportation emissions.",
+            eco_tip: "if you buy without reusing somehow, you adding more to the pile of waste",
             category: "materials",
         },
     ],
@@ -60,13 +60,13 @@ export const modules = {
                 { label: "5-10", eco_impact: "medium", value: 2 },
                 { label: "1-3", eco_impact: "low", value: 1 },
             ],
-            eco_tip: "Using reusable plates significantly reduces waste.",
+            eco_tip: "...",
             eco_impact: "medium",
             category: "materials"
         },
         {
             section: "II. Disposable Meal Items",
-            question: "How many boxes of 50 plastic forks did you use in an average competition?",
+            question: "How many boxes of 50 plastic forks did you use in a average competion?",
             hint: "Pick the option that best describes your situation",
             type: "multiple-choice",
             options: [
@@ -74,7 +74,7 @@ export const modules = {
                 { label: "5-8", eco_impact: "medium", value: 2 },
                 { label: "1-3", eco_impact: "low", value: 1 },
             ],
-            eco_tip: "Reusable silverware is a better eco-friendly option.",
+            eco_tip: "...",
             eco_impact: "medium",
             category: "materials"
         },
@@ -87,7 +87,7 @@ export const modules = {
                 { label: "3-5", eco_impact: "medium", value: 2 },
                 { label: "1-3", eco_impact: "low", value: 1 },
             ],
-            eco_tip: "Consider using cloth napkins or dispensers to reduce waste.",
+            eco_tip: "...",
             eco_impact: "medium",
             category: "materials"
         },
@@ -96,23 +96,23 @@ export const modules = {
             question: "What's your most purchased kind of water bottle pack?",
             type: "multiple-choice",
             options: [
-                { label: "Single-use plastic", eco_impact: "high", value: 3 },
-                { label: "Large jugs", eco_impact: "medium", value: 2 },
-                { label: "Refillable station", eco_impact: "low", value: 1 },
+                { label: "Crystal Geyser, Nestle Pure Life, Dasani, Aquafina, Fiji, and Evian", eco_impact: "high", value: 3 },
+                { label: "Klean Kanteen, Hydro Flask, S'wheat, Ocean Bottle", eco_impact: "low", value: 1 },
+                { label: "None of the above", eco_impact: "medium", value: 0 },
             ],
-            eco_tip: "Encourage team members to bring reusable water bottles.",
+            eco_tip: "Choose what kind of pack you use",
             eco_impact: "medium",
             category: "materials"
         }, {
             section: "II. Disposable Meal Items",
-            question: "How many packs of these water bottles did you use during build seasons and competitions?",
+            question: "How many packs of these water bottles did you use during build seasons and competitions.",
             type: "multiple-choice",
             options: [
                 { label: "A lot", eco_impact: "high", value: 3 },
                 { label: "A good amount", eco_impact: "medium", value: 2 },
                 { label: "A little", eco_impact: "low", value: 1 },
             ],
-            eco_tip: "Reducing single-use plastic bottles is a huge step for the environment.",
+            eco_tip: "...",
             eco_impact: "medium",
             category: "materials"
         },
@@ -120,131 +120,254 @@ export const modules = {
     '3': [
         {
             section: "III. Mechanical",
-            question: "How do you use Drills?",
-            hint: "Select an option",
-            type: "multiple-choice",
-            options: [
-                { label: "For Robot", eco_impact: "medium", value: 2 },
-                { label: "Own purpose", eco_impact: "medium", value: 2 },
-            ],
-            eco_tip: "Maintain tools to ensure longevity.",
-            eco_impact: "medium",
-            category: "energy"
+            question: "How many drills do you have in your workshop?",
+            hint: "Enter an integer value",
+            type: "int",
+            min: 0,
+            max: 200,
+            eco_tip: "The material that these drills are made out of severely effcets the enviroment",
+            eco_impact: "high",
+            category: "materials"
         },
         {
             section: "III. Mechanical",
-            question: "How many Drills do you use?",
-            hint: "Enter an integer value",
-            type: "int",
-            min: 0,
-            max: 67,
-            eco_tip: "Sharing tools can reduce the need for manufacturing new ones.",
-            eco_impact: "medium",
-            category: "energy"
-        },
-        {
-            section: "III. Programming",
-            question: "How do you use Laptops?",
+            question: "What do you do with your extra lumber",
             hint: "Select an option",
             type: "multiple-choice",
             options: [
-                { label: "For Robot", eco_impact: "medium", value: 2 },
-                { label: "Own purpose", eco_impact: "medium", value: 2 },
+                { label: "Throw it away", eco_impact: "high", value: 3 },
+                { label: "Repurpose/Recycle", eco_impact: "low", value: 1 },
             ],
-            eco_tip: "Use power-saving modes on laptops when possible.",
+            eco_tip: "",
             eco_impact: "medium",
-            category: "energy"
+            category: "materials"
+        },
+        {
+            section: "III. Mechanical",
+            question: "If you do Recycle/Repurpose your lumber, how do you do so?",
+            hint: "Select an option",
+            type: "multiple-choice",
+            options: [
+                { label: "We don't Recycle/Repurpose our lumber", eco_impact: "high", value: 3 },
+                { label: "Save it for next year", eco_impact: "medium", value: 2 },
+                { label: "Use for training", eco_impact: "medium", value: 2 },
+                { label: "Donate/Sale", eco_impact: "low", value: 1 },
+            ],
+            eco_tip: "",
+            eco_impact: "medium",
+            category: "materials"
+        },
+        {
+            section: "III. Mechanical",
+            question: "What do you do with your extra wires?",
+            hint: "Select an option",
+            type: "multiple-choice",
+            options: [
+                { label: "Throw them away", eco_impact: "high", value: 3 },
+                { label: "Save them for next year", eco_impact: "medium", value: 2 },
+                { label: "Use for training", eco_impact: "medium", value: 2 },
+                { label: "Donate/Sale", eco_impact: "low", value: 1 },
+            ],
+            eco_tip: "",
+            eco_impact: "medium",
+            category: "materials"
+        },
+        {
+            section: "III. Mechanical",
+            question: "How many batteries do you order for the season?",
+            hint: "Select an option",
+            type: "multiple-choice",
+            options: [
+                { label: "10-15", eco_impact: "high", value: 3 },
+                { label: "8-10", eco_impact: "medium", value: 2 },
+                { label: "2-8", eco_impact: "low", value: 1 },
+            ],
+            eco_tip: "",
+            eco_impact: "medium",
+            category: "materials"
         },
         {
             section: "III. Programming",
-            question: "How many Laptops do you use?",
-            hint: "Enter an integer value",
-            type: "int",
-            min: 0,
-            max: 30,
-            eco_tip: "Donating old laptops extends their lifecycle.",
-            eco_impact: "medium",
-            category: "energy"
-        },
-        {
-            section: "III. Electrical",
-            question: "How many Batteries/tools do you recharge?",
-            hint: "Enter an integer value",
-            type: "int",
-            min: 0,
-            max: 50,
-            eco_tip: "Proper battery maintenance extends life and reduces waste.",
-            eco_impact: "high",
-            category: "energy"
-        },
-        {
-            section: "III. Electrical",
-            question: "How often do you charge your batteries?",
-            hint: "Select frequency",
+            question: " How many Laptops do you use?",
+           hint: "Select an option",
             type: "multiple-choice",
             options: [
-                { label: "A lot", eco_impact: "high", value: 3 },
-                { label: "A good amount", eco_impact: "medium", value: 2 },
-                { label: "A little", eco_impact: "low", value: 1 },
+                { label: "25-40", eco_impact: "high", value: 3 },
+                { label: "15-25", eco_impact: "medium", value: 2 },
+                { label: "5-15", eco_impact: "low", value: 1 },
             ],
-            eco_tip: "Unplug chargers when not in use to save phantom energy.",
-            eco_impact: "high",
-            category: "energy"
+            eco_tip: "",
+            eco_impact: "medium",
+            category: "materials"
+        },
+        {
+            section: "III. Mechanical",
+            question: "What do you do with your extra sensors?",
+            hint: "Select an option",
+            type: "multiple-choice",
+            options: [
+                { label: "Throw them away", eco_impact: "high", value: 3 },
+                { label: "Save them for next year", eco_impact: "medium", value: 2 },
+                { label: "Use for training", eco_impact: "medium", value: 2 },
+                { label: "Donate/Sale", eco_impact: "low", value: 1 },
+            ],
+            eco_tip: "",
+            eco_impact: "medium",
+            category: "materials"
+        },
+        {
+            section: "III. Fabrics",
+            question: "What do you do with your extra lexan/polycarb?",
+            hint: "Select an option",
+            type: "multiple-choice",
+            options: [
+                { label: "Throw them away", eco_impact: "high", value: 3 },
+                { label: "Save them for next year", eco_impact: "medium", value: 2 },
+                { label: "Use for training", eco_impact: "medium", value: 2 },
+                { label: "Donate/Sale", eco_impact: "low", value: 1 },
+            ],
+            eco_tip: "",
+            eco_impact: "medium",
+            category: "materials"
+        },
+        {
+            section: "III. Mechanical",
+            question: " How often do you charge your batteries? ",
+            hint: "Enter an integer value",
+            type: "multiple-choice",
+            options: [
+                { label: "Every day", eco_impact: "high", value: 3 },
+                { label: "Every week", eco_impact: "medium", value: 2 },
+                { label: "Every month", eco_impact: "low", value: 1 },
+            ],
+            eco_tip: "",
+            eco_impact: "High",
+            category: "materials"
         },
         {
             section: "III. Fabrics",
             question: "How often do you buy filaments?",
+
             type: "multiple-choice",
             options: [
                 { label: "Every day", eco_impact: "high", value: 3 },
-                { label: "Once in a week", eco_impact: "medium", value: 2 },
-                { label: "Once in a month", eco_impact: "low", value: 1 },
+                { label: "Every week", eco_impact: "medium", value: 2 },
+                { label: "Every month", eco_impact: "low", value: 1 },
             ],
-            eco_tip: "Use biodegradable filaments (like PLA) when possible.",
-            eco_impact: "medium",
+            eco_tip: "",
+            eco_impact: "High",
+            category: "materials"
+        },
+        {
+            section: "III. Mechanical",
+            question: "How long did you run your large machines (in hours)?",
+
+            type: "multiple-choice",
+            options: [
+                { label: "10-15 hours", eco_impact: "high", value: 3 },
+                { label: "5-10 hours", eco_impact: "medium", value: 2 },
+                { label: "3-5 hours", eco_impact: "low", value: 1 },
+            ],
+            eco_tip: "",
+            eco_impact: "High",
+            category: "materials"
+        },
+        {
+            section: "III. Fabrics",
+            question: "What do you use for prototyping/training?",
+
+            type: "multiple-choice",
+            options: [
+                { label: "New material", eco_impact: "high", value: 3 },
+                { label: "Cardboard", eco_impact: "medium", value: 2 },
+                { label: "Scrap material", eco_impact: "low", value: 1 },
+            ],
+            eco_tip: "",
+            eco_impact: "High",
             category: "materials"
         }
     ],
     '4': [
         {
             section: "IV. Transportation",
-            question: "Why do you use transportation?",
+            question: " First Competion: How often do you use transportation? ",
             type: "multiple-choice",
             options: [
-                { label: "Every day", eco_impact: "high", value: 3 },
-                { label: "Once in a week", eco_impact: "medium", value: 2 },
-                { label: "Once in a month", eco_impact: "low", value: 1 },
+                { label: "Every day", eco_impact: "high", value: 2 },
+                { label: "Every week", eco_impact: "medium", value: 9 },
+                { label: "Every month", eco_impact: "low", value: 5 },
             ],
-            eco_tip: "Combine trips to reduce total mileage.",
-            eco_impact: "high",
-            category: "transport"
+            eco_tip: "",
+            eco_impact: "High",
+            category: "materials"
         },
         {
             section: "IV. Transportation",
-            question: "What kind of transportation do you use?",
+            question: " First Competion: What kind of transportation do you use? ",
             type: "multiple-choice",
             options: [
-                { label: "Car (Single Passenger)", eco_impact: "high", value: 3 },
-                { label: "Carpool / Public Transport", eco_impact: "medium", value: 2 },
-                { label: "Walking / Biking", eco_impact: "low", value: 1 },
+                { label: "Plane", eco_impact: "high", value: 5 },
+                { label: "Bus", eco_impact: "medium", value: 3 },
+                { label: "Car", eco_impact: "low", value: 1 },
             ],
-            eco_tip: "Carpooling significantly reduces carbon footprint per person.",
-            eco_impact: "high",
-            category: "transport"
+            eco_tip: "",
+            eco_impact: "High",
+            category: "materials"
         }
         , {
             section: "IV. Transportation",
-            question: "How many miles do you travel during the season?",
+            question: " First Competion: How many miles do you travel during the season? ",
             type: "multiple-choice",
             options: [
                 { label: "5000+ miles", eco_impact: "high", value: 3 },
                 { label: "500-2500 miles", eco_impact: "medium", value: 2 },
                 { label: "0-500 miles", eco_impact: "low", value: 1 },
             ],
-            eco_tip: "Plan meetings remotely when possible to save travel.",
-            eco_impact: "high",
-            category: "transport"
+            eco_tip: "",
+            eco_impact: "High",
+            category: "materials"
+        },
+    ],
+    '5': [
+        {
+            section: "IV. Transportation",
+            question: " First Competion: How often do you use transportation? ",
+            type: "multiple-choice",
+            options: [
+                { label: "Every day", eco_impact: "high", value: 2 },
+                { label: "Every week", eco_impact: "medium", value: 9 },
+                { label: "Every month", eco_impact: "low", value: 5 },
+            ],
+            eco_tip: "",
+            eco_impact: "High",
+            category: "materials"
+        },
+        {
+            section: "IV. Transportation",
+            question: " First Competion: What kind of transportation do you use? ",
+            type: "multiple-choice",
+            options: [
+                { label: "Plane", eco_impact: "high", value: 5 },
+                { label: "Bus", eco_impact: "medium", value: 3 },
+                { label: "Car", eco_impact: "low", value: 1 },
+            ],
+            eco_tip: "",
+            eco_impact: "High",
+            category: "materials"
         }
-
+        , {
+            section: "IV. Transportation",
+            question: " First Competion: How many miles do you travel during the season? ",
+            type: "multiple-choice",
+            options: [
+                { label: "5000+ miles", eco_impact: "high", value: 3 },
+                { label: "500-2500 miles", eco_impact: "medium", value: 2 },
+                { label: "0-500 miles", eco_impact: "low", value: 1 },
+            ],
+            eco_tip: "",
+            eco_impact: "High",
+            category: "materials"
+        },
+        
     ]
 };

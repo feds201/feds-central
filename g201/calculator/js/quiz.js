@@ -56,6 +56,7 @@ export function displayQuestion() {
         // Restore answer if exists
         if (answers[currentQuestionIndex]) {
              const savedVal = answers[currentQuestionIndex].answer;
+             
              // Find index by value
              const idx = question.options.findIndex(o => o.value == savedVal);
              if (idx !== -1) {
@@ -158,14 +159,15 @@ export function handleNext() {
         valueForScore = parseFloat(savedAnswer);
     }
 
-    updateEcoScore(question, valueForScore);
-
     answers[currentQuestionIndex] = {
         question: question.question,
         answer: savedAnswer,
         section: question.section,
-        category: question.category
+        category: question.category,
+        scoreBefore: currentEcoScore  // snapshot score before this question's impact
     };
+
+    updateEcoScore(question, valueForScore);
 
     currentQuestionIndex++;
 
@@ -179,6 +181,11 @@ export function handleNext() {
 export function handleBack() {
     if (currentQuestionIndex > 0) {
         currentQuestionIndex--;
+        // Restore the score to what it was before this question was answered
+        if (answers[currentQuestionIndex]) {
+            currentEcoScore = answers[currentQuestionIndex].scoreBefore;
+            if (elements.ecoScore) elements.ecoScore.textContent = Math.round(currentEcoScore);
+        }
         displayQuestion();
     }
 }
@@ -238,63 +245,42 @@ function finishQuiz() {
 }
 
 function updateImpactTexts() {
-    const presentCategories = [...new Set(activeQuestions.map(q => q.category))];
+    const matImpact = calculateCategoryImpact('materials', activeQuestions, answers);
+    const transImpact = calculateCategoryImpact('transport', activeQuestions, answers);
+    const enImpact = calculateCategoryImpact('energy', activeQuestions, answers);
 
-    // Hide all impact items first
-    if (elements.impactItems) {
-        elements.impactItems.forEach(item => {
-            const category = item.dataset.category;
-            if (presentCategories.includes(category)) {
-                item.style.display = 'flex';
-            } else {
-                item.style.display = 'none';
-            }
-        });
-    }
-
-    if (presentCategories.includes('materials')) {
-        const matImpact = calculateCategoryImpact('materials', activeQuestions, answers);
-        if (elements.materialsImpact) {
-            if (matImpact > 0.7) {
-                elements.materialsImpact.textContent = "Your team uses a large amount of disposable materials. Consider reducing waste and recycling more.";
-            } else if (matImpact > 0.4) {
-                elements.materialsImpact.textContent = "Your team used a moderate amount of disposable items. Consider reducing single-use plastics.";
-            } else {
-                elements.materialsImpact.textContent = "Great job minimizing material usage! Your team shows strong awareness of waste reduction.";
-            }
+    if (elements.materialsImpact) {
+        if (matImpact > 0.7) {
+            elements.materialsImpact.textContent = "Your team uses a large amount of disposable materials. Consider reducing waste and recycling more.";
+        } else if (matImpact > 0.4) {
+            elements.materialsImpact.textContent = "Your team used a moderate amount of disposable items. Consider reducing single-use plastics.";
+        } else {
+            elements.materialsImpact.textContent = "Great job minimizing material usage! Your team shows strong awareness of waste reduction.";
         }
     }
 
-    if (presentCategories.includes('transport')) {
-        const transImpact = calculateCategoryImpact('transport', activeQuestions, answers);
-        if (elements.transportImpact) {
-            if (transImpact > 0.7) {
-                elements.transportImpact.textContent = "Your team's travel has a significant carbon footprint. Consider carpooling and trip optimization.";
-            } else if (transImpact > 0.4) {
-                elements.transportImpact.textContent = "Your travel resulted in carbon emissions that could be reduced with more efficient planning.";
-            } else {
-                elements.transportImpact.textContent = "Your team is managing transportation efficiently with minimal environmental impact.";
-            }
+    if (elements.transportImpact) {
+        if (transImpact > 0.7) {
+            elements.transportImpact.textContent = "Your team's travel has a significant carbon footprint. Consider carpooling and trip optimization.";
+        } else if (transImpact > 0.4) {
+            elements.transportImpact.textContent = "Your travel resulted in carbon emissions that could be reduced with more efficient planning.";
+        } else {
+            elements.transportImpact.textContent = "Your team is managing transportation efficiently with minimal environmental impact.";
         }
     }
 
-    if (presentCategories.includes('energy')) {
-        const enImpact = calculateCategoryImpact('energy', activeQuestions, answers);
-        if (elements.energyImpact) {
-            if (enImpact > 0.7) {
-                elements.energyImpact.textContent = "High battery usage indicates potential for improvement in energy management.";
-            } else if (enImpact > 0.4) {
-                elements.energyImpact.textContent = "Battery usage is within reasonable limits, but proper disposal and recycling are essential.";
-            } else {
-                elements.energyImpact.textContent = "Excellent energy management! Your team is minimizing battery waste.";
-            }
+    if (elements.energyImpact) {
+        if (enImpact > 0.7) {
+            elements.energyImpact.textContent = "High battery usage indicates potential for improvement in energy management.";
+        } else if (enImpact > 0.4) {
+            elements.energyImpact.textContent = "Battery usage is within reasonable limits, but proper disposal and recycling are essential.";
+        } else {
+            elements.energyImpact.textContent = "Excellent energy management! Your team is minimizing battery waste.";
         }
     }
 }
 
 function generateRecommendations() {
-    const presentCategories = [...new Set(activeQuestions.map(q => q.category))];
-
     const materialsImpact = calculateCategoryImpact('materials', activeQuestions, answers);
     const transportImpact = calculateCategoryImpact('transport', activeQuestions, answers);
     const energyImpact = calculateCategoryImpact('energy', activeQuestions, answers);
@@ -312,42 +298,40 @@ function generateRecommendations() {
 
     let recommendations = [];
 
-    // Filter recommendations by category present
-    const applicableRecs = allRecommendations.filter(rec => presentCategories.includes(rec.category));
-
-    applicableRecs.forEach(rec => {
+    allRecommendations.forEach(rec => {
         let showRec = true;
-        // Don't show high impact recommendations if impact is low (already doing good)
         if (rec.category === 'materials' && rec.impact === 'high' && materialsImpact < 0.4) showRec = false;
         if (rec.category === 'transport' && rec.impact === 'high' && transportImpact < 0.4) showRec = false;
         if (rec.category === 'energy' && rec.impact === 'high' && energyImpact < 0.4) showRec = false;
 
-        if (showRec) {
-             // Check if we already have this text (avoid duplicates if any)
+        if (showRec || recommendations.filter(r => r.includes(rec.category)).length === 0) {
+            recommendations.push(`<div class='recommendation-item' data-category="${rec.category}">
+                <i class='fas fa-check-circle'></i>
+                <span>${rec.text}</span>
+            </div>`);
+        }
+    });
+
+    if (recommendations.length < 4) {
+        for (let i = 0; i < allRecommendations.length && recommendations.length < 4; i++) {
+             const rec = allRecommendations[i];
              const alreadyAdded = recommendations.some(r => r.includes(rec.text));
              if (!alreadyAdded) {
-                recommendations.push(`<div class='recommendation-item' data-category="${rec.category}">
+                  recommendations.push(`<div class='recommendation-item' data-category="${rec.category}">
                     <i class='fas fa-check-circle'></i>
                     <span>${rec.text}</span>
                 </div>`);
              }
         }
-    });
+    }
 
     if (elements.customRecommendations) {
-        if (recommendations.length > 0) {
-            elements.customRecommendations.innerHTML = recommendations.join('');
-            const recommendationHeading = document.createElement('h4');
-            recommendationHeading.textContent = "Suggested Action Steps:";
-            recommendationHeading.style.marginBottom = '15px';
-            // Safe check for computed style
-            if (document.documentElement) {
-                recommendationHeading.style.color = getComputedStyle(document.documentElement).getPropertyValue('--eco-friendly-color') || 'green';
-            }
-            elements.customRecommendations.prepend(recommendationHeading);
-        } else {
-            elements.customRecommendations.innerHTML = "<p>Great job! You are doing well in these categories.</p>";
-        }
+        elements.customRecommendations.innerHTML = recommendations.join('');
+        const recommendationHeading = document.createElement('h4');
+        recommendationHeading.textContent = "Suggested Action Steps:";
+        recommendationHeading.style.marginBottom = '15px';
+        recommendationHeading.style.color = getComputedStyle(document.documentElement).getPropertyValue('--eco-friendly-color');
+        elements.customRecommendations.prepend(recommendationHeading);
     }
 }
 
@@ -376,7 +360,6 @@ export function restartQuiz() {
     elements.actionsContainer.classList.add('hidden');
     elements.modulesWrapper.classList.remove('hidden');
 
-    // Reset state
     currentQuestionIndex = 0;
     answers = [];
     currentEcoScore = 0;
@@ -386,9 +369,5 @@ export function restartQuiz() {
     if (elements.ecoScore) elements.ecoScore.textContent = '0';
     if (elements.currentQuestion) elements.currentQuestion.textContent = '1';
     if (elements.progressBar) elements.progressBar.style.width = '0%';
-
-    // Reset display of impact items
-    if (elements.impactItems) {
-        elements.impactItems.forEach(item => item.style.display = '');
-    }
 }
+

@@ -28,7 +28,6 @@ document.addEventListener('DOMContentLoaded', () => {
         materialsImpact: document.getElementById('materials-impact'),
         transportImpact: document.getElementById('transport-impact'),
         energyImpact: document.getElementById('energy-impact'),
-        impactItems: document.querySelectorAll('.impact-item'),
         customRecommendations: document.getElementById('custom-recommendations'),
         themeToggle: document.getElementById('theme-toggle'),
         unitToggle: document.getElementById('unit-toggle'),
