@@ -56,6 +56,7 @@ export function displayQuestion() {
         // Restore answer if exists
         if (answers[currentQuestionIndex]) {
              const savedVal = answers[currentQuestionIndex].answer;
+             
              // Find index by value
              const idx = question.options.findIndex(o => o.value == savedVal);
              if (idx !== -1) {
@@ -158,14 +159,15 @@ export function handleNext() {
         valueForScore = parseFloat(savedAnswer);
     }
 
-    updateEcoScore(question, valueForScore);
-
     answers[currentQuestionIndex] = {
         question: question.question,
         answer: savedAnswer,
         section: question.section,
-        category: question.category
+        category: question.category,
+        scoreBefore: currentEcoScore  // snapshot score before this question's impact
     };
+
+    updateEcoScore(question, valueForScore);
 
     currentQuestionIndex++;
 
@@ -179,6 +181,11 @@ export function handleNext() {
 export function handleBack() {
     if (currentQuestionIndex > 0) {
         currentQuestionIndex--;
+        // Restore the score to what it was before this question was answered
+        if (answers[currentQuestionIndex]) {
+            currentEcoScore = answers[currentQuestionIndex].scoreBefore;
+            if (elements.ecoScore) elements.ecoScore.textContent = Math.round(currentEcoScore);
+        }
         displayQuestion();
     }
 }
@@ -274,7 +281,6 @@ function updateImpactTexts() {
 }
 
 function generateRecommendations() {
-    // Basic implementation mirroring original logic but safer
     const materialsImpact = calculateCategoryImpact('materials', activeQuestions, answers);
     const transportImpact = calculateCategoryImpact('transport', activeQuestions, answers);
     const energyImpact = calculateCategoryImpact('energy', activeQuestions, answers);
@@ -306,7 +312,6 @@ function generateRecommendations() {
         }
     });
 
-    // Ensure at least 4 items
     if (recommendations.length < 4) {
         for (let i = 0; i < allRecommendations.length && recommendations.length < 4; i++) {
              const rec = allRecommendations[i];
@@ -365,3 +370,4 @@ export function restartQuiz() {
     if (elements.currentQuestion) elements.currentQuestion.textContent = '1';
     if (elements.progressBar) elements.progressBar.style.width = '0%';
 }
+
