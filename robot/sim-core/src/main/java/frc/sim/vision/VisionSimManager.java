@@ -1,14 +1,21 @@
 package frc.sim.vision;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer;
+import edu.wpi.first.wpilibj.Timer;
 
 /**
  * Orchestrates simulated Limelight cameras.
  *
- * <p>Creates one {@link LimelightSim} per {@link CameraConfig} and forwards
- * the true sim pose to each camera every tick.
+ * <p>Maintains a timestamped pose history buffer and forwards it to each
+ * {@link LimelightSim} every tick. Each camera decides independently
+ * whether to publish based on its own FPS.
  */
 public class VisionSimManager {
+
+    /** Pose history for latency lookback. 2s is plenty of headroom. */
+    private final TimeInterpolatableBuffer<Pose2d> poseHistory =
+            TimeInterpolatableBuffer.createBuffer(2.0);
 
     private final LimelightSim[] cameras;
 
@@ -25,13 +32,16 @@ public class VisionSimManager {
     }
 
     /**
-     * Write the true pose to all simulated cameras' NT entries.
+     * Record the true pose and let each camera decide whether to publish.
      *
      * @param truePose the ground-truth robot pose from MapleSim
      */
     public void update(Pose2d truePose) {
+        double now = Timer.getFPGATimestamp();
+        poseHistory.addSample(now, truePose);
+
         for (LimelightSim camera : cameras) {
-            camera.update(truePose);
+            camera.update(poseHistory, now);
         }
     }
 }

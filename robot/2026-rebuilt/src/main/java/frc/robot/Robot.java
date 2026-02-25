@@ -47,9 +47,12 @@ public class Robot extends LoggedRobot {
         break;
 
       case SIM:
-        // Uncomment this line if you want to save logs even when running the simulator
-        // Logger.addDataReceiver(new WPILOGWriter("logs")); // Saves logs to "logs/" dir
-        Logger.addDataReceiver(new NT4Publisher()); // Publishes logs to network tables
+        // To save .wpilog files during sim (e.g. for SysID characterization), run:
+        //   ./gradlew simulateJava -PsimLogging=true
+        if (Boolean.getBoolean("simLogging")) {
+          Logger.addDataReceiver(new WPILOGWriter("logs"));
+        }
+        Logger.addDataReceiver(new NT4Publisher());
         break;
 
       case REPLAY:

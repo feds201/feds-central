@@ -26,7 +26,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 
 public class IntakeSubsystem extends SubsystemBase {
 
-  private TalonFX motor;
+  private final TalonFX motor;
   private final DigitalInput limit_switch_r;
   private final DigitalInput limit_switch_l;
   private final RollersSubsystem rollers; 

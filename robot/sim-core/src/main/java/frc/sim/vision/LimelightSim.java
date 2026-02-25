@@ -1,10 +1,13 @@
 package frc.sim.vision;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer;
 import edu.wpi.first.networktables.DoubleArrayEntry;
 import edu.wpi.first.networktables.DoubleEntry;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+
+import java.util.Optional;
 
 /**
  * Simulates a single Limelight camera by writing pose data to NetworkTables
@@ -21,6 +24,17 @@ import edu.wpi.first.networktables.NetworkTableInstance;
  * chosen so {@code LimelightWrapper}'s stddev calculations produce low
  * values instead of returning 1e6 (which would cause the estimator to
  * ignore the measurement entirely).
+ *
+ * <p>Publishing is gated by the camera's FPS (from {@link LimelightType}).
+ * When it's time to publish, the pose is sampled from a shared
+ * {@link TimeInterpolatableBuffer} at {@code now - latency}, so the
+ * published measurement is realistically stale.
+ *
+ * <p>TODO: Replace exact pose with a realistic noisy estimate. Plan:
+ * use the field's AprilTag layout + camera FOV to determine which tags
+ * are visible from the current robot pose, then add gaussian noise
+ * scaled by tag count and distance (fewer/farther tags → more noise).
+ * This would exercise the Kalman filter's stddev weighting in sim.
  */
 public class LimelightSim {
 
@@ -32,7 +46,19 @@ public class LimelightSim {
     private static final double FAKE_TAG_SPAN = 30.0;   // degrees
     private static final double FAKE_AVG_DIST = 2.0;    // meters
     private static final double FAKE_AVG_AREA = 1.5;    // percent of image
-    private static final double FAKE_LATENCY_MS = 5.0;
+
+    // Total simulated latency (capture + pipeline), in milliseconds.
+    // Real Limelight latency ≈ capture (~11ms) + pipeline (varies by resolution/pipeline).
+    // 25ms is a reasonable estimate for an AprilTag pipeline on LL3/LL4.
+    // Source: https://docs.limelightvision.io/docs/docs-limelight/software-change-log
+    //         https://www.chiefdelphi.com/t/determining-limelight-latency/411597
+    //
+    // TODO: Add gaussian variation to simulate real-world jitter. Something like:
+    //   latencyMs = MEAN_LATENCY_MS + random.nextGaussian() * LATENCY_STDDEV_MS
+    //   latencyMs = Math.max(latencyMs, MIN_LATENCY_MS)
+    //   with mean=25, stddev=5, min=15.
+    private static final double FAKE_LATENCY_MS = 25.0;
+    private static final double FAKE_LATENCY_SEC = FAKE_LATENCY_MS / 1000.0;
 
     // Per-fiducial fake data (7 doubles each)
     // [id, txnc, tync, ta, distToCamera, distToRobot, ambiguity]
@@ -46,6 +72,12 @@ public class LimelightSim {
     private final DoubleArrayEntry botposeMt2;
     private final DoubleEntry tvEntry;
 
+    /** Seconds between publishes, derived from camera FPS. */
+    private final double publishPeriodSec;
+
+    /** Timestamp of last NT publish (seconds, FPGA clock). */
+    private double lastPublishTimeSec = 0.0;
+
     /**
      * Create a simulated Limelight and set up its NT entries.
      *
@@ -58,23 +90,51 @@ public class LimelightSim {
         botposeMt1 = table.getDoubleArrayTopic("botpose_wpiblue").getEntry(new double[0]);
         botposeMt2 = table.getDoubleArrayTopic("botpose_orb_wpiblue").getEntry(new double[0]);
         tvEntry = table.getDoubleTopic("tv").getEntry(0.0);
+
+        publishPeriodSec = 1.0 / config.type().fps();
     }
 
     /**
-     * Write the sim's true pose to NT in Limelight format.
+     * Potentially publish a pose update to NT, gated by this camera's FPS.
      *
-     * @param truePose the ground-truth robot pose from MapleSim
+     * <p>If enough time has passed since the last publish, samples the pose
+     * history buffer at {@code now - latency} to get a realistically stale
+     * pose and writes it to NT.
+     *
+     * @param poseHistory shared buffer of timestamped true poses
+     * @param nowSec      current FPGA timestamp in seconds
      */
-    public void update(Pose2d truePose) {
+    public void update(TimeInterpolatableBuffer<Pose2d> poseHistory, double nowSec) {
+        if (nowSec - lastPublishTimeSec < publishPeriodSec) {
+            return; // not time to publish yet
+        }
+        lastPublishTimeSec = nowSec;
+
+        // Look back in the pose history by the simulated latency amount.
+        // This makes the published measurement realistically stale — the pose
+        // estimator will see a pose from FAKE_LATENCY_MS ago, matching the
+        // latency value we report in the array metadata.
+        Optional<Pose2d> maybePose = poseHistory.getSample(nowSec - FAKE_LATENCY_SEC);
+        if (maybePose.isEmpty()) {
+            return; // buffer not populated yet (first few ticks)
+        }
+
+        publish(maybePose.get());
+    }
+
+    /**
+     * Write a pose to NT in Limelight format.
+     */
+    private void publish(Pose2d pose) {
         double[] data = new double[ARRAY_LENGTH];
 
         // Pose (indices 0-5)
-        data[0] = truePose.getX();
-        data[1] = truePose.getY();
+        data[0] = pose.getX();
+        data[1] = pose.getY();
         data[2] = 0.0;  // z
         data[3] = 0.0;  // roll (degrees)
         data[4] = 0.0;  // pitch (degrees)
-        data[5] = truePose.getRotation().getDegrees();  // yaw (degrees)
+        data[5] = pose.getRotation().getDegrees();  // yaw (degrees)
 
         // Metadata (indices 6-10)
         data[6] = FAKE_LATENCY_MS;
