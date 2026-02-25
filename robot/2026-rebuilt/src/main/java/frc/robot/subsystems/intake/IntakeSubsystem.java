@@ -317,8 +317,23 @@ public class IntakeSubsystem extends SubsystemBase {
 
 
   public IntakeSubsystem() {
-    motor = new TalonFX(RobotMap.IntakeSubsystemConstants.kMotorID);
-    rollerMotor = new TalonFX(RobotMap.IntakeSubsystemConstants.kRollerMotorID);
+     var config = new TalonFXConfiguration();
+    config.Slot0.kP = 0.1;
+    config.Slot0.kI = 0.0;
+    config.Slot0.kD = 0.0;
+    motor.getConfigurator().apply(config);
+
+    sysID = new SysIdRoutine(
+      new SysIdRoutine.Config(), new SysIdRoutine.Mechanism((voltage)-> motor.setControl(new VoltageOut(0).withOutput(voltage)), (log)-> {
+        log.motor("motor1")
+        .voltage(motor.getMotorVoltage().asSupplier().get())
+        .angularVelocity(motor.getVelocity().asSupplier().get())
+        .angularPosition(motor.getPosition().asSupplier().get());
+      }, this));
+
+
+
+    motor = new TalonFX(RobotMap.IntakeSubsystemConstants.kMotorID, "rio");
     limit_switch_r = new DigitalInput(RobotMap.IntakeSubsystemConstants.kLimit_switch_rID);
     limit_switch_l = new DigitalInput(RobotMap.IntakeSubsystemConstants.kLimit_switch_lID);
     var config = new TalonFXConfiguration();

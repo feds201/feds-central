@@ -288,10 +288,42 @@ class EndGameState extends State<EndGame> {
                               onRatingChanged: (rating) {
                                 setState(() {
                                   shootingAccuracy = rating;
-                                  print(shootingAccuracy);
-                                });
-                              },
-                            ),
+
+                  ],
+                ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Container(
+                      height: 135,
+                      decoration: BoxDecoration(
+                        color: Colors.grey,
+                        borderRadius:BorderRadius.circular(12),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(1.5),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Color.fromARGB(255, 34, 34, 34),
+                            borderRadius:BorderRadius.circular(12),
+                          ),
+                          child:StarRating(
+                            initialRating: shootingAccuracy,
+                            onRatingChanged: (rating) {
+                              setState(() {
+                                shootingAccuracy = rating;
+<<<<<<< HEAD
+<<<<<<< HEAD
+                                if (kDebugMode) {
+                                  log('shootingAccuracy: $shootingAccuracy');
+                                }
+=======
+                                print(shootingAccuracy);
+>>>>>>> origin/main
+=======
+                                print(shootingAccuracy);
+>>>>>>> origin/main
+                              });
+                            },
                           ),
                         ),
                       ),
