@@ -19,7 +19,6 @@ import frc.robot.subsystems.intake.RollersSubsystem;
 import frc.robot.subsystems.intake.RollersSubsystem.RollerState;
 import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.subsystems.feeder.Feeder.feeder_state;
-import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterHood;
 import frc.robot.subsystems.shooter.ShooterWheels;
@@ -53,12 +52,10 @@ public class RobotContainer {
   private final Feeder feederSubsystem = new Feeder();
 
   // TODO: implement this for real (was just added to enable simulation)
-  private final Shooter shooter = new Shooter();
+  private final Shooter shooterSim = new Shooter();
   private final ShooterHood shooterHood = new ShooterHood(drivetrain);
   private final ShooterWheels shooterWheels = new ShooterWheels(drivetrain);
 
-  // TODO: implement this for real (was just added to enable simulation)
-  private final Intake intake = new Intake();
   // Local testing subsystem (contains @RobotAction tests used by RootTestingUtility)
   // private final TestingSubsystem testingSubsystem = new TestingSubsystem();
 
@@ -92,15 +89,6 @@ public class RobotContainer {
     }
   }
   private void configureBindings() {
-    // controller.a()
-    //   .onTrue(IntakeSubsystem.dyanmicCommand(Direction.kReverse));
-    // controller.b()
-    //   .onTrue(IntakeSubsystem.dyanmicCommand(Direction.kForward));
-    // controller.x()
-    //   .onTrue(IntakeSubsystem.quatsiCommand(Direction.kReverse));
-    // controller.y()
-    //   .onTrue(IntakeSubsystem.quatsiCommand(Direction.kForward));
-
     controller.leftTrigger()
         .onTrue(intakeSubsystem.extendIntake().andThen(rollersSubsystem.RollersCommand(RollerState.ON)))
         .onFalse(rollersSubsystem.RollersCommand(RollerState.OFF));
@@ -108,36 +96,14 @@ public class RobotContainer {
     controller.leftBumper()
         .onTrue(intakeSubsystem.retractIntake());
 
-    // controller.x()
-    //     .onTrue((leds.intakeSignal())).onFalse(leds.climbingSignal());
-
-    // controller.y()
-    //     .onTrue(rollers.RollersCommand(RollerState.ON))
-    //     .onFalse(rollers.RollersCommand(RollerState.OFF));
-
-    // TODO: implement this for real (was just added to enable simulation)
     // Default drive command: field-centric swerve with left stick + right stick rotation
     drivetrain.setDefaultCommand(
         new TeleopSwerve(drivetrain, controller));
 
-    // TODO: implement this for real (was just added to enable simulation)
-    // M key (Right bumper): intake
+    // M key (Right bumper): intake rollers
     controller.rightBumper()
-        .whileTrue(intake.intakeCommand());
-
-    // TODO: implement this for real (was just added to enable simulation)
-    // / key (Left bumper): shoot
-    // NOTE: leftBumper also bound to intakeSubsystem.retractIntake() above
-    controller.leftBumper()
-        .whileTrue(shooter.shootCommand());
-
-    // TODO: implement this for real (was just added to enable simulation)
-    // D-pad up: hood angle up
-    // D-pad down: hood angle down
-    // (POV buttons need custom triggers)
-    // controller.y()
-    //     .whileTrue(shooter.hoodUpCommand());
-    // controller.y().onTrue(new InstantCommand (() -> setShooterToShooting()));
+        .whileTrue(rollersSubsystem.RollersCommand(RollerState.ON))
+        .onFalse(rollersSubsystem.RollersCommand(RollerState.OFF));
 
     controller.y().onTrue(
       Commands.sequence(
@@ -146,18 +112,17 @@ public class RobotContainer {
       )
     );
 
+    // TODO: rm once shooter hood/wheels are tuned
+    controller.leftBumper().whileTrue(shooterSim.shootCommand());
+    controller.a().whileTrue(shooterSim.hoodDownCommand());
+    controller.b().whileTrue(shooterSim.hoodUpCommand());
+
     controller.x().whileTrue(
       Commands.sequence(
       feederSubsystem.setStateCommand(feeder_state.RUN),
       spinDexer.setStateCommand(spindexer_state.RUN)
       )
     );
-
-
-
-    // TODO: implement this for real (was just added to enable simulation)-
-
-   // controller.x().whileTrue(new InstantCommand(() -> getFuelIntoShooter()));
 
   }
 
@@ -171,7 +136,7 @@ public class RobotContainer {
       // RebuiltSimManager depends on optional simulation libraries. Guard against
       // missing simulation classes so entering simulation/test mode doesn't crash
       // the robot when those libraries are not present on the classpath.
-      simManager = new RebuiltSimManager(drivetrain, shooter, intake);
+      simManager = new RebuiltSimManager(drivetrain, shooterSim, rollersSubsystem);
       // Signal simulation enabled for dashboards
       Logger.recordOutput("Sim/Enabled", true);
     } catch (LinkageError e) {
@@ -209,8 +174,7 @@ public class RobotContainer {
   private void configureRootTests() {
     rootTester.registerSubsystem(
         intakeSubsystem,
-        shooter,
-        intake
+        shooterSim
     // testingSubsystem
         // Add more subsystems here as they're wired in:
         // feeder, climber, spindexer, etc.

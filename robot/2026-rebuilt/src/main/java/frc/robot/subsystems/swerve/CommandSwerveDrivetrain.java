@@ -7,6 +7,7 @@ import java.util.function.Supplier;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
@@ -40,6 +41,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.RobotMap;
+import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.subsystems.swerve.generated.TunerConstants.TunerSwerveDrivetrain;
 import frc.robot.utils.ShootOnTheMove;
 
@@ -325,6 +327,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                     .withDriveFrictionVoltage(Volts.of(0.2))
                     .withSteerFrictionVoltage(Volts.of(0.2))
                     .withSteerInertia(KilogramSquareMeters.of(0.05));
+
+            // Sim-only: limit drive motor current to prevent MapleSim battery brownout.
+            // The real robot relies on physical battery limits; the sim battery model has none.
+            ((TalonFXConfiguration) mc.DriveMotorInitialConfigs).CurrentLimits
+                    .withStatorCurrentLimit(Amps.of(120))
+                    .withStatorCurrentLimitEnable(true);
         }
         return moduleConstants;
     }

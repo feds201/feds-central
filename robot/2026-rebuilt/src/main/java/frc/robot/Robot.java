@@ -42,20 +42,23 @@ public class Robot extends LoggedRobot {
 
       switch (RobotMap.getRobotMode()) {
       case REAL:
-        Logger.addDataReceiver(new WPILOGWriter());
-        Logger.addDataReceiver(new NT4Publisher());
+        Logger.addDataReceiver(new WPILOGWriter()); // Saves logs to RoboRIO
+        Logger.addDataReceiver(new NT4Publisher()); // Publishes logs to network tables
         break;
 
       case SIM:
-        //Logger.addDataReceiver(new WPILOGWriter("log"));
+        // To save .wpilog files during sim (e.g. for SysID characterization), run:
+        //   ./gradlew simulateJava -PsimLogging=true
+        if (Boolean.getBoolean("simLogging")) {
+          Logger.addDataReceiver(new WPILOGWriter("logs"));
+        }
         Logger.addDataReceiver(new NT4Publisher());
         break;
 
       case REPLAY:
         String inPath = LogFileUtil.findReplayLog();
-        String outPath = LogFileUtil.addPathSuffix(inPath, "_sim");
-        Logger.setReplaySource(new WPILOGReader(inPath));
-        Logger.addDataReceiver(new WPILOGWriter(outPath));
+        Logger.setReplaySource(new WPILOGReader(inPath)); // Sets the log file to replay
+        Logger.addDataReceiver(new NT4Publisher()); // Publishes logs to network tables
         break;
     }
 

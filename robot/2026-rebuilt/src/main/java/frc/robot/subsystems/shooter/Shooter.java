@@ -18,14 +18,14 @@ public class Shooter extends SubsystemBase {
 
     /** Flywheel surface speed (placeholder, m/s). Maps directly to launch velocity in sim.
      *  On the real robot this will come from flywheel RPM × wheel radius. */
-    private static final double FLYWHEEL_SPEED_MPS = 20.0;
+    private static final double FLYWHEEL_SPEED_MPS = 6.0;
 
-    /** Hood adjustment rate when button is held (placeholder, rad/s = 30°/s). */
+    /** Hood adjustment rate when button is held (placeholder). */
     private static final double HOOD_ADJUST_RATE = Math.toRadians(30);
 
-    /** Minimum hood angle — prevents aiming below ~10° (placeholder, radians). */
+    /** Minimum hood angle — prevents aiming too low (placeholder, radians). */
     private static final double HOOD_MIN = Math.toRadians(10);
-    /** Maximum hood angle — prevents aiming above ~80° (placeholder, radians). */
+    /** Maximum hood angle — prevents aiming too high (placeholder, radians). */
     private static final double HOOD_MAX = Math.toRadians(80);
 
     public Shooter() {}
