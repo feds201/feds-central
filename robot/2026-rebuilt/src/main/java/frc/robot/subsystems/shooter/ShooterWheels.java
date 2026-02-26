@@ -62,13 +62,13 @@ public class ShooterWheels extends SubsystemBase {
   /** Creates a new Shooter. */
   public ShooterWheels(CommandSwerveDrivetrain dt) {
     this.dt = dt;
-    shooterLeader = new TalonFX(ShooterConstants.kShooterLeaderId);
-    shooterFollower1 = new TalonFX(ShooterConstants.kShooterFollower1Id);
-    shooterFollower2 = new TalonFX(ShooterConstants.kShooterFollower2Id);
-    shooterFollower3 = new TalonFX(ShooterConstants.kShooterFollower3Id);
-    shooterFollower1.setControl(new Follower(shooterLeader.getDeviceID(), MotorAlignmentValue.Aligned));
+    shooterLeader = new TalonFX(ShooterConstants.ShooterRightTop);
+    shooterFollower1 = new TalonFX(ShooterConstants.ShooterBottomLeft);
+    shooterFollower2 = new TalonFX(ShooterConstants.ShooterRightBottom);
+    shooterFollower3 = new TalonFX(ShooterConstants.ShooterTopLeft);
+    shooterFollower1.setControl(new Follower(shooterLeader.getDeviceID(), MotorAlignmentValue.Opposed));
     shooterFollower2.setControl(new Follower(shooterLeader.getDeviceID(), MotorAlignmentValue.Aligned));
-    shooterFollower3.setControl(new Follower(shooterLeader.getDeviceID(), MotorAlignmentValue.Aligned));
+    shooterFollower3.setControl(new Follower(shooterLeader.getDeviceID(), MotorAlignmentValue.Opposed));
     motionMagicControl = new MotionMagicVelocityVoltage(0.0);
 
     m_flywheelSysId = new SysIdRoutine(
@@ -99,7 +99,7 @@ public class ShooterWheels extends SubsystemBase {
     config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     config.CurrentLimits.StatorCurrentLimit = 40;
     //Following values would need to be tuned.
-    config.Slot0.kS = 0.0; // Constant applied for friction compensation (static gain)
+    config.Slot0.kS = 0.0; // Constant applied for friction compensation (static gain)///;;poy' qwertyhellooooooo
     config.Slot0.kP = 0.0; // Proportional gain 
     config.Slot0.kD = 0.0; // Derivative gain
     config.Slot0.kV = 0.0;// Velocity gain
@@ -154,13 +154,14 @@ public class ShooterWheels extends SubsystemBase {
 
   public AngularVelocity getTargetVelocityShooting()
   {
-     Distance d = dt.getDistanceToHub();
+     Distance d = dt.getDistanceToVirtualHub();
       return RotationsPerSecond.of(RobotMap.ShooterConstants.kShootingVelocityMap.get(d.in(Meters)));
   }
 
+  //METHOD DYSFUNCTIONAL: Passing doesnt shoot to hub, find position on field to pass to.
    public AngularVelocity getTargetVelocityPassing()
   {
-     Distance d = dt.getDistanceToHub();
+     Distance d = dt.getDistanceToCorner();
       return RotationsPerSecond.of(RobotMap.ShooterConstants.kPassingVelocityMap.get(d.in(Meters)));
   }
 

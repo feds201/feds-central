@@ -60,7 +60,7 @@ public class DeviceTempReporter {
             try {
                 temp = e.getValue().get();
             } catch (Throwable t) {
-                temp = Fahrenheit.of(-1);
+                temp = Fahrenheit.of(-2);
                 System.err.println("[DeviceTempReporter] Exception while polling '" + name + "': " + t.getMessage());
             }
             GenericEntry entry = deviceTempEntries.get(name);

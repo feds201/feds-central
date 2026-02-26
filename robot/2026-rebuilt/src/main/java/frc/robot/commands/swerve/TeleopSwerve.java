@@ -12,11 +12,12 @@ import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -24,13 +25,14 @@ import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 // import frc.robot.RobotMap.SafetyMap.SwerveConstants;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
-import frc.robot.utils.FieldConstants;
+import frc.robot.utils.ShootOnTheMove;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 
 public class TeleopSwerve extends Command {
@@ -100,6 +102,7 @@ private final PIDController hubRotPID = new PIDController(25, 0, 0);
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    Logger.recordOutput("CTRERobotPose", dt.getState().Pose);
     switch (mode) {
       case FALCONDRIVE:
       
@@ -173,31 +176,23 @@ private final PIDController hubRotPID = new PIDController(25, 0, 0);
 
 
           case HUBDRIVE:
-          // 1. Get the positions
-          Translation2d robotPose = dt.getState().Pose.getTranslation();
-          Translation2d hubCenter = FieldConstants.Hub.innerCenterPoint.toTranslation2d();
-          
-          // 2. Calculate the target angle to face the hub
-          // Math.atan2 returns radians, we convert to Degrees for the PID
-          double angleToHub = Math.toDegrees(Math.atan2(
-              hubCenter.getY() - robotPose.getY(), 
-              hubCenter.getX() - robotPose.getX()
-          ));
-
           // 3. Get current robot heading
           double robotHeading = dt.getState().Pose.getRotation().getDegrees();
 
+          //2 Get theta to virtual goal (will be equivalent to angle to hub when stationary, but leads the target when moving)
+          Double angleToGoal = ShootOnTheMove.calculateRobotHeading(dt.getState().Pose, dt.getState().Speeds).getDegrees();
+          Logger.recordOutput("angleToGoal", angleToGoal);
           // 4. Calculate PID output (Rotational Speed)
-          double rotationOutput = hubRotPID.calculate(robotHeading, angleToHub);
-
+          double rotationOutput = hubRotPID.calculate(robotHeading, angleToGoal);
+          SmartDashboard.putNumber("rotationoutput", rotationOutput);
           // 5. Apply to Drivetrain
           // We use FieldCentric so your Left Stick (driving) remains intuitive 
           // regardless of where the robot is facing.
           dt.setControl(driveNormal
-              .withVelocityX(-controller.getLeftY() * MAX_SPEED)
-              .withVelocityY(-controller.getLeftX() * MAX_SPEED)
+              .withVelocityX(-controller.getLeftY() *2)
+              .withVelocityY(-controller.getLeftX() *2)
               .withRotationalRate(DegreesPerSecond.of(rotationOutput)));
-
+          
           swerveCommandType = "HUB_AIM";
           swerveCommandEntry.setString(swerveCommandType);
           break;
