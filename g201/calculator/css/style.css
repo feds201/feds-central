@@ -117,6 +117,24 @@ body::after {
     animation: container-appear 0.6s ease-out;
 }
 
+.eco-score-module-1,
+.eco-score-module-2,
+.eco-score-module-3,
+.eco-score-module-4,
+.eco-score-module-5 {
+    background-color: rgba(77, 240, 12, 0.895);
+    padding: 8px 18px;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 15px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 3px 10px rgba(77, 240, 12, 0.895);
+    margin-top: 12px;
+    color: white;
+}
+
 
 .modules-wrapper {
   display: grid;
