@@ -218,6 +218,20 @@ public class RobotContainer {
 
   /** Called from Robot.testPeriodic(). Keeps dashboard data fresh. */
   public void updateRootTests() {
+
+
     rootTester.periodic();
   }
+
+  public void registerNamedCommands()
+  {
+    NamedCommands.registerCommand("Extend Intake", intakeSubsystem.extendIntake());
+
+    NamedCommands.registerCommand("Shooting",  shooterWheels.setStateCommand(shooter_state.SHOOTING).alongWith(spinDexer.setStateCommand
+    (spindexer_state.RUN).alongWith(feederSubsystem.setStateCommand(feeder_state.RUN))));
+    NamedCommands.registerCommand("Stop Shooting", shooterWheels.setStateCommand(shooter_state.IDLE).alongWith(feederSubsystem.
+    setStateCommand(feeder_state.STOP)));
+
+  }
 }
+
