@@ -233,5 +233,44 @@ public class RobotContainer {
     setStateCommand(feeder_state.STOP)));
 
   }
+
+
+
+
+
+
+
+
+
+
+public void registerNameCommands() {
+  NamedCommands.registerCommand("Extend Hopper", intakeSubsystem.extendIntake());
+  NamedCommands.registerCommand("Run Rollers", rollersSubsystem.RollersCommand(RollerState.ON));
+  NamedCommands.registerCommand("Stop Rollers", rollersSubsystem.RollersCommand(RollerState.OFF));
+  NamedCommands.registerCommand("Start Shooter Spin", shooterWheels.setStateCommand(shooter_state.SHOOTING));
+  NamedCommands.registerCommand("End Shooter Spin", shooterWheels.setStateCommand(shooter_state.IDLE));
+  NamedCommands.registerCommand("Run Shooter", shooterWheels.setStateCommand(shooter_state.SHOOTING).alongWith(feederSubsystem.setStateCommand(feeder_state.RUN)).alongWith(spinDexer.setStateCommand(spindexer_state.RUN)));
+  
+
+
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}
