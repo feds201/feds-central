@@ -1,0 +1,167 @@
+---
+title: "Simulation: Quick Start"
+---
+
+import {Callout, Steps} from 'nextra/components';
+
+# Simulation Quick Start
+
+<Callout type="warning">
+**Test all robot code changes in the simulator before running on the real robot.**
+The sim lets you run code that might not work yet, iterate on new features, and keep developing even without access to a physical robot.
+</Callout>
+
+## What the Sim Covers
+
+- **Physics** — collisions, bouncing, gravity, ramps
+- **Game pieces** — intake, hold, shoot, score
+- **Full robot control** — drivetrain + all mechanisms
+- **Limelight AprilTag simulation** — simulated vision pose estimates
+
+---
+
+## Setup
+
+<Steps>
+
+### Install WPILib
+
+Download the [WPILib installer](https://docs.wpilib.org/en/stable/docs/zero-to-robot/step-2/wpilib-setup.html). This gives you:
+- **WPILib VS Code** (a special VS Code build with FRC extensions)
+- **AdvantageScope** (3D visualization)
+- Java, Gradle, and all FRC vendor deps
+
+### Get the Code
+
+Clone the repo (if you haven't already):
+
+**GitKraken:** Open [GitKraken](https://www.gitkraken.com/) and clone `https://github.com/feds201/feds-central.git`.
+
+**Git CLI:**
+```bash
+git clone https://github.com/feds201/feds-central.git
+```
+
+If you already have the repo, pull the latest changes.
+
+### Open in WPILib VS Code
+
+Open this year's robot project in **WPILib VS Code** (not regular VS Code). For 2026, that's `robot/2026-rebuilt/`.
+
+</Steps>
+
+---
+
+## Run the Sim
+
+You can launch the simulator from the terminal or from VS Code.
+
+**Terminal:**
+```bash
+cd robot/2026-rebuilt
+./gradlew simulateJava
+```
+
+**VS Code (menu):**
+1. Click the **three-dot menu (···)** in the top-right of the WPILib sidebar (or the WPILib icon in the top-right corner)
+2. Select **"Simulate Robot Code"**
+3. Choose **"Sim GUI"**
+
+**VS Code (command palette):**
+1. `Ctrl+Shift+P` → type **"WPILib"**
+2. Select **"Simulate Robot Code"**
+3. Choose **"Sim GUI"**
+
+Either way, a **WPILib simulation GUI** window will open. Don't close it — you'll need it in a moment.
+
+<Callout type="info">
+First build takes a while (downloading deps + compiling). Subsequent runs are much faster.
+After launching, **wait ~30 seconds** for the sim to fully initialize before doing anything.
+</Callout>
+
+---
+
+## Set Up the Sim GUI
+
+In the **WPILib simulation GUI** that opened:
+
+1. **Connect a controller:**
+   - **Xbox / gamepad:** Plug it in — it should appear automatically
+   - **No controller?** Drag **"Keyboard 0"** onto **"Joystick 0"**
+2. Click **"Teleoperated"** to enable the robot
+
+---
+
+## Set Up AdvantageScope
+
+1. Open **AdvantageScope** (installed with WPILib)
+2. Connect via **NetworkTables 4 (AdvantageKit)**
+3. Click the **+** button (top right) → select **3D Field**
+4. In the bottom-right **Field** section, select this year's game
+5. **Add the robot:**
+   - In the left panel, expand `RealOutputs` → `Sim` → `Drivetrain`
+   - Drag `Pose3d` into the **Poses** section (bottom center)
+   - From the dropdown, select a robot model (use **KitBot** for now — instructions for adding our real robot model coming soon)
+6. **Add game pieces (2026 example — "Fuel" is the REBUILT ball):**
+   - In the left panel, find `RealOutputs` → `Sim` → `GamePieces` → `Fuel`
+   - Drag it into the **Poses** section
+   - From the dropdown, select **Game Pieces → Fuel**
+
+You should now see the field, robot, and game pieces rendered in 3D.
+
+---
+
+## Drive!
+
+<Callout type="info">
+**2026 REBUILT Controls** — as of Feb 26, 2026
+
+| Key | Action |
+|-----|--------|
+| `W` `A` `S` `D` | Drive (forward / strafe left / back / strafe right) |
+| `Q` / `E` | Rotate left / right |
+| `[` | Run feeder / spindexer |
+| `]` | Shoot |
+| `;` / `'` | Change shooter angle (down / up) |
+| `,` / `.` | Retract / extend intake |
+| `/` | Run intake rollers |
+
+</Callout>
+
+---
+
+## Useful Flags
+
+### Save Log Files (`simLogging`)
+
+By default, the sim doesn't write `.wpilog` files. To enable logging (useful for SysID characterization or offline analysis):
+
+```bash
+./gradlew simulateJava -PsimLogging=true
+```
+
+Logs are saved to the `logs/` directory.
+
+### Simulation Speed
+
+The sim runs in real-time by default. The speed multiplier is set in `RebuiltSimManager.java`:
+
+```java
+SimulatedArena.overrideSimulationTimings(Seconds.of(DT), 1);
+//                                                        ^ change this
+```
+
+Change the second argument to `2` for 2x speed, `5` for 5x, etc. (There's no command-line flag for this yet — see future improvements below.)
+
+---
+
+## Future Improvements
+
+- More realistic AprilTag sim (currently reports perfect odometry with fake detections)
+- Simulated ball detection for Limelight
+- Command-line flag for time speedup
+- More realistic intake (game pieces currently just disappear)
+- Magnus effect on shot balls
+- Better ramp physics (robot can't "fly off" yet)
+- Reduce ground physics jitter on settled balls
+- Faster initialization

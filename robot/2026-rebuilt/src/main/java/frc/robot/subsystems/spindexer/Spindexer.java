@@ -128,6 +128,10 @@ public void setVoltage(Voltage voltage)
   spindexerMotor.setControl(vOut.withOutput(voltage));
 }
 
+public spindexer_state getCurrentState() {
+  return currentState;
+}
+
 public void setState(spindexer_state state)
 {
   setVoltage(state.getVoltage());
