@@ -7,9 +7,6 @@ import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.led.LedsSubsystem;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N2  ;
-import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
@@ -18,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.units.Units;
 
 public class RollersSubsystem extends SubsystemBase {
@@ -25,14 +23,12 @@ public class RollersSubsystem extends SubsystemBase {
   private static RollersSubsystem instance;
   private RollerState currentState = RollerState.OFF;
   private final TalonFX motor;
-  private final LinearSystem<N2, N1, N2> plant;
-  private final DCMotorSim motorSim;
+  private DCMotorSim motorSim;
   LedsSubsystem leds = LedsSubsystem.getInstance();
-  // Visualization
-  private final Mechanism2d mech2d = new Mechanism2d(3, 3);
-  private final MechanismRoot2d mechRoot = mech2d.getRoot("RollerRoot", 1.5, 1.5);
-  private final MechanismLigament2d rollerLigament = mechRoot.append(
-      new MechanismLigament2d("Roller", 1, 0, 6, new Color8Bit(Color.kBlue)));
+  // Visualization (only initialized when running in sim)
+  private Mechanism2d mech2d;
+  private MechanismRoot2d mechRoot;
+  private MechanismLigament2d rollerLigament;
 
   public static RollersSubsystem getInstance() { 
   if (instance == null) {
@@ -47,10 +43,20 @@ public class RollersSubsystem extends SubsystemBase {
 
   private RollersSubsystem() {
     motor = new TalonFX(23, "rio");
-    plant = LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60(1), 0.001, 1.0);
+
+    if (RobotBase.isSimulation()) {
+      initSimulation();
+    }
+  }
+
+  private void initSimulation() {
+    var plant = LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60(1), 0.001, 1.0);
     motorSim = new DCMotorSim(plant, DCMotor.getKrakenX60(1));
-    
-    // Publish mechanism to SmartDashboard
+
+    mech2d = new Mechanism2d(3, 3);
+    mechRoot = mech2d.getRoot("RollerRoot", 1.5, 1.5);
+    rollerLigament = mechRoot.append(
+        new MechanismLigament2d("Roller", 1, 0, 6, new Color8Bit(Color.kBlue)));
     SmartDashboard.putData("Rollers Sim", mech2d);
   }
 
@@ -59,12 +65,18 @@ public class RollersSubsystem extends SubsystemBase {
     switch (targetState) {
       case ON:
         motor.set(0.1);
-        motorSim.setInput(0.1);
+        // Sim-only: forward input to physics model
+        if (motorSim != null) {
+          motorSim.setInput(0.1);
+        }
         leds.intakeSignal();
         break;
       case OFF:
         motor.stopMotor();
-        motorSim.setInput(0.0);
+        // Sim-only: forward input to physics model
+        if (motorSim != null) {
+          motorSim.setInput(0.0);
+        }
         break;
     }
   }

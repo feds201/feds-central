@@ -105,10 +105,18 @@ test {
 wpi.sim.addGui().defaultEnabled = true
 wpi.sim.addDriverstation()
 
+// Forward the -PsimLogging flag to the sim JVM as a system property.
+// This lets Robot.java check Boolean.getBoolean("simLogging") at runtime.
+// Usage:  ./gradlew simulateJava -PsimLogging=true
+project.tasks.withType(JavaExec).configureEach {
+    systemProperty 'simLogging', findProperty('simLogging') ?: 'false'
+}
+
 // Setting up my Jar File. In this case, adding all libraries into the main jar ('fat jar')
 // in order to make them all available at runtime. Also adding the manifest so WPILib
 // knows where to look for our Robot Class.
 jar {
+    dependsOn configurations.runtimeClasspath
     from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
     from('src') { into 'backup/src' }
     from('vendordeps') { into 'backup/vendordeps' }
