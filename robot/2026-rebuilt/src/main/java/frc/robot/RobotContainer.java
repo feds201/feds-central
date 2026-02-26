@@ -10,9 +10,9 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.RobotMap.DrivetrainConstants;
+import frc.robot.commands.swerve.HubDrive;
 import frc.robot.commands.swerve.TeleopSwerve;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.intake.RollersSubsystem;
@@ -41,6 +41,8 @@ public class RobotContainer {
   //Limelight naming conventions are based on physical inventory system, hence "limelight-two" and "limelight-five" represent our second and fifth limelights respectively.
   private final LimelightWrapper ll4 = new LimelightWrapper("limelight-two", true);
   private final LimelightWrapper ll3 = new LimelightWrapper("limelight-five", false);
+
+  private HubDrive hubDrive;
 
   private final CommandXboxController controller = new CommandXboxController(0);
 
@@ -77,8 +79,15 @@ public class RobotContainer {
 
   public RobotContainer() {
     ll4.getSettings().withImuMode(ImuMode.ExternalImu).save();
-    configureBindings();
+    if(Robot.isSimulation()){
+      configureBindingsSim();
+    } else {
+      configureBindings();
+    }
+    
     configureRootTests();
+    
+    hubDrive = new HubDrive(drivetrain, null);
   }
 
   public void updateLocalization() {
@@ -88,7 +97,19 @@ public class RobotContainer {
       ll3.updateLocalizationLimelight(drivetrain);
     }
   }
+  private void configureBindingsSim(){
+     // TODO: rm once shooter hood/wheels are tuned
+    controller.leftBumper().whileTrue(shooterSim.shootCommand());
+    controller.a().whileTrue(shooterSim.hoodDownCommand());
+    controller.b().whileTrue(shooterSim.hoodUpCommand());
+
+    // Default drive command: field-centric swerve with left stick + right stick rotation
+    drivetrain.setDefaultCommand(
+        new TeleopSwerve(drivetrain, controller));
+  }
+
   private void configureBindings() {
+
     controller.leftTrigger()
         .onTrue(intakeSubsystem.extendIntake().andThen(rollersSubsystem.RollersCommand(RollerState.ON)))
         .onFalse(rollersSubsystem.RollersCommand(RollerState.OFF));
@@ -105,22 +126,27 @@ public class RobotContainer {
         .whileTrue(rollersSubsystem.RollersCommand(RollerState.ON))
         .onFalse(rollersSubsystem.RollersCommand(RollerState.OFF));
 
-    controller.y().onTrue(
+    controller.povRight().whileTrue(
       Commands.sequence(
         shooterHood.setStateCommand(shooterhood_state.SHOOTING), 
         shooterWheels.setStateCommand(shooter_state.SHOOTING)
-      )
-    );
+      ).alongWith(hubDrive))
+    .onFalse(
+      Commands.sequence(
+        shooterHood.setStateCommand(shooterhood_state.OUT), 
+        shooterWheels.setStateCommand(shooter_state.IDLE)
+      ).alongWith(hubDrive)
+      );
 
-    // TODO: rm once shooter hood/wheels are tuned
-    controller.leftBumper().whileTrue(shooterSim.shootCommand());
-    controller.a().whileTrue(shooterSim.hoodDownCommand());
-    controller.b().whileTrue(shooterSim.hoodUpCommand());
-
-    controller.x().whileTrue(
+    controller.rightTrigger().and(hubDrive::pidAtSetpoint).and(shooterWheels::atSetpoint).whileTrue(
       Commands.sequence(
       feederSubsystem.setStateCommand(feeder_state.RUN),
       spinDexer.setStateCommand(spindexer_state.RUN)
+      )
+    ).onFalse(
+      Commands.sequence(
+      feederSubsystem.setStateCommand(feeder_state.STOP),
+      spinDexer.setStateCommand(spindexer_state.STOP)
       )
     );
 
