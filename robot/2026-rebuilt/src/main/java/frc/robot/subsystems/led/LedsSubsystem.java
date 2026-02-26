@@ -35,17 +35,17 @@ public class LedsSubsystem extends SubsystemBase {
 
 
   public enum LEDState {              
-    FALCON_DRIVE,       // Flashing Orange at 200ms
-    AIMED,             // When aimed should be fill solid Red
-    SHOOTING,            // Shooting should be blue coment kinda fast
-    CLIMBING,           // Rainbow         
-    ERROR_LL,                //Error limelight should be blink Limelight green at 200ms
-    ERROR_CAN,                //Error: CAN blink green and yellow at 400ms and should be altrnate
-    ERROR_JAMMING,                //Error: jamming should be blink scarlett at 200ms
-    ERROR_OTHER,
-    IDLE,
-    OFF,
-    STARTUP_TEST,             // Tests state for startup testing animation;
+    FALCON_DRIVE,                    // Flashing Orange at 200ms
+    AIMED,                          // When aimed should be fill solid Red
+    SHOOTING,                      // Shooting should be blue coment kinda fast
+    CLIMBING,                     // Rainbow         
+    ERROR_LL,                    //Error limelight should be blink Limelight green at 200ms
+    ERROR_CAN,                  //Error: CAN blink green and yellow at 400ms and should be altrnate
+    ERROR_JAMMING,             //Error: jamming should be blink scarlett at 200ms
+    ERROR_OTHER,              // blink pruple at 200ms
+    IDLE,                    // Default state, should be solid yellow when disabled, solid red in auto, and blinking yellow in teleop
+    OFF,                    // All LEDs off   
+    STARTUP_TEST,          // Tests state for startup testing animation;
 
 
                //Error: other should blink purple at 200ms
@@ -75,11 +75,14 @@ public class LedsSubsystem extends SubsystemBase {
 
   // Colors
   private static final Color COLOR_ORANGE = new Color(new Color8Bit(255, 100, 0));
-  private static final Color COLOR_GREEN = new Color(new Color8Bit(0, 255, 0));
+  private static final Color COLOR_LL = new Color(new Color8Bit(102,191,13));
   private static final Color COLOR_RED = new Color(new Color8Bit(255, 0, 0));
   private static final Color COLOR_WHITE = new Color(new Color8Bit(255, 255, 255));
   private static final Color COLOR_YELLOW = new Color(new Color8Bit(255, 255, 0));
-  private static final Color COLOR_FEDS_BLUE = new Color(new Color8Bit(0, 168, 255)); // Team color
+  private static final Color COLOR_GREEN = new Color(new Color8Bit(0, 255, 0));
+  private static final Color COLOR_FEDS_BLUE = new Color(new Color8Bit(0, 255, 255));
+  private static final Color COLOR_SCARLET = new Color(new Color8Bit(100, 14, 0));
+  private static final Color COLOR_PURPLE = new Color(new Color8Bit(128, 0, 128));
 
   /** Creates a new LedsSubsystem. */
   public LedsSubsystem() {
@@ -196,13 +199,50 @@ public class LedsSubsystem extends SubsystemBase {
             .RunOnce(false);
         break;
         
-      // case ERROR:
-      //     m_leds.leds.SetAnimation(Animation.Blink)
-      //       .ForGroup(GR_300)
-      //       .WithColor(COLOR_RED)
-      //       .WithDelay(Units.Milliseconds.of(100))
-      //       .RunOnce(false);
-      //   break;
+      case ERROR_LL:
+          m_leds.leds.SetAnimation(Animation.Comet)
+            .ForGroup(GR_300)
+            .WithColor(COLOR_LL)
+            .WithDelay(Units.Milliseconds.of(100))
+            .RunOnce(false);
+        break;
+
+        case ERROR_CAN:
+          m_leds.leds.SetAnimation(Animation.Comet)
+            .ForZone(ZONE_1)
+            .WithColor(COLOR_YELLOW)
+            .ForGroup(ZONE_2)
+            .WithColor(COLOR_GREEN)
+            .ForZone(ZONE_3)
+            .WithColor(COLOR_YELLOW)
+            .ForZone(ZONE_4)
+            .WithColor(COLOR_GREEN)
+            .ForZone(ZONE_5)
+            .WithColor(COLOR_YELLOW)
+            .ForZone(ZONE_6)
+            .WithColor(COLOR_GREEN)
+            .WithDelay(Units.Milliseconds.of(100))
+            .RunOnce(false);
+        break;
+
+
+        case ERROR_JAMMING:
+          m_leds.leds.SetAnimation(Animation.Blink)
+            .ForGroup(GR_300)
+            .WithColor(COLOR_SCARLET)
+            .WithDelay(Units.Milliseconds.of(200))
+            .RunOnce(false);
+        break;
+
+        case ERROR_OTHER:
+          m_leds.leds.SetAnimation(Animation.Blink)
+            .ForGroup(GR_300)
+            .WithColor(COLOR_PURPLE)
+            .WithDelay(Units.Milliseconds.of(200))
+            .RunOnce(false);
+        break;
+
+
       case STARTUP_TEST:
         m_leds.leds.SetAnimation(Animation.Blink)
             .ForGroup(GR_300)
