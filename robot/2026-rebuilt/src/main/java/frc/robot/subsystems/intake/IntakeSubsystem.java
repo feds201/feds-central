@@ -19,30 +19,27 @@ import edu.wpi.first.wpilibj.simulation.DIOSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
+import edu.wpi.first.wpilibj.RobotBase;
 
 public class IntakeSubsystem extends SubsystemBase {
 
-  private TalonFX motor;
+  private final TalonFX motor;
   private final DigitalInput limit_switch_r;
   private final DigitalInput limit_switch_l;
   private final RollersSubsystem rollers; 
+  private final SysIdRoutine sysID;
   private final double wheelRadius = 2.0; 
   private final double extendedLength = 14.43; 
 
-  // Simulation
-  private final DCMotorSim motorSim;
-  private final DIOSim limitSwitchRSim;
-  private final DIOSim limitSwitchLSim;
-   private SysIdRoutine sysID;
-  
-  // Visualization
-  private final Mechanism2d mech2d = new Mechanism2d(3, 3);
-  private final MechanismRoot2d mechRoot = mech2d.getRoot("IntakeRoot", 1.5, 1.5);
-  private final MechanismLigament2d intakeLigament = mechRoot.append(
-      new MechanismLigament2d("Intake", 1, 90, 6, new Color8Bit(Color.kOrange)));
+  // Simulation + Visualization values (only initialized when running in sim, can't be final)
+  private DCMotorSim motorSim;
+  private DIOSim limitSwitchRSim;
+  private DIOSim limitSwitchLSim;
+  private Mechanism2d mech2d;
+  private MechanismRoot2d mechRoot;
+  private MechanismLigament2d intakeLigament;
 
   public enum IntakeState {
     EXTENDED, 
@@ -96,17 +93,25 @@ public class IntakeSubsystem extends SubsystemBase {
         .angularPosition(motor.getPosition().asSupplier().get());
       }, this));
 
-    // Simulation Setup
+    if (RobotBase.isSimulation()) {
+      initSimulation();
+    }
+  }
+
+  private void initSimulation() {
     var intakePlant = LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60(1), 0.004, 100.0);
-    motorSim = new DCMotorSim(intakePlant, DCMotor.getKrakenX60(1)); 
+    motorSim = new DCMotorSim(intakePlant, DCMotor.getKrakenX60(1));
     limitSwitchRSim = new DIOSim(limit_switch_r);
     limitSwitchLSim = new DIOSim(limit_switch_l);
-    
+
     // Default limit switch state (True = Not Pressed for most switches)
     limitSwitchRSim.setValue(true);
     limitSwitchLSim.setValue(true);
 
-    SmartDashboard.putData("Intake Sim", mech2d);
+    mech2d = new Mechanism2d(3, 3);
+    mechRoot = mech2d.getRoot("IntakeRoot", 1.5, 1.5);
+    intakeLigament = mechRoot.append(
+        new MechanismLigament2d("Intake", 1, 90, 6, new Color8Bit(Color.kOrange)));
   }
 
   @Override

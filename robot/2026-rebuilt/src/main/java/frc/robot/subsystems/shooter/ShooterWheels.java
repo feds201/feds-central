@@ -62,13 +62,13 @@ public class ShooterWheels extends SubsystemBase {
   /** Creates a new Shooter. */
   public ShooterWheels(CommandSwerveDrivetrain dt) {
     this.dt = dt;
-    shooterLeader = new TalonFX(ShooterConstants.kShooterLeaderId);
-    shooterFollower1 = new TalonFX(ShooterConstants.kShooterFollower1Id);
-    shooterFollower2 = new TalonFX(ShooterConstants.kShooterFollower2Id);
-    shooterFollower3 = new TalonFX(ShooterConstants.kShooterFollower3Id);
-    shooterFollower1.setControl(new Follower(shooterLeader.getDeviceID(), MotorAlignmentValue.Aligned));
+    shooterLeader = new TalonFX(ShooterConstants.ShooterRightTop);
+    shooterFollower1 = new TalonFX(ShooterConstants.ShooterBottomLeft);
+    shooterFollower2 = new TalonFX(ShooterConstants.ShooterRightBottom);
+    shooterFollower3 = new TalonFX(ShooterConstants.ShooterTopLeft);
+    shooterFollower1.setControl(new Follower(shooterLeader.getDeviceID(), MotorAlignmentValue.Opposed));
     shooterFollower2.setControl(new Follower(shooterLeader.getDeviceID(), MotorAlignmentValue.Aligned));
-    shooterFollower3.setControl(new Follower(shooterLeader.getDeviceID(), MotorAlignmentValue.Aligned));
+    shooterFollower3.setControl(new Follower(shooterLeader.getDeviceID(), MotorAlignmentValue.Opposed));
     motionMagicControl = new MotionMagicVelocityVoltage(0.0);
 
     m_flywheelSysId = new SysIdRoutine(
