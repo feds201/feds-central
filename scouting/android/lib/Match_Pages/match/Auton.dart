@@ -212,9 +212,10 @@ class AutonState extends State<Auton> {
 
               UpdateData();
             },
+            //resets the total shooting cycle and timer time
             doChangeResetter: () {
               setState(() {
-                amount = 0;
+                amount = 67;
                 shootingTime = 0.0;
               });
               UpdateData();

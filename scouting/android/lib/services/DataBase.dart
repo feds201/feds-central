@@ -1051,7 +1051,6 @@ class EndPoints {
   int EndNeutralTrips =0;
   int ShootingAccuracy;
   double endgameTime;
-  int endgameActions;
   String Comments = '';
   List<int> drawingData = [];
 
@@ -1064,8 +1063,7 @@ class EndPoints {
     this.EndNeutralTrips,
     this.ShootingAccuracy,
     this.endgameTime,
-    this.endgameActions,
-    this.drawingData,
+      this.drawingData,
   );
 
   Map<String, dynamic> toJson() {
@@ -1077,7 +1075,6 @@ class EndPoints {
       "EndNeutralTrips": EndNeutralTrips,
       "ShootingAccuracy": ShootingAccuracy,
       "endgameTime": endgameTime,
-      "endgameActions": endgameActions,
       "Comments": Comments,
       "DrawingData": drawingData,
     };
@@ -1093,7 +1090,6 @@ class EndPoints {
       json['EndNeutralTrips'] ?? 0,
       (json['ShootingAccuracy'] as int?) ?? 3,
       (json['endgameTime'] ?? 0.0).toDouble(),
-      json['endgameActions'] ?? 0,
       // Handle both list and legacy string/migration
       (json['DrawingData'] is List) ? List<int>.from(json['DrawingData']) : [],
     );
@@ -1101,11 +1097,11 @@ class EndPoints {
 
   @override
   String toString() {
-    return 'EndPoints{ClimbStatus: $ClimbStatus, Park: $Park, FeedToHP: $FeedToHP, Passing: $Passing, EndNeutralTrips: $EndNeutralTrips, ShootingAccuracy: $ShootingAccuracy, endgameTime: $endgameTime, endgameActions: $endgameActions, Comments: $Comments, DrawingData: $drawingData}';
+    return 'EndPoints{ClimbStatus: $ClimbStatus, Park: $Park, FeedToHP: $FeedToHP, Passing: $Passing, EndNeutralTrips: $EndNeutralTrips, ShootingAccuracy: $ShootingAccuracy, endgameTime: $endgameTime, Comments: $Comments, DrawingData: $drawingData}';
   }
 
   String toCsv() {
-    return '$ClimbStatus,${Park ? 1 : 0},${FeedToHP ? 1 : 0},${Passing ? 1 : 0},$EndNeutralTrips, $ShootingAccuracy,$endgameActions,$Comments,$drawingData';
+    return '$ClimbStatus,${Park ? 1 : 0},${FeedToHP ? 1 : 0},${Passing ? 1 : 0},$EndNeutralTrips, $ShootingAccuracy,$Comments,$drawingData';
   }
 
   String _encodeDrawingData() {
@@ -1311,7 +1307,6 @@ class LocalDataBase {
       data['EndNeutralTrips'] ?? 0,
       data['ShootingAccuracy'] ?? 3,
       (data['EndgameTime'] ?? 0).toDouble(),
-      data['EndgameActions'] ?? 0,
       (data['DrawingData'] is List) ? List<int>.from(data['DrawingData']) : [],
     );
   }

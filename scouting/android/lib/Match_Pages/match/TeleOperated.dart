@@ -508,12 +508,6 @@ class _TeleOperatedState extends State<TeleOperated> {
   Widget _buildInactive1Phase() {
     return Column(
       children: [
-        buildCounterFull("Neutral Trips", neutralTripsI1, (int value) {
-          setState(() {
-            neutralTripsI1 = value;
-          });
-          UpdateData();
-        }, color: Colors.yellow),
         SizedBox(height: 8),
         buildCheckBoxFull("Shooting", shootingI1, (bool value) {
           setState(() {

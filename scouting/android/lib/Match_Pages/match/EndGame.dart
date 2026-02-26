@@ -75,7 +75,7 @@ class EndGameState extends State<EndGame> {
     neutralTrips = widget.matchRecord.endPoints.EndNeutralTrips;
     shootingAccuracy = widget.matchRecord.endPoints.ShootingAccuracy;
     endgameTime = widget.matchRecord.endPoints.endgameTime;
-    endgameActions = widget.matchRecord.endPoints.endgameActions;
+    endgameActions = 0;
     drawingData = widget.matchRecord.endPoints.drawingData;
   }
 
@@ -94,7 +94,6 @@ class EndGameState extends State<EndGame> {
 
     // Timer and endgame actions
     widget.matchRecord.endPoints.endgameTime = endgameTime;
-    widget.matchRecord.endPoints.endgameActions = endgameActions;
     widget.matchRecord.endPoints.drawingData = drawingData;
 
     endPoints = widget.matchRecord.endPoints;
