@@ -11,12 +11,12 @@ import java.util.function.Supplier;
 
 /**
  * Robot-relative bounding box for counter-based intake.
- * Each tick: checks if any piece overlaps the zone + rollers are active
+ * Each tick: checks if any piece overlaps the zone and the robot can intake
  * + counter is below max → removes the piece and increments the counter.
  */
 public class IntakeZone {
     private final double xMin, xMax, yMin, yMax, zMax;
-    private final BooleanSupplier rollersActive;
+    private final BooleanSupplier canIntake;
     private final Supplier<Pose2d> robotPoseSupplier;
 
     /**
@@ -25,17 +25,17 @@ public class IntakeZone {
      * @param yMin  robot-relative Y min (left = +Y)
      * @param yMax  robot-relative Y max
      * @param zMax  max height for intake (balls above this are ignored)
-     * @param rollersActive  supplier returning true when intake rollers are spinning
+     * @param canIntake  supplier returning true when the robot is ready to intake game pieces
      * @param robotPoseSupplier  supplier of current robot 2D pose
      */
     public IntakeZone(double xMin, double xMax, double yMin, double yMax, double zMax,
-                      BooleanSupplier rollersActive, Supplier<Pose2d> robotPoseSupplier) {
+                      BooleanSupplier canIntake, Supplier<Pose2d> robotPoseSupplier) {
         this.xMin = xMin;
         this.xMax = xMax;
         this.yMin = yMin;
         this.yMax = yMax;
         this.zMax = zMax;
-        this.rollersActive = rollersActive;
+        this.canIntake = canIntake;
         this.robotPoseSupplier = robotPoseSupplier;
     }
 
@@ -48,7 +48,7 @@ public class IntakeZone {
      * @return number of pieces consumed this tick
      */
     public int checkIntake(GamePieceManager manager, List<GamePiece> pieces) {
-        if (!rollersActive.getAsBoolean()) return 0;
+        if (!canIntake.getAsBoolean()) return 0;
 
         Pose2d robotPose = robotPoseSupplier.get();
         int consumed = 0;

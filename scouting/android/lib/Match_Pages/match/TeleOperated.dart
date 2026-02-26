@@ -169,6 +169,10 @@ class _TeleOperatedState extends State<TeleOperated> {
     );
 
     widget.matchRecord.teleOpPoints.Defense = defense;
+    widget.matchRecord.teleOpPoints.DefenseA1 = defenseA1;
+    widget.matchRecord.teleOpPoints.DefenseA2 = defenseA2;
+    widget.matchRecord.teleOpPoints.DefenseI1 = defenseI1;
+    widget.matchRecord.teleOpPoints.DefenseI2 = defenseI2;
     widget.matchRecord.teleOpPoints.TotalShootingTime1 = shootingTime1;
     widget.matchRecord.teleOpPoints.TotalShootingTimeA1 = shootingTimeA1;
     widget.matchRecord.teleOpPoints.TotalShootingTimeA2 = shootingTimeA2;
