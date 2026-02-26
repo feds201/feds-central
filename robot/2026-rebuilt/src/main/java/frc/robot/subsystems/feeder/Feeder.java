@@ -110,16 +110,21 @@ public class Feeder extends SubsystemBase {
     return currentState.getVoltage();
   }
 
-public feeder_state getCurrentState() {
-  return currentState;
-}
+  // subsystem setters
+  public void setVoltage(Voltage voltage) {
+    spindexerMotor.setControl(vOut.withOutput(voltage));
+  }
 
-public void setState(feeder_state state)
-{
-  setVoltage(state.getVoltage());
-  currentState = state;
-}
-public Command setStateCommand(feeder_state state) {
+  public void setState(feeder_state state) {
+    setVoltage(state.getVoltage());
+    currentState = state;
+  }
+
+  public feeder_state getCurrentState() {
+    return currentState;
+  }
+
+  public Command setStateCommand(feeder_state state) {
     return runOnce(() -> setState(state));
   }
 
