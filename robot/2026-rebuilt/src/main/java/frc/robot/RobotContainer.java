@@ -78,8 +78,6 @@ public class RobotContainer {
   private RebuiltSimManager simManager;
 
   private final RootTestingUtility rootTester = new RootTestingUtility();
-  private final LimelightWrapper ll4 = new LimelightWrapper("limelight-four-localization");
-  private final LimelightWrapper ll3 = new LimelightWrapper("limelight-three-localization");
   private final SendableChooser<Command> autoChooser;
 
 
@@ -171,11 +169,9 @@ public class RobotContainer {
       simManager.periodic();
     }
   }
-    LimelightWrapper.updateLocalizationLimelight(ll3, false, drivetrain);
-    LimelightWrapper.updateLocalizationLimelight(ll4, true, drivetrain);
-  }
+    
   
-  private void configureBindings() {}
+  
 
   public Command getAutonomousCommand() {
     return autoChooser.getSelected();
