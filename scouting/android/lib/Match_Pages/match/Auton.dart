@@ -30,7 +30,7 @@ class AutonState extends State<Auton> {
   late String winAfterAuton;
   late double shootingTime;
   late AutonPoints autonPoints;
-  late int amount = 0;
+  late int amount;
   late String assignedTeam;
   late int assignedStation;
   late String matchKey;
@@ -72,8 +72,6 @@ class AutonState extends State<Auton> {
     winAfterAuton = widget.matchRecord.autonPoints.winAfterAuton;
     shootingTime = widget.matchRecord.autonPoints.total_shooting_time;
     amount = widget.matchRecord.autonPoints.amountOfShooting;
-    left_startingLocation = false;
-
     autonPoints = AutonPoints(depot, outPost, zone, shootingTime, amount,
         autoClimb, winAfterAuton, startingBotLocations, left_startingLocation);
   }
