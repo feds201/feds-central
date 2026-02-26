@@ -9,8 +9,9 @@ import {Callout} from 'nextra/components';
 The **Root Testing Utility** is an automated test harness built for the 2026 REBUILT robot that discovers and runs test methods on every registered subsystem when the robot enters **Test mode** in the Driver Station. Instead of manually checking each motor, sensor, and mechanism before a match, the utility scans your subsystems for annotated methods, executes them in order, and reports pass/fail results to the console, AdvantageKit logs, and a live web dashboard.
 
 <Callout type="info">
-    This system was introduced during the 2026 REBUILT season. Robot projects before 2026 do not have this testing framework.
-    The full source lives in `robot/2026-rebuilt/src/main/java/frc/robot/utils/`.
+    This system was introduced during the 2026 REBUILT season and is now published as a **standalone reusable library** at
+    `robot/robot-testing-utility/` in the mono-repo. Any robot project — including future seasons — can add it as a Gradle dependency.
+    See **Installing the Package** below.
 </Callout>
 
 ---
@@ -64,6 +65,34 @@ Robot.java                    RobotContainer.java
                               │ 4. diagServer.update()│ ◄─ updates HTTP dashboard
                               └──────────────────────┘
 ```
+
+---
+
+## Installing the Package
+
+The RTU is a standalone Gradle library at `robot/robot-testing-utility/` in the mono-repo.
+Add it to any robot project in two steps:
+
+**`settings.gradle`** — declare the project path:
+```groovy
+include ':robot-testing-utility'
+project(':robot-testing-utility').projectDir = new File(settingsDir, '../robot-testing-utility')
+```
+
+**`build.gradle`** — add the dependency:
+```groovy
+dependencies {
+    implementation project(':robot-testing-utility')
+}
+```
+
+<Callout type="tip">
+    Don't want to use the mono-repo path? Download the prebuilt JAR from the **[GitHub Releases](https://github.com/feds201/feds-central/releases)** page
+    (tags matching `rtu/v*`) and drop it in your project's `libs/` folder:
+    ```groovy
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    ```
+</Callout>
 
 ---
 
@@ -482,8 +511,8 @@ Here's a step-by-step guide for adding automated tests to a new or existing subs
 ### Step 1: Import the Annotation
 
 ```java
-import frc.robot.utils.RobotAction;
-import frc.robot.utils.DiagnosticContext; // only if you want alerts/profiling
+import frc.rtu.RobotAction;
+import frc.rtu.DiagnosticContext; // only if you want alerts/profiling
 ```
 
 ### Step 2: Write Test Methods
@@ -595,18 +624,19 @@ Here are some test ideas based on the 2026 REBUILT robot's subsystems:
 
 ## Class Reference
 
-All classes are located in `robot/2026-rebuilt/src/main/java/frc/robot/utils/`:
+All RTU core classes are in `robot/robot-testing-utility/src/main/java/frc/rtu/` (standalone package).
+The `SubsystemStatusManager`, `DeviceTempReporter`, and `SwerveModuleStatusUtil` utilities remain in the robot project itself.
 
-| File | Class | Lines | Description |
+| File | Package | Class | Description |
 |---|---|---|---|
-| `RobotAction.java` | `@RobotAction` | ~40 | Annotation for marking test methods |
-| `RootTestingUtility.java` | `RootTestingUtility` | ~360 | Discovery, execution, and reporting engine |
-| `TestResult.java` | `TestResult` | ~135 | Immutable result record with alerts and data profiles |
-| `DiagnosticContext.java` | `DiagnosticContext` | ~117 | Mutable context for recording alerts and samples |
-| `DiagnosticServer.java` | `DiagnosticServer` | ~318 | Embedded HTTP dashboard with Chart.js visualization |
-| `SubsystemStatusManager.java` | `SubsystemStatusManager` | ~150 | Continuous CAN device health monitoring via Shuffleboard |
-| `DeviceTempReporter.java` | `DeviceTempReporter` | ~75 | Motor temperature tracking via Shuffleboard |
-| `SwerveModuleStatusUtil.java` | `SwerveModuleStatusUtil` | ~40 | Swerve module registration convenience wrapper |
+| `RobotAction.java` | `frc.rtu` | `@RobotAction` | Annotation for marking test methods |
+| `RootTestingUtility.java` | `frc.rtu` | `RootTestingUtility` | Discovery, execution, and reporting engine |
+| `TestResult.java` | `frc.rtu` | `TestResult` | Immutable result record with alerts and data profiles |
+| `DiagnosticContext.java` | `frc.rtu` | `DiagnosticContext` | Mutable context for recording alerts and samples |
+| `DiagnosticServer.java` | `frc.rtu` | `DiagnosticServer` | Embedded HTTP dashboard with Chart.js visualization |
+| `SubsystemStatusManager.java` | `frc.robot.utils` | `SubsystemStatusManager` | Continuous CAN device health monitoring via Shuffleboard |
+| `DeviceTempReporter.java` | `frc.robot.utils` | `DeviceTempReporter` | Motor temperature tracking via Shuffleboard |
+| `SwerveModuleStatusUtil.java` | `frc.robot.utils` | `SwerveModuleStatusUtil` | Swerve module registration convenience wrapper |
 
 ---
 

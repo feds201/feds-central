@@ -6,8 +6,6 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -22,31 +20,29 @@ import frc.robot.subsystems.feeder.Feeder.feeder_state;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterHood;
 import frc.robot.subsystems.shooter.ShooterWheels;
-import frc.robot.subsystems.shooter.ShooterHood.shooterhood_state;
-import frc.robot.subsystems.shooter.ShooterWheels.shooter_state;
-import frc.robot.subsystems.spindexer.Spindexer;
-import frc.robot.subsystems.spindexer.Spindexer.spindexer_state;
+import frc.robot.subsystems.testing.TestingSubsystem;
 import frc.robot.sim.RebuiltSimManager;
 import org.littletonrobotics.junction.Logger;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.utils.LimelightWrapper;
-import frc.robot.utils.RTU.RootTestingUtility;
+import frc.rtu.RootTestingUtility;
 import limelight.networktables.LimelightSettings.ImuMode;
 
 public class RobotContainer {
-  
+
   private final CommandSwerveDrivetrain drivetrain = DrivetrainConstants.createDrivetrain();
-  //Limelight naming conventions are based on physical inventory system, hence "limelight-two" and "limelight-five" represent our second and fifth limelights respectively.
+  // Limelight naming conventions are based on physical inventory system, hence
+  // "limelight-two" and "limelight-five" represent our second and fifth
+  // limelights respectively.
   private final LimelightWrapper ll4 = new LimelightWrapper("limelight-two", true);
   private final LimelightWrapper ll3 = new LimelightWrapper("limelight-five", false);
 
   private final CommandXboxController controller = new CommandXboxController(0);
 
-
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
-  
+
   private final RollersSubsystem rollersSubsystem = RollersSubsystem.getInstance();
 
   private final Feeder feederSubsystem = new Feeder();
@@ -56,18 +52,16 @@ public class RobotContainer {
   private final ShooterHood shooterHood = new ShooterHood(drivetrain);
   private final ShooterWheels shooterWheels = new ShooterWheels(drivetrain);
 
-  // Local testing subsystem (contains @RobotAction tests used by RootTestingUtility)
-  // private final TestingSubsystem testingSubsystem = new TestingSubsystem();
-
-  private final Spindexer spinDexer = new Spindexer();
- 
+  // TODO: implement this for real (was just added to enable simulation)
+  private final Intake intake = new Intake();
+  // Local testing subsystem (contains @RobotAction tests used by
+  // RootTestingUtility)
+  private final TestingSubsystem testingSubsystem = new TestingSubsystem();
 
   // TODO: implement this for real (was just added to enable simulation)
   // Swerve drive requests
   private final SwerveRequest.FieldCentric fieldCentric = new SwerveRequest.FieldCentric();
-  // TODO: implement this for real (was just added to enable simulation)
   private final double MAX_SPEED = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
-  // TODO: implement this for real (was just added to enable simulation)
   private final double MAX_ANGULAR_RATE = Math.PI * 2; // rad/s
 
   // Simulation
@@ -88,7 +82,17 @@ public class RobotContainer {
       ll3.updateLocalizationLimelight(drivetrain);
     }
   }
+
   private void configureBindings() {
+    // controller.a()
+    // .onTrue(IntakeSubsystem.dyanmicCommand(Direction.kReverse));
+    // controller.b()
+    // .onTrue(IntakeSubsystem.dyanmicCommand(Direction.kForward));
+    // controller.x()
+    // .onTrue(IntakeSubsystem.quatsiCommand(Direction.kReverse));
+    // controller.y()
+    // .onTrue(IntakeSubsystem.quatsiCommand(Direction.kForward));
+
     controller.leftTrigger()
         .onTrue(intakeSubsystem.extendIntake().andThen(rollersSubsystem.RollersCommand(RollerState.ON)))
         .onFalse(rollersSubsystem.RollersCommand(RollerState.OFF));
@@ -96,7 +100,16 @@ public class RobotContainer {
     controller.leftBumper()
         .onTrue(intakeSubsystem.retractIntake());
 
-    // Default drive command: field-centric swerve with left stick + right stick rotation
+    // controller.x()
+    // .onTrue((leds.intakeSignal())).onFalse(leds.climbingSignal());
+
+    // controller.y()
+    // .onTrue(rollers.RollersCommand(RollerState.ON))
+    // .onFalse(rollers.RollersCommand(RollerState.OFF));
+
+    // TODO: implement this for real (was just added to enable simulation)
+    // Default drive command: field-centric swerve with left stick + right stick
+    // rotation
     drivetrain.setDefaultCommand(
         new TeleopSwerve(drivetrain, controller));
 
@@ -106,11 +119,9 @@ public class RobotContainer {
         .onFalse(rollersSubsystem.RollersCommand(RollerState.OFF));
 
     controller.y().onTrue(
-      Commands.sequence(
-        shooterHood.setStateCommand(shooterhood_state.SHOOTING), 
-        shooterWheels.setStateCommand(shooter_state.SHOOTING)
-      )
-    );
+        Commands.sequence(
+            shooterHood.setStateCommand(shooterhood_state.SHOOTING),
+            shooterWheels.setStateCommand(shooter_state.SHOOTING)));
 
     // TODO: rm once shooter hood/wheels are tuned
     controller.leftBumper().whileTrue(shooterSim.shootCommand());
@@ -118,17 +129,11 @@ public class RobotContainer {
     controller.b().whileTrue(shooterSim.hoodUpCommand());
 
     controller.x().whileTrue(
-      Commands.sequence(
-      feederSubsystem.setStateCommand(feeder_state.RUN),
-      spinDexer.setStateCommand(spindexer_state.RUN)
-      )
-    );
+        Commands.sequence(
+            feederSubsystem.setStateCommand(feeder_state.RUN),
+            spinDexer.setStateCommand(spindexer_state.RUN)));
 
   }
-
- 
-  
-
 
   /** Called from Robot.simulationInit(). */
   public void initSimulation() {
@@ -151,7 +156,6 @@ public class RobotContainer {
       Logger.recordOutput("Sim/Enabled", false);
       simManager = null;
     }
-    drivetrain.resetPose(new Pose2d(.5, .5, new Rotation2d(0)));
   }
 
   /** Called from Robot.simulationPeriodic(). */
@@ -174,10 +178,11 @@ public class RobotContainer {
   private void configureRootTests() {
     rootTester.registerSubsystem(
         intakeSubsystem,
-        shooterSim
-    // testingSubsystem
-        // Add more subsystems here as they're wired in:
-        // feeder, climber, spindexer, etc.
+        shooter,
+        intake,
+        testingSubsystem
+    // Add more subsystems here as they're wired in:
+    // feeder, climber, spindexer, etc.
     );
 
     rootTester.setSafetyCheck(() -> {
@@ -188,7 +193,8 @@ public class RobotContainer {
       // Primary start command: both triggers held past threshold
       boolean triggersOk = controller.getLeftTriggerAxis() >= 0.5 && controller.getRightTriggerAxis() >= 0.5;
 
-      // Alternate start command: X + Y buttons pressed simultaneously (convenience for some controllers)
+      // Alternate start command: X + Y buttons pressed simultaneously (convenience
+      // for some controllers)
       boolean xyOk = controller.getHID().getXButton() && controller.getHID().getYButton();
 
       if (!triggersOk && !xyOk) {
