@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.LimelightHelpers;
-
+import frc.robot.RobotContainer;
 
 public class LedsSubsystem extends SubsystemBase {
   public ConnectorXAnimate m_leds = new ConnectorXAnimate();
@@ -45,18 +45,21 @@ public class LedsSubsystem extends SubsystemBase {
     ERROR_OTHER,
     IDLE,
     OFF,
-    STARTUP;
+    STARTUP_TEST,             // Tests state for startup testing animation;
 
 
                //Error: other should blink purple at 200ms
                     
   }
 
+
+
   private LEDState m_currentState = LEDState.IDLE;
   private LEDState m_lastState = LEDState.OFF; // Force initial update
 
   private boolean m_wasDisabled = false;
   private boolean m_wasAuto = false;
+  private boolean m_isConnected = false;
 
   // Configuration
   private static final String ZONE_1 = "ZONE_50_1"; 
@@ -81,13 +84,15 @@ public class LedsSubsystem extends SubsystemBase {
   /** Creates a new LedsSubsystem. */
   public LedsSubsystem() {
     // Connect to the device on USB port 2
-    boolean connected = m_leds.Connect(USBPort.kUSB1);
-    System.out.println("ConnectorX connected: " + connected);
-    
-    // Initial State application will happen in periodic loop or manually here
+    m_isConnected = m_leds.Connect(USBPort.kUSB1);
+    System.out.println("ConnectorX connected: " + m_isConnected);
+     // Initial State application will happen in periodic loop or manually here
     // But periodic handles state change, so setting lastState to OFF calls applyState(IDLE) in first loop.
   }
 
+  public boolean isConnected() {
+    return m_isConnected;
+  }
 
   private LEDState checkForErrors() {
     // CAN errors
@@ -100,21 +105,25 @@ public class LedsSubsystem extends SubsystemBase {
       return LEDState.IDLE;
     }
 
-
-
   }
+
+  
   
 
   @Override
   public void periodic() {  
 
     LEDState errorState = checkForErrors();
-
+    
     if (errorState != null) {
       if (m_currentState != errorState) {
         m_currentState = errorState;
         applyState(m_currentState);
         m_lastState = m_currentState; // Update last state to prevent immediate override
+      }
+
+      else if (m_currentState == errorState) {
+        // Already in the correct error state, no need to re-apply
       }
       return; // Skip normal state handling if we're in an error state
     }
@@ -136,6 +145,7 @@ public class LedsSubsystem extends SubsystemBase {
     if (m_currentState != m_lastState) {
       applyState(m_currentState);
       m_lastState = m_currentState;
+
     }
 
   }
@@ -193,6 +203,13 @@ public class LedsSubsystem extends SubsystemBase {
       //       .WithDelay(Units.Milliseconds.of(100))
       //       .RunOnce(false);
       //   break;
+      case STARTUP_TEST:
+        m_leds.leds.SetAnimation(Animation.Blink)
+            .ForGroup(GR_300)
+            .WithColor(COLOR_ORANGE)
+            .WithDelay(Units.Milliseconds.of(10))
+            .RunOnce(true); // Run once for startup animation
+        break;
     }
   }
 

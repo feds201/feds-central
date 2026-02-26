@@ -17,6 +17,7 @@ import frc.robot.commands.swerve.TeleopSwerve;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.intake.RollersSubsystem;
 import frc.robot.subsystems.intake.RollersSubsystem.RollerState;
+import frc.robot.subsystems.led.LedsSubsystem;
 import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.subsystems.feeder.Feeder.feeder_state;
 import frc.robot.subsystems.shooter.Shooter;
@@ -35,6 +36,7 @@ import frc.robot.utils.LimelightWrapper;
 import frc.robot.utils.RTU.RootTestingUtility;
 import limelight.networktables.LimelightSettings.ImuMode;
 
+
 public class RobotContainer {
   
   private final CommandSwerveDrivetrain drivetrain = DrivetrainConstants.createDrivetrain();
@@ -50,6 +52,9 @@ public class RobotContainer {
   private final RollersSubsystem rollersSubsystem = RollersSubsystem.getInstance();
 
   private final Feeder feederSubsystem = new Feeder();
+
+  private final LedsSubsystem ledsSubsystem = LedsSubsystem.getInstance();
+
 
   // TODO: implement this for real (was just added to enable simulation)
   private final Shooter shooterSim = new Shooter();
@@ -74,6 +79,9 @@ public class RobotContainer {
   private RebuiltSimManager simManager;
 
   private final RootTestingUtility rootTester = new RootTestingUtility();
+
+    
+
 
   public RobotContainer() {
     ll4.getSettings().withImuMode(ImuMode.ExternalImu).save();
@@ -184,11 +192,16 @@ public class RobotContainer {
       if (!controller.getHID().isConnected()) {
         return "Joystick is not connected";
       }
-
+    
+      if (ledsSubsystem.isConnected()) {
+        return "LED subsystem is not connected";
+      }
+      
+      ledsSubsystem.setState(LedsSubsystem.LEDState.STARTUP_TEST);
       // Primary start command: both triggers held past threshold
       boolean triggersOk = controller.getLeftTriggerAxis() >= 0.5 && controller.getRightTriggerAxis() >= 0.5;
 
-      // Alternate start command: X + Y buttons pressed simultaneously (convenience for some controllers)
+      // Alternate start command: X + Y buttons presssed simultaneously (convenience for some controllers)
       boolean xyOk = controller.getHID().getXButton() && controller.getHID().getYButton();
 
       if (!triggersOk && !xyOk) {
