@@ -4,6 +4,11 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.RobotMap.DrivetrainConstants;
@@ -15,9 +20,14 @@ public class RobotContainer {
   private final CommandSwerveDrivetrain drivetrain = DrivetrainConstants.createDrivetrain();
   private final LimelightWrapper ll4 = new LimelightWrapper("limelight-four-localization");
   private final LimelightWrapper ll3 = new LimelightWrapper("limelight-three-localization");
+  private final SendableChooser<Command> autoChooser;
+
 
   public RobotContainer() {
     configureBindings();
+    autoChooser = AutoBuilder.buildAutoChooser();
+
+    SmartDashboard.putData("Auto Chooser", autoChooser);
   }
 
   public void updateLocalization() {
@@ -28,6 +38,6 @@ public class RobotContainer {
   private void configureBindings() {}
 
   public Command getAutonomousCommand() {
-    return Commands.print("No autonomous command configured");
+    return autoChooser.getSelected();
   }
 }
