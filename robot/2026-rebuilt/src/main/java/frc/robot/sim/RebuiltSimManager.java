@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -26,13 +27,16 @@ import org.ironmaple.simulation.motorsims.SimulatedMotorController;
 import org.littletonrobotics.junction.Logger;
 import org.ode4j.ode.DBody;
 import org.ode4j.ode.DGeom;
-import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.RollersSubsystem;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.sim.chassis.ChassisConfig;
 import frc.sim.chassis.ChassisSimulation;
 import frc.sim.core.PhysicsWorld;
+import frc.sim.vision.CameraConfig;
+import frc.sim.vision.LimelightType;
+import frc.sim.vision.VisionSimManager;
 import frc.sim.gamepiece.GamePiece;
 import frc.sim.gamepiece.GamePieceManager;
 import frc.sim.gamepiece.IntakeZone;
@@ -109,6 +113,7 @@ public class RebuiltSimManager {
     /** Cached origin translation for telemetry component poses. */
     private static final Translation3d ORIGIN = new Translation3d(0, 0, 0);
 
+    private final VisionSimManager visionSimManager;
     private final PhysicsWorld physicsWorld;
     private final ChassisSimulation chassis;
     private final RebuiltField field;
@@ -126,7 +131,7 @@ public class RebuiltSimManager {
     // References to robot subsystems
     private final CommandSwerveDrivetrain drivetrain;
     private final Shooter shooter;
-    private final Intake intake;
+    private final RollersSubsystem intake;
 
     // CTRE sim state (for gyro only — MapleSim handles motor/encoder sim state)
     private final Pigeon2SimState pigeonSimState;
@@ -145,9 +150,9 @@ public class RebuiltSimManager {
      *
      * @param drivetrain the swerve drivetrain subsystem (motor and encoder references)
      * @param shooter    the shooter subsystem (hood angle and shooting state)
-     * @param intake     the intake subsystem (roller active state)
+     * @param intake     the rollers subsystem (roller active state)
      */
-    public RebuiltSimManager(CommandSwerveDrivetrain drivetrain, Shooter shooter, Intake intake) {
+    public RebuiltSimManager(CommandSwerveDrivetrain drivetrain, Shooter shooter, RollersSubsystem intake) {
         this.drivetrain = drivetrain;
         this.shooter = shooter;
         this.intake = intake;
@@ -227,7 +232,7 @@ public class RebuiltSimManager {
 
         // --- Intake Zone ---
         intakeZone = new IntakeZone(INTAKE_X_MIN, INTAKE_X_MAX, INTAKE_Y_MIN, INTAKE_Y_MAX, INTAKE_Z_MAX,
-                intake::isRollersActive,
+                () -> intake.getState() == RollersSubsystem.RollerState.ON,
                 () -> chassis.getPose2d());
 
         // --- Shooter ---
@@ -245,6 +250,13 @@ public class RebuiltSimManager {
         scoringTracker = new ScoringTracker();
         groundClearance = new GroundClearance(chassis.getBody(), chassisConfig.getBumperHeight());
         telemetry = new SimTelemetry(chassis);
+
+        // --- Vision sim (writes true pose to NT in Limelight format) ---
+        // TODO: replace Transform3d() with real camera mount offsets from CAD
+        //       (needed for FOV-based tag visibility when we move past V0)
+        visionSimManager = new VisionSimManager(
+                new CameraConfig("limelight-two", LimelightType.LL4, new Transform3d()),
+                new CameraConfig("limelight-five", LimelightType.LL3, new Transform3d()));
 
         // --- Cache gyro sim state ---
         pigeonSimState = drivetrain.getPigeonSimState();
@@ -276,11 +288,17 @@ public class RebuiltSimManager {
         double worldVx = robotSpeeds.vxMetersPerSecond * cos - robotSpeeds.vyMetersPerSecond * sin;
         double worldVy = robotSpeeds.vxMetersPerSecond * sin + robotSpeeds.vyMetersPerSecond * cos;
 
-        // 4. Set velocity only — do NOT call setPose() before step.
-        // setPose() overrides X every tick, which fights the ODE4J contact solver
-        // and prevents the chassis from riding up ramps/bumps.
-        // Velocity-only lets ODE4J integrate position naturally with ramp deflection.
-        chassis.setVelocity(worldVx, worldVy, robotSpeeds.omegaRadiansPerSecond, DT);
+        // 4. Set velocity with position correction to prevent ODE4J drift from MapleSim.
+        // Pure velocity-following drifts over time because ODE4J and MapleSim integrate
+        // independently. Adding a proportional position correction keeps them synced
+        // while still allowing the contact solver to deflect the chassis on ramps
+        // (the correction is a force, not a position override, so the solver can oppose it).
+        double odeX = chassis.getPose2d().getX();
+        double odeY = chassis.getPose2d().getY();
+        double kP = 50.0; // 1cm error → 0.5 m/s correction
+        double correctedVx = worldVx + kP * (pose.getX() - odeX);
+        double correctedVy = worldVy + kP * (pose.getY() - odeY);
+        chassis.setVelocity(correctedVx, correctedVy, robotSpeeds.omegaRadiansPerSecond, DT);
 
         // 5. Proximity activation — only wake balls near the robot
         gamePieceManager.updateProximity(
@@ -295,12 +313,16 @@ public class RebuiltSimManager {
 
         // 7. Step physics world — ODE4J integrates position from velocity,
         // handles ramp/bump contacts (Z changes), game piece collisions
+
         physicsWorld.step(DT);
 
         // 8. Sync gyro from MapleSim pose (not ODE4J)
         pigeonSimState.setSupplyVoltage(SimulatedBattery.getBatteryVoltage().in(Volts));
         pigeonSimState.setRawYaw(Math.toDegrees(pose.getRotation().getRadians()));
         pigeonSimState.setAngularVelocityZ(Math.toDegrees(robotSpeeds.omegaRadiansPerSecond));
+
+        // 8b. Write true pose to simulated Limelight NT entries
+        visionSimManager.update(pose);
 
         // 9. Update game piece states
         gamePieceManager.update();
@@ -328,7 +350,8 @@ public class RebuiltSimManager {
     }
 
     private void publishTelemetry() {
-        // Robot pose
+        // Robot pose — ODE4J is the source of truth for the full 3D pose.
+        // Position correction in periodic() keeps ODE4J synced to MapleSim's XY.
         Pose3d robotPose = chassis.getPose3d();
         Logger.recordOutput("Sim/Robot/Pose3d", robotPose);
 
@@ -349,7 +372,7 @@ public class RebuiltSimManager {
         // Component poses for articulated AdvantageScope robot model
         double hoodAngle = shooter.getHoodAngleRad();
         boolean shooting = shooter.isShooting();
-        boolean intaking = intake.isRollersActive();
+        boolean intaking = intake.getState() == RollersSubsystem.RollerState.ON;
 
         Pose3d shooterHoodPose = new Pose3d(
                 ORIGIN,

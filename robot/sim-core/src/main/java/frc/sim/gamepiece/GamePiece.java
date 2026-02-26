@@ -26,6 +26,13 @@ public class GamePiece {
     /** Threshold for detecting consumed pieces — anything below this is off-field. */
     private static final double OFF_FIELD_Z_THRESHOLD = -50.0;
 
+    /** Z height below which the piece is considered near ground (for damping). */
+    private static final double NEAR_GROUND_Z = 0.3;
+    /** Linear damping applied when rolling on the ground. */
+    private static final double GROUND_LINEAR_DAMPING = 0.05;
+    /** Angular damping applied when rolling on the ground. */
+    private static final double GROUND_ANGULAR_DAMPING = 0.1;
+
     public enum State {
         ON_FIELD,   // Free on the field, physics active
         IN_FLIGHT,  // Launched, physics active
@@ -85,13 +92,26 @@ public class GamePiece {
         body.setPosition(position.getX(), position.getY(), position.getZ());
         body.setLinearVel(velocity.getX(), velocity.getY(), velocity.getZ());
         body.setAngularVel(0, 0, 0);
+        body.setLinearDamping(0);
+        body.setAngularDamping(0);
         body.enable();
     }
 
-    /** Update state based on whether the body has auto-disabled. */
+    /** Update state based on whether the body has auto-disabled, and toggle damping by height. */
     public void updateState() {
         if ((state == State.IN_FLIGHT || state == State.ON_FIELD) && !body.isEnabled()) {
             state = State.AT_REST;
+        }
+
+        // Toggle damping: zero in air (ballistic flight), restore near ground (rolling friction)
+        if (body.isEnabled() && !isOffField()) {
+            if (body.getPosition().get2() < NEAR_GROUND_Z) {
+                body.setLinearDamping(GROUND_LINEAR_DAMPING);
+                body.setAngularDamping(GROUND_ANGULAR_DAMPING);
+            } else {
+                body.setLinearDamping(0);
+                body.setAngularDamping(0);
+            }
         }
     }
 

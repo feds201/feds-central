@@ -32,8 +32,16 @@ public class ShooterSim {
      *  Should match the physical shooter exit point on the robot CAD. */
     private static final double LAUNCH_HEIGHT = 0.6;
 
-    // Cooldown between shots (to avoid launching too many balls per second)
-    private static final double SHOT_COOLDOWN = 0.1; // seconds
+    /** Forward distance from robot center to muzzle along launch heading (meters).
+     *  Must clear chassis half-length (0.4m) + ball radius (0.075m) with margin. */
+    private static final double MUZZLE_FORWARD_OFFSET = 0.6;
+
+    /** Lateral distance from centerline for each barrel (meters). */
+    private static final double BARREL_LATERAL_OFFSET = 0.08;
+
+    /** Number of shot events per second (each event fires both barrels). */
+    private static final double SHOTS_PER_SECOND = 8;
+
     private double cooldownTimer = 0;
 
     /**
@@ -66,7 +74,7 @@ public class ShooterSim {
     }
 
     /**
-     * Call each tick. If shooting and cooldown expired, launch a ball.
+     * Call each tick. If shooting and cooldown expired, launch from both barrels.
      * @param dt timestep in seconds
      */
     public void update(double dt) {
@@ -80,15 +88,23 @@ public class ShooterSim {
                     launchVelocitySupplier.getAsDouble(),
                     hoodAngleSupplier.getAsDouble(),
                     LAUNCH_HEIGHT,
-                    0  // no turret offset (turretless robot)
+                    0,  // no turret offset (turretless robot)
+                    MUZZLE_FORWARD_OFFSET,
+                    BARREL_LATERAL_OFFSET
             );
 
-            Translation3d position = params.getLaunchPosition(robotPose);
             Translation3d velocity = params.getLaunchVelocity(robotPose,
                     robotVxSupplier.getAsDouble(), robotVySupplier.getAsDouble());
+            Translation3d[] positions = params.getLaunchPositions(robotPose);
 
-            gamePieceManager.launchPiece(fuelConfig, position, velocity);
-            cooldownTimer = SHOT_COOLDOWN;
+            // Fire from both barrels (left then right), checking held count before each
+            for (Translation3d pos : positions) {
+                if (gamePieceManager.getHeldCount() > 0) {
+                    gamePieceManager.launchPiece(fuelConfig, pos, velocity);
+                }
+            }
+
+            cooldownTimer = 1.0 / SHOTS_PER_SECOND;
         }
     }
 }

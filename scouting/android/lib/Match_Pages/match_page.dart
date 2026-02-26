@@ -701,9 +701,13 @@ class MatchPageState extends State<MatchPage>
             false,
             false),
 <<<<<<< HEAD
+<<<<<<< HEAD
         EndPoints(0, false, false, false, "", 0, 0.0, 0, ""),
 =======
         EndPoints(0, false, false, false, "", 0, 0.0, 0, []),
+>>>>>>> origin/main
+=======
+        EndPoints(0, false, false, false, "", 0,0, 0.0, 0, []),
 >>>>>>> origin/main
         teamNumber: teamNNumber.replaceAll('frc', ''),
         scouterName: _scouterName,
