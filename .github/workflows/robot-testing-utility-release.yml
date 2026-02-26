@@ -6,8 +6,8 @@
 #
 # Steps:
 #   1. Build and test the library
-#   2. Publish to GitHub Packages Maven (frc.rtu:robot-testing-utility:<version>)
-#   3. Create a GitHub Release and upload the JAR as an asset
+#   2. Create a GitHub Release named after the tag
+#   3. Upload robot-testing-utility-<version>.jar as a release asset
 #
 # Tag format:  rtu/v<semver>   (e.g. rtu/v1.0.0, rtu/v1.2.3-beta)
 # =============================================================================
