@@ -56,7 +56,7 @@ private final SysIdRoutine m_feederSysId;
 
 
   public Feeder() {
-    spindexerMotor = new TalonFX(2); // DO NOT SUBMIT // SpindexerConstants.kSpindexerMotorId);
+    spindexerMotor = new TalonFX(SpindexerConstants.kSpindexerMotorId);
 
     config = new TalonFXConfiguration();
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
