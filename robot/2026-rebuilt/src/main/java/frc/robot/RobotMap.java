@@ -88,16 +88,22 @@ public final class RobotMap {
     }
 
     public static class SpindexerConstants {
-        public static final int kSpindexerMotorId = 0;
+        public static final int kSpindexerMotorId = 57;
+    }
+
+    public static class FeederConstants
+    {
+        public static final int kFeederKickerMotorId = 56;
+
     }
 
     //All values subject to change, just placeholders for now
     public static class ShooterConstants {
-        public static final int kShooterLeaderId = 0;
-        public static final int kShooterFollower1Id = 1;
-        public static final int kShooterFollower2Id = 2;
-        public static final int kShooterFollower3Id = 3;
-        public static final int kHoodMotorId = 4;
+        public static final int ShooterRightTop = 53;
+        public static final int ShooterRightBottom = 52;
+        public static final int ShooterBottomLeft = 51;
+        public static final int ShooterTopLeft = 50;
+        public static final int ShooterHood = 54;
         public static final AngularVelocity velocityTolerance = RotationsPerSecond.of(3);
          public static final Angle postionTolerance = Rotations.of(.05);
 

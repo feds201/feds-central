@@ -7,7 +7,6 @@ import 'package:scouting_app/components/CounterShelf.dart';
 import 'package:scouting_app/components/QrGenerator.dart';
 import 'package:scouting_app/components/gameSpecifics/MultiPointSelector.dart';
 import 'package:scouting_app/components/gameSpecifics/climb.dart';
-import 'package:scouting_app/components/ratings.dart';
 import 'package:scouting_app/main.dart';
 
 import '../../components/TeamInfo.dart';
@@ -73,7 +72,7 @@ class EndGameState extends State<EndGame> {
     passing = widget.matchRecord.endPoints.Passing;
 
     commentController.text = widget.matchRecord.endPoints.Comments;
-    neutralTrips = 0;
+    neutralTrips = widget.matchRecord.endPoints.EndNeutralTrips;
     shootingAccuracy = widget.matchRecord.endPoints.ShootingAccuracy;
     endgameTime = widget.matchRecord.endPoints.endgameTime;
     endgameActions = widget.matchRecord.endPoints.endgameActions;
@@ -85,6 +84,8 @@ class EndGameState extends State<EndGame> {
     widget.matchRecord.endPoints.ClimbStatus = selectedLevel ?? 0;
 
     // Park is explicitly tracked, usually triggered if level is null and user leaves blank
+    widget.matchRecord.endPoints.EndNeutralTrips = neutralTrips;
+    widget.matchRecord.endPoints.ShootingAccuracy = shootingAccuracy;
     widget.matchRecord.endPoints.Park = park;
     widget.matchRecord.endPoints.FeedToHP = feedToHP;
     widget.matchRecord.endPoints.Passing = passing;
@@ -263,29 +264,7 @@ class EndGameState extends State<EndGame> {
                         ),
                       ],
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Container(
-                        height: 135,
-                        decoration: BoxDecoration(
-                          color: Colors.grey,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(1.5),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Color.fromARGB(255, 34, 34, 34),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: StarRating(
-                              initialRating: shootingAccuracy,
-                              onRatingChanged: (rating) {
-                                setState(() {
-                                  shootingAccuracy = rating;
 
-                  ],
-                ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Container(
@@ -313,6 +292,7 @@ class EndGameState extends State<EndGame> {
                         ),
                       ),
                     ),
+                  ),
                   ],
                 ),
               ),
