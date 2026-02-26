@@ -19,7 +19,6 @@ import edu.wpi.first.wpilibj.simulation.DIOSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -129,7 +128,6 @@ public class IntakeSubsystem extends SubsystemBase {
     mechRoot = mech2d.getRoot("IntakeRoot", 1.5, 1.5);
     intakeLigament = mechRoot.append(
         new MechanismLigament2d("Intake", 1, 90, 6, new Color8Bit(Color.kOrange)));
-    SmartDashboard.putData("Intake Sim", mech2d);
   }
 
   @Override
