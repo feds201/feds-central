@@ -46,27 +46,27 @@ public class Feeder extends SubsystemBase {
   }
 
   // susbsytem components
-  private final TalonFX spindexerMotor;
+  private final TalonFX feederMotor;
   private final TalonFXConfiguration config;
   private final VoltageOut vOut = new VoltageOut(0);
   private feeder_state currentState = feeder_state.STOP;
   private final SysIdRoutine m_feederSysId;
 
   public Feeder() {
-    spindexerMotor = new TalonFX(FeederConstants.kFeederKickerMotorId);
+    feederMotor = new TalonFX(FeederConstants.kFeederKickerMotorId);
 
     config = new TalonFXConfiguration();
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     config.CurrentLimits.StatorCurrentLimit = 20;
     for (int i = 0; i < 2; ++i) {
-      var status = spindexerMotor.getConfigurator().apply(config);
+      var status = feederMotor.getConfigurator().apply(config);
       if (status.isOK())
         break;
     }
 
-    SubsystemStatusManager.addSubsystem(getName(), spindexerMotor);
-    DeviceTempReporter.addDevices(spindexerMotor);
+    SubsystemStatusManager.addSubsystem(getName(), feederMotor);
+    DeviceTempReporter.addDevices(feederMotor);
 
     m_feederSysId = new SysIdRoutine(
         new SysIdRoutine.Config(
@@ -81,7 +81,7 @@ public class Feeder extends SubsystemBase {
               // voltsMeasure is a Measure<Voltage>
               double volts = voltsMeasure.in(Volts); // numeric voltage (e.g. 0..12)
               // phoenix6: setControl with VoltageOut (applies volts to motor)
-              spindexerMotor.setControl(new VoltageOut(volts));
+              feederMotor.setControl(new VoltageOut(volts));
               // if you have follower motors, set them appropriately (use followers or set
               // same request for each)
               SignalLogger.writeDouble("Rotational_Rate", voltsMeasure.in(Volts));
@@ -99,11 +99,11 @@ public class Feeder extends SubsystemBase {
 
   // subsystem getters
   public Angle getPosition() {
-    return spindexerMotor.getPosition().getValue();
+    return feederMotor.getPosition().getValue();
   }
 
   public Voltage getAppliedVoltage() {
-    return spindexerMotor.getMotorVoltage().getValue();
+    return feederMotor.getMotorVoltage().getValue();
   }
 
   public Voltage getTargetVoltage() {
@@ -112,7 +112,7 @@ public class Feeder extends SubsystemBase {
 
   // subsystem setters
   public void setVoltage(Voltage voltage) {
-    spindexerMotor.setControl(vOut.withOutput(voltage));
+    feederMotor.setControl(vOut.withOutput(voltage));
   }
 
   public void setState(feeder_state state) {
