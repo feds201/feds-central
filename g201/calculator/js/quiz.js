@@ -8,7 +8,6 @@ let activeQuestions = [];
 let activeModuleId = null;
 let elements = {};
 const moduleScores = {};
-const moduleAnswers = {};
 
 export function setElements(domElements) {
     elements = domElements;
@@ -226,7 +225,7 @@ function updateEcoScore(question, value) {
 
 function applyImpact(question, value) {
     let impactFactor;
-    switch (question.eco_impact?.toLowerCase()) {
+switch (question.eco_impact?.toLowerCase()) {
         case 'high': impactFactor = -20; break;
         case 'medium': impactFactor = -12; break;
         case 'low': impactFactor = -6; break;
@@ -261,9 +260,16 @@ function finishQuiz() {
         'secret': '🤫 Funny Team Stuff'
     };
 
-    const resultHeader = document.querySelector('.Eco-Friendly-text');
-    if (resultHeader) {
-        resultHeader.textContent = `Module ${activeModuleId}: ${moduleNames[activeModuleId]} Complete!`;
+    const finalScore = Math.round(currentEcoScore);
+    if (elements.finalEcoScore) elements.finalEcoScore.textContent = finalScore;
+moduleScores[activeModuleId] = finalScore;
+const moduleScoreEl = document.getElementById(`eco-score-module-${activeModuleId}`);
+if (moduleScoreEl) {
+    moduleScoreEl.innerHTML = `<i class="fas fa-leaf"></i> Eco Score: ${finalScore}`;
+}
+    if (elements.meterPointer) {
+        const pointerPosition = (finalScore / 100) * 100;
+        elements.meterPointer.style.left = `${pointerPosition}%`;
     }
     
     const finalScore = Math.round(currentEcoScore);
