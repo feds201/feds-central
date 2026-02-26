@@ -1,6 +1,8 @@
-# FEDS 201 Central Repository
+# FEDS 201's Scouting Learning
 
-Welcome to the FEDS 201 central codebase! This repository contains everything our team builds: robot code, scouting apps, documentation, and more.
+> **🛑 WARNING: This is a learning subsystem. DO NOT push any code here. DO NOT SUBMIT. 🛑**
+
+Welcome to the FEDS 201's Scouting Learning codebase! This repository is strictly for educational purposes, practice, and making mistakes safely. 
 
 ## 📁 Repository Structure
 
@@ -23,14 +25,14 @@ Here's what lives where:
 - **Don't be afraid to ask questions!** Everyone was new once.
 - **Start small** - Fix a typo, add a comment, or make a small improvement
 - **Read existing code** before making big changes
-- **Test locally first** - Never push code you haven't tested
+- **Test locally first** - Practice running your code on your own machine
 - **Commit often** - Small, frequent commits are better than huge ones
 
 ---
 
-## 🚀 Contributing Code
+## 🚀 Practice Workflow 
 
-New to contributing? No worries! Here's the workflow:
+New to contributing? Here is the workflow to practice (Remember: **DO NOT SUBMIT** to the main production branches!):
 
 ### 1. Make Your Changes Locally
 
@@ -46,10 +48,10 @@ New to contributing? No worries! Here's the workflow:
 - Test your code multiple times!
 - Make sure you didn't break anything else!
 
-### 3. Create a Pull Request (PR)
+### 3. Create a Practice Pull Request (PR)
 
 A pull request is how you propose your changes to the team. [New to PRs? Watch this video](https://www.youtube.com/watch?v=nCKdihvneS0).
-Once you finish a logical unit of work, submit a pull request.
+Once you finish a logical unit of work, you can draft a PR to see how the system works.
 
 **Good PR practices:**
 
@@ -62,12 +64,8 @@ Once you finish a logical unit of work, submit a pull request.
 
 ### 4. Wait for AI Review
 
-Our repository has automated AI review that will check your code and give you feedback. Read the comments and address any concerns.
+Our repository has automated AI review that will check your code and give you feedback. Read the comments and address any concerns to learn from the feedback.
 
 ### 5. Get a Teammate Review (Recommended)
 
 Ask a senior team member or mentor to review your code. They might catch things the AI missed or suggest improvements.
-
-### 6. Merge It
-
-Once your PR is approved and all checks pass, you can merge it into the main branch.
