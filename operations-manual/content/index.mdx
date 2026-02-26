@@ -1,0 +1,53 @@
+import { Cards, Card } from "nextra/components";
+import { GenericStats, SubgroupsGrid, CompetitionGrid, KnowledgeBaseGrid, SustainabilitySection, BuildKnowledgeSection } from "../Components/index";
+
+# Welcome to the FEDS Operational Manual
+
+This is the official operational manual for FEDS 201, your go-to resource for everything related to our team. Whether you're a new member or a seasoned veteran, this manual is designed to help you navigate our processes, tools, and culture.
+
+
+
+## 🚀 Our Subgroups
+
+Discover the dedicated teams within FEDS 201, each contributing to a different aspect of robotics mastery and innovation.
+
+<SubgroupsGrid />
+
+## 🚀 Celebrating a Legacy of Innovation and Impact
+
+From years of excellence to transforming student futures, here’s a quick look at our journey so far.
+
+<GenericStats
+  layout="grid"
+  variant="gradient"
+  countUp={true}
+  animation={{ enabled: true, duration: 2000, delay: 100 }}
+  stats={[
+    { value: 28, label: "Years of Excellence", icon: "🏆", suffix: "+" },
+    { value: 1000, label: "Students Impacted", icon: "👥", suffix: "+" },
+    { value: 7, label: "Competitions Won", icon: "🥇", suffix: "+" },
+    { value: 16, label: "Blue Banners", icon: "🏆" },
+  ]}
+/>
+
+## 🏆 Competition Experiences
+
+Learn from our championship journey and discover what it takes to compete at the highest level.
+
+<CompetitionGrid />
+
+## 📚 Essential Knowledge Base
+
+Master the fundamentals every FEDS member needs to know for success.
+
+<KnowledgeBaseGrid />
+
+## 🌱 Sustainability & Impact
+
+Leading the way in environmentally responsible robotics through innovation and conscious engineering practices.
+
+<SustainabilitySection />
+
+---
+
+<BuildKnowledgeSection />

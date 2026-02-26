@@ -1,0 +1,25 @@
+import org.gradle.internal.os.OperatingSystem
+
+pluginManagement {
+    repositories {
+        mavenLocal()
+        gradlePluginPortal()
+    }
+}
+
+rootProject.name = 'robot-testing-utility'
+
+// Resolve the local WPILib installation (same logic as GradleRIO robot projects)
+String frcYear = '2026'
+File frcHome
+if (OperatingSystem.current().isWindows()) {
+    String publicFolder = System.getenv('PUBLIC')
+    if (publicFolder == null) publicFolder = "C:\\Users\\Public"
+    frcHome = new File(new File(publicFolder, "wpilib"), frcYear)
+} else {
+    frcHome = new File(new File(System.getProperty("user.home"), "wpilib"), frcYear)
+}
+
+// Expose as a project property so build.gradle can use it
+gradle.ext.frcHome = frcHome
+gradle.ext.frcHomeMaven = new File(frcHome, 'maven')

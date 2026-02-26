@@ -131,3 +131,83 @@ body {
     @apply badge bg-amber-500/20 text-amber-300 border border-amber-500/30;
   }
 }
+
+/* --- assistant-ui overrides --- */
+
+[data-aui-root] {
+  --aui-bg: transparent;
+  --aui-fg: theme(colors.slate.100);
+  font-family: 'Inter', sans-serif;
+}
+
+/* Composer input styling */
+[data-aui-composer-input] {
+  @apply bg-slate-800/50 border border-slate-700/50 text-slate-100 placeholder-slate-500 rounded-xl;
+}
+
+[data-aui-composer-input]:focus {
+  @apply border-indigo-500 ring-2 ring-indigo-500/30 bg-slate-800;
+}
+
+/* Viewport / scroll area */
+[data-aui-thread-viewport] {
+  scrollbar-width: thin;
+  scrollbar-color: theme(colors.slate.700) transparent;
+}
+
+/* --- Markdown in chat messages --- */
+
+.aui-md {
+  @apply text-sm leading-relaxed;
+}
+
+.aui-md p {
+  @apply mb-3 last:mb-0;
+}
+
+.aui-md h1, .aui-md h2, .aui-md h3, .aui-md h4 {
+  @apply font-semibold mt-4 mb-2 first:mt-0;
+}
+.aui-md h1 { @apply text-lg; }
+.aui-md h2 { @apply text-base; }
+.aui-md h3, .aui-md h4 { @apply text-sm; }
+
+.aui-md ul, .aui-md ol {
+  @apply pl-5 mb-3 last:mb-0;
+}
+.aui-md ul { @apply list-disc; }
+.aui-md ol { @apply list-decimal; }
+.aui-md li { @apply mb-1; }
+
+.aui-md code {
+  @apply px-1.5 py-0.5 rounded bg-slate-700/60 text-indigo-300 text-xs font-mono;
+}
+
+.aui-md pre {
+  @apply mb-3 last:mb-0 rounded-lg bg-slate-900/80 border border-slate-700/50 overflow-x-auto p-3;
+}
+.aui-md pre code {
+  @apply bg-transparent p-0 text-slate-200;
+}
+
+.aui-md blockquote {
+  @apply border-l-2 border-indigo-500/50 pl-3 italic text-slate-400 mb-3 last:mb-0;
+}
+
+.aui-md a {
+  @apply text-indigo-400 underline underline-offset-2 hover:text-indigo-300;
+}
+
+.aui-md table {
+  @apply w-full border-collapse mb-3 last:mb-0 text-xs;
+}
+.aui-md th {
+  @apply border border-slate-700 px-3 py-1.5 bg-slate-800/60 text-left font-semibold;
+}
+.aui-md td {
+  @apply border border-slate-700/50 px-3 py-1.5;
+}
+
+.aui-md hr {
+  @apply border-slate-700/50 my-3;
+}

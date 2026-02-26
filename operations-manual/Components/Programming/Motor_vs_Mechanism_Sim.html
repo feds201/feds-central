@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rotor vs Sensor vs Mechanism Ratio Simulator</title>
+    <style>
+        :root {
+            --bg-color: #1a1a1a;
+            --card-bg: #2d2d2d;
+            --text-color: #e0e0e0;
+            --accent-blue: #4dabf7; /* Sensor */
+            --accent-orange: #ff922b; /* Mechanism */
+            --accent-green: #51cf66; /* Rotor */
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        p {
+            color: #bbb;
+            max-width: 800px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .panel {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        canvas {
+            background-color: #000;
+            border-radius: 8px;
+            border: 1px solid #444;
+        }
+
+        .controls {
+            width: 100%;
+            max-width: 400px;
+            margin-top: 20px;
+            display: grid;
+            gap: 15px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .input-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        label {
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        input[type="range"] {
+            flex-grow: 1;
+            accent-color: var(--accent-blue);
+        }
+
+        input[type="number"] {
+            width: 60px;
+            background: #444;
+            border: 1px solid #555;
+            color: white;
+            border-radius: 4px;
+            padding: 4px;
+        }
+
+        select {
+            background: #444;
+            border: 1px solid #555;
+            color: white;
+            border-radius: 4px;
+            padding: 5px;
+            width: 100%;
+        }
+
+        .legend {
+            display: flex;
+            gap: 20px;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .stat-box {
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+            font-family: monospace;
+            width: 100%;
+            font-size: 0.9em;
+        }
+
+        .math-display {
+            font-family: monospace;
+            color: #aaa;
+            margin-top: 5px;
+            font-size: 0.85em;
+        }
+
+    </style>
+</head>
+<body>
+
+<h1>Rotor vs. Sensor vs. Mechanism</h1>
+<p>
+    <strong>RotorToSensor:</strong> Gearing between Motor and Sensor.<br>
+    <strong>SensorToMechanism:</strong> Gearing between Sensor and Output.
+</p>
+
+<div class="container">
+
+    <!-- VISUALIZATION PANEL -->
+    <div class="panel">
+        <h3>Visualizing the Chain</h3>
+        <canvas id="simCanvas" width="450" height="350"></canvas>
+        <div class="legend">
+            <div class="legend-item">
+                <div class="dot" style="background: var(--accent-green)"></div>
+                Rotor (Motor)
+            </div>
+            <div class="legend-item">
+                <div class="dot" style="background: var(--accent-blue)"></div>
+                Sensor
+            </div>
+            <div class="legend-item">
+                <div class="dot" style="background: var(--accent-orange)"></div>
+                Mechanism
+            </div>
+        </div>
+        <div class="stat-box" id="statusText">
+            Initializing...
+        </div>
+    </div>
+
+    <!-- GRAPH PANEL -->
+    <div class="panel">
+        <h3>Position Comparison Graph</h3>
+        <canvas id="graphCanvas" width="500" height="350"></canvas>
+        <div class="legend">
+            <div class="legend-item">
+                <div class="dot" style="background: var(--accent-green)"></div>
+                Rotor
+            </div>
+            <div class="legend-item">
+                <div class="dot" style="background: var(--accent-blue)"></div>
+                Sensor
+            </div>
+            <div class="legend-item">
+                <div class="dot" style="background: var(--accent-orange)"></div>
+                Mech
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="panel controls">
+
+    <div class="control-group">
+        <label>Motion Mode</label>
+        <select id="motionMode">
+            <option value="oscillate">Oscillate (Sine Wave)</option>
+            <option value="continuous">Continuous Spin</option>
+        </select>
+    </div>
+
+    <div class="control-group">
+        <label>RotorToSensorRatio</label>
+        <div class="input-row">
+            <input type="range" id="r2sSlider" min="1" max="10" value="2" step="0.5">
+            <input type="number" id="r2sInput" value="2" step="0.1" min="0.1">
+        </div>
+        <div class="math-display">Sensor Speed = Rotor / <span id="r2sMath">2</span></div>
+    </div>
+
+    <div class="control-group">
+        <label>SensorToMechanismRatio</label>
+        <div class="input-row">
+            <input type="range" id="s2mSlider" min="1" max="20" value="2" step="0.5">
+            <input type="number" id="s2mInput" value="2" step="0.1" min="0.1">
+        </div>
+        <div class="math-display">Mech Speed = Sensor / <span id="s2mMath">2</span></div>
+    </div>
+
+    <div class="control-group">
+        <label>Total Reduction: <span id="totalRatioVal" style="color: var(--accent-orange)">4.0:1</span></label>
+    </div>
+
+    <div class="control-group">
+        <label>Simulation Speed: <span id="speedVal">1.0x</span></label>
+        <input type="range" id="speedSlider" min="0.1" max="3.0" value="1.0" step="0.1">
+    </div>
+</div>
+
+<script>
+    // --- CONFIGURATION & STATE ---
+    const state = {
+        rotorToSensor: 2.0,
+        sensorToMechanism: 2.0,
+        simSpeed: 1.0,
+        motionMode: 'oscillate', // 'oscillate' or 'continuous'
+        time: 0,
+
+        // Physics State (Degrees)
+        rotorAngle: 0,
+        sensorAngle: 0,
+        mechAngle: 0,
+
+        // Graph Data
+        historyMax: 300,
+        historyRotor: [],
+        historySensor: [],
+        historyMech: []
+    };
+
+    // --- DOM ELEMENTS ---
+    const simCanvas = document.getElementById('simCanvas');
+    const simCtx = simCanvas.getContext('2d');
+    const graphCanvas = document.getElementById('graphCanvas');
+    const graphCtx = graphCanvas.getContext('2d');
+    const statusText = document.getElementById('statusText');
+
+    // Inputs
+    const r2sSlider = document.getElementById('r2sSlider');
+    const r2sInput = document.getElementById('r2sInput');
+    const s2mSlider = document.getElementById('s2mSlider');
+    const s2mInput = document.getElementById('s2mInput');
+    const speedSlider = document.getElementById('speedSlider');
+    const motionModeSelect = document.getElementById('motionMode');
+
+    // --- EVENT LISTENERS FOR SYNC ---
+    function syncInputs(slider, input, key) {
+        slider.addEventListener('input', () => {
+            input.value = slider.value;
+        });
+        input.addEventListener('input', () => {
+            slider.value = input.value;
+        });
+    }
+
+    syncInputs(r2sSlider, r2sInput);
+    syncInputs(s2mSlider, s2mInput);
+
+    // --- UPDATE LOOP ---
+    function update() {
+        // 1. Calculate Inputs
+        state.rotorToSensor = parseFloat(r2sInput.value) || 1;
+        state.sensorToMechanism = parseFloat(s2mInput.value) || 1;
+        state.simSpeed = parseFloat(speedSlider.value);
+        state.motionMode = motionModeSelect.value;
+
+        // Update Labels
+        document.getElementById('r2sMath').innerText = state.rotorToSensor.toFixed(1);
+        document.getElementById('s2mMath').innerText = state.sensorToMechanism.toFixed(1);
+        document.getElementById('speedVal').innerText = `${state.simSpeed}x`;
+
+        const totalRatio = (state.rotorToSensor * state.sensorToMechanism).toFixed(1);
+        document.getElementById('totalRatioVal').innerText = `${totalRatio}:1`;
+
+        // 2. Move Motor
+        if (state.motionMode === 'oscillate') {
+            state.time += 0.03 * state.simSpeed;
+            // Oscillate +/- 2 rotations (720 deg)
+            state.rotorAngle = Math.sin(state.time) * 720;
+        } else {
+            // Continuous Spin
+            state.rotorAngle += 5 * state.simSpeed;
+        }
+
+        // 3. Calculate Sensor Position
+        // The Sensor is slower than the Rotor by the first ratio
+        state.sensorAngle = state.rotorAngle / state.rotorToSensor;
+
+        // 4. Calculate Mechanism Position
+        // The Mechanism is slower than the Sensor by the second ratio
+        state.mechAngle = state.sensorAngle / state.sensorToMechanism;
+
+        // 5. Update Status Text
+        // Use modulo 360 for cleaner display text
+        const dispRotor = Math.round(state.rotorAngle % 360);
+        const dispSensor = Math.round(state.sensorAngle % 360);
+        const dispMech = Math.round(state.mechAngle % 360);
+
+        statusText.innerHTML = `
+                Rotor Pos:  ${dispRotor}°<br>
+                Sensor Pos: ${dispSensor}° (Rotor / ${state.rotorToSensor})<br>
+                Mech Pos:   ${dispMech}° (Sensor / ${state.sensorToMechanism})
+            `;
+
+        // 6. Update Graph History
+        // For graph, we use modulo 360 if continuous to keep lines on screen (Sawtooth wave)
+        // If oscillating, we use raw values centered on graph
+        let gRotor, gSensor, gMech;
+
+        if (state.motionMode === 'continuous') {
+            gRotor = Math.abs(state.rotorAngle % 360);
+            gSensor = Math.abs(state.sensorAngle % 360);
+            gMech = Math.abs(state.mechAngle % 360);
+        } else {
+            gRotor = state.rotorAngle;
+            gSensor = state.sensorAngle;
+            gMech = state.mechAngle;
+        }
+
+        state.historyRotor.push(gRotor);
+        state.historySensor.push(gSensor);
+        state.historyMech.push(gMech);
+
+        if (state.historyRotor.length > state.historyMax) {
+            state.historyRotor.shift();
+            state.historySensor.shift();
+            state.historyMech.shift();
+        }
+    }
+
+    // --- DRAWING ---
+    function drawSim() {
+        simCtx.clearRect(0, 0, simCanvas.width, simCanvas.height);
+
+        const cx = simCanvas.width / 2;
+        const cy = simCanvas.height / 2;
+
+        // Helper to draw a gear/wheel
+        function drawGear(ctx, x, y, radius, angle, color, label, teeth = 8) {
+            ctx.save();
+            ctx.translate(x, y);
+
+            // Draw Label
+            ctx.fillStyle = color;
+            ctx.font = "14px sans-serif";
+            ctx.textAlign = "center";
+            ctx.fillText(label, 0, -radius - 10);
+
+            ctx.rotate((angle * Math.PI) / 180);
+
+            // Body
+            ctx.beginPath();
+            ctx.arc(0, 0, radius, 0, Math.PI * 2);
+            ctx.fillStyle = '#333';
+            ctx.fill();
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            // Spokes/Teeth visual
+            ctx.beginPath();
+            for (let i = 0; i < teeth; i++) {
+                ctx.rotate((Math.PI * 2) / teeth);
+                ctx.moveTo(0, 0);
+                ctx.lineTo(radius, 0);
+            }
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 1;
+            ctx.stroke();
+
+            // Position Marker
+            ctx.beginPath();
+            ctx.arc(radius - 10, 0, 5, 0, Math.PI * 2);
+            ctx.fillStyle = color;
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        // Draw 3 Stages: Rotor -> Sensor -> Mechanism
+
+        // 1. Rotor (Left)
+        drawGear(simCtx, 80, cy, 30, state.rotorAngle, '#51cf66', "Rotor", 4);
+
+        // Arrow to Sensor
+        simCtx.fillStyle = '#666';
+        simCtx.font = "20px monospace";
+        simCtx.fillText("→", 130, cy + 5);
+        simCtx.font = "10px monospace";
+        simCtx.fillText(`${state.rotorToSensor}:1`, 130, cy - 10);
+
+        // 2. Sensor (Middle)
+        drawGear(simCtx, 200, cy, 40, state.sensorAngle, '#4dabf7', "Sensor", 6);
+
+        // Arrow to Mechanism
+        simCtx.fillStyle = '#666';
+        simCtx.font = "20px monospace";
+        simCtx.fillText("→", 270, cy + 5);
+        simCtx.font = "10px monospace";
+        simCtx.fillText(`${state.sensorToMechanism}:1`, 270, cy - 10);
+
+        // 3. Mechanism (Right)
+        drawGear(simCtx, 360, cy, 60, state.mechAngle, '#ff922b', "Mechanism", 12);
+    }
+
+    function drawGraph() {
+        graphCtx.clearRect(0, 0, graphCanvas.width, graphCanvas.height);
+
+        const w = graphCanvas.width;
+        const h = graphCanvas.height;
+        const mid = h / 2;
+
+        // Scale based on mode
+        let scaleY = 0.15;
+        let yOffset = mid;
+
+        if (state.motionMode === 'continuous') {
+            scaleY = 0.8; // Use more height for 0-360 range
+            yOffset = h - 20; // Draw from bottom up
+        }
+
+        // Draw Center Line (only meaningful for oscillate)
+        if (state.motionMode === 'oscillate') {
+            graphCtx.beginPath();
+            graphCtx.strokeStyle = '#333';
+            graphCtx.moveTo(0, mid);
+            graphCtx.lineTo(w, mid);
+            graphCtx.stroke();
+        }
+
+        // Helper to draw lines
+        function plotLine(data, color) {
+            graphCtx.beginPath();
+            graphCtx.strokeStyle = color;
+            graphCtx.lineWidth = 2;
+
+            let wasGap = false;
+
+            for (let i = 0; i < data.length; i++) {
+                const x = (i / state.historyMax) * w;
+
+                // Logic to handle Sawtooth Wrap-around cleanly
+                // If the value drops significantly (e.g., 359 -> 0), don't draw a line connecting them
+                if (i > 0 && Math.abs(data[i] - data[i - 1]) > 300 && state.motionMode === 'continuous') {
+                    graphCtx.moveTo(x, yOffset - (data[i] * scaleY));
+                    continue;
+                }
+
+                const val = data[i];
+                const y = yOffset - (val * scaleY);
+
+                if (i === 0) graphCtx.moveTo(x, y);
+                else graphCtx.lineTo(x, y);
+            }
+            graphCtx.stroke();
+        }
+
+        // Draw Rotor (Green)
+        plotLine(state.historyRotor, '#51cf66');
+
+        // Draw Sensor (Blue)
+        plotLine(state.historySensor, '#4dabf7');
+
+        // Draw Mech (Orange)
+        plotLine(state.historyMech, '#ff922b');
+    }
+
+    function loop() {
+        update();
+        drawSim();
+        drawGraph();
+        requestAnimationFrame(loop);
+    }
+
+    // Start
+    loop();
+
+</script>
+</body>
+</html>

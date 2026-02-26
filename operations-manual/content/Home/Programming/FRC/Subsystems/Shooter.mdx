@@ -1,0 +1,207 @@
+import { Callout } from 'nextra/components';
+
+
+
+# Shooter
+
+### What Does a Shooter Do?
+
+A shooter is a great solution when game pieces have to be scored into a high goal. A shooter can typically be made with just one or two motors to spin a set of top and bottom / left and right wheels.
+
+### Code Example
+
+```java 
+ private final TalonFX shooterTopMain; // Falcon
+  private final TalonFX shooterBottomFollower; // Falcon
+
+  private final MotionMagicVelocityVoltage motionMagic = new MotionMagicVelocityVoltage(0);
+
+    public ShooterWheels() {
+  
+    shooterTopMain = new TalonFX(CANConstants.Shooter.kShooterTop);
+    shooterBottomFollower = new TalonFX(CANConstants.Shooter.kShooterBottom);
+    shooterTopMain.getConfigurator().apply(ShooterConstants.GetWheelsConfiguration());
+    shooterBottomFollower.getConfigurator().apply(ShooterConstants.GetWheelsConfiguration());
+    }
+
+    public void setShootVelocityMotionMagic(double velocityTop, double velocityBottom) {
+    motionMagic.Slot = 0;
+    shooterTopMain.setControl(motionMagic.withVelocity(velocityTop));
+    shooterBottomFollower.setControl(motionMagic.withVelocity(velocityBottom));
+  }
+```
+
+* As seen previously in the Arm subsystem, TalonFX motors are instantiated, the motor that spins the top shooter wheels 
+and the motor that spins the bottom shooter wheels.  
+* The lines below that applies a talonFX motor configuration. The method being called can be seen below:
+```java
+ public static TalonFXConfiguration GetWheelsConfiguration() {
+        TalonFXConfiguration configs = new TalonFXConfiguration();
+
+         configs.Slot0.kP = 0.11; // An error of 1 rotation per second results in 0.11V output
+         configs.Slot0.kI = 0.5;  // An accumulated error of 1 rotation per second increases output by 0.5V every second
+         configs.Slot0.kD = 0.0001; // A change of 1 rotation per second squared results in 0.0001 volts output
+        /*
+         * Voltage-based velocity requires a feed forward to account for the back-emf of
+         * the motor
+         */
+        configs.Slot0.kV = 0.12; // Falcon 500 is a 500kV motor, 500rpm per V = 8.333 rps per V, 1/8.33 = 0.12
+                                 // volts / Rotation per second
+
+        configs.MotionMagic.MotionMagicCruiseVelocity = 80;
+        configs.MotionMagic.MotionMagicAcceleration = 160;
+        configs.MotionMagic.MotionMagicJerk = 1600;
+
+        // Peak output of 8 volts
+        configs.Voltage.PeakForwardVoltage = 0.9 * 12;
+        configs.Voltage.PeakReverseVoltage = -0.9 * 12;
+
+        configs.TorqueCurrent.PeakForwardTorqueCurrent = 40;
+        configs.TorqueCurrent.PeakReverseTorqueCurrent = -40;
+
+        configs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+
+        return configs;
+    }
+    ```
+
+    * While this looks like a lot, it becomes much more straightforward after each part is explained.
+
+    ### TalonFXConfiguration
+    * Think of this like a "container" for the settings of the motor controller. Inside, there are a few main categories of configuration. 
+    **Slot0 Configs**, **Motion Magic Settings**, **Voltage Limits**, **Current Limits**, and **Neutral Mode**.
+
+### Code Explanation
+
+
+### Slot 0 (PIDF Configuration)
+```java
+    configs.Slot0.kP = 0.11; // An error of 1 rotation per second results in 0.11V output
+    configs.Slot0.kI = 0.5;  // An accumulated error of 1 rotation per second increases output by 0.5V every second
+    configs.Slot0.kD = 0.0001; // A change of 1 rotation per second squared results in 0.0001 volts output
+```
+
+### What are Slot 0 configs?
+
+* Slot 0 configs holds the PID and control loop parameters for motor configuration. 
+While slot 0 is the default slot for these configurations, they can also be placed in slot 1, 2, and so on.
+
+- **`Slot0.kP = 0.11;`**  
+  This sets the **Proportional** gain (kP) for the PID controller in **Slot 0**. The proportional term determines how much 
+  the controller output changes in response to the error. In this case, an error of 1 rotation per second would produce a 
+  0.11V output change.
+
+- **`Slot0.kI = 0.5;`**  
+  This sets the **Integral** gain (kI), which accumulates over time. The integral term helps eliminate steady-state 
+  error by adding a portion of the accumulated error to the output. With kI = 0.5, an error of 1 rotation per second 
+  will increase the output by 0.5V every second, as the error persists.
+
+- **`Slot0.kD = 0.0001;`**  
+  This sets the **Derivative** gain (kD), which predicts the future error based on its rate of change. 
+  The derivative term helps prevent overshooting and smoothens the response. A change of 1 rotation per 
+  second squared will produce a 0.0001V output change.
+
+### Voltage-Based Velocity Control (Feedforward)
+```java
+        /*
+         * Voltage-based velocity requires a feed forward to account for the back-emf of
+         * the motor
+         */
+    configs.Slot0.kV = 0.12; // Falcon 500 is a 500kV motor, 500rpm per V = 8.333 rps per V, 1/8.33 = 0.12
+                             // volts / Rotation per second
+```
+- **`Slot0.kV = 0.12;`**  
+  This sets the **voltage feedforward** term (kV), which compensates for the back electromotive force (back-EMF) of the motor. 
+  Since the **Falcon 500** motor is rated at **500 kV**, this means the motor will spin at **500 RPM per volt** applied. 
+  In this case, **0.12V** per **rotation per second** is used to account for the motor's characteristics. The formula comes 
+  from converting motor RPM to **rotations per second (RPS)** and calculating the corresponding feedforward voltage.
+
+### Motion Magic Settings
+```java
+    configs.MotionMagic.MotionMagicCruiseVelocity = 80;
+    configs.MotionMagic.MotionMagicAcceleration = 160;
+    configs.MotionMagic.MotionMagicJerk = 1600;
+```
+- **Motion Magic** is a control mode designed for smooth movement along a motion profile 
+(e.g., for moving to a position smoothly).
+- **`MotionMagicCruiseVelocity = 80;`**  
+  This sets the **cruise velocity** for the motion profile, which is the speed the motor will aim to maintain once 
+  it reaches a steady state in its motion. In this case, it's set to **80 units**.
+  
+- **`MotionMagicAcceleration = 160;`**  
+  This sets the **acceleration** that the motor should use to reach the target velocity. Here, it's set to **160**.
+
+- **`MotionMagicJerk = 1600;`**  
+  This sets the **jerk**, which is the rate of change of acceleration. 
+  Jerk limits how quickly the acceleration can change, preventing sudden, jerky movements. It's set to **1600**.
+
+
+<Callout type={"info"} emoji={"💡"}>Learn more about Motion Magic in [CTRE's documentation](https://v6.docs.ctr-electronics.com/en/latest/docs/api-reference/device-specific/talonfx/motion-magic.html).</Callout>
+
+### Voltage Limits
+```java
+    configs.Voltage.PeakForwardVoltage = 0.9 * 12;
+    configs.Voltage.PeakReverseVoltage = -0.9 * 12;
+```
+- **`PeakForwardVoltage = 0.9 * 12;`**  
+ * This limits the **maximum forward voltage** output to **90% of 12V**, or **10.8V**. 
+
+- **`PeakReverseVoltage = -0.9 * 12;`**  
+ * **Maximum reverse voltage** is set to the opposite.
+
+### Current Limits (Torque)
+```java
+    configs.TorqueCurrent.PeakForwardTorqueCurrent = 40;
+    configs.TorqueCurrent.PeakReverseTorqueCurrent = -40;
+```
+- **`PeakForwardTorqueCurrent = 40;`**  
+ * This sets the **maximum forward current** allowed to be sent to the motor for torque production. 
+ * It limits the current to **40A** in the forward direction.
+
+- **`PeakReverseTorqueCurrent = -40;`**  
+  * **maximum reverse current** is set to the opposite.
+
+### Neutral Mode (Motor Brake/Coast Mode)
+```java
+    configs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+```
+- **`NeutralMode = NeutralModeValue.Coast;`**  
+  This sets the **neutral mode** of the motor to **Coast**. In **Coast mode**, when no power is applied, 
+  the motor will freely rotate and slow down gradually. If set to **Brake mode**, the motor would resist movement and apply 
+  braking to stop the motor more quickly.
+
+  <Callout type={"info"} emoji={"💡"}>See an application of **Brake mode** on the ```Arm``` subsystem page.</Callout>
+
+### Return the Configuration
+```java
+    return configs;
+```
+- Finally, the method returns the configured **`TalonFXConfiguration`** object. This object contains all the settings 
+specified for the motor.
+
+
+
+## ```setShootVelocityMotionMagic()``` Method
+
+* Now, the Shooter motors are configured In order to run the wheels, the ```setShootVelocityMotionMagic()``` method was created, as seen below:
+```java
+public void setShootVelocityMotionMagic(double velocityTop, double velocityBottom) {
+    motionMagic.Slot = 0;
+    shooterTopMain.setControl(motionMagic.withVelocity(velocityTop));
+    shooterBottomFollower.setControl(motionMagic.withVelocity(velocityBottom));
+  }
+```
+### Code explanation
+
+**```motionMagic.Slot = 0;```**
+ * First, the code above sets the slot's gains that the motionMagic control uses. Because we have configured the talonFX motors to slot0, that is also the slot that 
+ we use here.
+
+ **```shooterTopMain.setControl(motionMagic.withVelocity(velocityTop));
+    shooterBottomFollower.setControl(motionMagic.withVelocity(velocityBottom));```**
+
+* Lastly, this code applies power to the motor using the ```setControl()``` method set to motion Magic using the velocity top and velocity bottom parameters. 
+
+<Callout type = {"info"} emoji = {"💡"}>It is important to know that each ```TalonFX Configuration``` has its **own unique slot 0 values**. This means that when the motion magic
+control set to slot 0 is set as the control of the two motors, each motor's configured slot 0 gains are used for the motion magic controller. In this case, those values are
+the same for both motors, but in other applications, those values may be different.</Callout>

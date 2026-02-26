@@ -26,5 +26,14 @@ pluginManagement {
     }
 }
 
+// Prefer including sim-core as a project so IDEs and the Gradle build include its classes
+// directly. The repository also supported composite builds; keep compatibility by leaving
+// includeBuild commented out if needed in the future.
+// includeBuild '../sim-core'
+
+// Include the sim-core project from the mono-repo so it is available as project(':sim-core')
+include ':sim-core'
+project(':sim-core').projectDir = new File(settingsDir, '../sim-core')
+
 Properties props = System.getProperties();
 props.setProperty("org.gradle.internal.native.headers.unresolved.dependencies.ignore", "true");

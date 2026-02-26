@@ -1,0 +1,133 @@
+---
+title: Troubleshooting Guide
+---
+
+# Scout-Ops-Android Troubleshooting Guide
+
+This guide addresses common issues encountered when using Scout-Ops-Android and provides step-by-step solutions.
+
+## Common Issues and Solutions
+
+### App Installation Problems
+
+| Issue | Solution |
+|-------|----------|
+| "App not compatible with device" | Ensure your device runs Android 7.0 or newer. Check Amazon App Store for updates. |
+| Installation freezes | Cancel installation, restart device, and try again. Check available storage space. |
+| App crashes immediately after installation | Clear app cache and data, then restart device. Reinstall if necessary. |
+
+### Permission-Related Issues
+
+| Issue | Solution |
+|-------|----------|
+| Permissions prompt not appearing | Go to device Settings > Apps > Scout-Ops-Android > Permissions and manually grant required permissions. |
+| App features not working after denying permissions | Navigate to device Settings > Apps > Scout-Ops-Android > Permissions and enable all required permissions. |
+| "Location permission required" error | Enable location services on your device and grant location permission to the app. |
+
+### Event Data Loading Issues
+
+| Issue | Solution |
+|-------|----------|
+| "Invalid event key" error | Double-check the event key format (e.g., "2025MITRY"). Verify on The Blue Alliance that the event exists. |
+| Event data fails to download | Check internet connection. Retry with Wi-Fi if possible. The event might not be available yet in The Blue Alliance database. |
+| Indicator remains red after download attempt | Verify internet connection and event key. Try clearing app cache and restarting. |
+
+### Data Collection and Entry Issues
+
+| Issue | Solution |
+|-------|----------|
+| Counters not responding | Restart the app. If persistent, clear app cache and restart device. |
+| Unable to progress to next phase | Complete all required fields in the current phase. Look for error messages indicating missing information. |
+| App freezes during match data entry | Force close the app, restart, and resume from the last auto-saved point. |
+
+### Data Transfer Problems
+
+| Issue | Solution |
+|-------|----------|
+| QR code not displaying | Ensure you've completed all required fields and swiped to finalize. If still not displaying, try force-stopping the app and restarting. |
+| QR code too small/unreadable | Increase screen brightness to maximum. Ensure scanning device is positioned correctly (8-12 inches away). |
+| Bluetooth PAN connection failing | Ensure both devices have Bluetooth enabled and are within range. Forget and re-pair the devices if necessary. |
+| Data transfer timeout | Move devices closer together. Restart both devices' Bluetooth. Try alternative transfer method (QR code). |
+
+### Data Management Issues
+
+| Issue | Solution |
+|-------|----------|
+| Missing match data | Check Logs section to verify if data was saved. Restore from backup if available. |
+| Duplicate match entries | In Logs, identify duplicates and delete the incorrect entries using the trash icon. |
+| Unable to export data | Ensure storage permission is granted. Verify available storage space. Try exporting to a different location. |
+
+## Advanced Troubleshooting
+
+### App Performance Issues
+
+If the app is running slowly or experiencing frequent crashes:
+
+1. **Clear Cache**:
+   - Go to device Settings > Apps > Scout-Ops-Android
+   - Tap Storage > Clear Cache
+
+2. **Enable Lightweight Mode**:
+   - In the app, go to Settings > Performance
+   - Enable "Lightweight Mode"
+
+3. **Check System Resources**:
+   - Close background apps
+   - Restart device
+   - Clear storage space if running low
+
+### Data Recovery Options
+
+If match data appears to be lost:
+
+1. **Check Local Cache**:
+   - Go to Settings > Data Management > View Cached Data
+   - Look for unsynchronized match entries
+
+2. **Restore from Backup**:
+   - Go to Settings > Backup & Restore
+   - Select the most recent backup file
+   - Tap "Restore Data"
+
+3. **Generate Recovery Report**:
+   - Go to Settings > Help & Support
+   - Tap "Generate Diagnostic Report"
+   - Send the report to your scouting lead or technical support
+
+## Factory Reset
+
+As a last resort, if the app continues to have issues:
+
+1. Go to device Settings > Apps > Scout-Ops-Android
+2. Tap "Storage" > "Clear Data" and "Clear Cache"
+3. Uninstall and reinstall the app
+4. Reconfigure all settings
+
+**Warning**: This will delete all locally stored match data and settings.
+
+## Contacting Support
+
+If you've tried all troubleshooting steps and continue to experience issues:
+
+1. Generate a diagnostic report (Settings > Help & Support > Diagnostic Report)
+2. Take screenshots of error messages
+3. Document steps that lead to the issue
+4. Contact support with this information:
+   - Email: support@scoutopsapp.com
+   - GitHub Issue: [Create a new issue](https://github.com/feds201/Scout-Ops-Android/issues/new)
+
+## Competition Day Emergency Procedures
+
+If encountering critical issues during competition:
+
+1. **Data Transfer Failure**:
+   - Switch to manual data collection (paper backup sheets)
+   - Take screenshots of QR codes for later processing
+   - Coordinate with scouting lead for alternative data entry methods
+
+2. **Device Failure**:
+   - Obtain backup device from scouting lead
+   - Install app and sign in with your scouter name
+   - Resume scouting with minimal configuration
+
+Keeping this troubleshooting guide accessible during competitions will help maintain efficient scouting operations even when technical issues arise.

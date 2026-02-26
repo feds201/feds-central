@@ -672,8 +672,8 @@ class MatchPageState extends State<MatchPage>
             0.0,
             0.0,
             0.0,
-            0.0,
-            0.0,
+            false,
+            false,
             0,
             0,
             0,
@@ -700,7 +700,7 @@ class MatchPageState extends State<MatchPage>
             false,
             false,
             false),
-        EndPoints(0, false, false, false, "", 0.0, 0, ""),
+        EndPoints(0, false, false, false, "", 0,0, 0.0, 0, []),
         teamNumber: teamNNumber.replaceAll('frc', ''),
         scouterName: _scouterName,
         matchKey: match['key'].toString(),
@@ -988,71 +988,71 @@ class MatchPageState extends State<MatchPage>
     );
   }
 
+  static const Map<String, String> eventNames = {
+    // Michigan District Events
+    "miket": "Kettering University District",
+    "micen": "Center Line District",
+    "misjo": "St. Joseph District",
+    "mitvc": "Traverse City District",
+    "miwat": "Waterford District",
+    "mitry": "Troy District",
+    "milak": "Lakeview District",
+    "miken": "East Kentwood District",
+    "miliv": "Livonia District",
+    "mimas": "Mason District",
+    "mialp": "Alpena District",
+    "mimid": "Midland District",
+    "mimon": "Monroe District",
+    "mimil": "Milford District",
+    "misou": "Southfield District",
+    "miann": "Ann Arbor District",
+    "mijac": "Jackson District",
+    "miwoo": "Woodhaven District",
+    "mimac": "Macomb District",
+    "mibel": "Belleville District",
+    "misag": "Saginaw Valley District",
+    "migib": "Gibraltar District",
+    "migul": "Gull Lake District",
+    "mical": "Calvin District",
+    "miesc": "Escanaba District",
+    "mifor": "Fordson District",
+    "mibri": "Brighton District",
+    "mimtp": "Mt. Pleasant District",
+    "mipla": "Placeholder District",
+
+    // Michigan State Championship
+    "micmp": "Michigan State Championship",
+    "micha": "Michigan State Championship",
+
+    // Other popular events
+    "chs": "Chesapeake District Championship",
+    "ont": "Ontario Provincial Championship",
+    "in": "Indiana State Championship",
+    "oh": "Ohio State Championship",
+    "first": "FIRST Championship",
+    "arc": "Archimedes Division",
+    "car": "Carson Division",
+    "cur": "Curie Division",
+    "dal": "Daly Division",
+    "dar": "Darwin Division",
+    "gal": "Galileo Division",
+    "hop": "Hopper Division",
+    "new": "Newton Division",
+    "roe": "Roebling Division",
+    "tur": "Turing Division",
+    "cmptx": "FIRST Championship - Houston",
+    "cmpmi": "FIRST Championship - Detroit",
+
+    // Additional events
+    "isde": "Israel District Event",
+    "isdc": "Israel District Championship",
+    "isw": "Israel World Championship",
+  };
+
   // Helper method to format event name
   String _formatEventName(String eventKey) {
     // Your existing formatting code
     String eventCode = eventKey.substring(4);
-
-    Map<String, String> eventNames = {
-      // Michigan District Events
-      "miket": "Kettering University District",
-      "micen": "Center Line District",
-      "misjo": "St. Joseph District",
-      "mitvc": "Traverse City District",
-      "miwat": "Waterford District",
-      "mitry": "Troy District",
-      "milak": "Lakeview District",
-      "miken": "East Kentwood District",
-      "miliv": "Livonia District",
-      "mimas": "Mason District",
-      "mialp": "Alpena District",
-      "mimid": "Midland District",
-      "mimon": "Monroe District",
-      "mimil": "Milford District",
-      "misou": "Southfield District",
-      "miann": "Ann Arbor District",
-      "mijac": "Jackson District",
-      "miwoo": "Woodhaven District",
-      "mimac": "Macomb District",
-      "mibel": "Belleville District",
-      "misag": "Saginaw Valley District",
-      "migib": "Gibraltar District",
-      "migul": "Gull Lake District",
-      "mical": "Calvin District",
-      "miesc": "Escanaba District",
-      "mifor": "Fordson District",
-      "mibri": "Brighton District",
-      "mimtp": "Mt. Pleasant District",
-      "mipla": "Placeholder District",
-
-      // Michigan State Championship
-      "micmp": "Michigan State Championship",
-      "micha": "Michigan State Championship",
-
-      // Other popular events
-      "chs": "Chesapeake District Championship",
-      "ont": "Ontario Provincial Championship",
-      "in": "Indiana State Championship",
-      "oh": "Ohio State Championship",
-      "first": "FIRST Championship",
-      "arc": "Archimedes Division",
-      "car": "Carson Division",
-      "cur": "Curie Division",
-      "dal": "Daly Division",
-      "dar": "Darwin Division",
-      "gal": "Galileo Division",
-      "hop": "Hopper Division",
-      "new": "Newton Division",
-      "roe": "Roebling Division",
-      "tur": "Turing Division",
-      "cmptx": "FIRST Championship - Houston",
-      "cmpmi": "FIRST Championship - Detroit",
-
-      // Additional events
-      "isde": "Israel District Event",
-      "isdc": "Israel District Championship",
-      "isw": "Israel World Championship",
-    };
 
     return eventNames[eventCode] ?? "Event ${eventCode.toUpperCase()}";
   }

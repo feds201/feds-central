@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hive/hive.dart';
 import 'package:scouting_app/Pit_Checklist/Pit_Checklist.dart';
+import 'services/LockdownService.dart';
 import 'package:scouting_app/Qualitative/qualitative.dart';
 import 'services/Colors.dart';
 import 'Experiment/ExpStateManager.dart';
@@ -26,6 +28,7 @@ class _HomePageState extends State<HomePage>
   late Animation<Color?> _colorAnimation;
   bool isExperimentBoxOpen = false;
   bool isCardBuilderOpen = false;
+  int _lockdownTapCount = 0;
 
   @override
   void initState() {
@@ -60,136 +63,133 @@ class _HomePageState extends State<HomePage>
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        scaffoldBackgroundColor:
-            islightmode() ? lightColors.white : darkColors.goodblack,
+    return Scaffold(
+      drawer: const NavBar(),
+      backgroundColor: Theme.of(context).brightness == Brightness.dark
+          ? darkColors.goodblack
+          : lightColors.white,
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: WaveGrid(isDark: Theme.of(context).brightness == Brightness.dark),
+          ),
+          Column(
+            children: [
+              _buildCustomAppBar(context),
+              Expanded(child: homePage()),
+            ],
+          ),
+        ],
       ),
-      home: Scaffold(
-        drawer: const NavBar(),
-        body: Stack(
-          children: [
-            const Positioned.fill(
-              child: WaveGrid(),
-            ),
-            Column(
-              children: [
-                _buildCustomAppBar(context),
-                Expanded(child: homePage()),
-              ],
-            ),
-          ],
-        ),
-        bottomSheet: _buildPersistentBottomSheet(),
-      ),
+      bottomSheet: _buildPersistentBottomSheet(),
     );
   }
 
   Widget _buildPersistentBottomSheet() {
+    List<Widget> children = [
+      const SizedBox(height: 20),
+      buildButton(
+        context: context,
+        text: 'Qualitative Scouting',
+        color: islightmode()
+            ? Color.fromARGB(192, 241, 131, 131)
+            : darkColors.advay_dark_red,
+        borderColor: const Color.fromARGB(255, 248, 0, 0),
+        icon: Icons.question_answer_outlined,
+        textColor: islightmode()
+            ? Color.fromARGB(255, 172, 18, 18)
+            : const Color.fromARGB(255, 248, 0, 0),
+        iconColor: islightmode()
+            ? Color.fromARGB(255, 172, 18, 18)
+            : const Color.fromARGB(255, 248, 0, 0),
+        onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const Qualitative(),
+                  fullscreenDialog: true));
+        },
+      ),
+      const SizedBox(height: 12),
+      buildButton(
+        context: context,
+        text: 'Match Scouting',
+        color: islightmode()
+            ? Colors.green.shade100
+            : darkColors.advay_dark_green,
+        borderColor: islightmode()
+            ? Colors.green.shade800
+            : const Color.fromARGB(255, 80, 218, 87),
+        icon: Icons.play_arrow_outlined,
+        textColor: islightmode()
+            ? Colors.green.shade800
+            : const Color.fromARGB(255, 80, 218, 87),
+        iconColor: islightmode()
+            ? Colors.green.shade800
+            : const Color.fromARGB(255, 80, 218, 87),
+        onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const MatchPage(),
+                  fullscreenDialog: true));
+        },
+      ),
+      const SizedBox(height: 12),
+      buildButton(
+        context: context,
+        text: 'Record Pit',
+        color: islightmode()
+            ? Colors.blue.shade100
+            : darkColors.advay_dark_blue,
+        borderColor: Colors.blueAccent,
+        icon: Icons.bookmark_add_outlined,
+        textColor: Colors.blueAccent,
+        iconColor: Colors.blueAccent,
+        onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const PitRecorder(),
+                  fullscreenDialog: true));
+        },
+      ),
+      const SizedBox(height: 12),
+      buildButton(
+        context: context,
+        text: 'Pit Checklist',
+        color: islightmode()
+            ? const Color.fromARGB(255, 230, 187, 251)
+            : darkColors.advay_dark_purple,
+        borderColor: islightmode()
+            ? const Color.fromARGB(255, 59, 24, 84)
+            : const Color.fromARGB(255, 174, 111, 219),
+        icon: Icons.bookmark_add_outlined,
+        textColor: islightmode()
+            ? const Color.fromARGB(255, 78, 26, 96)
+            : const Color.fromARGB(255, 174, 111, 219),
+            iconColor: const Color.fromARGB(255, 174, 111, 219),
+        onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const PitCheckListPage(),
+                  fullscreenDialog: true));
+        },
+      ),
+      const SizedBox(height: 5),
+    ];
+
+    double height = 50.0 * children.length;
+
     return AnimatedBuilder(
       animation: _colorAnimation,
+      child: Column(children: children),
       builder: (context, child) {
         return BottomSheet(
           enableDrag: false,
           onClosing: () {},
           builder: (BuildContext context) {
-            List<Widget> children = [
-              const SizedBox(height: 20),
-              buildButton(
-                context: context,
-                text: 'Qualitative Scouting',
-                color: islightmode()
-                    ? Color.fromARGB(192, 241, 131, 131)
-                    : darkColors.advay_dark_red,
-                borderColor: const Color.fromARGB(255, 248, 0, 0),
-                icon: Icons.question_answer_outlined,
-                textColor: islightmode()
-                    ? Color.fromARGB(255, 172, 18, 18)
-                    : const Color.fromARGB(255, 248, 0, 0),
-                iconColor: islightmode()
-                    ? Color.fromARGB(255, 172, 18, 18)
-                    : const Color.fromARGB(255, 248, 0, 0),
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const Qualitative(),
-                          fullscreenDialog: true));
-                },
-              ),
-              const SizedBox(height: 12),
-              buildButton(
-                context: context,
-                text: 'Match Scouting',
-                color: islightmode()
-                    ? Colors.green.shade100
-                    : darkColors.advay_dark_green,
-                borderColor: islightmode()
-                    ? Colors.green.shade800
-                    : const Color.fromARGB(255, 80, 218, 87),
-                icon: Icons.play_arrow_outlined,
-                textColor: islightmode()
-                    ? Colors.green.shade800
-                    : const Color.fromARGB(255, 80, 218, 87),
-                iconColor: islightmode()
-                    ? Colors.green.shade800
-                    : const Color.fromARGB(255, 80, 218, 87),
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const MatchPage(),
-                          fullscreenDialog: true));
-                },
-              ),
-              const SizedBox(height: 12),
-              buildButton(
-                context: context,
-                text: 'Record Pit',
-                color: islightmode()
-                    ? Colors.blue.shade100
-                    : darkColors.advay_dark_blue,
-                borderColor: Colors.blueAccent,
-                icon: Icons.bookmark_add_outlined,
-                textColor: Colors.blueAccent,
-                iconColor: Colors.blueAccent,
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const PitRecorder(),
-                          fullscreenDialog: true));
-                },
-              ),
-              const SizedBox(height: 12),
-              buildButton(
-                context: context,
-                text: 'Pit Checklist',
-                color: islightmode()
-                    ? const Color.fromARGB(255, 230, 187, 251)
-                    : darkColors.advay_dark_purple,
-                borderColor: islightmode()
-                    ? const Color.fromARGB(255, 59, 24, 84)
-                    : const Color.fromARGB(255, 174, 111, 219),
-                icon: Icons.bookmark_add_outlined,
-                textColor: islightmode()
-                    ? const Color.fromARGB(255, 78, 26, 96)
-                    : const Color.fromARGB(255, 174, 111, 219),
-                iconColor: const Color.fromARGB(255, 174, 111, 219),
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const PitCheckListPage(),
-                          fullscreenDialog: true));
-                },
-              ),
-              const SizedBox(height: 5),
-            ];
-
-            double height = 50.0 * children.length;
-
             return Container(
               width: MediaQuery.of(context).size.width,
               height: height,
@@ -210,9 +210,7 @@ class _HomePageState extends State<HomePage>
                   ),
                 ],
               ),
-              child: Column(
-                children: children,
-              ),
+              child: child,
             );
           },
         );
@@ -291,19 +289,38 @@ class _HomePageState extends State<HomePage>
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ).createShader(bounds),
-              child: Text(
-                'Scout-Ops',
-                style: GoogleFonts.chivoMono(
-                  fontSize: 70,
-                  fontWeight: FontWeight.w300,
-                  color: Colors.white,
-                  shadows: [
-                    Shadow(
-                      color: Colors.red.withOpacity(0.3),
-                      blurRadius: 15.0,
-                      offset: const Offset(5, 5),
-                    ),
-                  ],
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _lockdownTapCount++;
+                    if (_lockdownTapCount >= 10) {
+                      _lockdownTapCount = 0;
+                      if (Hive.box('settings')
+                          .get('isLockdown', defaultValue: false)) {
+                        Hive.box('settings').put('isLockdown', false);
+                        LockdownService.stopLockTask();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text('Lockdown Mode Disabled')),
+                        );
+                      }
+                    }
+                  });
+                },
+                child: Text(
+                  'Scout-Ops',
+                  style: GoogleFonts.chivoMono(
+                    fontSize: 70,
+                    fontWeight: FontWeight.w300,
+                    color: Colors.white,
+                    shadows: [
+                      Shadow(
+                        color: Colors.red.withOpacity(0.3),
+                        blurRadius: 15.0,
+                        offset: const Offset(5, 5),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

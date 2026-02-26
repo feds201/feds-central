@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:scouting_app/components/CheckBox.dart';
 import 'package:scouting_app/components/CounterShelf.dart';
@@ -9,6 +10,7 @@ import 'package:scouting_app/components/gameSpecifics/climb.dart';
 import 'package:scouting_app/main.dart';
 
 import '../../components/TeamInfo.dart';
+import '../../components/gameSpecifics/starRate.dart';
 import '../../components/gameSpecifics/timer.dart';
 import '../../components/slider.dart';
 import '../../services/DataBase.dart';
@@ -40,10 +42,10 @@ class EndGameState extends State<EndGame> {
   //timer
   double endgameTime = 0.0;
   int endgameActions = 0;
-  String drawingData = '';
-  List<List<Offset>> initialStrokes = [];
+  List<int> drawingData = [];
   Alliance mapcolor = Alliance.blue;
   bool isPageScrollable = true;
+  int shootingAccuracy = 3;
 
   TextEditingController commentController = TextEditingController();
 
@@ -70,11 +72,11 @@ class EndGameState extends State<EndGame> {
     passing = widget.matchRecord.endPoints.Passing;
 
     commentController.text = widget.matchRecord.endPoints.Comments;
-    neutralTrips = 0;
+    neutralTrips = widget.matchRecord.endPoints.EndNeutralTrips;
+    shootingAccuracy = widget.matchRecord.endPoints.ShootingAccuracy;
     endgameTime = widget.matchRecord.endPoints.endgameTime;
     endgameActions = widget.matchRecord.endPoints.endgameActions;
     drawingData = widget.matchRecord.endPoints.drawingData;
-    initialStrokes = _parseDrawingData(drawingData);
   }
 
   void UpdateData() {
@@ -82,6 +84,8 @@ class EndGameState extends State<EndGame> {
     widget.matchRecord.endPoints.ClimbStatus = selectedLevel ?? 0;
 
     // Park is explicitly tracked, usually triggered if level is null and user leaves blank
+    widget.matchRecord.endPoints.EndNeutralTrips = neutralTrips;
+    widget.matchRecord.endPoints.ShootingAccuracy = shootingAccuracy;
     widget.matchRecord.endPoints.Park = park;
     widget.matchRecord.endPoints.FeedToHP = feedToHP;
     widget.matchRecord.endPoints.Passing = passing;
@@ -95,47 +99,6 @@ class EndGameState extends State<EndGame> {
 
     endPoints = widget.matchRecord.endPoints;
     saveState();
-  }
-
-  // Minimalist serialization: "x,y,x,y;x,y"
-  String _serializeStrokes(List<List<Offset>> strokes) {
-    if (strokes.isEmpty) return "";
-    StringBuffer buffer = StringBuffer();
-    for (int i = 0; i < strokes.length; i++) {
-      if (i > 0) buffer.write(";");
-      List<Offset> stroke = strokes[i];
-      for (int j = 0; j < stroke.length; j++) {
-        if (j > 0) buffer.write(",");
-        // Truncate to 1 decimal place to save space
-        buffer.write(
-            "${stroke[j].dx.toStringAsFixed(1)},${stroke[j].dy.toStringAsFixed(1)}");
-      }
-    }
-    return buffer.toString();
-  }
-
-  List<List<Offset>> _parseDrawingData(String data) {
-    if (data.isEmpty) return [];
-    List<List<Offset>> strokes = [];
-    try {
-      List<String> strokeStrings = data.split(';');
-      for (String s in strokeStrings) {
-        if (s.isEmpty) continue;
-        List<String> coords = s.split(',');
-        List<Offset> stroke = [];
-        for (int i = 0; i < coords.length; i += 2) {
-          if (i + 1 < coords.length) {
-            double x = double.parse(coords[i]);
-            double y = double.parse(coords[i + 1]);
-            stroke.add(Offset(x, y));
-          }
-        }
-        if (stroke.isNotEmpty) strokes.add(stroke);
-      }
-    } catch (e) {
-      log("Error parsing drawing data: $e");
-    }
-    return strokes;
   }
 
   void saveState() {
@@ -257,7 +220,85 @@ class EndGameState extends State<EndGame> {
               park = newLevel == null;
             },
           ),
+          const SizedBox(height: 12),
+          Container(
+            height: 250,
+            width: double.infinity,
+            constraints: const BoxConstraints(maxWidth: 600),
+            decoration: BoxDecoration(
+              color: Color.fromARGB(255, 34, 34, 34),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: DottedBorder(
+                borderType: BorderType.RRect,
+                radius: const Radius.circular(12),
+                dashPattern: const [10, 4],
+                strokeWidth: 3,
+                color: Color(0xBF254EEA),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        SizedBox(
+                          height: 67,
+                          width: 20,
+                        ),
+                        Icon(
+                          Icons.thumbs_up_down,
+                          color: Colors.blueAccent,
+                          size: 30,
+                        ),
+                        SizedBox(
+                          width: 12,
+                        ),
+                        Text(
+                          'Shooter Accuracy',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
 
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Container(
+                      height: 135,
+                      decoration: BoxDecoration(
+                        color: Colors.grey,
+                        borderRadius:BorderRadius.circular(12),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(1.5),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Color.fromARGB(255, 34, 34, 34),
+                            borderRadius:BorderRadius.circular(12),
+                          ),
+                          child:StarRating(
+                            initialRating: shootingAccuracy,
+                            onRatingChanged: (rating) {
+                              setState(() {
+                                shootingAccuracy = rating;
+                                print(shootingAccuracy);
+                              });
+                            },
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
@@ -348,10 +389,10 @@ class EndGameState extends State<EndGame> {
             blueAllianceImagePath: 'assets/2026/BlueAlliance_StartPosition.png',
             redAllianceImagePath: 'assets/2026/RedAlliance_StartPosition.png',
             alliance: mapcolor,
-            initialStrokes: initialStrokes,
-            onStrokesChanged: (strokes) {
+            initialData: drawingData,
+            onDataChanged: (data) {
               setState(() {
-                drawingData = _serializeStrokes(strokes);
+                drawingData = data;
               });
               UpdateData();
             },

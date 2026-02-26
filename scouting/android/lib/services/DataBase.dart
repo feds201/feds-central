@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/painting.dart';
 import 'package:hive/hive.dart';
@@ -696,6 +697,7 @@ class AutonPoints {
       "FuelPickUpFromOutpost": fuel_pickup_from_Outpost,
       "FuelPickUpFromNeutralZone": fuel_pickup_from_Neutral_Zone,
       "TotalShootingTime": total_shooting_time,
+      "AmountOfShooting": amountOfShooting,
       "Climb": climb,
       "WinAfterAuton": winAfterAuton,
       "RobotLocation": starting_location.toJson(),
@@ -704,7 +706,7 @@ class AutonPoints {
   }
 
   String toCsv() {
-    return '$left_starting_position,$fuel_pickup_from_Depot,$fuel_pickup_from_Outpost,$fuel_pickup_from_Neutral_Zone,$total_shooting_time,$amountOfShooting,$climb,$winAfterAuton,${starting_location.toCsv()}';
+    return '${left_starting_position ? 1 : 0},${fuel_pickup_from_Depot ? 1 : 0},${fuel_pickup_from_Outpost ? 1 : 0},${fuel_pickup_from_Neutral_Zone ? 1 : 0},$total_shooting_time,$amountOfShooting,${climb ? 1 : 0},$winAfterAuton,${starting_location.toCsv()}';
   }
 
   static AutonPoints fromJson(Map<String, dynamic> json) {
@@ -713,7 +715,7 @@ class AutonPoints {
       json['FuelPickUpFromOutpost'] ?? false,
       json['FuelPickUpFromNeutralZone'] ?? false,
       json['TotalShootingTime'] ?? 0,
-      json["Amount of Shooting"] ?? 0,
+      json["AmountOfShooting"] ?? 0,
       json['Climb'] ?? false,
       json['WinAfterAuton'] ?? "",
       BotLocation.fromJson(
@@ -730,7 +732,7 @@ class AutonPoints {
 
   @override
   String toString() {
-    return 'AutonPoints{FuelPickUpFromDepot: $fuel_pickup_from_Depot, FuelPickUpFromOutpost: $fuel_pickup_from_Outpost, FuelPickUpFromNeutralZone: $fuel_pickup_from_Neutral_Zone, TotalShootingTime: $total_shooting_time, Climb: $climb, WinAfterAuton: $winAfterAuton, LeftStartingPosition: $left_starting_position, RobotLocation: $starting_location}';
+    return 'AutonPoints{FuelPickUpFromDepot: $fuel_pickup_from_Depot, FuelPickUpFromOutpost: $fuel_pickup_from_Outpost, FuelPickUpFromNeutralZone: $fuel_pickup_from_Neutral_Zone, TotalShootingTime: $total_shooting_time, AmountOfShooting: $amountOfShooting, Climb: $climb, WinAfterAuton: $winAfterAuton, LeftStartingPosition: $left_starting_position, RobotLocation: $starting_location}';
   }
 
   void setFuelPickupFromDepot(bool value) {
@@ -747,6 +749,10 @@ class AutonPoints {
 
   setTotalShootingTime(double value) {
     total_shooting_time = value;
+  }
+
+  setAmountOfShooting(int value) {
+    amountOfShooting = value;
   }
 
   setClimb(bool value) {
@@ -767,8 +773,8 @@ class TeleOpPoints {
   double TotalShootingTime1 = 0;
   double TotalShootingTimeA1 = 0;
   double TotalShootingTimeA2 = 0;
-  double TotalShootingTimeI1 = 0;
-  double TotalShootingTimeI2 = 0;
+  bool ShootingI1 = false;
+  bool ShootingI2 = false;
   int TotalAmount1 = 0;
   int TotalAmountA1 = 0;
   int TotalAmountA2 = 0;
@@ -800,8 +806,8 @@ class TeleOpPoints {
       this.TotalShootingTime1,
       this.TotalShootingTimeA1,
       this.TotalShootingTimeA2,
-      this.TotalShootingTimeI1,
-      this.TotalShootingTimeI2,
+      this.ShootingI1,
+      this.ShootingI2,
       this.TotalAmount1,
       this.TotalAmountA1,
       this.TotalAmountA2,
@@ -834,8 +840,8 @@ class TeleOpPoints {
       "TotalShootingTime1": TotalShootingTime1,
       "TotalShootingTimeA1": TotalShootingTimeA1,
       "TotalShootingTimeA2": TotalShootingTimeA2,
-      "TotalShootingTimeI1": TotalShootingTimeI1,
-      "TotalShootingTimeI2": TotalShootingTimeI2,
+      "ShootingI1": ShootingI1,
+      "ShootingI2": ShootingI2,
       "TotalAmount1": TotalAmount1,
       "TotalAmountA1": TotalAmountA1,
       "TotalAmountA2": TotalAmountA2,
@@ -866,7 +872,7 @@ class TeleOpPoints {
   }
 
   String toCsv() {
-    return '${TotalShootingTime1},${TotalShootingTimeA1},${TotalShootingTimeA2},${TotalShootingTimeI1},${TotalShootingTimeI2},${TotalAmount1}, ${TotalAmountA1}, ${TotalAmountA2}, ${TotalAmountI1}, ${TotalAmountI2}, ${TripAmount1}, ${NeutralTrips}, ${NeutralTripsA1}, ${NeutralTripsA2}, ${NeutralTripsI1}, ${NeutralTripsI2}, ${Defense} ${DefenseA1} ${DefenseA2} ${DefenseI1} ${DefenseI2}, ${FeedToHPStation} ${FeedToHPStationA1} ${FeedToHPStationA2} ${FeedToHPStationI1} ${FeedToHPStationI2}, ${passing} ${passingA1} ${passingA2} ${passingI1} ${passingI2}';
+    return '${TotalShootingTime1},${TotalShootingTimeA1},${TotalShootingTimeA2},${ShootingI1 ? 1 : 0},${ShootingI2 ? 1 : 0},${TotalAmount1},${TotalAmountA1},${TotalAmountA2},${TotalAmountI1},${TotalAmountI2},${TripAmount1},${NeutralTrips},${NeutralTripsA1},${NeutralTripsA2},${NeutralTripsI1},${NeutralTripsI2},${Defense ? 1 : 0},${DefenseA1 ? 1 : 0},${DefenseA2 ? 1 : 0},${DefenseI1 ? 1 : 0},${DefenseI2 ? 1 : 0},${FeedToHPStation ? 1 : 0},${FeedToHPStationA1 ? 1 : 0},${FeedToHPStationA2 ? 1 : 0},${FeedToHPStationI1 ? 1 : 0},${FeedToHPStationI2 ? 1 : 0},${passing ? 1 : 0},${passingA1 ? 1 : 0},${passingA2 ? 1 : 0},${passingI1 ? 1 : 0},${passingI2 ? 1 : 0}';
   }
 
   static TeleOpPoints fromJson(Map<String, dynamic> json) {
@@ -874,8 +880,8 @@ class TeleOpPoints {
       (json['TotalShootingTime1'] ?? json['TotalShootingTime'] ?? 0).toDouble(),
       (json['TotalShootingTimeA1'] ?? 0).toDouble(),
       (json['TotalShootingTimeA2'] ?? 0).toDouble(),
-      (json['TotalShootingTimeI1'] ?? 0).toDouble(),
-      (json['TotalShootingTimeI2'] ?? 0).toDouble(),
+      json['ShootingI1'] ?? false,
+      json['ShootingI2'] ?? false,
       json['TotalAmount1'] ?? 0,
       json['TotalAmountA1'] ?? 0,
       json['TotalAmountA2'] ?? 0,
@@ -907,7 +913,7 @@ class TeleOpPoints {
 
   @override
   String toString() {
-    return 'TeleOpPoints{TotalShootingTime1: $TotalShootingTime1, TotalShootingTimeA1: $TotalShootingTimeA1, TotalShootingTimeA2: $TotalShootingTimeA2, TotalShootingTimeI1: $TotalShootingTimeI1, TotalShootingTimeI2: $TotalShootingTimeI2, TotalAmount1 $TotalAmount1, TotalAmountA1 $TotalAmountA1, TotalAmountA2 $TotalAmountA2, TotalAmountI1 $TotalAmountI1, TotalAmountI2 $TotalAmountI2, TripAmount1 $TripAmount1, NeutralTips $NeutralTrips, NeutralTipsA1 $NeutralTripsA1, NeutralTipsA2 $NeutralTripsA2, NeutralTipsI1 $NeutralTripsI1, NeutralTipsI2 $NeutralTripsI2, Defense: $Defense DefenseA1: $DefenseA1, DefenseA2: $DefenseA2, DefenseI1: $DefenseI1, DefenseI2: $DefenseI2, FeedToHPStation: $FeedToHPStation FeedToHPStationA1: $FeedToHPStationA1, FeedToHPStationA2: $FeedToHPStationA2 FeedToHPStationI1: $FeedToHPStationI1, FeedToHPStationI2: $FeedToHPStationI2, passing: $passing, passingA1: $passingA1, passingA2: $passingA2, passingI1: $passingI1 passingI2: $passingI2}';
+    return 'TeleOpPoints{TotalShootingTime1: $TotalShootingTime1, TotalShootingTimeA1: $TotalShootingTimeA1, TotalShootingTimeA2: $TotalShootingTimeA2, ShootingI1: $ShootingI1, ShootingI2: $ShootingI2, TotalAmount1 $TotalAmount1, TotalAmountA1 $TotalAmountA1, TotalAmountA2 $TotalAmountA2, TotalAmountI1 $TotalAmountI1, TotalAmountI2 $TotalAmountI2, TripAmount1 $TripAmount1, NeutralTips $NeutralTrips, NeutralTipsA1 $NeutralTripsA1, NeutralTipsA2 $NeutralTripsA2, NeutralTipsI1 $NeutralTripsI1, NeutralTipsI2 $NeutralTripsI2, Defense: $Defense DefenseA1: $DefenseA1, DefenseA2: $DefenseA2, DefenseI1: $DefenseI1, DefenseI2: $DefenseI2, FeedToHPStation: $FeedToHPStation FeedToHPStationA1: $FeedToHPStationA1, FeedToHPStationA2: $FeedToHPStationA2 FeedToHPStationI1: $FeedToHPStationI1, FeedToHPStationI2: $FeedToHPStationI2, passing: $passing, passingA1: $passingA1, passingA2: $passingA2, passingI1: $passingI1 passingI2: $passingI2}';
   }
 
   setTotalShootingTime1(double value) {
@@ -922,12 +928,12 @@ class TeleOpPoints {
     TotalShootingTimeA2 = value;
   }
 
-  setTotalShootingTimeI1(double value) {
-    TotalShootingTimeI1 = value;
+  setShootingI1(bool value) {
+    ShootingI1 = value;
   }
 
-  setTotalShootingTimeI2(double value) {
-    TotalShootingTimeI2 = value;
+  setShootingI2(bool value) {
+    ShootingI2 = value;
   }
 
   setTotalAmount1(int value) {
@@ -1042,10 +1048,12 @@ class EndPoints {
   bool Park = false;
   bool FeedToHP = false;
   bool Passing = false;
+  int EndNeutralTrips =0;
+  int ShootingAccuracy;
   double endgameTime;
   int endgameActions;
   String Comments = '';
-  String drawingData = ''; // Format: "s:x,y,x,y;s:x,y..."
+  List<int> drawingData = [];
 
   EndPoints(
     this.ClimbStatus,
@@ -1053,6 +1061,8 @@ class EndPoints {
     this.FeedToHP,
     this.Passing,
     this.Comments,
+    this.EndNeutralTrips,
+    this.ShootingAccuracy,
     this.endgameTime,
     this.endgameActions,
     this.drawingData,
@@ -1064,6 +1074,8 @@ class EndPoints {
       "Park": Park,
       "FeedToHP": FeedToHP,
       "Passing": Passing,
+      "EndNeutralTrips": EndNeutralTrips,
+      "ShootingAccuracy": ShootingAccuracy,
       "endgameTime": endgameTime,
       "endgameActions": endgameActions,
       "Comments": Comments,
@@ -1078,19 +1090,26 @@ class EndPoints {
       json['FeedToHP'] ?? false,
       json['Passing'] ?? false,
       json['Comments'] ?? '',
+      json['EndNeutralTrips'] ?? 0,
+      (json['ShootingAccuracy'] as int?) ?? 3,
       (json['endgameTime'] ?? 0.0).toDouble(),
       json['endgameActions'] ?? 0,
-      json['DrawingData'] ?? '',
+      // Handle both list and legacy string/migration
+      (json['DrawingData'] is List) ? List<int>.from(json['DrawingData']) : [],
     );
   }
 
   @override
   String toString() {
-    return 'EndPoints{ClimbStatus: $ClimbStatus, Park: $Park, FeedToHP: $FeedToHP, Passing: $Passing, endgameTime: $endgameTime, endgameActions: $endgameActions, Comments: $Comments, DrawingData: $drawingData}';
+    return 'EndPoints{ClimbStatus: $ClimbStatus, Park: $Park, FeedToHP: $FeedToHP, Passing: $Passing, EndNeutralTrips: $EndNeutralTrips, ShootingAccuracy: $ShootingAccuracy, endgameTime: $endgameTime, endgameActions: $endgameActions, Comments: $Comments, DrawingData: $drawingData}';
   }
 
   String toCsv() {
-    return '$ClimbStatus,$Park,$FeedToHP,$Passing,$endgameTime,$endgameActions,$Comments,$drawingData';
+    return '$ClimbStatus,${Park ? 1 : 0},${FeedToHP ? 1 : 0},${Passing ? 1 : 0},$EndNeutralTrips, $ShootingAccuracy,$endgameActions,$Comments,$drawingData';
+  }
+
+  String _encodeDrawingData() {
+    return DrawingBitmaskCodec.encode(drawingData);
   }
 
   @override
@@ -1100,8 +1119,10 @@ class EndPoints {
     return other is EndPoints &&
         other.ClimbStatus == ClimbStatus &&
         other.Park == Park &&
+        other.EndNeutralTrips == EndNeutralTrips &&
         other.FeedToHP == FeedToHP &&
         other.Passing == Passing &&
+        other.ShootingAccuracy == ShootingAccuracy &&
         other.Comments == Comments;
   }
 
@@ -1109,8 +1130,10 @@ class EndPoints {
   int get hashCode {
     return ClimbStatus.hashCode ^
         Park.hashCode ^
+        EndNeutralTrips.hashCode ^
         FeedToHP.hashCode ^
         Passing.hashCode ^
+        ShootingAccuracy.hashCode ^
         Comments.hashCode;
   }
 
@@ -1122,12 +1145,61 @@ class EndPoints {
     Park = value;
   }
 
+  setShootingAccuracy(int value) {
+    ShootingAccuracy = value;
+  }
+
+  setEndNeutralTrips(int value) {
+    EndNeutralTrips = value;
+  }
+
   setFeedToHP(bool value) {
     FeedToHP = value;
   }
 
   setPassing(bool value) {
     Passing = value;
+  }
+}
+
+class DrawingBitmaskCodec {
+  static const int _rows = 33;
+  static const int _cols = 58;
+  static const int _totalCells = _rows * _cols; // 1914
+
+  static String encode(List<int> ids) {
+    if (ids.isEmpty) return '';
+
+    int byteLength = (_totalCells + 7) >> 3;
+    Uint8List bytes = Uint8List(byteLength);
+
+    for (final id in ids) {
+      if (id < 1 || id > _totalCells) continue;
+      int index = id - 1;
+      int byteIndex = index >> 3;
+      int bitIndex = index & 7;
+      bytes[byteIndex] |= (1 << bitIndex);
+    }
+
+    return base64Url.encode(bytes);
+  }
+
+  static List<int> decode(String encoded) {
+    if (encoded.isEmpty) return [];
+    Uint8List bytes = base64Url.decode(encoded);
+    List<int> ids = [];
+
+    int maxBits = _totalCells;
+    for (int index = 0; index < maxBits; index++) {
+      int byteIndex = index >> 3;
+      int bitIndex = index & 7;
+      if (byteIndex >= bytes.length) break;
+      if ((bytes[byteIndex] & (1 << bitIndex)) != 0) {
+        ids.add(index + 1);
+      }
+    }
+
+    return ids;
   }
 }
 
@@ -1236,9 +1308,11 @@ class LocalDataBase {
       data['FeedToHP'] ?? false,
       data['Passing'] ?? false,
       data['Comments'] ?? "",
+      data['EndNeutralTrips'] ?? 0,
+      data['ShootingAccuracy'] ?? 3,
       (data['EndgameTime'] ?? 0).toDouble(),
       data['EndgameActions'] ?? 0,
-      data['DrawingData'] ?? '',
+      (data['DrawingData'] is List) ? List<int>.from(data['DrawingData']) : [],
     );
   }
 
@@ -1758,4 +1832,5 @@ class PitCheckListDatabase {
       return false;
     }
   }
+
 }

@@ -1,4 +1,3 @@
-import re
 import threading
 import curses
 import logging
@@ -15,22 +14,18 @@ from gevent.pywsgi import WSGIServer
 from flask import Flask, request, jsonify, send_file, render_template
 import json
 import psutil
+import requests
 
 app = Flask(__name__)
 
+TBA_API_KEY = os.environ.get('TBA_API_KEY')
 
-def fix_to_json_format(data):
-    # Add double quotes to keys
-    data = re.sub(r'([a-zA-Z0-9_]+):', r'"\1":', data)
-    # Add double quotes to string values (but not true, false, numbers)
-    data = re.sub(r':\s*([a-zA-Z_]+)', r': "\1"', data)
-    return data
 
-# Function to take input, fix it, and save it
+# Function to take input and save it
 def process_json_input():
     count = 1
     while True:
-        # Input for a malformed JSON object
+        # Input for a JSON object
         input_data = input(f"Enter JSON object {count} (or type 'exit' to stop): ")
 
         if input_data.lower() == 'exit':
@@ -38,11 +33,8 @@ def process_json_input():
             break
 
         try:
-            # Fix the input data
-            fixed_data = fix_to_json_format(input_data)
-
-            # Parse the fixed string into a Python dictionary
-            json_data = json.loads(fixed_data)
+            # Parse the input string into a Python dictionary
+            json_data = json.loads(input_data)
 
             # Define the output file name
             output_filename = f"output_{count}.json"
@@ -370,7 +362,7 @@ def send_data():
     device = cursor.fetchone()
     if device:
         device_id = device[0]
-        cursor.execute('INSERT INTO device_data (device_id, data) VALUES (?, ?)', (device_id, str(data)))
+        cursor.execute('INSERT INTO device_data (device_id, data) VALUES (?, ?)', (device_id, json.dumps(data)))
         conn.commit()
         log_message(f"Data inserted for device {device_id}")
     else:
@@ -473,17 +465,19 @@ def clear_devices_json():
 
 @app.route('/send_pit_data', methods=['POST'])
 def send_pit_data():
-    data = None
+    data = request.get_json(silent=True)
+    if data is None:
+        return jsonify({"status": "error", "message": "Invalid JSON format"}), 400
+
     try:
-        data = str(request.json).replace("'", '"')
         log_message(f"Pit data received: {data}")
         with open('pit_data.json', 'w') as file:
-            file.write(fix_to_json_format(str(data)))
+            json.dump(data, file, indent=4)
         print("")
         return jsonify({"status": "success"})
-    except json.JSONDecodeError:
-        data = None
-        return jsonify({"status": "error", "message": "Invalid JSON format"}), 400
+    except Exception as e:
+        log_message(f"Error saving pit data: {e}")
+        return jsonify({"status": "error", "message": str(e)}), 500
     
     
 
@@ -555,10 +549,8 @@ def post_match():
     cursor = conn.cursor()
 
     try:
-        for match in data:
-            match_id = match.get('key')
-            match_data = json.dumps(match)
-            cursor.execute('INSERT INTO event (match_id, match_data) VALUES (?, ?)', (match_id, match_data))
+        insert_data = ((match.get('key'), json.dumps(match)) for match in data)
+        cursor.executemany('INSERT INTO event (match_id, match_data) VALUES (?, ?)', insert_data)
 
         conn.commit()
         conn.close()
@@ -585,6 +577,26 @@ def clear_event_data():
 def get_health():
     server_info = json.loads(get_server_info())
     return jsonify(server_info)
+
+
+@app.route('/api/tba/team/<int:team_number>', methods=['GET'])
+def get_tba_team_data(team_number):
+    if not TBA_API_KEY:
+        return jsonify({"error": "TBA_API_KEY environment variable is not set"}), 500
+
+    url = f"https://www.thebluealliance.com/api/v3/team/frc{team_number}"
+    headers = {"X-TBA-Auth-Key": TBA_API_KEY}
+    try:
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+            data = response.json()
+            resp = jsonify(data)
+            resp.headers.add('Access-Control-Allow-Origin', '*')
+            return resp
+        else:
+            return jsonify({"error": "Failed to fetch data from TBA", "status_code": response.status_code}), response.status_code
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 # Main function

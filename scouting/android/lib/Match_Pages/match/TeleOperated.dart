@@ -24,8 +24,8 @@ class _TeleOperatedState extends State<TeleOperated> {
   late double shootingTime1;
   late double shootingTimeA1;
   late double shootingTimeA2;
-  late double shootingTimeI1;
-  late double shootingTimeI2;
+  late bool shootingI1;
+  late bool shootingI2;
   late int amount = 0;
   late int amountA1 = 0;
   late int amountA2 = 0;
@@ -68,8 +68,8 @@ class _TeleOperatedState extends State<TeleOperated> {
     shootingTime1 = widget.matchRecord.teleOpPoints.TotalShootingTime1;
     shootingTimeA1 = widget.matchRecord.teleOpPoints.TotalShootingTimeA1;
     shootingTimeA2 = widget.matchRecord.teleOpPoints.TotalShootingTimeA2;
-    shootingTimeI1 = widget.matchRecord.teleOpPoints.TotalShootingTimeI1;
-    shootingTimeI2 = widget.matchRecord.teleOpPoints.TotalShootingTimeI2;
+    shootingI1 = widget.matchRecord.teleOpPoints.ShootingI1;
+    shootingI2 = widget.matchRecord.teleOpPoints.ShootingI2;
     amount = widget.matchRecord.teleOpPoints.TotalAmount1;
     amountA1 = widget.matchRecord.teleOpPoints.TotalAmountA1;
     amountA2 = widget.matchRecord.teleOpPoints.TotalAmountA2;
@@ -101,8 +101,8 @@ class _TeleOperatedState extends State<TeleOperated> {
       shootingTime1,
       shootingTimeA1,
       shootingTimeA2,
-      shootingTimeI1,
-      shootingTimeI2,
+      shootingI1,
+      shootingI2,
       amount,
       amountA1,
       amountA2,
@@ -138,8 +138,8 @@ class _TeleOperatedState extends State<TeleOperated> {
       shootingTime1,
       shootingTimeA1,
       shootingTimeA2,
-      shootingTimeI1,
-      shootingTimeI2,
+      shootingI1,
+      shootingI2,
       amount,
       amountA1,
       amountA2,
@@ -169,11 +169,15 @@ class _TeleOperatedState extends State<TeleOperated> {
     );
 
     widget.matchRecord.teleOpPoints.Defense = defense;
+    widget.matchRecord.teleOpPoints.DefenseA1 = defenseA1;
+    widget.matchRecord.teleOpPoints.DefenseA2 = defenseA2;
+    widget.matchRecord.teleOpPoints.DefenseI1 = defenseI1;
+    widget.matchRecord.teleOpPoints.DefenseI2 = defenseI2;
     widget.matchRecord.teleOpPoints.TotalShootingTime1 = shootingTime1;
     widget.matchRecord.teleOpPoints.TotalShootingTimeA1 = shootingTimeA1;
     widget.matchRecord.teleOpPoints.TotalShootingTimeA2 = shootingTimeA2;
-    widget.matchRecord.teleOpPoints.TotalShootingTimeI1 = shootingTimeI1;
-    widget.matchRecord.teleOpPoints.TotalShootingTimeI2 = shootingTimeI2;
+    widget.matchRecord.teleOpPoints.ShootingI1 = shootingI1;
+    widget.matchRecord.teleOpPoints.ShootingI2 = shootingI2;
     widget.matchRecord.teleOpPoints.TotalAmount1 = amount;
     widget.matchRecord.teleOpPoints.TotalAmountA1 = amountA1;
     widget.matchRecord.teleOpPoints.TotalAmountA2 = amountA2;
@@ -511,8 +515,10 @@ class _TeleOperatedState extends State<TeleOperated> {
           UpdateData();
         }, color: Colors.yellow),
         SizedBox(height: 8),
-        buildCheckBoxFull("Shooting", false, (bool value) {
-          setState(() {});
+        buildCheckBoxFull("Shooting", shootingI1, (bool value) {
+          setState(() {
+            shootingI1 = value;
+          });
           UpdateData();
         }),
         SizedBox(height: 8),
@@ -560,8 +566,10 @@ class _TeleOperatedState extends State<TeleOperated> {
           });
           UpdateData();
         }, color: Colors.yellow),
-        buildCheckBoxFull("Shooting", false, (bool value) {
-          setState(() {});
+        buildCheckBoxFull("Shooting", shootingI2, (bool value) {
+          setState(() {
+            shootingI2 = value;
+          });
           UpdateData();
         }),
         SizedBox(height: 8),
