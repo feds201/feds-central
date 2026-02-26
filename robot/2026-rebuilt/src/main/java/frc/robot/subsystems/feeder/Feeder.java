@@ -56,7 +56,7 @@ private final SysIdRoutine m_feederSysId;
 
 
   public Feeder() {
-    spindexerMotor = new TalonFX(SpindexerConstants.kSpindexerMotorId);
+    spindexerMotor = new TalonFX(2); // DO NOT SUBMIT // SpindexerConstants.kSpindexerMotorId);
 
     config = new TalonFXConfiguration();
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
@@ -116,6 +116,10 @@ public Voltage getTargetVoltage(){
 public void setVoltage(Voltage voltage)
 {
   spindexerMotor.setControl(vOut.withOutput(voltage));
+}
+
+public feeder_state getCurrentState() {
+  return currentState;
 }
 
 public void setState(feeder_state state)
