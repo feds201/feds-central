@@ -346,7 +346,7 @@ public class LimelightSim {
      * 12 triangles: 2 per face x 6 faces
      * </pre>
      */
-    private static DGeom buildFrustum(PhysicsWorld physicsWorld, DBody chassisBody,
+    static DGeom buildFrustum(PhysicsWorld physicsWorld, DBody chassisBody,
                                        LimelightType type, double nearDist, double farDist,
                                        Transform3d robotToCamera) {
         double hFovRad = Math.toRadians(type.horizontalFovDegrees);
