@@ -39,7 +39,6 @@ import frc.robot.subsystems.shooter.ShooterWheels.shooter_state;
 import frc.robot.subsystems.spindexer.Spindexer;
 import frc.robot.subsystems.spindexer.Spindexer.spindexer_state;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
-import frc.robot.utils.LimelightHelpers;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.sim.chassis.ChassisConfig;
 import frc.sim.chassis.ChassisSimulation;
@@ -448,6 +447,7 @@ public class RebuiltSimManager {
         } else if (hoodState == shooterhood_state.AIMING_DOWN) {
             simHoodAngleRad = Math.max(HOOD_MIN_RAD, simHoodAngleRad - HOOD_ADJUST_RATE * DT);
         }
+        shooterHood.setSimPosition(simHoodAngleRad / (2 * Math.PI));
 
         // 12. Update shooter
         shooterSim.update(DT);
@@ -466,38 +466,19 @@ public class RebuiltSimManager {
     }
 
     private void publishTelemetry() {
-        // ── Drivetrain ──────────────────────────────────────────────────────
         Pose3d robotPose = chassis.getPose3d();
-        Logger.recordOutput("Sim/Robot/Drivetrain/Pose3d", robotPose);
+        Logger.recordOutput("Sim/RobotPose", robotPose);
 
-        // ── Limelight direction lines ─────────────────────────────────────────
+        // Limelight direction lines (sim-only visualization)
         visionSimManager.getDirectionLines(robotPose).forEach((name, line) ->
                 Logger.recordOutput("Sim/Limelights/" + name + "/DirectionLine", line));
 
-        Logger.recordOutput("Sim/Robot/Drivetrain/GroundClearance", groundClearance.getClearance());
-        Logger.recordOutput("Sim/Robot/Drivetrain/IsAirborne", groundClearance.isAirborne());
+        Logger.recordOutput("Sim/RobotGroundClearance", groundClearance.getClearance());
+        Logger.recordOutput("Sim/RobotIsAirborne", groundClearance.isAirborne());
 
-        // ── Intake ──────────────────────────────────────────────────────────
-        Logger.recordOutput("Sim/Robot/Intake/Extended",
-                intakeSubsystem.getState() == IntakeState.EXTENDED);
-        Logger.recordOutput("Sim/Robot/Intake/RollersOn",
-                intake.getState() == RollersSubsystem.RollerState.ON);
-        Logger.recordOutput("Sim/Robot/Intake/HeldCount", gamePieceManager.getHeldCount());
-        Logger.recordOutput("Sim/Robot/Intake/FuelDetected",
-                LimelightHelpers.getTV(FUEL_LL_NAME));
+        Logger.recordOutput("Sim/FuelHeld", gamePieceManager.getHeldCount());
 
-        // ── Shooter ─────────────────────────────────────────────────────────
-        Logger.recordOutput("Sim/Robot/Shooter/HoodAngleDeg",
-                Math.toDegrees(simHoodAngleRad));
-        Logger.recordOutput("Sim/Robot/Shooter/IsShooting",
-                shooterWheels.getCurrentState() == shooter_state.SHOOTING);
-        Logger.recordOutput("Sim/Robot/Shooter/SpindexerOn",
-                spindexer.getCurrentState() == spindexer_state.RUN);
-        Logger.recordOutput("Sim/Robot/Shooter/FeederOn",
-                feeder.getCurrentState() == feeder_state.RUN);
-
-        // ── Scoring ─────────────────────────────────────────────────────────
-        Logger.recordOutput("Sim/Score/Total", scoringTracker.getTotalScore());
+        Logger.recordOutput("Sim/Score", scoringTracker.getTotalScore());
 
         // Game piece poses for AdvantageScope
         gamePieceManager.publishPoses((key, poses) -> Logger.recordOutput(key, poses));
@@ -529,7 +510,7 @@ public class RebuiltSimManager {
                 new Translation3d(),
                 new Rotation3d(0, feederAngle, 0));
 
-        Logger.recordOutput("Sim/Robot/ComponentPoses",
+        Logger.recordOutput("Sim/ComponentPoses",
                 new Pose3d[]{
                     shooterHoodPose,
                     intakeRollerPose,
