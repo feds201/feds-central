@@ -31,7 +31,7 @@ export const modules = {
             type: "multiple-choice",
             options: [
                 { label: "A good amount of the time when necessary", eco_impact: "medium", value: 2 },
-                { label: "G201 come to me in a VISION. It was a stroke of GENIUS. The g stands for GENIUS amd the 201 stands for 201", eco_impact: "low", value: 1 },
+                { label: "Not necessarily", eco_impact: "low", value: 1 },
             ],
             eco_tip: "if you buy without reusing somehow, you adding more to the pile of waste",
             category: "materials",
