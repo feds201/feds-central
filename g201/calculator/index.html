@@ -26,6 +26,7 @@
         <span class="overall-score-max">/100</span>
     </div>
     <p class="overall-score-note">Score is determined by your lowest module — improve your weakest area to raise it.</p>
+    <div id="overall-score-summary"></div>
 </div>
     <div class="progress-container">
         <div class="progress-bar" id="progress-bar"></div>
@@ -150,20 +151,79 @@
                     </div>
                 </div>
                 
-                <div class="impact-item" data-category="transport">
-                    <div class="impact-icon"><i class="fas fa-car"></i></div>
-                    <div class="impact-content">
-                        <h4>Transportation Impact</h4>
-                        <p id="transport-impact">Your travel resulted in carbon emissions that could be reduced with more efficient planning.</p>
-                    </div>
-                </div>
-                
-                <div class="impact-item" data-category="energy">
-                    <div class="impact-icon"><i class="fas fa-bolt"></i></div>
-                    <div class="impact-content">
-                        <h4>Energy Consumption</h4>
-                        <p id="energy-impact">Battery usage is within reasonable limits, but proper disposal and recycling are essential.</p>
-                    </div>
+                 
+               
+            </div>
+            </div>
+        </div>
+    </div>
+        
+
+    
+     <!--
+    <div class="question-card">
+        <span class="question-number">Question <span id="current-question-display">1</span>/<span id="total-questions-display">13</span></span>
+        <h2 class="section-heading" id="section-heading">I. Shipping and Packaging of Products</h2>
+        <h3 class="question-text" id="question">What was the total weight (in lbs) of the packages that you transported?</h3>
+        
+    <div class="question-card">
+        <span class="question-number">Question <span id="current-question-display">1</span>/<span id="total-questions-display">13</span></span>
+        <h2 class="section-heading" id="section-heading">I. Shipping and Packaging of Products</h2>
+        <h3 class="question-text" id="question">What was the total weight (in lbs) of the packages that you transported?</h3>
+
+    <div class="question-card">
+        <span class="question-number">Question <span id="current-question-display">1</span>/<span id="total-questions-display">13</span></span>
+        <h2 class="section-heading" id="section-heading">I. Shipping and Packaging of Products</h2>
+        <h3 class="question-text" id="question">What was the total weight (in lbs) of the packages that you transported?</h3>
+    
+        <div class="input-container">
+            <input type="number" id="answer-input" min="500" max="1500" placeholder="Enter value (500-1500)">
+            <div class="input-hint"><i class="fas fa-info-circle"></i> Enter an integer between 500-1500 lbs</div>
+            <div class="error-message" id="error-message"></div>
+        </div>
+    </div> -->
+    
+    <!-- <div class="actions">s
+        <div class="eco-tip" id="eco-tip">Every lbs of package weight contributes to carbon emissions during transport.</div>
+        <div class="button-group">
+            <button class="back-btn hidden" id="back-btn"><i class="fas fa-arrow-left"></i> Previous</button>
+            <button class="next-btn" id="next-btn">Next <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </div> -->
+    
+    <div class="result hidden" id="result">
+        <div class="result-header">
+            <div class="result-icon"><i class="fas fa-leaf"></i></div>
+            <h2 class="Eco-Friendly-text">Eco Assessment Complete!</h2>
+            <div class="result-score">Your Eco Score: <span id="final-eco-score">75</span>/100</div>
+        </div>
+        <div class="eco-meter">
+            <div class="meter-scale">
+                <div class="meter-pointer" id="meter-pointer"></div>
+            </div>
+            <div class="meter-labels">
+                <div>High Impact</div>
+                <div>Moderate</div>
+                <div>Eco-Friendly</div>
+            </div>
+        </div>
+        
+        <div class="result-message" id="result-message">Your team is making good progress toward sustainability, but there's room for improvement.</div>
+
+        <!-- Add a visual separator -->
+        <div class="visual-separator">
+            <div class="separator-line"></div>
+            <div style="height: 10px;"  class="separator-line"></div>
+            <div class="separator-line"></div>
+        </div>
+        
+        <div class="eco-impact">
+            <h3>Your Environmental Impact</h3>
+            <div class="impact-item" data-category="materials">
+                <div class="impact-icon"><i class="fas fa-box"></i></div>
+                <div class="impact-content">
+                    <h4>Materials Usage</h4>
+                    <p id="materials-impact">Your team used a moderate amount of disposable items. Consider reducing single-use plastics.</p>
                 </div>
             </div>
             
