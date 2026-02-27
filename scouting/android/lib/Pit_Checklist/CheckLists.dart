@@ -72,9 +72,31 @@ class _Checklist_recordState extends State<Checklist_record> {
   late bool elevator_motors;
   late bool elevator_wires;
   late bool elevator_nuts_and_bolts;
-  late List<String> elevator, drivetrain;
+  late List<String> elevator;
 
-  late bool drive_motors, drive_wheels, drive_gearboxes, drive_wires;
+  //drive train
+  late bool drive_motors, drive_wheels, drive_gearboxes, drive_wires, drive_steer_motors, drive_encoders, drive_lime_lights, drive_nuts_and_bolts;
+  late List<String> drivetrain;
+
+  //structure
+  late bool structure_frame, structure_hopper_panels, structure_brain_pan, structure_belly_pan, structure_nuts_and_bolts;
+  late List<String> structure;
+
+  //intake
+  late bool intake_rack, intake_pinion, intake_belts, intake_rollers, intake_motors, intake_limit_switches, intake_lime_lights, intake_nuts_and_bolts, intake_wires;
+  late List<String> intake;
+
+  //spindexer
+  late bool spindexer_panel, spindexer_churros, spindexer_motor, spindexer_wheels, spindexer_nuts_and_bolts;
+  late List<String> spindexer;
+
+  //kicker
+  late bool kicker_plates, kicker_rollers, kicker_belts, kicker_gears, kicker_motor, kicker_radio, kicker_ethernet_switch, kicker_nuts_and_bolts, kicker_wires;
+  late List<String> kicker;
+
+  //shooter
+  late bool shooter_flywheels, shooter_hood, shooter_hood_gears, shooter_gears, shooter_motors, shooter_nuts_and_bolts, shooter_wires;
+  late List<String> shooter;
 
   late bool trapdoor_panels;
   late bool trapdoor_supports;
@@ -103,15 +125,6 @@ class _Checklist_recordState extends State<Checklist_record> {
   late bool gooseneck_wires;
   late List<String> gooseneck;
 
-  late bool shooter_hood;
-  late bool shooter_motors;
-  late bool shooter_gears;
-  late bool shooter_gearboxes;
-  late bool shooter_space;
-  late bool shooter_rollers;
-  late bool shooter_fuel_pusher;
-  late bool shooter_belts;
-  late List<String> shooter;
 
   late bool spinD_gears;
   late bool spinD_belts;
@@ -122,12 +135,6 @@ class _Checklist_recordState extends State<Checklist_record> {
   late bool spinD_nuts;
   late List<String> spinDexer;
 
-  late bool intake_rollers;
-  late bool intake_rollerMotor;
-  late bool intake_iMotors;
-  late bool intake_gears;
-  late bool intake_limelight;
-  late List<String> intake;
 
   late double outgoing_number;
   late double outgoing_battery_voltage;
@@ -234,32 +241,66 @@ class _Checklist_recordState extends State<Checklist_record> {
     elevator_wires = false;
     elevator_nuts_and_bolts = false;
 
+    //drive train
     drive_motors = false;
     drive_wheels = false;
     drive_gearboxes = false;
     drive_wires = false;
+    drive_encoders = false;
+    drive_lime_lights = false;
+    drive_nuts_and_bolts = false;
+    drive_steer_motors = false;
     drivetrain = [];
-    elevator = [];
 
-   shooter_hood = false;
-   shooter_motors = false;
-   shooter_gears = false;
-   shooter_gearboxes = false;
-   shooter_space = false;
-    shooter_rollers = false;
-    shooter_fuel_pusher = false;
-    shooter_belts = false;
+    //structure
+    structure_frame = false;
+    structure_hopper_panels = false;
+    structure_brain_pan = false;
+    structure_belly_pan = false;
+    structure_nuts_and_bolts = false;
+    structure = [];
+
+    //intake
+    intake_rack = false;
+    intake_pinion = false;
+    intake_belts = false;
+    intake_rollers = false;
+    intake_motors = false;
+    intake_limit_switches = false;
+    intake_lime_lights = false;
+    intake_nuts_and_bolts = false;
+    intake_wires = false;
+    intake = [];
+
+    //spindexer
+    spindexer_panel = false;
+    spindexer_churros = false;
+    spindexer_motor = false;
+    spindexer_wheels = false;
+    spindexer_nuts_and_bolts = false;
+    spindexer = [];
+
+    //kicker
+    kicker_plates = false;
+    kicker_rollers = false;
+    kicker_belts = false;
+    kicker_gears = false;
+    kicker_motor = false;
+    kicker_radio = false;
+    kicker_ethernet_switch = false;
+    kicker_nuts_and_bolts = false;
+    kicker_wires = false;
+    kicker = [];
+
+    //shooter
+    shooter_flywheels = false;
+    shooter_hood = false;
+    shooter_hood_gears = false;
+    shooter_gears = false;
+    shooter_motors = false;
+    shooter_nuts_and_bolts = false;
+    shooter_wires = false;
     shooter = [];
-
-    spinD_gears = false;
-    spinD_belts = false;
-    spinD_gearboxes = false;
-    spinD_combinedWheels = false;
-    spinD_motor = false;
-    spinD_feederBar = false;
-    spinD_nuts = false;
-
-    spinDexer = [];
 
     trapdoor_panels = false;
     trapdoor_supports = false;
@@ -287,13 +328,6 @@ class _Checklist_recordState extends State<Checklist_record> {
     gooseneck_gears = false;
     gooseneck_wires = false;
     gooseneck = [];
-
-    intake_rollers = false;
-    intake_rollerMotor = false;
-    intake_iMotors = false;
-    intake_gears = false;
-    intake_limelight = false;
-    intake = [];
 
     returning_battery_voltage = 0;
     returning_battery_cca = 0;
@@ -408,6 +442,62 @@ class _Checklist_recordState extends State<Checklist_record> {
           image4 = existingRecord.img4;
           image5 = existingRecord.img5;
 
+          //drivetrain
+          drive_motors = existingRecord.drive_motors;
+          drive_wheels = existingRecord.drive_wheels;
+          drive_gearboxes = existingRecord.drive_gearboxes;
+          drive_wires = existingRecord.drive_wires;
+          drive_lime_lights = existingRecord.drive_lime_lights;
+          drive_steer_motors = existingRecord.drive_steer_motors;
+          drive_nuts_and_bolts = existingRecord.drive_nuts_and_bolts;
+          drive_encoders = existingRecord.drive_encoders;
+
+          //structure
+          structure_frame = existingRecord.structure_frame;
+          structure_hopper_panels = existingRecord.structure_hopper_panels;
+          structure_brain_pan = existingRecord.structure_brain_pan;
+          structure_belly_pan = existingRecord.structure_belly_pan;
+          structure_nuts_and_bolts = existingRecord.structure_nuts_and_bolts;
+
+          //intake
+          intake_rack = existingRecord.intake_rack;
+          intake_pinion = existingRecord.intake_pinion;
+          intake_belts = existingRecord.intake_belts;
+          intake_rollers = existingRecord.intake_roller;
+          intake_motors = existingRecord.intake_motors;
+          intake_limit_switches = existingRecord.intake_limit_switches;
+          intake_lime_lights = existingRecord.intake_lime_lights;
+          intake_nuts_and_bolts = existingRecord.intake_nuts_and_bolts;
+          intake_wires = existingRecord.intake_wires;
+
+          //spindexer
+          spindexer_panel = existingRecord.spindexer_panel;
+          spindexer_churros = existingRecord.spindexer_churros;
+          spindexer_motor = existingRecord.spindexer_motor;
+          spindexer_wheels = existingRecord.spindexer_wheels;
+          spindexer_nuts_and_bolts = existingRecord.spindexer_nuts_and_bolts;
+
+          //kicker
+          kicker_plates = existingRecord.kicker_plates;
+          kicker_rollers = existingRecord.kicker_roller;
+          kicker_belts = existingRecord.kicker_belts;
+          kicker_gears = existingRecord.kicker_gears;
+          kicker_motor = existingRecord.kicker_motor;
+          kicker_radio = existingRecord.kicker_radio;
+          kicker_ethernet_switch = existingRecord.kicker_ethernet_switch;
+          kicker_nuts_and_bolts = existingRecord.kicker_nuts_and_bolts;
+          kicker_wires = existingRecord.kicker_wires;
+
+          //shooter
+          shooter_flywheels = existingRecord.shooter_flywheels;
+          shooter_hood = existingRecord.shooter_hood;
+          shooter_hood_gears = existingRecord.shooter_hood_gears;
+          shooter_gears = existingRecord.shooter_gears;
+          shooter_motors = existingRecord.shooter_motors;
+          shooter_nuts_and_bolts = existingRecord.shooter_nuts_and_bolts;
+          shooter_wires = existingRecord.shooter_wires;
+
+
           notes.text = existingRecord.note;
 
           // Populate lists from boolean values
@@ -458,11 +548,67 @@ class _Checklist_recordState extends State<Checklist_record> {
           if (elevator_string) elevator.add("String");
           if (elevator_limit_switch) elevator.add("Limit Switch");
 
+
+          //drivetrain
           drivetrain = [];
           if (drive_motors) drivetrain.add("Motors");
           if (drive_wheels) drivetrain.add("Wheels");
           if (drive_wires) drivetrain.add("Wires");
           if (drive_gearboxes) drivetrain.add("Gearboxes");
+          if (drive_steer_motors) drivetrain.add("Steer Motors");
+          if (drive_nuts_and_bolts) drivetrain.add("Nuts and Bolts");
+          if (drive_lime_lights) drivetrain.add("Lime Lights");
+          if (drive_encoders) drivetrain.add("Encoders");
+
+          //structure
+          structure = [];
+          if (structure_frame) structure.add("Frame");
+          if (structure_hopper_panels) structure.add("Hopper Panels");
+          if (structure_brain_pan) structure.add("BrainPan");
+          if (structure_belly_pan) structure.add("Belly Pan");
+          if (structure_nuts_and_bolts) structure.add("Nuts and Bolts");
+
+          //intake
+          intake = [];
+          if (intake_rack) intake.add("Rack");
+          if (intake_pinion) intake.add("Pinion");
+          if (intake_belts) intake.add("Belts");
+          if (intake_rollers) intake.add("Rollers");
+          if (intake_motors) intake.add("Motors");
+          if (intake_limit_switches) intake.add("Limit Switches");
+          if (intake_lime_lights) intake.add("Lime Lights");
+          if (intake_nuts_and_bolts) intake.add("Nuts and Bolts");
+          if (intake_wires) intake.add("Wires");
+
+          //spindexer
+          spindexer = [];
+          if (spindexer_panel) spindexer.add("Panel");
+          if (spindexer_churros) spindexer.add("Churros");
+          if (spindexer_motor) spindexer.add("Motor");
+          if (spindexer_wheels) spindexer.add("Wheels");
+          if (spindexer_nuts_and_bolts) spindexer.add("Nuts and Bolts");
+
+          //kicker
+          kicker = [];
+          if (kicker_plates) kicker.add("Plates");
+          if (kicker_rollers) kicker.add("Rollers");
+          if (kicker_belts) kicker.add("Belts");
+          if (kicker_gears) kicker.add("Gears");
+          if (kicker_motor) kicker.add("Motor");
+          if (kicker_radio) kicker.add("Radio");
+          if (kicker_ethernet_switch) kicker.add("Ethernet Switch");
+          if (kicker_nuts_and_bolts) kicker.add("Nuts and Bolts");
+          if (kicker_wires) kicker.add("Wires");
+
+          //shooter
+          shooter = [];
+          if (shooter_flywheels) shooter.add("Flywheels");
+          if (shooter_hood) shooter.add("Hood");
+          if (shooter_hood_gears) shooter.add("Hood Gears");
+          if (shooter_gears) shooter.add("Gears");
+          if (shooter_motors) shooter.add("Motors");
+          if (shooter_nuts_and_bolts) shooter.add("Nuts and Bolts");
+          if (shooter_wires) shooter.add("Wires");
 
           // Trapdoor list
           trapdoor = [];
@@ -493,33 +639,6 @@ class _Checklist_recordState extends State<Checklist_record> {
           if (gooseneck_gears) gooseneck.add("Gears");
           if (gooseneck_wires) gooseneck.add("Wires");
           if (gooseneck_nuts_and_bolts) gooseneck.add("Nuts and Bolts");
-
-          // Shooter List
-          shooter = [];
-          if (shooter_hood) shooter.add("Hood");
-          if (shooter_motors) shooter.add("Motors");
-          if (shooter_gears) shooter.add("Gears");
-          if (shooter_gearboxes) shooter.add("Gearboxes");
-          if(shooter_space) shooter.add("Space");
-          if(shooter_rollers) shooter.add("Rollers");
-          if(shooter_fuel_pusher) shooter.add("Fuelpusher");
-          if(shooter_belts) shooter.add("Belts");
-
-          // Spindexer List
-          if (spinD_gears) spinDexer.add("Gears");
-          if (spinD_belts) spinDexer.add("Belts");
-          if (spinD_gearboxes) spinDexer.add("Gearboxes");
-          if (spinD_combinedWheels) spinDexer.add("Combined Wheels");
-          if (spinD_motor) spinDexer.add("Motor");
-          if (spinD_feederBar) spinDexer.add("Feeder Bar");
-          if (spinD_nuts) spinDexer.add("Nuts");
-
-          // Intake List
-          if (intake_rollers) intake.add("Rollers");
-          if (intake_rollerMotor) intake.add("Roller Motors");
-          if (intake_iMotors) intake.add("Intake Motors");
-          if (intake_gears) intake.add("Gears");
-          if (intake_limelight) spinDexer.add("Limelight");
 
           // Set matchkey from existing record
           matchkey = existingRecord.matchkey;
@@ -635,14 +754,103 @@ class _Checklist_recordState extends State<Checklist_record> {
               "DriveTrain",
               Icon(Icons.star_outline, size: 30, color: Colors.blue),
               [
-                "motors",
-                "wheels",
-                "gearboxes",
-                "wires",
+                "Wheels",
+                "Gearboxes",
+                "Steer Motors",
+                "Drive Motots",
+                "Encoders",
+                "Lime Lights",
+                "Nuts and Bolts",
+                "Wires",
               ],
               drivetrain, (value) {
             setState(() {
               drivetrain = value;
+            });
+          }),
+          buildMultiChoiceBox(
+              "Structure",
+              Icon(Icons.star_outline, size: 30, color: Colors.blue),
+              [
+                "Frame",
+                "Hopper Panels",
+                "BrainPan",
+                "Belly Pan",
+                "Nuts and Bolts",
+              ],
+              structure, (value) {
+            setState(() {
+              structure = value;
+            });
+          }),
+          buildMultiChoiceBox(
+              "Intake",
+              Icon(Icons.star_outline, size: 30, color: Colors.blue),
+              [
+                "Rack",
+                "Pinion",
+                "Belts",
+                "Rollers",
+                "Motors",
+                "Limit Switches",
+                "Lime Lights",
+                "Nuts and Bolts",
+                "Wires",
+              ],
+              intake, (value) {
+            setState(() {
+              intake = value;
+            });
+          }),
+          buildMultiChoiceBox(
+              "Spindexer",
+              Icon(Icons.star_outline, size: 30, color: Colors.blue),
+              [
+                "Panel",
+                "Churros",
+                "Motor",
+                "Wheels",
+                "Nuts and Bolts",
+              ],
+              spindexer, (value) {
+            setState(() {
+              spindexer = value;
+            });
+          }),
+          buildMultiChoiceBox(
+              "Kicker",
+              Icon(Icons.star_outline, size: 30, color: Colors.blue),
+              [
+                "Plates",
+                "Rollers",
+                "Belts",
+                "Gears",
+                "Motor",
+                "Radio",
+                "Ethernet Switch",
+                "Nuts and Bolts",
+                "Wires",
+              ],
+              kicker, (value) {
+            setState(() {
+              kicker = value;
+            });
+          }),
+          buildMultiChoiceBox(
+              "Shooter",
+              Icon(Icons.star_outline, size: 30, color: Colors.blue),
+              [
+                "Flywheels",
+                "Hood",
+                "Hood Gears",
+                "Gears",
+                "Motors",
+                "Nuts and Bolts",
+                "Wires",
+              ],
+              shooter, (value) {
+            setState(() {
+              shooter = value;
             });
           }),
           buildMultiChoiceBox(
@@ -663,56 +871,6 @@ class _Checklist_recordState extends State<Checklist_record> {
               climber, (value) {
             setState(() {
               climber = value;
-            });
-          }),
-          buildMultiChoiceBox(
-              "Shooter",
-              Icon(Icons.star_outline, size: 30, color: Colors.blue),
-              [
-                "Hood",
-                "Motors",
-                "Gears",
-                "Gearboxes",
-                // "Space",
-                "Rollers",
-                "Fuel Pusher",
-                // "Belts",
-              ],
-              shooter, (value) {
-            setState(() {
-              shooter = value;
-            });
-          }),
-          buildMultiChoiceBox(
-              "SpinDexer",
-              Icon(Icons.star_outline, size: 30, color: Colors.blue),
-              [
-                "Gears",
-                // "Belts",
-                "Gearboxes",
-                "Combined Wheels",
-                "Motor",
-                "Feeder Bar",
-                "Nuts",
-              ],
-              carriage, (value) {
-            setState(() {
-              carriage = value;
-            });
-          }),
-          buildMultiChoiceBox(
-              "Intake",
-              Icon(Icons.star_outline, size: 30, color: Colors.blue),
-              [
-                "Rollers",
-                "Roller Motor",
-                "Intake Motors",
-                "Gears",
-                "Limelight",
-              ],
-              gooseneck, (value) {
-            setState(() {
-              gooseneck = value;
             });
           }),
           buildTextBoxs(
@@ -916,6 +1074,56 @@ class _Checklist_recordState extends State<Checklist_record> {
       outgoing_battery_cca: outgoing_battery_cca,
       outgoing_number: outgoing_number,
       outgoing_battery_replaced: outgoing_battery_replaced,
+      //drivetrain
+      drive_motors: drivetrain.contains("Motors"),
+      drive_wheels: drivetrain.contains("Wheels"),
+      drive_gearboxes: drivetrain.contains("Gearboxes"),
+      drive_wires: drivetrain.contains("Wires"),
+      drive_lime_lights: drivetrain.contains("Lime Lights"),
+      drive_steer_motors: drivetrain.contains("Steer Motors"),
+      drive_nuts_and_bolts: drivetrain.contains("Nuts and Bolts"),
+      drive_encoders: drivetrain.contains("Encoders"),
+      //structure
+      structure_frame: structure.contains("Frame"),
+      structure_hopper_panels: structure.contains("Hopper Panels"),
+      structure_brain_pan: structure.contains("BrainPan"),
+      structure_belly_pan: structure.contains("Belly Pan"),
+      structure_nuts_and_bolts: structure.contains("Nuts and Bolts"),
+      //intake
+      intake_rack: intake.contains("Rack"),
+      intake_pinion: intake.contains("Pinion"),
+      intake_belts: intake.contains("Belts"),
+      intake_roller: intake.contains("Rollers"),
+      intake_motors: intake.contains("Motors"),
+      intake_limit_switches: intake.contains("Limit Switches"),
+      intake_lime_lights: intake.contains("Lime Lights"),
+      intake_nuts_and_bolts: intake.contains("Nuts and Bolts"),
+      intake_wires: intake.contains("Wires"),
+      //spindexer
+      spindexer_panel: spindexer.contains("Panel"),
+      spindexer_churros: spindexer.contains("Churros"),
+      spindexer_motor: spindexer.contains("Motor"),
+      spindexer_wheels: spindexer.contains("Wheels"),
+      spindexer_nuts_and_bolts: spindexer.contains("Nuts and Bolts"),
+      //kicker
+      kicker_plates: kicker.contains("Plates"),
+      kicker_roller: kicker.contains("Rollers"),
+      kicker_belts: kicker.contains("Belts"),
+      kicker_gears: kicker.contains("Gears"),
+      kicker_motor: kicker.contains("Motor"),
+      kicker_radio: kicker.contains("Radio"),
+      kicker_ethernet_switch: kicker.contains("Ethernet Switch"),
+      kicker_nuts_and_bolts: kicker.contains("Nuts and Bolts"),
+      kicker_wires: kicker.contains("Wires"),
+      //shooter
+      shooter_flywheels: shooter.contains("Flywheels"),
+      shooter_hood: shooter.contains("Hood"),
+      shooter_hood_gears: shooter.contains("Hood Gears"),
+      shooter_gears: shooter.contains("Gears"),
+      shooter_motors: shooter.contains("Motors"),
+      shooter_nuts_and_bolts: shooter.contains("Nuts and Bolts"),
+      shooter_wires: shooter.contains("Wires"),
+
       alliance_color: alliance_color,
       note: notes.text,
       img1: image1,

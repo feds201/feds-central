@@ -1434,6 +1434,63 @@ class PitChecklistItem {
   double outgoing_battery_cca = 0.0;
   double outgoing_number = 0.0;
   bool outgoing_battery_replaced = false;
+
+  //drivetrain
+  bool drive_motors = false;
+  bool drive_wheels = false;
+  bool drive_gearboxes = false;
+  bool drive_encoders = false;
+  bool drive_wires = false;
+  bool drive_lime_lights = false;
+  bool drive_nuts_and_bolts = false;
+  bool drive_steer_motors = false;
+
+  //structure
+  bool structure_frame = false;
+  bool structure_hopper_panels = false;
+  bool structure_brain_pan = false;
+  bool structure_belly_pan = false;
+  bool structure_nuts_and_bolts = false;
+
+  //intake
+  bool intake_rack = false;
+  bool intake_pinion = false;
+  bool intake_belts = false;
+  bool intake_roller = false;
+  bool intake_motors = false;
+  bool intake_limit_switches = false;
+  bool intake_lime_lights = false;
+  bool intake_nuts_and_bolts = false;
+  bool intake_wires = false;
+
+  //spindexer
+  bool spindexer_panel = false;
+  bool spindexer_churros = false;
+  bool spindexer_motor = false;
+  bool spindexer_wheels = false;
+  bool spindexer_nuts_and_bolts = false;
+
+  //kicker
+  bool kicker_plates = false;
+  bool kicker_roller = false;
+  bool kicker_belts = false;
+  bool kicker_gears = false;
+  bool kicker_motor = false;
+  bool kicker_radio = false;
+  bool kicker_ethernet_switch = false;
+  bool kicker_nuts_and_bolts = false;
+  bool kicker_wires = false;
+
+  //shooter
+  bool shooter_flywheels = false;
+  bool shooter_hood = false;
+  bool shooter_hood_gears = false;
+  bool shooter_gears = false;
+  bool shooter_motors = false;
+  bool shooter_nuts_and_bolts = false;
+  bool shooter_wires = false;
+
+
   String alliance_color = "Blue";
   Map<String, dynamic>? alliance_selection_data;
   String img1 = "";
@@ -1507,6 +1564,56 @@ class PitChecklistItem {
     required this.outgoing_battery_cca,
     required this.outgoing_number,
     required this.outgoing_battery_replaced,
+    //drivetrain
+    required this.drive_motors,
+    required this.drive_wheels,
+    required this.drive_gearboxes,
+    required this.drive_encoders,
+    required this.drive_wires,
+    required this.drive_lime_lights,
+    required this.drive_nuts_and_bolts,
+    required this.drive_steer_motors,
+    //structure
+    required this.structure_frame,
+    required this.structure_hopper_panels,
+    required this.structure_brain_pan,
+    required this.structure_belly_pan,
+    required this.structure_nuts_and_bolts,
+    //intake
+    required this.intake_rack,
+    required this.intake_pinion,
+    required this.intake_belts,
+    required this.intake_roller,
+    required this.intake_motors,
+    required this.intake_limit_switches,
+    required this.intake_lime_lights,
+    required this.intake_nuts_and_bolts,
+    required this.intake_wires,
+    //spindexer
+    required this.spindexer_panel,
+    required this.spindexer_churros,
+    required this.spindexer_motor,
+    required this.spindexer_wheels,
+    required this.spindexer_nuts_and_bolts,
+    //kicker
+    required this.kicker_plates,
+    required this.kicker_roller,
+    required this.kicker_belts,
+    required this.kicker_gears,
+    required this.kicker_motor,
+    required this.kicker_radio,
+    required this.kicker_ethernet_switch,
+    required this.kicker_nuts_and_bolts,
+    required this.kicker_wires,
+    //shooter
+    required this.shooter_flywheels,
+    required this.shooter_hood,
+    required this.shooter_hood_gears,
+    required this.shooter_gears,
+    required this.shooter_motors,
+    required this.shooter_nuts_and_bolts,
+    required this.shooter_wires,
+
     required this.img1,
     required this.img2,
     required this.img3,
@@ -1532,6 +1639,18 @@ class PitChecklistItem {
         '$gooseneck_panels,$gooseneck_wheels,$gooseneck_belts,$gooseneck_nuts_and_bolts,'
         '$returning_battery_voltage,$returning_battery_cca,$returning_number,'
         '$outgoing_battery_voltage,$outgoing_battery_cca,$outgoing_number,$outgoing_battery_replaced,'
+        //drivetrain
+        '$drive_motors,$drive_wheels,$drive_gearboxes,$drive_encoders,$drive_wires,$drive_lime_lights,$drive_nuts_and_bolts,$drive_steer_motors,'
+        //structure
+        '$structure_frame,$structure_hopper_panels,$structure_brain_pan,$structure_belly_pan,$structure_nuts_and_bolts'
+        //intake
+        '$intake_rack,$intake_pinion,$intake_belts,$intake_roller,$intake_motors,$intake_limit_switches,$intake_lime_lights,$intake_nuts_and_bolts,$intake_wires,'
+        //spindexer
+        '$spindexer_panel,$spindexer_churros,$spindexer_motor,$spindexer_wheels,$spindexer_nuts_and_bolts'
+        //kicker
+        '$kicker_plates,$kicker_roller,$kicker_belts,$kicker_gears,$kicker_motor,$kicker_radio,$kicker_ethernet_switch,$kicker_nuts_and_bolts,$kicker_wires,'
+        //shooter
+        '$shooter_flywheels,$shooter_hood,$shooter_hood_gears,$shooter_gears,$shooter_motors,$shooter_nuts_and_bolts,$shooter_wires,'
         '$alliance_color';
   }
 
@@ -1601,6 +1720,56 @@ class PitChecklistItem {
       'outgoing_battery_cca': outgoing_battery_cca,
       'outgoing_number': outgoing_number,
       'outgoing_battery_replaced': outgoing_battery_replaced,
+      //drivetrain
+      'drive_motors': drive_motors,
+      'drive_wheels': drive_wheels,
+      'drive_gearboxes': drive_gearboxes,
+      'drive_encoders': drive_encoders,
+      'drive_wires': drive_wires,
+      'drive_lime_lights': drive_lime_lights,
+      'drive_nuts_and_bolts': drive_nuts_and_bolts,
+      'drive_steer_motors': drive_steer_motors,
+      //structure
+      'structure_frame': structure_frame,
+      'structure_hopper_panels': structure_hopper_panels,
+      'structure_brain_pan': structure_brain_pan,
+      'structure_belly_pan': structure_belly_pan,
+      'structure_nuts_and_bolts': structure_nuts_and_bolts,
+      //intake
+      'intake_rack': intake_rack,
+      'intake_pinion': intake_pinion,
+      'intake_belts': intake_belts,
+      'intake_roller': intake_roller,
+      'intake_motors': intake_motors,
+      'intake_limit_switches': intake_limit_switches,
+      'intake_lime_lights': intake_lime_lights,
+      'intake_nuts_and_bolts': intake_nuts_and_bolts,
+      'intake_wires': intake_wires,
+      //spindexer
+      'spindexer_panel': spindexer_panel,
+      'spindexer_churros': spindexer_churros,
+      'spindexer_motor': spindexer_motor,
+      'spindexer_wheels': spindexer_wheels,
+      'spindexer_nuts_and_bolts': spindexer_nuts_and_bolts,
+      //kicker
+      'kicker_plates': kicker_plates,
+      'kicker_roller': kicker_roller,
+      'kicker_belts': kicker_belts,
+      'kicker_gears': kicker_gears,
+      'kicker_motor': kicker_motor,
+      'kicker_radio': kicker_radio,
+      'kicker_ethernet_switch': kicker_ethernet_switch,
+      'kicker_nuts_and_bolts': kicker_nuts_and_bolts,
+      'kicker_wires': kicker_wires,
+      //shooter
+      'shooter_flywheels': shooter_flywheels,
+      'shooter_hood': shooter_hood,
+      'shooter_hood_gears': shooter_hood_gears,
+      'shooter_gears': shooter_gears,
+      'shooter_motors': shooter_motors,
+      'shooter_nuts_and_bolts': shooter_nuts_and_bolts,
+      'shooter_wires': shooter_wires,
+
       'alliance_color': alliance_color,
       'note': note,
       'alliance_selection_data': alliance_selection_data,
@@ -1685,6 +1854,56 @@ class PitChecklistItem {
         outgoing_battery_cca: (json['outgoing_battery_cca'] ?? 0.0).toDouble(),
         outgoing_number: (json['outgoing_number'] ?? 0.0).toDouble(),
         outgoing_battery_replaced: json['outgoing_battery_replaced'] ?? false,
+        //drivetrain
+        drive_motors: json['drive_motors'] ?? false,
+        drive_wheels: json['drive_wheels'] ?? false,
+        drive_gearboxes: json['drive_gearboxes'] ?? false,
+        drive_encoders: json['drive_encoders'] ?? false,
+        drive_wires: json['drive'] ?? false,
+        drive_lime_lights: json['drive_lime_lights'] ?? false,
+        drive_nuts_and_bolts: json['drive_nuts_and_bolts'] ?? false,
+        drive_steer_motors: json['drive_steer_motors'] ?? false,
+        //structure
+        structure_frame: json['structure_frame'] ?? false,
+        structure_hopper_panels: json['structure_hopper_panels'] ?? false,
+        structure_brain_pan: json['structure_brain_pan'] ?? false,
+        structure_belly_pan: json['structure_belly_pan'] ?? false,
+        structure_nuts_and_bolts: json['structure_nuts_and_bolts'] ?? false,
+        //intake
+        intake_rack: json['intake_rack'] ?? false,
+        intake_pinion: json['intake_pinion'] ?? false,
+        intake_belts: json['intake_belts'] ?? false,
+        intake_roller: json['intake_roller'] ?? false,
+        intake_motors: json['intake_motors'] ?? false,
+        intake_limit_switches: json['intake_limit_switches'] ?? false,
+        intake_lime_lights: json['intake_lime_lights'] ?? false,
+        intake_nuts_and_bolts: json['intake_nuts_and_bolts'] ?? false,
+        intake_wires: json['intake_wires'] ?? false,
+        //spindexer
+        spindexer_panel: json['spindexer_panel'] ?? false,
+        spindexer_churros: json['spindexer_churros'] ?? false,
+        spindexer_motor: json['spindexer_motor'] ?? false,
+        spindexer_wheels: json['spindexer_wheels'] ?? false,
+        spindexer_nuts_and_bolts: json['spindexer_nuts_and_bolts'] ?? false,
+        //kicker
+        kicker_plates: json['kicker_plates'] ?? false,
+        kicker_roller: json['kicker_roller'] ?? false,
+        kicker_belts: json['kicker_belts'] ?? false,
+        kicker_gears: json['kicker_gears'] ?? false,
+        kicker_motor: json['kicker_motor'] ?? false,
+        kicker_radio: json['kicker_radio'] ?? false,
+        kicker_ethernet_switch: json['kicker_ethernet_switch'] ?? false,
+        kicker_nuts_and_bolts: json['kicker_nuts_and_bolts'] ?? false,
+        kicker_wires: json['kicker_wires'] ?? false,
+        //shooter
+        shooter_flywheels: json['shooter_flywheels'] ?? false,
+        shooter_hood: json['shooter_hood'] ?? false,
+        shooter_hood_gears: json['shooter_hood_gears'] ?? false,
+        shooter_gears: json['shooter_gears'] ?? false,
+        shooter_motors: json['shooter_motors'] ?? false,
+        shooter_nuts_and_bolts: json['shooter_nuts_and_bolts'] ?? false,
+        shooter_wires: json['shooter_wires'] ?? false,
+
         img1: json['img1'] ?? "",
         img2: json['img2'] ?? "",
         img3: json['img3'] ?? "",
