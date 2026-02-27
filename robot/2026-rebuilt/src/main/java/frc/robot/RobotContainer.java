@@ -32,6 +32,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.utils.LimelightWrapper;
 import frc.robot.utils.RTU.RootTestingUtility;
+import limelight.Limelight;
 import limelight.networktables.LimelightSettings.ImuMode;
 
 public class RobotContainer {
@@ -40,6 +41,7 @@ public class RobotContainer {
   //Limelight naming conventions are based on physical inventory system, hence "limelight-two" and "limelight-five" represent our second and fifth limelights respectively.
   private final LimelightWrapper ll4 = new LimelightWrapper("limelight-two", true);
   private final LimelightWrapper ll3 = new LimelightWrapper("limelight-five", false);
+  private final Limelight ll_intake = new Limelight("ll-intake");
 
   private final CommandXboxController controller = new CommandXboxController(0);
 
