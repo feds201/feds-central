@@ -20,6 +20,7 @@ import frc.robot.RobotMap.DrivetrainConstants;
 import frc.robot.commands.swerve.TeleopSwerve;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.intake.RollersSubsystem;
+import frc.robot.subsystems.intake.IntakeSubsystem.IntakeState;
 import frc.robot.subsystems.intake.RollersSubsystem.RollerState;
 import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.subsystems.feeder.Feeder.feeder_state;
@@ -76,6 +77,7 @@ public class RobotContainer {
     autoChooser = AutoBuilder.buildAutoChooser();
 
     SmartDashboard.putData("Auto Chooser", autoChooser);
+    registerNameCommands();
   }
 
   public void updateLocalization() {
@@ -87,7 +89,7 @@ public class RobotContainer {
   }
   private void configureBindings() {
     controller.leftTrigger()
-        .onTrue(intakeSubsystem.extendIntake().andThen(rollersSubsystem.RollersCommand(RollerState.ON)))
+        .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED).andThen(rollersSubsystem.RollersCommand(RollerState.ON)))
         .onFalse(rollersSubsystem.RollersCommand(RollerState.OFF));
 
     controller.leftBumper()
@@ -237,7 +239,7 @@ public class RobotContainer {
 
 
 public void registerNameCommands() {
-  NamedCommands.registerCommand("Extend Hopper", intakeSubsystem.extendIntake());
+  NamedCommands.registerCommand("Extend Hopper", intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED));
   NamedCommands.registerCommand("Run Rollers", rollersSubsystem.RollersCommand(RollerState.ON));
   NamedCommands.registerCommand("Stop Rollers", rollersSubsystem.RollersCommand(RollerState.OFF));
   NamedCommands.registerCommand("Start Shooter Spin", shooterWheels.setStateCommand(shooter_state.SHOOTING));

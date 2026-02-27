@@ -331,7 +331,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             // Sim-only: limit drive motor current to prevent MapleSim battery brownout.
             // The real robot relies on physical battery limits; the sim battery model has none.
             ((TalonFXConfiguration) mc.DriveMotorInitialConfigs).CurrentLimits
-                    .withStatorCurrentLimit(Amps.of(120))
+                    .withStatorCurrentLimit(Amps.of(75))
                     .withStatorCurrentLimitEnable(true);
         }
         return moduleConstants;
