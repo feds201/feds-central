@@ -110,6 +110,10 @@ public class RobotContainer {
 
   private void configureBindings() {
 
+    controller.start()
+       .onTrue(DrivetrainConstants.createDrivetrain().runOnce(() -> DrivetrainConstants.createDrivetrain().seedFieldCentric()));
+    
+
     controller.leftTrigger()
         .onTrue(intakeSubsystem.extendIntake().andThen(rollersSubsystem.RollersCommand(RollerState.ON)))
         .onFalse(rollersSubsystem.RollersCommand(RollerState.OFF));
@@ -117,46 +121,87 @@ public class RobotContainer {
     controller.leftBumper()
         .onTrue(intakeSubsystem.retractIntake());
 
-    // Default drive command: field-centric swerve with left stick + right stick rotation
-    drivetrain.setDefaultCommand(
-        new TeleopSwerve(drivetrain, controller));
-
-    // M key (Right bumper): intake rollers
-    controller.rightBumper()
-        .whileTrue(rollersSubsystem.RollersCommand(RollerState.ON))
-        .onFalse(rollersSubsystem.RollersCommand(RollerState.OFF));
-
-    controller.povRight().whileTrue(
-      Commands.sequence(
-        shooterHood.setStateCommand(shooterhood_state.SHOOTING), 
-        shooterWheels.setStateCommand(shooter_state.SHOOTING)
-      ).alongWith(hubDrive))
-    .onFalse(
-      Commands.sequence(
-        shooterHood.setStateCommand(shooterhood_state.OUT), 
-        shooterWheels.setStateCommand(shooter_state.IDLE)
-      ).alongWith(hubDrive)
-      );
-
     controller.rightTrigger().and(hubDrive::pidAtSetpoint).and(shooterWheels::atSetpoint).whileTrue(
-      Commands.sequence(
-      feederSubsystem.setStateCommand(feeder_state.RUN),
-      spinDexer.setStateCommand(spindexer_state.RUN)
-      )
-    ).onFalse(
-      Commands.sequence(
-      feederSubsystem.setStateCommand(feeder_state.STOP),
-      spinDexer.setStateCommand(spindexer_state.STOP)
-      )
-    );
+            Commands.sequence(
+            shooterWheels.setStateCommand(shooter_state.SHOOTING),
+             spinDexer.setStateCommand(spindexer_state.RUN),
+            feederSubsystem.setStateCommand(feeder_state.RUN)
+            )
+          ).onFalse(
+            Commands.sequence(
+            feederSubsystem.setStateCommand(feeder_state.STOP),
+            spinDexer.setStateCommand(spindexer_state.STOP)
+            )
+          );
 
-  }
+      // Right Bumper being reserved for Climbing
 
- 
-  
+    controller.x()
+      .onTrue(
+        Commands.sequence(
+          shooterHood.setStateCommand(shooterhood_state.LAYUP),
+          shooterWheels.setStateCommand(shooter_state.LAYUP)
+        )
+      );
+      onFalse(shooterHood.setStateCommand(shooterhood_state.IDLE));
 
-
-  /** Called from Robot.simulationInit(). */
+      controller.a().and(shooterWheels::atSetpoint).whileTrue(
+        Commands.sequence(
+            shooterWheels.setStateCommand(shooter_state.SHOOTING),
+             spinDexer.setStateCommand(spindexer_state.RUN),
+            feederSubsystem.setStateCommand(feeder_state.RUN)
+        )
+      );
+      onFalse(
+        Commands.sequence(
+          shooterWheels.setStateCommand(shooter_state.IDLE),
+          spinDexer.setStateCommand(spindexer_state.STOP),
+          feederSubsystem.setStateCommand(feeder_state.STOP)
+        )
+      );
+        
+    controller.y()
+      .onTrue(
+        Commands.sequence(
+          shooterHood.setStateCommand(shooterhood_state.HALFCOURT),
+          shooterWheels.setStateCommand(shooter_state.HALFCOURT)
+        )
+      ); 
+      onFalse(shooterHood.setStateCommand(shooterhood_state.IDLE));
+      
+          // Default drive command: field-centric swerve with left stick + right stick rotation
+          drivetrain.setDefaultCommand(
+              new TeleopSwerve(drivetrain, controller));
+      
+          // M key (Right bumper): intake rollers
+          controller.rightBumper()
+              .whileTrue(rollersSubsystem.RollersCommand(RollerState.ON))
+              .onFalse(rollersSubsystem.RollersCommand(RollerState.OFF));
+      
+          controller.povRight().whileTrue(
+            Commands.sequence(
+              shooterHood.setStateCommand(shooterhood_state.SHOOTING), 
+              shooterWheels.setStateCommand(shooter_state.SHOOTING)
+            ).alongWith(hubDrive))
+          .onFalse(
+            Commands.sequence(
+              shooterHood.setStateCommand(shooterhood_state.OUT), 
+              shooterWheels.setStateCommand(shooter_state.IDLE)
+            ).alongWith(hubDrive)
+            );
+      
+        }
+      
+       
+        
+      
+      
+        private void onFalse(Command setStateCommand) {
+          // TODO Auto-generated method stub
+          throw new UnsupportedOperationException("Unimplemented method 'onFalse'");
+        }
+      
+        /** Called from Robot.simulationInit(). */
   public void initSimulation() {
     try {
       // RebuiltSimManager depends on optional simulation libraries. Guard against

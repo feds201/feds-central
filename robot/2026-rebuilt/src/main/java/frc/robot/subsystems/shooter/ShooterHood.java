@@ -10,6 +10,7 @@ import static edu.wpi.first.units.Units.Rotations;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveRequest.Idle;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
@@ -26,10 +27,15 @@ import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 public class ShooterHood extends SubsystemBase {
 
     public enum shooterhood_state {
-    IN(ShooterConstants.minHoodAngle),
-    OUT(ShooterConstants.maxHoodAngle),
-    PASSING(Rotations.of(0)),
-    SHOOTING(Rotations.of(0));
+      IDLE(ShooterConstants.minHoodAngle),
+      IN(ShooterConstants.minHoodAngle),
+      OUT(ShooterConstants.maxHoodAngle),
+      PASSING(Rotations.of(0)),
+      SHOOTING(Rotations.of(0)),
+      LAYUP(ShooterConstants.maxHoodAngle),
+      HALFCOURT(ShooterConstants.minHoodAngle);
+      
+      // tune the max and min hood angle
 
     private final Angle angleTarget;
 
@@ -111,6 +117,7 @@ public class ShooterHood extends SubsystemBase {
   public boolean atSetpointShooting(){
     return RobotMap.ShooterConstants.postionTolerance.gte(Rotations.of(getPosition().minus(getTargetPositionShooting()).abs(Rotations))); //not for passing bc doesnt need to be super accurate
   } 
+
 
   public Angle getTargetPositionShooting()
   {
