@@ -118,7 +118,6 @@ public class IntakeSubsystem extends SubsystemBase {
   public void periodic() {
 
     if (LimelightHelpers.getTV("limelight-one")) {
-      System.out.println("Limelight found target.");
       rollers.setState(RollerState.ON);
     }
 
