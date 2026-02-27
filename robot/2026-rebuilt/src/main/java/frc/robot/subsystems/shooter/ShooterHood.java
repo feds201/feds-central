@@ -1,4 +1,4 @@
-// Copyright (c) FIRST and other WPILib contributors.
+ // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
@@ -29,7 +29,9 @@ public class ShooterHood extends SubsystemBase {
     IN(ShooterConstants.minHoodAngle),
     OUT(ShooterConstants.maxHoodAngle),
     PASSING(Rotations.of(0)),
-    SHOOTING(Rotations.of(0));
+    SHOOTING(Rotations.of(0)),
+    AIMING_UP(Rotations.of(0)),
+    AIMING_DOWN(Rotations.of(0));
 
     private final Angle angleTarget;
 
@@ -52,7 +54,7 @@ public class ShooterHood extends SubsystemBase {
   /** Creates a new Shooter. */
   public ShooterHood(CommandSwerveDrivetrain dt) {
     this.dt = dt;
-    hoodMotor = new TalonFX(ShooterConstants.kHoodMotorId);
+    hoodMotor = new TalonFX(ShooterConstants.ShooterHood);
     positionVoltage = new PositionVoltage(0.0);
     config = new TalonFXConfiguration();
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
@@ -87,6 +89,11 @@ public class ShooterHood extends SubsystemBase {
       case PASSING:
       hoodMotor.setControl(positionVoltage.withPosition(getTargetPositionPassing()));
         break;
+
+      case AIMING_UP:
+      case AIMING_DOWN:
+        // Sim-only: hood angle managed by ShooterSim, not the motor
+        break;
     }
     // This method will be called once per scheduler run
   }
@@ -114,13 +121,13 @@ public class ShooterHood extends SubsystemBase {
 
   public Angle getTargetPositionShooting()
   {
-     Distance d = dt.getDistanceToHub();
+     Distance d = dt.getDistanceToVirtualHub();
       return Rotations.of(RobotMap.ShooterConstants.kShootingPositionMap.get(d.in(Meters)));
   }
 
    public Angle getTargetPositionPassing()
   {
-     Distance d = dt.getDistanceToHub();
+     Distance d = dt.getDistanceToCorner();
       return Rotations.of(RobotMap.ShooterConstants.kPassingPositionMap.get(d.in(Meters)));
   }
 
