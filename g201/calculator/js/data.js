@@ -184,7 +184,7 @@ export const modules = {
             ],
             eco_tip: "",
             eco_impact: "medium",
-            category: "materials"
+            category: "energy"
         },
         {
             section: "III. Programming",
@@ -198,7 +198,7 @@ export const modules = {
             ],
             eco_tip: "",
             eco_impact: "medium",
-            category: "materials"
+            category: "energy"
         },
         {
             section: "III. Mechanical",
@@ -242,7 +242,7 @@ export const modules = {
             ],
             eco_tip: "",
             eco_impact: "High",
-            category: "materials"
+            category: "energy"
         },
         {
             section: "III. Fabrics",
@@ -270,7 +270,7 @@ export const modules = {
             ],
             eco_tip: "",
             eco_impact: "High",
-            category: "materials"
+            category: "energy"
         },
         {
             section: "III. Fabrics",
@@ -299,7 +299,7 @@ export const modules = {
             ],
             eco_tip: "",
             eco_impact: "High",
-            category: "materials"
+            category: "transport"
         },
         {
             section: "IV. Transportation",
@@ -312,7 +312,7 @@ export const modules = {
             ],
             eco_tip: "",
             eco_impact: "High",
-            category: "materials"
+            category: "transport"
         }
         , {
             section: "IV. Transportation",
@@ -325,7 +325,132 @@ export const modules = {
             ],
             eco_tip: "",
             eco_impact: "High",
-            category: "materials"
+            category: "transport"
+        },
+        
+
+
+        {
+            section: "IV. Transportation",
+            question: " Second Competion: How often do you use transportation? ",
+            type: "multiple-choice",
+            options: [
+                { label: "Every day", eco_impact: "high", value: 2 },
+                { label: "Every week", eco_impact: "medium", value: 9 },
+                { label: "Every month", eco_impact: "low", value: 5 },
+            ],
+            eco_tip: "",
+            eco_impact: "High",
+            category: "transport"
+        },
+        {
+            section: "IV. Transportation",
+            question: " Second Competion: What kind of transportation do you use? ",
+            type: "multiple-choice",
+            options: [
+                { label: "Plane", eco_impact: "high", value: 5 },
+                { label: "Bus", eco_impact: "medium", value: 3 },
+                { label: "Car", eco_impact: "low", value: 1 },
+            ],
+            eco_tip: "",
+            eco_impact: "High",
+            category: "transport"
+        }
+        , {
+            section: "IV. Transportation",
+            question: " Second Competion: How many miles do you travel during the season? ",
+            type: "multiple-choice",
+            options: [
+                { label: "5000+ miles", eco_impact: "high", value: 3 },
+                { label: "500-2500 miles", eco_impact: "medium", value: 2 },
+                { label: "0-500 miles", eco_impact: "low", value: 1 },
+            ],
+            eco_tip: "",
+            eco_impact: "High",
+            category: "transport"
+        },
+
+
+         {
+            section: "IV. Transportation",
+            question: " Third Competion: How often do you use transportation? ",
+            type: "multiple-choice",
+            options: [
+                { label: "Every day", eco_impact: "high", value: 2 },
+                { label: "Every week", eco_impact: "medium", value: 9 },
+                { label: "Every month", eco_impact: "low", value: 5 },
+            ],
+            eco_tip: "",
+            eco_impact: "High",
+            category: "transport"
+        },
+        {
+            section: "IV. Transportation",
+            question: " Third Competion: What kind of transportation do you use? ",
+            type: "multiple-choice",
+            options: [
+                { label: "Plane", eco_impact: "high", value: 5 },
+                { label: "Bus", eco_impact: "medium", value: 3 },
+                { label: "Car", eco_impact: "low", value: 1 },
+            ],
+            eco_tip: "",
+            eco_impact: "High",
+            category: "transport"
+        }
+        , {
+            section: "IV. Transportation",
+            question: " Third Competion: How many miles do you travel during the season? ",
+            type: "multiple-choice",
+            options: [
+                { label: "5000+ miles", eco_impact: "high", value: 3 },
+                { label: "500-2500 miles", eco_impact: "medium", value: 2 },
+                { label: "0-500 miles", eco_impact: "low", value: 1 },
+            ],
+            eco_tip: "",
+            eco_impact: "High",
+            category: "transport"
+        },
+
+
+
+         {
+            section: "IV. Transportation",
+            question: " Fourth Competion: How often do you use transportation? ",
+            type: "multiple-choice",
+            options: [
+                { label: "Every day", eco_impact: "high", value: 2 },
+                { label: "Every week", eco_impact: "medium", value: 9 },
+                { label: "Every month", eco_impact: "low", value: 5 },
+            ],
+            eco_tip: "",
+            eco_impact: "High",
+            category: "transport"
+        },
+        {
+            section: "IV. Transportation",
+            question: " Fourth Competion: What kind of transportation do you use? ",
+            type: "multiple-choice",
+            options: [
+                { label: "Plane", eco_impact: "high", value: 5 },
+                { label: "Bus", eco_impact: "medium", value: 3 },
+                { label: "Car", eco_impact: "low", value: 1 },
+            ],
+            eco_tip: "",
+            eco_impact: "High",
+            category: "transport"
+        }
+        , {
+            section: "IV. Transportation",
+            question: " Fourth Competion: How many miles do you travel during the season? ",
+            type: "multiple-choice",
+            options: [
+                { label: "5000+ miles", eco_impact: "high", value: 3 },
+                { label: "500-2500 miles", eco_impact: "medium", value: 2 },
+                { label: "0-500 miles", eco_impact: "low", value: 1 },
+            ],
+            eco_tip: "",
+            eco_impact: "High",
+            category: "transport"
         },
     ],
     '5': [
@@ -340,7 +465,7 @@ export const modules = {
             ],
             eco_tip: "",
             eco_impact: "High",
-            category: "materials"
+            category: "transport"
         },
         {
             section: "IV. Transportation",
@@ -353,7 +478,7 @@ export const modules = {
             ],
             eco_tip: "",
             eco_impact: "High",
-            category: "materials"
+            category: "transport"
         }
         , {
             section: "IV. Transportation",
@@ -366,7 +491,90 @@ export const modules = {
             ],
             eco_tip: "",
             eco_impact: "High",
-            category: "materials"
+            category: "transport"
+        },
+
+
+
+        {
+            section: "IV. Transportation",
+            question: " Second Competion: How often do you use transportation? ",
+            type: "multiple-choice",
+            options: [
+                { label: "Every day", eco_impact: "high", value: 2 },
+                { label: "Every week", eco_impact: "medium", value: 9 },
+                { label: "Every month", eco_impact: "low", value: 5 },
+            ],
+            eco_tip: "",
+            eco_impact: "High",
+            category: "transport"
+        },
+        {
+            section: "IV. Transportation",
+            question: " Second Competion: What kind of transportation do you use? ",
+            type: "multiple-choice",
+            options: [
+                { label: "Plane", eco_impact: "high", value: 5 },
+                { label: "Bus", eco_impact: "medium", value: 3 },
+                { label: "Car", eco_impact: "low", value: 1 },
+            ],
+            eco_tip: "",
+            eco_impact: "High",
+            category: "transport"
+        }
+        , {
+            section: "IV. Transportation",
+            question: " Second Competion: How many miles do you travel during the season? ",
+            type: "multiple-choice",
+            options: [
+                { label: "5000+ miles", eco_impact: "high", value: 3 },
+                { label: "500-2500 miles", eco_impact: "medium", value: 2 },
+                { label: "0-500 miles", eco_impact: "low", value: 1 },
+            ],
+            eco_tip: "",
+            eco_impact: "High",
+            category: "transport"
+        },
+
+
+         {
+            section: "IV. Transportation",
+            question: " Third Competion: How often do you use transportation? ",
+            type: "multiple-choice",
+            options: [
+                { label: "Every day", eco_impact: "high", value: 2 },
+                { label: "Every week", eco_impact: "medium", value: 9 },
+                { label: "Every month", eco_impact: "low", value: 5 },
+            ],
+            eco_tip: "",
+            eco_impact: "High",
+            category: "transport"
+        },
+        {
+            section: "IV. Transportation",
+            question: " Third Competion: What kind of transportation do you use? ",
+            type: "multiple-choice",
+            options: [
+                { label: "Plane", eco_impact: "high", value: 5 },
+                { label: "Bus", eco_impact: "medium", value: 3 },
+                { label: "Car", eco_impact: "low", value: 1 },
+            ],
+            eco_tip: "",
+            eco_impact: "High",
+            category: "transport"
+        }
+        , {
+            section: "IV. Transportation",
+            question: " Third Competion: How many miles do you travel during the season? ",
+            type: "multiple-choice",
+            options: [
+                { label: "5000+ miles", eco_impact: "high", value: 3 },
+                { label: "500-2500 miles", eco_impact: "medium", value: 2 },
+                { label: "0-500 miles", eco_impact: "low", value: 1 },
+            ],
+            eco_tip: "",
+            eco_impact: "High",
+            category: "transport"
         },
         
     ]

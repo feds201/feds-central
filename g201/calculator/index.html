@@ -12,16 +12,23 @@
                 <img src="./assets/G201 logo.png" alt="FRC Team 201 Logo" class="team-logo" loading="eager">
             </a>
         </div>
-        <div class="question-card hidden">
-    <span class="question-number">Question <span id="current-question-display">1</span>/<span id="total-questions-display">13</span></span>
-    <h2 class="section-heading" id="section-heading"></h2>
-    <h3 class="question-text" id="question"></h3>
-
-    <div class="input-container">
-        <input type="number" id="answer-input" placeholder="Enter value">
-        <div class="mc-container hidden" id="mc-container"></div>
-        <div class="input-hint"><i class="fas fa-info-circle"></i></div>
-        <div class="error-message" id="error-message"></div>
+        <h1>FRC Eco-Friendly Calculator</h1>
+        <div class="quiz-subtitle">Measure your team's environmental impact</div>
+        
+    </header>
+    <div id="overall-score-card" class="overall-score-card hidden">
+    <div class="overall-score-header">
+        <i class="fas fa-leaf"></i>
+        <h2>Overall Eco Score</h2>
+    </div>
+    <div class="overall-score-value">
+        <span id="overall-eco-score">--</span>
+        <span class="overall-score-max">/100</span>
+    </div>
+    <p class="overall-score-note">Score is determined by your lowest module — improve your weakest area to raise it.</p>
+</div>
+    <div class="progress-container">
+        <div class="progress-bar" id="progress-bar"></div>
     </div>
 </div>
 
