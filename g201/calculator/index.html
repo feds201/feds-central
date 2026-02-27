@@ -14,12 +14,19 @@
         </div>
         <h1>FRC Eco-Friendly Calculator</h1>
         <div class="quiz-subtitle">Measure your team's environmental impact</div>
-        <div class="quiz-info">
-            <div class="eco-score"><i class="fas fa-leaf"></i> Eco Score: <span id="eco-score">0</span></div>
-            <div class="questions-completed"><i class="fas fa-check-circle"></i> <span id="current-question">0</span>/<span id="total-questions">0</span></div>
-        </div>
+        
     </header>
-    
+    <div id="overall-score-card" class="overall-score-card hidden">
+    <div class="overall-score-header">
+        <i class="fas fa-leaf"></i>
+        <h2>Overall Eco Score</h2>
+    </div>
+    <div class="overall-score-value">
+        <span id="overall-eco-score">--</span>
+        <span class="overall-score-max">/100</span>
+    </div>
+    <p class="overall-score-note">Score is determined by your lowest module — improve your weakest area to raise it.</p>
+</div>
     <div class="progress-container">
         <div class="progress-bar" id="progress-bar"></div>
     </div>

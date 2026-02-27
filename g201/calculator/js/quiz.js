@@ -190,6 +190,19 @@ export function handleBack() {
         displayQuestion();
     }
 }
+function calculateOverallScore() {
+    const completed = Object.values(moduleScores);
+    if (completed.length === 0) return null;
+    return Math.min(...completed); // WEI style: bottleneck score
+}
+
+const overallScore = calculateOverallScore();
+const overallEl = document.getElementById('overall-eco-score');
+if (overallEl && overallScore !== null) {
+    overallEl.textContent = overallScore;
+}
+const overallCard = document.getElementById('overall-score-card');
+if (overallCard) overallCard.classList.remove('hidden');
 
 function updateEcoScore(question, value) {
     let impactFactor;
