@@ -46,6 +46,9 @@ public class LimelightSim {
         GAME_PIECE
     }
 
+    /** Result of game piece detection: angles and apparent area. Package-private for testing. */
+    record DetectionResult(double tx, double ty, double ta) {}
+
     // ── AprilTag mode constants ─────────────────────────────────────────────
 
     // Fake tag metadata — values are tuned for LimelightWrapper's stddev logic
@@ -261,10 +264,10 @@ public class LimelightSim {
         if (mode != Mode.GAME_PIECE) return;
 
         double nowSec = Timer.getFPGATimestamp();
-        if (nowSec - lastPublishTimeSec < publishPeriodSec) {
-            sensorGeom.disable();
-        } else {
+        if (shouldPublish(nowSec, lastPublishTimeSec, publishPeriodSec)) {
             sensorGeom.enable();
+        } else {
+            sensorGeom.disable();
         }
     }
 
@@ -287,12 +290,51 @@ public class LimelightSim {
             return;
         }
 
+        DetectionResult result = computeDetection(contacts, chassisBody,
+                cameraOffsetTranslation, inverseCameraRotation, objectRadius);
+
+        tvEntry.set(1.0);
+        txEntry.set(result.tx());
+        tyEntry.set(result.ty());
+        taEntry.set(result.ta());
+    }
+
+    // ── Extracted logic (package-private for testing) ───────────────────────
+
+    /**
+     * Determine whether enough time has elapsed since the last publish.
+     * Package-private for testing.
+     */
+    static boolean shouldPublish(double nowSec, double lastPublishTimeSec, double publishPeriodSec) {
+        return nowSec - lastPublishTimeSec >= publishPeriodSec;
+    }
+
+    /**
+     * Select the closest contact body and compute tx/ty/ta angles.
+     *
+     * <p>Finds the body nearest to the camera (not chassis center), transforms its
+     * position into camera-relative coordinates, and computes Limelight-convention
+     * angles: tx positive = target right of crosshair, ty positive = target above.
+     *
+     * <p>Package-private for testing.
+     *
+     * @param contacts               non-empty set of detected bodies
+     * @param chassisBody            the robot chassis body (for coordinate transforms)
+     * @param cameraOffset           camera mount position relative to chassis
+     * @param inverseCameraRotation  inverse of camera mount rotation
+     * @param objectRadius           game piece radius (for ta calculation)
+     * @return detection result with tx, ty (degrees) and ta (apparent area percentage)
+     */
+    static DetectionResult computeDetection(
+            Set<DBody> contacts,
+            DBody chassisBody,
+            Translation3d cameraOffset,
+            Rotation3d inverseCameraRotation,
+            double objectRadius) {
         // Compute camera world position from chassis body + mount offset
         DVector3 camWorldPos = new DVector3();
         chassisBody.getRelPointPos(
-                cameraOffsetTranslation.getX(),
-                cameraOffsetTranslation.getY(),
-                cameraOffsetTranslation.getZ(),
+                cameraOffset.getX(), cameraOffset.getY(), cameraOffset.getZ(),
                 camWorldPos);
 
         // Find the closest contact body (distance from camera, not chassis center)
@@ -314,23 +356,16 @@ public class LimelightSim {
         DVector3 bodyLocal = new DVector3();
         chassisBody.getPosRelPoint(closest.getPosition(), bodyLocal);
 
-        // Vector from camera to game piece in body frame
-        double dx = bodyLocal.get0() - cameraOffsetTranslation.getX();
-        double dy = bodyLocal.get1() - cameraOffsetTranslation.getY();
-        double dz = bodyLocal.get2() - cameraOffsetTranslation.getZ();
-
-        // Rotate into camera frame (camera +X = forward, +Y = left, +Z = up)
+        double dx = bodyLocal.get0() - cameraOffset.getX();
+        double dy = bodyLocal.get1() - cameraOffset.getY();
+        double dz = bodyLocal.get2() - cameraOffset.getZ();
         Translation3d camDelta = new Translation3d(dx, dy, dz).rotateBy(inverseCameraRotation);
 
-        // Limelight convention: tx positive = target right of crosshair, ty positive = above
         double tx = Math.toDegrees(Math.atan2(-camDelta.getY(), camDelta.getX()));
         double ty = Math.toDegrees(Math.atan2(camDelta.getZ(), camDelta.getX()));
         double ta = Math.PI * objectRadius * objectRadius / closestDistSq * AREA_SCALE;
 
-        tvEntry.set(1.0);
-        txEntry.set(tx);
-        tyEntry.set(ty);
-        taEntry.set(ta);
+        return new DetectionResult(tx, ty, ta);
     }
 
     // ── Frustum construction ────────────────────────────────────────────────
