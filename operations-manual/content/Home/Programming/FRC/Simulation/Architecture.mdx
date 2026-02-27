@@ -1,0 +1,331 @@
+---
+title: "Simulation: Architecture"
+---
+
+import {Callout} from 'nextra/components';
+
+# Simulation Architecture
+
+## Core Principle
+
+**Reusable code goes in `sim-core`. Game-specific code goes under that year's robot project.**
+
+The simulator runs the same `Robot.java` and subsystem code that deploys to the real robot. Instead of talking to real motors and sensors, the code talks to simulated physics engines.
+
+<Callout type="info">
+This is not a video game. It uses the same physics equations (Newton's laws, motor curves, friction models) that govern the real robot.
+</Callout>
+
+---
+
+## Two Layers
+
+| Layer | Location | Scope |
+|-------|----------|-------|
+| **sim-core** | `robot/sim-core/` | Reusable physics: rigid bodies, collisions, game pieces, field geometry, scoring, telemetry, vision |
+| **Year-specific** | e.g. `robot/2026-rebuilt/src/main/java/frc/robot/sim/` | Field layout, robot config, mechanism bridges |
+
+When a new game drops, you only write the year-specific layer. Everything else is inherited.
+
+<Callout type="info">
+Simulation was introduced in 2025 (Reefscape) and significantly expanded for 2026 (REBUILT).
+</Callout>
+
+---
+
+## Dual-Engine Architecture
+
+The sim pairs two physics engines, each handling what it does best:
+
+```
+              Your Robot Code
+             (Robot.java, subsystems, commands)
+                    |
+                    | motor voltages, sensor reads
+                    v
+        +-----------+-----------+
+        |                       |
+        v                       v
+   MapleSim                 sim-core (ODE4J)
+ (Drivetrain)             (Everything Else)
+        |                       |
+        | pose, velocity        | collisions, intake,
+        | encoders, gyro        | scoring, terrain, vision
+        |                       |
+        v                       v
+   Year-Specific SimManager (orchestrator)
+        |
+        v
+   AdvantageKit → AdvantageScope
+```
+
+### MapleSim (Drivetrain)
+
+[MapleSim](https://github.com/IronMaple) is purpose-built for FRC swerve simulation:
+- Motor models (voltage → torque, with current limits)
+- Tire dynamics (slip, traction, carpet friction)
+- Gear ratios (drive and steer reductions)
+- Encoder/gyro feedback (TalonFX + Pigeon2 sim state)
+
+### ODE4J via sim-core (Everything Else)
+
+[ODE4J](https://github.com/tzaeschke/ode4j) handles general rigid body physics:
+- Hundreds of game pieces with gravity, bounce, and collisions
+- 3D field geometry (walls, ramps, bumps) from OBJ meshes
+- Intake zones, launch trajectories, scoring detection
+- Vision simulation (Limelight AprilTag estimates)
+
+### Why Two Engines?
+
+| Concern | MapleSim | ODE4J (sim-core) |
+|---------|----------|-------------------|
+| Swerve motor physics | Built for it | Not designed for FRC motors |
+| Tire slip / traction | Realistic carpet model | Generic friction |
+| Encoder / gyro sim | Direct CTRE integration | No hardware API |
+| Rigid body collisions | Not supported | Excellent |
+| Hundreds of game pieces | Not supported | Optimized (sleep/wake) |
+| 3D terrain (ramps) | 2D only | Full 3D mesh collision |
+
+<Callout type="warning">
+MapleSim **owns** the robot's position and velocity. ODE4J is a kinematic **follower** — it mirrors MapleSim's pose so game pieces can collide with the robot, but it never drives the robot. Don't try to drive from both engines.
+</Callout>
+
+**Key design decision:** MapleSim's arena is configured with `AddRampCollider=false` — MapleSim only handles the hub collision boundary (2D). ODE4J handles all 3D terrain including ramps.
+
+---
+
+## sim-core Internals
+
+Located at `robot/sim-core/src/main/java/frc/sim/`:
+
+### Packages
+
+| Package | Purpose |
+|---------|---------|
+| `frc.sim.core` | Physics world, field geometry, terrain surfaces, math utils |
+| `frc.sim.chassis` | Chassis rigid body, swerve module model, config |
+| `frc.sim.gamepiece` | Game pieces, intake zones, launch parameters, manager |
+| `frc.sim.scoring` | Score tracking via sensor zones |
+| `frc.sim.telemetry` | NT publishing, ground clearance |
+| `frc.sim.vision` | Limelight simulation, camera configs |
+
+### Key Classes
+
+| Class | Purpose |
+|-------|---------|
+| `PhysicsWorld` | ODE4J world wrapper. Gravity, ground plane, adaptive sub-stepping, terrain surfaces. |
+| `FieldGeometry` | Loads OBJ meshes as collision surfaces (walls, ramps, field elements). |
+| `TerrainSurface` | Contact material presets: CARPET, WALL, RUBBER, POLYCARBONATE. |
+| `ChassisSimulation` | Robot rigid body. Three modes: velocity-follow, force-based, standalone motor model. |
+| `GamePieceManager` | Manages all pieces: spawn, intake (counter-based), launch, proximity sleep/wake. |
+| `IntakeZone` | Robot-relative bounding box for detecting game piece overlap. |
+| `LaunchParameters` | 3D launch velocity from hood angle + heading + robot velocity. |
+| `ScoringTracker` | Detects pieces passing through scoring sensor zones. |
+| `SimTelemetry` | Publishes sim data to AdvantageKit. |
+| `VisionSimManager` | Simulates Limelight cameras via NetworkTables. |
+| `LimelightSim` | Per-camera FPS throttling, hardware latency, pose history. |
+
+### Adaptive Sub-stepping
+
+Fast objects (e.g., a ball at 30 m/s) can tunnel through thin walls in a single 20ms step. `PhysicsWorld.step()` detects the fastest body and subdivides the timestep so no object moves more than 0.1m per sub-step. Most frames use 1 sub-step; extra sub-steps only kick in during launches.
+
+### Proximity Sleep/Wake
+
+With hundreds of game pieces, simulating every one is expensive. `GamePieceManager` uses a **hysteresis pattern**:
+- **Wake** pieces within 1.5m of the robot
+- **Sleep** pieces beyond 3.0m
+
+The gap prevents thrashing at the boundary. Fast-moving pieces (launched shots) also create wake zones so nearby pieces react to collisions. Result: only ~20-30 pieces are active at any time, even with 400+ on the field.
+
+### Terrain Surfaces
+
+Four built-in contact materials:
+
+| Surface | Friction | Bounce | Notes |
+|---------|----------|--------|-------|
+| CARPET | High | Low | Soft contacts, prevents ball jitter |
+| WALL | Medium | Medium | Hard contacts |
+| RUBBER | High | Medium | — |
+| POLYCARBONATE | Low | Medium | — |
+
+Per-geom overrides let you assign different materials to different field elements.
+
+### Sensor Geoms (Scoring)
+
+Scoring zones use ODE4J sensors — they detect overlap without creating contact joints. Pieces pass through the trigger while the system records the score.
+
+### Chassis Control Modes
+
+| Mode | Method | Use Case |
+|------|--------|----------|
+| Velocity-follow | `setVelocity()` | Kinematic follower for MapleSim. Applies corrective forces `F = m * (v_desired - v_current) / dt`. ODE4J still handles Z/pitch/roll from terrain. |
+| Force-based | `applyForces()` | Apply world-frame forces directly. |
+| Standalone | `SwerveModuleSim` | DC motor voltage-to-force model, for running without MapleSim. |
+
+---
+
+## Game Piece Lifecycle
+
+This is the same regardless of game year:
+
+```
+SPAWN          → Created on field by year-specific layout
+  ↓
+DISABLED       → Moved underground, zero physics cost
+  ↓  (robot within wake radius)
+AWAKE          → Physics enabled
+  ↓  (overlaps intake zone + intake active)
+CONSUMED       → Removed from world, hopper counter increments
+  ↓  (mechanism fires, cooldown expired, hopper > 0)
+LAUNCHED       → New body spawned at mechanism exit with 3D velocity
+  ↓  (gravity, bounces off walls/field)
+IN FLIGHT      → Normal rigid body physics
+  ↓  (enters scoring sensor zone)
+SCORED         → Removed from field, score increments
+```
+
+**Counter-based tracking:** `GamePieceManager` tracks held pieces with `heldCount` / `maxCapacity`. `intakePiece()` removes from world + increments counter. `launchPiece()` decrements counter + spawns new physics body. Pieces are grouped by type in a `Map<String, List<GamePiece>>`.
+
+---
+
+## Vision Simulation
+
+`frc.sim.vision` provides Limelight camera simulation:
+
+- **`VisionSimManager`** — manages multiple simulated cameras, maintains a 2-second pose history buffer
+- **`LimelightSim`** — per-camera simulation with FPS throttling and hardware-specific latency
+- **`CameraConfig`** / **`LimelightType`** — hardware profiles (LL3: 30fps / 25ms latency, LL4: 60fps / 20ms latency)
+
+**How it works:** Each tick, the robot's true pose is recorded into a `TimeInterpolatableBuffer`. When a camera "captures a frame" (based on its FPS), it samples the pose at `now - latency` to simulate realistic measurement delay. Results are published to NetworkTables in YALL/PoseEstimate format.
+
+<Callout type="info">
+**Current status (V0):** Reports exact robot pose with fake AprilTag metadata (constant number of detections). This is good enough for testing pose-estimation pipelines but doesn't model tag visibility or measurement noise.
+
+**Planned (V1):** Real tag visibility based on camera FOV and distance, with distance-based noise.
+</Callout>
+
+---
+
+## Motor Controller Adapters
+
+The year-specific SimManager bridges MapleSim to CTRE's simulation APIs with **bidirectional adapters**:
+
+```
+MapleSim → (position, velocity) → Adapter → TalonFX SimState
+MapleSim ← (commanded voltage) ← Adapter ← TalonFX SimState
+```
+
+Two adapter types in 2026's `RebuiltSimManager`:
+- **`TalonFXMotorControllerSim`** — syncs a single TalonFX motor
+- **`TalonFXMotorControllerWithRemoteCanCoderSim`** — syncs TalonFX rotor state AND CANcoder absolute position (used for swerve steer modules)
+
+Both connect to `SimulatedBattery` for brownout effects.
+
+---
+
+## Component Animation
+
+The SimManager maintains rotation accumulators for animated mechanisms (rollers, feeders, shooter wheels). Each tick, if a mechanism is active, its angle accumulator increments by a speed constant. These are published as an array of `Pose3d` values to AdvantageKit, which AdvantageScope renders as articulated robot parts.
+
+---
+
+## 2026 REBUILT Specifics
+
+**Code:** `robot/2026-rebuilt/src/main/java/frc/robot/sim/`
+
+| Class | Purpose |
+|-------|---------|
+| `RebuiltSimManager` | Orchestrator. 12-step sim loop at 50Hz. Bridges MapleSim ↔ ODE4J. |
+| `RebuiltField` | Field layout: hubs, ramps, scoring zones, fuel spawn positions. Loads `field_collision.obj`. |
+| `RebuiltGamePieces` | Fuel ball config: sphere, 0.075m radius, 0.2kg, bounce 0.15. |
+| `ShooterSim` | Bridges shooter subsystem to game piece launches. 100ms cooldown. |
+
+**Field:** 16.54m × 8.07m with two hubs, ramps, 360-400 fuel balls in neutral zone, 24 per depot.
+
+**Hood state machine:** `RebuiltSimManager` tracks hood angle (`simHoodAngleRad`) by watching the `ShooterHood` subsystem state (AIMING_UP / AIMING_DOWN) and applying `HOOD_ADJUST_RATE` within min/max bounds.
+
+**Field mesh loading:** `RebuiltField` tries the deploy directory first, falls back to classpath. Check console for warnings if the mesh isn't found.
+
+### The Sim Loop (every 20ms)
+
+1. MapleSim steps drivetrain (motor voltages → tire forces → chassis state)
+2. Read robot pose + velocity from MapleSim
+3. Convert velocity to world frame (robot-relative → field-relative rotation)
+4. Update ODE4J chassis body (corrective force to match MapleSim velocity)
+5. Wake nearby game pieces (1.5m radius)
+6. Check intake zone (before physics step, to prevent re-consuming launched balls)
+7. ODE4J physics step (with adaptive sub-stepping)
+8. Sync gyro (MapleSim yaw → Pigeon2 sim state)
+9. Update game piece states (auto-disable settled pieces)
+10. Check scoring zones (sensor geom overlaps)
+11. Update shooter (launch if firing + cooldown expired + hopper > 0)
+12. Publish telemetry (poses, scores, components → AdvantageKit)
+
+---
+
+## Design Patterns
+
+### Supplier-Based Decoupling
+
+`ShooterSim`, `IntakeZone`, and other bridges use `Supplier<T>` / `DoubleSupplier` to lazily read subsystem state. This avoids snapshot inconsistencies within a tick and decouples sim-core from concrete subsystem classes.
+
+### BiConsumer Publish Callback
+
+`GamePieceManager` uses `BiConsumer<String, Pose3d[]>` for telemetry publishing. This decouples sim-core from AdvantageKit — the year-specific code provides the publish callback.
+
+### Kinematic Follower
+
+MapleSim owns the "truth" for robot pose. ODE4J applies corrective forces (`F = mass × (v_desired - v_current) / dt`) to match, while ODE4J's contact constraints naturally prevent wall penetration. This gives you the best of both engines without double-counting.
+
+---
+
+## Building a Sim for a New Game Year
+
+1. **Define game piece properties** — shape, mass, radius, bounce via `GamePieceConfig.Builder`
+2. **Generate the field collision mesh** — see below
+3. **Configure the chassis** — mass, dimensions via `ChassisConfig.Builder`
+4. **Write the SimManager** — initialize MapleSim + sim-core, run the sim loop, publish telemetry
+5. **Add scoring zones** — sensor geoms at scoring locations, register with `ScoringTracker`
+6. **Add mechanism bridges** — connect subsystem state to intake zones and launch parameters
+
+Use `RebuiltSimManager` as the reference implementation.
+
+### Generating the Field Collision Mesh
+
+The sim needs an OBJ file that defines the field's collision surfaces (walls, ramps, hubs, etc.). We use FEDS Bot to generate a Python script that outputs the OBJ from hardcoded field dimensions. See `robot/2026-rebuilt/src/main/resources/generate_field.py` for the 2026 example.
+
+**The workflow:**
+1. Write a prompt asking for a Python script to generate this year's field collision mesh. Include field details — both manually written descriptions and references from the game manual. See the [2026 prompt](https://github.com/feds201/feds-central/blob/main/robot/2026-rebuilt/src/main/resources/generate_field_script_ai_prompt.md) as an example.
+2. Give the prompt to FEDS Bot (make sure you've added the new game manual PDF to `./game-manuals/` first so it has context).
+3. Save the generated script to `robot/20XX-GAMENAME/src/main/resources/generate_field.py`
+4. Run it — it produces `field_collision.obj`
+5. Visually inspect the OBJ at [3dviewer.net](https://3dviewer.net), then load it in the sim and drive around in AdvantageScope — verify that obstacles line up with the visual field
+6. If something's off, go back to FEDS Bot to tweak the script and repeat from step 3
+
+<Callout type="warning">
+Keep field OBJ meshes simple. Every triangle is a collision surface. 500 triangles is fine. 50,000 will destroy your frame rate.
+</Callout>
+
+---
+
+## Troubleshooting
+
+**Robot doesn't move:** Check that the sim GUI shows "Enabled" in "Teleop". Make sure a controller or keyboard is connected.
+
+**Balls fall through the floor:** Verify `PhysicsWorld` has gravity enabled and the OBJ mesh loaded without errors.
+
+**Balls tunnel through walls:** Adaptive sub-stepping should prevent this. If it happens, the launch velocity may exceed the 0.1m sub-step threshold.
+
+**`ClassNotFoundException: frc.sim.core.PhysicsWorld`:** sim-core isn't on the classpath. In `settings.gradle`:
+```gradle
+include ':sim-core'
+project(':sim-core').projectDir = new File(settingsDir, '../sim-core')
+```
+And in `build.gradle`:
+```gradle
+implementation project(':sim-core')
+```
+
+**Slow performance:** Check active piece count. Default wake radius (1.5m) should keep it under 30. Also make sure you ran the mesh simplify script.
+
+**Encoder mismatch:** Check MapleSim gear ratios match the physical robot config.
