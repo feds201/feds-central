@@ -190,19 +190,23 @@ export function handleBack() {
         displayQuestion();
     }
 }
-function calculateOverallScore() {
-    const completed = Object.values(moduleScores);
-    if (completed.length === 0) return null;
-    return Math.min(...completed); // WEI style: bottleneck score
+function updateOverallScore() {
+    const requiredModules = ['1', '2', '3'];
+    const completedRequired = requiredModules.filter(m => moduleScores[m] !== undefined);
+    if (completedRequired.length === 0) return;
+    
+    const avg = Math.round(
+        completedRequired.reduce((sum, m) => sum + moduleScores[m], 0) / completedRequired.length
+    );
+    
+    const overallEl = document.getElementById('overall-eco-score');
+    if (overallEl) overallEl.textContent = avg;
+    
+    const overallCard = document.getElementById('overall-score-card');
+    if (overallCard) overallCard.classList.remove('hidden');
 }
 
-const overallScore = calculateOverallScore();
-const overallEl = document.getElementById('overall-eco-score');
-if (overallEl && overallScore !== null) {
-    overallEl.textContent = overallScore;
-}
-const overallCard = document.getElementById('overall-score-card');
-if (overallCard) overallCard.classList.remove('hidden');
+
 
 function updateEcoScore(question, value) {
     let impactFactor;
@@ -236,6 +240,7 @@ function finishQuiz() {
     const finalScore = Math.round(currentEcoScore);
     if (elements.finalEcoScore) elements.finalEcoScore.textContent = finalScore;
 moduleScores[activeModuleId] = finalScore;
+updateOverallScore();
 const moduleScoreEl = document.getElementById(`eco-score-module-${activeModuleId}`);
 if (moduleScoreEl) {
     moduleScoreEl.innerHTML = `<i class="fas fa-leaf"></i> Eco Score: ${finalScore}`;
@@ -256,10 +261,36 @@ if (moduleScoreEl) {
             elements.resultMessage.textContent = "Your team has a significant environmental footprint. Urgent action is recommended.";
         }
     }
-
+const overallScore = calculateOverallScore();
+const overallEl = document.getElementById('overall-eco-score');
+if (overallEl && overallScore !== null) {
+    overallEl.textContent = overallScore;
+}
+const overallCard = document.getElementById('overall-score-card');
+if (overallCard) overallCard.classList.remove('hidden');
     updateImpactTexts();
     generateRecommendations();
     generateSummary();
+
+
+    const overallSummaryEl = document.getElementById('overall-score-summary');
+if (overallSummaryEl) {
+    const moduleNames = {
+        '1': 'Shipping & Packaging',
+        '2': 'Disposable Meal Items',
+        '3': 'Mechanical/Programming/Fabrics',
+        '4': 'Transportation (First)',
+        '5': 'Transportation (Regional)'
+    };
+    let html = '';
+    for (const [id, score] of Object.entries(moduleScores)) {
+        html += `<div class="module-score-row">
+            <span>${moduleNames[id] || 'Module ' + id}</span>
+            <span>${score}/100</span>
+        </div>`;
+    }
+    overallSummaryEl.innerHTML = html;
+}
 }
 
 function updateImpactTexts() {
