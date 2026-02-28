@@ -245,7 +245,9 @@ if (activeModuleId === 'secret') {
 } else {
     if (elements.finalEcoScore) elements.finalEcoScore.textContent = finalScore;
     moduleScores[activeModuleId] = finalScore;
+    
     moduleAnswers[activeModuleId] = [...answers];
+    updateOverallScore();
     const moduleScoreEl = document.getElementById(`eco-score-module-${activeModuleId}`);
 if (moduleScoreEl) {
     moduleScoreEl.innerHTML = `<i class="fas fa-leaf"></i> Eco Score: ${finalScore}`;
@@ -390,6 +392,24 @@ function generateRecommendations() {
     document.querySelectorAll('.eco-recommendations > .recommendation-item').forEach(el => {
         el.style.display = 'none';
     });
+}
+
+function updateOverallScore() {
+    const coreModules = ['1', '2', '3'];
+    const completedCore = coreModules.filter(m => moduleScores[m] !== undefined);
+    if (completedCore.length === 0) return;
+
+    const transportScore = moduleScores['4'] ?? moduleScores['5'];
+    const allScores = completedCore.map(m => moduleScores[m]);
+    if (transportScore !== undefined) allScores.push(transportScore);
+
+    const lowest = Math.min(...allScores);
+
+    const overallEl = document.getElementById('overall-eco-score');
+    if (overallEl) overallEl.textContent = lowest;
+
+    const overallCard = document.getElementById('overall-score-card');
+    if (overallCard) overallCard.classList.remove('hidden');
 }
 
 function generateSummary() {
