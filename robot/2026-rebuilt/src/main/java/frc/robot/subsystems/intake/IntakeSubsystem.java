@@ -54,11 +54,11 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public Command extendIntake(){
-    return run(()-> motor.setControl(new PositionVoltage(0).withPosition(extendedLength/(wheelRadius*2*Math.PI))));
+    return runOnce(()-> motor.setControl(new PositionVoltage(0).withPosition(extendedLength/(wheelRadius*2*Math.PI))));
   }
 
   public Command retractIntake() {
-     return run(()-> motor.setControl(new PositionVoltage(0).withPosition(0)));
+     return runOnce(()-> motor.setControl(new PositionVoltage(0).withPosition(0)));
     }
 
   
@@ -68,7 +68,7 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public Command setIntakeStateCommand(IntakeState targState){ // -> Extended 
-    return run(() -> setState(targState)); // -> Extended
+    return runOnce(() -> setState(targState)); // -> Extended
   }
 
 
@@ -116,15 +116,17 @@ public class IntakeSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    //commented because this code currently does not allow the wheels to spin if limelight 
+    //does not see a target, this should be a switch of whether or not the limelight determines roller state.
+    
+    // if (LimelightHelpers.getTV("limelight-one")) {
+    //   System.out.println("Limelight found target.");
+    //   rollers.setState(RollerState.ON);
+    // }
 
-    if (LimelightHelpers.getTV("limelight-one")) {
-      System.out.println("Limelight found target.");
-      rollers.setState(RollerState.ON);
-    }
-
-    else {
-      rollers.setState(RollerState.OFF);
-    }
+    // else {
+    //   rollers.setState(RollerState.OFF);
+    // }
 
     switch(targetState) { // -> Extended
       case EXTENDED: extendIntake();

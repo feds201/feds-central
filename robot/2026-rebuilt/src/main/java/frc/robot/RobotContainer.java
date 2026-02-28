@@ -16,6 +16,7 @@ import frc.robot.commands.swerve.HubDrive;
 import frc.robot.commands.swerve.TeleopSwerve;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.intake.RollersSubsystem;
+import frc.robot.subsystems.intake.IntakeSubsystem.IntakeState;
 import frc.robot.subsystems.intake.RollersSubsystem.RollerState;
 import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.subsystems.feeder.Feeder.feeder_state;
@@ -28,8 +29,6 @@ import frc.robot.subsystems.spindexer.Spindexer.spindexer_state;
 import frc.robot.sim.RebuiltSimManager;
 import org.littletonrobotics.junction.Logger;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
-import com.ctre.phoenix6.swerve.SwerveRequest;
-import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.utils.LimelightWrapper;
 import frc.robot.utils.RTU.RootTestingUtility;
 import limelight.networktables.LimelightSettings.ImuMode;
@@ -67,15 +66,13 @@ public class RobotContainer {
 
   public RobotContainer() {
     ll4.getSettings().withImuMode(ImuMode.ExternalImu).save();
-    if(Robot.isSimulation()){
-      configureBindingsSim();
-    } else {
-      configureBindings();
-    }
+    hubDrive = new HubDrive(drivetrain, null);
+    configureBindings();
+    
     
     configureRootTests();
     
-    hubDrive = new HubDrive(drivetrain, null);
+    
   }
 
   public void updateLocalization() {
@@ -85,25 +82,15 @@ public class RobotContainer {
       ll3.updateLocalizationLimelight(drivetrain);
     }
   }
-  private void configureBindingsSim(){
-     // TODO: rm once shooter hood/wheels are tuned
-    controller.leftBumper().whileTrue(shooterSim.shootCommand());
-    controller.a().whileTrue(shooterSim.hoodDownCommand());
-    controller.b().whileTrue(shooterSim.hoodUpCommand());
-
-    // Default drive command: field-centric swerve with left stick + right stick rotation
-    drivetrain.setDefaultCommand(
-        new TeleopSwerve(drivetrain, controller));
-  }
 
   private void configureBindings() {
 
     controller.leftTrigger()
-        .onTrue(intakeSubsystem.extendIntake().andThen(rollersSubsystem.RollersCommand(RollerState.ON)))
+        .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED).andThen(rollersSubsystem.RollersCommand(RollerState.ON)))
         .onFalse(rollersSubsystem.RollersCommand(RollerState.OFF));
 
     controller.leftBumper()
-        .onTrue(intakeSubsystem.retractIntake());
+        .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED));
 
     // Default drive command: field-centric swerve with left stick + right stick rotation
     drivetrain.setDefaultCommand(
@@ -126,6 +113,7 @@ public class RobotContainer {
     controller.a()
         .onTrue(shooterHood.setStateCommand(shooterhood_state.AIMING_DOWN))
         .onFalse(shooterHood.setStateCommand(shooterhood_state.IN));
+
     controller.b()
         .onTrue(shooterHood.setStateCommand(shooterhood_state.AIMING_UP))
         .onFalse(shooterHood.setStateCommand(shooterhood_state.IN));
@@ -137,19 +125,19 @@ public class RobotContainer {
       .onFalse(Commands.sequence(
         feederSubsystem.setStateCommand(feeder_state.STOP),
         spinDexer.setStateCommand(spindexer_state.STOP)));
+
     controller.povRight().whileTrue(
       Commands.sequence(
         shooterHood.setStateCommand(shooterhood_state.SHOOTING), 
         shooterWheels.setStateCommand(shooter_state.SHOOTING)
-      ).alongWith(hubDrive))
+      ).alongWith(new HubDrive(drivetrain, controller)))
     .onFalse(
       Commands.sequence(
         shooterHood.setStateCommand(shooterhood_state.OUT), 
         shooterWheels.setStateCommand(shooter_state.IDLE)
-      ).alongWith(hubDrive)
-      );
+      ));
 
-    controller.rightTrigger().and(hubDrive::pidAtSetpoint).and(shooterWheels::atSetpoint).whileTrue(
+    controller.rightTrigger().and(HubDrive::pidAtSetpoint).and(shooterWheels::atSetpoint).whileTrue(
       Commands.sequence(
       feederSubsystem.setStateCommand(feeder_state.RUN),
       spinDexer.setStateCommand(spindexer_state.RUN)

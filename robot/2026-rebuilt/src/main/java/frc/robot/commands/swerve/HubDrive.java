@@ -26,7 +26,7 @@ public class HubDrive extends Command {
 
   public static final double MAX_SPEED = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
   public static final double MAX_ANGULAR_RATE = RotationsPerSecond.of(2).in(RadiansPerSecond);
-private final PIDController hubRotPID = new PIDController(25, 0, 0);
+  private static final PIDController hubRotPID = new PIDController(25, 0, 0);
   private CommandSwerveDrivetrain dt;
   private CommandXboxController controller;
   
@@ -42,6 +42,7 @@ private final PIDController hubRotPID = new PIDController(25, 0, 0);
     .withDeadband(MAX_SPEED*.07)
     .withRotationalDeadband(MAX_ANGULAR_RATE*.07);
     hubRotPID.enableContinuousInput(-180, 180);
+    hubRotPID.setTolerance(3);
     
     addRequirements(this.dt);
   }
@@ -52,7 +53,7 @@ private final PIDController hubRotPID = new PIDController(25, 0, 0);
     
   }
 
-  public boolean pidAtSetpoint(){
+  public static boolean pidAtSetpoint(){
     return hubRotPID.atSetpoint();
   }
   // Called every time the scheduler runs while the command is scheduled.
