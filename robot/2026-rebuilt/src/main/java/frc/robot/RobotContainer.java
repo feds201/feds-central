@@ -85,6 +85,10 @@ public class RobotContainer {
 
   private void configureBindings() {
 
+    controller.start()
+       .onTrue(DrivetrainConstants.createDrivetrain().runOnce(() -> DrivetrainConstants.createDrivetrain().seedFieldCentric()));
+    
+
     controller.leftTrigger()
         .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED).andThen(rollersSubsystem.RollersCommand(RollerState.ON)))
         .onFalse(rollersSubsystem.RollersCommand(RollerState.OFF));
