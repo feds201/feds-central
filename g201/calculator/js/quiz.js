@@ -191,23 +191,7 @@ export function handleBack() {
         displayQuestion();
     }
 }
-function updateOverallScore() {
-    const coreModules = ['1', '2', '3'];
-    const completedCore = coreModules.filter(m => moduleScores[m] !== undefined);
-    if (completedCore.length === 0) return;
 
-    const transportScore = moduleScores['4'] ?? moduleScores['5'];
-    const allScores = completedCore.map(m => moduleScores[m]);
-    if (transportScore !== undefined) allScores.push(transportScore);
-
-    const lowest = Math.min(...allScores);
-
-    const overallEl = document.getElementById('overall-eco-score');
-    if (overallEl) overallEl.textContent = lowest;
-
-    const overallCard = document.getElementById('overall-score-card');
-    if (overallCard) overallCard.classList.remove('hidden');
-}
 
 
 
