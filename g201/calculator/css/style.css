@@ -136,6 +136,15 @@ body::after {
     transition: background-color 0.4s ease, box-shadow 0.4s ease;
 }
 
+.eco-score-module-1.completed,
+.eco-score-module-2.completed,
+.eco-score-module-3.completed,
+.eco-score-module-4.completed,
+.eco-score-module-5.completed {
+    background-color: rgba(77, 240, 12, 0.895);  /* green */
+    box-shadow: 0 3px 10px rgba(77, 240, 12, 0.895);
+}
+
 .modules-wrapper {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
