@@ -121,176 +121,218 @@ export const modules = {
             category: "materials"
         },
     ],
-          '3': [
-        {
-            section: "III. Mechanical",
-            question: "How many drills do you have in your workshop?",
-            hint: "Enter an integer value",
-            type: "int",
-            min: 0,
-            max: 200,
-            eco_tip: "The material that these drills are made out of severely effcets the enviroment",
-            eco_impact: "high",
-            category: "materials"
-        },
-        {
-            section: "III. Mechanical",
-            question: "What do you do with your extra lumber",
-            hint: "Select an option",
-            type: "multiple-choice",
-            options: [
-                { label: "Throw it away", eco_impact: "high", value: 3 },
-                { label: "Repurpose/Recycle", eco_impact: "low", value: 1 },
-            ],
-            eco_tip: "Lumber sent to landfill releases methane as it decomposes. Donating or repurposing scrap wood keeps it out of the waste stream.",
-            eco_impact: "medium",
-            category: "materials"
-        },
-        {
-            section: "III. Mechanical",
-            question: "If you do Recycle/Repurpose your lumber, how do you do so?",
-            hint: "Select an option",
-            type: "multiple-choice",
-            options: [
-                { label: "We don't Recycle/Repurpose our lumber", eco_impact: "high", value: 3 },
-                { label: "Save it for next year", eco_impact: "medium", value: 2 },
-                { label: "Use for training", eco_impact: "medium", value: 2 },
-                { label: "Donate/Sale", eco_impact: "low", value: 1 },
-            ],
-            eco_tip: "Donating or selling scrap lumber gives it a second life and reduces the demand for newly harvested wood.",
-            eco_impact: "medium",
-            category: "materials"
-        },
-        {
-            section: "III. Mechanical",
-            question: "What do you do with your extra wires?",
-            hint: "Select an option",
-            type: "multiple-choice",
-            options: [
-                { label: "Throw them away", eco_impact: "high", value: 3 },
-                { label: "Save them for next year", eco_impact: "medium", value: 2 },
-                { label: "Use for training", eco_impact: "medium", value: 2 },
-                { label: "Donate/Sale", eco_impact: "low", value: 1 },
-            ],
-            eco_tip: "Copper wire is highly recyclable. Many scrap metal facilities accept it — look for an e-waste drop-off near you.",
-            eco_impact: "medium",
-            category: "materials"
-        },
-        {
-            section: "III. Mechanical",
-            question: "How many batteries do you order for the season?",
-            hint: "Select an option",
-            type: "multiple-choice",
-            options: [
-                { label: "10-15", eco_impact: "high", value: 3 },
-                { label: "8-10", eco_impact: "medium", value: 2 },
-                { label: "2-8", eco_impact: "low", value: 1 },
-            ],
-            eco_tip: "Lead-acid batteries are toxic if landfilled. Always recycle them — most auto stores accept them for free.",
-            eco_impact: "medium",
-            category: "energy"
-        },
-        {
-            section: "III. Programming",
-            question: " How many Laptops do you use?",
-            hint: "Select an option",
-            type: "multiple-choice",
-            options: [
-                { label: "25-40", eco_impact: "high", value: 3 },
-                { label: "15-25", eco_impact: "medium", value: 2 },
-                { label: "5-15", eco_impact: "low", value: 1 },
-            ],
-            eco_tip: "Manufacturing a laptop produces significant carbon emissions. Extending the life of existing devices is the most eco-friendly option.",
-            eco_impact: "medium",
-            category: "energy"
-        },
-        {
-            section: "III. Mechanical",
-            question: "What do you do with your extra sensors?",
-            hint: "Select an option",
-            type: "multiple-choice",
-            options: [
-                { label: "Throw them away", eco_impact: "high", value: 3 },
-                { label: "Save them for next year", eco_impact: "medium", value: 2 },
-                { label: "Use for training", eco_impact: "medium", value: 2 },
-                { label: "Donate/Sale", eco_impact: "low", value: 1 },
-            ],
-            eco_tip: "Electronic components contain valuable materials that can be recovered. Donating to other teams or e-waste programs keeps them out of landfills.",
-            eco_impact: "medium",
-            category: "materials"
-        },
-        {
-            section: "III. Fabrics",
-            question: "What do you do with your extra lexan/polycarb?",
-            hint: "Select an option",
-            type: "multiple-choice",
-            options: [
-                { label: "Throw them away", eco_impact: "high", value: 3 },
-                { label: "Save them for next year", eco_impact: "medium", value: 2 },
-                { label: "Use for training", eco_impact: "medium", value: 2 },
-                { label: "Donate/Sale", eco_impact: "low", value: 1 },
-            ],
-            eco_tip: "Polycarbonate is a petroleum-based plastic. Reusing or donating scraps avoids the energy cost of producing new sheets.",
-            eco_impact: "medium",
-            category: "materials"
-        },
-        {
-            section: "III. Mechanical",
-            question: " How often do you charge your batteries? ",
-            hint: "Pick the option that best describes your situation",
-            type: "multiple-choice",
-            options: [
-                { label: "Every day", eco_impact: "high", value: 3 },
-                { label: "Every week", eco_impact: "medium", value: 2 },
-                { label: "Every month", eco_impact: "low", value: 1 },
-            ],
-            eco_tip: "Frequent charging cycles degrade battery life faster, leading to more replacements. Only charge when needed and avoid overcharging.",
-            eco_impact: "High",
-            category: "energy"
-        },
-        {
-            section: "III. Fabrics",
-            question: "How often do you buy filaments?",
-            hint: "Pick the option that best describes your situation",
-            type: "multiple-choice",
-            options: [
-                { label: "Every day", eco_impact: "high", value: 3 },
-                { label: "Every week", eco_impact: "medium", value: 2 },
-                { label: "Every month", eco_impact: "low", value: 1 },
-            ],
-            eco_tip: "Most 3D printing filaments are plastic and non-recyclable. Look into PLA (compostable) filament and reduce waste by optimizing print designs.",
-            eco_impact: "High",
-            category: "materials"
-        },
-        {
-            section: "III. Mechanical",
-            question: "How long did you run your large machines (in hours)?",
-            hint: "Pick the option that best describes your situation",
-            type: "multiple-choice",
-            options: [
-                { label: "10-15 hours", eco_impact: "high", value: 3 },
-                { label: "5-10 hours", eco_impact: "medium", value: 2 },
-                { label: "3-5 hours", eco_impact: "low", value: 1 },
-            ],
-            eco_tip: "CNC machines, lathes, and routers draw significant power. Batch your operations to minimize idle time and total run hours.",
-            eco_impact: "High",
-            category: "energy"
-        },
-        {
-            section: "III. Fabrics",
-            question: "What do you use for prototyping/training?",
-            hint: "Pick the option that best describes your situation",
-            type: "multiple-choice",
-            options: [
-                { label: "New material", eco_impact: "high", value: 3 },
-                { label: "Cardboard", eco_impact: "medium", value: 2 },
-                { label: "Scrap material", eco_impact: "low", value: 1 },
-            ],
-            eco_tip: "Using scrap material for prototypes is the most eco-friendly approach — it gives leftover pieces a purpose before they become waste.",
-            eco_impact: "High",
-            category: "materials"
-        }
+       '3': [
+    // --- MECHANICAL ---
+    {
+        section: "III. Mechanical",
+        question: "How many 2x1 aluminum bars and parts did you use in total?",
+        hint: "Enter an integer value",
+        type: "int",
+        min: 0,
+        max: 500,
+        eco_tip: "Aluminum production is energy-intensive. Reusing and recycling aluminum parts significantly reduces your footprint.",
+        eco_impact: "high",
+        category: "materials"
+    },
+    {
+        section: "III. Mechanical",
+        question: "What do you do with your extra aluminum?",
+        hint: "Pick the option that best describes your situation",
+        type: "multiple-choice",
+        options: [
+            { label: "Throw it away", eco_impact: "high", value: 3 },
+            { label: "Save it for next year", eco_impact: "medium", value: 2 },
+            { label: "Repurpose/Donate/Sell", eco_impact: "low", value: 1 },
+        ],
+        eco_tip: "Aluminum is infinitely recyclable. Scrap metal facilities accept it — don't landfill it.",
+        eco_impact: "high",
+        category: "materials"
+    },
+
+    {
+    section: "III. Mechanical",
+    question: "Do you use lumber in your build process?",
+    hint: "Pick the option that best describes your situation",
+    type: "multiple-choice",
+    options: [
+        { label: "Yes", eco_impact: "medium", value: 2 },
+        { label: "No", eco_impact: "low", value: 1 },
     ],
+    eco_tip: "Lumber is a renewable resource when sourced responsibly, but still has a footprint from processing and transport.",
+    eco_impact: "low",
+    category: "materials"
+},
+    {
+        section: "III. Mechanical",
+        question: "What do you do with your extra lumber?",
+        hint: "Pick the option that best describes your situation",
+        type: "multiple-choice",
+        options: [
+            { label: "Throw it away", eco_impact: "high", value: 3 },
+            { label: "Save it for next year", eco_impact: "medium", value: 2 },
+            { label: "Repurpose/Donate/Sell", eco_impact: "low", value: 1 },
+        ],
+        eco_tip: "Lumber sent to landfill releases methane as it decomposes. Donating or repurposing scrap wood keeps it out of the waste stream.",
+        eco_impact: "medium",
+        category: "materials"
+    },
+    {
+        section: "III. Mechanical",
+        question: "How many drill/tool batteries do you recharge?",
+        hint: "Enter an integer value",
+        type: "int",
+        min: 0,
+        max: 100,
+        eco_tip: "Recharging batteries instead of replacing them is always the greener choice.",
+        eco_impact: "medium",
+        category: "energy"
+    },
+    {
+        section: "III. Mechanical",
+        question: "How long did you run your large machines (in hours)?",
+        hint: "Pick the option that best describes your situation",
+        type: "multiple-choice",
+        options: [
+            { label: "10-15 hours", eco_impact: "high", value: 3 },
+            { label: "5-10 hours", eco_impact: "medium", value: 2 },
+            { label: "3-5 hours", eco_impact: "low", value: 1 },
+        ],
+        eco_tip: "CNC machines, lathes, and routers draw significant power. Batch your operations to minimize idle time and total run hours.",
+        eco_impact: "high",
+        category: "energy"
+    },
+
+    // --- ELECTRICAL ---
+    {
+        section: "III. Electrical",
+        question: "How many robot batteries do you order for the season?",
+        hint: "Pick the option that best describes your situation",
+        type: "multiple-choice",
+        options: [
+            { label: "10-15", eco_impact: "high", value: 3 },
+            { label: "8-10", eco_impact: "medium", value: 2 },
+            { label: "2-8", eco_impact: "low", value: 1 },
+        ],
+        eco_tip: "Lead-acid batteries are toxic if landfilled. Always recycle them — most auto stores accept them for free.",
+        eco_impact: "high",
+        category: "energy"
+    },
+    {
+        section: "III. Electrical",
+        question: "How often do you charge your robot batteries?",
+        hint: "Pick the option that best describes your situation",
+        type: "multiple-choice",
+        options: [
+            { label: "Every day", eco_impact: "high", value: 3 },
+            { label: "Every week", eco_impact: "medium", value: 2 },
+            { label: "Only when needed", eco_impact: "low", value: 1 },
+        ],
+        eco_tip: "Frequent charging cycles degrade battery life faster, leading to more replacements. Only charge when needed and avoid overcharging.",
+        eco_impact: "high",
+        category: "energy"
+    },
+    {
+        section: "III. Electrical",
+        question: "What do you do with your extra wires?",
+        hint: "Pick the option that best describes your situation",
+        type: "multiple-choice",
+        options: [
+            { label: "Throw them away", eco_impact: "high", value: 3 },
+            { label: "Save them for next year", eco_impact: "medium", value: 2 },
+            { label: "Donate/Sell", eco_impact: "low", value: 1 },
+            { label: "Repurpose it", eco_impact: "low", value: 1 },
+        ],
+        eco_tip: "Copper wire is highly recyclable. Many scrap metal facilities accept it — look for an e-waste drop-off near you.",
+        eco_impact: "medium",
+        category: "materials"
+    },
+
+    // --- PROGRAMMING ---
+    {
+        section: "III. Programming",
+        question: "How many laptops does your team use?",
+        hint: "Pick the option that best describes your situation",
+        type: "multiple-choice",
+        options: [
+            { label: "25-40", eco_impact: "high", value: 3 },
+            { label: "15-25", eco_impact: "medium", value: 2 },
+            { label: "5-15", eco_impact: "low", value: 1 },
+        ],
+        eco_tip: "Manufacturing a laptop produces significant carbon emissions. Extending the life of existing devices is the most eco-friendly option.",
+        eco_impact: "medium",
+        category: "energy"
+    },
+    {
+        section: "III. Programming",
+        question: "What do you do with your extra sensors?",
+        hint: "Pick the option that best describes your situation",
+        type: "multiple-choice",
+        options: [
+            { label: "Throw them away", eco_impact: "high", value: 3 },
+            { label: "Save them for next year", eco_impact: "medium", value: 2 },
+            { label: "Donate/Sell", eco_impact: "low", value: 1 },
+            { label: "Repurpose it", eco_impact: "low", value: 1 },
+        ],
+        eco_tip: "Electronic components contain valuable materials. Donating to other teams or e-waste programs keeps them out of landfills.",
+        eco_impact: "medium",
+        category: "materials"
+    },
+
+    // --- FAB ---
+    {
+        section: "III. Fab",
+        question: "How often do you buy filament?",
+        hint: "Pick the option that best describes your situation",
+        type: "multiple-choice",
+        options: [
+            { label: "Every week or more", eco_impact: "high", value: 3 },
+            { label: "Every few weeks", eco_impact: "medium", value: 2 },
+            { label: "Once a month or less", eco_impact: "low", value: 1 },
+        ],
+        eco_tip: "Most 3D printing filaments are plastic. Look into PLA (compostable) filament and reduce waste by optimizing print designs.",
+        eco_impact: "high",
+        category: "materials"
+    },
+    {
+        section: "III. Fab",
+        question: "What do you do with your extra lexan/polycarbonate?",
+        hint: "Pick the option that best describes your situation",
+        type: "multiple-choice",
+        options: [
+            { label: "Throw it away", eco_impact: "high", value: 3 },
+            { label: "Save it for next year", eco_impact: "medium", value: 2 },
+            { label: "Donate/Sell", eco_impact: "low", value: 1 },
+            { label: "Repurpose it", eco_impact: "low", value: 1 },
+        ],
+        eco_tip: "Polycarbonate is a petroleum-based plastic. Reusing or donating scraps avoids the energy cost of producing new sheets.",
+        eco_impact: "medium",
+        category: "materials"
+    },
+    {
+        section: "III. Fab",
+        question: "Do you use cardboard for prototyping?",
+        hint: "Pick the option that best describes your situation",
+        type: "multiple-choice",
+        options: [
+            { label: "Yes", eco_impact: "low", value: 1 },
+            { label: "No", eco_impact: "high", value: 3 },
+        ],
+        eco_tip: "Cardboard prototyping is far more eco-friendly than using new material. It reduces waste from expensive scrap.",
+        eco_impact: "low",
+        category: "materials"
+    },
+    {
+        section: "III. Fab",
+        question: "How many cardboard boxes/pieces did you use for prototyping?",
+        hint: "Enter an integer value",
+        type: "int",
+        min: 0,
+        max: 200,
+        eco_tip: "Reusing cardboard boxes from shipping for prototyping is a great way to close the waste loop.",
+        eco_impact: "low",
+        category: "materials"
+    },
+],
          '4': [
         {
             section: "IV. Transportation",

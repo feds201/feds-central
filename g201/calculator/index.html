@@ -26,7 +26,6 @@
         <span class="overall-score-max">/100</span>
     </div>
     <p class="overall-score-note">Score is determined by your lowest module — improve your weakest area to raise it.</p>
-    <div id="overall-score-summary"></div>
 </div>
     <div class="progress-container">
         <div class="progress-bar" id="progress-bar"></div>
@@ -44,50 +43,52 @@
 </div>
 </div> <div class="actions hidden"> <div class="eco-tip" id="eco-tip"></div> <div class="button-group"> <button class="back-btn hidden" id="back-btn"><i class="fas fa-arrow-left"></i> Previous</button> <button class="next-btn" id="next-btn">Next <i class="fas fa-arrow-right"></i></button> </div> </div>
     <div class="modules-wrapper">
-        <div class="module module1">
-            <div class="module-header"><h2>Module 1</h2></div>
-            <div class="module-body">
-                <p>Overview and initial questions.</p>
-                <button class="start-btn">Open</button>
-                <div class="eco-score-module-1"></i> <span id="eco-score-module-1"><i class="fas fa-leaf"></i>Eco Score: ?</span></div>
-            </div>
+    <div class="module module1">
+        <div class="module-header"><h2>Module 1</h2></div>
+        <div class="module-body">
+            <p>Shipping &amp; Packaging questions.</p>
+            <button class="start-btn">Open</button>
+            <div class="eco-score-module-1"><span id="eco-score-module-1"><i class="fas fa-leaf"></i> Eco Score: 0</span></div>
         </div>
+    </div>
 
-        <div class="module module2">
-            <div class="module-header"><h2>Module 2</h2></div>
-            <div class="module-body">
-                <p>Materials &amp; Packaging questions.</p>
-                <button class="start-btn">Open</button>
-                <div class="eco-score-module-2"></i><span id="eco-score-module-2"><i class="fas fa-leaf"></i>Eco Score: ?</span></div>
-            </div>
+    <div class="module module2">
+        <div class="module-header"><h2>Module 2</h2></div>
+        <div class="module-body">
+            <p>Disposable Meal Items questions.</p>
+            <button class="start-btn">Open</button>
+            <div class="eco-score-module-2"><span id="eco-score-module-2"><i class="fas fa-leaf"></i> Eco Score: 0</span></div>
         </div>
+    </div>
 
-        <div class="module module3">
-            <div class="module-header"><h2>Module 3</h2></div>
-            <div class="module-body">
-                <p>Robot Questions &amp; Robot Materials questions.</p>
-                <button class="start-btn">Open</button>
-                <div class="eco-score-module-3"></i><span id="eco-score-module-3"><i class="fas fa-leaf"></i>Eco Score: ?</span></div>
-            </div>
+    <div class="module module3">
+        <div class="module-header"><h2>Module 3</h2></div>
+        <div class="module-body">
+            <p>Build questions.</p>
+            <button class="start-btn">Open</button>
+            <div class="eco-score-module-3"><span id="eco-score-module-3"><i class="fas fa-leaf"></i> Eco Score: 0</span></div>
         </div>
+    </div>
 
-        <div class="module module4">
-            <div class="module-header"><h2>Module 4</h2></div>
-            <div class="module-body">
-                <p >Transportation &amp; travel questions.</p>
-                <button class="start-btn">Open</button>
-                <div class="eco-score-module-4"><span id="eco-score-module-4"><i class="fas fa-leaf"></i> Eco Score: ?</span></div>
-                <div class="module module5"><p >Regional Questions</p>
-                <button class="start-btn">Open</button>
-                <div class="eco-score-module-5"><span id="eco-score-module-5"><i class="fas fa-leaf"></i> Eco Score: ?</span></div>
-            </div>
-                
-                 
-               
-            </div>
+    <div class="module module4">
+        <div class="module-header"><h2>Module 4 &amp; 5 — Transportation</h2></div>
+        <div class="module-body">
+            <p>Choose the version that matches your competition type.</p>
+            <div class="transport-module-row">
+                <div>
+                    <p class="transport-label">FIRST Competition</p>
+                    <button class="start-btn" data-module="4">Open</button>
+                    <div class="eco-score-module-4"><span id="eco-score-module-4"><i class="fas fa-leaf"></i> Eco Score: 0</span></div>
+                </div>
+                <div>
+                    <p class="transport-label">Regional Competition</p>
+                    <button class="start-btn" data-module="5">Open</button>
+                    <div class="eco-score-module-5"><span id="eco-score-module-5"><i class="fas fa-leaf"></i> Eco Score: 0</span></div>
+                </div>
             </div>
         </div>
     </div>
+</div>
         
 
     
@@ -140,7 +141,7 @@
         </div>
         
         <div class="result-message" id="result-message">Your team is making good progress toward sustainability, but there's room for improvement.</div>
-
+        <div id="overall-score-summary" class="overall-score-summary"></div>
         <!-- Add a visual separator -->
         <div class="visual-separator">
             <div class="separator-line"></div>

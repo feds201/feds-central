@@ -8,6 +8,7 @@ let activeQuestions = [];
 let activeModuleId = null;
 let elements = {};
 const moduleScores = {};
+const moduleAnswers = {};
 
 export function setElements(domElements) {
     elements = domElements;
@@ -238,12 +239,23 @@ function finishQuiz() {
     elements.questionCard.classList.add('hidden');
     elements.actionsContainer.classList.add('hidden');
     elements.resultContainer.classList.remove('hidden');
-
+    const moduleNames = {
+    '1': 'Shipping & Packaging',
+    '2': 'Disposable Meal Items',
+    '3': 'Build',
+    '4': 'Transportation (FIRST)',
+    '5': 'Transportation (Regional)'
+};
+const resultHeader = document.querySelector('.Eco-Friendly-text');
+if (resultHeader) {
+    resultHeader.textContent = `Module ${activeModuleId}: ${moduleNames[activeModuleId]} Complete!`;
+}
     const finalScore = Math.round(currentEcoScore);
    
 
     if (elements.finalEcoScore) elements.finalEcoScore.textContent = finalScore;
 moduleScores[activeModuleId] = finalScore;
+moduleAnswers[activeModuleId] = [...answers];
 updateOverallScore();
 const moduleScoreEl = document.getElementById(`eco-score-module-${activeModuleId}`);
 if (moduleScoreEl) {
@@ -291,6 +303,8 @@ if (overallSummaryEl) {
         '4': 'Transportation (First)',
         '5': 'Transportation (Regional)'
     };
+
+
     let html = '';
     for (const [id, score] of Object.entries(moduleScores)) {
         html += `<div class="module-score-row">
@@ -303,111 +317,119 @@ if (overallSummaryEl) {
 }
 
 function updateImpactTexts() {
+    const moduleCategories = {
+        '1': ['materials'],
+        '2': ['materials'],
+        '3': ['materials', 'energy'],
+        '4': ['transport'],
+        '5': ['transport']
+    };
+    const relevantCategories = moduleCategories[activeModuleId] || ['materials', 'transport', 'energy'];
+
+    document.querySelectorAll('.impact-item').forEach(item => {
+        item.style.display = relevantCategories.includes(item.dataset.category) ? 'flex' : 'none';
+    });
+
     const matImpact = calculateCategoryImpact('materials', activeQuestions, answers);
     const transImpact = calculateCategoryImpact('transport', activeQuestions, answers);
     const enImpact = calculateCategoryImpact('energy', activeQuestions, answers);
 
     if (elements.materialsImpact) {
-        if (matImpact > 0.7) {
-            elements.materialsImpact.textContent = "Your team uses a large amount of disposable materials. Consider reducing waste and recycling more.";
-        } else if (matImpact > 0.4) {
-            elements.materialsImpact.textContent = "Your team used a moderate amount of disposable items. Consider reducing single-use plastics.";
-        } else {
-            elements.materialsImpact.textContent = "Great job minimizing material usage! Your team shows strong awareness of waste reduction.";
-        }
+        elements.materialsImpact.textContent = matImpact > 0.7
+            ? "Your team uses a large amount of disposable materials. Consider reducing waste and recycling more."
+            : matImpact > 0.4
+            ? "Your team used a moderate amount of disposable items. Consider reducing single-use plastics."
+            : "Great job minimizing material usage! Your team shows strong awareness of waste reduction.";
     }
-
     if (elements.transportImpact) {
-        if (transImpact > 0.7) {
-            elements.transportImpact.textContent = "Your team's travel has a significant carbon footprint. Consider carpooling and trip optimization.";
-        } else if (transImpact > 0.4) {
-            elements.transportImpact.textContent = "Your travel resulted in carbon emissions that could be reduced with more efficient planning.";
-        } else {
-            elements.transportImpact.textContent = "Your team is managing transportation efficiently with minimal environmental impact.";
-        }
+        elements.transportImpact.textContent = transImpact > 0.7
+            ? "Your team's travel has a significant carbon footprint. Consider carpooling and trip optimization."
+            : transImpact > 0.4
+            ? "Your travel resulted in carbon emissions that could be reduced with more efficient planning."
+            : "Your team is managing transportation efficiently with minimal environmental impact.";
     }
-
     if (elements.energyImpact) {
-        if (enImpact > 0.7) {
-            elements.energyImpact.textContent = "High battery usage indicates potential for improvement in energy management.";
-        } else if (enImpact > 0.4) {
-            elements.energyImpact.textContent = "Battery usage is within reasonable limits, but proper disposal and recycling are essential.";
-        } else {
-            elements.energyImpact.textContent = "Excellent energy management! Your team is minimizing battery waste.";
-        }
+        elements.energyImpact.textContent = enImpact > 0.7
+            ? "High battery and machine usage — look into energy management practices."
+            : enImpact > 0.4
+            ? "Battery and machine usage is within reasonable limits, but proper disposal and recycling are essential."
+            : "Excellent energy management! Your team is minimizing battery waste and machine idle time.";
     }
 }
 
 function generateRecommendations() {
-    const materialsImpact = calculateCategoryImpact('materials', activeQuestions, answers);
-    const transportImpact = calculateCategoryImpact('transport', activeQuestions, answers);
-    const energyImpact = calculateCategoryImpact('energy', activeQuestions, answers);
+    const allRecommendations = {
+        '1': [
+            'Order parts in bulk to reduce packaging waste and shipping frequency',
+            'Source parts locally where possible to cut transport emissions',
+            'Reuse and flatten shipping boxes for recycling or cardboard prototyping',
+        ],
+        '2': [
+            'Switch to reusable plates, utensils, and cloth napkins at competitions',
+            'Set up a team water station with reusable bottles instead of buying packs',
+            'Buy napkins and paper products made from recycled materials in bulk',
+        ],
+        '3': [
+            'Use scrap aluminum and cardboard for prototyping before cutting new material',
+            'Donate or sell leftover aluminum, lumber, and polycarbonate to other teams',
+            'Recycle lead-acid batteries at auto stores — never landfill them',
+            'Batch CNC/lathe operations to reduce total machine run hours',
+            'Use PLA (compostable) filament for 3D printing where possible',
+        ],
+        '4': [
+            'Carpool to competitions to reduce the number of vehicles on the road',
+            'Choose ground transport over flying for regional competitions when possible',
+            'Plan routes efficiently to minimize total miles traveled',
+        ],
+        '5': [
+            'Carpool to regional competitions to reduce the number of vehicles on the road',
+            'Combine trips and plan routes efficiently to minimize total miles traveled',
+            'Consider closer regional competitions to reduce your travel footprint',
+        ],
+    };
 
-    const allRecommendations = [
-        { category: 'materials', text: 'Replace single-use plastic items with biodegradable alternatives', impact: 'high' },
-        { category: 'materials', text: 'Implement a materials recycling program for your workspace', impact: 'medium' },
-        { category: 'materials', text: 'Set up a recycling station for scrap materials from robot building', impact: 'low' },
-        { category: 'transport', text: 'Implement a carpooling system for team travel to competitions', impact: 'high' },
-        { category: 'transport', text: 'Plan trips more efficiently to reduce fuel consumption', impact: 'medium' },
-        { category: 'energy', text: 'Implement a battery recycling program', impact: 'high' },
-        { category: 'energy', text: 'Explore renewable energy options for powering practice sessions', impact: 'medium' },
-        { category: 'energy', text: 'Ensure all electronics are turned off when not in use', impact: 'low' }
-    ];
-
-    let recommendations = [];
-
-    allRecommendations.forEach(rec => {
-        let showRec = true;
-        if (rec.category === 'materials' && rec.impact === 'high' && materialsImpact < 0.4) showRec = false;
-        if (rec.category === 'transport' && rec.impact === 'high' && transportImpact < 0.4) showRec = false;
-        if (rec.category === 'energy' && rec.impact === 'high' && energyImpact < 0.4) showRec = false;
-
-        if (showRec || recommendations.filter(r => r.includes(rec.category)).length === 0) {
-            recommendations.push(`<div class='recommendation-item' data-category="${rec.category}">
-                <i class='fas fa-check-circle'></i>
-                <span>${rec.text}</span>
-            </div>`);
-        }
-    });
-
-    if (recommendations.length < 4) {
-        for (let i = 0; i < allRecommendations.length && recommendations.length < 4; i++) {
-             const rec = allRecommendations[i];
-             const alreadyAdded = recommendations.some(r => r.includes(rec.text));
-             if (!alreadyAdded) {
-                  recommendations.push(`<div class='recommendation-item' data-category="${rec.category}">
-                    <i class='fas fa-check-circle'></i>
-                    <span>${rec.text}</span>
-                </div>`);
-             }
-        }
-    }
+    const recs = allRecommendations[activeModuleId] || [];
 
     if (elements.customRecommendations) {
-        elements.customRecommendations.innerHTML = recommendations.join('');
-        const recommendationHeading = document.createElement('h4');
-        recommendationHeading.textContent = "Suggested Action Steps:";
-        recommendationHeading.style.marginBottom = '15px';
-        recommendationHeading.style.color = getComputedStyle(document.documentElement).getPropertyValue('--eco-friendly-color');
-        elements.customRecommendations.prepend(recommendationHeading);
+        elements.customRecommendations.innerHTML = recs.map(text => `
+            <div class="recommendation-item">
+                <i class="fas fa-check-circle"></i>
+                <span>${text}</span>
+            </div>
+        `).join('');
     }
+
+    // Hide the hardcoded static recommendation items since we're replacing them
+    document.querySelectorAll('.eco-recommendations > .recommendation-item').forEach(el => {
+        el.style.display = 'none';
+    });
 }
 
 function generateSummary() {
     if (!elements.resultSummary) return;
 
+    const moduleNames = {
+        '1': 'Shipping & Packaging',
+        '2': 'Disposable Meal Items',
+        '3': 'Build',
+        '4': 'Transportation (FIRST)',
+        '5': 'Transportation (Regional)'
+    };
+
     let summaryHTML = '<h3>Your Detailed Responses:</h3>';
-    let currentSection = '';
 
-    answers.forEach((answer, index) => {
-        if (currentSection !== answer.section) {
-            currentSection = answer.section;
-            summaryHTML += `<h4>${currentSection}</h4>`;
-        }
-
-        summaryHTML += `<p><strong>Q${index + 1}:</strong> ${answer.question}<br>
-                      <strong>A:</strong> ${answer.answer}</p>`;
-    });
+    for (const [moduleId, moduleAnswerList] of Object.entries(moduleAnswers)) {
+        summaryHTML += `<h3>${moduleNames[moduleId] || 'Module ' + moduleId}</h3>`;
+        let currentSection = '';
+        moduleAnswerList.forEach((answer, index) => {
+            if (currentSection !== answer.section) {
+                currentSection = answer.section;
+                summaryHTML += `<h4>${currentSection}</h4>`;
+            }
+            summaryHTML += `<p><strong>Q${index + 1}:</strong> ${answer.question}<br>
+                          <strong>A:</strong> ${answer.answer}</p>`;
+        });
+    }
 
     elements.resultSummary.innerHTML = summaryHTML;
 }
