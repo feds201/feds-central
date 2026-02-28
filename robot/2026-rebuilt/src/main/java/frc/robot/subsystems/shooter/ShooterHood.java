@@ -29,7 +29,9 @@ public class ShooterHood extends SubsystemBase {
     IN(ShooterConstants.minHoodAngle),
     OUT(ShooterConstants.maxHoodAngle),
     PASSING(Rotations.of(0)),
-    SHOOTING(Rotations.of(0));
+    SHOOTING(Rotations.of(0)),
+    AIMING_UP(Rotations.of(0)),
+    AIMING_DOWN(Rotations.of(0));
 
     private final Angle angleTarget;
 
@@ -86,6 +88,11 @@ public class ShooterHood extends SubsystemBase {
 
       case PASSING:
       hoodMotor.setControl(positionVoltage.withPosition(getTargetPositionPassing()));
+        break;
+
+      case AIMING_UP:
+      case AIMING_DOWN:
+        // Sim-only: hood angle managed by ShooterSim, not the motor
         break;
     }
     // This method will be called once per scheduler run
