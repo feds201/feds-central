@@ -128,6 +128,10 @@ public void setVoltage(Voltage voltage)
   spindexerMotor.setControl(vOut.withOutput(voltage));
 }
 
+public spindexer_state getCurrentState() {
+  return currentState;
+}
+
 public void setState(spindexer_state state)
 {
   setVoltage(state.getVoltage());
@@ -149,4 +153,9 @@ public void setState(spindexer_state state)
   public Command commandStop(){
     return new InstantCommand(() -> setState(spindexer_state.STOP));
   }
+
+  
+public Command setStateCommand(spindexer_state state) {
+    return runOnce(() -> setState(state));
+}
 }

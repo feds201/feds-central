@@ -8,7 +8,7 @@
   "PID_control":"PID Control",
   "Vision": "Video Processing",
   "Autonomous": "Autonomous",
-  "SimulationSystem": "Simulation System Design",
+  "Simulation": "Simulation",
   "RobotTestingUtility": "Robot Testing Utility",
   "Examples": "Examples",
   "UsingInterijIdea": "Resources",
