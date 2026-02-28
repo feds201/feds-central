@@ -42,19 +42,22 @@ document.addEventListener('DOMContentLoaded', () => {
     // Event Listeners
 
     // Start buttons
-    const startButtons = document.querySelectorAll('.start-btn');
-    startButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
+   const startButtons = document.querySelectorAll('.start-btn');
+startButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+        // Check for explicit data-module attribute first, then fall back to class
+        let moduleNumber = btn.dataset.module;
+        if (!moduleNumber) {
             const module = btn.closest('.module');
-            const moduleNumber = [...module.classList]
+            moduleNumber = [...module.classList]
                 .find(c => c.startsWith('module') && c !== 'module')
                 ?.replace('module', '');
-
-            if (moduleNumber) {
-                startModule(moduleNumber);
-            }
-        });
+        }
+        if (moduleNumber) {
+            startModule(moduleNumber);
+        }
     });
+});
 
     // Navigation
     if (elements.nextButton) {
