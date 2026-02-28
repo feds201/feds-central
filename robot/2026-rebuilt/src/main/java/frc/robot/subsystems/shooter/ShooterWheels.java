@@ -36,7 +36,9 @@ public class ShooterWheels extends SubsystemBase {
     public enum shooter_state {
     SHOOTING(RotationsPerSecond.of(0)),
     IDLE(RotationsPerSecond.of(0)),
-    PASSING(RotationsPerSecond.of(0));
+    PASSING(RotationsPerSecond.of(0)),
+    LAYUP(RotationsPerSecond.of(0)), //TUNE
+    HALFCOURT (RotationsPerSecond.of(1)); //TUNE
 
     private final AngularVelocity targetVelocity;
 
