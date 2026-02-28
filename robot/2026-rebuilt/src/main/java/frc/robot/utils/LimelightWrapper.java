@@ -101,7 +101,7 @@ public class LimelightWrapper extends Limelight {
         //apply the calculated scalar to the standard deviations
         estStdDevs = estStdDevs.times(stddevScalar);
 
-        Logger.recordOutput(limelightName + " mt1 stddev", estStdDevs.getData());
+        Logger.recordOutput("Robot/Limelights/" + limelightName + "/MT1StdDev", estStdDevs.getData());
         
         return estStdDevs;
     }
@@ -150,7 +150,7 @@ public class LimelightWrapper extends Limelight {
         //apply the calculated scalar to the standard deviations
         estStdDevs = estStdDevs.times(stddevScalar);
 
-        Logger.recordOutput(limelightName + " mt2 stddev", estStdDevs.getData());
+        Logger.recordOutput("Robot/Limelights/" + limelightName + "/MT2StdDev", estStdDevs.getData());
 
         return estStdDevs;
     }
@@ -179,7 +179,7 @@ public class LimelightWrapper extends Limelight {
             // Publish average tag count
             totalTags += visionEstimateMt2.get().tagCount;
             roboRioHeartbeat++;
-            Logger.recordOutput(limelightName + " Average tag", totalTags / roboRioHeartbeat);
+            Logger.recordOutput("Robot/Limelights/" + limelightName + "/AvgTagCount", totalTags / roboRioHeartbeat);
 
             // If we see >0 tags and robot rotates <2 rotations per second
             if (poseEstimate.tagCount > 0

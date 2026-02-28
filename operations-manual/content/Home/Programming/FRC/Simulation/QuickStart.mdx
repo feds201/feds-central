@@ -16,7 +16,8 @@ The sim lets you run code that might not work yet, iterate on new features, and 
 - **Physics** — collisions, bouncing, gravity, ramps
 - **Game pieces** — intake, hold, shoot, score
 - **Full robot control** — drivetrain + all mechanisms
-- **Limelight AprilTag simulation** — simulated vision pose estimates
+- **Limelight AprilTag simulation** — simulated vision pose estimates for localization
+- **Limelight game piece detection** — simulated fuel detection via 3D frustum sensor (publishes tv/tx/ty/ta)
 
 ---
 
@@ -54,13 +55,7 @@ Open this year's robot project in **WPILib VS Code** (not regular VS Code). For 
 
 ## Run the Sim
 
-You can launch the simulator from the terminal or from VS Code.
-
-**Terminal:**
-```bash
-cd robot/2026-rebuilt
-./gradlew simulateJava
-```
+You can launch the simulator from VS Code or from the terminal.
 
 **VS Code (menu):**
 1. Click the **three-dot menu (···)** in the top-right of the WPILib sidebar (or the WPILib icon in the top-right corner)
@@ -71,6 +66,12 @@ cd robot/2026-rebuilt
 1. `Ctrl+Shift+P` → type **"WPILib"**
 2. Select **"Simulate Robot Code"**
 3. Choose **"Sim GUI"**
+
+**Terminal:**
+```bash
+cd robot/2026-rebuilt
+./gradlew simulateJava
+```
 
 Either way, a **WPILib simulation GUI** window will open. Don't close it — you'll need it in a moment.
 
@@ -87,7 +88,7 @@ In the **WPILib simulation GUI** that opened:
 
 1. **Connect a controller:**
    - **Xbox / gamepad:** Plug it in — it should appear automatically
-   - **No controller?** Drag **"Keyboard 0"** onto **"Joystick 0"**
+   - **No controller?** Drag **"Keyboard 0"** onto **"Joystick 0"** (see [key mappings](#drive) below)
 2. Click **"Teleoperated"** to enable the robot
 
 ---
@@ -99,8 +100,8 @@ In the **WPILib simulation GUI** that opened:
 3. Click the **+** button (top right) → select **3D Field**
 4. In the bottom-right **Field** section, select this year's game
 5. **Add the robot:**
-   - In the left panel, expand `RealOutputs` → `Sim` → `Drivetrain`
-   - Drag `Pose3d` into the **Poses** section (bottom center)
+   - In the left panel, expand `RealOutputs` → `Sim`
+   - Drag `RobotPose` into the **Poses** section (bottom center)
    - From the dropdown, select a robot model (use **KitBot** for now — instructions for adding our real robot model coming soon)
 6. **Add game pieces (2026 example — "Fuel" is the REBUILT ball):**
    - In the left panel, find `RealOutputs` → `Sim` → `GamePieces` → `Fuel`
@@ -108,6 +109,39 @@ In the **WPILib simulation GUI** that opened:
    - From the dropdown, select **Game Pieces → Fuel**
 
 You should now see the field, robot, and game pieces rendered in 3D.
+
+### AdvantageScope Telemetry Keys
+
+All sim telemetry is under `RealOutputs` in AdvantageScope. Values are split into two namespaces:
+
+**`Sim/` — simulation-only values** (don't exist on the real robot):
+
+| Key | Type | What it shows |
+|-----|------|---------------|
+| `Sim/RobotPose` | Pose3d | Ground-truth robot pose (perfect — no sensor noise) |
+| `Sim/RobotGroundClearance` | double | Height of chassis above ground (m) |
+| `Sim/RobotIsAirborne` | boolean | Whether the robot is off the ground |
+| `Sim/FuelHeld` | int | Number of fuel balls in the hopper |
+| `Sim/Score` | int | Total scored points |
+| `Sim/ComponentPoses` | Pose3d[] | Individual mechanism poses for 3D rendering (COMING SOON) |
+| `Sim/GamePieces/Fuel` | Pose3d[] | All fuel ball positions (drag into 3D field) |
+| `Sim/Limelights/{name}/DirectionLine` | Pose3d[] | Camera aim direction (2-point line) |
+
+**`Robot/` — values that exist on both sim and real robot:**
+
+| Key | Type | What it shows |
+|-----|------|---------------|
+| `Robot/Intake/Extended` | boolean | Intake deployed |
+| `Robot/Intake/RollersOn` | boolean | Intake rollers spinning |
+| `Robot/Intake/FuelDetected` | boolean | Limelight sees a fuel ball |
+| `Robot/Limelights/limelight-one/TV` | boolean | Target visible |
+| `Robot/Limelights/limelight-one/TX` | double | Target horizontal angle (°) |
+| `Robot/Limelights/limelight-one/TY` | double | Target vertical angle (°) |
+| `Robot/Limelights/limelight-one/TA` | double | Target area (% of image) |
+| `Robot/Shooter/HoodAngleDeg` | double | Hood angle in degrees |
+| `Robot/Shooter/IsShooting` | boolean | Shooter wheels at speed |
+| `Robot/Shooter/SpindexerOn` | boolean | Spindexer running |
+| `Robot/Shooter/FeederOn` | boolean | Feeder running |
 
 ---
 
@@ -158,7 +192,6 @@ Change the second argument to `2` for 2x speed, `5` for 5x, etc. (There's no com
 ## Future Improvements
 
 - More realistic AprilTag sim (currently reports perfect odometry with fake detections)
-- Simulated ball detection for Limelight
 - Command-line flag for time speedup
 - More realistic intake (game pieces currently just disappear)
 - Magnus effect on shot balls
