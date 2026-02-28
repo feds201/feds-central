@@ -1,5 +1,5 @@
 ## Owner
-(Real name of who did most of the development for this PR!)
+(Real name of who did most of the development for this PR)
 ...
 
 ## Work Done
@@ -9,7 +9,7 @@
 - ...
 
 ## Testing / Validation
-(List testing you did to validate this work. For robot code, this must be verifiable work done in the sim or on the real robot!)
+(List testing you did to validate this work. Robot code must be verified on the real robot or in the sim! See [Simulator quick start guide](https://operational-manual.feds201.com/Home/Programming/FRC/Simulation/QuickStart))
 - ...
 - ...
 
@@ -22,5 +22,5 @@ YES or NO
 YES or NO
 
 ## Did You Add a Reviewer?
-(Add one of these people to review your code: https://github.com/orgs/feds201/teams/programming-mentors-leads)
+(Add one of [these people](https://github.com/orgs/feds201/teams/programming-mentors-leads) to review your code)
 YES or NO
