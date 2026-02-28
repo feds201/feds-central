@@ -282,13 +282,7 @@ if (moduleScoreDiv) {
             elements.resultMessage.textContent = "Your team has a significant environmental footprint. Urgent action is recommended.";
         }
     }
-const overallScore = calculateOverallScore();
-const overallEl = document.getElementById('overall-eco-score');
-if (overallEl && overallScore !== null) {
-    overallEl.textContent = overallScore;
-}
-const overallCard = document.getElementById('overall-score-card');
-if (overallCard) overallCard.classList.remove('hidden');
+
     updateImpactTexts();
     generateRecommendations();
     generateSummary();
