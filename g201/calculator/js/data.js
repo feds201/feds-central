@@ -26,18 +26,6 @@ export const modules = {
         },
         {
             section: "I. Shipping and Packaging of Products",
-            question: "How much times do you bulk reorder during the season?",
-            hint: "Pick the option that best describes your situation",
-            type: "multiple-choice",
-            options: [
-                { label: "A good amount of the time when necessary", eco_impact: "medium", value: 2 },
-                { label: "Not necessarily", eco_impact: "low", value: 1 },
-            ],
-            eco_tip: "if you buy without reusing somehow, you adding more to the pile of waste",
-            category: "materials",
-        },
-        {
-            section: "I. Shipping and Packaging of Products",
             question: "Where do you order from?",
             hint: "Pick the option that best describes your situation",
             type: "multiple-choice",
