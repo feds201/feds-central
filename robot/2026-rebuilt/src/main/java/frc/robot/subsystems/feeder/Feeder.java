@@ -55,7 +55,6 @@ public class Feeder extends SubsystemBase {
 
   public Feeder() {
     feederMotor = new TalonFX(FeederConstants.kFeederKickerMotorId);
-    feederMotor = new TalonFX(FeederConstants.kFeederKickerMotorId);
 
     config = new TalonFXConfiguration();
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
@@ -67,8 +66,6 @@ public class Feeder extends SubsystemBase {
         break;
     }
 
-    SubsystemStatusManager.addSubsystem(getName(), feederMotor);
-    DeviceTempReporter.addDevices(feederMotor);
     SubsystemStatusManager.addSubsystem(getName(), feederMotor);
     DeviceTempReporter.addDevices(feederMotor);
 
