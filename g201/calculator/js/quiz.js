@@ -250,27 +250,24 @@ const resultHeader = document.querySelector('.Eco-Friendly-text');
 if (resultHeader) {
     resultHeader.textContent = `Module ${activeModuleId}: ${moduleNames[activeModuleId]} Complete!`;
 }
-    const finalScore = Math.round(currentEcoScore);
-   
+   const finalScore = Math.round(currentEcoScore);
 
+if (activeModuleId === 'secret') {
+    if (elements.finalEcoScore) elements.finalEcoScore.textContent = '🤫';
+    const scoreLabel = document.querySelector('.result-score');
+    if (scoreLabel) scoreLabel.textContent = 'Team Vibe Score: IMMEASURABLE';
+    if (elements.meterPointer) elements.meterPointer.style.left = '100%';
+    if (elements.resultMessage) elements.resultMessage.textContent = "You have passed the vibe check. Clifford has been notified. Ritesh is proud. Lock in.";
+} else {
     if (elements.finalEcoScore) elements.finalEcoScore.textContent = finalScore;
-moduleScores[activeModuleId] = finalScore;
-moduleAnswers[activeModuleId] = [...answers];
-updateOverallScore();
-const moduleScoreEl = document.getElementById(`eco-score-module-${activeModuleId}`);
-if (moduleScoreEl) {
-    moduleScoreEl.innerHTML = `<i class="fas fa-leaf"></i> Eco Score: ${finalScore}`;
-}
-
-const moduleScoreDiv = moduleScoreEl?.closest(`[class*="eco-score-module-${activeModuleId}"]`);
-if (moduleScoreDiv) {
-    moduleScoreDiv.classList.add('completed');
-}
-    if (elements.meterPointer) {
-        const pointerPosition = (finalScore / 100) * 100;
-        elements.meterPointer.style.left = `${pointerPosition}%`;
+    moduleScores[activeModuleId] = finalScore;
+    const moduleScoreEl = document.getElementById(`eco-score-module-${activeModuleId}`);
+    if (moduleScoreEl) {
+        moduleScoreEl.innerHTML = `<i class="fas fa-leaf"></i> Eco Score: ${finalScore}`;
     }
-
+    if (elements.meterPointer) {
+        elements.meterPointer.style.left = `${finalScore}%`;
+    }
     if (elements.resultMessage) {
         if (finalScore >= 80) {
             elements.resultMessage.textContent = "Excellent! Your team is very eco-conscious. Keep up the great work!";
@@ -282,6 +279,7 @@ if (moduleScoreDiv) {
             elements.resultMessage.textContent = "Your team has a significant environmental footprint. Urgent action is recommended.";
         }
     }
+}
 
     updateImpactTexts();
     generateRecommendations();
@@ -295,7 +293,8 @@ if (overallSummaryEl) {
         '2': 'Disposable Meal Items',
         '3': 'Mechanical/Programming/Fabrics',
         '4': 'Transportation (First)',
-        '5': 'Transportation (Regional)'
+        '5': 'Transportation (Regional)',
+        'secret': '🤫 Funny Team Stuff'
     };
 
 
@@ -316,7 +315,8 @@ function updateImpactTexts() {
         '2': ['materials'],
         '3': ['materials', 'energy'],
         '4': ['transport'],
-        '5': ['transport']
+        '5': ['transport'],
+        'secret': []
     };
     const relevantCategories = moduleCategories[activeModuleId] || ['materials', 'transport', 'energy'];
 
@@ -380,6 +380,12 @@ function generateRecommendations() {
             'Combine trips and plan routes efficiently to minimize total miles traveled',
             'Consider closer regional competitions to reduce your travel footprint',
         ],
+        'secret': [
+    "Consider summoning fewer Cliffords. Or more. We honestly don't know.",
+    "Ritesh music hours should be maximized at all times.",
+    "Lock in. Always lock in.",
+    "Popcorn consumption is not yet regulated by FIRST. Enjoy responsibly.",
+],
     };
 
     const recs = allRecommendations[activeModuleId] || [];
@@ -407,7 +413,8 @@ function generateSummary() {
         '2': 'Disposable Meal Items',
         '3': 'Build',
         '4': 'Transportation (FIRST)',
-        '5': 'Transportation (Regional)'
+        '5': 'Transportation (Regional)',
+        'secret': '🤫 Funny Team Stuff'
     };
 
     let summaryHTML = '<h3>Your Detailed Responses:</h3>';
