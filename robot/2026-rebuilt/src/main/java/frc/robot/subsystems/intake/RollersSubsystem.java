@@ -6,6 +6,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotMap.IntakeSubsystemConstants;
 import frc.robot.subsystems.led.LedsSubsystem;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
@@ -41,7 +42,7 @@ public class RollersSubsystem extends SubsystemBase {
   }
 
   private RollersSubsystem() {
-    motor = new TalonFX(23, "rio");
+    motor = new TalonFX(IntakeSubsystemConstants.kRollerMotorID);
 
     if (RobotBase.isSimulation()) {
       initSimulation();

@@ -11,7 +11,6 @@ import static edu.wpi.first.units.Units.Rotations;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveRequest.Idle;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
@@ -64,13 +63,17 @@ public class ShooterHood extends SubsystemBase {
     hoodMotor = new TalonFX(ShooterConstants.ShooterHood);
     positionVoltage = new PositionVoltage(0.0);
     config = new TalonFXConfiguration();
-    config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     config.CurrentLimits.StatorCurrentLimit = 20;
     //Following values would need to be tuned.
     config.Slot0.kS = 0.0; // Constant applied for friction compensation (static gain)
     config.Slot0.kP = 0.0; // Proportional gain 
     config.Slot0.kD = 0.0; // Derivative gain
+    config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 31; 
+    config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0.5; 
+    config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+    config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
     // Apply config multiple times to ensure application
     for (int i = 0; i < 2; ++i){
       var status = hoodMotor.getConfigurator().apply(config);
@@ -97,9 +100,11 @@ public class ShooterHood extends SubsystemBase {
       hoodMotor.setControl(positionVoltage.withPosition(getTargetPositionPassing()));
         break;
 
-      case AIMING_UP:
-      case AIMING_DOWN:
+      case AIMING_UP,AIMING_DOWN:
         // Sim-only: hood angle managed by ShooterSim, not the motor
+        break;
+      
+      case IDLE, LAYUP, HALFCOURT:
         break;
     }
     Logger.recordOutput("Robot/Shooter/HoodAngleDeg", getPosition().in(Degrees));

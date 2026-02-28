@@ -5,6 +5,7 @@
 package frc.robot.subsystems.feeder;
 
 import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.SignalLogger;
@@ -31,17 +32,17 @@ public class Feeder extends SubsystemBase {
 
   // subsystem states
   public enum feeder_state {
-    RUN(Volts.of(3)),
+    RUN(Volts.of(7)),
     STOP(Volts.of(0));
 
-    private final Voltage targetPosition;
+    private final Voltage targetVoltage;
 
-    feeder_state(Voltage targetPosition) {
-      this.targetPosition = targetPosition;
+    feeder_state(Voltage targetVoltage) {
+      this.targetVoltage = targetVoltage;
     }
 
     public Voltage getVoltage() {
-      return targetPosition;
+      return targetVoltage;
     }
 
   }
@@ -59,8 +60,8 @@ public class Feeder extends SubsystemBase {
 
     config = new TalonFXConfiguration();
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-    config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-    config.CurrentLimits.StatorCurrentLimit = 20;
+    config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    config.CurrentLimits.StatorCurrentLimit = 40;
     for (int i = 0; i < 2; ++i) {
       var status = feederMotor.getConfigurator().apply(config);
       if (status.isOK())
@@ -74,7 +75,7 @@ public class Feeder extends SubsystemBase {
         new SysIdRoutine.Config(
             Volts.of(0.5).per(Second), // default ramp (or Volts.of(x).per(Second) if you want custom)
             Volts.of(3), // dynamic step voltage: start with something conservative (4-6 V)
-            null, // default timeout
+            Seconds.of(5), // default timeout
             state -> SignalLogger.writeString("SysId_Feeder_State", state.toString()) // log state string
         ),
         new SysIdRoutine.Mechanism(
@@ -143,4 +144,7 @@ public class Feeder extends SubsystemBase {
   public Command commandStop() {
     return new InstantCommand(() -> setState(feeder_state.STOP));
   }
+
+  public Command feederSysIdQuasistatic(SysIdRoutine.Direction dir) { return m_feederSysId.quasistatic(dir); }
+  public Command feederSysIdDynamic(SysIdRoutine.Direction dir) { return m_feederSysId.dynamic(dir); }
 }

@@ -51,7 +51,8 @@ public final class RobotMap {
         SIM,REAL,REPLAY;
     }
     public static final class IntakeSubsystemConstants {
-        public static final int kMotorID = 1;
+        public static final int kExtensionMotorID = 58;
+        public static final int kRollerMotorID = 59;
         public static final int kLimit_switch_rID = 2;
         public static final int kLimit_switch_lID = 3; 
 
@@ -107,8 +108,8 @@ public final class RobotMap {
         public static final AngularVelocity velocityTolerance = RotationsPerSecond.of(3);
          public static final Angle postionTolerance = Rotations.of(.05);
 
-         public static final Angle maxHoodAngle = Rotations.of(0); //tune
-         public static final Angle minHoodAngle = Rotations.of(0); //tune
+         public static final Angle maxHoodAngle = Rotations.of(30); //tune
+         public static final Angle minHoodAngle = Rotations.of(.5); //tune
 
         //offset of the shooter from robot center
         public static final Translation2d robotShooterOffset = new Translation2d(.25, 0); //TODO: tune

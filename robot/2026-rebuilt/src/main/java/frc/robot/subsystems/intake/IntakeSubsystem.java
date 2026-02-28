@@ -75,7 +75,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
 
   public IntakeSubsystem() {
-    motor = new TalonFX(RobotMap.IntakeSubsystemConstants.kMotorID, "rio");
+    motor = new TalonFX(RobotMap.IntakeSubsystemConstants.kExtensionMotorID);
     limit_switch_r = new DigitalInput(RobotMap.IntakeSubsystemConstants.kLimit_switch_rID);
     limit_switch_l = new DigitalInput(RobotMap.IntakeSubsystemConstants.kLimit_switch_lID);
     rollers = RollersSubsystem.getInstance();

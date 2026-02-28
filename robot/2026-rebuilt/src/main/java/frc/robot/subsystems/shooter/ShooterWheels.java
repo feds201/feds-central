@@ -7,14 +7,16 @@ package frc.robot.subsystems.shooter;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -37,7 +39,7 @@ public class ShooterWheels extends SubsystemBase {
     SHOOTING(RotationsPerSecond.of(0)),
     IDLE(RotationsPerSecond.of(0)),
     PASSING(RotationsPerSecond.of(0)),
-    LAYUP(RotationsPerSecond.of(0)), //TUNE
+    LAYUP(RotationsPerSecond.of(45)), //TUNE
     HALFCOURT (RotationsPerSecond.of(1)); //TUNE
 
     private final AngularVelocity targetVelocity;
@@ -57,7 +59,7 @@ public class ShooterWheels extends SubsystemBase {
     private final TalonFX shooterFollower2;
     private final TalonFX shooterFollower3;
     private final TalonFXConfiguration config;
-    private final MotionMagicVelocityVoltage motionMagicControl;
+    private final VelocityVoltage velocityVoltageControl;
     private shooter_state currentState = shooter_state.IDLE;
     private final CommandSwerveDrivetrain dt;
     private final SysIdRoutine m_flywheelSysId;
@@ -72,13 +74,14 @@ public class ShooterWheels extends SubsystemBase {
     shooterFollower1.setControl(new Follower(shooterLeader.getDeviceID(), MotorAlignmentValue.Opposed));
     shooterFollower2.setControl(new Follower(shooterLeader.getDeviceID(), MotorAlignmentValue.Aligned));
     shooterFollower3.setControl(new Follower(shooterLeader.getDeviceID(), MotorAlignmentValue.Opposed));
-    motionMagicControl = new MotionMagicVelocityVoltage(0.0);
+    velocityVoltageControl = new VelocityVoltage(0.0);
+    velocityVoltageControl.Acceleration = 150;
 
     m_flywheelSysId = new SysIdRoutine(
     new SysIdRoutine.Config(
       Volts.of(0.5).per(Second),                // default ramp (or Volts.of(x).per(Second) if you want custom)
       Volts.of(3),          // dynamic step voltage: start with something conservative (4-6 V)
-      null,                // default timeout
+      Seconds.of(5),                // default timeout
       state -> SignalLogger.writeString("SysId_Flywheel_State", state.toString()) // log state string
     ),
     new SysIdRoutine.Mechanism(
@@ -99,17 +102,14 @@ public class ShooterWheels extends SubsystemBase {
 
     config = new TalonFXConfiguration();
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-    config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     config.CurrentLimits.StatorCurrentLimit = 40;
+    config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
+    config.Feedback.SensorToMechanismRatio = 2/3;
     //Following values would need to be tuned.
-    config.Slot0.kS = 0.0; // Constant applied for friction compensation (static gain)///;;poy' qwertyhellooooooo
-    config.Slot0.kP = 0.0; // Proportional gain 
-    config.Slot0.kD = 0.0; // Derivative gain
-    config.Slot0.kV = 0.0;// Velocity gain
-    config.Slot0.kA = 0.0; // Acceleration gain
-    config.MotionMagic.MotionMagicCruiseVelocity = 0.0; // Max allowed velocity (Motor rot / sec)
-    config.MotionMagic.MotionMagicAcceleration = 0.0; // Max allowed acceleration (Motor rot / sec^2)
-    // Apply config multiple times to ensure application
+    config.Slot0.kS = 0.34; // Constant applied for friction compensation (static gain)
+    config.Slot0.kP = 0.0; // Proportional gain
+    config.Slot0.kV = 0.12;// Velocity gain
     for (int i = 0; i < 2; ++i){
       var status = shooterLeader.getConfigurator().apply(config);
       if(status.isOK()) break;
@@ -123,7 +123,7 @@ public class ShooterWheels extends SubsystemBase {
 
     switch (currentState) {
       case SHOOTING:
-      shooterLeader.setControl(motionMagicControl.withVelocity(getTargetVelocityShooting()));
+      shooterLeader.setControl(velocityVoltageControl.withVelocity(getTargetVelocityShooting()));
 
         break;
 
@@ -131,13 +131,15 @@ public class ShooterWheels extends SubsystemBase {
         break;
 
       case PASSING:
-      shooterLeader.setControl(motionMagicControl.withVelocity(getTargetVelocityPassing())); //from passing table
+      shooterLeader.setControl(velocityVoltageControl.withVelocity(getTargetVelocityPassing())); //from passing table
         break;
+      case LAYUP, HALFCOURT:
+      break;
     }
   }
 
   public void setVelocity(AngularVelocity velocity){
-    shooterLeader.setControl(motionMagicControl.withVelocity(velocity));
+    shooterLeader.setControl(velocityVoltageControl.withVelocity(velocity));
   }
 
   public void setState(shooter_state state){

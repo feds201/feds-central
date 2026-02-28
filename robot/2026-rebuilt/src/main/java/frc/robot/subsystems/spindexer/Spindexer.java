@@ -38,7 +38,7 @@ public class Spindexer extends SubsystemBase {
 
   //subsystem states 
   public enum spindexer_state {
-    RUN(Volts.of(3)),
+    RUN(Volts.of(5)),
     STOP(Volts.of(0));
 
     private final Voltage targetPosition;
@@ -71,7 +71,7 @@ public class Spindexer extends SubsystemBase {
     config = new TalonFXConfiguration();
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-    config.CurrentLimits.StatorCurrentLimit = 20;
+    config.CurrentLimits.StatorCurrentLimit = 40;
     for (int i = 0; i < 2; ++i){
       var status = spindexerMotor.getConfigurator().apply(config);
       if(status.isOK()) break;
