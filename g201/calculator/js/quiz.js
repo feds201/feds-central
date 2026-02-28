@@ -245,10 +245,13 @@ if (activeModuleId === 'secret') {
 } else {
     if (elements.finalEcoScore) elements.finalEcoScore.textContent = finalScore;
     moduleScores[activeModuleId] = finalScore;
+    moduleAnswers[activeModuleId] = [...answers];
     const moduleScoreEl = document.getElementById(`eco-score-module-${activeModuleId}`);
-    if (moduleScoreEl) {
-        moduleScoreEl.innerHTML = `<i class="fas fa-leaf"></i> Eco Score: ${finalScore}`;
-    }
+if (moduleScoreEl) {
+    moduleScoreEl.innerHTML = `<i class="fas fa-leaf"></i> Eco Score: ${finalScore}`;
+        moduleScoreEl.parentElement?.classList.add('completed');
+
+}
     if (elements.meterPointer) {
         elements.meterPointer.style.left = `${finalScore}%`;
     }
