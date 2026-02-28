@@ -238,6 +238,8 @@ function finishQuiz() {
     elements.resultContainer.classList.remove('hidden');
 
     const finalScore = Math.round(currentEcoScore);
+   
+
     if (elements.finalEcoScore) elements.finalEcoScore.textContent = finalScore;
 moduleScores[activeModuleId] = finalScore;
 updateOverallScore();
