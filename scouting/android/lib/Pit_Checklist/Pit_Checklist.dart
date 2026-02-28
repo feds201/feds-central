@@ -589,6 +589,8 @@ class PitCheckListPageState extends State<PitCheckListPage>
     );
   }
 
+
+
   Widget _buildEnhancedMatchCard(
     BuildContext context,
     dynamic match,
@@ -599,6 +601,16 @@ class PitCheckListPageState extends State<PitCheckListPage>
     int index,
   ) {
     PitCheckListDatabase.LoadAll();
+    final String matchKey = match['key'];
+    final PitChecklistItem? saved = PitCheckListDatabase.GetData(matchKey);
+
+    bool drivetrainDone = saved != null && saved.drive_motors && saved.drive_wheels && saved.drive_gearboxes && saved.drive_wires && saved.drive_steer_motors && saved.drive_encoders && saved.drive_lime_lights && saved.drive_nuts_and_bolts;
+    bool structureDone = saved != null && saved.structure_frame && saved.structure_hopper_panels && saved.structure_brain_pan && saved.structure_belly_pan && saved.structure_nuts_and_bolts;
+    bool intakeDone    = saved != null && saved.intake_rack && saved.intake_pinion && saved.intake_belts && saved.intake_roller && saved.intake_motors && saved.intake_limit_switches && saved.intake_lime_lights && saved.intake_nuts_and_bolts && saved.intake_wires;
+    bool spindexerDone = saved != null && saved.spindexer_panel && saved.spindexer_churros && saved.spindexer_motor && saved.spindexer_wheels && saved.spindexer_nuts_and_bolts;
+    bool kickerDone    = saved != null && saved.kicker_plates && saved.kicker_roller && saved.kicker_belts && saved.kicker_gears && saved.kicker_motor && saved.kicker_radio && saved.kicker_ethernet_switch && saved.kicker_nuts_and_bolts && saved.kicker_wires;
+    bool shooterDone   = saved != null && saved.shooter_flywheels && saved.shooter_hood && saved.shooter_hood_gears && saved.shooter_gears && saved.shooter_motors && saved.shooter_nuts_and_bolts && saved.shooter_wires;
+
     // Check if this is a manual entry
     final bool isManual = match['manual_entry'] == true;
 
@@ -756,96 +768,24 @@ class PitCheckListPageState extends State<PitCheckListPage>
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Row(
+                              const SizedBox(height: 6),
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: 4,
                                 children: [
-                                  Container(
-                                    width: 12,
-                                    height: 12,
-                                    decoration: BoxDecoration(
-                                      color: Colors.red,
-                                      borderRadius: BorderRadius.circular(6),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    'Red Alliance',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.red.shade700,
-                                    ),
-                                  ),
+                                  _sectionCheck("Drivetrain", drivetrainDone),
+                                  _sectionCheck("Structure",  structureDone),
+                                  _sectionCheck("Intake",     intakeDone),
+                                  _sectionCheck("Spindexer", spindexerDone),
+                                  _sectionCheck("Kicker",     kickerDone),
+                                  _sectionCheck("Shooter",    shooterDone),
                                 ],
                               ),
-                              const SizedBox(height: 6),
-                              ...redAlliance.map((team) => Padding(
-                                    padding:
-                                        const EdgeInsets.only(left: 20, top: 2),
-                                    child: Text(
-                                      team,
-                                      style: TextStyle(
-                                        color: team == '201'
-                                            ? Colors.red.shade700
-                                            : (_filteredTeam == team
-                                                ? Colors.purple.shade700
-                                                : Colors.grey.shade700),
-                                        fontWeight: (team == '201' ||
-                                                _filteredTeam == team)
-                                            ? FontWeight.bold
-                                            : FontWeight.normal,
-                                      ),
-                                    ),
-                                  )),
                             ],
                           ),
                         ),
 
                         // Blue Alliance
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Container(
-                                    width: 12,
-                                    height: 12,
-                                    decoration: BoxDecoration(
-                                      color: Colors.blue,
-                                      borderRadius: BorderRadius.circular(6),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    'Blue Alliance',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.blue.shade700,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 6),
-                              ...blueAlliance.map((team) => Padding(
-                                    padding:
-                                        const EdgeInsets.only(left: 20, top: 2),
-                                    child: Text(
-                                      team,
-                                      style: TextStyle(
-                                        color: team == '201'
-                                            ? Colors.blue.shade700
-                                            : (_filteredTeam == team
-                                                ? Colors.purple.shade700
-                                                : Colors.grey.shade700),
-                                        fontWeight: (team == '201' ||
-                                                _filteredTeam == team)
-                                            ? FontWeight.bold
-                                            : FontWeight.normal,
-                                      ),
-                                    ),
-                                  )),
-                            ],
-                          ),
-                        ),
                       ],
                     ),
                   ],
@@ -859,7 +799,29 @@ class PitCheckListPageState extends State<PitCheckListPage>
       ),
     );
   }
-
+  Widget _sectionCheck(String label, bool done) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SizedBox(
+          width: 20,
+          height: 20,
+          child: Checkbox(
+            value: done,
+            onChanged: (_) {},
+            activeColor: Colors.green,
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            visualDensity: VisualDensity.compact,
+          ),
+        ),
+        const SizedBox(width: 4),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 12),
+        ),
+      ],
+    );
+  }
   void _handleMatchSelection(dynamic match) {
     PitChecklistItem record = PitChecklistItem.defaultConstructor(match['key']);
 
@@ -2617,57 +2579,6 @@ class PitCheckListPageState extends State<PitCheckListPage>
     return {
       "type": "checklist",
       "matchKey": checklistData.matchkey,
-      "chassisDriveMotors": checklistData.chassis_drive_motors,
-      "chassisSteerMotors": checklistData.chassis_steer_motors,
-      "chassisGearboxes": checklistData.chassis_gearboxes,
-      "chassisTreadConditions": checklistData.chassis_tread_conditions,
-      "chassisWires": checklistData.chassis_wires,
-      "chassisBumpers": checklistData.chassis_bumpers,
-      "chassisCamera": checklistData.chassis_camera,
-      "chassisLimelightProtectors": checklistData.chassis_limelight_protectors,
-      "ethernetFrontLeftLimelight": checklistData.ethernet_front_left_limelight,
-      "ethernetFrontRightLimelight":
-          checklistData.ethernet_front_right_limelight,
-      "ethernetBackRightLimelight": checklistData.ethernet_back_right_limelight,
-      "ethernetSwitch": checklistData.ethernet_switch,
-      "ethernetRadio": checklistData.ethernet_radio,
-      "climberString": checklistData.climber_string,
-      "climberClips": checklistData.climber_clips,
-      "climberSprings": checklistData.climber_springs,
-      "climberBumper": checklistData.climber_bumper,
-      "climberGearbox": checklistData.climber_gearbox,
-      "climberMotors": checklistData.climber_motors,
-      "climberWires": checklistData.climber_wires,
-      "climberNutsAndBolts": checklistData.climber_nuts_and_bolts,
-      "climberReset": checklistData.climber_reset,
-      "climberNumber": checklistData.climber_hooks,
-      "elevatorRodOfDoom": checklistData.elevator_rod_of_doom,
-      "elevatorStage0": checklistData.elevator_stage_0,
-      "elevatorStage1": checklistData.elevator_stage_1,
-      "elevatorStage2": checklistData.elevator_stage_2,
-      "elevatorChain": checklistData.elevator_chain,
-      "elevatorGearbox": checklistData.elevator_gearbox,
-      "elevatorMotors": checklistData.elevator_motors,
-      "elevatorWires": checklistData.elevator_wires,
-      "elevatorNutsAndBolts": checklistData.elevator_nuts_and_bolts,
-      "trapdoorPanels": checklistData.trapdoor_panels,
-      "trapdoorWires": checklistData.trapdoor_wires,
-      "trapdoorSupports": checklistData.trapdoor_supports,
-      "trapdoorHinges": checklistData.trapdoor_hinges,
-      "trapdoorTensioners": checklistData.trapdoor_tensioners,
-      "trapdoorNutsAndBolts": checklistData.trapdoor_nuts_and_bolts,
-      "trapdoorReset": checklistData.trapdoor_reset,
-      "carriageGearbox": checklistData.carriage_gearbox,
-      "carriageBeltbox": checklistData.carriage_beltbox,
-      "carriageMotors": checklistData.carriage_motors,
-      "carriageWires": checklistData.carriage_wires,
-      "carriageNutsAndBolts": checklistData.carriage_nuts_and_bolts,
-      "carriageCoralSlide": checklistData.carriage_coral_slide,
-      "carriageCarriage": checklistData.carriage_carriage,
-      "gooseneckPanels": checklistData.gooseneck_panels,
-      "gooseneckWheels": checklistData.gooseneck_wheels,
-      "gooseneckBelts": checklistData.gooseneck_belts,
-      "gooseneckNutsAndBolts": checklistData.gooseneck_nuts_and_bolts,
       "returningBatteryVoltage": checklistData.returning_battery_voltage,
       "returningBatteryCCA": checklistData.returning_battery_cca,
       "returningNumber": checklistData.returning_number,
@@ -2675,6 +2586,49 @@ class PitCheckListPageState extends State<PitCheckListPage>
       "outgoingBatteryCCA": checklistData.outgoing_battery_cca,
       "outgoingNumber": checklistData.outgoing_number,
       "outgoingBatteryReplaced": checklistData.outgoing_battery_replaced,
+      "drivetrainWheels": checklistData.drive_wheels,
+      "drivetrainGearboxes": checklistData.drive_gearboxes,
+      "drivetrainSteerMotors": checklistData.drive_steer_motors,
+      "drivetrainMotors": checklistData.drive_motors,
+      "drivetrainEncoders": checklistData.drive_encoders,
+      "drivetrainWires": checklistData.drive_wires,
+      "drivetrainLimeLights": checklistData.drive_lime_lights,
+      "drivetrainNutsAndBolts": checklistData.drive_nuts_and_bolts,
+      "structureFrame": checklistData.structure_frame,
+      "structureHopperPanels": checklistData.structure_hopper_panels,
+      "structureBrainPan": checklistData.structure_brain_pan,
+      "structureBellyPan": checklistData.structure_belly_pan,
+      "structureNutsAndBolts": checklistData.structure_nuts_and_bolts,
+      "intakeRack": checklistData.intake_rack,
+      "intakePinion": checklistData.intake_pinion,
+      "intakeBelts": checklistData.intake_belts,
+      "intakeRollers": checklistData.intake_roller,
+      "intakeMotors": checklistData.intake_motors,
+      "intakeLimitSwitches": checklistData.intake_limit_switches,
+      "intakeLimeLights": checklistData.intake_lime_lights,
+      "intakeNutsAndBolts": checklistData.intake_nuts_and_bolts,
+      "intakeWires": checklistData.intake_wires,
+      "spindexerPanel": checklistData.spindexer_panel,
+      "spindexerChurros": checklistData.spindexer_churros,
+      "spindexerMotor": checklistData.spindexer_motor,
+      "spindexerWheels": checklistData.spindexer_wheels,
+      "spindexerNutsAndBolts": checklistData.spindexer_nuts_and_bolts,
+      "kickerPlates": checklistData.kicker_plates,
+      "kickerRollers": checklistData.kicker_roller,
+      "kickerBelts": checklistData.kicker_belts,
+      "kickerGears": checklistData.kicker_gears,
+      "kickerMotor": checklistData.kicker_motor,
+      "kickerRadio": checklistData.kicker_radio,
+      "kickerEthernetSwitch": checklistData.kicker_ethernet_switch,
+      "kickerNutsAndBolts": checklistData.kicker_nuts_and_bolts,
+      "kickerWires": checklistData.kicker_wires,
+      "shooterFlywheels": checklistData.shooter_flywheels,
+      "shooterHood": checklistData.shooter_hood,
+      "shooterHoodGears": checklistData.shooter_hood_gears,
+      "shooterGears": checklistData.shooter_gears,
+      "shooterMotors": checklistData.shooter_motors,
+      "shooterNutsAndBolts": checklistData.shooter_nuts_and_bolts,
+      "shooterWires": checklistData.shooter_wires,
       "allianceColor": checklistData.alliance_color,
       "notes": checklistData.note,
     };
