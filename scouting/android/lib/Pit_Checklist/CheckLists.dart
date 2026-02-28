@@ -362,9 +362,9 @@ class _Checklist_recordState extends State<Checklist_record> {
       appBar: AppBar(
         leading: Builder(builder: (context) {
           return IconButton(
-              icon: const Icon(Icons.menu),
-              color: !islightmode() ? Colors.transparent : Colors.transparent,
-              onPressed: () => {});
+              icon: const Icon(Icons.undo),
+              color: !islightmode() ? Colors.white : Colors.black,
+              onPressed: () => Navigator.pop(context));
         }),
         backgroundColor: islightmode() ? Colors.white : darkColors.goodblack,
         centerTitle: true,
