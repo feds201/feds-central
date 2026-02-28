@@ -912,6 +912,21 @@ p {
     display: none;
 }
 
+
+
+#secret-btn {
+    position: fixed;
+    right: 15%;
+    top: 19%;
+    width: 80px;
+    height: 120px;
+    background: transparent;
+    border: none;
+    cursor: default;
+    z-index: 999;
+    opacity: 0;
+}
+
 /* Eco Score Indicator */
 .eco-meter {
     margin: 20px auto;

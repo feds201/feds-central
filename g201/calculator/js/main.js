@@ -110,4 +110,10 @@ startButtons.forEach(btn => {
             localStorage.setItem('unit', newUnit);
         });
     }
+    const secretBtn = document.getElementById('secret-btn');
+if (secretBtn) {
+    secretBtn.addEventListener('click', () => {
+        startModule('secret');
+    });
+}
 });

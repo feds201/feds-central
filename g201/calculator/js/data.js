@@ -630,5 +630,73 @@ export const modules = {
             eco_impact: "High",
             category: "transport"
         },
-    ]
+    ],
+
+    'secret': [
+    {
+        section: "🤫 Module Secret: Funny Team Stuff",
+        question: "How many Clifford St Clair summoners did you use to fix the robot programming?",
+        hint: "Enter an integer value",
+        type: "int", min: 0, max: 9999,
+        eco_tip: "Every Clifford summon emits approximately 0.0 carbon. Very green.",
+        eco_impact: "low", category: "materials"
+    },
+    {
+        section: "🤫 Module Secret: Funny Team Stuff",
+        question: "How many hours did you listen to Ritesh music?",
+        hint: "Enter an integer value",
+        type: "int", min: 0, max: 9999,
+        eco_tip: "Ritesh music has been shown to increase productivity by 400%. Allegedly.",
+        eco_impact: "low", category: "materials"
+    },
+    {
+        section: "🤫 Module Secret: Funny Team Stuff",
+        question: "Do you lock in?",
+        hint: "Be honest.",
+        type: "multiple-choice",
+        options: [
+            { label: "Yes, always.", eco_impact: "low", value: 1 },
+            { label: "Sometimes...", eco_impact: "medium", value: 2 },
+            { label: "Never cook again.", eco_impact: "high", value: 3 },
+        ],
+        eco_tip: "Locking in reduces wasted time, which reduces energy consumption. Probably.",
+        eco_impact: "low", category: "materials"
+    },
+    {
+        section: "🤫 Module Secret: Funny Team Stuff",
+        question: "How many pieces of popcorn do you eat per year?",
+        hint: "Enter an integer value",
+        type: "int", min: 0, max: 999999,
+        eco_tip: "Popcorn is technically a whole grain. You're basically eating salad.",
+        eco_impact: "low", category: "materials"
+    },
+    {
+        section: "🤫 Module Secret: Funny Team Stuff",
+        question: "How many questions did you ask AI for programming?",
+        hint: "Enter an integer value",
+        type: "int", min: 0, max: 99999,
+        eco_tip: "Each AI query uses roughly the energy of a small star. Worth it though.",
+        eco_impact: "high", category: "energy"
+    },
+    {
+        section: "🤫 Module Secret: Funny Team Stuff",
+        question: "How many double agents did you have to kick off the team?",
+        hint: "Enter an integer value",
+        type: "int", min: 0, max: 100,
+        eco_tip: "Double agents produce twice the carbon footprint. Good call kicking them.",
+        eco_impact: "low", category: "materials"
+    },
+    {
+        section: "🤫 Module Secret: Funny Team Stuff",
+        question: "G201 came to me in a VISION. It was a stroke of GENIUS. The G stands for GENIUS and the 201 stands for 201. Do you understand?",
+        hint: "There is only one correct answer.",
+        type: "multiple-choice",
+        options: [
+            { label: "Yes please!", eco_impact: "low", value: 1 },
+            { label: "Never cook again.", eco_impact: "high", value: 3 },
+        ],
+        eco_tip: "GENIUS is very eco-friendly. The vision itself was solar powered.",
+        eco_impact: "low", category: "materials"
+    },
+]
 };
