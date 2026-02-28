@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import org.littletonrobotics.junction.Logger;
 import frc.robot.RobotMap;
 import frc.robot.subsystems.intake.RollersSubsystem.RollerState;
 import frc.robot.utils.LimelightHelpers;
@@ -116,13 +117,20 @@ public class IntakeSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    //commented because this code currently does not allow the wheels to spin if limelight 
-    //does not see a target, this should be a switch of whether or not the limelight determines roller state.
-    
-    // if (LimelightHelpers.getTV("limelight-one")) {
-    //   System.out.println("Limelight found target.");
-    //   rollers.setState(RollerState.ON);
-    // }
+
+    boolean fuelDetected = LimelightHelpers.getTV("limelight-one");
+
+    Logger.recordOutput("Robot/Intake/Extended", currentState == IntakeState.EXTENDED);
+    Logger.recordOutput("Robot/Intake/RollersOn", rollers.getState() == RollerState.ON);
+    Logger.recordOutput("Robot/Intake/FuelDetected", fuelDetected);
+    Logger.recordOutput("Robot/Limelights/limelight-one/TV", fuelDetected);
+    Logger.recordOutput("Robot/Limelights/limelight-one/TX", LimelightHelpers.getTX("limelight-one"));
+    Logger.recordOutput("Robot/Limelights/limelight-one/TY", LimelightHelpers.getTY("limelight-one"));
+    Logger.recordOutput("Robot/Limelights/limelight-one/TA", LimelightHelpers.getTA("limelight-one"));
+
+    if (fuelDetected) {
+      rollers.setState(RollerState.ON);
+    }
 
     // else {
     //   rollers.setState(RollerState.OFF);
@@ -131,14 +139,14 @@ public class IntakeSubsystem extends SubsystemBase {
     switch(targetState) { // -> Extended
       case EXTENDED: extendIntake();
         break;
-      
-        
+
+
       case DEFAULT: retractIntake();
-      break; 
+      break;
     }
 
 
-    
+
     super.periodic();
   }
 

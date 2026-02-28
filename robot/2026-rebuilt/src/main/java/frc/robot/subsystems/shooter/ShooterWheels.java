@@ -19,6 +19,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
@@ -118,12 +119,14 @@ public class ShooterWheels extends SubsystemBase {
   @Override
   public void periodic() {
 
+    Logger.recordOutput("Robot/Shooter/IsShooting", currentState == shooter_state.SHOOTING);
+
     switch (currentState) {
       case SHOOTING:
       shooterLeader.setControl(motionMagicControl.withVelocity(getTargetVelocityShooting()));
 
         break;
-    
+
       case IDLE:
         break;
 

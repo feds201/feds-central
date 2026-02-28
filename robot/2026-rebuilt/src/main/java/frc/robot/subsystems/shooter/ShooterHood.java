@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems.shooter;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Rotations;
 
@@ -14,6 +15,7 @@ import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveRequest.Idle;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
@@ -100,6 +102,7 @@ public class ShooterHood extends SubsystemBase {
         // Sim-only: hood angle managed by ShooterSim, not the motor
         break;
     }
+    Logger.recordOutput("Robot/Shooter/HoodAngleDeg", getPosition().in(Degrees));
     // This method will be called once per scheduler run
   }
 
@@ -137,7 +140,11 @@ public class ShooterHood extends SubsystemBase {
       return Rotations.of(RobotMap.ShooterConstants.kPassingPositionMap.get(d.in(Meters)));
   }
 
+  public void setSimPosition(double rotations) {
+    hoodMotor.getSimState().setRawRotorPosition(rotations);
+  }
+
   public Command setStateCommand(shooterhood_state state) {
     return runOnce(() -> setState(state));
-  } 
+  }
 }
