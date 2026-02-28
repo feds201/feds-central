@@ -6,8 +6,6 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -125,27 +123,10 @@ public class RobotContainer {
 
   /** Called from Robot.simulationInit(). */
   public void initSimulation() {
-    try {
-      // RebuiltSimManager depends on optional simulation libraries. Guard against
-      // missing simulation classes so entering simulation/test mode doesn't crash
-      // the robot when those libraries are not present on the classpath.
-      simManager = new RebuiltSimManager(drivetrain, rollersSubsystem,
-          intakeSubsystem, feederSubsystem, shooterWheels, shooterHood, spinDexer);
-      // Signal simulation enabled for dashboards
-      Logger.recordOutput("Sim/Enabled", true);
-    } catch (LinkageError e) {
-      // Missing simulation dependency (e.g. frc.sim.core.PhysicsWorld) or link error
-      Logger.recordOutput("Sim/Error", "Simulation libraries not found or failed to link: " + e.toString());
-      Logger.recordOutput("Sim/Enabled", false);
-      simManager = null;
-    } catch (Throwable t) {
-      // Any other error during simulation init should not kill the robot program.
-      Logger.recordOutput("Sim/Error", "Failed to initialize simulation: " + t.toString());
-      t.printStackTrace();
-      Logger.recordOutput("Sim/Enabled", false);
-      simManager = null;
-    }
-    drivetrain.resetPose(new Pose2d(.5, .5, new Rotation2d(0)));
+    simManager = new RebuiltSimManager(drivetrain, rollersSubsystem,
+        intakeSubsystem, feederSubsystem, shooterWheels, shooterHood, spinDexer);
+    Logger.recordOutput("Sim/State", "Ready");
+    drivetrain.resetPose(RebuiltSimManager.STARTING_POSE);
   }
 
   /** Called from Robot.simulationPeriodic(). */
