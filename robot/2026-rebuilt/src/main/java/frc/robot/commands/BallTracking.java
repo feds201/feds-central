@@ -37,11 +37,11 @@ public class BallTracking extends Command {
 
   public static final double MAX_SPEED = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
   public static final double MAX_ANGULAR_RATE = RotationsPerSecond.of(2).in(RadiansPerSecond);
-  private final PIDController hubRotPID = new PIDController(25, 0, 0);
+  private final PIDController hubRotPID = new PIDController(1, 0, 0);
   private final CommandSwerveDrivetrain dt;
 
 
-
+ private SwerveRequest.FieldCentric driveNormal;
 
 
   
@@ -49,6 +49,7 @@ public class BallTracking extends Command {
   public BallTracking(CommandSwerveDrivetrain dt) {
     this.dt = dt;
     
+    driveNormal = new SwerveRequest.FieldCentric();
 
   }
 
@@ -62,8 +63,12 @@ public class BallTracking extends Command {
   @Override
   public void execute() {
     double xError = LimelightHelpers.getTX("ll_intake");
+    
 
-//    dt.setControl(SwerveRequest);
+   dt.setControl(driveNormal
+          .withVelocityX(0)
+          .withVelocityY(0)
+          .withRotationalRate(-hubRotPID.calculate(xError)));
   }
 
   // Called once the command ends or is interrupted.
@@ -73,6 +78,6 @@ public class BallTracking extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return hubRotPID.atSetpoint();
   }
 }
