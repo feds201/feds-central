@@ -16,6 +16,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
@@ -107,6 +108,7 @@ public class Spindexer extends SubsystemBase {
    
   @Override
   public void periodic() {
+    Logger.recordOutput("Robot/Shooter/SpindexerOn", currentState == spindexer_state.RUN);
   }
 
   // subsystem getters

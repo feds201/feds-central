@@ -88,7 +88,7 @@ public class TeleopSwerve extends Command {
     tab.addDouble("Snapped Controller Pointing angle", ()-> currentJoystickAngle.in(Degrees));
     addRequirements(this.dt);
     controller.povLeft()
-            .toggleOnTrue(new InstantCommand(()-> mode = driveMode.HUBDRIVE)
+            .toggleOnTrue(new InstantCommand(()-> mode = driveMode.FALCONDRIVE)
                           .andThen(new RunCommand(()->{}))
                           .finallyDo(()-> mode = driveMode.NORMALDRIVE));
   }
