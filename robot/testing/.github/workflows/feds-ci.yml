@@ -1,0 +1,27 @@
+name: FEDS Robot CI
+
+on:
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-simulate:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+
+    - name: Build and Run Simulation Tests
+      # This compiles the code and runs the headless JUnit tests. 
+      # If the robot code crashes in the test, this step fails and prints the stack trace.
+      run: ./gradlew build
