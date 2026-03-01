@@ -73,7 +73,7 @@ The sim pairs two physics engines, each handling what it does best:
 - Hundreds of game pieces with gravity, bounce, and collisions
 - 3D field geometry (walls, ramps, bumps) from OBJ meshes
 - Intake zones, launch trajectories, scoring detection
-- Vision simulation (Limelight AprilTag estimates)
+- Vision simulation (Limelight AprilTag estimates + game piece detection via frustum sensors)
 
 ### Why Two Engines?
 
@@ -123,7 +123,7 @@ Located at `robot/sim-core/src/main/java/frc/sim/`:
 | `ScoringTracker` | Detects pieces passing through scoring sensor zones. |
 | `SimTelemetry` | Publishes sim data to AdvantageKit. |
 | `VisionSimManager` | Simulates Limelight cameras via NetworkTables. |
-| `LimelightSim` | Per-camera FPS throttling, hardware latency, pose history. |
+| `LimelightSim` | Per-camera simulation. AprilTag mode: FPS throttling, latency lookback, pose history. Game piece mode: builds a trimesh frustum sensor, publishes tv/tx/ty/ta to NT. |
 
 ### Adaptive Sub-stepping
 
@@ -190,19 +190,32 @@ SCORED         → Removed from field, score increments
 
 ## Vision Simulation
 
-`frc.sim.vision` provides Limelight camera simulation:
+`frc.sim.vision` provides Limelight camera simulation in two modes:
 
-- **`VisionSimManager`** — manages multiple simulated cameras, maintains a 2-second pose history buffer
-- **`LimelightSim`** — per-camera simulation with FPS throttling and hardware-specific latency
+- **`VisionSimManager`** — manages multiple simulated cameras (AprilTag and game piece), maintains a 2-second pose history buffer, and coordinates game piece sensor enable/disable around the physics step
+- **`LimelightSim`** — per-camera simulation supporting two modes (see below)
 - **`CameraConfig`** / **`LimelightType`** — hardware profiles (LL3: 30fps / 25ms latency, LL4: 60fps / 20ms latency)
 
-**How it works:** Each tick, the robot's true pose is recorded into a `TimeInterpolatableBuffer`. When a camera "captures a frame" (based on its FPS), it samples the pose at `now - latency` to simulate realistic measurement delay. Results are published to NetworkTables in YALL/PoseEstimate format.
+### AprilTag Mode
+
+Each tick, the robot's true pose is recorded into a `TimeInterpolatableBuffer`. When a camera "captures a frame" (based on its FPS), it samples the pose at `now - latency` to simulate realistic measurement delay. Results are published to NetworkTables in YALL/PoseEstimate format with fake fiducial data (4 tags, tuned for tight stddevs).
 
 <Callout type="info">
-**Current status (V0):** Reports exact robot pose with fake AprilTag metadata (constant number of detections). This is good enough for testing pose-estimation pipelines but doesn't model tag visibility or measurement noise.
+**Current status:** Reports exact robot pose with fake AprilTag metadata (constant number of detections). Good enough for testing pose-estimation pipelines but doesn't model tag visibility or measurement noise.
 
-**Planned (V1):** Real tag visibility based on camera FOV and distance, with distance-based noise.
+**Planned:** Real tag visibility based on camera FOV and distance, with distance-based noise.
 </Callout>
+
+### Game Piece Mode
+
+A `LimelightSim` in game piece mode builds a 3D trimesh frustum (from the camera's FOV, near plane, and far plane) and attaches it to the chassis body as an ODE4J sensor. The frustum follows the robot automatically since it's attached to the chassis rigid body.
+
+**Detection pipeline:**
+1. `prepareGamePiece()` — enable/disable the frustum sensor based on FPS gating (called before physics step)
+2. ODE4J collision detection runs — the frustum detects overlapping game piece bodies
+3. `updateGamePiece()` — reads sensor contacts, finds the closest piece, converts its 3D position to camera-relative angles, and publishes `tv`/`tx`/`ty`/`ta` to NetworkTables (called after physics step)
+
+The published NT entries are consumed by `LimelightHelpers.getTV/getTX/getTY/getTA`, so subsystem code (e.g. `IntakeSubsystem`) reads the same API in sim and on the real robot.
 
 ---
 
@@ -235,10 +248,15 @@ The SimManager maintains rotation accumulators for animated mechanisms (rollers,
 
 | Class | Purpose |
 |-------|---------|
-| `RebuiltSimManager` | Orchestrator. 12-step sim loop at 50Hz. Bridges MapleSim ↔ ODE4J. |
+| `RebuiltSimManager` | Orchestrator. Sim loop at 50Hz. Bridges MapleSim ↔ ODE4J. |
 | `RebuiltField` | Field layout: hubs, ramps, scoring zones, fuel spawn positions. Loads `field_collision.obj`. |
 | `RebuiltGamePieces` | Fuel ball config: sphere, 0.075m radius, 0.2kg, bounce 0.15. |
 | `ShooterSim` | Bridges shooter subsystem to game piece launches. 100ms cooldown. |
+
+**Vision cameras:** Three simulated Limelights:
+- **limelight-two** (LL4, AprilTag): 60 FPS, front-right mount, 25° inward yaw
+- **limelight-five** (LL3, AprilTag): 30 FPS, front-left mount, -25° inward yaw
+- **limelight-one** (LL4, Game Piece): 5 FPS, rear-facing mount, detects fuel within 0.3–3.0m frustum
 
 **Field:** 16.54m × 8.07m with two hubs, ramps, 360-400 fuel balls in neutral zone, 24 per depot.
 
@@ -254,12 +272,17 @@ The SimManager maintains rotation accumulators for animated mechanisms (rollers,
 4. Update ODE4J chassis body (corrective force to match MapleSim velocity)
 5. Wake nearby game pieces (1.5m radius)
 6. Check intake zone (before physics step, to prevent re-consuming launched balls)
-7. ODE4J physics step (with adaptive sub-stepping)
-8. Sync gyro (MapleSim yaw → Pigeon2 sim state)
-9. Update game piece states (auto-disable settled pieces)
-10. Check scoring zones (sensor geom overlaps)
-11. Update shooter (launch if firing + cooldown expired + hopper > 0)
-12. Publish telemetry (poses, scores, components → AdvantageKit)
+7. Enable/disable game piece detection sensors (FPS gating)
+8. ODE4J physics step (with adaptive sub-stepping)
+9. Sync gyro (MapleSim yaw → Pigeon2 sim state)
+10. Update AprilTag vision (write true pose to simulated Limelight NT entries)
+11. Update game piece detection cameras (read sensor contacts → publish tv/tx/ty/ta)
+12. Update game piece states (auto-disable settled pieces)
+13. Check scoring zones (sensor geom overlaps)
+14. Update hood angle (watching ShooterHood state)
+15. Update shooter (launch if firing + cooldown expired + hopper > 0)
+16. Update animation accumulators (rollers, feeders, shooter wheels)
+17. Publish telemetry (poses, scores, components → AdvantageKit)
 
 ---
 

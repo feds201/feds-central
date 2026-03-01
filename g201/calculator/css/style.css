@@ -110,11 +110,39 @@ body::after {
     max-width: 700px;
     overflow: hidden;
     border: 2px solid var(--accent-color);
-    max-height: 85vh;
+    max-height: 92vh;
     overflow-y: auto;
     transition: all 0.3s ease;
     transform: translateY(0);
     animation: container-appear 0.6s ease-out;
+}
+
+.eco-score-module-1,
+.eco-score-module-2,
+.eco-score-module-3,
+.eco-score-module-4,
+.eco-score-module-5 {
+    background-color: rgba(231, 76, 60, 0.9);   /* red */
+    padding: 8px 18px;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 15px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 3px 10px rgba(231, 76, 60, 0.5);
+    margin-top: 12px;
+    color: white;
+    transition: background-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.eco-score-module-1.completed,
+.eco-score-module-2.completed,
+.eco-score-module-3.completed,
+.eco-score-module-4.completed,
+.eco-score-module-5.completed {
+    background-color: rgba(77, 240, 12, 0.895);  /* green */
+    box-shadow: 0 3px 10px rgba(77, 240, 12, 0.895);
 }
 
 
@@ -141,8 +169,9 @@ body::after {
 }
 
 .module-body p {
-  color: var(--text-secondary);
-  margin-bottom: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+    line-height: 1.5;
 }
 
 .start-btn {
@@ -166,19 +195,44 @@ body::after {
 .module3 { border-color: #0984e3; }
 .module4 { border-color: #e74c3c; }
 
-.module1:hover { background-color:#e74c3c; filter: brightness(100%); }
-.module2:hover { background-color:#3ce77e; filter: brightness(100%); }
-.module3:hover { background-color:#a53ce7; filter: brightness(100%); }
-.module4:hover { background-color:#e7e73c; filter: brightness(100%); }
+.overall-score-card {
+    background: var(--header-gradient);
+    padding: 18px;
+    text-align: center;
+    box-shadow: 0 10px 25px var(--shadow-color);
+    color: white;
+    margin-bottom: 0;
+}
+
+.overall-score-card.hidden { display: none; }
+
+.overall-score-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.overall-score-value {
+    font-size: 3rem;
+    font-weight: 700;
+}
+
+.overall-score-max {
+    font-size: 1.2rem;
+    opacity: 0.6;
+}
+
+.overall-score-note {
+    font-size: 0.85rem;
+    opacity: 0.75;
+    margin-top: 8px;
+}
 
 p {
     font-size: 14px;
-    color: #06f92e ;
-    font-style: italic;
-    font-weight: 300;
     border: 0;
-    height: 4px;
-
 }
 
 
@@ -293,6 +347,33 @@ p {
     height: 100px;
 }
 
+.transport-module-row {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    margin-top: 14px;
+}
+
+.transport-module-row > div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    padding: 14px;
+    border-radius: 10px;
+    background: rgba(var(--accent-color-rgb, 9, 132, 227), 0.06);
+    border: 1px solid var(--border-color);
+}
+
+.transport-label {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--accent-color);
+    margin: 0;
+    text-align: center;
+}
+
 .team-logo {
     width: 90px;
     height: 90px;
@@ -303,7 +384,7 @@ p {
     background-color: rgba(255, 255, 255, 0.3);
     display: block;
     margin: 0 auto;
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 6px 15px rgba(156, 14, 14, 0.2);
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     position: relative;
     z-index: 2;
@@ -709,7 +790,30 @@ p {
     scrollbar-width: thin;
     scrollbar-color: var(--accent-color) var(--card-bg);
 }
+.overall-score-summary {
+    margin: 20px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
 
+.module-score-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(var(--accent-color-rgb, 9, 132, 227), 0.08);
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    border-left: 4px solid var(--accent-color);
+    color: var(--text-color);
+}
+
+.module-score-row span:last-child {
+    font-weight: 700;
+    color: var(--eco-friendly-color);
+}
 /* Customize scrollbar for WebKit browsers */
 .result-summary::-webkit-scrollbar {
     width: 6px;
@@ -806,6 +910,21 @@ p {
 
 .hidden {
     display: none;
+}
+
+
+
+#secret-btn {
+    position: fixed;
+    right: 15%;
+    top: 19%;
+    width: 80px;
+    height: 120px;
+    background: transparent;
+    border: none;
+    cursor: default;
+    z-index: 999;
+    opacity: 0;
 }
 
 /* Eco Score Indicator */
