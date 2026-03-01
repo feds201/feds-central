@@ -16,7 +16,7 @@ import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+// import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -104,8 +104,11 @@ public class ShooterWheels extends SubsystemBase {
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     config.CurrentLimits.StatorCurrentLimit = 40;
-    config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
-    config.Feedback.SensorToMechanismRatio = 2/3;
+
+    //Lines commented because changing ratio will require retuning, TODO after first comp
+    // config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
+    // config.Feedback.SensorToMechanismRatio = 2/3;
+
     //Following values would need to be tuned.
     config.Slot0.kS = 0.34; // Constant applied for friction compensation (static gain)
     config.Slot0.kP = 0.0; // Proportional gain
