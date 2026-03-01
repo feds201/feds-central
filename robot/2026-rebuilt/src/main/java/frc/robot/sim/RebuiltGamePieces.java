@@ -11,8 +11,8 @@ public class RebuiltGamePieces {
             .withName("Fuel")
             .withShape(GamePieceConfig.Shape.SPHERE)
             .withRadius(0.075) // 75mm radius = 150mm diameter (~6 inches)
-            .withMass(0.2)     // ~0.2 kg
-            .withBounce(0.15)  // low bounce — foam on carpet
+            .withMass(0.2) // ~0.2 kg
+            .withBounce(0.15) // low bounce — foam on carpet
             .withFriction(0.5) // carpet friction
             .build();
 }
