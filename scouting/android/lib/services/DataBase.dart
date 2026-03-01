@@ -1092,6 +1092,12 @@ class EndPoints {
       json['Comments'] ?? '',
       json['EndNeutralTrips'] ?? 0,
       (json['ShootingAccuracy'] as int?) ?? 3,
+=======
+      json['ShootingAccuracy'] ?? 3,
+>>>>>>> origin/main
+=======
+      (json['ShootingAccuracy'] as int?) ?? 3,
+>>>>>>> origin/robot_intake
       (json['endgameTime'] ?? 0.0).toDouble(),
       json['endgameActions'] ?? 0,
       // Handle both list and legacy string/migration
