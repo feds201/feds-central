@@ -15,6 +15,7 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
+import com.ctre.phoenix6.SignalLogger;
 
 import edu.wpi.first.hal.AllianceStationID;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -65,6 +66,8 @@ public class Robot extends LoggedRobot {
         break;
     }
 
+    SignalLogger.setPath("/media/sda1/CTRElogs/");
+    
     Logger.start();
 
      // Silence joystick alerts
@@ -102,10 +105,8 @@ public class Robot extends LoggedRobot {
   public void robotPeriodic() {
     m_robotContainer.updateLocalization();
     CommandScheduler.getInstance().run();
-    DeviceTempReporter.pollAll();
-    SubsystemStatusManager.pollAll();
-    DeviceTempReporter.pollAll();
-    SubsystemStatusManager.pollAll();
+    // DeviceTempReporter.pollAll();
+    // SubsystemStatusManager.pollAll();
   }
 
   @Override

@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.RobotMap.DrivetrainConstants;
 import frc.robot.commands.swerve.HubDrive;
 import frc.robot.commands.swerve.TeleopSwerve;
@@ -27,6 +28,9 @@ import frc.robot.subsystems.spindexer.Spindexer;
 import frc.robot.subsystems.spindexer.Spindexer.spindexer_state;
 import frc.robot.sim.RebuiltSimManager;
 import org.littletonrobotics.junction.Logger;
+
+import com.ctre.phoenix6.SignalLogger;
+
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import frc.robot.utils.LimelightWrapper;
 import frc.robot.utils.RTU.RootTestingUtility;
@@ -66,8 +70,8 @@ public class RobotContainer {
   public RobotContainer() {
     ll4.getSettings().withImuMode(ImuMode.ExternalImu).save();
     hubDrive = new HubDrive(drivetrain, null);
+    // configureBindings();
     configureBindings();
-    
     
     configureRootTests();
     
@@ -82,6 +86,23 @@ public class RobotContainer {
     }
   }
 
+
+  private void configureSysidBindings(){
+    controller.leftBumper().onTrue(Commands.runOnce(SignalLogger::start));
+    controller.rightBumper().onTrue(Commands.runOnce(SignalLogger::stop));
+
+    controller.a().whileTrue(Commands.sequence(
+      shooterWheels.flywheelSysIdDynamic(Direction.kForward),
+      shooterWheels.flywheelSysIdDynamic(Direction.kReverse),
+      shooterWheels.flywheelSysIdQuasistatic(Direction.kForward),
+      shooterWheels.flywheelSysIdQuasistatic(Direction.kReverse)));
+
+    controller.y().whileTrue(Commands.sequence(
+      feederSubsystem.feederSysIdDynamic(Direction.kForward),
+      feederSubsystem.feederSysIdDynamic(Direction.kReverse),
+      feederSubsystem.feederSysIdQuasistatic(Direction.kForward),
+      feederSubsystem.feederSysIdQuasistatic(Direction.kReverse)));
+  }
   private void configureBindings() {
 
     controller.start()
@@ -124,10 +145,12 @@ public class RobotContainer {
     controller.x()
       .onTrue(Commands.sequence(
         feederSubsystem.setStateCommand(feeder_state.RUN),
-        spinDexer.setStateCommand(spindexer_state.RUN)))
+        spinDexer.setStateCommand(spindexer_state.RUN),
+        shooterWheels.setStateCommand(shooter_state.LAYUP)))
       .onFalse(Commands.sequence(
         feederSubsystem.setStateCommand(feeder_state.STOP),
-        spinDexer.setStateCommand(spindexer_state.STOP)));
+        spinDexer.setStateCommand(spindexer_state.STOP),
+        shooterWheels.setStateCommand(shooter_state.IDLE)));
 
     controller.povRight().whileTrue(
       Commands.sequence(
