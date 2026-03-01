@@ -1105,7 +1105,7 @@ class EndPoints {
   }
 
   String toCsv() {
-    return '$ClimbStatus,${Park ? 1 : 0},${FeedToHP ? 1 : 0},${Passing ? 1 : 0},$EndNeutralTrips, $ShootingAccuracy,$endgameActions,$Comments,$drawingData';
+    return '$ClimbStatus,${Park ? 1 : 0},${FeedToHP ? 1 : 0},${Passing ? 1 : 0},$EndNeutralTrips, $ShootingAccuracy,$endgameTime,$Comments,$drawingData';
   }
 
   String _encodeDrawingData() {
