@@ -12,7 +12,7 @@
         "y": 4.752194281539783
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "FuelCloseLeft"
     },
     {
       "anchor": {
@@ -47,16 +47,16 @@
   "rotationTargets": [
     {
       "waypointRelativePos": 1.0072440944881766,
-      "rotationDegrees": 135.0
+      "rotationDegrees": -45.0
     }
   ],
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 0.8316086547507057,
-      "maxWaypointRelativePos": 1.614299153339615,
+      "minWaypointRelativePos": 0.7450611476952028,
+      "maxWaypointRelativePos": 2.0,
       "constraints": {
-        "maxVelocity": 2.0,
+        "maxVelocity": 1.8,
         "maxAcceleration": 6.0,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 360.0,
@@ -77,13 +77,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 135.0
+    "rotation": -45.0
   },
   "reversed": false,
   "folder": "MidIntakeToLeftBump",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -90.0
+    "rotation": 90.0
   },
   "useDefaultConstraints": true
 }

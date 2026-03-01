@@ -19,13 +19,19 @@
         {
           "type": "named",
           "data": {
-            "name": "Run intake"
+            "name": "Run Rollers"
           }
         },
         {
           "type": "path",
           "data": {
             "pathName": "MidIntakeL"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Stop Rollers"
           }
         },
         {
@@ -53,13 +59,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Stop Intake"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Shoot"
+                  "name": "Run Shooter"
                 }
               }
             ]

@@ -74,10 +74,10 @@ public class RobotContainer {
     ll4.getSettings().withImuMode(ImuMode.ExternalImu).save();
     configureBindings();
     configureRootTests();
-    autoChooser = AutoBuilder.buildAutoChooser();
 
+    registerNamedCommands();
+    autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
-    registerNameCommands();
   }
 
   public void updateLocalization() {
@@ -218,34 +218,16 @@ public class RobotContainer {
     rootTester.periodic();
   }
 
-  public void registerNamedCommands()
-  {
-    NamedCommands.registerCommand("Extend Intake", intakeSubsystem.extendIntake());
 
-    NamedCommands.registerCommand("Shooting",  shooterWheels.setStateCommand(shooter_state.SHOOTING).alongWith(spinDexer.setStateCommand
-    (spindexer_state.RUN).alongWith(feederSubsystem.setStateCommand(feeder_state.RUN))));
-    NamedCommands.registerCommand("Stop Shooting", shooterWheels.setStateCommand(shooter_state.IDLE).alongWith(feederSubsystem.
-    setStateCommand(feeder_state.STOP)));
-
-  }
-
-
-
-
-
-
-
-
-
-
-public void registerNameCommands() {
+public void registerNamedCommands() {
   NamedCommands.registerCommand("Extend Hopper", intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED));
+  NamedCommands.registerCommand("Extend Intake", intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED));
   NamedCommands.registerCommand("Run Rollers", rollersSubsystem.RollersCommand(RollerState.ON));
   NamedCommands.registerCommand("Stop Rollers", rollersSubsystem.RollersCommand(RollerState.OFF));
-  NamedCommands.registerCommand("Start Shooter Spin", shooterWheels.setStateCommand(shooter_state.SHOOTING));
+  NamedCommands.registerCommand("Start Shooter Spin", shooterWheels.setStateCommand(shooter_state.SHOOTING).alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
   NamedCommands.registerCommand("End Shooter Spin", shooterWheels.setStateCommand(shooter_state.IDLE));
-  NamedCommands.registerCommand("Run Shooter", shooterWheels.setStateCommand(shooter_state.SHOOTING).alongWith(feederSubsystem.setStateCommand(feeder_state.RUN)).alongWith(spinDexer.setStateCommand(spindexer_state.RUN)));
-  
+  NamedCommands.registerCommand("Run Shooter", shooterWheels.setStateCommand(shooter_state.SHOOTING).alongWith(feederSubsystem.setStateCommand(feeder_state.RUN)).alongWith(spinDexer.setStateCommand(spindexer_state.RUN)).alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
+  NamedCommands.registerCommand("Shooting", shooterWheels.setStateCommand(shooter_state.SHOOTING).alongWith(feederSubsystem.setStateCommand(feeder_state.RUN)).alongWith(spinDexer.setStateCommand(spindexer_state.RUN)).alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
 
 
 }
