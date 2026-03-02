@@ -103,14 +103,14 @@ public class RebuiltSimManager {
 
     // ── Intake zone bounds (robot-relative, placeholder) ───────────────────
 
-    /** Intake zone forward start distance from robot center. */
-    private static final double INTAKE_X_MIN = 0.35;
-    /** Intake zone forward end distance from robot center. */
-    private static final double INTAKE_X_MAX = 0.5;
-    /** Intake zone left/right half-width from robot center. */
-    private static final double INTAKE_Y_MIN = -0.25;
-    private static final double INTAKE_Y_MAX = 0.25;
-    /** Intake zone max height — balls above this are ignored. */
+    /** Intake zone forward start distance from robot center (meters). */
+    private static final double INTAKE_X_MIN = -0.5;
+    /** Intake zone forward end distance from robot center (meters). */
+    private static final double INTAKE_X_MAX = -.35;
+    /** Intake zone left/right half-width from robot center (meters). */
+    private static final double INTAKE_Y_MIN = -0.35;
+    private static final double INTAKE_Y_MAX = 0.35;
+    /** Intake zone max height — balls above this are ignored (meters). */
     private static final double INTAKE_Z_MAX = 0.2;
 
     // ── Proximity activation radii ─────────────────────────────────────────
