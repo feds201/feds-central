@@ -1,4 +1,4 @@
-package frc.robot.utils.RTU;
+package frc.utils.RTU;
 
 
 import java.io.IOException;
@@ -13,8 +13,8 @@ import java.util.UUID;
 
 import com.sun.net.httpserver.HttpServer;
 
-import frc.robot.utils.RTU.TestResult.Alert;
-import frc.robot.utils.RTU.TestResult.DataSample;
+import frc.utils.RTU.TestResult.Alert;
+import frc.utils.RTU.TestResult.DataSample;
 
 
 

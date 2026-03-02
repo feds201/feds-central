@@ -1,4 +1,4 @@
-package frc.robot.utils.RTU;
+package frc.utils.RTU;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
