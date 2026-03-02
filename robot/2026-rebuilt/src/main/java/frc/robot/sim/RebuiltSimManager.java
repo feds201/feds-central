@@ -44,6 +44,7 @@ import frc.sim.chassis.ChassisConfig;
 import frc.sim.chassis.ChassisSimulation;
 import frc.sim.core.PhysicsWorld;
 import frc.sim.vision.CameraConfig;
+import frc.sim.vision.LimelightSim;
 import frc.sim.vision.LimelightType;
 import frc.sim.vision.VisionSimManager;
 import frc.sim.gamepiece.GamePiece;
@@ -54,6 +55,7 @@ import frc.sim.telemetry.GroundClearance;
 import frc.sim.telemetry.SimTelemetry;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -67,6 +69,8 @@ import java.util.Set;
  * - ODE4J chassis: kinematically follows MapleSim pose, provides collision body for game pieces
  */
 public class RebuiltSimManager {
+    // All distances in meters, angles in radians (unless noted otherwise).
+
     /** Simulation timestep — 50 Hz to match robot periodic. */
     private static final double DT = 0.02;
 
@@ -84,44 +88,50 @@ public class RebuiltSimManager {
     /** Robot moment of inertia about Z axis (placeholder, kg*m^2). */
     private static final double ROBOT_MOI = 6.0;
 
-    /** Bumper frame length and width (placeholder, meters). */
+    /** Bumper frame length and width (placeholder). */
     private static final double BUMPER_LENGTH_M = 0.8;
     private static final double BUMPER_WIDTH_M = 0.8;
 
-    /** Bumper frame height (placeholder, meters). */
+    /** Bumper frame height (placeholder). */
     private static final double BUMPER_HEIGHT_M = 0.25;
+
+    /** Starting pose for simulation. */
+    public static final Pose2d STARTING_POSE = new Pose2d(0.5, 0.5, Rotation2d.kZero);
 
     /** Maximum fuel balls the hopper can hold (placeholder). */
     private static final int HOPPER_CAPACITY = 70;
 
     // ── Intake zone bounds (robot-relative, placeholder) ───────────────────
 
-    /** Intake zone forward start distance from robot center (meters). */
+    /** Intake zone forward start distance from robot center. */
     private static final double INTAKE_X_MIN = 0.35;
-    /** Intake zone forward end distance from robot center (meters). */
+    /** Intake zone forward end distance from robot center. */
     private static final double INTAKE_X_MAX = 0.5;
-    /** Intake zone left/right half-width from robot center (meters). */
+    /** Intake zone left/right half-width from robot center. */
     private static final double INTAKE_Y_MIN = -0.25;
     private static final double INTAKE_Y_MAX = 0.25;
-    /** Intake zone max height — balls above this are ignored (meters). */
+    /** Intake zone max height — balls above this are ignored. */
     private static final double INTAKE_Z_MAX = 0.2;
 
     // ── Proximity activation radii ─────────────────────────────────────────
 
-    /** Wake sleeping game pieces within this distance of the robot (meters). */
+    /** Wake sleeping game pieces within this distance of the robot. */
     private static final double PROXIMITY_WAKE_RADIUS = 1.5;
-    /** Put game pieces to sleep beyond this distance from all wake zones (meters). */
+    /** Put game pieces to sleep beyond this distance from all wake zones. */
     private static final double PROXIMITY_SLEEP_RADIUS = 3.0;
+
+    /** ODE4J→MapleSim position correction gain (1cm error → 0.5 m/s correction). */
+    private static final double POSITION_CORRECTION_KP = 50.0;
 
     // ── Sim hood parameters ────────────────────────────────────────────────
 
     /** Hood adjustment rate when aiming (placeholder, rad/s). */
     private static final double HOOD_ADJUST_RATE = Math.toRadians(30);
-    /** Minimum sim hood angle (placeholder, radians). */
+    /** Minimum sim hood angle (placeholder). */
     private static final double HOOD_MIN_RAD = Math.toRadians(10);
-    /** Maximum sim hood angle (placeholder, radians). */
+    /** Maximum sim hood angle (placeholder). */
     private static final double HOOD_MAX_RAD = Math.toRadians(80);
-    /** Default sim hood angle (placeholder, radians). */
+    /** Default sim hood angle (placeholder). */
     private static final double HOOD_DEFAULT_RAD = Math.toRadians(45);
     /** Fixed launch speed when shooting (placeholder, m/s). */
     private static final double LAUNCH_SPEED_MPS = 6.0;
@@ -132,8 +142,18 @@ public class RebuiltSimManager {
     private static final double FEEDER_ROLLER_SPEED = 15.0;
     private static final double SHOOTER_ROLLER_SPEED = 30.0;
 
-    /** Cached origin translation for telemetry component poses. */
-    private static final Translation3d ORIGIN = new Translation3d(0, 0, 0);
+    // ── Fuel detection Limelight (limelight-one, rear-facing) ───────────────
+
+    private static final String FUEL_LL_NAME = "limelight-one";
+    private static final Transform3d FUEL_LL_MOUNT = new Transform3d(
+            new Translation3d(-0.4, 0, 0.305),
+            new Rotation3d(0, Math.toRadians(30), Math.toRadians(180)));
+    /** Near plane distance for fuel detection frustum. */
+    private static final double FUEL_LL_NEAR = 0.3;
+    /** Far plane distance for fuel detection frustum. */
+    private static final double FUEL_LL_FAR = 3.0;
+    /** Detection rate for fuel detection camera. */
+    private static final double FUEL_LL_FPS = 5.0;
 
     private final VisionSimManager visionSimManager;
     private final PhysicsWorld physicsWorld;
@@ -200,11 +220,13 @@ public class RebuiltSimManager {
         // --- MapleSim timing ---
         // Use AddRampCollider=false so MapleSim only blocks on the hub (47x47),
         // not the hub+ramps (47x217). ODE4J handles ramp climbing in 3D.
+        Logger.recordOutput("Sim/State", "Loading MapleSim");
         SimulatedArena.overrideInstance(
                 new org.ironmaple.simulation.seasonspecific.rebuilt2026.Arena2026Rebuilt(false));
         SimulatedArena.overrideSimulationTimings(Seconds.of(DT), 1);
 
         // --- MapleSim swerve drive simulation ---
+        Logger.recordOutput("Sim/State", "Loading drivetrain");
         Translation2d[] modulePositions = new Translation2d[] {
             new Translation2d(MODULE_OFFSET_M, MODULE_OFFSET_M),   // FL
             new Translation2d(MODULE_OFFSET_M, -MODULE_OFFSET_M),  // FR
@@ -229,13 +251,13 @@ public class RebuiltSimManager {
                 .withCustomModuleTranslations(modulePositions)
                 .withSwerveModule(moduleSimConfig);
 
-        Pose2d startingPose = new Pose2d(.5, .5, Rotation2d.kZero);
-        mapleSimDrive = new SwerveDriveSimulation(driveSimConfig, startingPose);
+        mapleSimDrive = new SwerveDriveSimulation(driveSimConfig, STARTING_POSE);
 
         // MapleSim owns and steps the drivetrain; ODE4J chassis is a kinematic follower
         SimulatedArena.getInstance().addDriveTrainSimulation(mapleSimDrive);
 
         // --- Wire motor controller adapters ---
+        Logger.recordOutput("Sim/State", "Wiring motors");
         moduleSimulations = mapleSimDrive.getModules();
         for (int i = 0; i < 4; i++) {
             moduleSimulations[i].useDriveMotorController(
@@ -249,9 +271,11 @@ public class RebuiltSimManager {
         drivetrain.stopSimNotifier();
 
         // --- Physics World (ODE4J) ---
+        Logger.recordOutput("Sim/State", "Loading physics");
         physicsWorld = new PhysicsWorld();
 
         // --- Chassis (ODE4J body for collisions) ---
+        Logger.recordOutput("Sim/State", "Loading chassis");
         ChassisConfig chassisConfig = new ChassisConfig.Builder()
                 .withModulePositions(modulePositions)
                 .withRobotMass(ROBOT_MASS_KG)
@@ -259,24 +283,28 @@ public class RebuiltSimManager {
                 .withBumperSize(BUMPER_LENGTH_M, BUMPER_WIDTH_M, BUMPER_HEIGHT_M)
                 .build();
 
-        chassis = new ChassisSimulation(physicsWorld, chassisConfig, startingPose);
+        chassis = new ChassisSimulation(physicsWorld, chassisConfig, STARTING_POSE);
 
         // --- Field ---
+        Logger.recordOutput("Sim/State", "Loading field");
         field = new RebuiltField(physicsWorld);
 
         // --- Game Pieces ---
+        Logger.recordOutput("Sim/State", "Spawning game pieces");
         gamePieceManager = new GamePieceManager(physicsWorld);
         gamePieceManager.setMaxCapacity(HOPPER_CAPACITY);
         field.spawnStartingFuel(gamePieceManager);
         gamePieceManager.disableAll();
 
         // --- Intake Zone ---
+        Logger.recordOutput("Sim/State", "Loading intake");
         intakeZone = new IntakeZone(INTAKE_X_MIN, INTAKE_X_MAX, INTAKE_Y_MIN, INTAKE_Y_MAX, INTAKE_Z_MAX,
                 () -> intake.getState() == RollersSubsystem.RollerState.ON
                         && intakeSubsystem.getState() == IntakeState.EXTENDED,
                 () -> chassis.getPose2d());
 
         // --- Shooter ---
+        Logger.recordOutput("Sim/State", "Loading shooter");
         // ShooterSim watches real subsystem states:
         // - Hood angle: managed by sim (adjusted when ShooterHood is AIMING_UP/DOWN)
         // - Launch velocity: fixed placeholder speed
@@ -294,18 +322,36 @@ public class RebuiltSimManager {
                 () -> chassis.getBody().getLinearVel().get1());
 
         // --- Scoring & Telemetry ---
+        Logger.recordOutput("Sim/State", "Loading scoring");
         scoringTracker = new ScoringTracker();
         groundClearance = new GroundClearance(chassis.getBody(), chassisConfig.getBumperHeight());
         telemetry = new SimTelemetry(chassis);
 
         // --- Vision sim (writes true pose to NT in Limelight format) ---
-        // TODO: replace Transform3d() with real camera mount offsets from CAD
-        //       (needed for FOV-based tag visibility when we move past V0)
-        visionSimManager = new VisionSimManager(
-                new CameraConfig("limelight-two", LimelightType.LL4, new Transform3d()),
-                new CameraConfig("limelight-five", LimelightType.LL3, new Transform3d()));
+        Logger.recordOutput("Sim/State", "Loading vision");
+        // Camera mounts: LL4 front-right, LL3 front-left, both 7.7" high, 25° inward yaw, 30° upward pitch
+        Transform3d ll4Mount = new Transform3d(
+                new Translation3d(0.27, -0.27, 0.1956),
+                new Rotation3d(0, Math.toRadians(-30), Math.toRadians(25)));
+        Transform3d ll3Mount = new Transform3d(
+                new Translation3d(0.27, 0.27, 0.1956),
+                new Rotation3d(0, Math.toRadians(-30), Math.toRadians(-25)));
+        LimelightSim ll4Cam = new LimelightSim(
+                new CameraConfig("limelight-two", LimelightType.LL4, ll4Mount));
+        LimelightSim ll3Cam = new LimelightSim(
+                new CameraConfig("limelight-five", LimelightType.LL3, ll3Mount));
+        LimelightSim fuelCam = new LimelightSim(
+                new CameraConfig(FUEL_LL_NAME, LimelightType.LL4, FUEL_LL_MOUNT),
+                physicsWorld,
+                chassis.getBody(),
+                FUEL_LL_NEAR,
+                FUEL_LL_FAR,
+                RebuiltGamePieces.FUEL.getRadius(),
+                FUEL_LL_FPS);
+        visionSimManager = new VisionSimManager(ll4Cam, ll3Cam, fuelCam);
 
         // --- Cache gyro sim state ---
+        Logger.recordOutput("Sim/State", "Syncing gyro");
         pigeonSimState = drivetrain.getPigeonSimState();
     }
 
@@ -342,9 +388,8 @@ public class RebuiltSimManager {
         // (the correction is a force, not a position override, so the solver can oppose it).
         double odeX = chassis.getPose2d().getX();
         double odeY = chassis.getPose2d().getY();
-        double kP = 50.0; // 1cm error → 0.5 m/s correction
-        double correctedVx = worldVx + kP * (pose.getX() - odeX);
-        double correctedVy = worldVy + kP * (pose.getY() - odeY);
+        double correctedVx = worldVx + POSITION_CORRECTION_KP * (pose.getX() - odeX);
+        double correctedVy = worldVy + POSITION_CORRECTION_KP * (pose.getY() - odeY);
         chassis.setVelocity(correctedVx, correctedVy, robotSpeeds.omegaRadiansPerSecond, DT);
 
         // 5. Proximity activation — only wake balls near the robot
@@ -358,6 +403,9 @@ public class RebuiltSimManager {
         // balls that were already in the zone from the previous frame are intaked.
         intakeZone.checkIntake(gamePieceManager, gamePieceManager.getPieces());
 
+        // 6b. Enable/disable game piece sensors for this tick's collision pass
+        visionSimManager.prepareGamePieces();
+
         // 7. Step physics world — ODE4J integrates position from velocity,
         // handles ramp/bump contacts (Z changes), game piece collisions
 
@@ -370,6 +418,9 @@ public class RebuiltSimManager {
 
         // 8b. Write true pose to simulated Limelight NT entries
         visionSimManager.update(pose);
+
+        // 8c. Update game piece detection cameras (reads sensor contacts from step above)
+        visionSimManager.updateGamePieces();
 
         // 9. Update game piece states
         gamePieceManager.update();
@@ -396,78 +447,70 @@ public class RebuiltSimManager {
         } else if (hoodState == shooterhood_state.AIMING_DOWN) {
             simHoodAngleRad = Math.max(HOOD_MIN_RAD, simHoodAngleRad - HOOD_ADJUST_RATE * DT);
         }
+        shooterHood.setSimPosition(simHoodAngleRad / (2 * Math.PI));
 
         // 12. Update shooter
         shooterSim.update(DT);
 
-        // 12. Publish telemetry to NetworkTables
+        // 13. Update animation accumulators
+        if (intake.getState() == RollersSubsystem.RollerState.ON) {
+            rollerAngleAccum += INTAKE_ROLLER_SPEED * DT;
+        }
+        if (shooterWheels.getCurrentState() == shooter_state.SHOOTING) {
+            feederAngleAccum += FEEDER_ROLLER_SPEED * DT;
+            shooterRollerAngleAccum += SHOOTER_ROLLER_SPEED * DT;
+        }
+
+        // 14. Publish telemetry to NetworkTables
         publishTelemetry();
     }
 
     private void publishTelemetry() {
-        // ── Drivetrain ──────────────────────────────────────────────────────
         Pose3d robotPose = chassis.getPose3d();
-        Logger.recordOutput("Sim/Robot/Drivetrain/Pose3d", robotPose);
-        Logger.recordOutput("Sim/Robot/Drivetrain/GroundClearance", groundClearance.getClearance());
-        Logger.recordOutput("Sim/Robot/Drivetrain/IsAirborne", groundClearance.isAirborne());
+        Logger.recordOutput("Sim/RobotPose", robotPose);
 
-        // ── Intake ──────────────────────────────────────────────────────────
-        Logger.recordOutput("Sim/Robot/Intake/Extended",
-                intakeSubsystem.getState() == IntakeState.EXTENDED);
-        Logger.recordOutput("Sim/Robot/Intake/RollersOn",
-                intake.getState() == RollersSubsystem.RollerState.ON);
-        Logger.recordOutput("Sim/Robot/Intake/HeldCount", gamePieceManager.getHeldCount());
+        // Limelight direction lines (sim-only visualization)
+        visionSimManager.getDirectionLines(robotPose).forEach((name, line) ->
+                Logger.recordOutput("Sim/Limelights/" + name + "/DirectionLine", line));
 
-        // ── Shooter ─────────────────────────────────────────────────────────
-        Logger.recordOutput("Sim/Robot/Shooter/HoodAngleDeg",
-                Math.toDegrees(simHoodAngleRad));
-        Logger.recordOutput("Sim/Robot/Shooter/IsShooting",
-                shooterWheels.getCurrentState() == shooter_state.SHOOTING);
-        Logger.recordOutput("Sim/Robot/Shooter/SpindexerOn",
-                spindexer.getCurrentState() == spindexer_state.RUN);
-        Logger.recordOutput("Sim/Robot/Shooter/FeederOn",
-                feeder.getCurrentState() == feeder_state.RUN);
+        Logger.recordOutput("Sim/RobotGroundClearance", groundClearance.getClearance());
+        Logger.recordOutput("Sim/RobotIsAirborne", groundClearance.isAirborne());
 
-        // ── Scoring ─────────────────────────────────────────────────────────
-        Logger.recordOutput("Sim/Score/Total", scoringTracker.getTotalScore());
+        Logger.recordOutput("Sim/FuelHeld", gamePieceManager.getHeldCount());
+
+        Logger.recordOutput("Sim/Score", scoringTracker.getTotalScore());
 
         // Game piece poses for AdvantageScope
         gamePieceManager.publishPoses((key, poses) -> Logger.recordOutput(key, poses));
 
         // Component poses for articulated AdvantageScope robot model
-        double hoodAngle = simHoodAngleRad;
-        boolean shooting = shooterWheels.getCurrentState() == shooter_state.SHOOTING;
         boolean intaking = intake.getState() == RollersSubsystem.RollerState.ON;
+        boolean shooting = shooterWheels.getCurrentState() == shooter_state.SHOOTING;
 
         Pose3d shooterHoodPose = new Pose3d(
-                ORIGIN,
-                new Rotation3d(hoodAngle - Math.PI / 4, 0, 0));
+                new Translation3d(),
+                new Rotation3d(simHoodAngleRad - Math.PI / 4, 0, 0));
 
-        if (intaking) rollerAngleAccum += INTAKE_ROLLER_SPEED * DT;
         double rollerAngle = intaking ? (rollerAngleAccum % (2 * Math.PI)) : 0;
         Pose3d intakeRollerPose = new Pose3d(
-                ORIGIN,
+                new Translation3d(),
                 new Rotation3d(rollerAngle, 0, 0));
 
-        if (shooting) feederAngleAccum += FEEDER_ROLLER_SPEED * DT;
         double feederAngle = shooting ? (feederAngleAccum % (2 * Math.PI)) : 0;
         Pose3d feederRollerPose = new Pose3d(
-                ORIGIN,
+                new Translation3d(),
                 new Rotation3d(feederAngle, 0, 0));
 
-        if (shooting) shooterRollerAngleAccum += SHOOTER_ROLLER_SPEED * DT;
         double shooterRollerAngle = shooting ? (shooterRollerAngleAccum % (2 * Math.PI)) : 0;
         Pose3d shooterRollerPose = new Pose3d(
-                ORIGIN,
+                new Translation3d(),
                 new Rotation3d(shooterRollerAngle, 0, 0));
 
         Pose3d verticalFeederPose = new Pose3d(
-                ORIGIN,
+                new Translation3d(),
                 new Rotation3d(0, feederAngle, 0));
 
-        Pose3d climberPose = new Pose3d();
-
-        Logger.recordOutput("Sim/Robot/ComponentPoses",
+        Logger.recordOutput("Sim/ComponentPoses",
                 new Pose3d[]{
                     shooterHoodPose,
                     intakeRollerPose,
@@ -476,7 +519,7 @@ public class RebuiltSimManager {
                     verticalFeederPose,
                     verticalFeederPose,
                     shooterRollerPose,
-                    climberPose
+                    new Pose3d()
                 });
     }
 
