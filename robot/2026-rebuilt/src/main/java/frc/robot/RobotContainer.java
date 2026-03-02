@@ -6,21 +6,20 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.RobotMap.DrivetrainConstants;
+import frc.robot.commands.swerve.HubDrive;
 import frc.robot.commands.swerve.TeleopSwerve;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.intake.RollersSubsystem;
+import frc.robot.subsystems.intake.IntakeSubsystem.IntakeState;
 import frc.robot.subsystems.intake.RollersSubsystem.RollerState;
 import frc.robot.subsystems.led.LedsSubsystem;
 import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.subsystems.feeder.Feeder.feeder_state;
-import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterHood;
 import frc.robot.subsystems.shooter.ShooterWheels;
 import frc.robot.subsystems.shooter.ShooterHood.shooterhood_state;
@@ -30,8 +29,6 @@ import frc.robot.subsystems.spindexer.Spindexer.spindexer_state;
 import frc.robot.sim.RebuiltSimManager;
 import org.littletonrobotics.junction.Logger;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
-import com.ctre.phoenix6.swerve.SwerveRequest;
-import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.utils.LimelightWrapper;
 import frc.robot.utils.RTU.RootTestingUtility;
 import limelight.networktables.LimelightSettings.ImuMode;
@@ -43,6 +40,8 @@ public class RobotContainer {
   //Limelight naming conventions are based on physical inventory system, hence "limelight-two" and "limelight-five" represent our second and fifth limelights respectively.
   private final LimelightWrapper ll4 = new LimelightWrapper("limelight-two", true);
   private final LimelightWrapper ll3 = new LimelightWrapper("limelight-five", false);
+
+  private HubDrive hubDrive;
 
   private final CommandXboxController controller = new CommandXboxController(0);
 
@@ -56,8 +55,6 @@ public class RobotContainer {
   private final LedsSubsystem ledsSubsystem = LedsSubsystem.getInstance();
 
 
-  // TODO: implement this for real (was just added to enable simulation)
-  private final Shooter shooterSim = new Shooter();
   private final ShooterHood shooterHood = new ShooterHood(drivetrain);
   private final ShooterWheels shooterWheels = new ShooterWheels(drivetrain);
 
@@ -66,15 +63,6 @@ public class RobotContainer {
 
   private final Spindexer spinDexer = new Spindexer();
  
-
-  // TODO: implement this for real (was just added to enable simulation)
-  // Swerve drive requests
-  private final SwerveRequest.FieldCentric fieldCentric = new SwerveRequest.FieldCentric();
-  // TODO: implement this for real (was just added to enable simulation)
-  private final double MAX_SPEED = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
-  // TODO: implement this for real (was just added to enable simulation)
-  private final double MAX_ANGULAR_RATE = Math.PI * 2; // rad/s
-
   // Simulation
   private RebuiltSimManager simManager;
 
@@ -85,8 +73,13 @@ public class RobotContainer {
 
   public RobotContainer() {
     ll4.getSettings().withImuMode(ImuMode.ExternalImu).save();
+    hubDrive = new HubDrive(drivetrain, null);
     configureBindings();
+    
+    
     configureRootTests();
+    
+    
   }
 
   public void updateLocalization() {
@@ -96,13 +89,19 @@ public class RobotContainer {
       ll3.updateLocalizationLimelight(drivetrain);
     }
   }
+
   private void configureBindings() {
+
+    controller.start()
+       .onTrue(new InstantCommand(drivetrain::seedFieldCentric));
+    
+
     controller.leftTrigger()
-        .onTrue(intakeSubsystem.extendIntake().andThen(rollersSubsystem.RollersCommand(RollerState.ON)))
+        .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED).andThen(rollersSubsystem.RollersCommand(RollerState.ON)))
         .onFalse(rollersSubsystem.RollersCommand(RollerState.OFF));
 
     controller.leftBumper()
-        .onTrue(intakeSubsystem.retractIntake());
+        .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED));
 
     // Default drive command: field-centric swerve with left stick + right stick rotation
     drivetrain.setDefaultCommand(
@@ -113,22 +112,51 @@ public class RobotContainer {
         .whileTrue(rollersSubsystem.RollersCommand(RollerState.ON))
         .onFalse(rollersSubsystem.RollersCommand(RollerState.OFF));
 
-    controller.y().onTrue(
+    controller.y()
+      .onTrue(Commands.sequence(
+        shooterHood.setStateCommand(shooterhood_state.SHOOTING),
+        shooterWheels.setStateCommand(shooter_state.SHOOTING)))
+      .onFalse(Commands.sequence(
+        shooterHood.setStateCommand(shooterhood_state.IN),
+        shooterWheels.setStateCommand(shooter_state.IDLE)));
+
+    // Hood aiming: A = aim down, B = aim up (ShooterSim adjusts angle at fixed rate)
+    controller.a()
+        .onTrue(shooterHood.setStateCommand(shooterhood_state.AIMING_DOWN))
+        .onFalse(shooterHood.setStateCommand(shooterhood_state.IN));
+
+    controller.b()
+        .onTrue(shooterHood.setStateCommand(shooterhood_state.AIMING_UP))
+        .onFalse(shooterHood.setStateCommand(shooterhood_state.IN));
+
+    controller.x()
+      .onTrue(Commands.sequence(
+        feederSubsystem.setStateCommand(feeder_state.RUN),
+        spinDexer.setStateCommand(spindexer_state.RUN)))
+      .onFalse(Commands.sequence(
+        feederSubsystem.setStateCommand(feeder_state.STOP),
+        spinDexer.setStateCommand(spindexer_state.STOP)));
+
+    controller.povRight().whileTrue(
       Commands.sequence(
         shooterHood.setStateCommand(shooterhood_state.SHOOTING), 
         shooterWheels.setStateCommand(shooter_state.SHOOTING)
-      )
-    );
+      ).alongWith(new HubDrive(drivetrain, controller)))
+    .onFalse(
+      Commands.sequence(
+        shooterHood.setStateCommand(shooterhood_state.OUT), 
+        shooterWheels.setStateCommand(shooter_state.IDLE)
+      ));
 
-    // TODO: rm once shooter hood/wheels are tuned
-    controller.leftBumper().whileTrue(shooterSim.shootCommand());
-    controller.a().whileTrue(shooterSim.hoodDownCommand());
-    controller.b().whileTrue(shooterSim.hoodUpCommand());
-
-    controller.x().whileTrue(
+    controller.rightTrigger().and(HubDrive::pidAtSetpoint).and(shooterWheels::atSetpoint).whileTrue(
       Commands.sequence(
       feederSubsystem.setStateCommand(feeder_state.RUN),
       spinDexer.setStateCommand(spindexer_state.RUN)
+      )
+    ).onFalse(
+      Commands.sequence(
+      feederSubsystem.setStateCommand(feeder_state.STOP),
+      spinDexer.setStateCommand(spindexer_state.STOP)
       )
     );
 
@@ -140,26 +168,10 @@ public class RobotContainer {
 
   /** Called from Robot.simulationInit(). */
   public void initSimulation() {
-    try {
-      // RebuiltSimManager depends on optional simulation libraries. Guard against
-      // missing simulation classes so entering simulation/test mode doesn't crash
-      // the robot when those libraries are not present on the classpath.
-      simManager = new RebuiltSimManager(drivetrain, shooterSim, rollersSubsystem);
-      // Signal simulation enabled for dashboards
-      Logger.recordOutput("Sim/Enabled", true);
-    } catch (LinkageError e) {
-      // Missing simulation dependency (e.g. frc.sim.core.PhysicsWorld) or link error
-      Logger.recordOutput("Sim/Error", "Simulation libraries not found or failed to link: " + e.toString());
-      Logger.recordOutput("Sim/Enabled", false);
-      simManager = null;
-    } catch (Throwable t) {
-      // Any other error during simulation init should not kill the robot program.
-      Logger.recordOutput("Sim/Error", "Failed to initialize simulation: " + t.toString());
-      t.printStackTrace();
-      Logger.recordOutput("Sim/Enabled", false);
-      simManager = null;
-    }
-    drivetrain.resetPose(new Pose2d(.5, .5, new Rotation2d(0)));
+    simManager = new RebuiltSimManager(drivetrain, rollersSubsystem,
+        intakeSubsystem, feederSubsystem, shooterWheels, shooterHood, spinDexer);
+    Logger.recordOutput("Sim/State", "Ready");
+    drivetrain.resetPose(RebuiltSimManager.STARTING_POSE);
   }
 
   /** Called from Robot.simulationPeriodic(). */
@@ -181,8 +193,7 @@ public class RobotContainer {
    */
   private void configureRootTests() {
     rootTester.registerSubsystem(
-        intakeSubsystem,
-        shooterSim
+        intakeSubsystem
     // testingSubsystem
         // Add more subsystems here as they're wired in:
         // feeder, climber, spindexer, etc.

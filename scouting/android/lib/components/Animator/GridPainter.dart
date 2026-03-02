@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import '../../main.dart';
 
 class WaveGrid extends StatefulWidget {
-  const WaveGrid({super.key});
+  final bool isDark;
+  const WaveGrid({super.key, required this.isDark});
 
   @override
   _WaveGridState createState() => _WaveGridState();
@@ -43,7 +44,8 @@ class _WaveGridState extends State<WaveGrid> with TickerProviderStateMixin {
           return CustomPaint(
             painter: _WaveGridPainter(
               waveAnimation:
-                  _controller.drive(Tween(begin: 1 * pi, end: 5 * pi)),
+              _controller.drive(Tween(begin: 1 * pi, end: 5 * pi)),
+              isDark: widget.isDark,
             ),
             size: Size.infinite,
           );
@@ -56,14 +58,16 @@ class _WaveGridState extends State<WaveGrid> with TickerProviderStateMixin {
 class _WaveGridPainter extends CustomPainter {
   final Animation<double> waveAnimation;
 
+  final bool isDark;
   _WaveGridPainter({
     required this.waveAnimation,
+    required this.isDark,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = islightmode() ? const Color(0x15040404) : invertColor(const Color(0x15040404))
+      ..color = isDark ? invertColor(const Color(0x15040404)) : const Color(0x15040404)
       ..style = PaintingStyle.fill;
 
     final linePaint = Paint()

@@ -8,11 +8,12 @@ import 'about_page.dart';
 import 'Match_Pages/match_page.dart';
 import 'home_page.dart';
 import 'services/Adapters/AutonPoints.dart';
+import 'services/LockdownService.dart';
 import 'settings_page.dart';
 
 const Color themeColor = Color.fromARGB(255, 255, 255, 0);
 const bool material3 = true;
-bool isDarkMode = false;
+bool isDarkMode = true;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
@@ -42,12 +43,19 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  bool _isDarkMode = false;
+  bool _isDarkMode = true;
 
   @override
   void initState() {
     super.initState();
-    _isDarkMode = Hive.box('settings').get('isDarkMode', defaultValue: false);
+    _isDarkMode = Hive.box('settings').get('isDarkMode', defaultValue: true);
+    isDarkMode = _isDarkMode;
+
+    // Check for lockdown mode
+    if (Hive.box('settings').get('isLockdown', defaultValue: false)) {
+      LockdownService.startLockTask();
+    }
+
     // Listen for theme changes
     Hive.box('settings')
         .listenable(keys: ['isDarkMode']).addListener(_onThemeChanged);
@@ -102,7 +110,7 @@ class _MyAppState extends State<MyApp> {
 // Fix the misleadingly named function
 
 bool islightmode() {
-  return isDarkMode;
+  return !isDarkMode;
 }
 
 void setmode(bool mode) {

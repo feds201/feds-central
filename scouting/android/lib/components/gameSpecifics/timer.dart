@@ -184,7 +184,7 @@ class _TklKeyboardState extends State<TklKeyboard>
                                 // Minus button
                                 _buildRoundButton(
                                   "-0.30",
-                                  const Color.fromARGB(255, 76, 175, 80),
+                                  const Color.fromARGB(255, 229, 57, 53),
                                   60,
                                   () {
                                     setState(() {
@@ -233,7 +233,7 @@ class _TklKeyboardState extends State<TklKeyboard>
                                 // Plus button
                                 _buildRoundButton(
                                   "+0.30",
-                                  const Color.fromARGB(255, 229, 57, 53),
+                                  const Color.fromARGB(255, 76, 175, 8),
                                   60,
                                   () {
                                     setState(() {
