@@ -22,7 +22,7 @@ import frc.rtu.DiagnosticContext.DataSample;
  * -- no external dependencies required. Works on both roboRIO and desktop
  * (sim).
  *
- * <h3>Usage</h3>
+ * <h2>Usage</h2>
  * 
  * <pre>{@code
  * DiagnosticServer server = new DiagnosticServer(5800);

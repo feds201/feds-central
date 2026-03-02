@@ -16,7 +16,7 @@ import java.util.Map;
  * anomaly detection, etc.</li>
  * </ul>
  *
- * <h3>Usage inside a {@code @RobotAction} method</h3>
+ * <h2>Usage inside a {@code @RobotAction} method</h2>
  * 
  * <pre>{@code
  * @RobotAction(name = "Motor Profile Test")

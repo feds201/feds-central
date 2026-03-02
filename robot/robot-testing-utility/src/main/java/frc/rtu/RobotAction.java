@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
  * a testable robot action. The Root Testing Utility discovers these at
  * runtime via reflection and runs them when the robot enters <b>Test mode</b>.
  *
- * <h3>Method contract</h3>
+ * <h2>Method contract</h2>
  * <ul>
  * <li><b>{@code boolean} return</b> – returns {@code true} to pass,
  * {@code false} to fail.</li>
