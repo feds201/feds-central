@@ -110,10 +110,25 @@ startButtons.forEach(btn => {
             localStorage.setItem('unit', newUnit);
         });
     }
-    const secretBtn = document.getElementById('secret-btn');
-if (secretBtn) {
-    secretBtn.addEventListener('click', () => {
-        startModule('secret');
+   let typedSequence = '';
+    const SECRET_CODE = '201';
+
+    document.addEventListener('keydown', (e) => {
+        typedSequence += e.key;
+        typedSequence = typedSequence.slice(-SECRET_CODE.length);
     });
-}
+
+    const secretBtn = document.getElementById('secret-btn');
+    if (secretBtn) {
+        secretBtn.addEventListener('click', () => {
+            if (typedSequence === SECRET_CODE) {   
+                startModule('secret');
+                typedSequence = '';
+            }else {
+            // optionally: shake the button, show a hint, etc.
+            console.log('Type 201 first!');
+        }
+        });
+    }
+
 });
