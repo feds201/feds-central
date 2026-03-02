@@ -5,10 +5,10 @@ import edu.wpi.first.math.geometry.Transform3d;
 /**
  * Per-camera configuration for a simulated Limelight.
  *
- * <p>{@code type} and {@code robotToCamera} are stored for future use —
- * V0 writes exact pose so they don't affect output yet. When we add
- * real tag visibility checks, type determines FOV/noise model and
- * robotToCamera determines which tags the camera can actually see.
+ * <p>{@code type} provides hardware specs (FPS, latency, FOV) used for
+ * publish timing, frustum construction, and future noise modeling.
+ * {@code robotToCamera} provides the mount transform used for direction
+ * line visualization, camera pose computation, and frustum attachment.
  *
  * @param name          NT table name, e.g. "limelight-two"
  * @param type          hardware type (LL3 or LL4)

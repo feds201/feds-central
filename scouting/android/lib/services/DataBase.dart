@@ -5,12 +5,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/painting.dart';
 import 'package:hive/hive.dart';
-import 'dart:convert';
-import 'dart:developer';
-import 'dart:io';
 
-import 'package:flutter/painting.dart';
-import 'package:hive/hive.dart';
 class Settings {
   static void setApiKey(String key) {
     LocalDataBase.putData('Settings.apiKey', key);
@@ -702,6 +697,7 @@ class AutonPoints {
       "FuelPickUpFromOutpost": fuel_pickup_from_Outpost,
       "FuelPickUpFromNeutralZone": fuel_pickup_from_Neutral_Zone,
       "TotalShootingTime": total_shooting_time,
+      "AmountOfShooting": amountOfShooting,
       "Climb": climb,
       "WinAfterAuton": winAfterAuton,
       "RobotLocation": starting_location.toJson(),
@@ -719,7 +715,7 @@ class AutonPoints {
       json['FuelPickUpFromOutpost'] ?? false,
       json['FuelPickUpFromNeutralZone'] ?? false,
       json['TotalShootingTime'] ?? 0,
-      json["Amount of Shooting"] ?? 0,
+      json["AmountOfShooting"] ?? 0,
       json['Climb'] ?? false,
       json['WinAfterAuton'] ?? "",
       BotLocation.fromJson(
@@ -736,7 +732,7 @@ class AutonPoints {
 
   @override
   String toString() {
-    return 'AutonPoints{FuelPickUpFromDepot: $fuel_pickup_from_Depot, FuelPickUpFromOutpost: $fuel_pickup_from_Outpost, FuelPickUpFromNeutralZone: $fuel_pickup_from_Neutral_Zone, TotalShootingTime: $total_shooting_time, Climb: $climb, WinAfterAuton: $winAfterAuton, LeftStartingPosition: $left_starting_position, RobotLocation: $starting_location}';
+    return 'AutonPoints{FuelPickUpFromDepot: $fuel_pickup_from_Depot, FuelPickUpFromOutpost: $fuel_pickup_from_Outpost, FuelPickUpFromNeutralZone: $fuel_pickup_from_Neutral_Zone, TotalShootingTime: $total_shooting_time, AmountOfShooting: $amountOfShooting, Climb: $climb, WinAfterAuton: $winAfterAuton, LeftStartingPosition: $left_starting_position, RobotLocation: $starting_location}';
   }
 
   void setFuelPickupFromDepot(bool value) {
@@ -753,6 +749,10 @@ class AutonPoints {
 
   setTotalShootingTime(double value) {
     total_shooting_time = value;
+  }
+
+  setAmountOfShooting(int value) {
+    amountOfShooting = value;
   }
 
   setClimb(bool value) {
@@ -1048,6 +1048,7 @@ class EndPoints {
   bool Park = false;
   bool FeedToHP = false;
   bool Passing = false;
+  int EndNeutralTrips =0;
   int ShootingAccuracy;
   double endgameTime;
   int endgameActions;
@@ -1060,6 +1061,7 @@ class EndPoints {
     this.FeedToHP,
     this.Passing,
     this.Comments,
+    this.EndNeutralTrips,
     this.ShootingAccuracy,
     this.endgameTime,
     this.endgameActions,
@@ -1072,6 +1074,7 @@ class EndPoints {
       "Park": Park,
       "FeedToHP": FeedToHP,
       "Passing": Passing,
+      "EndNeutralTrips": EndNeutralTrips,
       "ShootingAccuracy": ShootingAccuracy,
       "endgameTime": endgameTime,
       "endgameActions": endgameActions,
@@ -1087,6 +1090,7 @@ class EndPoints {
       json['FeedToHP'] ?? false,
       json['Passing'] ?? false,
       json['Comments'] ?? '',
+      json['EndNeutralTrips'] ?? 0,
       (json['ShootingAccuracy'] as int?) ?? 3,
       (json['endgameTime'] ?? 0.0).toDouble(),
       json['endgameActions'] ?? 0,
@@ -1097,16 +1101,15 @@ class EndPoints {
 
   @override
   String toString() {
-    return 'EndPoints{ClimbStatus: $ClimbStatus, Park: $Park, FeedToHP: $FeedToHP, Passing: $Passing, shootingAccuracy: $ShootingAccuracy, endgameTime: $endgameTime, endgameActions: $endgameActions, Comments: $Comments, DrawingData: $drawingData}';
+    return 'EndPoints{ClimbStatus: $ClimbStatus, Park: $Park, FeedToHP: $FeedToHP, Passing: $Passing, EndNeutralTrips: $EndNeutralTrips, ShootingAccuracy: $ShootingAccuracy, endgameTime: $endgameTime, endgameActions: $endgameActions, Comments: $Comments, DrawingData: $drawingData}';
   }
 
   String toCsv() {
-    return '$ClimbStatus,${Park ? 1 : 0},${FeedToHP ? 1 : 0},${Passing ? 1 : 0},$ShootingAccuracy,$endgameTime,$endgameActions,$Comments,$drawingData';
+    return '$ClimbStatus,${Park ? 1 : 0},${FeedToHP ? 1 : 0},${Passing ? 1 : 0},$EndNeutralTrips, $ShootingAccuracy,$endgameActions,$Comments,$drawingData';
   }
 
   String _encodeDrawingData() {
     return DrawingBitmaskCodec.encode(drawingData);
->>>>>>> origin/main
   }
 
   @override
@@ -1116,6 +1119,7 @@ class EndPoints {
     return other is EndPoints &&
         other.ClimbStatus == ClimbStatus &&
         other.Park == Park &&
+        other.EndNeutralTrips == EndNeutralTrips &&
         other.FeedToHP == FeedToHP &&
         other.Passing == Passing &&
         other.ShootingAccuracy == ShootingAccuracy &&
@@ -1126,6 +1130,7 @@ class EndPoints {
   int get hashCode {
     return ClimbStatus.hashCode ^
         Park.hashCode ^
+        EndNeutralTrips.hashCode ^
         FeedToHP.hashCode ^
         Passing.hashCode ^
         ShootingAccuracy.hashCode ^
@@ -1138,6 +1143,14 @@ class EndPoints {
 
   setPark(bool value) {
     Park = value;
+  }
+
+  setShootingAccuracy(int value) {
+    ShootingAccuracy = value;
+  }
+
+  setEndNeutralTrips(int value) {
+    EndNeutralTrips = value;
   }
 
   setFeedToHP(bool value) {
@@ -1295,6 +1308,7 @@ class LocalDataBase {
       data['FeedToHP'] ?? false,
       data['Passing'] ?? false,
       data['Comments'] ?? "",
+      data['EndNeutralTrips'] ?? 0,
       data['ShootingAccuracy'] ?? 3,
       (data['EndgameTime'] ?? 0).toDouble(),
       data['EndgameActions'] ?? 0,
