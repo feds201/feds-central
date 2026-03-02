@@ -12,7 +12,6 @@ import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -57,7 +56,6 @@ public class RollersSubsystem extends SubsystemBase {
     mechRoot = mech2d.getRoot("RollerRoot", 1.5, 1.5);
     rollerLigament = mechRoot.append(
         new MechanismLigament2d("Roller", 1, 0, 6, new Color8Bit(Color.kBlue)));
-    SmartDashboard.putData("Rollers Sim", mech2d);
   }
 
   public void setState(RollerState targetState) {
