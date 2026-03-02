@@ -87,6 +87,8 @@ dependencies {
 
     // Use the local sim-core project instead of requiring a published artifact.
     implementation project(':sim-core')
+    // Robot Testing Utility — provides @RobotAction, RootTestingUtility, DiagnosticContext
+    implementation project(':robot-testing-utility')
     // Explicit ode4j — composite build doesn't reliably propagate transitive api deps
     implementation 'org.ode4j:core:0.5.4'
 

@@ -35,5 +35,8 @@ pluginManagement {
 include ':sim-core'
 project(':sim-core').projectDir = new File(settingsDir, '../sim-core')
 
+include ':robot-testing-utility'
+project(':robot-testing-utility').projectDir = new File(settingsDir, '../robot-testing-utility')
+
 Properties props = System.getProperties();
 props.setProperty("org.gradle.internal.native.headers.unresolved.dependencies.ignore", "true");
