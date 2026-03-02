@@ -29,13 +29,14 @@ import frc.robot.RobotMap;
 import frc.robot.RobotMap.ShooterConstants;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 
+
 @Logged
 public class ShooterWheels extends SubsystemBase {
 
     public enum shooter_state {
-    SHOOTING(RotationsPerSecond.of(0)),
-    IDLE(RotationsPerSecond.of(0)),
-    PASSING(RotationsPerSecond.of(0));
+      SHOOTING(RotationsPerSecond.of(0)),
+      IDLE(RotationsPerSecond.of(0)),
+      PASSING(RotationsPerSecond.of(0));
 
     private final AngularVelocity targetVelocity;
 

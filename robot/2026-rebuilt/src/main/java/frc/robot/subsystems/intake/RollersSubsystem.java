@@ -69,7 +69,7 @@ public class RollersSubsystem extends SubsystemBase {
         if (motorSim != null) {
           motorSim.setInput(0.1);
         }
-        leds.intakeSignal();
+        
         break;
       case OFF:
         motor.stopMotor();

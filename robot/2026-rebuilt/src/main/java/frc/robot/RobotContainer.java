@@ -53,13 +53,13 @@ public class RobotContainer {
 
   private final Feeder feederSubsystem = new Feeder();
 
-  private final LedsSubsystem ledsSubsystem = LedsSubsystem.getInstance();
-
-
+  
   // TODO: implement this for real (was just added to enable simulation)
   private final Shooter shooterSim = new Shooter();
   private final ShooterHood shooterHood = new ShooterHood(drivetrain);
   private final ShooterWheels shooterWheels = new ShooterWheels(drivetrain);
+  private final LedsSubsystem ledsSubsystem = new LedsSubsystem(shooterWheels);
+
 
   // Local testing subsystem (contains @RobotAction tests used by RootTestingUtility)
   // private final TestingSubsystem testingSubsystem = new TestingSubsystem();
@@ -115,8 +115,10 @@ public class RobotContainer {
 
     controller.y().onTrue(
       Commands.sequence(
-        shooterHood.setStateCommand(shooterhood_state.SHOOTING), 
+
+        shooterHood.setStateCommand(shooterhood_state.SHOOTING) ,
         shooterWheels.setStateCommand(shooter_state.SHOOTING)
+        
       )
     );
 

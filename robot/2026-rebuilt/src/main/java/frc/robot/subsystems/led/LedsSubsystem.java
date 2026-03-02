@@ -20,21 +20,18 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.LimelightHelpers;
 import frc.robot.RobotContainer;
+import frc.robot.subsystems.shooter.ShooterWheels;
+import frc.robot.subsystems.shooter.ShooterWheels.shooter_state;
+
 
 public class LedsSubsystem extends SubsystemBase {
   public ConnectorXAnimate m_leds = new ConnectorXAnimate();
   private static LedsSubsystem instance;
-
-  
-  public static LedsSubsystem getInstance() { 
-  if (instance == null) {
-      instance = new LedsSubsystem();
-    }
-    return instance;
-  }
+  private ShooterWheels m_shooterWheels;
 
 
-  public enum LEDState {              
+
+  public static enum LEDState {              
     FALCON_DRIVE,                    // Flashing Orange at 200ms
     AIMED,                          // When aimed should be fill solid Red
     SHOOTING,                      // Shooting should be blue coment kinda fast
@@ -56,11 +53,12 @@ public class LedsSubsystem extends SubsystemBase {
 
   private LEDState m_currentState = LEDState.IDLE;
   private LEDState m_lastState = LEDState.OFF; // Force initial update
+  //private LEDState m_ledState = ShooterWheels.shooter_state.getCurrentState(); 
 
   private boolean m_wasDisabled = false;
   private boolean m_wasAuto = false;
   private boolean m_isConnected = false;
-
+ 
   // Configuration
   private static final String ZONE_1 = "ZONE_50_1"; 
   private static final String ZONE_2 = "ZONE_50_2";
@@ -86,6 +84,12 @@ public class LedsSubsystem extends SubsystemBase {
 
   /** Creates a new LedsSubsystem. */
   public LedsSubsystem() {
+
+  }
+
+  public LedsSubsystem(ShooterWheels shooterWheels) {
+    m_shooterWheels = shooterWheels;
+
     // Connect to the device on USB port 2
     m_isConnected = m_leds.Connect(USBPort.kUSB1);
     System.out.println("ConnectorX connected: " + m_isConnected);
@@ -96,6 +100,8 @@ public class LedsSubsystem extends SubsystemBase {
   public boolean isConnected() {
     return m_isConnected;
   }
+
+  
 
   private LEDState checkForErrors() {
     // CAN errors
@@ -130,6 +136,15 @@ public class LedsSubsystem extends SubsystemBase {
       }
       return; // Skip normal state handling if we're in an error state
     }
+    
+
+  
+    if (m_shooterWheels.getCurrentState() == shooter_state.SHOOTING) {
+        setState(LEDState.SHOOTING);
+    } 
+
+
+
 
     // Handle IDLE state dynamic changes based on Robot Mode (Disabled/Enabled/Auto)
     if (m_currentState == LEDState.IDLE) {
