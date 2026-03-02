@@ -1,5 +1,6 @@
 package frc.rtu;
 
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
@@ -12,18 +13,17 @@ import java.util.UUID;
 
 import com.sun.net.httpserver.HttpServer;
 
-import frc.rtu.DiagnosticContext.Alert;
-import frc.rtu.DiagnosticContext.DataSample;
+import frc.rtu.TestResult.Alert;
+import frc.rtu.TestResult.DataSample;
+
+
 
 /**
  * Lightweight embedded HTTP server that serves a diagnostic dashboard for
- * the Root Testing Utility. Uses the JDK built-in
- * {@code com.sun.net.httpserver}
- * -- no external dependencies required. Works on both roboRIO and desktop
- * (sim).
+ * the Root Testing Utility.  Uses the JDK built-in {@code com.sun.net.httpserver}
+ * -- no external dependencies required.  Works on both roboRIO and desktop (sim).
  *
  * <h3>Usage</h3>
- * 
  * <pre>{@code
  * DiagnosticServer server = new DiagnosticServer(5800);
  * server.start();
@@ -40,8 +40,9 @@ public final class DiagnosticServer {
     private final String sessionId = UUID.randomUUID().toString().substring(0, 8);
     private String safetyMessage = null;
 
-    private static final DateTimeFormatter TIME_FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-            .withZone(ZoneId.systemDefault());
+    private static final DateTimeFormatter TIME_FMT =
+        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+                         .withZone(ZoneId.systemDefault());
 
     public DiagnosticServer(int port) {
         this.port = port;
@@ -110,7 +111,7 @@ public final class DiagnosticServer {
         var sb = new StringBuilder();
         sb.append("<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'>");
         sb.append("<meta http-equiv='refresh' content='3'>");
-        sb.append("<title>RTU Diagnostic Dashboard</title>");
+        sb.append("<title>FEDS 201 - Root Test Diagnostics</title>");
         sb.append("<script src='https://cdn.jsdelivr.net/npm/chart.js'></script>");
         sb.append("<style>");
         sb.append(CSS);
@@ -118,7 +119,7 @@ public final class DiagnosticServer {
         sb.append("<div class='container'>");
 
         // Header
-        sb.append("<h1>RTU Diagnostic Dashboard</h1>");
+        sb.append("<h1>FEDS 201 Root Test Diagnostics</h1>");
         sb.append("<p class='session'>Session: <code>").append(sessionId).append("</code></p>");
 
         if (safetyMessage != null) {
@@ -185,20 +186,19 @@ public final class DiagnosticServer {
                     sb.append("<canvas id='").append(canvasId).append("'></canvas>");
                     sb.append("</div>");
 
+                    // Build chart data
                     List<DataSample> samples = entry.getValue();
                     sb.append("<script>");
                     sb.append("new Chart(document.getElementById('").append(canvasId).append("'),{");
                     sb.append("type:'line',data:{labels:[");
                     for (int i = 0; i < samples.size(); i++) {
-                        if (i > 0)
-                            sb.append(",");
+                        if (i > 0) sb.append(",");
                         sb.append(String.format("%.1f", samples.get(i).timestampMs()));
                     }
                     sb.append("],datasets:[{label:'").append(esc(entry.getKey())).append("',");
                     sb.append("data:[");
                     for (int i = 0; i < samples.size(); i++) {
-                        if (i > 0)
-                            sb.append(",");
+                        if (i > 0) sb.append(",");
                         sb.append(String.format("%.4f", samples.get(i).value()));
                     }
                     sb.append("],borderColor:'#3b82f6',backgroundColor:'rgba(59,130,246,0.1)',");
@@ -206,8 +206,8 @@ public final class DiagnosticServer {
                     sb.append("options:{responsive:true,plugins:{title:{display:true,text:'");
                     sb.append(esc(entry.getKey())).append("'}},");
                     sb.append("scales:{x:{title:{display:true,text:'Time (ms)'}},");
-                    sb.append("y:{title:{display:true,text:'Value'}}}}}");
-                    sb.append(");</script>");
+                    sb.append("y:{title:{display:true,text:'Value'}}}}");
+                    sb.append("});</script>");
                 }
                 sb.append("</div>");
             }
@@ -229,8 +229,7 @@ public final class DiagnosticServer {
         }
         sb.append(",\"results\":[");
         for (int i = 0; i < latestResults.size(); i++) {
-            if (i > 0)
-                sb.append(",");
+            if (i > 0) sb.append(",");
             TestResult r = latestResults.get(i);
             sb.append("{\"subsystem\":\"").append(jsonEsc(r.getSubsystemName())).append("\"");
             sb.append(",\"action\":\"").append(jsonEsc(r.getActionName())).append("\"");
@@ -244,8 +243,7 @@ public final class DiagnosticServer {
             // Alerts
             sb.append(",\"alerts\":[");
             for (int j = 0; j < r.getAlerts().size(); j++) {
-                if (j > 0)
-                    sb.append(",");
+                if (j > 0) sb.append(",");
                 Alert a = r.getAlerts().get(j);
                 sb.append("{\"level\":\"").append(a.level().name()).append("\"");
                 sb.append(",\"message\":\"").append(jsonEsc(a.message())).append("\"}");
@@ -255,12 +253,10 @@ public final class DiagnosticServer {
             sb.append(",\"dataProfiles\":{");
             int pIdx = 0;
             for (var entry : r.getDataProfiles().entrySet()) {
-                if (pIdx++ > 0)
-                    sb.append(",");
+                if (pIdx++ > 0) sb.append(",");
                 sb.append("\"").append(jsonEsc(entry.getKey())).append("\":[");
                 for (int j = 0; j < entry.getValue().size(); j++) {
-                    if (j > 0)
-                        sb.append(",");
+                    if (j > 0) sb.append(",");
                     DataSample s = entry.getValue().get(j);
                     sb.append("{\"t\":").append(String.format("%.2f", s.timestampMs()));
                     sb.append(",\"v\":").append(String.format("%.4f", s.value())).append("}");
@@ -276,16 +272,14 @@ public final class DiagnosticServer {
     // ── Utilities ────────────────────────────────────────────
 
     private static String esc(String s) {
-        if (s == null)
-            return "";
+        if (s == null) return "";
         return s.replace("&", "&amp;").replace("<", "&lt;")
                 .replace(">", "&gt;").replace("\"", "&quot;")
                 .replace("'", "&#39;");
     }
 
     private static String jsonEsc(String s) {
-        if (s == null)
-            return "";
+        if (s == null) return "";
         return s.replace("\\", "\\\\").replace("\"", "\\\"")
                 .replace("\n", "\\n").replace("\r", "\\r");
     }
@@ -293,53 +287,53 @@ public final class DiagnosticServer {
     // ── CSS ──────────────────────────────────────────────────
 
     private static final String CSS = """
-                * { margin: 0; padding: 0; box-sizing: border-box; }
-                body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                       background: #0f172a; color: #e2e8f0; padding: 24px; }
-                .container { max-width: 960px; margin: 0 auto; }
-                h1 { color: #f8fafc; margin-bottom: 4px; font-size: 1.8rem; }
-                .session { color: #94a3b8; margin-bottom: 20px; }
-                .session code { background: #1e293b; padding: 2px 8px; border-radius: 4px; }
-                .waiting { color: #fbbf24; font-size: 1.2rem; margin-top: 40px; text-align: center; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+               background: #0f172a; color: #e2e8f0; padding: 24px; }
+        .container { max-width: 960px; margin: 0 auto; }
+        h1 { color: #f8fafc; margin-bottom: 4px; font-size: 1.8rem; }
+        .session { color: #94a3b8; margin-bottom: 20px; }
+        .session code { background: #1e293b; padding: 2px 8px; border-radius: 4px; }
+        .waiting { color: #fbbf24; font-size: 1.2rem; margin-top: 40px; text-align: center; }
 
-                .summary { display: flex; gap: 32px; padding: 16px 24px; border-radius: 8px;
-                           margin-bottom: 24px; font-size: 1.1rem; }
-                .summary-pass { background: #065f46; border: 1px solid #10b981; }
-                .summary-fail { background: #7f1d1d; border: 1px solid #ef4444; }
+        .summary { display: flex; gap: 32px; padding: 16px 24px; border-radius: 8px;
+                   margin-bottom: 24px; font-size: 1.1rem; }
+        .summary-pass { background: #065f46; border: 1px solid #10b981; }
+        .summary-fail { background: #7f1d1d; border: 1px solid #ef4444; }
 
-                .card { background: #1e293b; border-radius: 8px; padding: 20px; margin-bottom: 16px;
-                        border-left: 4px solid #475569; }
-                .card.pass { border-left-color: #10b981; }
-                .card.fail { border-left-color: #ef4444; }
-                .card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
-                .card-header h2 { font-size: 1.15rem; color: #f1f5f9; flex: 1; }
-                .subsystem { color: #94a3b8; font-size: 0.85rem; background: #334155;
-                             padding: 2px 10px; border-radius: 12px; }
-                .status-badge { font-size: 0.75rem; font-weight: 700; padding: 3px 10px;
-                                border-radius: 4px; text-transform: uppercase; }
-                .status-badge.passed { background: #10b981; color: #022c22; }
-                .status-badge.failed { background: #ef4444; color: #450a0a; }
-                .status-badge.timed_out { background: #f59e0b; color: #451a03; }
+        .card { background: #1e293b; border-radius: 8px; padding: 20px; margin-bottom: 16px;
+                border-left: 4px solid #475569; }
+        .card.pass { border-left-color: #10b981; }
+        .card.fail { border-left-color: #ef4444; }
+        .card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+        .card-header h2 { font-size: 1.15rem; color: #f1f5f9; flex: 1; }
+        .subsystem { color: #94a3b8; font-size: 0.85rem; background: #334155;
+                     padding: 2px 10px; border-radius: 12px; }
+        .status-badge { font-size: 0.75rem; font-weight: 700; padding: 3px 10px;
+                        border-radius: 4px; text-transform: uppercase; }
+        .status-badge.passed { background: #10b981; color: #022c22; }
+        .status-badge.failed { background: #ef4444; color: #450a0a; }
+        .status-badge.timed_out { background: #f59e0b; color: #451a03; }
 
-                .desc { color: #94a3b8; margin-bottom: 6px; }
-                .meta { color: #64748b; font-size: 0.85rem; margin-bottom: 12px; }
-                .error-box { background: #450a0a; border: 1px solid #ef4444; color: #fca5a5;
-                             padding: 10px 14px; border-radius: 6px; margin-bottom: 12px;
-                             font-family: monospace; font-size: 0.9rem; }
+        .desc { color: #94a3b8; margin-bottom: 6px; }
+        .meta { color: #64748b; font-size: 0.85rem; margin-bottom: 12px; }
+        .error-box { background: #450a0a; border: 1px solid #ef4444; color: #fca5a5;
+                     padding: 10px 14px; border-radius: 6px; margin-bottom: 12px;
+                     font-family: monospace; font-size: 0.9rem; }
 
-                .alerts h3, .profiles h3 { color: #cbd5e1; font-size: 0.95rem; margin-bottom: 8px; }
-                .alerts ul { list-style: none; }
-                .alerts li { padding: 4px 0; font-size: 0.9rem; border-bottom: 1px solid #334155; }
-                .alert-info { color: #38bdf8; }
-                .alert-warning { color: #fbbf24; }
-                .alert-error { color: #f87171; }
+        .alerts h3, .profiles h3 { color: #cbd5e1; font-size: 0.95rem; margin-bottom: 8px; }
+        .alerts ul { list-style: none; }
+        .alerts li { padding: 4px 0; font-size: 0.9rem; border-bottom: 1px solid #334155; }
+        .alert-info { color: #38bdf8; }
+        .alert-warning { color: #fbbf24; }
+        .alert-error { color: #f87171; }
 
-                .safety-alert { background: #7f1d1d; border: 2px solid #ef4444; color: #fca5a5;
-                                padding: 16px; border-radius: 8px; margin-bottom: 24px;
-                                font-size: 1.2rem; text-align: center; font-weight: bold; }
+        .safety-alert { background: #7f1d1d; border: 2px solid #ef4444; color: #fca5a5;
+                        padding: 16px; border-radius: 8px; margin-bottom: 24px;
+                        font-size: 1.2rem; text-align: center; font-weight: bold; }
 
-                .chart-container { background: #0f172a; border-radius: 6px; padding: 12px;
-                                   margin-bottom: 12px; max-height: 300px; }
-                canvas { max-height: 260px; }
-            """;
+        .chart-container { background: #0f172a; border-radius: 6px; padding: 12px;
+                           margin-bottom: 12px; max-height: 300px; }
+        canvas { max-height: 260px; }
+    """;
 }

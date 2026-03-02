@@ -2,13 +2,15 @@ package frc.rtu;
 
 import org.junit.jupiter.api.Test;
 
+import frc.rtu.TestResult.Alert;
+import frc.rtu.TestResult.AlertLevel;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import frc.rtu.DiagnosticContext.Alert;
-import frc.rtu.DiagnosticContext.AlertLevel;
+
 
 /**
  * Unit tests for {@link TestResult}.

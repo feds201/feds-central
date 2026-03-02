@@ -6,18 +6,15 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import frc.rtu.DiagnosticContext.Alert;
-import frc.rtu.DiagnosticContext.DataSample;
-
 /**
  * Immutable record that captures the outcome of a single {@link RobotAction}
  * test executed by the {@link RootTestingUtility}.
  *
  * <p>
- * Carries:
+ * Now also carries:
  * <ul>
- * <li><b>Alerts</b> -- human-readable messages attached by the test
- * (info / warning / error via {@link DiagnosticContext}).</li>
+ * <li><b>Alerts</b> -- human-readable messages attached by the test (info /
+ * warning / error).</li>
  * <li><b>Data profiles</b> -- named series of timestamped numeric samples
  * (e.g. motor velocity over time) for anomaly detection / charting.</li>
  * </ul>
@@ -28,7 +25,7 @@ public final class TestResult {
         PASSED, FAILED, TIMED_OUT
     }
 
-    // ── Core fields ───────────────────────────────────────────
+    // ── Core fields ──────────────────────────────────────────
 
     private final String subsystemName;
     private final String actionName;
@@ -38,13 +35,44 @@ public final class TestResult {
     private final double durationMs;
     private final Instant timestamp;
 
+
     /** Alerts attached by the test via {@link DiagnosticContext}. */
     private final List<Alert> alerts;
 
     /** Named data-profile series attached by the test. */
     private final Map<String, List<DataSample>> dataProfiles;
 
-    // ── Constructors ──────────────────────────────────────────
+    /** Multi-dimensional data profiles. */
+    private final Map<String, List<DataSampleNd>> dataProfilesNd;
+
+    // ── Nested types ─────────────────────────────────────────
+
+    /** Severity for diagnostic alerts. */
+    public enum AlertLevel {
+        INFO, WARNING, ERROR
+    }
+
+    /** A single alert message. */
+    public record Alert(AlertLevel level, String message) {
+    }
+
+    /** A single timestamped numeric sample. */
+    public record DataSample(double timestampMs, double value) {
+    }
+
+    /** A timestamped multi-dimensional numeric sample (e.g. for Voltage/Velocity/Current). */
+    public record DataSampleNd(double timestampMs, double[] values) {
+    }
+
+    /** Backwards-compatible constructor (no alerts / profiles). */
+    public TestResult(String subsystemName,
+            String actionName,
+            String description,
+            Status status,
+            Throwable error,
+            double durationMs) {
+        this(subsystemName, actionName, description, status, error, durationMs, null, null, null);
+    }
 
     public TestResult(String subsystemName,
             String actionName,
@@ -54,6 +82,18 @@ public final class TestResult {
             double durationMs,
             List<Alert> alerts,
             Map<String, List<DataSample>> dataProfiles) {
+        this(subsystemName, actionName, description, status, error, durationMs, alerts, dataProfiles, null);
+    }
+
+    public TestResult(String subsystemName,
+            String actionName,
+            String description,
+            Status status,
+            Throwable error,
+            double durationMs,
+            List<Alert> alerts,
+            Map<String, List<DataSample>> dataProfiles,
+            Map<String, List<DataSampleNd>> dataProfilesNd) {
         this.subsystemName = subsystemName;
         this.actionName = actionName;
         this.description = description;
@@ -65,19 +105,12 @@ public final class TestResult {
         this.dataProfiles = dataProfiles != null
                 ? deepCopyProfiles(dataProfiles)
                 : Map.of();
+        this.dataProfilesNd = dataProfilesNd != null
+                ? deepCopyProfilesNd(dataProfilesNd)
+                : Map.of();
     }
 
-    /** Backwards-compatible constructor (no alerts / profiles). */
-    public TestResult(String subsystemName,
-            String actionName,
-            String description,
-            Status status,
-            Throwable error,
-            double durationMs) {
-        this(subsystemName, actionName, description, status, error, durationMs, null, null);
-    }
-
-    // ── Getters ───────────────────────────────────────────────
+    // ── Getters ──────────────────────────────────────────────
 
     public String getSubsystemName() {
         return subsystemName;
@@ -119,7 +152,11 @@ public final class TestResult {
         return dataProfiles;
     }
 
-    // ── Display ───────────────────────────────────────────────
+    public Map<String, List<DataSampleNd>> getDataProfilesNd() {
+        return dataProfilesNd;
+    }
+
+    // ── Display ──────────────────────────────────────────────
 
     @Override
     public String toString() {
@@ -143,13 +180,26 @@ public final class TestResult {
         return base;
     }
 
-    // ── Helpers ───────────────────────────────────────────────
+    // ── Helpers ──────────────────────────────────────────────
 
     private static Map<String, List<DataSample>> deepCopyProfiles(
             Map<String, List<DataSample>> src) {
         var copy = new LinkedHashMap<String, List<DataSample>>();
         for (var e : src.entrySet()) {
             copy.put(e.getKey(), List.copyOf(e.getValue()));
+        }
+        return Collections.unmodifiableMap(copy);
+    }
+
+    private static Map<String, List<DataSampleNd>> deepCopyProfilesNd(
+            Map<String, List<DataSampleNd>> src) {
+        var copy = new LinkedHashMap<String, List<DataSampleNd>>();
+        for (var e : src.entrySet()) {
+            // copy the arrays to ensure true immutability
+            var listCopy = e.getValue().stream()
+                .map(s -> new DataSampleNd(s.timestampMs(), s.values().clone()))
+                .toList();
+            copy.put(e.getKey(), listCopy);
         }
         return Collections.unmodifiableMap(copy);
     }
