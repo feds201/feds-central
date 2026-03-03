@@ -113,6 +113,20 @@ class PitRecord {
   final String botImage2;
   final String botImage3;
 
+  // New FRC 2026 Fields
+  final List<String> autoRoutes;
+  final int autoFuel;
+  final bool gameData;
+  final double weight;
+  final double speed;
+  final String driveMotorType;
+  final double groundClearance;
+  final int maxFuelCapacity;
+  final double avgCycleTime;
+  final double climbSuccessProb;
+  final int batteries;
+  final String framePerimeter;
+
   PitRecord(
       {required this.teamNumber,
       required this.scouterName,
@@ -125,7 +139,19 @@ class PitRecord {
       required this.climbType,
       required this.botImage1,
       required this.botImage2,
-      required this.botImage3});
+      required this.botImage3,
+      this.autoRoutes = const [],
+      this.autoFuel = 0,
+      this.gameData = false,
+      this.weight = 0.0,
+      this.speed = 0.0,
+      this.driveMotorType = '',
+      this.groundClearance = 0.0,
+      this.maxFuelCapacity = 0,
+      this.avgCycleTime = 0.0,
+      this.climbSuccessProb = 0.0,
+      this.batteries = 0,
+      this.framePerimeter = ''});
 
   Map<String, dynamic> toJson() {
     return {
@@ -140,7 +166,19 @@ class PitRecord {
       "climbType": climbType,
       "botImage1": botImage1,
       "botImage2": botImage2,
-      "botImage3": botImage3
+      "botImage3": botImage3,
+      "autoRoutes": autoRoutes,
+      "autoFuel": autoFuel,
+      "gameData": gameData,
+      "weight": weight,
+      "speed": speed,
+      "driveMotorType": driveMotorType,
+      "groundClearance": groundClearance,
+      "maxFuelCapacity": maxFuelCapacity,
+      "avgCycleTime": avgCycleTime,
+      "climbSuccessProb": climbSuccessProb,
+      "batteries": batteries,
+      "framePerimeter": framePerimeter
     };
   }
 
@@ -196,6 +234,21 @@ class PitRecord {
       botImage1: json['botImage1'] ?? '',
       botImage2: json['botImage2'] ?? '',
       botImage3: json['botImage3'] ?? '',
+
+      autoRoutes: json['autoRoutes'] != null
+          ? List<String>.from(json['autoRoutes'])
+          : [],
+      autoFuel: json['autoFuel'] ?? 0,
+      gameData: json['gameData'] ?? false,
+      weight: (json['weight'] ?? 0.0).toDouble(),
+      speed: (json['speed'] ?? 0.0).toDouble(),
+      driveMotorType: json['driveMotorType'] ?? '',
+      groundClearance: (json['groundClearance'] ?? 0.0).toDouble(),
+      maxFuelCapacity: json['maxFuelCapacity'] ?? 0,
+      avgCycleTime: (json['avgCycleTime'] ?? 0.0).toDouble(),
+      climbSuccessProb: (json['climbSuccessProb'] ?? 0.0).toDouble(),
+      batteries: json['batteries'] ?? 0,
+      framePerimeter: json['framePerimeter'] ?? '',
     );
   }
 }
@@ -706,7 +759,7 @@ class AutonPoints {
   }
 
   String toCsv() {
-    return '${left_starting_position ? 1 : 0},${fuel_pickup_from_Depot ? 1 : 0},${fuel_pickup_from_Outpost ? 1 : 0},${fuel_pickup_from_Neutral_Zone ? 1 : 0},$total_shooting_time,$amountOfShooting,${climb ? 1 : 0},$winAfterAuton,${starting_location.toCsv()}';
+    return '${left_starting_position ? 1 : 0},${fuel_pickup_from_Depot ? 1 : 0},${fuel_pickup_from_Outpost ? 1 : 0},${fuel_pickup_from_Neutral_Zone ? 1 : 0},${total_shooting_time.toStringAsFixed(2)},$amountOfShooting,${climb ? 1 : 0},$winAfterAuton,${starting_location.toCsv()}';
   }
 
   static AutonPoints fromJson(Map<String, dynamic> json) {
@@ -872,7 +925,7 @@ class TeleOpPoints {
   }
 
   String toCsv() {
-    return '${TotalShootingTime1},${TotalShootingTimeA1},${TotalShootingTimeA2},${ShootingI1 ? 1 : 0},${ShootingI2 ? 1 : 0},${TotalAmount1},${TotalAmountA1},${TotalAmountA2},${TotalAmountI1},${TotalAmountI2},${TripAmount1},${NeutralTrips},${NeutralTripsA1},${NeutralTripsA2},${NeutralTripsI1},${NeutralTripsI2},${Defense ? 1 : 0},${DefenseA1 ? 1 : 0},${DefenseA2 ? 1 : 0},${DefenseI1 ? 1 : 0},${DefenseI2 ? 1 : 0},${FeedToHPStation ? 1 : 0},${FeedToHPStationA1 ? 1 : 0},${FeedToHPStationA2 ? 1 : 0},${FeedToHPStationI1 ? 1 : 0},${FeedToHPStationI2 ? 1 : 0},${passing ? 1 : 0},${passingA1 ? 1 : 0},${passingA2 ? 1 : 0},${passingI1 ? 1 : 0},${passingI2 ? 1 : 0}';
+    return '${TotalShootingTime1.toStringAsFixed(2)},${TotalShootingTimeA1.toStringAsFixed(2)},${TotalShootingTimeA2.toStringAsFixed(2)},${ShootingI1 ? 1 : 0},${ShootingI2 ? 1 : 0},${TotalAmount1},${TotalAmountA1},${TotalAmountA2},${TotalAmountI1},${TotalAmountI2},${TripAmount1},${NeutralTrips},${NeutralTripsA1},${NeutralTripsA2},${NeutralTripsI1},${NeutralTripsI2},${Defense ? 1 : 0},${DefenseA1 ? 1 : 0},${DefenseA2 ? 1 : 0},${DefenseI1 ? 1 : 0},${DefenseI2 ? 1 : 0},${FeedToHPStation ? 1 : 0},${FeedToHPStationA1 ? 1 : 0},${FeedToHPStationA2 ? 1 : 0},${FeedToHPStationI1 ? 1 : 0},${FeedToHPStationI2 ? 1 : 0},${passing ? 1 : 0},${passingA1 ? 1 : 0},${passingA2 ? 1 : 0},${passingI1 ? 1 : 0},${passingI2 ? 1 : 0}';
   }
 
   static TeleOpPoints fromJson(Map<String, dynamic> json) {
@@ -1048,7 +1101,7 @@ class EndPoints {
   bool Park = false;
   bool FeedToHP = false;
   bool Passing = false;
-  int EndNeutralTrips =0;
+  int EndNeutralTrips = 0;
   int ShootingAccuracy;
   double endgameTime;
   int endgameActions;
@@ -1428,7 +1481,6 @@ class PitChecklistItem {
   bool shooter_nuts_and_bolts = false;
   bool shooter_wires = false;
 
-
   String alliance_color = "Blue";
   Map<String, dynamic>? alliance_selection_data;
   String img1 = "";
@@ -1439,7 +1491,6 @@ class PitChecklistItem {
 
   PitChecklistItem({
     required this.matchkey,
-
     required this.returning_battery_voltage,
     required this.returning_battery_cca,
     required this.returning_number,
@@ -1496,7 +1547,6 @@ class PitChecklistItem {
     required this.shooter_motors,
     required this.shooter_nuts_and_bolts,
     required this.shooter_wires,
-
     required this.img1,
     required this.img2,
     required this.img3,
@@ -1813,5 +1863,4 @@ class PitCheckListDatabase {
       return false;
     }
   }
-
 }

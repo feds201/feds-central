@@ -39,6 +39,20 @@ class _RecordState extends State<Record> {
   late String ImageBlob3;
   late String ImageBlob; // Add this variable to store combined images
 
+  // New FRC 2026 State Variables
+  late List<String> AutoRoutesController;
+  late int AutoFuelController;
+  late String GameDataController; // "Yes" or "No"
+  late double WeightController;
+  late double SpeedController;
+  late TextEditingController DriveMotorTypeController;
+  late double GroundClearanceController;
+  late int MaxFuelCapacityController;
+  late double AvgCycleTimeController;
+  late double ClimbSuccessProbController;
+  late int BatteriesController;
+  late TextEditingController FramePerimeterController;
+
   @override
   void initState() {
     super.initState();
@@ -59,6 +73,20 @@ class _RecordState extends State<Record> {
     ImageBlob3 = "";
     ImageBlob = ""; // Initialize the combined blob
 
+    // New Fields Init
+    AutoRoutesController = [];
+    AutoFuelController = 0;
+    GameDataController = "No";
+    WeightController = 0.0;
+    SpeedController = 0.0;
+    DriveMotorTypeController = TextEditingController();
+    GroundClearanceController = 0.0;
+    MaxFuelCapacityController = 0;
+    AvgCycleTimeController = 0.0;
+    ClimbSuccessProbController = 0.0;
+    BatteriesController = 0;
+    FramePerimeterController = TextEditingController();
+
     // Load database and try to get existing data for this team
     PitDataBase.LoadAll();
     try {
@@ -75,6 +103,20 @@ class _RecordState extends State<Record> {
           ImageBlob1 = existingRecord.botImage1;
           ImageBlob2 = existingRecord.botImage2;
           ImageBlob3 = existingRecord.botImage3;
+
+          // New Fields Populate
+          AutoRoutesController = existingRecord.autoRoutes;
+          AutoFuelController = existingRecord.autoFuel;
+          GameDataController = existingRecord.gameData ? "Yes" : "No";
+          WeightController = existingRecord.weight;
+          SpeedController = existingRecord.speed;
+          DriveMotorTypeController.text = existingRecord.driveMotorType;
+          GroundClearanceController = existingRecord.groundClearance;
+          MaxFuelCapacityController = existingRecord.maxFuelCapacity;
+          AvgCycleTimeController = existingRecord.avgCycleTime;
+          ClimbSuccessProbController = existingRecord.climbSuccessProb;
+          BatteriesController = existingRecord.batteries;
+          FramePerimeterController.text = existingRecord.framePerimeter;
 
           // Combine the existing images into ImageBlob
           // Filter out empty images and join with comma
@@ -124,68 +166,156 @@ class _RecordState extends State<Record> {
         scrollDirection: Axis.vertical,
         child: Column(children: [
           buildTextBoxs(
-            "PIT Questions",
+            "Autonomous & Game Data",
             [
+              buildMultiChoiceBox(
+                  "Auto Starting Positions",
+                  Icon(Icons.start, size: 30, color: Colors.green),
+                  ["Left", "Center", "Right"],
+                  AutoRoutesController, (value) {
+                setState(() {
+                  AutoRoutesController = value;
+                });
+              }),
+              buildNumberBox(
+                  "Auto Fuel Scored (Avg)",
+                  AutoFuelController.toDouble(),
+                  Icon(Icons.numbers, size: 30, color: Colors.blue), (value) {
+                setState(() {
+                  AutoFuelController = int.tryParse(value) ?? 0;
+                });
+              }),
               buildChoiceBox(
-                  "What type of drive train do they have?",
+                  "Game Data Processing?",
+                  Icon(Icons.data_object, size: 30, color: Colors.orange),
+                  ["Yes", "No"],
+                  GameDataController, (value) {
+                setState(() {
+                  GameDataController = value;
+                });
+              }),
+            ],
+            Icon(Icons.auto_mode),
+          ),
+          buildTextBoxs(
+            "Physical & Drive Stats",
+            [
+              buildNumberBox("Total Weight (lbs)", WeightController,
+                  Icon(Icons.monitor_weight, size: 30, color: Colors.grey),
+                  (value) {
+                setState(() {
+                  WeightController = double.tryParse(value) ?? 0.0;
+                });
+              }),
+              buildNumberBox("Top Speed (ft/s)", SpeedController,
+                  Icon(Icons.speed, size: 30, color: Colors.red), (value) {
+                setState(() {
+                  SpeedController = double.tryParse(value) ?? 0.0;
+                });
+              }),
+              buildTextBox(
+                  "Drive Motors",
+                  "e.g. 4x Kraken",
+                  Icon(Icons.motorcycle, size: 30, color: Colors.black),
+                  DriveMotorTypeController),
+              buildNumberBox("Ground Clearance (in)", GroundClearanceController,
+                  Icon(Icons.height, size: 30, color: Colors.brown), (value) {
+                setState(() {
+                  GroundClearanceController = double.tryParse(value) ?? 0.0;
+                });
+              }),
+              buildChoiceBox(
+                  "Drive Train Type",
                   Icon(Icons.car_crash_outlined,
                       size: 30, color: Colors.purple),
-                  ["Tank drive", "Swerve drive", "Others"],
+                  ["Tank", "Swerve", "Mecanum", "Other"],
                   DrivetrainController, (value) {
                 setState(() {
                   DrivetrainController = value;
                 });
               }),
-              buildChoiceBox(
-                  "Auton?",
-                  Icon(Icons.computer_outlined,
-                      size: 30, color: const Color.fromARGB(255, 69, 84, 169)),
-                  ["No Auto", "Leave", "Leave + Auto."],
-                  AutonController, (value) {
+            ],
+            Icon(Icons.engineering),
+          ),
+          buildTextBoxs(
+            "Scoring & Intake",
+            [
+              buildNumberBox(
+                  "Max Fuel Capacity",
+                  MaxFuelCapacityController.toDouble(),
+                  Icon(Icons.battery_full, size: 30, color: Colors.green),
+                  (value) {
                 setState(() {
-                  AutonController = value;
+                  MaxFuelCapacityController = int.tryParse(value) ?? 0;
+                });
+              }),
+              buildNumberBox("Avg Cycle Time (sec)", AvgCycleTimeController,
+                  Icon(Icons.timer, size: 30, color: Colors.blue), (value) {
+                setState(() {
+                  AvgCycleTimeController = double.tryParse(value) ?? 0.0;
                 });
               }),
               buildMultiChoiceBox(
-                  "What can they score??",
-                  Icon(Icons.star_outline, size: 30, color: Colors.blue),
-                  ["Coral", "Algae"],
-                  ScoreObjectController, (value) {
-                setState(() {
-                  ScoreObjectController = value;
-                });
-              }),
-              buildMultiChoiceBox(
-                  "Where can they score?",
-                  Icon(Icons.star_outline, size: 30, color: Colors.blue),
-                  ["L1", "L2", "L3", "L4", "Barge", "Processor"],
-                  ScoreTypeController, (value) {
-                setState(() {
-                  ScoreTypeController = value;
-                });
-              }),
-              buildMultiChoiceBox(
-                  "How do they INTAKE Coral",
+                  "Intake Type",
                   Icon(Icons.shopping_cart_checkout_outlined,
                       size: 30, color: Colors.green),
-                  ["Ground", "Coral Station"],
+                  ["Ground", "Source"],
                   IntakeController, (value) {
                 setState(() {
                   IntakeController = value;
                 });
               }),
               buildMultiChoiceBox(
-                  "Can they climb?",
+                  "Score Locations",
+                  Icon(Icons.star_outline, size: 30, color: Colors.blue),
+                  ["Low Goal", "High Goal", "Cross Obstacles"],
+                  ScoreTypeController, (value) {
+                setState(() {
+                  ScoreTypeController = value;
+                });
+              }),
+            ],
+            Icon(Icons.sports_score),
+          ),
+          buildTextBoxs(
+            "Strategic Checklist",
+            [
+              buildNumberBox("Climb Success %", ClimbSuccessProbController,
+                  Icon(Icons.elevator, size: 30, color: Colors.amber), (value) {
+                setState(() {
+                  ClimbSuccessProbController = double.tryParse(value) ?? 0.0;
+                });
+              }),
+              buildMultiChoiceBox(
+                  "Climb Type",
                   Icon(Icons.elevator,
                       size: 30, color: const Color.fromARGB(255, 200, 186, 34)),
-                  ["Deep", "Shallow", "Doesn't Climb"],
+                  ["Climb", "Park", "None"],
                   ClimbTypeController, (value) {
                 setState(() {
                   ClimbTypeController = value;
                 });
               }),
-              Icon(Icons.question_answer),
-
+              buildNumberBox(
+                  "Batteries On-Site",
+                  BatteriesController.toDouble(),
+                  Icon(Icons.battery_charging_full,
+                      size: 30, color: Colors.yellow), (value) {
+                setState(() {
+                  BatteriesController = int.tryParse(value) ?? 0;
+                });
+              }),
+              buildTextBox(
+                  "Frame Perimeter",
+                  "Dimensions",
+                  Icon(Icons.square_foot, size: 30, color: Colors.grey),
+                  FramePerimeterController),
+            ],
+            Icon(Icons.check_box),
+          ),
+          buildTextBoxs(
+            "Photos",
+            [
               // Camera component with previously captured images
               CameraPhotoCapture(
                 title: "Robot Photos",
@@ -229,7 +359,7 @@ class _RecordState extends State<Record> {
               const SizedBox(height: 20),
               _buildFunButton(),
             ],
-            Icon(Icons.question_answer),
+            Icon(Icons.camera_alt),
           ),
         ]));
   }
@@ -306,19 +436,38 @@ class _RecordState extends State<Record> {
         .get('deviceName', defaultValue: 'Ritesh Raj Arul Selvan');
     String eventKey =
         Hive.box('userData').get('eventKey', defaultValue: 'test');
+
+    // Ensure lists are specialized
+    List<String> finalScoreObject = ["Fuel"]; // Default for 2026
+
     PitRecord record = PitRecord(
         teamNumber: widget.team.teamNumber,
         scouterName: deviceName,
         eventKey: eventKey,
         driveTrainType: DrivetrainController,
-        autonType: AutonController,
+        autonType:
+            AutonController, // Might be empty if widget removed, relying on loaded or default
         scoreType: ScoreTypeController,
         intake: IntakeController,
         climbType: ClimbTypeController,
-        scoreObject: ScoreObjectController.cast<String>().toList(),
+        scoreObject: finalScoreObject,
         botImage1: ImageBlob1,
         botImage2: ImageBlob2,
-        botImage3: ImageBlob3);
+        botImage3: ImageBlob3,
+
+        // New Fields
+        autoRoutes: AutoRoutesController,
+        autoFuel: AutoFuelController,
+        gameData: GameDataController == "Yes",
+        weight: WeightController,
+        speed: SpeedController,
+        driveMotorType: DriveMotorTypeController.text,
+        groundClearance: GroundClearanceController,
+        maxFuelCapacity: MaxFuelCapacityController,
+        avgCycleTime: AvgCycleTimeController,
+        climbSuccessProb: ClimbSuccessProbController,
+        batteries: BatteriesController,
+        framePerimeter: FramePerimeterController.text);
 
     print('Recording data: $record');
     print("Hiv ${record.toJson()}");

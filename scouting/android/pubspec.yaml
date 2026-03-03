@@ -101,8 +101,6 @@ flutter:
     - assets/thumb.png
     - assets/ref/Cheat-Sheet.jpg
     - assets/ref/Cheat-Sheet-2.jpg
-    - assets/day_zero.json
-    - assets/response.json
   # To add assets to your application, add an assets section, like this:
   # assets:
   #     - images/a_dot_burr.jpeg

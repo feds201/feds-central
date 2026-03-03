@@ -11,20 +11,17 @@ import 'package:scouting_app/main.dart';
 import '../Match_Pages/match_page.dart';
 import '../Plugins/plugin_state_manager.dart';
 import '../services/DataBase.dart';
-import 'package:archive/archive.dart';
-import 'dart:io';
-import 'dart:convert';
 
 String compressToBase64(String data) {
-  final bytes = utf8.encode(data);
-  final compressed = GZipEncoder().encode(bytes)!;
-  return base64Url.encode(compressed);
+  print('Compressing data...');
+  print(data);
+  return data;
 }
 
 String decompressFromBase64(String encoded) {
-  final compressed = base64Url.decode(encoded);
-  final bytes = GZipDecoder().decodeBytes(compressed);
-  return utf8.decode(bytes);
+  print('Decompressing data...');
+  print(encoded);
+  return encoded;
 }
 
 class Qrgenerator extends StatefulWidget {
@@ -59,7 +56,6 @@ class QrCoder extends State<Qrgenerator> {
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-
           children: <Widget>[
             QrImageView(
               backgroundColor: Colors.white,
