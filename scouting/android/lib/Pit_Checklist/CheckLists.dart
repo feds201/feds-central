@@ -364,7 +364,9 @@ class _Checklist_recordState extends State<Checklist_record> {
           return IconButton(
               icon: const Icon(Icons.undo),
               color: !islightmode() ? Colors.white : Colors.black,
-              onPressed: () => Navigator.pop(context));
+              onPressed: () {
+                  _recordData();
+                  Navigator.pop(context);});
         }),
         backgroundColor: islightmode() ? Colors.white : darkColors.goodblack,
         centerTitle: true,
@@ -386,6 +388,7 @@ class _Checklist_recordState extends State<Checklist_record> {
       body: _buildQuestions(),
     );
   }
+
 
   Widget _buildQuestions() {
     return SingleChildScrollView(
