@@ -589,8 +589,6 @@ class PitCheckListPageState extends State<PitCheckListPage>
     );
   }
 
-
-
   Widget _buildEnhancedMatchCard(
     BuildContext context,
     dynamic match,
@@ -604,21 +602,61 @@ class PitCheckListPageState extends State<PitCheckListPage>
     final String matchKey = match['key'];
     final PitChecklistItem? saved = PitCheckListDatabase.GetData(matchKey);
 
-    bool drivetrainDone = saved != null && saved.drive_motors && saved.drive_wheels && saved.drive_gearboxes && saved.drive_wires && saved.drive_steer_motors && saved.drive_encoders && saved.drive_lime_lights && saved.drive_nuts_and_bolts;
-    bool structureDone = saved != null && saved.structure_frame && saved.structure_hopper_panels && saved.structure_brain_pan && saved.structure_belly_pan && saved.structure_nuts_and_bolts;
-    bool intakeDone    = saved != null && saved.intake_rack && saved.intake_pinion && saved.intake_belts && saved.intake_roller && saved.intake_motors && saved.intake_limit_switches && saved.intake_lime_lights && saved.intake_nuts_and_bolts && saved.intake_wires;
-    bool spindexerDone = saved != null && saved.spindexer_panel && saved.spindexer_churros && saved.spindexer_motor && saved.spindexer_wheels && saved.spindexer_nuts_and_bolts;
-    bool kickerDone    = saved != null && saved.kicker_plates && saved.kicker_roller && saved.kicker_belts && saved.kicker_gears && saved.kicker_motor && saved.kicker_radio && saved.kicker_ethernet_switch && saved.kicker_nuts_and_bolts && saved.kicker_wires;
-    bool shooterDone   = saved != null && saved.shooter_flywheels && saved.shooter_hood && saved.shooter_hood_gears && saved.shooter_gears && saved.shooter_motors && saved.shooter_nuts_and_bolts && saved.shooter_wires;
+    bool drivetrainDone = saved != null &&
+        saved.drive_motors &&
+        saved.drive_wheels &&
+        saved.drive_gearboxes &&
+        saved.drive_wires &&
+        saved.drive_steer_motors &&
+        saved.drive_encoders &&
+        saved.drive_lime_lights &&
+        saved.drive_nuts_and_bolts;
+    bool structureDone = saved != null &&
+        saved.structure_frame &&
+        saved.structure_hopper_panels &&
+        saved.structure_brain_pan &&
+        saved.structure_belly_pan &&
+        saved.structure_nuts_and_bolts;
+    bool intakeDone = saved != null &&
+        saved.intake_rack &&
+        saved.intake_pinion &&
+        saved.intake_belts &&
+        saved.intake_roller &&
+        saved.intake_motors &&
+        saved.intake_limit_switches &&
+        saved.intake_lime_lights &&
+        saved.intake_nuts_and_bolts &&
+        saved.intake_wires;
+    bool spindexerDone = saved != null &&
+        saved.spindexer_panel &&
+        saved.spindexer_churros &&
+        saved.spindexer_motor &&
+        saved.spindexer_wheels &&
+        saved.spindexer_nuts_and_bolts;
+    bool kickerDone = saved != null &&
+        saved.kicker_plates &&
+        saved.kicker_roller &&
+        saved.kicker_belts &&
+        saved.kicker_gears &&
+        saved.kicker_motor &&
+        saved.kicker_radio &&
+        saved.kicker_ethernet_switch &&
+        saved.kicker_nuts_and_bolts &&
+        saved.kicker_wires;
+    bool shooterDone = saved != null &&
+        saved.shooter_flywheels &&
+        saved.shooter_hood &&
+        saved.shooter_hood_gears &&
+        saved.shooter_gears &&
+        saved.shooter_motors &&
+        saved.shooter_nuts_and_bolts &&
+        saved.shooter_wires;
 
     // Check if this is a manual entry
     final bool isManual = match['manual_entry'] == true;
 
     // Create alliance teams lists
     final redAlliance = match['alliances']['red']['team_keys']
-        .map((team) => team.toString().replaceAll('frc', ''))
-        .toList();
-    final blueAlliance = match['alliances']['blue']['team_keys']
         .map((team) => team.toString().replaceAll('frc', ''))
         .toList();
 
@@ -774,11 +812,11 @@ class PitCheckListPageState extends State<PitCheckListPage>
                                 runSpacing: 4,
                                 children: [
                                   _sectionCheck("Drivetrain", drivetrainDone),
-                                  _sectionCheck("Structure",  structureDone),
-                                  _sectionCheck("Intake",     intakeDone),
+                                  _sectionCheck("Structure", structureDone),
+                                  _sectionCheck("Intake", intakeDone),
                                   _sectionCheck("Spindexer", spindexerDone),
-                                  _sectionCheck("Kicker",     kickerDone),
-                                  _sectionCheck("Shooter",    shooterDone),
+                                  _sectionCheck("Kicker", kickerDone),
+                                  _sectionCheck("Shooter", shooterDone),
                                 ],
                               ),
                             ],
@@ -799,6 +837,7 @@ class PitCheckListPageState extends State<PitCheckListPage>
       ),
     );
   }
+
   Widget _sectionCheck(String label, bool done) {
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -822,6 +861,7 @@ class PitCheckListPageState extends State<PitCheckListPage>
       ],
     );
   }
+
   void _handleMatchSelection(dynamic match) {
     PitChecklistItem record = PitChecklistItem.defaultConstructor(match['key']);
 
@@ -1742,7 +1782,7 @@ class PitCheckListPageState extends State<PitCheckListPage>
                         : 'f';
 
                 String matchKey =
-                    '2025mimid_${matchTypeCode}${setNumber}m$matchNumber';
+                    '2026mimid_${matchTypeCode}${setNumber}m$matchNumber';
 
                 // Create synthetic match object
                 Map<String, dynamic> syntheticMatch = {
@@ -1750,7 +1790,7 @@ class PitCheckListPageState extends State<PitCheckListPage>
                   'comp_level': matchTypeCode,
                   'match_number': matchNumber,
                   'set_number': setNumber,
-                  'event_key': '2025mimid',
+                  'event_key': '2026mimid',
                   'manual_entry': true,
                   'alliance_selection_data': {
                     'alliance_number': allianceNumber,

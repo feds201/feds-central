@@ -3,15 +3,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:scouting_app/services/DataBase.dart';
 import 'dart:math';
 import 'dart:io';
-import 'dart:typed_data';
-import 'dart:convert';
 
 void main() {
   group('Realistic Match Data Generator', () {
     test('Generate configurable realistic match data - CSV export', () async {
       // Change this number to generate different amounts of data
       const int numMatches = 100; // <-- CHANGE THIS NUMBER HERE
-      
+
       final generator = RealisticMatchDataGenerator();
       final matches = generator.generateMatches(numMatches);
       final csvContent = generator.exportToCSV(matches);
@@ -27,11 +25,13 @@ void main() {
       // Save to dev directory with timestamp
       final devDir = Directory('test_output/dev_data');
       await devDir.create(recursive: true);
-      
-      final timestamp = DateTime.now().toString().replaceAll(':', '-').split('.')[0];
-      final file = File('test_output/dev_data/match_data_$numMatches matches_$timestamp.csv');
+
+      final timestamp =
+          DateTime.now().toString().replaceAll(':', '-').split('.')[0];
+      final file = File(
+          'test_output/dev_data/match_data_$numMatches matches_$timestamp.csv');
       await file.writeAsString(csvContent);
-      
+
       print('\n✅ Saved to: ${file.path}');
       print('Total size: ${(csvContent.length / 1024).toStringAsFixed(2)} KB');
 
@@ -54,10 +54,10 @@ void main() {
 
       final devDir = Directory('test_output/dev_data');
       await devDir.create(recursive: true);
-      
+
       final file = File('test_output/dev_data/match_data_50matches.csv');
       await file.writeAsString(csvContent);
-      
+
       print('\n✅ Saved to: ${file.path}');
 
       expect(matches.length, 50);
@@ -68,14 +68,14 @@ void main() {
 class RealisticMatchDataGenerator {
   final Random _random = Random();
   final List<String> _teams = [
-    '2025mibg',
-    '2025frc254',
-    '2025frc1690',
-    '2025frc2202',
-    '2025frc3476',
-    '2025frc1836',
-    '2025frc3407',
-    '2025frc4414',
+    '2026mibg',
+    '2026frc254',
+    '2026frc1690',
+    '2026frc2202',
+    '2026frc3476',
+    '2026frc1836',
+    '2026frc3407',
+    '2026frc4414',
   ];
   final List<String> _scouts = [
     'Alex',
@@ -87,9 +87,9 @@ class RealisticMatchDataGenerator {
     'Sam',
   ];
   final List<String> _events = [
-    '2025mibg',
-    '2025midmi',
-    '2025mimel',
+    '2026mibg',
+    '2026midmi',
+    '2026mimel',
   ];
 
   List<MatchRecord> generateMatches(int count) {
@@ -142,7 +142,8 @@ class RealisticMatchDataGenerator {
 
     final autonShots =
         ((performanceLevel * 16) + _random.nextInt(6)).toInt().clamp(0, 20);
-    final autonPickupDepot = performanceLevel > 0.6 || _random.nextDouble() > 0.5;
+    final autonPickupDepot =
+        performanceLevel > 0.6 || _random.nextDouble() > 0.5;
     final autonPickupNeutral =
         performanceLevel > 0.5 || _random.nextDouble() > 0.6;
     final autonClimb = performanceLevel > 0.7 && _random.nextDouble() > 0.4;
@@ -157,13 +158,11 @@ class RealisticMatchDataGenerator {
     final teleOpFeedHP = performanceLevel > 0.5 && _random.nextDouble() > 0.4;
 
     // Endgame data
-    final climbStatus =
-        performanceLevel > 0.75 ? _random.nextInt(3) + 1 : 0;
+    final climbStatus = performanceLevel > 0.75 ? _random.nextInt(3) + 1 : 0;
     final endgamePark = performanceLevel > 0.5 && _random.nextDouble() > 0.3;
     final endgameTime = endgamePark ? _randomDouble(5, 25) : 0.0;
-    final shootingAccuracy = ((performanceLevel * 100).toInt() +
-            _random.nextInt(20))
-        .clamp(0, 100);
+    final shootingAccuracy =
+        ((performanceLevel * 100).toInt() + _random.nextInt(20)).clamp(0, 100);
 
     final autonPoints = AutonPoints(
       autonPickupDepot,
@@ -293,7 +292,9 @@ class RealisticMatchDataGenerator {
         int cellsInCluster =
             (cellsToSelect / clusterCount).toInt() + _random.nextInt(2);
 
-        for (int i = 0; i < cellsInCluster && drawingData.length < cellsToSelect; i++) {
+        for (int i = 0;
+            i < cellsInCluster && drawingData.length < cellsToSelect;
+            i++) {
           int offset = _random.nextInt(5) - 2; // Nearby cells
           int cellId = clusterCenter + offset;
 
@@ -307,25 +308,6 @@ class RealisticMatchDataGenerator {
     // Sort for consistency
     drawingData.sort();
     return drawingData;
-  }
-
-  /// Encode drawing data to match the app's format
-  String _encodeDrawingData(List<int> drawingData) {
-    if (drawingData.isEmpty) return '';
-
-    const int totalCells = 200; // 10 rows x 20 cols
-    int byteLength = (totalCells + 7) >> 3;
-    Uint8List bytes = Uint8List(byteLength);
-
-    for (final id in drawingData) {
-      if (id < 1 || id > totalCells) continue;
-      int index = id - 1;
-      int byteIndex = index >> 3;
-      int bitIndex = index & 7;
-      bytes[byteIndex] |= (1 << bitIndex);
-    }
-
-    return base64Url.encode(bytes);
   }
 
   double _randomDouble(double min, double max) {
