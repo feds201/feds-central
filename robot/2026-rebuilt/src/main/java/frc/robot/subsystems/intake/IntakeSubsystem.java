@@ -202,5 +202,9 @@ public class IntakeSubsystem extends SubsystemBase {
     return false; 
     }
 
+  public Command setMotorPower(Double power){
+    return runOnce(()->  motor.set(power));
+  }
+
 }
 
