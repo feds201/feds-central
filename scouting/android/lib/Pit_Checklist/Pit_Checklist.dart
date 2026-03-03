@@ -831,6 +831,7 @@ class PitCheckListPageState extends State<PitCheckListPage>
           builder: (context) => Checklist_record(list_item: record),
           fullscreenDialog: true),
     ).then((_) {
+      setState(() {});
       print('Returned to Pit Checklist Page');
     });
   }
