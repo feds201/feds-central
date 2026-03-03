@@ -17,9 +17,11 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.LimelightHelpers;
 import frc.robot.RobotContainer;
+import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.shooter.ShooterWheels;
 import frc.robot.subsystems.shooter.ShooterWheels.shooter_state;
 
@@ -30,9 +32,17 @@ public class LedsSubsystem extends SubsystemBase {
   private ShooterWheels m_shooterWheels;
 
 
+   public static LedsSubsystem getInstance(Subsystem[] subsystems) { 
+    if (instance == null) {
+      instance = new LedsSubsystem(subsystems);
+    }
+    return instance;
+  }
+
 
   public static enum LEDState {              
     FALCON_DRIVE,                    // Flashing Orange at 200ms
+    HUB_DRIVE,                       // TBD
     AIMED,                          // When aimed should be fill solid Red
     SHOOTING,                      // Shooting should be blue coment kinda fast
     CLIMBING,                     // Rainbow         
@@ -82,13 +92,17 @@ public class LedsSubsystem extends SubsystemBase {
   private static final Color COLOR_SCARLET = new Color(new Color8Bit(100, 14, 0));
   private static final Color COLOR_PURPLE = new Color(new Color8Bit(128, 0, 128));
 
-  /** Creates a new LedsSubsystem. */
-  public LedsSubsystem() {
 
-  }
+  public LedsSubsystem(Subsystem[] subsystems) {
+    m_shooterWheels = null;
 
-  public LedsSubsystem(ShooterWheels shooterWheels) {
-    m_shooterWheels = shooterWheels;
+
+    for (Subsystem subsystem : subsystems) {
+      if (subsystem instanceof ShooterWheels) { m_shooterWheels = (ShooterWheels) subsystem; break; }
+      // Climb is currently not used for LED state changes, but we can easily add it in the future if needed
+      // else if (subsystem instanceof Climb) { m_climb = (Climb) subsystem; break; }
+    }
+
 
     // Connect to the device on USB port 2
     m_isConnected = m_leds.Connect(USBPort.kUSB1);
@@ -142,6 +156,9 @@ public class LedsSubsystem extends SubsystemBase {
     if (m_shooterWheels.getCurrentState() == shooter_state.SHOOTING) {
         setState(LEDState.SHOOTING);
     } 
+    // else if (m_climb.getState() == climb_state.CLIMBING) {
+    //     setState(LEDState.CLIMBING);
+    // }
 
 
 

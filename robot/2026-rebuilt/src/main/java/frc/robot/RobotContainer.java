@@ -9,6 +9,7 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.RobotMap.DrivetrainConstants;
 import frc.robot.commands.swerve.HubDrive;
@@ -47,18 +48,15 @@ public class RobotContainer {
 
 
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
-  
   private final RollersSubsystem rollersSubsystem = RollersSubsystem.getInstance();
-
   private final Feeder feederSubsystem = new Feeder();
-
-  private final LedsSubsystem ledsSubsystem = LedsSubsystem.getInstance();
-
 
   private final ShooterHood shooterHood = new ShooterHood(drivetrain);
   private final ShooterWheels shooterWheels = new ShooterWheels(drivetrain);
-  private final LedsSubsystem ledsSubsystem = new LedsSubsystem(shooterWheels);
 
+  private final LedsSubsystem ledsSubsystem = LedsSubsystem.getInstance(getSubsystems());
+
+  //private final LedsSubsystem leds = new LedsSubsystem(shooterWheels);
 
   // Local testing subsystem (contains @RobotAction tests used by RootTestingUtility)
   // private final TestingSubsystem testingSubsystem = new TestingSubsystem();
@@ -81,7 +79,7 @@ public class RobotContainer {
     
     configureRootTests();
     
-    
+    ledsSubsystem.setState(null);
   }
 
   public void updateLocalization() {
@@ -234,5 +232,13 @@ public class RobotContainer {
   /** Called from Robot.testPeriodic(). Keeps dashboard data fresh. */
   public void updateRootTests() {
     rootTester.periodic();
+  }
+
+
+  private Subsystem[] getSubsystems() {
+    return new Subsystem[] {
+      shooterWheels,
+      ledsSubsystem
+    };
   }
 }

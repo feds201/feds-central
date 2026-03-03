@@ -23,7 +23,7 @@ public class RollersSubsystem extends SubsystemBase {
   private RollerState currentState = RollerState.OFF;
   private final TalonFX motor;
   private DCMotorSim motorSim;
-  LedsSubsystem leds = LedsSubsystem.getInstance();
+  
   // Visualization (only initialized when running in sim)
   private Mechanism2d mech2d;
   private MechanismRoot2d mechRoot;
