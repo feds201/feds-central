@@ -156,7 +156,6 @@ export const modules = {
         hint: "Pick the option that best describes your situation",
         type: "multiple-choice",
         options: [
-            { label: "Don't use lumber", eco_impact: "low", value: 1 },
             { label: "Throw it away", eco_impact: "high", value: 3 },
             { label: "Save it for next year", eco_impact: "medium", value: 2 },
             { label: "Repurpose/Donate/Sell", eco_impact: "low", value: 1 },
@@ -269,7 +268,7 @@ export const modules = {
 
     // --- FAB ---
     {
-        section: "III. Fabrication",
+        section: "III. Fab",
         question: "How often do you buy filament?",
         hint: "Pick the option that best describes your situation",
         type: "multiple-choice",
@@ -283,7 +282,7 @@ export const modules = {
         category: "materials"
     },
     {
-        section: "III. Fabrication",
+        section: "III. Fab",
         question: "What do you do with your extra lexan/polycarbonate?",
         hint: "Pick the option that best describes your situation",
         type: "multiple-choice",
@@ -298,7 +297,7 @@ export const modules = {
         category: "materials"
     },
     {
-        section: "III. Fabrication",
+        section: "III. Fab",
         question: "Do you use cardboard for prototyping?",
         hint: "Pick the option that best describes your situation",
         type: "multiple-choice",
@@ -311,7 +310,7 @@ export const modules = {
         category: "materials"
     },
     {
-        section: "III. Fabrication",
+        section: "III. Fab",
         question: "How many cardboard boxes/pieces did you use for prototyping?",
         hint: "Enter an integer value",
         type: "int",
