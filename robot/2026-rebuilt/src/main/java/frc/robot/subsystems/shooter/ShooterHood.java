@@ -66,7 +66,7 @@ public class ShooterHood extends SubsystemBase {
     config = new TalonFXConfiguration();
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-    config.CurrentLimits.StatorCurrentLimit = 20;
+    config.CurrentLimits.StatorCurrentLimit = 40;
     //Following values would need to be tuned.
     config.Slot0.kS = 0.0; // Constant applied for friction compensation (static gain)
     config.Slot0.kP = 0.0; // Proportional gain 
