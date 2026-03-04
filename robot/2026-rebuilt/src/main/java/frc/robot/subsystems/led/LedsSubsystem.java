@@ -46,7 +46,7 @@ public class LedsSubsystem extends SubsystemBase {
   public static enum LEDState {              
     FALCON_DRIVE,                    // Flashing Orange at 200ms
     HUB_DRIVE,                       // TBD
-    //AIMED,                          // When aimed should be fill solid Red
+    AIMED,                          // When aimed should be fill solid Red
     SHOOTING,                      // Shooting should be blue coment kinda fast
     CLIMBING,                     // Rainbow         
     ERROR_LL,                    //Error limelight should be blink Limelight green at 200ms
@@ -163,8 +163,8 @@ public class LedsSubsystem extends SubsystemBase {
     if (m_shooterWheels.getCurrentState() == shooter_state.SHOOTING) {
         setState(LEDState.SHOOTING);
     } 
-    // if (m_shooterHood.getCurrentState() == shooterhood_state.AIMING_UP || m_shooterHood.getCurrentState() == shooterhood_state.AIMING_DOWN) {
-    //     setState(LEDState.AIMED);
+    if (m_shooterHood.getCurrentState() == shooterhood_state.AIMING_UP || m_shooterHood.getCurrentState() == shooterhood_state.AIMING_DOWN) {
+        setState(LEDState.AIMED);
     }
     // else if (m_climb.getState() == climb_state.CLIMBING) {
     //     setState(LEDState.CLIMBING);
@@ -215,13 +215,13 @@ public class LedsSubsystem extends SubsystemBase {
         applyIdlePattern();
         break;
         
-      //  case AIMED:
-      //   m_leds.leds.SetAnimation(Animation.Fill)
-      //       .ForGroup(GR_300)
-      //       .WithColor(COLOR_RED)
-      //       .WithDelay(Units.Milliseconds.of(50))
-      //       .RunOnce(false);
-      //   break; 
+       case AIMED:
+        m_leds.leds.SetAnimation(Animation.Fill)
+            .ForGroup(GR_300)
+            .WithColor(COLOR_RED)
+            .WithDelay(Units.Milliseconds.of(50))
+            .RunOnce(false);
+        break; 
 
 
       case SHOOTING:
