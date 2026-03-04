@@ -299,6 +299,3 @@ ctre_sim/
 *.sln
 expo-env.d.ts
 
-
-# Gradle wrapper jars (binary build artifacts)
-gradle-wrapper.jar

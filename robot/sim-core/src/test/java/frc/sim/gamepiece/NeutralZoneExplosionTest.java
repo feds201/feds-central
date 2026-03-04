@@ -1,7 +1,6 @@
 package frc.sim.gamepiece;
 
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Translation3d;
 import frc.sim.core.PhysicsWorld;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -97,11 +96,11 @@ class NeutralZoneExplosionTest {
     private int countOverlaps(List<GamePiece> pieces) {
         int overlaps = 0;
         for (int i = 0; i < pieces.size(); i++) {
-            Translation3d posA = pieces.get(i).getPosition3d();
+            DVector3C posA = pieces.get(i).getBody().getPosition();
             for (int j = i + 1; j < pieces.size(); j++) {
-                Translation3d posB = pieces.get(j).getPosition3d();
-                double dx = posA.getX() - posB.getX();
-                double dy = posA.getY() - posB.getY();
+                DVector3C posB = pieces.get(j).getBody().getPosition();
+                double dx = posA.get0() - posB.get0();
+                double dy = posA.get1() - posB.get1();
                 double dist = Math.sqrt(dx * dx + dy * dy);
                 if (dist < DIAMETER) {
                     overlaps++;
@@ -117,7 +116,7 @@ class NeutralZoneExplosionTest {
     private double maxSpeed(List<GamePiece> pieces) {
         double max = 0;
         for (GamePiece piece : pieces) {
-            if (!piece.isActive() || !piece.hasPhysics() || !piece.getBody().isEnabled()) continue;
+            if (!piece.isActive() || !piece.getBody().isEnabled()) continue;
             DVector3C vel = piece.getBody().getLinearVel();
             double speed = Math.sqrt(
                     vel.get0() * vel.get0() +
@@ -159,7 +158,6 @@ class NeutralZoneExplosionTest {
 
         // Simulate robot approaching: enable all pieces at once
         for (GamePiece piece : pieces) {
-            piece.initializePhysics();
             piece.getBody().enable();
             piece.getBody().setAutoDisableFlag(false); // keep enabled to measure
         }
@@ -198,12 +196,12 @@ class NeutralZoneExplosionTest {
         Translation2d robotPos = new Translation2d(8.0, 4.0); // center of zone
 
         // Wake pieces near robot
-        manager.updateProximity(robotPos);
+        manager.updateProximity(robotPos, 1.5, 3.0);
 
         // Count how many got enabled
         int enabledCount = 0;
         for (GamePiece piece : pieces) {
-            if (piece.hasPhysics() && piece.getBody().isEnabled()) {
+            if (piece.getBody().isEnabled()) {
                 piece.getBody().setAutoDisableFlag(false);
                 enabledCount++;
             }
@@ -239,18 +237,17 @@ class NeutralZoneExplosionTest {
         int overlaps = countOverlaps(pieces);
         System.out.println("Full-scale overlapping pairs: " + overlaps + " / " + pieces.size() + " balls");
 
-        // Record spawn positions (uses lazy position, no physics needed)
+        // Record spawn positions
         double[][] spawnPositions = new double[pieces.size()][2];
         for (int i = 0; i < pieces.size(); i++) {
-            Translation3d pos = pieces.get(i).getPosition3d();
-            spawnPositions[i][0] = pos.getX();
-            spawnPositions[i][1] = pos.getY();
+            DVector3C pos = pieces.get(i).getBody().getPosition();
+            spawnPositions[i][0] = pos.get0();
+            spawnPositions[i][1] = pos.get1();
         }
 
         // Disable all, then re-enable (simulating the approach)
         manager.disableAll();
         for (GamePiece piece : pieces) {
-            piece.initializePhysics();
             piece.getBody().enable();
             piece.getBody().setAutoDisableFlag(false);
         }
@@ -266,9 +263,9 @@ class NeutralZoneExplosionTest {
         // Measure max displacement from spawn position
         double maxDisplacement = 0;
         for (int i = 0; i < pieces.size(); i++) {
-            Translation3d pos = pieces.get(i).getPosition3d();
-            double dx = pos.getX() - spawnPositions[i][0];
-            double dy = pos.getY() - spawnPositions[i][1];
+            DVector3C pos = pieces.get(i).getBody().getPosition();
+            double dx = pos.get0() - spawnPositions[i][0];
+            double dy = pos.get1() - spawnPositions[i][1];
             double displacement = Math.sqrt(dx * dx + dy * dy);
             if (displacement > maxDisplacement) maxDisplacement = displacement;
         }
@@ -319,7 +316,6 @@ class NeutralZoneExplosionTest {
         // Disable, then re-enable
         manager.disableAll();
         for (GamePiece piece : pieces) {
-            piece.initializePhysics();
             piece.getBody().enable();
             piece.getBody().setAutoDisableFlag(false);
         }
