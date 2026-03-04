@@ -95,7 +95,7 @@ public class RobotContainer {
         .onFalse(rollersSubsystem.RollersCommand(RollerState.OFF));
 
     controller.leftBumper()
-        .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED));
+        .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT));
 
     // Default drive command: field-centric swerve with left stick + right stick rotation
     drivetrain.setDefaultCommand(
