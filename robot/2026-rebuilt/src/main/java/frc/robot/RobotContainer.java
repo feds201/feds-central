@@ -6,12 +6,15 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.RobotMap.DrivetrainConstants;
 import frc.robot.commands.swerve.HubDrive;
+import frc.robot.commands.swerve.PathfindToPose;
 import frc.robot.commands.swerve.TeleopSwerve;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.intake.RollersSubsystem;
@@ -88,6 +91,9 @@ public class RobotContainer {
 
     controller.start()
        .onTrue(new InstantCommand(drivetrain::seedFieldCentric));
+
+    controller.povUp()
+       .whileTrue(new PathfindToPose(drivetrain, new Pose2d(2.0, 2.0, new Rotation2d())));
     
 
     controller.leftTrigger()
