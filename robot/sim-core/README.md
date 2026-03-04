@@ -40,7 +40,7 @@ src/main/java/frc/sim/
 Fast objects (e.g., a ball shot at 30 m/s) can tunnel through thin walls in a single 20ms step. `PhysicsWorld.step()` automatically detects the fastest body and subdivides the timestep so no object moves more than `minCollisionThickness` (default 0.1m) per sub-step. Most frames use 1 sub-step (zero overhead); extra sub-steps only kick in during fast events like shooter launches.
 
 ### Proximity Sleep/Wake
-With 360-400 balls on the field, simulating every one each tick is expensive. `GamePieceManager.updateProximity()` only enables bodies near the robot (within `wakeRadius`). Distant settled balls are disabled and cost nearly zero CPU. Fast-moving balls (like a launched shot) also become wake zones, so pieces near the landing area wake up for collision response.
+With 360-400 balls on the field, simulating every one each tick is expensive. `GamePieceManager.updateProximity()` uses a Minecraft-style chunk grid (2 m × 2 m cells) to decide which game pieces need physics simulation. The robot's chunk and its neighbors (based on `wakeRadius`) are marked "active"; pieces in active chunks have their physics initialized and enabled. Distant settled balls are disabled and cost nearly zero CPU. Fast-moving balls (like a launched shot) also mark their chunk as active, so pieces near the landing area wake up for collision response.
 
 ### Sensor Geoms
 Scoring zones use ODE4J sensors -- they detect overlap with game piece bodies without creating contact joints. This lets balls pass through the scoring zone trigger while the system records the score event.

@@ -152,28 +152,32 @@ public class GamePieceManager {
     private static final double MOVING_SPEED_THRESHOLD_SQ = MOVING_SPEED_THRESHOLD * MOVING_SPEED_THRESHOLD;
     private static final double SLEEP_SPEED_THRESHOLD_SQ = SLEEP_SPEED_THRESHOLD * SLEEP_SPEED_THRESHOLD;
 
+    // Reusable set to avoid per-tick allocation
+    private final Set<Long> activeChunks = new HashSet<>();
+
     /**
      * Proximity-based body activation for performance using a Minecraft-style chunk system.
      *
      * <p>The field is divided into chunks (e.g., 2x2 meters). Active chunks include
      * the chunk the robot is in, chunks containing any fast-moving piece, and the
-     * 8 neighbors of all those chunks. Pieces in active chunks have their physics
-     * initialized (if needed) and enabled. Pieces in inactive chunks that have
-     * settled are disabled to save CPU.
+     * neighbors of all those chunks (neighborhood radius derived from {@code wakeRadius}).
+     * Pieces in active chunks have their physics initialized (if needed) and enabled.
+     * Pieces in inactive chunks that have settled are disabled to save CPU.
      *
      * <p>Call this each tick BEFORE {@link frc.sim.core.PhysicsWorld#step(double)}.
      *
      * @param robotPos    robot position on the field (2D)
-     * @param wakeRadius  (ignored, using chunk logic)
-     * @param sleepRadius (ignored, using chunk logic)
+     * @param wakeRadius  used to compute the chunk neighborhood radius (in meters)
+     * @param sleepRadius (unused; sleep behavior is implicit: slow pieces outside active chunks are disabled)
      */
     public void updateProximity(Translation2d robotPos, double wakeRadius, double sleepRadius) {
-        Set<Long> activeChunks = new HashSet<>();
+        int chunkRadius = Math.max(1, (int) Math.ceil(wakeRadius / CHUNK_SIZE));
+        activeChunks.clear();
 
         // Add robot chunk and its neighbors
         int robotCx = (int) Math.floor(robotPos.getX() / CHUNK_SIZE);
         int robotCy = (int) Math.floor(robotPos.getY() / CHUNK_SIZE);
-        addChunkAndNeighbors(activeChunks, robotCx, robotCy);
+        addChunkAndNeighbors(activeChunks, robotCx, robotCy, chunkRadius);
 
         // Add fast-moving pieces' chunks
         for (GamePiece piece : pieces) {
@@ -184,7 +188,7 @@ public class GamePieceManager {
                 Translation3d pos = piece.getPosition3d();
                 int cx = (int) Math.floor(pos.getX() / CHUNK_SIZE);
                 int cy = (int) Math.floor(pos.getY() / CHUNK_SIZE);
-                addChunkAndNeighbors(activeChunks, cx, cy);
+                addChunkAndNeighbors(activeChunks, cx, cy, chunkRadius);
             }
         }
 
@@ -214,9 +218,9 @@ public class GamePieceManager {
         }
     }
 
-    private void addChunkAndNeighbors(Set<Long> chunks, int cx, int cy) {
-        for (int i = -1; i <= 1; i++) {
-            for (int j = -1; j <= 1; j++) {
+    private void addChunkAndNeighbors(Set<Long> chunks, int cx, int cy, int radius) {
+        for (int i = -radius; i <= radius; i++) {
+            for (int j = -radius; j <= radius; j++) {
                 chunks.add(packChunk(cx + i, cy + j));
             }
         }
