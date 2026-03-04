@@ -29,7 +29,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.subsystems.led.LedsSubsystem;
+import frc.robot.subsystems.led.LedsSubsystem.LEDState;
 // import frc.robot.RobotMap.SafetyMap.SwerveConstants;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import frc.robot.utils.ShootOnTheMove;
@@ -68,6 +71,9 @@ private final PIDController hubRotPID = new PIDController(25, 0, 0);
 
    private driveMode mode = driveMode.NORMALDRIVE;
 
+   private final LedsSubsystem ledsSubsystem = LedsSubsystem.getInstance(new Subsystem[]{});
+   
+
   /** Command used to control swerve in teleop. */
   public TeleopSwerve(CommandSwerveDrivetrain dt, CommandXboxController controller) {
     this.dt = dt;
@@ -92,6 +98,18 @@ private final PIDController hubRotPID = new PIDController(25, 0, 0);
                           .andThen(new RunCommand(()->{}))
                           .finallyDo(()-> mode = driveMode.NORMALDRIVE));
   }
+
+
+  public void periodic() {
+    if (mode == driveMode.FALCONDRIVE) {
+        ledsSubsystem.setState(LEDState.FALCON_DRIVE);
+    }
+    else if (mode == driveMode.HUBDRIVE) {
+        ledsSubsystem.setState(LEDState.HUB_DRIVE);
+    } else {
+        ledsSubsystem.setState(LEDState.IDLE);
+    }
+}
 
   // Called when the command is initially scheduled.
   @Override

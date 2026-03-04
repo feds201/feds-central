@@ -238,7 +238,8 @@ public class RobotContainer {
   private Subsystem[] getSubsystems() {
     return new Subsystem[] {
       shooterWheels,
-      ledsSubsystem
+      ledsSubsystem,
+      //shooterHood,
     };
   }
 }

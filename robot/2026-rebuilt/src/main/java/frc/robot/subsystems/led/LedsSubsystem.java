@@ -22,7 +22,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.LimelightHelpers;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.intake.IntakeSubsystem;
+import frc.robot.subsystems.shooter.ShooterHood;
 import frc.robot.subsystems.shooter.ShooterWheels;
+import frc.robot.subsystems.shooter.ShooterHood.shooterhood_state;
 import frc.robot.subsystems.shooter.ShooterWheels.shooter_state;
 
 
@@ -30,6 +32,7 @@ public class LedsSubsystem extends SubsystemBase {
   public ConnectorXAnimate m_leds = new ConnectorXAnimate();
   private static LedsSubsystem instance;
   private ShooterWheels m_shooterWheels;
+  private ShooterHood m_shooterHood;
 
 
    public static LedsSubsystem getInstance(Subsystem[] subsystems) { 
@@ -43,7 +46,7 @@ public class LedsSubsystem extends SubsystemBase {
   public static enum LEDState {              
     FALCON_DRIVE,                    // Flashing Orange at 200ms
     HUB_DRIVE,                       // TBD
-    AIMED,                          // When aimed should be fill solid Red
+    //AIMED,                          // When aimed should be fill solid Red
     SHOOTING,                      // Shooting should be blue coment kinda fast
     CLIMBING,                     // Rainbow         
     ERROR_LL,                    //Error limelight should be blink Limelight green at 200ms
@@ -95,10 +98,14 @@ public class LedsSubsystem extends SubsystemBase {
 
   public LedsSubsystem(Subsystem[] subsystems) {
     m_shooterWheels = null;
+    m_shooterHood = null;
+    // m_climb = null;
+
 
 
     for (Subsystem subsystem : subsystems) {
       if (subsystem instanceof ShooterWheels) { m_shooterWheels = (ShooterWheels) subsystem; break; }
+      if (subsystem instanceof ShooterHood) { m_shooterHood = (ShooterHood) subsystem; break; }
       // Climb is currently not used for LED state changes, but we can easily add it in the future if needed
       // else if (subsystem instanceof Climb) { m_climb = (Climb) subsystem; break; }
     }
@@ -156,6 +163,9 @@ public class LedsSubsystem extends SubsystemBase {
     if (m_shooterWheels.getCurrentState() == shooter_state.SHOOTING) {
         setState(LEDState.SHOOTING);
     } 
+    // if (m_shooterHood.getCurrentState() == shooterhood_state.AIMING_UP || m_shooterHood.getCurrentState() == shooterhood_state.AIMING_DOWN) {
+    //     setState(LEDState.AIMED);
+    }
     // else if (m_climb.getState() == climb_state.CLIMBING) {
     //     setState(LEDState.CLIMBING);
     // }
@@ -205,13 +215,13 @@ public class LedsSubsystem extends SubsystemBase {
         applyIdlePattern();
         break;
         
-       case AIMED:
-        m_leds.leds.SetAnimation(Animation.Fill)
-            .ForGroup(GR_300)
-            .WithColor(COLOR_RED)
-            .WithDelay(Units.Milliseconds.of(50))
-            .RunOnce(false);
-        break; 
+      //  case AIMED:
+      //   m_leds.leds.SetAnimation(Animation.Fill)
+      //       .ForGroup(GR_300)
+      //       .WithColor(COLOR_RED)
+      //       .WithDelay(Units.Milliseconds.of(50))
+      //       .RunOnce(false);
+      //   break; 
 
 
       case SHOOTING:
@@ -329,7 +339,6 @@ public class LedsSubsystem extends SubsystemBase {
 
   public Command shootingSignal() { return runStateCommand(LEDState.SHOOTING); }
   public Command climbingSignal() { return runStateCommand(LEDState.CLIMBING); }
- // public Command errorSignal() { return runStateCommand(LEDState.ERROR); }
   public Command resetLEDS() { return setStateCommand(LEDState.IDLE); }
 
   @Deprecated
