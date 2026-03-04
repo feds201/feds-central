@@ -286,9 +286,6 @@ app.post('/api/auth/passkey/register-verify', authenticateToken, async (req, res
 
         const { verified, registrationInfo } = verification;
 
-        // Debug logging
-        console.log('Registration Info:', registrationInfo);
-
         if (verified && registrationInfo) {
             const { credentialDeviceType, credentialBackedUp } = registrationInfo;
 
@@ -456,14 +453,6 @@ app.post('/api/auth/passkey/auth-verify', async (req, res) => {
             if (!user) return res.status(400).json({ error: 'User not found for this passkey' });
         }
 
-        // Check passkey object structure
-        console.log('Found passkey:', {
-            id: passkey.id,
-            counter: passkey.counter,
-            type: typeof passkey.counter,
-            credId: passkey.credential_id
-        });
-
         if (passkey.counter === undefined || passkey.counter === null) {
             console.error('Passkey counter is missing!');
             return res.status(500).json({ error: 'Stored passkey corrupted: missing counter' });
@@ -483,8 +472,6 @@ app.post('/api/auth/passkey/auth-verify', async (req, res) => {
                     transports: passkey.transports ? passkey.transports.split(',') : [],
                 },
             };
-
-            // console.log('Verification Opts prepared');
 
             verification = await verifyAuthenticationResponse(verificationOpts);
         } catch (error) {
