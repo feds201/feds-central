@@ -6,12 +6,15 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.RobotMap.DrivetrainConstants;
 import frc.robot.commands.swerve.HubDrive;
+import frc.robot.commands.swerve.PathfindToPose;
 import frc.robot.commands.swerve.TeleopSwerve;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.intake.RollersSubsystem;
@@ -30,6 +33,7 @@ import org.littletonrobotics.junction.Logger;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import frc.robot.utils.LimelightWrapper;
 import frc.robot.utils.RTU.RootTestingUtility;
+import limelight.Limelight;
 import limelight.networktables.LimelightSettings.ImuMode;
 
 public class RobotContainer {
@@ -38,6 +42,7 @@ public class RobotContainer {
   //Limelight naming conventions are based on physical inventory system, hence "limelight-two" and "limelight-five" represent our second and fifth limelights respectively.
   private final LimelightWrapper ll4 = new LimelightWrapper("limelight-two", true);
   private final LimelightWrapper ll3 = new LimelightWrapper("limelight-five", false);
+  private final Limelight ll_intake = new Limelight("ll-intake");
 
   private HubDrive hubDrive;
 
@@ -86,6 +91,9 @@ public class RobotContainer {
 
     controller.start()
        .onTrue(new InstantCommand(drivetrain::seedFieldCentric));
+
+    controller.povUp()
+       .whileTrue(new PathfindToPose(drivetrain, new Pose2d(2.0, 2.0, new Rotation2d())));
     
 
     controller.leftTrigger()
@@ -93,7 +101,7 @@ public class RobotContainer {
         .onFalse(rollersSubsystem.RollersCommand(RollerState.OFF));
 
     controller.leftBumper()
-        .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED));
+        .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT));
 
     // Default drive command: field-centric swerve with left stick + right stick rotation
     drivetrain.setDefaultCommand(
