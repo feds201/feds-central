@@ -22,6 +22,9 @@ public class GamePieceManager {
     private final Map<String, String> publishKeys = new HashMap<>();
     private final Map<String, Pose3d[]> poseBuffers = new HashMap<>();
 
+    // Reusable set for chunk activation — cleared each tick to avoid per-tick allocation.
+    private final Set<Long> activeChunks = new HashSet<>();
+
     // Counter-based intake tracking
     private int heldCount = 0;
     private int maxCapacity = 70; // hopper capacity
@@ -164,11 +167,9 @@ public class GamePieceManager {
      * <p>Call this each tick BEFORE {@link frc.sim.core.PhysicsWorld#step(double)}.
      *
      * @param robotPos    robot position on the field (2D)
-     * @param wakeRadius  (ignored, using chunk logic)
-     * @param sleepRadius (ignored, using chunk logic)
      */
-    public void updateProximity(Translation2d robotPos, double wakeRadius, double sleepRadius) {
-        Set<Long> activeChunks = new HashSet<>();
+    public void updateProximity(Translation2d robotPos) {
+        activeChunks.clear();
 
         // Add robot chunk and its neighbors
         int robotCx = (int) Math.floor(robotPos.getX() / CHUNK_SIZE);

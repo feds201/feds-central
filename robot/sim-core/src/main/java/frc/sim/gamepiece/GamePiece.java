@@ -43,28 +43,29 @@ public class GamePiece {
     }
 
     public boolean hasPhysics() {
-        return body != null;
+        return body != null && geom != null;
     }
 
     public void initializePhysics() {
         if (hasPhysics()) return;
 
-        body = OdeHelper.createBody(physicsWorld.getWorld());
-        body.setPosition(initialX, initialY, initialZ);
+        DBody newBody = OdeHelper.createBody(physicsWorld.getWorld());
+        newBody.setPosition(initialX, initialY, initialZ);
 
         DMass mass = OdeHelper.createMass();
+        DGeom newGeom;
 
         switch (config.getShape()) {
             case SPHERE:
-                geom = OdeHelper.createSphere(physicsWorld.getSpace(), config.getRadius());
+                newGeom = OdeHelper.createSphere(physicsWorld.getSpace(), config.getRadius());
                 mass.setSphereTotal(config.getMassKg(), config.getRadius());
                 break;
             case CYLINDER:
-                geom = OdeHelper.createCylinder(physicsWorld.getSpace(), config.getRadius(), config.getLength());
+                newGeom = OdeHelper.createCylinder(physicsWorld.getSpace(), config.getRadius(), config.getLength());
                 mass.setCylinderTotal(config.getMassKg(), 3, config.getRadius(), config.getLength());
                 break;
             case BOX:
-                geom = OdeHelper.createBox(physicsWorld.getSpace(),
+                newGeom = OdeHelper.createBox(physicsWorld.getSpace(),
                         config.getRadius() * 2, config.getWidth(), config.getLength());
                 mass.setBoxTotal(config.getMassKg(),
                         config.getRadius() * 2, config.getWidth(), config.getLength());
@@ -73,11 +74,16 @@ public class GamePiece {
                 throw new IllegalArgumentException("Unknown shape: " + config.getShape());
         }
 
-        body.setMass(mass);
-        geom.setBody(body);
-        body.setAutoDisableFlag(true);
+        newBody.setMass(mass);
+        newGeom.setBody(newBody);
+        newBody.setAutoDisableFlag(true);
 
-        physicsWorld.setGeomSurface(geom, new TerrainSurface(config.getFriction(), config.getBounce(), 0.02));
+        physicsWorld.setGeomSurface(newGeom, new TerrainSurface(config.getFriction(), config.getBounce(), 0.02));
+
+        // Assign fields only after fully successful initialization so hasPhysics()
+        // never observes a partially-initialized state (body != null, geom == null).
+        this.geom = newGeom;
+        this.body = newBody;
     }
 
     public void consume() {
@@ -137,12 +143,16 @@ public class GamePiece {
     public State getState() { return state; }
 
     public DBody getBody() {
-        if (!hasPhysics()) initializePhysics();
+        if (!hasPhysics()) {
+            throw new IllegalStateException("Physics is not initialized for this GamePiece; call initializePhysics() or check hasPhysics() before accessing the body.");
+        }
         return body;
     }
 
     public DGeom getGeom() {
-        if (!hasPhysics()) initializePhysics();
+        if (!hasPhysics()) {
+            throw new IllegalStateException("Physics is not initialized for this GamePiece; call initializePhysics() or check hasPhysics() before accessing the geom.");
+        }
         return geom;
     }
 

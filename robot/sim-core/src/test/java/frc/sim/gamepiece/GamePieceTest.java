@@ -39,6 +39,7 @@ class GamePieceTest {
     @Test
     void pieceFallsUnderGravity() {
         GamePiece piece = new GamePiece(world, fuelConfig, 5, 5, 2.0);
+        piece.initializePhysics();
         piece.getBody().setAutoDisableFlag(false);
 
         for (int i = 0; i < 50; i++) {
@@ -52,6 +53,7 @@ class GamePieceTest {
     @Test
     void pieceBouncesOffGround() {
         GamePiece piece = new GamePiece(world, fuelConfig, 5, 5, 2.0);
+        piece.initializePhysics();
         piece.getBody().setAutoDisableFlag(false);
 
         double maxZ = 0;
@@ -100,6 +102,7 @@ class GamePieceTest {
     @Test
     void launchedPieceHasVelocity() {
         GamePiece piece = new GamePiece(world, fuelConfig, 0, 0, -100);
+        piece.initializePhysics();
         piece.getBody().setAutoDisableFlag(false);
 
         piece.launch(new Translation3d(5, 5, 1), new Translation3d(3, 0, 5));
