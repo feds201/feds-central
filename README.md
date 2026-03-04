@@ -84,6 +84,77 @@ Reading code
 ➡ Understanding code  
 ➡ Improving code  
 
+
+---
+
+# 🚀 Practice Workflow
+
+---
+
+## 1️⃣ Create Your Own Branch
+
+Always branch off the main learning branch.
+
+Format:
+
+```
+learning_scouting_yourname
+```
+
+Example:
+
+```
+git checkout -b learning_scouting_james
+```
+
+---
+
+## 2️⃣ Make Your Changes Locally
+
+Write your code.  
+Test it thoroughly.  
+Work through all four levels.
+
+---
+
+## 3️⃣ Commit Your Work
+
+Use clear commit messages.
+
+Example:
+
+```
+git commit -m "Fixed Level 1 timer reset logic"
+```
+
+Small commits > Giant commits.
+
+---
+
+## 4️⃣ Create a Practice Pull Request
+
+Explain:
+
+- What you changed  
+- Why you changed it  
+- What you learned  
+
+If you don’t know how to create a PR, search:
+
+```
+How to create a pull request on GitHub
+```
+
+---
+
+## 5️⃣ Wait for Review
+
+- FEDSBot may give automated feedback  
+- A senior scout or programmer will review  
+- Read feedback carefully  
+
+That’s where real learning happens.
+
 ---
 
 # 🔴 Level 1 — The Glitchy Timer
@@ -250,76 +321,6 @@ Ask for:
 - Debugging guidance  
 
 Not full solutions.
-
----
-
-# 🚀 Practice Workflow
-
----
-
-## 1️⃣ Create Your Own Branch
-
-Always branch off the main learning branch.
-
-Format:
-
-```
-learning_scouting_yourname
-```
-
-Example:
-
-```
-git checkout -b learning_scouting_james
-```
-
----
-
-## 2️⃣ Make Your Changes Locally
-
-Write your code.  
-Test it thoroughly.  
-Work through all four levels.
-
----
-
-## 3️⃣ Commit Your Work
-
-Use clear commit messages.
-
-Example:
-
-```
-git commit -m "Fixed Level 1 timer reset logic"
-```
-
-Small commits > Giant commits.
-
----
-
-## 4️⃣ Create a Practice Pull Request
-
-Explain:
-
-- What you changed  
-- Why you changed it  
-- What you learned  
-
-If you don’t know how to create a PR, search:
-
-```
-How to create a pull request on GitHub
-```
-
----
-
-## 5️⃣ Wait for Review
-
-- FEDSBot may give automated feedback  
-- A senior scout or programmer will review  
-- Read feedback carefully  
-
-That’s where real learning happens.
 
 ---
 
