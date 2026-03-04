@@ -31,6 +31,7 @@ public class IntakeSubsystem extends SubsystemBase {
   private final DigitalInput limit_switch_l;
   private final RollersSubsystem rollers; 
   private final SysIdRoutine sysID;
+  private final LimelightHelpers LL; 
   private final double wheelRadius = 2.0; 
   private final double extendedLength = 14.43; 
 
@@ -55,10 +56,12 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public Command extendIntake(){
+    setState(IntakeState.EXTENDED);
     return runOnce(()-> motor.setControl(new PositionVoltage(0).withPosition(extendedLength/(wheelRadius*2*Math.PI))));
   }
 
   public Command retractIntake() {
+    setState(IntakeState.DEFAULT);
      return runOnce(()-> motor.setControl(new PositionVoltage(0).withPosition(0)));
     }
 
@@ -79,7 +82,7 @@ public class IntakeSubsystem extends SubsystemBase {
     limit_switch_r = new DigitalInput(RobotMap.IntakeSubsystemConstants.kLimit_switch_rID);
     limit_switch_l = new DigitalInput(RobotMap.IntakeSubsystemConstants.kLimit_switch_lID);
     rollers = RollersSubsystem.getInstance();
-
+    LL = new LimelightHelpers();
     var config = new TalonFXConfiguration();
     config.Slot0.kP = 0.1;
     config.Slot0.kI = 0.0;
@@ -93,6 +96,7 @@ public class IntakeSubsystem extends SubsystemBase {
         .angularVelocity(motor.getVelocity().asSupplier().get())
         .angularPosition(motor.getPosition().asSupplier().get());
       }, this));
+
 
     if (RobotBase.isSimulation()) {
       initSimulation();
