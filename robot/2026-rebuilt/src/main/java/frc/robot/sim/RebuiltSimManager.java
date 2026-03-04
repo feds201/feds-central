@@ -394,8 +394,7 @@ public class RebuiltSimManager {
 
         // 5. Proximity activation — only wake balls near the robot
         gamePieceManager.updateProximity(
-                chassis.getPose2d().getTranslation(),
-                PROXIMITY_WAKE_RADIUS, PROXIMITY_SLEEP_RADIUS);
+                chassis.getPose2d().getTranslation());
 
         // 6. Check intake BEFORE physics step — if we step first, launched balls
         // that are still inside the robot's intake zone would get re-consumed
