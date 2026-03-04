@@ -111,7 +111,7 @@ public class ShooterWheels extends SubsystemBase {
 
     //Following values would need to be tuned.
     config.Slot0.kS = 0.34; // Constant applied for friction compensation (static gain)
-    config.Slot0.kP = 0.0; // Proportional gain
+    config.Slot0.kP = 0.2; // Proportional gain
     config.Slot0.kV = 0.12;// Velocity gain
     for (int i = 0; i < 2; ++i){
       var status = shooterLeader.getConfigurator().apply(config);

@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.RobotMap.ShooterConstants;
 // import frc.robot.RobotMap.SafetyMap.SwerveConstants;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import frc.robot.utils.ShootOnTheMove;
@@ -102,6 +103,7 @@ private final PIDController hubRotPID = new PIDController(25, 0, 0);
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    SmartDashboard.putNumber("Dist to hub", dt.getState().Pose.getTranslation().getDistance(ShooterConstants.hubCenter));
     Logger.recordOutput("CTRERobotPose", dt.getState().Pose);
     switch (mode) {
       case FALCONDRIVE:

@@ -68,10 +68,10 @@ public class ShooterHood extends SubsystemBase {
     config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     config.CurrentLimits.StatorCurrentLimit = 40;
     //Following values would need to be tuned.
-    config.Slot0.kS = 0.0; // Constant applied for friction compensation (static gain)
-    config.Slot0.kP = 0.0; // Proportional gain 
+    config.Slot0.kS = .189; // Constant applied for friction compensation (static gain)
+    config.Slot0.kP = 1; // Proportional gain 
     config.Slot0.kD = 0.0; // Derivative gain
-    config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 31; 
+    config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 28; 
     config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0.5; 
     config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
     config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
