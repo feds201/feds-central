@@ -8,6 +8,7 @@
 
 import { getMessages, saveMessages } from './chatStorage'
 import { saveThread, getThreads, renameThread } from './chatStorage'
+import { getToolInputSummary } from './toolUtils'
 
 // --- Active streams (threadId → state) ---
 
@@ -196,12 +197,37 @@ export function sendMessage(threadId, messageText, { getToken }) {
               } else if (eventType === 'tool') {
                 state.parts.push({
                   type: 'tool-call',
-                  toolCallId: crypto.randomUUID(),
+                  toolCallId: data.toolUseId || crypto.randomUUID(),
                   toolName: data.toolName || 'unknown',
+                  inputSummary: getToolInputSummary(data.toolName || 'unknown', data.toolInput || {}),
                   args: data.toolInput || {},
                   argsText: JSON.stringify(data.toolInput || {}),
+                  startedAt: Date.now(),
+                  done: false,
                 })
                 notify()
+              } else if (eventType === 'tool_progress') {
+                const part = state.parts.find(
+                  (p) => p.type === 'tool-call' && p.toolCallId === data.toolUseId
+                )
+                if (part) {
+                  part.elapsedSeconds = data.elapsedSeconds
+                  notify()
+                }
+              } else if (eventType === 'tool_done') {
+                const part = state.parts.find(
+                  (p) => p.type === 'tool-call' && p.toolCallId === data.toolUseId
+                )
+                if (part) {
+                  part.done = true
+                  if (part.elapsedSeconds === undefined) {
+                    part.elapsedSeconds = (Date.now() - part.startedAt) / 1000
+                  }
+                  if (data.isError && data.text) {
+                    part.error = data.text
+                  }
+                  notify()
+                }
               } else if (eventType === 'error') {
                 appendText(`\n\n_Error: ${data.message}_`)
                 state.status = 'error'
