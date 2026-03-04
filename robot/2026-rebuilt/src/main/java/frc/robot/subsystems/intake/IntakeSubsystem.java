@@ -1,7 +1,7 @@
 package frc.robot.subsystems.intake;
 
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.units.Units;
@@ -32,9 +32,10 @@ public class IntakeSubsystem extends SubsystemBase {
   private final DigitalInput limit_switch_l;
   private final SysIdRoutine sysID;
   private final LedsSubsystem leds = LedsSubsystem.getInstance();
-  private final double wheelRadius = 2.0; 
-  private final double extendedLength = 14.43; 
+  private final double extendedRotations = 78.0;
+  private final double retractedRotations = 0.0;
   private static final double ROLLER_OUTPUT = 0.5;
+
 
   // Simulation + Visualization values (only initialized when running in sim, can't be final)
   private DCMotorSim motorSim;
@@ -67,15 +68,15 @@ public class IntakeSubsystem extends SubsystemBase {
     this.currentState = targetState;
     switch (targetState) {
       case DEFAULT -> {
-        moveIntakeToPosition(0);
+        moveIntakeWithPosition(retractedRotations);
         setRollerState(RollerState.OFF);
       }
       case EXTENDED -> {
-        moveIntakeToPosition(getExtendedRotations());
+        moveIntakeWithPosition(extendedRotations);
         setRollerState(RollerState.OFF);
       }
       case INTAKING -> {
-        moveIntakeToPosition(getExtendedRotations());
+        moveIntakeWithPosition(extendedRotations);
         setRollerState(RollerState.ON);
       }
     }
@@ -97,8 +98,23 @@ public class IntakeSubsystem extends SubsystemBase {
     return runOnce(() -> setState(targState));
   }
 
+  public void moveIntakeWithPosition(double rotations) {
+    motor.setControl(new PositionVoltage(rotations));
+  }
+
+  public void setMotorVoltage(double voltage) {
+    motor.setControl(new VoltageOut(voltage));
+  }
+
   public void setRollerState(RollerState desiredState) {
     this.currentRollerState = desiredState;
+  }
+
+  public Command emergencyStop() {
+    return runOnce(() -> {
+      setState(IntakeState.DEFAULT);
+      setRollerState(RollerState.OFF);
+    });
   }
 
   public RollerState getRollerState() {
@@ -109,12 +125,8 @@ public class IntakeSubsystem extends SubsystemBase {
     return runOnce(() -> setRollerState(desiredState));
   }
 
-  private double getExtendedRotations() {
-    return extendedLength / (wheelRadius * 2 * Math.PI);
-  }
-
-  private void moveIntakeToPosition(double rotations) {
-    motor.setControl(new PositionVoltage(0).withPosition(rotations));
+  public Command resetIntakeEncoder() {
+    return runOnce(() -> motor.setPosition(0));
   }
 
 
@@ -125,10 +137,13 @@ public class IntakeSubsystem extends SubsystemBase {
     limit_switch_r = new DigitalInput(RobotMap.IntakeSubsystemConstants.kLimit_switch_rID);
     limit_switch_l = new DigitalInput(RobotMap.IntakeSubsystemConstants.kLimit_switch_lID);
     var config = new TalonFXConfiguration();
-    config.Slot0.kP = 0.1;
-    config.Slot0.kI = 0.0;
+    config.Slot0.kP = 50;
+    config.Slot0.kI = .0;
     config.Slot0.kD = 0.0;
+
     motor.getConfigurator().apply(config);
+
+    motor.setPosition(0);
 
     sysID = new SysIdRoutine(
       new SysIdRoutine.Config(), new SysIdRoutine.Mechanism((voltage)-> motor.setControl(new VoltageOut(0).withOutput(voltage)), (log)-> {

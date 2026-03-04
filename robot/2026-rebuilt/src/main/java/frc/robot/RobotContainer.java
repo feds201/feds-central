@@ -57,7 +57,7 @@ public class RobotContainer {
 
   public RobotContainer() {
     ll4.getSettings().withImuMode(ImuMode.ExternalImu).save();
-    configureBindings();
+    // configureBindings();
     configureTestBindings();
     
     configureRootTests();
@@ -73,9 +73,14 @@ public class RobotContainer {
       ll3.updateLocalizationLimelight(drivetrain);
     }
   }
+
+
   private void configureTestBindings() {
-  controller.a().onTrue(intakeSubsystem.setRollerStateCommand(RollerState.ON))
-    .onFalse(intakeSubsystem.setRollerStateCommand(RollerState.OFF));
+    controller.a().onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.INTAKING))
+      .onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED));
+    controller.x().onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED));
+
+    controller.y().onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT));
   }
 
   private void configureBindings() {
