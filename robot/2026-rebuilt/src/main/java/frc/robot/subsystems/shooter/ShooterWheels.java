@@ -124,7 +124,8 @@ public class ShooterWheels extends SubsystemBase {
 
     switch (currentState) {
       case SHOOTING:
-      shooterLeader.setControl(motionMagicControl.withVelocity(getTargetVelocityShooting()));
+      shooterLeader.setControl(motionMagicControl.withVelocity(getTargetVelocityShooting()
+      .times(velocityMultiplier)));
 
         break;
 
@@ -132,7 +133,8 @@ public class ShooterWheels extends SubsystemBase {
         break;
 
       case PASSING:
-      shooterLeader.setControl(motionMagicControl.withVelocity(getTargetVelocityPassing())); //from passing table
+      shooterLeader.setControl(motionMagicControl.withVelocity(getTargetVelocityPassing()
+      .times(velocityMultiplier))); //from passing table
         break;
     }
   }
@@ -176,6 +178,12 @@ public class ShooterWheels extends SubsystemBase {
 
   public Command setStateCommand(shooter_state state) {
     return runOnce(() -> setState(state));
+  } 
+
+  public double velocityMultiplier = 1.0;
+
+  public void changeMultiplier(double toAdd){
+    velocityMultiplier += toAdd;
   }
 
   public Command stopShooterSpin(shooter_state state) {

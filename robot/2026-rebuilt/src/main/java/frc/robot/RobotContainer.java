@@ -10,14 +10,13 @@ import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.RobotMap.DrivetrainConstants;
 import frc.robot.commands.swerve.HubDrive;
+import frc.robot.commands.swerve.PathfindToPose;
 import frc.robot.commands.swerve.TeleopSwerve;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.intake.RollersSubsystem;
@@ -36,6 +35,7 @@ import org.littletonrobotics.junction.Logger;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import frc.robot.utils.LimelightWrapper;
 import frc.robot.utils.RTU.RootTestingUtility;
+import limelight.Limelight;
 import limelight.networktables.LimelightSettings.ImuMode;
 
 public class RobotContainer {
@@ -44,11 +44,12 @@ public class RobotContainer {
   //Limelight naming conventions are based on physical inventory system, hence "limelight-two" and "limelight-five" represent our second and fifth limelights respectively.
   private final LimelightWrapper ll4 = new LimelightWrapper("limelight-two", true);
   private final LimelightWrapper ll3 = new LimelightWrapper("limelight-five", false);
+  private final Limelight ll_intake = new Limelight("ll-intake");
 
   private HubDrive hubDrive;
 
   private final CommandXboxController controller = new CommandXboxController(0);
-
+  private final CommandXboxController operaterController= new CommandXboxController(1);
 
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
   
@@ -97,14 +98,28 @@ public class RobotContainer {
 
     controller.start()
        .onTrue(new InstantCommand(drivetrain::seedFieldCentric));
+
+    controller.povUp()
+       .whileTrue(new PathfindToPose(drivetrain, new Pose2d(2.0, 2.0, new Rotation2d())));
     
+    // -------- INTAKE CONTROLS --------- 
 
     controller.leftTrigger()
-        .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED).andThen(rollersSubsystem.RollersCommand(RollerState.ON)))
+        .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED)
+        .andThen(rollersSubsystem.RollersCommand(RollerState.ON)))
         .onFalse(rollersSubsystem.RollersCommand(RollerState.OFF));
 
     controller.leftBumper()
-        .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED));
+        .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT));
+
+    operaterController.rightBumper()
+        .onTrue(intakeSubsystem.setMotorPower(0.1))
+        .onFalse(intakeSubsystem.setMotorPower( 0.0));
+    
+    operaterController.rightBumper()
+        .onTrue(intakeSubsystem.setMotorPower(-0.1))
+        .onFalse(intakeSubsystem.setMotorPower( 0.0));
+
 
     // Default drive command: field-centric swerve with left stick + right stick rotation
     drivetrain.setDefaultCommand(
@@ -130,7 +145,16 @@ public class RobotContainer {
 
     controller.b()
         .onTrue(shooterHood.setStateCommand(shooterhood_state.AIMING_UP))
-        .onFalse(shooterHood.setStateCommand(shooterhood_state.IN));
+        .onFalse(shooterHood.setStateCommand(shooterhood_state.IN)); 
+
+    // Manual way to change the angle of the shooter hood
+    operaterController.a()
+      .onTrue(shooterHood.setMotorPower(0.1))
+      .onFalse(shooterHood.setMotorPower(0.0));
+
+    operaterController.b()
+      .onTrue(shooterHood.setMotorPower(-0.1))
+      .onFalse(shooterHood.setMotorPower(0.0));
 
     controller.x()
       .onTrue(Commands.sequence(

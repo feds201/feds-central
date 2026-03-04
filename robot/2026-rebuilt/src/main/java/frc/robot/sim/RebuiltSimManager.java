@@ -122,6 +122,14 @@ public class RebuiltSimManager {
 
     /** ODE4J→MapleSim position correction gain (1cm error → 0.5 m/s correction). */
     private static final double POSITION_CORRECTION_KP = 50.0;
+    /**
+     * ODE4J→MapleSim rotation correction gain (rad/s per radian of error).
+     * Without this, ODE4J heading drifts from MapleSim over time because angular
+     * damping and numerical integration differences cause systematic undershoot.
+     * A gain of 8.0 corrects drift within a fraction of a second without causing
+     * violent angular corrections during transients.
+     */
+    private static final double ROTATION_CORRECTION_KP = 8.0;
 
     // ── Sim hood parameters ────────────────────────────────────────────────
 
@@ -381,16 +389,25 @@ public class RebuiltSimManager {
         double worldVx = robotSpeeds.vxMetersPerSecond * cos - robotSpeeds.vyMetersPerSecond * sin;
         double worldVy = robotSpeeds.vxMetersPerSecond * sin + robotSpeeds.vyMetersPerSecond * cos;
 
-        // 4. Set velocity with position correction to prevent ODE4J drift from MapleSim.
-        // Pure velocity-following drifts over time because ODE4J and MapleSim integrate
-        // independently. Adding a proportional position correction keeps them synced
-        // while still allowing the contact solver to deflect the chassis on ramps
-        // (the correction is a force, not a position override, so the solver can oppose it).
+        // 4. Set velocity with position AND rotation correction to prevent ODE4J drift
+        // from MapleSim. Pure velocity-following drifts over time because ODE4J and
+        // MapleSim integrate independently. Adding proportional correction keeps them
+        // synced while still allowing the contact solver to deflect the chassis on
+        // ramps (the correction is a force, not a position override, so the solver
+        // can oppose it).
         double odeX = chassis.getPose2d().getX();
         double odeY = chassis.getPose2d().getY();
+        double odeYaw = chassis.getPose2d().getRotation().getRadians();
+        double mapleYaw = pose.getRotation().getRadians();
+
         double correctedVx = worldVx + POSITION_CORRECTION_KP * (pose.getX() - odeX);
         double correctedVy = worldVy + POSITION_CORRECTION_KP * (pose.getY() - odeY);
-        chassis.setVelocity(correctedVx, correctedVy, robotSpeeds.omegaRadiansPerSecond, DT);
+        // atan2(sin,cos) gives shortest-path error in [-pi, pi], avoiding
+        // discontinuities at the +/-180° boundary.
+        double yawError = Math.atan2(Math.sin(mapleYaw - odeYaw), Math.cos(mapleYaw - odeYaw));
+        double correctedOmega = robotSpeeds.omegaRadiansPerSecond + ROTATION_CORRECTION_KP * yawError;
+
+        chassis.setVelocity(correctedVx, correctedVy, correctedOmega, DT);
 
         // 5. Proximity activation — only wake balls near the robot
         gamePieceManager.updateProximity(
