@@ -41,7 +41,7 @@ public class RollersSubsystem extends SubsystemBase {
   }
 
   private RollersSubsystem() {
-    motor = new TalonFX(23, "rio");
+    motor = new TalonFX(62, "rio");
 
     if (RobotBase.isSimulation()) {
       initSimulation();
