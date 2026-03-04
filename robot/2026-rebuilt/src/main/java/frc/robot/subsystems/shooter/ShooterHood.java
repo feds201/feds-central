@@ -153,4 +153,8 @@ public class ShooterHood extends SubsystemBase {
   public Command setStateCommand(shooterhood_state state) {
     return runOnce(() -> setState(state));
   }
+
+   public Command setMotorPower(Double power){
+    return runOnce(()->  hoodMotor.set(power));
+  }
 }
