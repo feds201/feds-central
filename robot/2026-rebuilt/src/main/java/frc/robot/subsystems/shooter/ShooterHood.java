@@ -29,15 +29,16 @@ import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 public class ShooterHood extends SubsystemBase {
 
     public enum shooterhood_state {
-      IDLE(ShooterConstants.minHoodAngle),
       IN(ShooterConstants.minHoodAngle),
       OUT(ShooterConstants.maxHoodAngle),
       PASSING(Rotations.of(0)),
       SHOOTING(Rotations.of(0)),
-      AIMING_UP(Rotations.of(0)),
-      AIMING_DOWN(Rotations.of(0)),
       LAYUP(ShooterConstants.maxHoodAngle),
-      HALFCOURT(ShooterConstants.minHoodAngle);
+      HALFCOURT(ShooterConstants.minHoodAngle),
+      MANUAL(Rotations.of(0)),
+      //Sim states
+      AIMING_UP(Rotations.of(0)),
+      AIMING_DOWN(Rotations.of(0));
       
 
     private final Angle angleTarget;
@@ -57,6 +58,7 @@ public class ShooterHood extends SubsystemBase {
   private final PositionVoltage positionVoltage;
   private shooterhood_state currentState = shooterhood_state.IN;
   private final CommandSwerveDrivetrain dt;
+  private double HoodAngleMultiplier = 1;
 
   /** Creates a new Shooter. */
   public ShooterHood(CommandSwerveDrivetrain dt) {
@@ -84,6 +86,7 @@ public class ShooterHood extends SubsystemBase {
 
   @Override
   public void periodic() {
+    Logger.recordOutput("Robot/Shooter/Shooter Hood State", currentState.toString());
 
     switch (currentState) {
       case OUT:
@@ -94,18 +97,18 @@ public class ShooterHood extends SubsystemBase {
         break;
 
       case SHOOTING:
-      hoodMotor.setControl(positionVoltage.withPosition(getTargetPositionShooting())); //from passing table
+      hoodMotor.setControl(positionVoltage.withPosition(getTargetPositionShooting().times(HoodAngleMultiplier)));
         break;
 
       case PASSING:
       hoodMotor.setControl(positionVoltage.withPosition(getTargetPositionPassing()));
         break;
 
-      case AIMING_UP,AIMING_DOWN:
+      case MANUAL, AIMING_UP,AIMING_DOWN:
         // Sim-only: hood angle managed by ShooterSim, not the motor
         break;
       
-      case IDLE, LAYUP, HALFCOURT:
+      case LAYUP, HALFCOURT:
         break;
     }
     Logger.recordOutput("Robot/Shooter/HoodAngleDeg", getPosition().in(Degrees));
@@ -150,11 +153,25 @@ public class ShooterHood extends SubsystemBase {
     hoodMotor.getSimState().setRawRotorPosition(rotations);
   }
 
+  /**
+   * Update the hood angle multiplier, capped in the range of 0.9 to 1.1.
+   * @param toAdd Positive or negative double value to add to the multiplier 
+   */
+  public void updateHoodAngleMultiplier(double toAdd) {
+    if(HoodAngleMultiplier + toAdd > 1.1 || HoodAngleMultiplier + toAdd < 0.9) {
+      return;
+    } else {
+    HoodAngleMultiplier += toAdd;
+    Logger.recordOutput("Robot/Shooter/HoodAngleMultiplier", HoodAngleMultiplier);
+    }
+  }
+
   public Command setStateCommand(shooterhood_state state) {
     return runOnce(() -> setState(state));
   }
 
    public Command setMotorPower(Double power){
+    setState(shooterhood_state.MANUAL);
     return runOnce(()->  hoodMotor.set(power));
   }
 }

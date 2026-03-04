@@ -45,7 +45,8 @@ public class IntakeSubsystem extends SubsystemBase {
 
   public enum IntakeState {
     EXTENDED, 
-    DEFAULT
+    DEFAULT,
+    MANUAL
   }
   private IntakeState currentState = IntakeState.DEFAULT;
   private IntakeState targetState = IntakeState.DEFAULT;
@@ -126,12 +127,14 @@ public class IntakeSubsystem extends SubsystemBase {
 
     Logger.recordOutput("Robot/Intake/Extended", currentState == IntakeState.EXTENDED);
     Logger.recordOutput("Robot/Intake/RollersOn", rollers.getState() == RollerState.ON);
+    Logger.recordOutput("Robot/Intake/IntakeState", currentState.toString());
+    Logger.recordOutput("Robot/Intake/RollerState", rollers.getState().toString());
     Logger.recordOutput("Robot/Intake/FuelDetected", fuelDetected);
     Logger.recordOutput("Robot/Limelights/limelight-one/TV", fuelDetected);
     Logger.recordOutput("Robot/Limelights/limelight-one/TX", LimelightHelpers.getTX("limelight-one"));
     Logger.recordOutput("Robot/Limelights/limelight-one/TY", LimelightHelpers.getTY("limelight-one"));
     Logger.recordOutput("Robot/Limelights/limelight-one/TA", LimelightHelpers.getTA("limelight-one"));
-
+    
     if (fuelDetected) {
       rollers.setState(RollerState.ON);
     }
@@ -147,6 +150,9 @@ public class IntakeSubsystem extends SubsystemBase {
 
       case DEFAULT: retractIntake();
       break;
+
+      case MANUAL: // Do nothing, manual control should override automatic commands
+        break;
     }
 
 
@@ -207,6 +213,7 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
   public Command setMotorPower(Double power){
+    setState(IntakeState.MANUAL);
     return runOnce(()->  motor.set(power));
   }
 

@@ -99,6 +99,7 @@ public class Feeder extends SubsystemBase {
   @Override
   public void periodic() {
     Logger.recordOutput("Robot/Shooter/FeederOn", currentState == feeder_state.RUN);
+    Logger.recordOutput("Robot/Shooter/FeederState", currentState.toString());
   }
 
   // subsystem getters

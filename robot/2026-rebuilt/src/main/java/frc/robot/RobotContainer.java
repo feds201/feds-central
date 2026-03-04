@@ -4,15 +4,12 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.MetersPerSecond;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.RobotMap.DrivetrainConstants;
 import frc.robot.commands.swerve.HubDrive;
 import frc.robot.commands.swerve.PathfindToPose;
@@ -32,8 +29,6 @@ import frc.robot.subsystems.spindexer.Spindexer.spindexer_state;
 import frc.robot.sim.RebuiltSimManager;
 import org.littletonrobotics.junction.Logger;
 
-import com.ctre.phoenix6.SignalLogger;
-
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import frc.robot.utils.LimelightWrapper;
 import frc.robot.utils.RTU.RootTestingUtility;
@@ -47,8 +42,6 @@ public class RobotContainer {
   private final LimelightWrapper ll4 = new LimelightWrapper("limelight-two", true);
   private final LimelightWrapper ll3 = new LimelightWrapper("limelight-five", false);
   private final Limelight ll_intake = new Limelight("ll-intake");
-
-  private HubDrive hubDrive;
 
   private final CommandXboxController controller = new CommandXboxController(0);
   private final CommandXboxController operaterController= new CommandXboxController(1);
@@ -74,9 +67,9 @@ public class RobotContainer {
 
   public RobotContainer() {
     ll4.getSettings().withImuMode(ImuMode.ExternalImu).save();
-    hubDrive = new HubDrive(drivetrain, null);
-    // configureBindings();
-    configureBindings();
+
+    configureBindingsDriver();
+    configureBindingsOperator();
     
     configureRootTests();
     
@@ -92,24 +85,35 @@ public class RobotContainer {
   }
 
 
-  private void configureSysidBindings(){
-    controller.leftBumper().onTrue(Commands.runOnce(SignalLogger::start));
-    controller.rightBumper().onTrue(Commands.runOnce(SignalLogger::stop));
+  private void configureBindingsOperator(){
+    //Manual way to extend and retract the intake
+    operaterController.rightTrigger()
+        .onTrue(intakeSubsystem.setMotorPower(0.1))
+        .onFalse(intakeSubsystem.setMotorPower( 0.0));
+    
+    operaterController.rightBumper()
+        .onTrue(intakeSubsystem.setMotorPower(-0.1))
+        .onFalse(intakeSubsystem.setMotorPower( 0.0));
 
-    controller.a().whileTrue(Commands.sequence(
-      shooterWheels.flywheelSysIdDynamic(Direction.kForward),
-      shooterWheels.flywheelSysIdDynamic(Direction.kReverse),
-      shooterWheels.flywheelSysIdQuasistatic(Direction.kForward),
-      shooterWheels.flywheelSysIdQuasistatic(Direction.kReverse)));
+    // Manual way to change the angle of the shooter hood
+    operaterController.leftTrigger()
+      .onTrue(shooterHood.setMotorPower(0.1))
+      .onFalse(shooterHood.setMotorPower(0.0));
 
-    controller.y().whileTrue(Commands.sequence(
-      feederSubsystem.feederSysIdDynamic(Direction.kForward),
-      feederSubsystem.feederSysIdDynamic(Direction.kReverse),
-      feederSubsystem.feederSysIdQuasistatic(Direction.kForward),
-      feederSubsystem.feederSysIdQuasistatic(Direction.kReverse)));
+    operaterController.leftBumper()
+      .onTrue(shooterHood.setMotorPower(-0.1))
+      .onFalse(shooterHood.setMotorPower(0.0));
+
+    //Add multiplier to hood angle
+    operaterController.a()
+      .onTrue(new InstantCommand(()-> shooterHood.updateHoodAngleMultiplier(.01)));
+
+    operaterController.b()
+      .onTrue(new InstantCommand(()-> shooterHood.updateHoodAngleMultiplier(-.01)));
   }
-  private void configureBindings() {
-
+  
+  private void configureBindingsDriver() {
+    //Button to reset field centric direction (backup if vision fails)
     controller.start()
        .onTrue(new InstantCommand(drivetrain::seedFieldCentric));
 
@@ -118,22 +122,15 @@ public class RobotContainer {
     
     // -------- INTAKE CONTROLS --------- 
 
+    //Button to extend intake and run rollers
     controller.leftTrigger()
         .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED)
         .andThen(rollersSubsystem.RollersCommand(RollerState.ON)))
         .onFalse(rollersSubsystem.RollersCommand(RollerState.OFF));
 
+    //Button to retract intake
     controller.leftBumper()
         .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT));
-
-    operaterController.rightBumper()
-        .onTrue(intakeSubsystem.setMotorPower(0.1))
-        .onFalse(intakeSubsystem.setMotorPower( 0.0));
-    
-    operaterController.rightBumper()
-        .onTrue(intakeSubsystem.setMotorPower(-0.1))
-        .onFalse(intakeSubsystem.setMotorPower( 0.0));
-
 
     // Default drive command: field-centric swerve with left stick + right stick rotation
     drivetrain.setDefaultCommand(
@@ -144,15 +141,10 @@ public class RobotContainer {
         .whileTrue(rollersSubsystem.RollersCommand(RollerState.ON))
         .onFalse(rollersSubsystem.RollersCommand(RollerState.OFF));
 
-    controller.y()
-      .onTrue(Commands.sequence(
-        shooterHood.setStateCommand(shooterhood_state.SHOOTING),
-        shooterWheels.setStateCommand(shooter_state.SHOOTING)))
-      .onFalse(Commands.sequence(
-        shooterHood.setStateCommand(shooterhood_state.IN),
-        shooterWheels.setStateCommand(shooter_state.IDLE)));
+    
 
     // Hood aiming: A = aim down, B = aim up (ShooterSim adjusts angle at fixed rate)
+    if(Robot.isSimulation()){
     controller.a()
         .onTrue(shooterHood.setStateCommand(shooterhood_state.AIMING_DOWN))
         .onFalse(shooterHood.setStateCommand(shooterhood_state.IN));
@@ -160,26 +152,38 @@ public class RobotContainer {
     controller.b()
         .onTrue(shooterHood.setStateCommand(shooterhood_state.AIMING_UP))
         .onFalse(shooterHood.setStateCommand(shooterhood_state.IN)); 
+    }
+    
+    
 
-    // Manual way to change the angle of the shooter hood
-    operaterController.a()
-      .onTrue(shooterHood.setMotorPower(0.1))
-      .onFalse(shooterHood.setMotorPower(0.0));
 
-    operaterController.b()
-      .onTrue(shooterHood.setMotorPower(-0.1))
-      .onFalse(shooterHood.setMotorPower(0.0));
+    //Button to shoot from against trench side
+    controller.y()
+      .onTrue(Commands.sequence(
+        feederSubsystem.setStateCommand(feeder_state.RUN),
+        spinDexer.setStateCommand(spindexer_state.RUN),
+        shooterHood.setStateCommand(shooterhood_state.HALFCOURT),
+        shooterWheels.setStateCommand(shooter_state.HALFCOURT)))
+      .onFalse(Commands.sequence(
+        feederSubsystem.setStateCommand(feeder_state.STOP),
+        spinDexer.setStateCommand(spindexer_state.STOP),
+        shooterWheels.setStateCommand(shooter_state.IDLE),
+        shooterHood.setStateCommand(shooterhood_state.IN)));
 
+    //Button to shoot from against hub
     controller.x()
       .onTrue(Commands.sequence(
         feederSubsystem.setStateCommand(feeder_state.RUN),
         spinDexer.setStateCommand(spindexer_state.RUN),
-        shooterWheels.setStateCommand(shooter_state.LAYUP)))
+        shooterWheels.setStateCommand(shooter_state.LAYUP),
+        shooterHood.setStateCommand(shooterhood_state.LAYUP)))
       .onFalse(Commands.sequence(
         feederSubsystem.setStateCommand(feeder_state.STOP),
         spinDexer.setStateCommand(spindexer_state.STOP),
-        shooterWheels.setStateCommand(shooter_state.IDLE)));
+        shooterWheels.setStateCommand(shooter_state.IDLE),
+        shooterHood.setStateCommand(shooterhood_state.IN)));
 
+    //Button to aim and spin up shooter
     controller.povRight().whileTrue(
       Commands.sequence(
         shooterHood.setStateCommand(shooterhood_state.SHOOTING), 
@@ -191,6 +195,7 @@ public class RobotContainer {
         shooterWheels.setStateCommand(shooter_state.IDLE)
       ));
 
+    //Button to fire, if swerve is aimed and shooter is at speed.
     controller.rightTrigger().and(HubDrive::pidAtSetpoint).and(shooterWheels::atSetpoint).whileTrue(
       Commands.sequence(
       feederSubsystem.setStateCommand(feeder_state.RUN),

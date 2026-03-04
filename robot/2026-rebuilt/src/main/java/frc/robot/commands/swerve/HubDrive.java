@@ -59,7 +59,7 @@ public class HubDrive extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    Logger.recordOutput("CTRERobotPose", dt.getState().Pose);
+    Logger.recordOutput("Robot/CTRERobotPose", dt.getState().Pose);
           // 3. Get current robot heading
           double robotHeading = dt.getState().Pose.getRotation().getDegrees();
 
@@ -68,7 +68,6 @@ public class HubDrive extends Command {
           Logger.recordOutput("angleToGoal", angleToGoal);
           // 4. Calculate PID output (Rotational Speed)
           double rotationOutput = hubRotPID.calculate(robotHeading, angleToGoal);
-          SmartDashboard.putNumber("rotationoutput", rotationOutput);
           // 5. Apply to Drivetrain
           // We use FieldCentric so your Left Stick (driving) remains intuitive 
           // regardless of where the robot is facing.

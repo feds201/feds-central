@@ -109,6 +109,7 @@ public class Spindexer extends SubsystemBase {
   @Override
   public void periodic() {
     Logger.recordOutput("Robot/Shooter/SpindexerOn", currentState == spindexer_state.RUN);
+    Logger.recordOutput("Robot/Shooter/SpindexerState", currentState.toString());
   }
 
   // subsystem getters

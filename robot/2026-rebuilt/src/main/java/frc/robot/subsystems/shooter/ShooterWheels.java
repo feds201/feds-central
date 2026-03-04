@@ -123,7 +123,7 @@ public class ShooterWheels extends SubsystemBase {
   public void periodic() {
 
     Logger.recordOutput("Robot/Shooter/IsShooting", currentState == shooter_state.SHOOTING);
-
+    Logger.recordOutput("Robot/Shooter/ShooterState", currentState.toString());
     switch (currentState) {
       case SHOOTING:
       shooterLeader.setControl(velocityVoltageControl.withVelocity(getTargetVelocityShooting()));
@@ -181,10 +181,4 @@ public class ShooterWheels extends SubsystemBase {
   public Command setStateCommand(shooter_state state) {
     return runOnce(() -> setState(state));
   } 
-
-  public double velocityMultiplier = 1.0;
-
-  public void changeMultiplier(double toAdd){
-    velocityMultiplier += toAdd;
-  }
 }
