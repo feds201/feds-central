@@ -531,18 +531,20 @@ class _Checklist_recordState extends State<Checklist_record> {
           buildTextBoxs(
               "Outgoing Battery",
               [
+                buildNumberBox("Battery Tag", outgoing_number, Icon(Icons.tag),
+                        (value) {
+                      setState(() {
+                        outgoing_number = (double.tryParse(value) ?? 0);
+                      });
+                    }),
+
                 buildNumberBox("Battery Voltage", outgoing_battery_voltage,
                     Icon(Icons.tag), (value) {
                   setState(() {
                     outgoing_battery_voltage = (double.tryParse(value) ?? 0);
                   });
                 }),
-                buildNumberBox("Battery Tag", outgoing_number, Icon(Icons.tag),
-                    (value) {
-                  setState(() {
-                    outgoing_number = (double.tryParse(value) ?? 0);
-                  });
-                }),
+
                 buildNumberBox(
                     "Battery CCA", outgoing_battery_cca, Icon(Icons.tag),
                     (value) {
