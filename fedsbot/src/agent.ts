@@ -52,7 +52,7 @@ function getSessionOptions() {
     // bypassPermissions is broken in V2: https://github.com/anthropics/claude-code/issues/14279
     permissionMode: 'acceptEdits' as const,
     // Do not use `settingSources: ['project']` as it results in systemPrompt being ignored!
-    maxTurns: 10,
+    maxTurns: 15,
     canUseTool: async (toolName: string, input: Record<string, unknown>) => {
       if (toolName === 'Task' && input.subagent_type !== 'Explore') {
         return { behavior: 'deny' as const, message: 'Only Explore subagents are allowed' };
