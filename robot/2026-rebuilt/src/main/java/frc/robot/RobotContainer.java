@@ -47,7 +47,7 @@ public class RobotContainer {
   private HubDrive hubDrive;
 
   private final CommandXboxController controller = new CommandXboxController(0);
-
+  private final CommandXboxController operaterController= new CommandXboxController(1);
 
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
   
@@ -95,13 +95,24 @@ public class RobotContainer {
     controller.povUp()
        .whileTrue(new PathfindToPose(drivetrain, new Pose2d(2.0, 2.0, new Rotation2d())));
     
+    // -------- INTAKE CONTROLS ---------
 
     controller.leftTrigger()
-        .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED).andThen(rollersSubsystem.RollersCommand(RollerState.ON)))
+        .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED)
+        .andThen(rollersSubsystem.RollersCommand(RollerState.ON)))
         .onFalse(rollersSubsystem.RollersCommand(RollerState.OFF));
 
     controller.leftBumper()
         .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT));
+
+    operaterController.rightBumper()
+        .onTrue(intakeSubsystem.setMotorPower(0.1))
+        .onFalse(intakeSubsystem.setMotorPower( 0.0));
+
+    operaterController.rightBumper()
+        .onTrue(intakeSubsystem.setMotorPower(-0.1))
+        .onFalse(intakeSubsystem.setMotorPower( 0.0));
+
 
     // Default drive command: field-centric swerve with left stick + right stick rotation
     drivetrain.setDefaultCommand(
@@ -128,6 +139,15 @@ public class RobotContainer {
     controller.b()
         .onTrue(shooterHood.setStateCommand(shooterhood_state.AIMING_UP))
         .onFalse(shooterHood.setStateCommand(shooterhood_state.IN));
+
+    // Manual way to change the angle of the shooter hood
+    operaterController.a()
+      .onTrue(shooterHood.setMotorPower(0.1))
+      .onFalse(shooterHood.setMotorPower(0.0));
+
+    operaterController.b()
+      .onTrue(shooterHood.setMotorPower(-0.1))
+      .onFalse(shooterHood.setMotorPower(0.0));
 
     controller.x()
       .onTrue(Commands.sequence(
