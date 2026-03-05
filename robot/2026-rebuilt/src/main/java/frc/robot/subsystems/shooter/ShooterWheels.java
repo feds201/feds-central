@@ -5,10 +5,14 @@
 package frc.robot.subsystems.shooter;
 
 import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Rotation;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
+
+import java.util.Map;
+import java.util.function.DoubleSupplier;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -23,8 +27,12 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -36,6 +44,7 @@ import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 public class ShooterWheels extends SubsystemBase {
 
     public enum shooter_state {
+    TEST(RotationsPerSecond.of(0)),
     SHOOTING(RotationsPerSecond.of(0)),
     IDLE(RotationsPerSecond.of(0)),
     PASSING(RotationsPerSecond.of(0)),
@@ -63,6 +72,8 @@ public class ShooterWheels extends SubsystemBase {
     private shooter_state currentState = shooter_state.IDLE;
     private final CommandSwerveDrivetrain dt;
     private final SysIdRoutine m_flywheelSysId;
+    private ShuffleboardTab tab = Shuffleboard.getTab("testing");
+    private DoubleSupplier speed = ()->0.0;
   
   /** Creates a new Shooter. */
   public ShooterWheels(CommandSwerveDrivetrain dt) {
@@ -117,6 +128,13 @@ public class ShooterWheels extends SubsystemBase {
       var status = shooterLeader.getConfigurator().apply(config);
       if(status.isOK()) break;
     }
+
+    GenericEntry swanNeckPivotSpeedSetter = tab.add("wheel speed", 0.0)
+                .withWidget(BuiltInWidgets.kNumberSlider)
+                .withProperties(Map.of("min", 0, "max", .2))
+                .getEntry();
+                speed = () -> swanNeckPivotSpeedSetter.getDouble(0);
+
   }
 
   @Override
@@ -137,6 +155,9 @@ public class ShooterWheels extends SubsystemBase {
       shooterLeader.setControl(velocityVoltageControl.withVelocity(getTargetVelocityPassing())); //from passing table
         break;
       case LAYUP, HALFCOURT:
+      break;
+      case TEST:
+      setVelocity(RotationsPerSecond.of(speed.getAsDouble()));
       break;
     }
   }

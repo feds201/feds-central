@@ -11,7 +11,9 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.RobotMap.DrivetrainConstants;
+import frc.robot.RobotMap.ShooterConstants;
 import frc.robot.commands.swerve.HubDrive;
+import frc.robot.commands.swerve.PassingDrive;
 import frc.robot.commands.swerve.PathfindToPose;
 import frc.robot.commands.swerve.TeleopSwerve;
 import frc.robot.subsystems.intake.IntakeSubsystem;
@@ -27,9 +29,13 @@ import frc.robot.subsystems.shooter.ShooterWheels.shooter_state;
 import frc.robot.subsystems.spindexer.Spindexer;
 import frc.robot.subsystems.spindexer.Spindexer.spindexer_state;
 import frc.robot.sim.RebuiltSimManager;
+
+import static edu.wpi.first.units.Units.MetersPerSecond;
+
 import org.littletonrobotics.junction.Logger;
 
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
+import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.utils.LimelightWrapper;
 import frc.robot.utils.RTU.RootTestingUtility;
 import limelight.Limelight;
@@ -45,6 +51,8 @@ public class RobotContainer {
 
   private final CommandXboxController controller = new CommandXboxController(0);
   private final CommandXboxController operaterController= new CommandXboxController(1);
+
+  private final Telemetry telemetry = new Telemetry(TunerConstants.kSpeedAt12Volts.in(MetersPerSecond));
 
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
   
@@ -72,8 +80,7 @@ public class RobotContainer {
     configureBindingsOperator();
     
     configureRootTests();
-    
-    
+    drivetrain.registerTelemetry(telemetry::telemeterize);
   }
 
   public void updateLocalization() {
@@ -158,33 +165,36 @@ public class RobotContainer {
 
 
     //Button to shoot from against trench side
-    controller.y()
-      .onTrue(Commands.sequence(
-        feederSubsystem.setStateCommand(feeder_state.RUN),
-        spinDexer.setStateCommand(spindexer_state.RUN),
-        shooterHood.setStateCommand(shooterhood_state.HALFCOURT),
-        shooterWheels.setStateCommand(shooter_state.HALFCOURT)))
-      .onFalse(Commands.sequence(
-        feederSubsystem.setStateCommand(feeder_state.STOP),
-        spinDexer.setStateCommand(spindexer_state.STOP),
-        shooterWheels.setStateCommand(shooter_state.IDLE),
-        shooterHood.setStateCommand(shooterhood_state.IN)));
+    // controller.y()
+    //   .onTrue(Commands.sequence(
+    //     feederSubsystem.setStateCommand(feeder_state.RUN),
+    //     spinDexer.setStateCommand(spindexer_state.RUN),
+    //     shooterHood.setStateCommand(shooterhood_state.HALFCOURT),
+    //     shooterWheels.setStateCommand(shooter_state.HALFCOURT)))
+    //   .onFalse(Commands.sequence(
+    //     feederSubsystem.setStateCommand(feeder_state.STOP),
+    //     spinDexer.setStateCommand(spindexer_state.STOP),
+    //     shooterWheels.setStateCommand(shooter_state.IDLE),
+    //     shooterHood.setStateCommand(shooterhood_state.IN)));
 
     //Button to shoot from against hub
-    controller.x()
-      .onTrue(Commands.sequence(
-        feederSubsystem.setStateCommand(feeder_state.RUN),
-        spinDexer.setStateCommand(spindexer_state.RUN),
-        shooterWheels.setStateCommand(shooter_state.LAYUP),
-        shooterHood.setStateCommand(shooterhood_state.LAYUP)))
-      .onFalse(Commands.sequence(
-        feederSubsystem.setStateCommand(feeder_state.STOP),
-        spinDexer.setStateCommand(spindexer_state.STOP),
-        shooterWheels.setStateCommand(shooter_state.IDLE),
-        shooterHood.setStateCommand(shooterhood_state.IN)));
+    // controller.x()
+    //   .onTrue(Commands.sequence(
+    //     feederSubsystem.setStateCommand(feeder_state.RUN),
+    //     spinDexer.setStateCommand(spindexer_state.RUN),
+    //     shooterWheels.setStateCommand(shooter_state.LAYUP),
+    //     shooterHood.setStateCommand(shooterhood_state.LAYUP)))
+    //   .onFalse(Commands.sequence(
+    //     feederSubsystem.setStateCommand(feeder_state.STOP),
+    //     spinDexer.setStateCommand(spindexer_state.STOP),
+    //     shooterWheels.setStateCommand(shooter_state.IDLE),
+    //     shooterHood.setStateCommand(shooterhood_state.IN)));
 
-    //Button to aim and spin up shooter
-    controller.povRight().whileTrue(
+    controller.x().onTrue(shooterHood.setStateCommand(shooterhood_state.TEST).andThen(shooterWheels.setStateCommand(shooter_state.TEST)));
+    controller.y().onTrue(feederSubsystem.commandRun().andThen(spinDexer.setStateCommand(spindexer_state.RUN))).onFalse(feederSubsystem.commandStop().andThen(spinDexer.setStateCommand(spindexer_state.STOP)));
+
+    // If out of neutral zone, face hub and ready shoot
+    controller.povRight().and(()->!ShooterConstants.neutralZone.contains(drivetrain.getState().Pose.getTranslation())).whileTrue(
       Commands.sequence(
         shooterHood.setStateCommand(shooterhood_state.SHOOTING), 
         shooterWheels.setStateCommand(shooter_state.SHOOTING)
@@ -194,6 +204,19 @@ public class RobotContainer {
         shooterHood.setStateCommand(shooterhood_state.OUT), 
         shooterWheels.setStateCommand(shooter_state.IDLE)
       ));
+
+    // If in neutral zone, face outpost and ready shoot (passing shot)
+    controller.povRight().and(()->ShooterConstants.neutralZone.contains(drivetrain.getState().Pose.getTranslation())).whileTrue(
+       Commands.sequence(
+        shooterHood.setStateCommand(shooterhood_state.PASSING), 
+        shooterWheels.setStateCommand(shooter_state.PASSING)
+      ).alongWith(new PassingDrive(drivetrain, controller)))
+    .onFalse(
+      Commands.sequence(
+        shooterHood.setStateCommand(shooterhood_state.OUT), 
+        shooterWheels.setStateCommand(shooter_state.IDLE)
+      ));
+
 
     //Button to fire, if swerve is aimed and shooter is at speed.
     controller.rightTrigger().and(HubDrive::pidAtSetpoint).and(shooterWheels::atSetpoint).whileTrue(

@@ -7,6 +7,7 @@ import java.util.Map;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Rectangle2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
@@ -129,6 +130,8 @@ public final class RobotMap {
         public static final Rotation2d robotToShooterRotation = Rotation2d.fromDegrees(0.0);
         public static final Translation2d hubCenter = FieldConstants.Hub.innerCenterPoint.toTranslation2d();   
         public static final Translation2d centerPointOutpost = FieldConstants.Outpost.centerPoint;
+        public static final Rectangle2d neutralZone = new Rectangle2d(FieldConstants.LeftTrench.openingTopLeft.toTranslation2d(), FieldConstants.RightTrench.oppOpeningTopRight.toTranslation2d());
+    
         // This map is used to determine the velocity of the shooter based on the distance to the target. 
         //The key is the distance to the target in meters, and the value is the velocity of the shooter in rotations per second.`
         public static final InterpolatingDoubleTreeMap kShootingVelocityMap = InterpolatingDoubleTreeMap.ofEntries(

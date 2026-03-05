@@ -4,9 +4,13 @@
 
 package frc.robot.subsystems.shooter;
 
+import static edu.wpi.first.units.Units.Degree;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Rotations;
+
+import java.util.Map;
+import java.util.function.DoubleSupplier;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
@@ -17,8 +21,12 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
@@ -29,6 +37,7 @@ import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 public class ShooterHood extends SubsystemBase {
 
     public enum shooterhood_state {
+      TEST(Rotations.of(0)),
       IN(ShooterConstants.minHoodAngle),
       OUT(ShooterConstants.maxHoodAngle),
       PASSING(Rotations.of(0)),
@@ -59,6 +68,8 @@ public class ShooterHood extends SubsystemBase {
   private shooterhood_state currentState = shooterhood_state.IN;
   private final CommandSwerveDrivetrain dt;
   private double HoodAngleMultiplier = 1;
+  private ShuffleboardTab tab = Shuffleboard.getTab("testing");
+    private DoubleSupplier pos = ()->0.0;
 
   /** Creates a new Shooter. */
   public ShooterHood(CommandSwerveDrivetrain dt) {
@@ -82,6 +93,12 @@ public class ShooterHood extends SubsystemBase {
       var status = hoodMotor.getConfigurator().apply(config);
       if(status.isOK()) break;
     }
+
+     GenericEntry swanNeckPivotSpeedSetter = tab.add("hood pos", 0.0)
+                .withWidget(BuiltInWidgets.kNumberSlider)
+                .withProperties(Map.of("min", 0, "max", .2))
+                .getEntry();
+                pos = () -> swanNeckPivotSpeedSetter.getDouble(0);
   }
 
   @Override
@@ -110,6 +127,9 @@ public class ShooterHood extends SubsystemBase {
       
       case LAYUP, HALFCOURT:
         break;
+      case TEST:
+      setAngle(Rotations.of(pos.getAsDouble()));
+      break;
     }
     Logger.recordOutput("Robot/Shooter/HoodAngleDeg", getPosition().in(Degrees));
     // This method will be called once per scheduler run
