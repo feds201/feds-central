@@ -30,30 +30,64 @@ class _Checklist_recordState extends State<Checklist_record> {
   late String matchkey;
 
   //drive train
-  late bool drive_motors, drive_wheels, drive_gearboxes, drive_wires, drive_steer_motors, drive_encoders, drive_lime_lights, drive_nuts_and_bolts;
+  late bool drive_motors,
+      drive_wheels,
+      drive_gearboxes,
+      drive_wires,
+      drive_steer_motors,
+      drive_encoders,
+      drive_lime_lights,
+      drive_nuts_and_bolts;
   late List<String> drivetrain;
 
   //structure
-  late bool structure_frame, structure_hopper_panels, structure_brain_pan, structure_belly_pan, structure_nuts_and_bolts;
+  late bool structure_frame,
+      structure_hopper_panels,
+      structure_brain_pan,
+      structure_belly_pan,
+      structure_nuts_and_bolts;
   late List<String> structure;
 
   //intake
-  late bool intake_rack, intake_pinion, intake_belts, intake_rollers, intake_motors, intake_limit_switches, intake_lime_lights, intake_nuts_and_bolts, intake_wires;
+  late bool intake_rack,
+      intake_pinion,
+      intake_belts,
+      intake_rollers,
+      intake_boot,
+      intake_motors,
+      intake_limit_switches,
+      intake_lime_lights,
+      intake_nuts_and_bolts,
+      intake_wires;
   late List<String> intake;
 
   //spindexer
-  late bool spindexer_panel, spindexer_churros, spindexer_motor, spindexer_wheels, spindexer_nuts_and_bolts;
+  late bool spindexer_panel,
+      spindexer_churros,
+      spindexer_3d_prints,
+      spindexer_motor,
+      spindexer_wheels,
+      spindexer_nuts_and_bolts;
   late List<String> spindexer;
 
   //kicker
-  late bool kicker_plates, kicker_rollers, kicker_belts, kicker_gears, kicker_motor, kicker_radio, kicker_ethernet_switch, kicker_nuts_and_bolts, kicker_wires;
+  late bool kicker_plates,
+      kicker_rollers,
+      kicker_belts,
+      kicker_gears,
+      kicker_motor,
+      kicker_radio,
+      kicker_ethernet_switch,
+      kicker_nuts_and_bolts,
+      kicker_wires;
   late List<String> kicker;
 
   //shooter
-  late bool shooter_flywheels, shooter_hood, shooter_hood_gears, shooter_gears, shooter_motors, shooter_nuts_and_bolts, shooter_wires;
+  late bool shooter_flywheels,
+      shooter_motors,
+      shooter_nuts_and_bolts,
+      shooter_wires;
   late List<String> shooter;
-
-
 
   late double outgoing_number;
   late double outgoing_battery_voltage;
@@ -65,8 +99,11 @@ class _Checklist_recordState extends State<Checklist_record> {
   late bool outgoing_battery_replaced;
 
   late String alliance_color;
+  late String bumper_color;
+  late String last_battery_tag;
 
   late TextEditingController notes;
+  late TextEditingController notes2;
 
   late bool isPlayoffMatch;
   late String manualPlayoffMatchType; // "Quarterfinal", "Semifinal", "Final"
@@ -86,8 +123,14 @@ class _Checklist_recordState extends State<Checklist_record> {
         ConfettiController(duration: const Duration(seconds: 2));
 
     notes = TextEditingController();
+    notes2 = TextEditingController();
     // Initialize with empty values
     matchkey = widget.list_item.matchkey;
+    bumper_color = "";
+    last_battery_tag = "";
+
+    // Get battery tag from most recently pit checked match
+    _loadLastBatteryTag();
     isPlayoffMatch = widget.list_item.matchkey.contains('_qf') ||
         widget.list_item.matchkey.contains('_sf') ||
         widget.list_item.matchkey.contains('_f');
@@ -99,15 +142,19 @@ class _Checklist_recordState extends State<Checklist_record> {
       manualAlliancePosition =
           widget.list_item.alliance_selection_data!['position'] ?? 'Captain';
 
-      if (widget.list_item.matchkey.contains('_qf')) {
-        manualPlayoffMatchType = "Quarterfinal";
-      } else if (widget.list_item.matchkey.contains('_sf')) {
-        manualPlayoffMatchType = "Semifinal";
+      // Combine playoffs and finals as requested
+      if (widget.list_item.matchkey.contains('_qf') ||
+          widget.list_item.matchkey.contains('_sf') ||
+          widget.list_item.matchkey.contains('_f')) {
+        manualPlayoffMatchType = "Playoff";
+      } else if (widget.list_item.matchkey.contains('_practice')) {
+        // Practice should be similar to playoff
+        manualPlayoffMatchType = "Practice";
       } else {
-        manualPlayoffMatchType = "Final";
+        manualPlayoffMatchType = "Qualification";
       }
     } else {
-      manualPlayoffMatchType = "Quarterfinal";
+      manualPlayoffMatchType = "Playoff";
       manualAllianceNumber = 1;
       manualAlliancePosition = "Captain";
     }
@@ -117,6 +164,7 @@ class _Checklist_recordState extends State<Checklist_record> {
       alliance_color = widget.list_item.alliance_color;
     }
     alliance_color = "";
+    bumper_color = "";
 
     //drive train
     drive_motors = false;
@@ -142,6 +190,7 @@ class _Checklist_recordState extends State<Checklist_record> {
     intake_pinion = false;
     intake_belts = false;
     intake_rollers = false;
+    intake_boot = false;
     intake_motors = false;
     intake_limit_switches = false;
     intake_lime_lights = false;
@@ -152,6 +201,7 @@ class _Checklist_recordState extends State<Checklist_record> {
     //spindexer
     spindexer_panel = false;
     spindexer_churros = false;
+    spindexer_3d_prints = false;
     spindexer_motor = false;
     spindexer_wheels = false;
     spindexer_nuts_and_bolts = false;
@@ -171,9 +221,6 @@ class _Checklist_recordState extends State<Checklist_record> {
 
     //shooter
     shooter_flywheels = false;
-    shooter_hood = false;
-    shooter_hood_gears = false;
-    shooter_gears = false;
     shooter_motors = false;
     shooter_nuts_and_bolts = false;
     shooter_wires = false;
@@ -204,8 +251,6 @@ class _Checklist_recordState extends State<Checklist_record> {
         // Populate UI state variables with existing data
 
         setState(() {
-
-
           returning_battery_voltage = existingRecord.returning_battery_voltage;
           returning_battery_cca = existingRecord.returning_battery_cca;
           returning_number = existingRecord.returning_number;
@@ -216,6 +261,8 @@ class _Checklist_recordState extends State<Checklist_record> {
           returning_battery_replacd = existingRecord.outgoing_battery_replaced;
 
           alliance_color = existingRecord.alliance_color;
+          bumper_color = existingRecord
+              .alliance_color; // Use alliance_color as bumper_color for backwards compatibility
           image1 = existingRecord.img1;
           image2 = existingRecord.img2;
           image3 = existingRecord.img3;
@@ -244,6 +291,7 @@ class _Checklist_recordState extends State<Checklist_record> {
           intake_pinion = existingRecord.intake_pinion;
           intake_belts = existingRecord.intake_belts;
           intake_rollers = existingRecord.intake_roller;
+          intake_boot = existingRecord.intake_boot; // Load new field
           intake_motors = existingRecord.intake_motors;
           intake_limit_switches = existingRecord.intake_limit_switches;
           intake_lime_lights = existingRecord.intake_lime_lights;
@@ -253,6 +301,8 @@ class _Checklist_recordState extends State<Checklist_record> {
           //spindexer
           spindexer_panel = existingRecord.spindexer_panel;
           spindexer_churros = existingRecord.spindexer_churros;
+          spindexer_3d_prints =
+              existingRecord.spindexer_3d_prints; // Load new field
           spindexer_motor = existingRecord.spindexer_motor;
           spindexer_wheels = existingRecord.spindexer_wheels;
           spindexer_nuts_and_bolts = existingRecord.spindexer_nuts_and_bolts;
@@ -270,15 +320,13 @@ class _Checklist_recordState extends State<Checklist_record> {
 
           //shooter
           shooter_flywheels = existingRecord.shooter_flywheels;
-          shooter_hood = existingRecord.shooter_hood;
-          shooter_hood_gears = existingRecord.shooter_hood_gears;
-          shooter_gears = existingRecord.shooter_gears;
           shooter_motors = existingRecord.shooter_motors;
           shooter_nuts_and_bolts = existingRecord.shooter_nuts_and_bolts;
           shooter_wires = existingRecord.shooter_wires;
 
-
           notes.text = existingRecord.note;
+          notes2.text = existingRecord
+              .note; // Initialize second notes with same content initially
 
           // Populate lists from boolean values
 
@@ -307,6 +355,7 @@ class _Checklist_recordState extends State<Checklist_record> {
           if (intake_pinion) intake.add("Pinion");
           if (intake_belts) intake.add("Belts");
           if (intake_rollers) intake.add("Rollers");
+          if (intake_boot) intake.add("Boot");
           if (intake_motors) intake.add("Motors");
           if (intake_limit_switches) intake.add("Limit Switches");
           if (intake_lime_lights) intake.add("Lime Lights");
@@ -317,6 +366,7 @@ class _Checklist_recordState extends State<Checklist_record> {
           spindexer = [];
           if (spindexer_panel) spindexer.add("Panel");
           if (spindexer_churros) spindexer.add("Churros");
+          if (spindexer_3d_prints) spindexer.add("3D Prints");
           if (spindexer_motor) spindexer.add("Motor");
           if (spindexer_wheels) spindexer.add("Wheels");
           if (spindexer_nuts_and_bolts) spindexer.add("Nuts and Bolts");
@@ -336,9 +386,6 @@ class _Checklist_recordState extends State<Checklist_record> {
           //shooter
           shooter = [];
           if (shooter_flywheels) shooter.add("Flywheels");
-          if (shooter_hood) shooter.add("Hood");
-          if (shooter_hood_gears) shooter.add("Hood Gears");
-          if (shooter_gears) shooter.add("Gears");
           if (shooter_motors) shooter.add("Motors");
           if (shooter_nuts_and_bolts) shooter.add("Nuts and Bolts");
           if (shooter_wires) shooter.add("Wires");
@@ -356,17 +403,63 @@ class _Checklist_recordState extends State<Checklist_record> {
     } finally {}
   }
 
+  // Load battery tag from most recently pit checked match
+  void _loadLastBatteryTag() {
+    try {
+      // Get all pit checklist records
+      PitCheckListDatabase.LoadAll();
+      var allRecords = PitCheckListDatabase.Export();
+
+      if (allRecords.isNotEmpty) {
+        // Find the most recent record that has a battery tag
+        PitChecklistItem? mostRecentWithBattery;
+
+        for (var record in allRecords.values) {
+          if (record is PitChecklistItem && record.outgoing_number > 0) {
+            mostRecentWithBattery = record;
+          }
+        }
+
+        if (mostRecentWithBattery != null) {
+          setState(() {
+            last_battery_tag =
+                mostRecentWithBattery!.outgoing_number.toString();
+          });
+        }
+      }
+    } catch (e) {
+      print("Error loading last battery tag: $e");
+    }
+  }
+
+  // Check if all checklist items are completed
+  bool _areAllItemsChecked() {
+    return drivetrain.isNotEmpty &&
+        structure.isNotEmpty &&
+        intake.isNotEmpty &&
+        spindexer.isNotEmpty &&
+        kicker.isNotEmpty &&
+        shooter.isNotEmpty &&
+        outgoing_battery_voltage > 0 &&
+        outgoing_number > 0 &&
+        returning_battery_voltage > 0 &&
+        returning_number > 0 &&
+        bumper_color.isNotEmpty &&
+        notes.text.isNotEmpty;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         leading: Builder(builder: (context) {
           return IconButton(
-              icon: const Icon(Icons.undo),
+              icon: const Icon(Icons.arrow_back),
               color: !islightmode() ? Colors.white : Colors.black,
               onPressed: () {
-                  _recordData();
-                  Navigator.pop(context);});
+                _recordData();
+                Navigator.pop(context);
+              });
         }),
         backgroundColor: islightmode() ? Colors.white : darkColors.goodblack,
         centerTitle: true,
@@ -389,11 +482,72 @@ class _Checklist_recordState extends State<Checklist_record> {
     );
   }
 
-
   Widget _buildQuestions() {
+    // Calculate if all checklist items are valid/checked
+    bool allItemsChecked = _areAllItemsChecked();
+
     return SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Column(children: [
+          // Overall completion indicator
+          Container(
+            margin: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(12.0),
+            decoration: BoxDecoration(
+              color: allItemsChecked
+                  ? Colors.green.withOpacity(0.1)
+                  : Colors.orange.withOpacity(0.1),
+              border: Border.all(
+                color: allItemsChecked ? Colors.green : Colors.orange,
+                width: 2,
+              ),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  allItemsChecked ? Icons.check_circle : Icons.warning,
+                  color:
+                      allItemsChecked ? Colors.green[700] : Colors.orange[700],
+                  size: 24,
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  allItemsChecked
+                      ? 'All checklist items completed'
+                      : 'Checklist incomplete - please review all sections',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: allItemsChecked
+                        ? Colors.green[700]
+                        : Colors.orange[700],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // Battery Display at front
+          if (last_battery_tag.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Container(
+                padding: const EdgeInsets.all(12.0),
+                decoration: BoxDecoration(
+                  color: Colors.blue.withOpacity(0.1),
+                  border: Border.all(color: Colors.blue),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  'Last Battery Tag: $last_battery_tag',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blue[700],
+                  ),
+                ),
+              ),
+            ),
           // MatchInfo(
           //   assignedTeam: assignedTeam,
           //   assignedStation: assignedStation,
@@ -424,7 +578,7 @@ class _Checklist_recordState extends State<Checklist_record> {
                   image5 = base64Images[4];
                 });
               }),
-          buildTextBox("Notes", "", Icon(Icons.note), notes),
+          buildTextBox("Notes 1", "", Icon(Icons.note), notes),
           buildMultiChoiceBox(
               "DriveTrain",
               Icon(Icons.star_outline, size: 30, color: Colors.blue),
@@ -466,6 +620,7 @@ class _Checklist_recordState extends State<Checklist_record> {
                 "Pinion",
                 "Belts",
                 "Rollers",
+                "Boot", // Added between Rollers and Motors as requested
                 "Motors",
                 "Limit Switches",
                 "Lime Lights",
@@ -483,6 +638,7 @@ class _Checklist_recordState extends State<Checklist_record> {
               [
                 "Panel",
                 "Churros",
+                "3D Prints", // Added before Motor as requested
                 "Motor",
                 "Wheels",
                 "Nuts and Bolts",
@@ -516,9 +672,7 @@ class _Checklist_recordState extends State<Checklist_record> {
               Icon(Icons.star_outline, size: 30, color: Colors.blue),
               [
                 "Flywheels",
-                "Hood",
-                "Hood Gears",
-                "Gears",
+                // Removed "Hood", "Hood Gears", and "Gears" as requested
                 "Motors",
                 "Nuts and Bolts",
                 "Wires",
@@ -532,19 +686,17 @@ class _Checklist_recordState extends State<Checklist_record> {
               "Outgoing Battery",
               [
                 buildNumberBox("Battery Tag", outgoing_number, Icon(Icons.tag),
-                        (value) {
-                      setState(() {
-                        outgoing_number = (double.tryParse(value) ?? 0);
-                      });
-                    }),
-
+                    (value) {
+                  setState(() {
+                    outgoing_number = (double.tryParse(value) ?? 0);
+                  });
+                }),
                 buildNumberBox("Battery Voltage", outgoing_battery_voltage,
                     Icon(Icons.tag), (value) {
                   setState(() {
                     outgoing_battery_voltage = (double.tryParse(value) ?? 0);
                   });
                 }),
-
                 buildNumberBox(
                     "Battery CCA", outgoing_battery_cca, Icon(Icons.tag),
                     (value) {
@@ -591,7 +743,20 @@ class _Checklist_recordState extends State<Checklist_record> {
                 })
               ],
               Icon(Icons.add_ic_call_outlined)),
-          buildTextBox("Notes", "", Icon(Icons.note), notes),
+          buildTextBox("Notes 2", "", Icon(Icons.note), notes2),
+          // Bumper color selection at end as requested
+          buildMultiChoiceBox(
+              "Bumper Color",
+              Icon(Icons.color_lens, size: 30, color: Colors.blue),
+              [
+                "Red",
+                "Blue",
+              ],
+              bumper_color.isEmpty ? [] : [bumper_color], (value) {
+            setState(() {
+              bumper_color = value.isEmpty ? "" : value.first;
+            });
+          }),
           const SizedBox(height: 20),
           _buildFunButton(),
         ]));
@@ -666,7 +831,6 @@ class _Checklist_recordState extends State<Checklist_record> {
 
   void _recordData() {
     PitChecklistItem record = PitChecklistItem(
-
       matchkey: matchkey,
 
       returning_battery_voltage: returning_battery_voltage,
@@ -696,6 +860,7 @@ class _Checklist_recordState extends State<Checklist_record> {
       intake_pinion: intake.contains("Pinion"),
       intake_belts: intake.contains("Belts"),
       intake_roller: intake.contains("Rollers"),
+      intake_boot: intake.contains("Boot"), // Now properly supported
       intake_motors: intake.contains("Motors"),
       intake_limit_switches: intake.contains("Limit Switches"),
       intake_lime_lights: intake.contains("Lime Lights"),
@@ -704,6 +869,8 @@ class _Checklist_recordState extends State<Checklist_record> {
       //spindexer
       spindexer_panel: spindexer.contains("Panel"),
       spindexer_churros: spindexer.contains("Churros"),
+      spindexer_3d_prints:
+          spindexer.contains("3D Prints"), // Now properly supported
       spindexer_motor: spindexer.contains("Motor"),
       spindexer_wheels: spindexer.contains("Wheels"),
       spindexer_nuts_and_bolts: spindexer.contains("Nuts and Bolts"),
@@ -719,15 +886,15 @@ class _Checklist_recordState extends State<Checklist_record> {
       kicker_wires: kicker.contains("Wires"),
       //shooter
       shooter_flywheels: shooter.contains("Flywheels"),
-      shooter_hood: shooter.contains("Hood"),
-      shooter_hood_gears: shooter.contains("Hood Gears"),
-      shooter_gears: shooter.contains("Gears"),
+      shooter_hood: false, // Set to false since we removed it from UI
+      shooter_hood_gears: false, // Set to false since we removed it from UI
+      shooter_gears: false, // Set to false since we removed it from UI
       shooter_motors: shooter.contains("Motors"),
       shooter_nuts_and_bolts: shooter.contains("Nuts and Bolts"),
       shooter_wires: shooter.contains("Wires"),
 
-      alliance_color: alliance_color,
-      note: notes.text,
+      alliance_color: bumper_color.isNotEmpty ? bumper_color : alliance_color,
+      note: "${notes.text}\n---NOTES 2---\n${notes2.text}",
       img1: image1,
       img2: image2,
       img3: image3,

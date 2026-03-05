@@ -1448,6 +1448,7 @@ class PitChecklistItem {
   bool intake_pinion = false;
   bool intake_belts = false;
   bool intake_roller = false;
+  bool intake_boot = false; // New field for Boot
   bool intake_motors = false;
   bool intake_limit_switches = false;
   bool intake_lime_lights = false;
@@ -1457,6 +1458,7 @@ class PitChecklistItem {
   //spindexer
   bool spindexer_panel = false;
   bool spindexer_churros = false;
+  bool spindexer_3d_prints = false; // New field for 3D Prints
   bool spindexer_motor = false;
   bool spindexer_wheels = false;
   bool spindexer_nuts_and_bolts = false;
@@ -1518,6 +1520,7 @@ class PitChecklistItem {
     required this.intake_pinion,
     required this.intake_belts,
     required this.intake_roller,
+    required this.intake_boot, // New required field
     required this.intake_motors,
     required this.intake_limit_switches,
     required this.intake_lime_lights,
@@ -1526,6 +1529,7 @@ class PitChecklistItem {
     //spindexer
     required this.spindexer_panel,
     required this.spindexer_churros,
+    required this.spindexer_3d_prints, // New required field
     required this.spindexer_motor,
     required this.spindexer_wheels,
     required this.spindexer_nuts_and_bolts,
@@ -1570,9 +1574,9 @@ class PitChecklistItem {
         //structure
         '$structure_frame,$structure_hopper_panels,$structure_brain_pan,$structure_belly_pan,$structure_nuts_and_bolts'
         //intake
-        '$intake_rack,$intake_pinion,$intake_belts,$intake_roller,$intake_motors,$intake_limit_switches,$intake_lime_lights,$intake_nuts_and_bolts,$intake_wires,'
+        '$intake_rack,$intake_pinion,$intake_belts,$intake_roller,$intake_boot,$intake_motors,$intake_limit_switches,$intake_lime_lights,$intake_nuts_and_bolts,$intake_wires,'
         //spindexer
-        '$spindexer_panel,$spindexer_churros,$spindexer_motor,$spindexer_wheels,$spindexer_nuts_and_bolts'
+        '$spindexer_panel,$spindexer_churros,$spindexer_3d_prints,$spindexer_motor,$spindexer_wheels,$spindexer_nuts_and_bolts'
         //kicker
         '$kicker_plates,$kicker_roller,$kicker_belts,$kicker_gears,$kicker_motor,$kicker_radio,$kicker_ethernet_switch,$kicker_nuts_and_bolts,$kicker_wires,'
         //shooter
@@ -1611,6 +1615,7 @@ class PitChecklistItem {
       'intake_pinion': intake_pinion,
       'intake_belts': intake_belts,
       'intake_roller': intake_roller,
+      'intake_boot': intake_boot,
       'intake_motors': intake_motors,
       'intake_limit_switches': intake_limit_switches,
       'intake_lime_lights': intake_lime_lights,
@@ -1619,6 +1624,7 @@ class PitChecklistItem {
       //spindexer
       'spindexer_panel': spindexer_panel,
       'spindexer_churros': spindexer_churros,
+      'spindexer_3d_prints': spindexer_3d_prints,
       'spindexer_motor': spindexer_motor,
       'spindexer_wheels': spindexer_wheels,
       'spindexer_nuts_and_bolts': spindexer_nuts_and_bolts,
@@ -1687,6 +1693,7 @@ class PitChecklistItem {
         intake_pinion: json['intake_pinion'] ?? false,
         intake_belts: json['intake_belts'] ?? false,
         intake_roller: json['intake_roller'] ?? false,
+        intake_boot: json['intake_boot'] ?? false,
         intake_motors: json['intake_motors'] ?? false,
         intake_limit_switches: json['intake_limit_switches'] ?? false,
         intake_lime_lights: json['intake_lime_lights'] ?? false,
@@ -1695,6 +1702,7 @@ class PitChecklistItem {
         //spindexer
         spindexer_panel: json['spindexer_panel'] ?? false,
         spindexer_churros: json['spindexer_churros'] ?? false,
+        spindexer_3d_prints: json['spindexer_3d_prints'] ?? false,
         spindexer_motor: json['spindexer_motor'] ?? false,
         spindexer_wheels: json['spindexer_wheels'] ?? false,
         spindexer_nuts_and_bolts: json['spindexer_nuts_and_bolts'] ?? false,
