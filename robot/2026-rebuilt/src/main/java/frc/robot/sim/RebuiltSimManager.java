@@ -103,10 +103,10 @@ public class RebuiltSimManager {
 
     // ── Intake zone bounds (robot-relative, placeholder) ───────────────────
 
-    /** Intake zone forward start distance from robot center. */
-    private static final double INTAKE_X_MIN = 0.35;
-    /** Intake zone forward end distance from robot center. */
-    private static final double INTAKE_X_MAX = 0.5;
+    /** Intake zone forward start distance from robot center. (note: intake is behind us) */
+    private static final double INTAKE_X_MIN = -0.50;
+    /** Intake zone forward end distance from robot center. (note: intake is behind us) */
+    private static final double INTAKE_X_MAX = -0.35;
     /** Intake zone left/right half-width from robot center. */
     private static final double INTAKE_Y_MIN = -0.25;
     private static final double INTAKE_Y_MAX = 0.25;
@@ -131,21 +131,47 @@ public class RebuiltSimManager {
     private static final double HOOD_MIN_RAD = Math.toRadians(10);
     /** Maximum sim hood angle (placeholder). */
     private static final double HOOD_MAX_RAD = Math.toRadians(80);
+    /** Angle changes by this much to visually match ball path */
+    private static final double HOOD_OFFSET_RAD = Math.toRadians(70);
     /** Default sim hood angle (placeholder). */
     private static final double HOOD_DEFAULT_RAD = Math.toRadians(45);
     /** Fixed launch speed when shooting (placeholder, m/s). */
     private static final double LAUNCH_SPEED_MPS = 6.0;
 
+    // ── Shooter launch geometry ─────────────────────────────────────────────
+
+    /** Forward X position of the shooter hood from robot center (meters). */
+    private static final double SHOOTER_HOOD_FORWARD_X = 0.243;
+
+    /**
+     * These 2 values combined MUST ensure we clear the chassis otherwise
+     * the physics engine will have balls colliding w/ the robot immediately
+     * upon shooting
+     */
+    private static final double LAUNCH_HEIGHT = 0.55;
+    private static final double MUZZLE_FORWARD_OFFSET = SHOOTER_HOOD_FORWARD_X - RebuiltGamePieces.FUEL.getRadius();
+
+    /** Lateral distance from centerline for each barrel (meters). */
+    private static final double BARREL_LATERAL_OFFSET = 0.08;
+
+    /** Number of shot events per second (each event fires both barrels). */
+    private static final double SHOTS_PER_SECOND = 8;
+
     // ── Component animation speeds (rad/s) ─────────────────────────────────
 
-    private static final double INTAKE_ROLLER_SPEED = 10.0;
+    private static final double INTAKE_ROLLER_SPEED = 20.0;
+    private static final double SPINDEXER_WHEEL_SPEED = 5.0;
     private static final double FEEDER_ROLLER_SPEED = 15.0;
     private static final double SHOOTER_ROLLER_SPEED = 30.0;
+
+    // Intake extension translation (delta from retracted position)
+    private static final double INTAKE_EXTEND_X = -0.302;
+    private static final double INTAKE_EXTEND_Z = -0.098;
 
     // ── Fuel detection Limelight (limelight-one, rear-facing) ───────────────
 
     private static final String FUEL_LL_NAME = "limelight-one";
-    private static final Transform3d FUEL_LL_MOUNT = new Transform3d(
+  private static final Transform3d FUEL_LL_MOUNT = new Transform3d(
             new Translation3d(-0.4, 0, 0.305),
             new Rotation3d(0, Math.toRadians(30), Math.toRadians(180)));
     /** Near plane distance for fuel detection frustum. */
@@ -184,6 +210,7 @@ public class RebuiltSimManager {
 
     // Animation angle accumulators (radians)
     private double rollerAngleAccum = 0;
+    private double spindexerAngleAccum = 0;
     private double feederAngleAccum = 0;
     private double shooterRollerAngleAccum = 0;
 
@@ -319,7 +346,11 @@ public class RebuiltSimManager {
                         && feeder.getCurrentState() == feeder_state.RUN
                         && spindexer.getCurrentState() == spindexer_state.RUN,
                 () -> chassis.getBody().getLinearVel().get0(),
-                () -> chassis.getBody().getLinearVel().get1());
+                () -> chassis.getBody().getLinearVel().get1(),
+                LAUNCH_HEIGHT,
+                MUZZLE_FORWARD_OFFSET,
+                BARREL_LATERAL_OFFSET,
+                SHOTS_PER_SECOND);
 
         // --- Scoring & Telemetry ---
         Logger.recordOutput("Sim/State", "Loading scoring");
@@ -456,8 +487,13 @@ public class RebuiltSimManager {
         if (intake.getState() == RollersSubsystem.RollerState.ON) {
             rollerAngleAccum += INTAKE_ROLLER_SPEED * DT;
         }
-        if (shooterWheels.getCurrentState() == shooter_state.SHOOTING) {
+        if (spindexer.getCurrentState() == spindexer_state.RUN) {
+            spindexerAngleAccum += SPINDEXER_WHEEL_SPEED * DT;
+        }
+        if (feeder.getCurrentState() == feeder_state.RUN) {
             feederAngleAccum += FEEDER_ROLLER_SPEED * DT;
+        }
+        if (shooterWheels.getCurrentState() == shooter_state.SHOOTING) {
             shooterRollerAngleAccum += SHOOTER_ROLLER_SPEED * DT;
         }
 
@@ -483,43 +519,70 @@ public class RebuiltSimManager {
         // Game piece poses for AdvantageScope
         gamePieceManager.publishPoses((key, poses) -> Logger.recordOutput(key, poses));
 
-        // Component poses for articulated AdvantageScope robot model
+        // Component poses for articulated AdvantageScope robot model.
+        // Array order must match the model_N.glb files in the AdvantageScope config.
+        //
+        // Moving parts need a position offset because CAD models have their origin at
+        // the robot origin, not at their rotation axis. The AdvantageScope config uses
+        // zeroPosition/zeroRotation to shift each model so its origin is at the axle,
+        // then the code pose here places it back at the correct location with rotation
+        // applied. Exception: spindexer star/omni wheel CAD files already have their
+        // origin at the axle, so no zeroPosition was needed in the config.
+        //
+        //  0: Intake - Stationary          (static)
+        //  1: Intake - Hopper              (extension translation only)
+        //  2: Intake - Rollers             (Y rotation + extension translation)
+        //  3: Spindexer - Assembly         (static)
+        //  4: Spindexer - Omni Wheel 1     (Z rotation, axle 1)
+        //  5: Spindexer - Star Wheel 1     (Z rotation, axle 1)
+        //  6: Spindexer - Omni Wheel 2     (Z rotation, axle 2, opposite)
+        //  7: Spindexer - Star Wheel 2     (Z rotation, axle 2, opposite)
+        //  8: Feeder - Stationary          (static)
+        //  9: Feeder - Wheels Lower Front  (Y rotation)
+        // 10: Feeder - Wheels Lower Back   (Y rotation, opposite)
+        // 11: Feeder - Wheels Top Front    (Y rotation)
+        // 12: Feeder - Wheels Top Back     (Y rotation, opposite)
+        // 13: Shooter - Stationary Base    (static)
+        // 14: Shooter - Hood               (Y rotation, hood angle)
+        // 15: Shooter - Wheels             (Y rotation)
+
         boolean intaking = intake.getState() == RollersSubsystem.RollerState.ON;
         boolean shooting = shooterWheels.getCurrentState() == shooter_state.SHOOTING;
 
-        Pose3d shooterHoodPose = new Pose3d(
-                new Translation3d(),
-                new Rotation3d(simHoodAngleRad - Math.PI / 4, 0, 0));
+        // Intake extension: rollers and hopper translate out when deployed
+        boolean intakeExtended = intakeSubsystem.getState() == IntakeState.EXTENDED;
+        Translation3d intakeExtension = intakeExtended
+                ? new Translation3d(INTAKE_EXTEND_X, 0, INTAKE_EXTEND_Z)
+                : new Translation3d();
 
-        double rollerAngle = intaking ? (rollerAngleAccum % (2 * Math.PI)) : 0;
-        Pose3d intakeRollerPose = new Pose3d(
-                new Translation3d(),
-                new Rotation3d(rollerAngle, 0, 0));
-
-        double feederAngle = shooting ? (feederAngleAccum % (2 * Math.PI)) : 0;
-        Pose3d feederRollerPose = new Pose3d(
-                new Translation3d(),
-                new Rotation3d(feederAngle, 0, 0));
-
-        double shooterRollerAngle = shooting ? (shooterRollerAngleAccum % (2 * Math.PI)) : 0;
-        Pose3d shooterRollerPose = new Pose3d(
-                new Translation3d(),
-                new Rotation3d(shooterRollerAngle, 0, 0));
-
-        Pose3d verticalFeederPose = new Pose3d(
-                new Translation3d(),
-                new Rotation3d(0, feederAngle, 0));
+        double rollerAngle = intaking ? (-rollerAngleAccum % (2 * Math.PI)) : 0;
+        double spindexerAngle = spindexerAngleAccum % (2 * Math.PI);
+        double feederAngle = feederAngleAccum % (2 * Math.PI);
+        double shooterAngle = shooting ? ((shooterRollerAngleAccum) % (2 * Math.PI)) : 0;
+        double hoodAngle = simHoodAngleRad - HOOD_OFFSET_RAD;
 
         Logger.recordOutput("Sim/ComponentPoses",
                 new Pose3d[]{
-                    shooterHoodPose,
-                    intakeRollerPose,
-                    feederRollerPose,
-                    feederRollerPose,
-                    verticalFeederPose,
-                    verticalFeederPose,
-                    shooterRollerPose,
-                    new Pose3d()
+                    new Pose3d(),                                                                                //  0: Intake - Stationary
+                    new Pose3d(intakeExtension, new Rotation3d()),                                               //  1: Intake - Hopper
+                    new Pose3d(intakeExtension.plus(
+                        new Translation3d(-0.2812, 0, 0.2627)), 
+                        new Rotation3d(0, rollerAngle, 0)),                                                      //  2: Intake - Rollers
+                    new Pose3d(),                                                                                //  3: Spindexer - Assembly
+                    new Pose3d(new Translation3d(0.002, 0.0635, 0.184), new Rotation3d(0, 0, spindexerAngle)),   //  4: Spindexer - Omni 1
+                    new Pose3d(new Translation3d(0.002, 0.0635, 0.318), new Rotation3d(0, 0, spindexerAngle)),   //  5: Spindexer - Star 1
+                    new Pose3d(new Translation3d(0.002, -0.0635, 0.184), new Rotation3d(0, 0, -spindexerAngle)), //  6: Spindexer - Omni 2
+                    new Pose3d(new Translation3d(0.002, -0.0635, 0.318), new Rotation3d(0, 0, -spindexerAngle)), //  7: Spindexer - Star 2
+                    new Pose3d(),                                                                                //  8: Feeder - Stationary
+                    new Pose3d(new Translation3d(0.118, 0, 0.280), new Rotation3d(0, -feederAngle, 0)),          //  9: Feeder - Lower Front
+                    new Pose3d(new Translation3d(0.316, 0, 0.257), new Rotation3d(0, feederAngle, 0)),           // 10: Feeder - Lower Back
+                    new Pose3d(new Translation3d(0.075, 0, 0.380), new Rotation3d(0, -feederAngle, 0)),          // 11: Feeder - Top Front
+                    new Pose3d(new Translation3d(0.270, 0, 0.360), new Rotation3d(0, feederAngle, 0)),           // 12: Feeder - Top Back
+                    new Pose3d(),                                                                                // 13: Shooter - Stationary Base
+                    new Pose3d(
+                        new Translation3d(SHOOTER_HOOD_FORWARD_X, 0.0, 0.500), 
+                        new Rotation3d(0, -hoodAngle, 0)),                                                       // 14: Shooter - Hood
+                    new Pose3d(new Translation3d(0.286, 0, 0.558), new Rotation3d(0, shooterAngle, 0)),          // 15: Shooter - Wheels
                 });
     }
 
