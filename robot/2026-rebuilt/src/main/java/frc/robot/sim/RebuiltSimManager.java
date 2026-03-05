@@ -172,8 +172,8 @@ public class RebuiltSimManager {
 
     private static final String FUEL_LL_NAME = "limelight-one";
   private static final Transform3d FUEL_LL_MOUNT = new Transform3d(
-            new Translation3d(-0.4, 0, 0.305),
-            new Rotation3d(0, Math.toRadians(30), Math.toRadians(180)));
+            new Translation3d(-0.50, 0, 0.325),
+            new Rotation3d(0, Math.toRadians(28), Math.toRadians(180)));
     /** Near plane distance for fuel detection frustum. */
     private static final double FUEL_LL_NEAR = 0.3;
     /** Far plane distance for fuel detection frustum. */
@@ -360,13 +360,12 @@ public class RebuiltSimManager {
 
         // --- Vision sim (writes true pose to NT in Limelight format) ---
         Logger.recordOutput("Sim/State", "Loading vision");
-        // Camera mounts: LL4 front-right, LL3 front-left, both 7.7" high, 25° inward yaw, 30° upward pitch
         Transform3d ll4Mount = new Transform3d(
-                new Translation3d(0.27, -0.27, 0.1956),
-                new Rotation3d(0, Math.toRadians(-30), Math.toRadians(25)));
+                new Translation3d(0.31, -0.284, 0.193),
+                new Rotation3d(0, Math.toRadians(-25), Math.toRadians(22)));
         Transform3d ll3Mount = new Transform3d(
-                new Translation3d(0.27, 0.27, 0.1956),
-                new Rotation3d(0, Math.toRadians(-30), Math.toRadians(-25)));
+                new Translation3d(0.31, 0.284, 0.193),
+                new Rotation3d(0, Math.toRadians(-25), Math.toRadians(-22)));
         LimelightSim ll4Cam = new LimelightSim(
                 new CameraConfig("limelight-two", LimelightType.LL4, ll4Mount));
         LimelightSim ll3Cam = new LimelightSim(
