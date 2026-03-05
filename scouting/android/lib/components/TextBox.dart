@@ -464,12 +464,12 @@ Widget buildChoiceBox(String question, Icon titleIcon, List<String> choices,
 }
 
 Widget buildMultiChoiceBox(
-    String question,
-    Icon titleIcon,
-    List<String> choices,
-    List<String> selectedValues,
-    Function(List<String>) onchange,
-    ) {
+  String question,
+  Icon titleIcon,
+  List<String> choices,
+  List<String> selectedValues,
+  Function(List<String>) onchange,
+) {
   return Padding(
     padding: const EdgeInsets.all(8.0),
     child: Container(
@@ -490,7 +490,6 @@ Widget buildMultiChoiceBox(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-
             // -------------------------------
             // TOP ROW WITH TITLE + SELECT ALL
             // -------------------------------
@@ -522,7 +521,6 @@ Widget buildMultiChoiceBox(
                         color: Colors.grey,
                       ),
                     ),
-
                     Transform.scale(
                       scale: 1.8, // <— THIS makes the checkbox itself bigger
                       child: Checkbox(
@@ -587,7 +585,7 @@ Widget buildMultiChoiceBox(
                       side: const BorderSide(color: Colors.black),
                       onSelected: (bool selected) {
                         List<String> newSelectedValues =
-                        List.from(selectedValues);
+                            List.from(selectedValues);
                         if (selected) {
                           newSelectedValues.add(choice);
                         } else {
@@ -606,5 +604,3 @@ Widget buildMultiChoiceBox(
     ),
   );
 }
-
-

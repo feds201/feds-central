@@ -211,9 +211,9 @@ class MatchPageState extends State<MatchPage>
                 currentSelectedMatchType == 1,
               ),
               _buildNavDestination(
-                Icons.sports_rugby,
-                'Finals',
-                Colors.red,
+                Icons.sports_tennis,
+                'Practice',
+                Colors.green,
                 currentSelectedMatchType == 2,
               ),
               _buildNavDestination(
@@ -285,40 +285,49 @@ class MatchPageState extends State<MatchPage>
         );
 
       case 1:
-        var filteredMatches =
-            matches.where((match) => match['comp_level'] == 'sf').toList()
-              ..sort((a, b) {
-                int aValue = a['comp_level'].startsWith('sf')
-                    ? int.parse(a['set_number'].toString())
-                    : int.parse(a['match_number'].toString());
-                int bValue = b['comp_level'].startsWith('sf')
-                    ? int.parse(b['set_number'].toString())
-                    : int.parse(b['match_number'].toString());
-                return aValue.compareTo(bValue);
-              });
+        var filteredMatches = matches
+            .where((match) =>
+                match['comp_level'] == 'sf' ||
+                match['comp_level'] == 'f' ||
+                match['comp_level'] == 'qf')
+            .toList()
+          ..sort((a, b) {
+            int aValue = (a['set_number'] != null)
+                ? int.parse(a['set_number'].toString())
+                : int.parse(a['match_number'].toString());
+            int bValue = (b['set_number'] != null)
+                ? int.parse(b['set_number'].toString())
+                : int.parse(b['match_number'].toString());
+            if (aValue == bValue) {
+              return int.parse(a['match_number'].toString())
+                  .compareTo(int.parse(b['match_number'].toString()));
+            }
+            return aValue.compareTo(bValue);
+          });
 
         return _buildMatchListView(
           filteredMatches,
-          'Semifinal',
+          'Playoff',
           Icons.sports_basketball,
           Colors.orange,
-          (match) => match['comp_level'].startsWith('sf')
+          (match) => (match['set_number'] != null)
               ? int.parse(match['set_number'].toString())
               : int.parse(match['match_number'].toString()),
         );
 
       case 2:
         var filteredMatches = matches
-            .where((match) => match['comp_level'] == 'f')
+            .where((match) =>
+                match['comp_level'] == 'p' || match['comp_level'] == 'pr')
             .toList()
           ..sort((a, b) => int.parse(a['match_number'].toString())
               .compareTo(int.parse(b['match_number'].toString())));
 
         return _buildMatchListView(
           filteredMatches,
-          'Final',
-          Icons.sports_rugby,
-          Colors.red,
+          'Practice',
+          Icons.sports_tennis,
+          Colors.green,
           (match) => int.parse(match['match_number'].toString()),
         );
 
@@ -354,7 +363,7 @@ class MatchPageState extends State<MatchPage>
               'No $matchTypeName Matches',
               style: GoogleFonts.museoModerno(
                 fontSize: 20,
-                color: Colors.grey.shade600,
+                color: islightmode() ? darkColors.goodblack : lightColors.white,
               ),
             ),
           ],
@@ -362,30 +371,33 @@ class MatchPageState extends State<MatchPage>
       );
     }
 
-    return ListView.builder(
-      controller: _scrollController,
-      physics: const BouncingScrollPhysics(),
-      padding: const EdgeInsets.fromLTRB(8, 16, 8, 24),
-      itemCount: matches.length + 1,
-      itemBuilder: (BuildContext context, int index) {
-        if (index == 0) {
-          return ShowInsults();
-        }
-        index -= 1;
+    return Container(
+      color: islightmode() ? lightColors.white : darkColors.goodblack,
+      child: ListView.builder(
+        controller: _scrollController,
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(8, 16, 8, 24),
+        itemCount: matches.length + 1,
+        itemBuilder: (BuildContext context, int index) {
+          if (index == 0) {
+            return ShowInsults();
+          }
+          index -= 1;
 
-        final match = matches[index];
-        final matchNumber = getMatchNumber(match);
+          final match = matches[index];
+          final matchNumber = getMatchNumber(match);
 
-        return _buildEnhancedMatchCard(
-          context,
-          match,
-          matchTypeName,
-          matchIcon,
-          themeColor,
-          matchNumber,
-          index,
-        );
-      },
+          return _buildEnhancedMatchCard(
+            context,
+            match,
+            matchTypeName,
+            matchIcon,
+            themeColor,
+            matchNumber,
+            index,
+          );
+        },
+      ),
     );
   }
 
@@ -412,12 +424,14 @@ class MatchPageState extends State<MatchPage>
       margin: const EdgeInsets.only(bottom: 16),
       child: Card(
         elevation: 4,
-        color: islightmode() ? Colors.white : Colors.grey[850],
+        color: islightmode() ? lightColors.white : darkColors.goodblack,
         shadowColor: themeColor.withOpacity(0.3),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
           side: BorderSide(
-            color: isScouted ? Colors.green : themeColor.withOpacity(0.2),
+            color: isScouted
+                ? lightColors.light_green
+                : themeColor.withOpacity(0.2),
             width: isScouted ? 2 : 1,
           ),
         ),
@@ -700,7 +714,7 @@ class MatchPageState extends State<MatchPage>
             false,
             false,
             false),
-        EndPoints(0, false, false, false, "", 0,0, 0.0, 0, []),
+        EndPoints(0, false, false, false, "", 0, 0, 0.0, 0, []),
         teamNumber: teamNNumber.replaceAll('frc', ''),
         scouterName: _scouterName,
         matchKey: match['key'].toString(),

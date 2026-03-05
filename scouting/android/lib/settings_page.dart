@@ -168,13 +168,13 @@ class SettingsPageState extends State<SettingsPage> {
         backgroundColor: Colors.transparent,
         actions: [
           IconButton(
-              icon: Icon(isDarkMode ? Icons.dark_mode : Icons.light_mode),
-        onPressed: () {
-          toggle();
-          Hive.box('settings').put('isDarkMode', isDarkMode);
-          setState(() {});
-          Navigator.of(context).pop();
-        },
+            icon: Icon(isDarkMode ? Icons.dark_mode : Icons.light_mode),
+            onPressed: () {
+              toggle();
+              Hive.box('settings').put('isDarkMode', isDarkMode);
+              setState(() {});
+              Navigator.of(context).pop();
+            },
           ),
         ],
         title: ShaderMask(
@@ -414,7 +414,8 @@ class SettingsPageState extends State<SettingsPage> {
                     title: Text("Lockdown Mode",
                         style: GoogleFonts.museoModerno(fontSize: 20)),
                     thumbIcon: thumbIcon,
-                    value: Hive.box('settings').get('isLockdown', defaultValue: false),
+                    value: Hive.box('settings')
+                        .get('isLockdown', defaultValue: false),
                     onChanged: (bool value) {
                       setState(() {
                         Hive.box('settings').put('isLockdown', value);

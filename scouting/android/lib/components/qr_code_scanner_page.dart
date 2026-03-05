@@ -34,7 +34,8 @@ class _QRCodeScannerPageState extends State<QRCodeScannerPage> {
             flex: 1,
             child: Center(
               child: (result != null)
-                  ? Text('Barcode Type: ${result!.format}   Data: ${result!.rawValue}')
+                  ? Text(
+                      'Barcode Type: ${result!.format}   Data: ${result!.rawValue}')
                   : const Text('Scan a code'),
             ),
           )

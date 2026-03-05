@@ -248,8 +248,8 @@ Widget buildMap(
 
   // Otherwise use the original implementation
   onTap ??= (_) {};
-  image ??= Image.asset(
-      'assets/2026/${allianceColor}Alliance_StartPosition.png');
+  image ??=
+      Image.asset('assets/2026/${allianceColor}Alliance_StartPosition.png');
 
   return Padding(
     padding: const EdgeInsets.all(8.0),

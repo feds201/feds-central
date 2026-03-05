@@ -12,6 +12,7 @@ class PluginStateManager {
     var box = Hive.box(_boxName);
     await box.put(pluginKey, value);
   }
+
   Future<bool> getPluginState(String pluginKey) async {
     await _initializeBox();
     var box = Hive.box(_boxName);
