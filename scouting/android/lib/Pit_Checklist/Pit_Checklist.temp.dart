@@ -1543,7 +1543,7 @@ class PitCheckListPageState extends State<PitCheckListPage>
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
           child: ElevatedButton.icon(
             icon: const Icon(Icons.add_circle_outline),
-            label: const Text('Create Manual Match'),
+            label: const Text('Create Manual Playoff Match'),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.orange,
               foregroundColor: Colors.white,
@@ -1619,18 +1619,21 @@ class PitCheckListPageState extends State<PitCheckListPage>
     );
   }
 
-  // Dialog for creating manual playoff or practice matches
+  // Dialog for creating manual playoff matches
   void _showCreatePlayoffMatchDialog(BuildContext context) {
-    String selectedMatchType = 'Playoff';
+    String selectedMatchType = 'Quarterfinal';
+    int allianceNumber = 1;
+    String alliancePosition = 'Captain';
     int matchNumber = 1;
     String allianceColor = 'Red';
+    int setNumber = 1;
 
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
           title: Text(
-            'Create Match',
+            'Create Playoff Match',
             style: GoogleFonts.museoModerno(
               fontWeight: FontWeight.bold,
               color: Colors.orange,
@@ -1649,7 +1652,7 @@ class PitCheckListPageState extends State<PitCheckListPage>
                         borderRadius: BorderRadius.circular(12)),
                   ),
                   value: selectedMatchType,
-                  items: ['Playoff', 'Practice'].map((type) {
+                  items: ['Quarterfinal', 'Semifinal', 'Final'].map((type) {
                     return DropdownMenuItem(
                       value: type,
                       child: Text(type),
@@ -1661,18 +1664,79 @@ class PitCheckListPageState extends State<PitCheckListPage>
                 ),
                 const SizedBox(height: 16),
 
-                // Match Number
-                TextFormField(
+                // Alliance Number
+                DropdownButtonFormField<int>(
                   decoration: InputDecoration(
-                    labelText: 'Match Number',
+                    labelText: 'Alliance Number',
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12)),
                   ),
-                  keyboardType: TextInputType.number,
-                  initialValue: matchNumber.toString(),
+                  value: allianceNumber,
+                  items: List.generate(8, (index) {
+                    return DropdownMenuItem(
+                      value: index + 1,
+                      child: Text('Alliance ${index + 1}'),
+                    );
+                  }),
                   onChanged: (value) {
-                    matchNumber = int.tryParse(value) ?? 1;
+                    allianceNumber = value!;
                   },
+                ),
+                const SizedBox(height: 16),
+
+                // Alliance Position
+                DropdownButtonFormField<String>(
+                  decoration: InputDecoration(
+                    labelText: 'Team 201 Position',
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                  ),
+                  value: alliancePosition,
+                  items: ['Captain', 'First Pick', 'Second Pick'].map((pos) {
+                    return DropdownMenuItem(
+                      value: pos,
+                      child: Text(pos),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    alliancePosition = value!;
+                  },
+                ),
+                const SizedBox(height: 16),
+
+                // Match Number and Set Number in a row
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        decoration: InputDecoration(
+                          labelText: 'Match Number',
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12)),
+                        ),
+                        keyboardType: TextInputType.number,
+                        initialValue: matchNumber.toString(),
+                        onChanged: (value) {
+                          matchNumber = int.tryParse(value) ?? 1;
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: TextFormField(
+                        decoration: InputDecoration(
+                          labelText: 'Set Number',
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12)),
+                        ),
+                        keyboardType: TextInputType.number,
+                        initialValue: setNumber.toString(),
+                        onChanged: (value) {
+                          setNumber = int.tryParse(value) ?? 1;
+                        },
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 16),
 
@@ -1711,14 +1775,14 @@ class PitCheckListPageState extends State<PitCheckListPage>
               child: const Text('Create Match'),
               onPressed: () {
                 // Generate match ID based on match type
-                String matchTypeCode =
-                    selectedMatchType == 'Playoff' ? 'sf' : 'p';
-                int setNumber = 1; // Default to 1
+                String matchTypeCode = selectedMatchType == 'Quarterfinal'
+                    ? 'qf'
+                    : selectedMatchType == 'Semifinal'
+                        ? 'sf'
+                        : 'f';
 
-                String suffix = selectedMatchType == 'Playoff'
-                    ? '${setNumber}m$matchNumber'
-                    : 'm$matchNumber';
-                String matchKey = '2026mimid_$matchTypeCode$suffix';
+                String matchKey =
+                    '2026mimid_${matchTypeCode}${setNumber}m$matchNumber';
 
                 // Create synthetic match object
                 Map<String, dynamic> syntheticMatch = {
@@ -1729,8 +1793,8 @@ class PitCheckListPageState extends State<PitCheckListPage>
                   'event_key': '2026mimid',
                   'manual_entry': true,
                   'alliance_selection_data': {
-                    'alliance_number': 1,
-                    'position': 'Captain',
+                    'alliance_number': allianceNumber,
+                    'position': alliancePosition,
                   },
                   'alliances': {
                     'red': {
@@ -1808,7 +1872,7 @@ class PitCheckListPageState extends State<PitCheckListPage>
     return [];
   }
 
-  // Add this method to the PitCheckListPageState class
+  // Add this method to extract all teams from matches
   List<String> _extractTeamsFromMatches(List<dynamic> matches) {
     Set<String> teams = {};
 

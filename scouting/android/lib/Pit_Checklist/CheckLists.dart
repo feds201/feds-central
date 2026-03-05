@@ -84,11 +84,12 @@ class _Checklist_recordState extends State<Checklist_record> {
 
   //shooter
   late bool shooter_flywheels,
+      shooter_hood,
+      shooter_gears,
       shooter_motors,
       shooter_nuts_and_bolts,
       shooter_wires;
   late List<String> shooter;
-
   late double outgoing_number;
   late double outgoing_battery_voltage;
   late double outgoing_battery_cca;
@@ -101,6 +102,7 @@ class _Checklist_recordState extends State<Checklist_record> {
   late String alliance_color;
   late String bumper_color;
   late String last_battery_tag;
+  late String last_bumper_color;
 
   late TextEditingController notes;
   late TextEditingController notes2;
@@ -128,9 +130,10 @@ class _Checklist_recordState extends State<Checklist_record> {
     matchkey = widget.list_item.matchkey;
     bumper_color = "";
     last_battery_tag = "";
+    last_bumper_color = "";
 
-    // Get battery tag from most recently pit checked match
-    _loadLastBatteryTag();
+    // Get battery tag & bumper color from most recently pit checked match
+    _loadLastMatchData();
     isPlayoffMatch = widget.list_item.matchkey.contains('_qf') ||
         widget.list_item.matchkey.contains('_sf') ||
         widget.list_item.matchkey.contains('_f');
@@ -221,11 +224,12 @@ class _Checklist_recordState extends State<Checklist_record> {
 
     //shooter
     shooter_flywheels = false;
+    shooter_hood = false;
+    shooter_gears = false;
     shooter_motors = false;
     shooter_nuts_and_bolts = false;
     shooter_wires = false;
     shooter = [];
-
     returning_battery_voltage = 0;
     returning_battery_cca = 0;
     returning_number = 0;
@@ -320,10 +324,11 @@ class _Checklist_recordState extends State<Checklist_record> {
 
           //shooter
           shooter_flywheels = existingRecord.shooter_flywheels;
+          shooter_hood = existingRecord.shooter_hood;
+          shooter_gears = existingRecord.shooter_gears;
           shooter_motors = existingRecord.shooter_motors;
           shooter_nuts_and_bolts = existingRecord.shooter_nuts_and_bolts;
           shooter_wires = existingRecord.shooter_wires;
-
           notes.text = existingRecord.note;
           notes2.text = existingRecord
               .note; // Initialize second notes with same content initially
@@ -386,11 +391,12 @@ class _Checklist_recordState extends State<Checklist_record> {
           //shooter
           shooter = [];
           if (shooter_flywheels) shooter.add("Flywheels");
+          if (shooter_hood) shooter.add("Hood");
+          if (shooter_gears) shooter.add("Gears");
           if (shooter_motors) shooter.add("Motors");
           if (shooter_nuts_and_bolts) shooter.add("Nuts and Bolts");
-          if (shooter_wires) shooter.add("Wires");
-
-          // Set matchkey from existing record
+          if (shooter_wires)
+            shooter.add("Wires"); // Set matchkey from existing record
           matchkey = existingRecord.matchkey;
         });
         print("Loaded existing data for match ${widget.list_item.matchkey}");
@@ -404,7 +410,7 @@ class _Checklist_recordState extends State<Checklist_record> {
   }
 
   // Load battery tag from most recently pit checked match
-  void _loadLastBatteryTag() {
+  void _loadLastMatchData() {
     try {
       // Get all pit checklist records
       PitCheckListDatabase.LoadAll();
@@ -413,22 +419,26 @@ class _Checklist_recordState extends State<Checklist_record> {
       if (allRecords.isNotEmpty) {
         // Find the most recent record that has a battery tag
         PitChecklistItem? mostRecentWithBattery;
+        PitChecklistItem? mostRecentWithBumper;
 
         for (var record in allRecords.values) {
-          if (record is PitChecklistItem && record.outgoing_number > 0) {
-            mostRecentWithBattery = record;
+          if (record is PitChecklistItem) {
+            if (record.outgoing_number > 0) mostRecentWithBattery = record;
+            if (record.alliance_color.isNotEmpty) mostRecentWithBumper = record;
           }
         }
 
-        if (mostRecentWithBattery != null) {
-          setState(() {
-            last_battery_tag =
-                mostRecentWithBattery!.outgoing_number.toString();
-          });
-        }
+        setState(() {
+          if (mostRecentWithBattery != null) {
+            last_battery_tag = mostRecentWithBattery.outgoing_number.toString();
+          }
+          if (mostRecentWithBumper != null) {
+            last_bumper_color = mostRecentWithBumper.alliance_color;
+          }
+        });
       }
     } catch (e) {
-      print("Error loading last battery tag: $e");
+      print("Error loading last match data: $e");
     }
   }
 
@@ -528,7 +538,7 @@ class _Checklist_recordState extends State<Checklist_record> {
             ),
           ),
           // Battery Display at front
-          if (last_battery_tag.isNotEmpty)
+          if (last_battery_tag.isNotEmpty || last_bumper_color.isNotEmpty)
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Container(
@@ -538,13 +548,31 @@ class _Checklist_recordState extends State<Checklist_record> {
                   border: Border.all(color: Colors.blue),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Text(
-                  'Last Battery Tag: $last_battery_tag',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.blue[700],
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (last_battery_tag.isNotEmpty)
+                      Text(
+                        'Last Battery Tag: $last_battery_tag',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue[700],
+                        ),
+                      ),
+                    if (last_battery_tag.isNotEmpty &&
+                        last_bumper_color.isNotEmpty)
+                      const SizedBox(height: 8),
+                    if (last_bumper_color.isNotEmpty)
+                      Text(
+                        'Last Bumper Color: $last_bumper_color',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue[700],
+                        ),
+                      ),
+                  ],
                 ),
               ),
             ),
@@ -672,7 +700,8 @@ class _Checklist_recordState extends State<Checklist_record> {
               Icon(Icons.star_outline, size: 30, color: Colors.blue),
               [
                 "Flywheels",
-                // Removed "Hood", "Hood Gears", and "Gears" as requested
+                "Hood",
+                "Gears",
                 "Motors",
                 "Nuts and Bolts",
                 "Wires",
@@ -886,9 +915,9 @@ class _Checklist_recordState extends State<Checklist_record> {
       kicker_wires: kicker.contains("Wires"),
       //shooter
       shooter_flywheels: shooter.contains("Flywheels"),
-      shooter_hood: false, // Set to false since we removed it from UI
-      shooter_hood_gears: false, // Set to false since we removed it from UI
-      shooter_gears: false, // Set to false since we removed it from UI
+      shooter_hood: shooter.contains("Hood"),
+      shooter_hood_gears: false, // Not using Hood Gears anymore
+      shooter_gears: shooter.contains("Gears"),
       shooter_motors: shooter.contains("Motors"),
       shooter_nuts_and_bolts: shooter.contains("Nuts and Bolts"),
       shooter_wires: shooter.contains("Wires"),

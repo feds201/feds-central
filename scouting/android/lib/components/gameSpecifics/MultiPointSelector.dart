@@ -62,7 +62,7 @@ class MultiPointSelectorState extends State<MultiPointSelector> {
 
   void _clear() {
     setState(() {
-      _selectedCells.clear(); 
+      _selectedCells.clear();
       _notifyChanged();
     });
   }

@@ -65,7 +65,7 @@ class NavBar extends StatelessWidget {
                     children: [
                       Text(
                         'Scout Ops v.5'
-                            '.0.0',
+                        '.0.0',
                         style: GoogleFonts.museoModerno(
                           fontSize: 14,
                           fontWeight: FontWeight.w400,
