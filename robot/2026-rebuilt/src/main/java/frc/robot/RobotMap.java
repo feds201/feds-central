@@ -54,6 +54,7 @@ public final class RobotMap {
         public static final int kMotorID = 61;
         public static final int kLimit_switch_rID = 2;
         public static final int kLimit_switch_lID = 3; 
+        public static final int kRollerMotorID = 62;
 
     }
 
