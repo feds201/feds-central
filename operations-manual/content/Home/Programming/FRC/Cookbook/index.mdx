@@ -1,0 +1,90 @@
+---
+title: Programming Cookbook
+---
+
+import {Callout} from 'nextra/components';
+import { GenericHero, GenericGrid } from '../../../../../Components/index';
+
+    <meta property="og:description" content="Copy-paste code recipes for common FRC programming tasks — game pieces, intake, simulation, testing, and more" />
+<GenericHero 
+  title="Programming Cookbook"
+  backgroundType='gradient'
+  height="sm"
+  description='Practical code recipes you can copy, paste, and adapt for your robot project'
+  backgroundValue='linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)'
+  textAlign='center'
+/>
+
+<div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 20px' }}>
+
+# 📖 Programming Cookbook
+
+Welcome to the FEDS 201 Programming Cookbook — a collection of **practical, copy-paste code recipes** for common tasks you'll encounter when building and maintaining our robot code.
+
+<Callout type="info">
+  These recipes are pulled directly from the real FEDS 201 codebase. They show you exactly how we do things, with working code you can adapt for your subsystem or project.
+</Callout>
+
+## When to Use This Section
+
+- **You need to do something specific** and want working code, not theory
+- **You're building a new subsystem** and need the boilerplate
+- **It's a new game year** and you need to set up simulation from scratch
+- **You're adding automated tests** and want to know the exact pattern
+
+## What's in the Cookbook
+
+<GenericGrid 
+  layout="masonry"
+  variant="cards"
+  items={[
+    {
+      title: "Defining Game Pieces",
+      description: "Configure shape, mass, bounce, and friction for any game piece using the GamePieceConfig builder. Includes sphere, cylinder, and box examples.",
+      icon: "🏐",
+      color: "blue",
+      link: "Home/Programming/FRC/Cookbook/GamePieces",
+      buttonText: "View Recipe"
+    },
+    {
+      title: "Intake & Launching",
+      description: "Set up intake zones, consume pieces into the hopper counter, and launch with 3D velocity. The full game piece flow from floor to scoring zone.",
+      icon: "🚀",
+      color: "green",
+      link: "Home/Programming/FRC/Cookbook/IntakeLaunch",
+      buttonText: "View Recipe"
+    },
+    {
+      title: "New Sim Year Setup",
+      description: "Step-by-step checklist for building a full physics simulation for a new FRC game — from game pieces to field layout to scoring zones.",
+      icon: "🎮",
+      color: "purple",
+      link: "Home/Programming/FRC/Cookbook/NewSimYear",
+      buttonText: "View Recipe"
+    },
+    {
+      title: "Writing RTU Tests",
+      description: "Add automated @RobotAction tests to any subsystem in under 5 minutes. Includes DiagnosticContext profiling and safety checks.",
+      icon: "🧪",
+      color: "orange",
+      link: "Home/Programming/FRC/Cookbook/RTUTests",
+      buttonText: "View Recipe"
+    },
+    {
+      title: "Subsystem Template",
+      description: "Full boilerplate for a new SubsystemBase class with motor init, default commands, status manager, temp reporter, and test stubs.",
+      icon: "🔧",
+      color: "red",
+      link: "Home/Programming/FRC/Cookbook/SubsystemTemplate",
+      buttonText: "View Recipe"
+    }
+  ]}
+/>
+
+---
+
+<Callout type="info">
+  For conceptual deep-dives (how the simulation engine works, what PID control is, how vision processing works), see the other pages in the FRC Wing section. The Cookbook is for **doing**, not just understanding.
+</Callout>
+
+</div>

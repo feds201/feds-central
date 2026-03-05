@@ -508,11 +508,162 @@ MapleSim handles encoder simulation. Check that the gear ratios in your swerve c
 
 ---
 
+## Advanced: Spatial Partitioning Concepts
+
+sim-core's proximity sleep/wake system is a form of **spatial partitioning** — the field is implicitly divided into regions around active objects (the robot, fast-moving balls), and only entities within those regions are simulated. Understanding spatial partitioning helps you tune performance and debug unexpected behavior.
+
+### Key Terminology
+
+| Term | sim-core Equivalent | Description |
+|---|---|---|
+| **Region / Zone** | Wake radius around robot | A spatial area where physics is active |
+| **Entity** | `GamePiece`, chassis body | Any dynamic object in the simulation |
+| **Active Zone** | Bodies within `wakeRadius` | Entities with enabled physics — simulated every tick |
+| **Idle Zone** | Bodies beyond `sleepRadius` | Entities with disabled physics — zero CPU cost |
+| **Boundary Transfer** | Proximity wake/sleep toggle | When an entity moves between active and idle zones |
+| **Authority** | `GamePieceManager` | The system responsible for deciding which entities are active |
+
+### How Spatial Partitioning Works in sim-core
+
+```
+Field (16.54m × 8.07m)
+┌─────────────────────────────────────────┐
+│                                         │
+│  💤 💤 💤        💤 💤 💤 💤 💤        │  💤 = sleeping (disabled) pieces
+│       💤    ┌───────────┐    💤         │
+│  💤        │  🔴 WAKE   │       💤 💤  │  🔴 = wake zone (robot position)
+│            │  ZONE      │              │
+│  💤 💤    │ ⚽⚽⚽ 🤖  │    💤        │  ⚽ = active (enabled) pieces
+│            │ ⚽   ⚽    │              │  🤖 = robot
+│  💤        └───────────┘       💤      │
+│       💤 💤        💤    💤 💤        │
+│  💤              💤         💤 💤      │
+└─────────────────────────────────────────┘
+```
+
+1. **Initialization**: All pieces spawn, then immediately `disableAll()` — the field starts fully idle.
+2. **Per-tick**: `updateProximity()` checks each piece's distance to wake zones (robot + fast-moving balls). Nearby pieces → enable. Distant settled pieces → disable.
+3. **Fast-moving wake zones**: A launched ball traveling at 15+ m/s becomes a wake zone itself, so pieces near the landing spot wake up for collision response.
+4. **Stable transitions**: Hysteresis is built in — `wakeRadius` (enable) is smaller than `sleepRadius` (disable), preventing pieces from flickering on/off at the boundary.
+
+### Performance Tuning
+
+| Parameter | Effect of Increasing | Effect of Decreasing | Recommended |
+|---|---|---|---|
+| `wakeRadius` | More active pieces, higher CPU | Fewer active pieces, may miss nearby collisions | 1.0–2.0m |
+| `sleepRadius` | Slower deactivation, smoother | Faster deactivation, may cause visible pop-in | 2.5–4.0m |
+| Piece count | Linear CPU increase for active pieces | — | Keep active count under 30 |
+
+### Edge Cases and Debugging Tips
+
+- **Pieces near zone edges flickering**: Increase the gap between `wakeRadius` and `sleepRadius` (e.g., 1.5m / 3.0m instead of 1.5m / 2.0m).
+- **Pieces "teleporting" when they wake up**: This means a piece was still moving when it was disabled. Lower the `SLEEP_SPEED_THRESHOLD` in `GamePieceManager` so only truly settled pieces sleep.
+- **Jitter in ball clusters**: When many pieces stack up, ODE4J contacts can oscillate. Use `TerrainSurface.CARPET`'s soft contact settings (`cfm` / `erp`) to damp this — the defaults are tuned for this.
+- **Headless / batched simulations**: If running sim without a viewer (CI tests, parameter sweeps), you can increase the physics step size from 20ms to 50ms for speed, but watch for tunneling at higher speeds.
+
+---
+
+## Visualization & Web UI
+
+sim-core's spatial partitioning model is well suited for streaming compact, zone-aligned snapshots to a browser dashboard for real-time visualization.
+
+### Streaming Sim Data to a Web UI
+
+**Recommended approach:**
+
+1. **Snapshot stream**: Emit periodic JSON snapshots containing only active entities via WebSocket or HTTP SSE stream
+2. **Zone metadata**: Include zone bounds, activity flag, and entity summaries (id, type, position, angle)
+3. **Client rendering**: Draw zone boundaries (grid), color active vs idle areas, and render entity markers
+
+### Snapshot Format Example
+
+```json
+{
+  "tick": 12345,
+  "activeRegions": [
+    {
+      "id": "zone_4_2",
+      "bounds": { "x": 4.0, "y": 2.0, "w": 2.0, "h": 2.0 },
+      "active": true,
+      "entities": [
+        { "id": "robot", "type": "robot", "x": 4.3, "y": 2.1, "angle": 1.57 },
+        { "id": "fuel_42", "type": "ball", "x": 4.8, "y": 2.5, "angle": 0 }
+      ]
+    }
+  ],
+  "score": 15,
+  "heldCount": 3
+}
+```
+
+### Minimal Canvas Viewer
+
+```javascript
+// Connect to sim snapshot stream
+const ws = new WebSocket('ws://localhost:8080/sim-snap');
+ws.onmessage = (ev) => {
+  const snap = JSON.parse(ev.data);
+  renderSnapshot(snap);
+};
+
+function renderSnapshot(snap) {
+  const canvas = document.querySelector('#simCanvas');
+  const ctx = canvas.getContext('2d');
+  const scale = 50; // pixels per meter
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Draw field boundary
+  ctx.strokeStyle = '#333';
+  ctx.strokeRect(0, 0, 16.54 * scale, 8.07 * scale);
+
+  // Draw active regions
+  snap.activeRegions.forEach(region => {
+    const color = region.active ? 'rgba(0,200,0,0.12)' : 'rgba(0,0,0,0.04)';
+    ctx.fillStyle = color;
+    ctx.fillRect(
+      region.bounds.x * scale,
+      region.bounds.y * scale,
+      region.bounds.w * scale,
+      region.bounds.h * scale
+    );
+
+    // Draw entities
+    region.entities.forEach(e => {
+      ctx.fillStyle = e.type === 'robot' ? '#ff4d4f' : '#1890ff';
+      ctx.beginPath();
+      ctx.arc(e.x * scale, e.y * scale, e.type === 'robot' ? 10 : 4, 0, Math.PI * 2);
+      ctx.fill();
+    });
+  });
+
+  // Draw score overlay
+  ctx.fillStyle = '#fff';
+  ctx.font = '16px monospace';
+  ctx.fillText(`Tick: ${snap.tick}  Score: ${snap.score}  Held: ${snap.heldCount}`, 10, 20);
+}
+```
+
+### Design Considerations
+
+- **Bandwidth**: Stream only active regions / changed entities. Emit full snapshots at a lower frequency for replay/seek.
+- **Determinism**: Include the sim tick ID in snapshots so replay clients can validate ordering.
+- **Debugging tools**: Client-side tools can send commands (force-spawn a piece, teleport robot, pause physics) via the WebSocket for interactive debugging.
+- **Recommended demo location**: `robot/sim-core/examples/web-visualizer/` — a small Node WebSocket server + static HTML/JS canvas viewer.
+
+<Callout type="info">
+  The AdvantageScope 3D viewer is the primary way to visualize the simulation during development. The web UI approach above is useful for custom dashboards, remote monitoring, or when AdvantageScope isn't available.
+</Callout>
+
+---
+
 ## Further Reading
 
 - **sim-core README** (`robot/sim-core/README.md`) -- API reference and usage examples
-- **sim-core tests** (`robot/sim-core/src/test/java/`) -- unit tests that demonstrate how each component works
+- **sim-core tests** (`robot/sim-core/src/test/java/`) -- unit tests that demonstrate how each component works, especially `SimPipelineTest` and `NeutralZoneExplosionTest` for spatial partitioning behavior
 - **MapleSim documentation** -- see the [IronMaple GitHub repository](https://github.com/IronMaple)
 - **ODE4J documentation** -- see the [ode4j GitHub repository](https://github.com/tzaeschke/ode4j)
 - **AdvantageKit docs** -- for understanding telemetry logging
 - **AdvantageScope docs** -- for 3D visualization setup
+- **Programming Cookbook** -- practical recipes in the Cookbook section: Defining Game Pieces, Intake & Launching, New Sim Year Setup
+

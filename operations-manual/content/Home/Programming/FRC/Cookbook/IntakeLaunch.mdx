@@ -1,0 +1,218 @@
+---
+title: "Recipe: Intake & Launching"
+---
+
+import {Callout} from 'nextra/components';
+
+    <meta property="og:description" content="How to set up intake zones, consume game pieces, and launch them with 3D velocity using sim-core" />
+
+# 🚀 Setting Up Intake Zones & Launching
+
+This recipe covers the full game piece flow: **picking up pieces from the field → storing in the hopper → launching toward a target**. All using sim-core's counter-based system.
+
+---
+
+## How the Counter-Based System Works
+
+sim-core does **not** simulate individual pieces inside the robot. Instead, it uses a simple counter:
+
+```
+FIELD PIECE          →  intakePiece()  →  heldCount++  →  launchPiece()  →  heldCount--
+(ODE4J physics body)    (body removed)    (just a number)   (new body spawned with velocity)
+```
+
+This is much simpler than trying to simulate pieces bouncing around inside a hopper.
+
+---
+
+## Step 1: Create the GamePieceManager
+
+```java
+import frc.sim.gamepiece.GamePieceManager;
+import frc.sim.gamepiece.GamePieceConfig;
+import frc.sim.core.PhysicsWorld;
+
+// In your SimManager constructor:
+PhysicsWorld world = new PhysicsWorld();
+GamePieceManager pieces = new GamePieceManager(world);
+pieces.setMaxCapacity(70);  // hopper capacity
+```
+
+---
+
+## Step 2: Spawn Pieces on the Field
+
+```java
+// Spawn a single piece at position (x, y, z) in meters
+pieces.spawnPiece(RebuiltGamePieces.FUEL, 8.27, 4.0, 0.5);
+
+// Spawn many pieces (e.g., neutral zone fuel)
+for (int i = 0; i < 360; i++) {
+    double x = 5.0 + Math.random() * 6.54;  // random X across neutral zone
+    double y = 1.0 + Math.random() * 6.07;  // random Y across field width
+    double z = 0.5 + Math.random() * 0.5;   // drop from above
+    pieces.spawnPiece(RebuiltGamePieces.FUEL, x, y, z);
+}
+
+// Disable all pieces after spawning (for performance)
+// They'll be woken up by proximity when the robot gets close
+pieces.disableAll();
+```
+
+---
+
+## Step 3: Set Up the Intake Zone
+
+The `IntakeZone` is a robot-relative bounding box that detects when pieces overlap:
+
+```java
+import frc.sim.gamepiece.IntakeZone;
+
+// Define the intake zone relative to robot center (meters)
+// This example: forward-facing intake, 0.35-0.50m ahead, ±0.25m wide, up to 0.2m high
+IntakeZone intakeZone = new IntakeZone(
+    0.35,   // xMin (forward from robot center)
+    0.50,   // xMax
+    -0.25,  // yMin (left)
+    0.25,   // yMax (right)
+    0.0,    // zMin (ground)
+    0.20    // zMax (max pickup height)
+);
+```
+
+### Checking for Intake (Each Tick)
+
+```java
+// In your sim loop, BEFORE the physics step:
+if (intakeIsActive) {  // check your intake subsystem state
+    GamePiece overlapping = intakeZone.checkOverlap(
+        pieces.getActivePieces(),
+        robotPose  // current Pose2d of the robot
+    );
+    
+    if (overlapping != null) {
+        boolean consumed = pieces.intakePiece(overlapping);
+        if (consumed) {
+            System.out.println("Picked up a piece! Held: " + pieces.getHeldCount());
+        }
+    }
+}
+```
+
+<Callout type="warning">
+  Always check the intake zone **before** the physics step, not after. This prevents the robot from re-consuming a piece that was just launched (since the launched piece starts inside the robot).
+</Callout>
+
+---
+
+## Step 4: Launching Pieces
+
+When the shooter fires, spawn a new physics body with the correct 3D velocity:
+
+```java
+import frc.sim.gamepiece.LaunchParameters;
+import edu.wpi.first.math.geometry.Translation3d;
+
+// Compute launch velocity from hood angle + robot heading
+double launchSpeed = 15.0;      // m/s — from shooter characterization
+double hoodAngle = Math.toRadians(45.0);  // radians from horizontal
+double robotHeading = gyro.getRotation2d().getRadians();
+
+// LaunchParameters computes the 3D world-frame velocity
+Translation3d launchPos = new Translation3d(
+    robotPose.getX(),
+    robotPose.getY(),
+    0.6  // launcher exit height above ground
+);
+
+Translation3d launchVel = LaunchParameters.computeLaunchVelocity(
+    launchSpeed, hoodAngle, robotHeading
+);
+
+// Launch!
+GamePiece launched = pieces.launchPiece(
+    RebuiltGamePieces.FUEL,
+    launchPos,
+    launchVel
+);
+
+if (launched != null) {
+    System.out.println("Launched! Remaining: " + pieces.getHeldCount());
+}
+```
+
+---
+
+## Step 5: Proximity Sleep/Wake (Performance)
+
+With hundreds of pieces, you need this. Call it **every tick** before the physics step:
+
+```java
+// Only simulate pieces near the robot (and near fast-moving balls)
+pieces.updateProximity(
+    robotPose.getTranslation(),  // Translation2d
+    1.5,    // wakeRadius — enable bodies within 1.5m
+    3.0     // sleepRadius — disable settled bodies beyond 3.0m
+);
+```
+
+<Callout type="info">
+  With 400 pieces on the field but only ~20 active at a time, the sim loop typically takes **less than 2ms** per tick. Without proximity management it would take 50ms+ and kill your frame rate.
+</Callout>
+
+---
+
+## Step 6: Publishing Poses for AdvantageScope
+
+```java
+// Publish all active piece positions to NetworkTables
+pieces.publishPoses((key, poses) -> {
+    Logger.recordOutput(key, poses);
+});
+```
+
+This sends an array of `Pose3d` for each piece type, so AdvantageScope can render them in the 3D viewer.
+
+---
+
+## Complete Sim Loop Example
+
+Here's how all the pieces fit together in your `SimManager.periodic()`:
+
+```java
+public void periodic() {
+    // 1. Step drivetrain (MapleSim)
+    driveSim.update();
+    Pose2d robotPose = driveSim.getPose();
+    
+    // 2. Update ODE4J chassis to follow MapleSim
+    chassis.setVelocity(worldVx, worldVy, omega, 0.02);
+    
+    // 3. Proximity — wake nearby pieces
+    pieces.updateProximity(robotPose.getTranslation(), 1.5, 3.0);
+    
+    // 4. Check intake (BEFORE physics step)
+    if (intakeSubsystem.isRunning()) {
+        GamePiece hit = intakeZone.checkOverlap(pieces.getActivePieces(), robotPose);
+        if (hit != null) pieces.intakePiece(hit);
+    }
+    
+    // 5. Physics step
+    world.step(0.02);
+    
+    // 6. Update piece states
+    pieces.update();
+    
+    // 7. Check scoring zones
+    scorer.checkScoring(pieces.getActivePieces());
+    
+    // 8. Handle launching
+    if (shooterSubsystem.isFiring() && cooldownExpired()) {
+        launchPiece(robotPose);
+    }
+    
+    // 9. Publish telemetry
+    pieces.publishPoses((key, poses) -> Logger.recordOutput(key, poses));
+    Logger.recordOutput("Sim/Intake/HeldCount", pieces.getHeldCount());
+}
+```

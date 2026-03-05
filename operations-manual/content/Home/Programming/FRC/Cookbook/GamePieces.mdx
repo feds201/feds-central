@@ -1,0 +1,132 @@
+---
+title: "Recipe: Defining Game Pieces"
+---
+
+import {Callout} from 'nextra/components';
+
+    <meta property="og:description" content="How to define game piece physics properties using GamePieceConfig — shape, mass, bounce, friction" />
+
+# 🏐 Defining Game Pieces
+
+Every FRC game has unique game pieces — balls, cubes, cones, rings. In our sim-core physics engine, you define a game piece's physical properties using the `GamePieceConfig.Builder` pattern. This recipe shows you how.
+
+---
+
+## The Builder Pattern
+
+`GamePieceConfig` is an immutable configuration class located at `robot/sim-core/src/main/java/frc/sim/gamepiece/GamePieceConfig.java`. You create one using the builder:
+
+```java
+import frc.sim.gamepiece.GamePieceConfig;
+
+GamePieceConfig myPiece = new GamePieceConfig.Builder()
+    .withName("MyPiece")              // display name for telemetry
+    .withShape(GamePieceConfig.Shape.SPHERE)  // SPHERE, CYLINDER, or BOX
+    .withRadius(0.075)                // meters (sphere/cylinder radius)
+    .withMass(0.2)                    // kilograms
+    .withBounce(0.15)                 // coefficient of restitution (0 = no bounce, 1 = perfect bounce)
+    .withFriction(0.5)                // surface friction coefficient
+    .build();
+```
+
+<Callout type="info">
+  `GamePieceConfig` is **immutable** — once built, it can't be changed. Create one config per game piece type and reuse it for all instances of that type.
+</Callout>
+
+---
+
+## Available Shapes
+
+| Shape | Builder Methods Used | Use Case |
+|---|---|---|
+| `SPHERE` | `withRadius(r)` | Balls (REBUILT fuel, Rapid React cargo) |
+| `CYLINDER` | `withRadius(r)`, `withLength(l)` | Rings, discs, tubes |
+| `BOX` | `withRadius(r)`, `withLength(l)`, `withWidth(w)` | Cubes, totes |
+
+---
+
+## Real Example: REBUILT 2026 Fuel Ball
+
+This is the actual config used in the 2026 REBUILT robot. Located at `robot/2026-rebuilt/src/main/java/frc/robot/sim/RebuiltGamePieces.java`:
+
+```java
+package frc.robot.sim;
+
+import frc.sim.gamepiece.GamePieceConfig;
+
+public class RebuiltGamePieces {
+    /** Fuel ball: 6" diameter foam ball, ~0.2kg. */
+    public static final GamePieceConfig FUEL = new GamePieceConfig.Builder()
+            .withName("Fuel")
+            .withShape(GamePieceConfig.Shape.SPHERE)
+            .withRadius(0.075) // 75mm radius = 150mm diameter (~6 inches)
+            .withMass(0.2)     // ~0.2 kg
+            .withBounce(0.15)  // low bounce — foam on carpet
+            .withFriction(0.5) // carpet friction
+            .build();
+}
+```
+
+<Callout type="warning">
+  **Measure your real game pieces!** The radius, mass, and bounce values directly affect how pieces behave in simulation. Get the mass from the game manual. Estimate bounce by dropping the piece from 1 meter and seeing how high it bounces back (0.3 = bounces to 30cm).
+</Callout>
+
+---
+
+## More Examples
+
+### Cylinder Game Piece (Ring/Disc)
+
+```java
+GamePieceConfig ring = new GamePieceConfig.Builder()
+    .withName("Ring")
+    .withShape(GamePieceConfig.Shape.CYLINDER)
+    .withRadius(0.165)    // outer radius in meters
+    .withLength(0.05)     // thickness / height in meters
+    .withMass(0.3)
+    .withBounce(0.2)
+    .withFriction(0.6)
+    .build();
+```
+
+### Box Game Piece (Cube/Tote)
+
+```java
+GamePieceConfig cube = new GamePieceConfig.Builder()
+    .withName("Cube")
+    .withShape(GamePieceConfig.Shape.BOX)
+    .withRadius(0.12)     // half-width X in meters
+    .withWidth(0.12)      // half-width Y in meters
+    .withLength(0.12)     // half-width Z in meters
+    .withMass(0.5)
+    .withBounce(0.1)      // foam cubes barely bounce
+    .withFriction(0.7)    // high friction — foam on carpet
+    .build();
+```
+
+---
+
+## Tuning Guide
+
+| Property | Too Low | Too High | How to Measure |
+|---|---|---|---|
+| `mass` | Pieces fly too far when hit | Pieces barely move | Weigh the real piece on a kitchen scale |
+| `bounce` | Pieces stick to surfaces | Pieces bounce endlessly | Drop from 1m, measure bounce height ÷ 1m |
+| `friction` | Pieces slide on carpet like ice | Pieces stop instantly | Trial and error — 0.5 is a good starting point for carpet |
+| `radius` | Collision detection misses | Pieces overlap visually | Measure with calipers, convert to meters |
+
+---
+
+## Where This Fits
+
+```
+GamePieceConfig (you define this)
+       │
+       ▼
+GamePieceManager.spawnPiece(config, x, y, z)    ← creates a physics body
+       │
+       ▼
+GamePiece (individual instance with ODE4J rigid body)
+```
+
+After defining your config, see the **Intake & Launching** recipe to learn how to spawn, consume, and launch pieces.

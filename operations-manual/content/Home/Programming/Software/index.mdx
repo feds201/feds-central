@@ -1,74 +1,126 @@
 import {Callout} from 'nextra/components';
-import { Cards } from 'nextra/components';
-import { GenericHero, GenericStats, GenericGrid, GenericWidget} from '../../../../Components/index';
+import { GenericHero, GenericGrid } from '../../../../Components/index';
 
-    <meta property="og:description" content="Master FRC robot programming with our comprehensive guide - from Java fundamentals to advanced autonomous systems" />
+    <meta property="og:description" content="Software tools, utilities, and guides used across FEDS 201 projects — from web apps to internal tools" />
 <GenericHero 
-  title="FRC Wing"
+  title="Software Wing"
   backgroundType='gradient'
   height="sm"
-  description='Master FRC robot programming with our comprehensive guide - from Java fundamentals to advanced autonomous systems'
-  backgroundValue='linear-gradient(to right,rgb(0, 55, 128), rgba(255, 0, 0, 0.62))'
+  description='Non-FRC software projects, tools, and development guides'
+  backgroundValue='linear-gradient(135deg, #1a1a2e 0%, #0f3460 50%, #533483 100%)'
   textAlign='center'
 />
 
 <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 20px' }}>
 
-# Welcome to FRC Wing
-<strong> Where Code Meets Competition</strong>
+# Software Wing
 
-FRC programming isn’t just about writing code. It’s about breathing life into machines, making decisions faster than your Wi-Fi, and building a robot that doesn’t just move—but flexes on the competition. At FEDS 201, our programmers are the unsung heroes, turning caffeine into code, bugs into features, and chaos into (mostly) functional robots.
+Beyond FRC robot code, FEDS 201 builds and maintains several software projects — web apps, internal tools, data pipelines, and development utilities. This section covers non-FRC software development.
 
-<br />
+---
 
-<GenericStats
-  layout="grid"
-  variant="gradient"
-  countUp={true}
-  animation={{ enabled: true, duration: 2000, delay: 100 }}
-  stats={[
-    { value: 14, label: "Days to Full Subsystem Code 🧠 — Fueled by coffee and questionable life choices." },
-    { value: 500, label: "Programming Hours Logged 💻 — Grass was touched (virtually).", suffix: "+" },
-    { value: 1200, label: "Lines of Handwritten Code ✍️ — Every semicolon tells a story.", suffix: "+" },
-    { value: 8, label: "Subsystems Integrated 🔧 — Like duct-taping lawnmowers into a spaceship." },
-    { value: 3, label: "Reusable Code Templates ♻️ — Ctrl+C, Ctrl+V, engineering at its finest." },
-    { value: 1, label: "Swerve Generator Used ⚙️ — Because reinventing the wheel is overrated." },
-    { value: 100, label: "CAD-Based Code Tweaks 📐 — Mechanical team: the gift that keeps on giving (plot twists).", suffix: "+" },
-    { value: 20, label: "Late Nights Debugging 🌙 — Staring into the void until the robot obeys.", suffix: "+" },
-    { value: 7, label: "Auto Modes Created 🤖 — The robot now dreams in trajectories." },
-    { value: 42, label: "Merge Conflicts Resolved 🔀 — Git turned coding into boss fights." },
-    { value: 69, label: "Build Errors Caused by One Missing Bracket 🧱 — Still blaming the compiler." },
-    { value: 1337, label: "Debug Prints Deployed 🐞 — Console.log: the unsung MVP.", suffix: "+" },
-    { value: 1, label: "Programmers Who Swore Never to Touch Code Again 😤 — Until next season." },
-    { value: 6, label: "Panic Deploys Before Matches 🚨 — Ctrl+S, Ctrl+B, Ctrl+Pray." },
-    { value: 2, label: "Robots Possessed by Gremlins 👻 — We don’t talk about Week 3." }
+## Our Software Projects
+
+<GenericGrid 
+  layout="masonry"
+  variant="cards"
+  items={[
+    {
+      title: "G201 Eco Calculator",
+      description: "Web-based sustainability assessment tool built with HTML, CSS, and vanilla JavaScript (ES Modules). Assess team environmental impact across 5 modules.",
+      icon: "🌱",
+      color: "green"
+    },
+    {
+      title: "ScoutOps Suite",
+      description: "Three-part scouting platform — Flutter mobile app, React/Electron desktop client, and Python Flask server for collecting and analyzing match data.",
+      icon: "📊",
+      color: "blue"
+    },
+    {
+      title: "Operations Manual",
+      description: "This documentation site! Built with Next.js and Nextra, with custom React components for heroes, stats, grids, and interactive widgets.",
+      icon: "📖",
+      color: "purple"
+    },
+    {
+      title: "Dev Dashboard",
+      description: "Internal developer tools and utilities for team workflow management.",
+      icon: "🖥️",
+      color: "orange"
+    }
   ]}
 />
 
-## 🔥 What You'll Learn in the FRC Wing
-<p>
-  Welcome, brave coder. If you're reading this, congratulations — you're officially in too deep. But hey, here's the good news: by the end of this, you'll be the reason the robot actually moves (and maybe even in the right direction).
-</p>
+---
 
-<GenericStats
-  layout="grid"
-  variant="compact"
-  countUp={true}
-  stats={[
-    { value: "🚀", label: "Java for FRC", description: "Learn to code in Java. You’ll write methods, classes, and accidentally create infinite loops at 3AM." },
-    { value: "🧠", label: "Subsystem Architecture", description: "Split your code like a modular pizza. Subsystems, commands, triggers — it’s object-oriented programming on steroids." },
-    { value: "🎮", label: "Controller Mapping", description: "Map buttons to actions, and occasionally to chaos. Left bumper will probably do something you didn’t expect." },
-    { value: "🛠", label: "Debugging Strategies", description: "Cry into `System.out.println()`. Stack traces, null pointers, and 'why does it only fail when the judges are watching?'" },
-    { value: "🤖", label: "Autonomous Routines", description: "Make the robot do cool stuff without touching it. When it works, it’s magic. When it doesn’t, it’s a feature." },
-    { value: "📦", label: "Git & Version Control", description: "Learn how to git push --force and pray. Also, how to recover from that prayer." },
-    { value: "🧪", label: "Simulation & Tuning", description: "Run your robot in simulation because driving into walls IRL is frowned upon." },
-    { value: "📐", label: "CAD-Driven Adaptation", description: "Turn last-minute mechanical changes into last-minute code commits. We stay flexible. Like spaghetti." }
-  ]}
-/>
+## Development Tools & Visualizers
 
-<Callout type="info" title="Pro Tip">
-  Programming on an FRC team is 20% Java, 30% teamwork, and 50% convincing the robot it’s not haunted.
+### sim-core Web Visualizer
+
+A lightweight browser-based viewer for sim-core's physics simulation. Streams JSON snapshots via WebSocket and renders entities on a canvas. Great for debugging field layouts and piece behavior without AdvantageScope.
+
+**Location:** `robot/sim-core/examples/web-visualizer/` (scaffold)
+
+**Quick start:**
+```bash
+cd robot/sim-core/examples/web-visualizer
+node server.js
+# Open http://localhost:8080 in a browser
+```
+
+See the **Simulation System Design → Visualization & Web UI** section for implementation details and snapshot format.
+
+### Telemetry Tools
+
+- **AdvantageScope** — primary 3D visualization and log replay tool (external)
+- **Shuffleboard** — WPILib dashboard for real-time subsystem status, motor temps, test results
+- **Diagnostic Server** — RTU's embedded web server (port 5800) for Chart.js test result charts
+
+### Build & Deploy Scripts
+
+| Script | Location | Purpose |
+|---|---|---|
+| `gradlew build` | `robot/<year>/` | Compile and run unit tests |
+| `gradlew deploy` | `robot/<year>/` | Deploy to roboRIO via USB or WiFi |
+| `gradlew simulateJava` | `robot/<year>/` | Run physics simulation locally |
+| `npm run dev` | `operations-manual/` | Dev server for documentation site |
+| `npm run build` | `operations-manual/` | Production build of documentation |
+| `npx http-server` | `g201/calculator/` | Serve the G201 calculator locally |
+
+---
+
+## Programming Guides & Patterns
+
+### Short Recipes (in FRC Cookbook)
+
+The **FRC → Programming Cookbook** section has actionable, copy-paste recipes for common programming tasks:
+
+- Defining game pieces (sphere, cylinder, box configs)
+- Setting up intake zones and launching
+- Building simulation for a new game year
+- Writing @RobotAction automated tests
+- Creating new subsystems from the template
+
+### Architecture Patterns We Use
+
+| Pattern | Where It's Used | Why |
+|---|---|---|
+| **Command-based** | All robot subsystems | WPILib standard — separates "what to do" from "when to do it" |
+| **Builder pattern** | `GamePieceConfig`, `ChassisConfig` | Clean construction of objects with many optional parameters |
+| **Counter-based sim** | Intake/launch system | Avoids simulating pieces inside the robot — just count them |
+| **Proximity sleep/wake** | `GamePieceManager` | Only simulate pieces near the robot for performance |
+| **Annotation-driven testing** | `@RobotAction` | Auto-discovers test methods without manual registration |
+| **Dual-engine simulation** | MapleSim + ODE4J | Specialized engines for drivetrain vs. game piece physics |
+
+### Version Control Conventions
+
+- **Branch naming**: `feature/<description>`, `fix/<description>`, `comp/<event-name>`
+- **Commit messages**: imperative tense — "Add intake subsystem", not "Added intake subsystem"
+- **Pre-competition**: create a `comp/` branch, deploy from it, never push untested code to `main` during an event
+
+<Callout type="info">
+  For the full codebase map showing how all projects connect, see **Programming → Codebase Architecture**.
 </Callout>
-
 
 </div>

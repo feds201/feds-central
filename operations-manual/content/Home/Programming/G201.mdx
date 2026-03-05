@@ -32,3 +32,112 @@ Based on the score, the tool provides **personalized recommendations** to help t
 ## Accessing the Calculator
 
 The calculator can be run directly from the browser by opening `g201/calculator/index.html`.
+
+To run locally (ES Modules require a server):
+```bash
+cd g201/calculator
+npx http-server
+```
+
+---
+
+## Developer Guide
+
+### How to Add a New Question to an Existing Module
+
+Open `g201/calculator/js/data.js`. Each module is a numbered key (`'1'`, `'2'`, etc.) containing an array of question objects. Add a new object to the array:
+
+```javascript
+// In data.js, inside the module '3' array (Robot Components):
+{
+    section: "III. Mechanical",
+    question: "How many 3D printers does your team use?",
+    hint: "Select an option",
+    type: "multiple-choice",
+    options: [
+        { label: "5+", eco_impact: "high", value: 3 },
+        { label: "2-4", eco_impact: "medium", value: 2 },
+        { label: "0-1", eco_impact: "low", value: 1 },
+    ],
+    eco_tip: "3D printers consume energy and produce waste filament. Consider recycling failed prints.",
+    eco_impact: "medium",
+    category: "materials"
+},
+```
+
+**Question Properties:**
+
+| Property | Required | Description |
+|---|---|---|
+| `section` | ✅ | Section heading displayed above the question |
+| `question` | ✅ | The question text shown to the user |
+| `type` | ✅ | `"multiple-choice"` or `"int"` (numeric input) |
+| `options` | For MC | Array of `{ label, eco_impact, value }` objects |
+| `hint` | Optional | Helper text below the question |
+| `min` / `max` | For int | Valid range for numeric inputs |
+| `eco_tip` | Optional | Sustainability tip shown alongside the question |
+| `eco_impact` | ✅ | `"high"`, `"medium"`, or `"low"` — controls scoring weight |
+| `category` | ✅ | `"materials"`, `"transport"`, or `"energy"` — groups impact for results |
+
+### How to Create a New Module
+
+1. **Add the question array** in `data.js`:
+
+```javascript
+// Add a new module '6' for Energy Usage
+'6': [
+    {
+        section: "VI. Energy Usage",
+        question: "How many hours per week does your team use the workshop?",
+        type: "multiple-choice",
+        options: [
+            { label: "30+ hours", eco_impact: "high", value: 3 },
+            { label: "15-30 hours", eco_impact: "medium", value: 2 },
+            { label: "Under 15 hours", eco_impact: "low", value: 1 },
+        ],
+        eco_tip: "Consider turning off lights and equipment when not in use",
+        eco_impact: "medium",
+        category: "energy"
+    },
+    // ... more questions
+]
+```
+
+2. **Add a module card** in `index.html` so users can access it. Copy an existing module card and update the `onclick` to call `startModule('6')`.
+
+### How the Scoring Algorithm Works
+
+The scoring engine lives in `quiz.js` in the `updateEcoScore()` function. It starts at 100 and deducts points per question:
+
+```
+Score starts at 100
+
+For each question answered:
+  1. Determine impact factor from eco_impact:
+     - "high"   → -20 points max
+     - "medium" → -12 points max
+     - "low"    → -6  points max
+
+  2. Normalize the answer to 0-1 range:
+     - Multiple choice: (value - 1) / (3 - 1)
+     - Numeric input:   (value - min) / (max - min)
+
+  3. Apply a curve: curvedImpact = normalizedValue ^ 1.5
+     (this makes moderate answers less punishing)
+
+  4. Deduct: score += curvedImpact × impactFactor
+     (clamped to 0-100)
+```
+
+The power curve (`^ 1.5`) means that selecting the worst option has a proportionally larger penalty than selecting the middle option. This encourages incremental improvement.
+
+### How to Add New Recommendations
+
+Recommendations are generated in `quiz.js` in the `generateRecommendations()` function. Add entries to the `allRecommendations` array:
+
+```javascript
+{ category: 'energy', text: 'Use LED lighting in your workshop', impact: 'medium' },
+{ category: 'materials', text: 'Partner with local recycling centers for metal scraps', impact: 'low' },
+```
+
+Recommendations are filtered by impact — high-impact recommendations only show if the user scored poorly in that category.

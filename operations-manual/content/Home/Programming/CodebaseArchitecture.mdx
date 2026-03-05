@@ -1,0 +1,239 @@
+---
+title: Codebase Architecture
+---
+
+import {Callout} from 'nextra/components';
+import { GenericHero } from '../../../Components/index';
+
+    <meta property="og:description" content="A complete map of the FEDS 201 feds-central monorepo — what each directory does, what tech it uses, and how they connect" />
+<GenericHero 
+  title="Codebase Architecture"
+  backgroundType='gradient'
+  height="sm"
+  description='The complete map of the feds-central monorepo'
+  backgroundValue='linear-gradient(135deg, #0d1117 0%, #161b22 50%, #21262d 100%)'
+  textAlign='center'
+/>
+
+<div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 20px' }}>
+
+# 🗺️ Codebase Architecture
+
+The `feds-central` repository is a **monorepo** — everything FEDS 201 builds lives here. This page is your map. Whether you're a new programmer figuring out where things are, or a returning member wondering "where did they put that thing," start here.
+
+---
+
+## Repository Overview
+
+```
+feds-central/
+├── robot/                      🤖 All robot code (Java, Gradle)
+│   ├── 2026-rebuilt/             Current season robot
+│   ├── 2025-reefscape/           Last season (archived)
+│   ├── sim-core/                 Reusable physics simulation library
+│   ├── robot-testing-utility/    Reusable automated test harness (RTU)
+│   └── template/                 Starter template for new robot projects
+│
+├── scouting/                   📊 Scout-Ops scouting platform
+│   ├── scan/                     Mobile app (Flutter/Dart)
+│   ├── desktop-client/           Admin dashboard (Electron/React)
+│   ├── server/                   Backend API (Python/Flask)
+│   ├── data-source/              Data pipeline utilities
+│   ├── data-chunk/               Data chunking/processing
+│   └── old-yearly/               Past season scouting configs
+│
+├── g201/                       🌱 G201 Eco Calculator
+│   └── calculator/               Web app (HTML/CSS/JS)
+│
+├── operations-manual/          📖 This documentation site (Next.js/Nextra)
+│
+├── dev-dashboard/              🖥️ Internal developer tools
+│
+└── game-manuals/               📕 FRC game manual archives
+```
+
+---
+
+## Robot Projects
+
+All robot code lives under `robot/`. Each season gets its own project.
+
+### Current Season: `robot/2026-rebuilt/`
+
+| Aspect | Detail |
+|---|---|
+| **Language** | Java 17 |
+| **Framework** | WPILib 2026.1.1 |
+| **Build System** | Gradle (with WPILib plugin) |
+| **Drivetrain** | CTRE Swerve (TunerConstants generated) |
+| **Simulation** | Dual-engine: MapleSim (drivetrain) + ODE4J (game pieces) |
+| **Testing** | RTU (@RobotAction automated tests) |
+
+**Key directories:**
+- `src/main/java/frc/robot/subsystems/` — drivetrain, intake, shooter, feeder, climber, LEDs
+- `src/main/java/frc/robot/sim/` — simulation classes (RebuiltSimManager, RebuiltField, ShooterSim)
+- `src/main/java/frc/robot/utils/` — utilities (LimelightHelpers, SubsystemStatusManager, DeviceTempReporter)
+- `src/main/java/frc/robot/commands/` — command classes
+- `vendordeps/` — third-party library JSON files (CTRE, REV, PathPlanner, etc.)
+
+**Build & Run:**
+```bash
+cd robot/2026-rebuilt
+./gradlew build           # compile + tests
+./gradlew deploy          # deploy to roboRIO
+./gradlew simulateJava    # run simulation
+```
+
+---
+
+### `robot/sim-core/` — Physics Simulation Library
+
+A **reusable** physics engine that is game-year-independent. Built on ODE4J.
+
+| Aspect | Detail |
+|---|---|
+| **Language** | Java 17 |
+| **Physics Engine** | ODE4J 0.5.4 |
+| **Purpose** | Rigid body physics for game pieces, field collisions, chassis simulation |
+
+**What it provides:** PhysicsWorld, FieldGeometry, ChassisSimulation, GamePieceManager, IntakeZone, LaunchParameters, ScoringTracker, proximity sleep/wake, adaptive sub-stepping.
+
+**Used by:** 2026-rebuilt, 2025-reefscape
+
+For full API docs, see **Simulation System Design** in the FRC section.
+
+---
+
+### `robot/robot-testing-utility/` — RTU Library
+
+A **reusable** test harness that auto-discovers `@RobotAction` methods.
+
+| Aspect | Detail |
+|---|---|
+| **Language** | Java 17 |
+| **Purpose** | Automated hardware testing in Driver Station Test mode |
+| **Dashboard** | Embedded HTTP server on port 5800 with Chart.js charts |
+
+**Used by:** 2026-rebuilt (via Gradle project dependency)
+
+For full docs, see **Robot Testing Utility** in the FRC section.
+
+---
+
+### `robot/template/` — Robot Project Starter
+
+A minimal WPILib robot project with swerve drive already configured. Use this as the starting point for a new season:
+
+```bash
+# Copy the template for a new year
+cp -r robot/template robot/2027-newgame
+```
+
+---
+
+## Scouting Platform
+
+### `scouting/scan/` — Mobile Scanner App
+
+| Aspect | Detail |
+|---|---|
+| **Framework** | Flutter (Dart) |
+| **Platform** | Android |
+| **Purpose** | Field-side match scouting data entry |
+
+**Key files:** `lib/main.dart`, `lib/scout_ops_scanner.dart`, `lib/components/`
+
+### `scouting/desktop-client/` — Admin Dashboard
+
+| Aspect | Detail |
+|---|---|
+| **Framework** | Electron + React |
+| **Platform** | Windows (Electron) |
+| **Purpose** | Admin control, device management, data aggregation |
+
+**Key files:** `main.js` (Electron main), `renderer.js`, `pages/`
+
+### `scouting/server/` — Backend API
+
+| Aspect | Detail |
+|---|---|
+| **Framework** | Python (Flask) |
+| **Database** | SQL |
+| **Purpose** | Data sync between mobile + desktop, app hosting |
+
+**Key files:** `server.py`, `configFile.json`
+
+**Endpoints:** `/getApp` (download Android APK), `/getDashboard` (download desktop client)
+
+For scouting docs, see **Strategy / Scouting** section → ScoutOpsSuite.
+
+---
+
+## G201 Eco Calculator
+
+### `g201/calculator/`
+
+| Aspect | Detail |
+|---|---|
+| **Tech** | Vanilla HTML, CSS, JavaScript (ES Modules) |
+| **Purpose** | Sustainability assessment for FRC teams |
+
+**Key files:**
+- `js/data.js` — all questions, options, and scoring weights
+- `js/quiz.js` — assessment flow, score calculation, recommendations
+- `js/utils.js` — helper functions
+- `js/main.js` — entry point and DOM element binding
+
+For developer guide (adding questions, creating modules), see **G201 Calculator** in the Programming section.
+
+---
+
+## Operations Manual
+
+### `operations-manual/`
+
+| Aspect | Detail |
+|---|---|
+| **Framework** | Next.js + Nextra |
+| **Content** | MDX files in `content/` |
+| **Styling** | Tailwind CSS + custom components |
+
+**Content structure:** `content/Home/` with sections for Programming, CAD, Electrical, Mechanical, PandC (People and Culture), Strategy, Experiences.
+
+**Custom components:** `Components/` directory with `GenericHero`, `GenericStats`, `GenericGrid`, `GenericWidget`, `GenericCard`, and more.
+
+**Build & Run:**
+```bash
+cd operations-manual
+npm install
+npm run dev     # development server
+npm run build   # production build
+```
+
+---
+
+## How They Connect
+
+```
+                    feds-central (monorepo)
+                          │
+          ┌───────────────┼───────────────┐
+          │               │               │
+       robot/          scouting/        g201/
+          │               │               │
+    ┌─────┼─────┐    ┌───┼───┐      calculator/
+    │     │     │    │   │   │     (standalone web app)
+  2026  sim-  RTU  scan dektop server
+ rebuilt core      (Flutter)(Electron)(Flask)
+    │     │  │        └───┬───┘
+    │     │  │            │
+    ├─uses┘  │     Bluetooth PAN sync
+    └─uses───┘
+```
+
+- **2026-rebuilt** depends on **sim-core** (physics) and **RTU** (testing) via Gradle project references
+- **scouting/scan** syncs data to **scouting/server** via HTTP, which feeds **scouting/desktop-client**
+- **g201/calculator** is fully standalone — no server required
+- **operations-manual** documents everything but has no runtime dependencies on other projects
+
+</div>

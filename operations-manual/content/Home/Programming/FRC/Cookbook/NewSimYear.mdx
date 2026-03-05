@@ -1,0 +1,268 @@
+---
+title: "Recipe: New Sim Year Setup"
+---
+
+import {Callout} from 'nextra/components';
+
+    <meta property="og:description" content="Step-by-step checklist for building a full physics simulation for a new FRC game year" />
+
+# 🎮 Building a Sim for a New Game Year
+
+When a new FRC game is announced, you need to set up simulation for the new field, game pieces, and robot mechanisms. This recipe is your step-by-step checklist. The whole process takes about **2-4 hours** once you've done it before.
+
+<Callout type="info">
+  Use `robot/2026-rebuilt/src/main/java/frc/robot/sim/` as your reference implementation. Every class mentioned below has a working example there.
+</Callout>
+
+---
+
+## Prerequisites
+
+Before you start, make sure:
+- [ ] Your robot project exists under `robot/<year>/`
+- [ ] `sim-core` is included in your `settings.gradle` and `build.gradle`
+- [ ] You have the game manual with field dimensions and game piece specs
+
+### Add sim-core to Your Project
+
+**`settings.gradle`:**
+```groovy
+include ':sim-core'
+project(':sim-core').projectDir = new File(settingsDir, '../sim-core')
+```
+
+**`build.gradle`:**
+```groovy
+dependencies {
+    implementation project(':sim-core')
+}
+```
+
+---
+
+## Step 1: Define Game Piece Properties
+
+Create a `<Year>GamePieces.java` class with `GamePieceConfig` constants for each piece type:
+
+```java
+package frc.robot.sim;
+
+import frc.sim.gamepiece.GamePieceConfig;
+
+public class MyYearGamePieces {
+    public static final GamePieceConfig BALL = new GamePieceConfig.Builder()
+        .withName("Ball")
+        .withShape(GamePieceConfig.Shape.SPHERE)
+        .withRadius(0.075)    // measure in meters
+        .withMass(0.2)        // weigh real piece
+        .withBounce(0.15)     // drop test
+        .withFriction(0.5)
+        .build();
+}
+```
+
+See the **Defining Game Pieces** recipe for full details on each property.
+
+---
+
+## Step 2: Build the Field Layout
+
+Create a `<Year>Field.java` class that sets up the field:
+
+```java
+package frc.robot.sim;
+
+import frc.sim.core.FieldGeometry;
+import frc.sim.core.PhysicsWorld;
+import frc.sim.core.TerrainSurface;
+import frc.sim.gamepiece.GamePieceManager;
+import frc.sim.scoring.ScoringTracker;
+
+public class MyYearField {
+    
+    public void setup(PhysicsWorld world, FieldGeometry field, 
+                      GamePieceManager pieces, ScoringTracker scorer) {
+        
+        // 1. Load field collision mesh
+        field.loadMesh(
+            getClass().getResourceAsStream("/field_collision.obj"),
+            TerrainSurface.CARPET
+        );
+        
+        // 2. Add boundary walls (field dimensions from game manual)
+        field.addBoundaryWalls(
+            16.54,  // field length (meters)
+            8.07,   // field width (meters)
+            0.5,    // wall height
+            0.1     // wall thickness
+        );
+        
+        // 3. Spawn game pieces at starting positions
+        spawnNeutralZonePieces(pieces);
+        spawnDepotPieces(pieces);
+        
+        // 4. Disable all pieces (proximity will wake them)
+        pieces.disableAll();
+        
+        // 5. Register scoring zones
+        setupScoringZones(world, scorer);
+    }
+    
+    private void spawnNeutralZonePieces(GamePieceManager pieces) {
+        // Example: scatter pieces across neutral zone
+        for (int i = 0; i < 100; i++) {
+            double x = 5.0 + Math.random() * 6.54;
+            double y = 1.0 + Math.random() * 6.07;
+            pieces.spawnPiece(MyYearGamePieces.BALL, x, y, 0.5);
+        }
+    }
+}
+```
+
+<Callout type="warning">
+  **Field mesh matters!** Export a simplified OBJ from CAD. Keep it under ~500 triangles. Use `robot/sim-core/scripts/simplify_field.py` to reduce polygon count. A 50,000-triangle mesh will destroy your frame rate.
+</Callout>
+
+---
+
+## Step 3: Configure the Chassis
+
+```java
+import frc.sim.chassis.ChassisConfig;
+
+ChassisConfig chassisConfig = new ChassisConfig.Builder()
+    .withModulePositions(moduleTranslations)  // from TunerConstants
+    .withRobotMass(55.0)        // kg, with bumpers + battery
+    .withRobotMOI(6.0)          // kg*m², estimate from CAD
+    .withBumperSize(0.8, 0.8, 0.25)  // length, width, height in meters
+    .build();
+```
+
+---
+
+## Step 4: Write the SimManager
+
+Create `<Year>SimManager.java` — the orchestrator that runs every tick:
+
+```java
+package frc.robot.sim;
+
+import frc.sim.core.PhysicsWorld;
+import frc.sim.core.FieldGeometry;
+import frc.sim.chassis.ChassisSimulation;
+import frc.sim.gamepiece.GamePieceManager;
+import frc.sim.gamepiece.IntakeZone;
+import frc.sim.scoring.ScoringTracker;
+
+public class MyYearSimManager {
+    private final PhysicsWorld world;
+    private final ChassisSimulation chassis;
+    private final GamePieceManager pieces;
+    private final IntakeZone intakeZone;
+    private final ScoringTracker scorer;
+    
+    public MyYearSimManager(/* subsystem references */) {
+        // 1. Create physics world
+        world = new PhysicsWorld();
+        FieldGeometry field = new FieldGeometry(world);
+        
+        // 2. Create chassis
+        chassis = new ChassisSimulation(world, chassisConfig, startPose);
+        
+        // 3. Create game piece manager
+        pieces = new GamePieceManager(world);
+        pieces.setMaxCapacity(70);
+        
+        // 4. Set up intake zone
+        intakeZone = new IntakeZone(0.35, 0.50, -0.25, 0.25, 0.0, 0.20);
+        
+        // 5. Create scoring tracker
+        scorer = new ScoringTracker();
+        
+        // 6. Set up the field
+        new MyYearField().setup(world, field, pieces, scorer);
+    }
+    
+    /** Called every robot tick (50 Hz). */
+    public void periodic() {
+        // Full sim loop — see the Intake & Launching recipe for details
+    }
+}
+```
+
+---
+
+## Step 5: Wire It Into Your Robot
+
+In `Robot.java`:
+
+```java
+@Override
+public void simulationPeriodic() {
+    simManager.periodic();
+}
+```
+
+---
+
+## Checklist Summary
+
+| Step | File to Create | What It Does |
+|---|---|---|
+| 1 | `<Year>GamePieces.java` | Game piece configs (shape, mass, bounce) |
+| 2 | `<Year>Field.java` | Field layout, piece spawning, scoring zones |
+| 3 | *(in SimManager)* | Chassis config (mass, dimensions) |
+| 4 | `<Year>SimManager.java` | Orchestrator — runs the sim loop each tick |
+| 5 | *(in Robot.java)* | Wire `simManager.periodic()` into `simulationPeriodic()` |
+| Optional | `ShooterSim.java` | Bridge shooter subsystem to piece launching |
+| Optional | Field OBJ mesh | 3D collision geometry for walls/ramps |
+
+---
+
+## Running Your New Sim
+
+```bash
+cd robot/<year-project>
+./gradlew simulateJava
+```
+
+Then open AdvantageScope, connect to `localhost`, and you should see your field with game pieces!
+
+---
+
+## Migrating From a Previous Year's Sim
+
+If you're upgrading or adapting an existing year's simulation code instead of starting fresh, here are the key migration steps:
+
+### From No Sim → sim-core
+
+If your previous robot project had no simulation at all:
+
+1. Add sim-core to your Gradle project (see Prerequisites above)
+2. Follow Steps 1–5 exactly as written — everything is new
+3. Copy `RebuiltSimManager.java` as your starting template and modify it
+
+### From Older sim-core → Current sim-core
+
+If your previous project used an older iteration of sim-core (e.g., 2025-era code):
+
+| Old Pattern | New Pattern | What Changed |
+|---|---|---|
+| Global body iteration | `updateProximity()` + spatial partitioning | Only active pieces are simulated — must call `updateProximity()` each tick |
+| Manual entity tracking | `GamePieceManager.spawnPiece()` | Manager handles lifecycle, pose publishing, and proximity automatically |
+| Direct `DWorld` access | `PhysicsWorld` wrapper | Wrapper handles sub-stepping, collision callbacks, and terrain surfaces |
+| No scoring detection | `ScoringTracker` + sensor geoms | Sensor geometries detect scoring without blocking piece movement |
+
+**Recommended migration steps:**
+
+1. Replace direct world-wide body iteration with `GamePieceManager` — it handles spawn, consume, launch, and proximity sleep/wake
+2. Register entities via `spawnPiece()` instead of manual bookkeeping — this ensures they participate in proximity updates and pose publishing
+3. Use `PhysicsWorld.step()` instead of raw `DWorld.step()` — the wrapper adds adaptive sub-stepping to prevent fast balls tunneling through walls
+4. Add `updateProximity()` calls before the physics step if your old code didn't have spatial partitioning
+
+### Common Migration Pitfalls
+
+- **Missing `disableAll()` after spawning**: If you spawn 400 pieces without disabling them, all 400 will simulate every tick instead of ~20. Always call `pieces.disableAll()` after initial field spawn.
+- **Intake check order**: The intake zone must be checked **before** the physics step, not after. If checked after, a just-launched ball can be immediately re-consumed.
+- **Velocity frame mismatch**: MapleSim reports robot-relative velocities. You must rotate them to world-frame before passing to `chassis.setVelocity()`. Forgetting this rotation causes the robot to drive in the wrong direction in sim.
+

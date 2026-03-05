@@ -1,0 +1,225 @@
+---
+title: "Recipe: Subsystem Template"
+---
+
+import {Callout} from 'nextra/components';
+
+    <meta property="og:description" content="Full boilerplate for creating a new WPILib SubsystemBase class with all FEDS 201 conventions" />
+
+# 🔧 Creating a New Subsystem from Scratch
+
+Every mechanism on the robot gets its own subsystem class. This recipe gives you the full boilerplate following FEDS 201 conventions — motor init, default commands, status monitoring, temperature reporting, and test stubs.
+
+---
+
+## The Template
+
+Copy this into a new file at `src/main/java/frc/robot/subsystems/<name>/<Name>.java`:
+
+```java
+package frc.robot.subsystems.mysubsystem;
+
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.controls.VoltageOut;
+import com.ctre.phoenix6.controls.PositionVoltage;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj.Timer;
+import frc.robot.utils.RTU.RobotAction;
+import frc.robot.utils.RTU.DiagnosticContext;
+import frc.robot.utils.SubsystemStatusManager;
+import frc.robot.utils.DeviceTempReporter;
+
+public class MySubsystem extends SubsystemBase {
+
+    // ========================
+    //  HARDWARE
+    // ========================
+    private final TalonFX motor;
+
+    // ========================
+    //  CONSTANTS
+    // ========================
+    private static final int MOTOR_CAN_ID = 42;
+    private static final double DEFAULT_VOLTAGE = 0.0;
+
+    // ========================
+    //  CONSTRUCTOR
+    // ========================
+    public MySubsystem() {
+        motor = new TalonFX(MOTOR_CAN_ID);
+
+        // Configure motor
+        var config = new com.ctre.phoenix6.configs.TalonFXConfiguration();
+        // Add your motor configs here (PID, current limits, etc.)
+        motor.getConfigurator().apply(config);
+
+        // Register for continuous health monitoring (Shuffleboard)
+        SubsystemStatusManager.addSubsystem(getName(), motor);
+
+        // Register for temperature monitoring (Shuffleboard)
+        DeviceTempReporter.addDevices(motor);
+    }
+
+    // ========================
+    //  PUBLIC API
+    // ========================
+
+    /** Run motor at the given voltage. */
+    public void setVoltage(double volts) {
+        motor.setControl(new VoltageOut(volts));
+    }
+
+    /** Move to a target position (rotations). */
+    public void setPosition(double rotations) {
+        motor.setControl(new PositionVoltage(rotations));
+    }
+
+    /** Stop all motors. */
+    public void stop() {
+        motor.setControl(new VoltageOut(0));
+    }
+
+    /** Get current motor position in rotations. */
+    public double getPosition() {
+        return motor.getPosition().getValueAsDouble();
+    }
+
+    /** Get current motor velocity in rot/s. */
+    public double getVelocity() {
+        return motor.getVelocity().getValueAsDouble();
+    }
+
+    /** Check if motor is connected on CAN bus. */
+    public boolean isConnected() {
+        return motor.isConnected();
+    }
+
+    // ========================
+    //  PERIODIC
+    // ========================
+    @Override
+    public void periodic() {
+        // Called every 20ms — put telemetry updates here
+    }
+
+    // ========================
+    //  RTU TESTS
+    // ========================
+
+    @RobotAction(name = "Motor Connected", description = "CAN bus check", order = 1)
+    public boolean testMotorConnected() {
+        return motor.isConnected();
+    }
+
+    @RobotAction(name = "Motor Spins", description = "Voltage response check", order = 2, timeoutSeconds = 3.0)
+    public boolean testMotorSpins(DiagnosticContext ctx) {
+        ctx.info("Applying 2V...");
+        motor.setControl(new VoltageOut(2.0));
+        Timer.delay(0.5);
+
+        double velocity = motor.getVelocity().getValueAsDouble();
+        motor.setControl(new VoltageOut(0));
+
+        if (Math.abs(velocity) < 0.1) {
+            ctx.error("Motor did not move! Velocity: " + velocity);
+            return false;
+        }
+        ctx.info("Motor spinning at " + velocity + " rot/s");
+        return true;
+    }
+}
+```
+
+---
+
+## Registration Checklist
+
+After creating your subsystem, wire it up:
+
+### 1. Instantiate in RobotContainer
+
+```java
+// In RobotContainer.java
+private final MySubsystem mySubsystem = new MySubsystem();
+```
+
+### 2. Register for RTU Tests
+
+```java
+// In RobotContainer.configureRootTests()
+rootTester.registerSubsystem(mySubsystem);
+```
+
+### 3. Bind Commands to Buttons
+
+```java
+// In RobotContainer.configureBindings()
+controller.a().whileTrue(
+    Commands.run(() -> mySubsystem.setVoltage(4.0), mySubsystem)
+);
+controller.a().onFalse(
+    Commands.runOnce(() -> mySubsystem.stop(), mySubsystem)
+);
+```
+
+### 4. Set a Default Command (Optional)
+
+```java
+// If this subsystem should always be doing something when idle:
+mySubsystem.setDefaultCommand(
+    Commands.run(() -> mySubsystem.stop(), mySubsystem)
+);
+```
+
+---
+
+## What You Get for Free
+
+By following this template, your subsystem automatically gets:
+
+| Feature | How | Where to See It |
+|---|---|---|
+| **CAN health monitoring** | `SubsystemStatusManager.addSubsystem()` | Shuffleboard → "Status Manager" tab |
+| **Temperature tracking** | `DeviceTempReporter.addDevices()` | Shuffleboard → "Device Temp Reporter" tab |
+| **Automated testing** | `@RobotAction` methods | Driver Station Test mode → console + web dashboard |
+| **AdvantageKit logging** | RTU publishes results to `RootTests/` | AdvantageScope (live + post-match) |
+
+---
+
+## Common Variations
+
+### Subsystem with Multiple Motors
+
+```java
+private final TalonFX leftMotor;
+private final TalonFX rightMotor;
+
+public DualMotorSubsystem() {
+    leftMotor = new TalonFX(LEFT_CAN_ID);
+    rightMotor = new TalonFX(RIGHT_CAN_ID);
+    
+    // Follow mode: right follows left (inverted)
+    rightMotor.setControl(new Follower(LEFT_CAN_ID, true));
+    
+    SubsystemStatusManager.addSubsystem(getName(), leftMotor, rightMotor);
+    DeviceTempReporter.addDevices(leftMotor, rightMotor);
+}
+```
+
+### Subsystem with Sensor
+
+```java
+private final CANcoder encoder;
+
+public SensorSubsystem() {
+    motor = new TalonFX(MOTOR_CAN_ID);
+    encoder = new CANcoder(ENCODER_CAN_ID);
+    
+    SubsystemStatusManager.addSubsystem(getName(), motor, encoder);
+    DeviceTempReporter.addDevices(motor);
+}
+
+public double getAbsoluteAngle() {
+    return encoder.getAbsolutePosition().getValueAsDouble() * 360.0;
+}
+```

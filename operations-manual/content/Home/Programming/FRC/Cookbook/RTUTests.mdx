@@ -1,0 +1,251 @@
+---
+title: "Recipe: Writing RTU Tests"
+---
+
+import {Callout} from 'nextra/components';
+
+    <meta property="og:description" content="How to add automated @RobotAction tests to any FRC subsystem in under 5 minutes" />
+
+# 🧪 Writing @RobotAction Tests
+
+The Robot Testing Utility (RTU) lets you write automated hardware tests that run when the robot enters **Test mode** in the Driver Station. This recipe shows you the fastest path to getting tests working on any subsystem.
+
+<Callout type="info">
+  For the full deep-dive on RTU architecture, DiagnosticServer, AdvantageKit integration, etc., see the **Robot Testing Utility** page in the FRC section.
+</Callout>
+
+---
+
+## Quick Start (5 Minutes)
+
+### 1. Import the Annotation
+
+```java
+import frc.rtu.RobotAction;
+import frc.rtu.DiagnosticContext;  // optional, for alerts + profiling
+```
+
+<Callout type="warning">
+  If your project uses the copy inside `frc.robot.utils.RTU` instead of the standalone library, import from `frc.robot.utils.RTU.RobotAction` instead.
+</Callout>
+
+### 2. Add a Test Method
+
+Drop a `@RobotAction` method into any `SubsystemBase` class:
+
+```java
+@RobotAction(name = "Motor Connected", description = "CAN bus check", order = 1)
+public boolean testMotorConnected() {
+    return motor.isConnected();
+}
+```
+
+### 3. Register the Subsystem
+
+In `RobotContainer`:
+
+```java
+private final RootTestingUtility rootTester = new RootTestingUtility();
+
+private void configureRootTests() {
+    rootTester.registerSubsystem(mySubsystem);
+}
+```
+
+### 4. Run Tests
+
+Switch the Driver Station to **Test** mode and **Enable**. Results appear in the console and at `http://localhost:5800/diag/<session>`.
+
+**That's it.** Three annotations, one registration call, and you have automated testing.
+
+---
+
+## Annotation Cheat Sheet
+
+```java
+@RobotAction(
+    name = "My Test Name",       // shown in results (default: method name)
+    description = "What this checks",  // shown in dashboard cards
+    order = 1,                   // lower runs first (default: MAX_VALUE)
+    timeoutSeconds = 5.0         // auto-fail if exceeded (default: 5.0)
+)
+```
+
+---
+
+## Method Signatures That Work
+
+```java
+// ✅ Boolean return — true = PASS, false = FAIL
+public boolean myTest() { ... }
+
+// ✅ Void return — PASS if no exception thrown
+public void myTest() { ... }
+
+// ✅ With DiagnosticContext — for alerts and data profiling
+public boolean myTest(DiagnosticContext ctx) { ... }
+
+// ❌ Other return types — SKIPPED
+public String myTest() { ... }  // won't work
+
+// ❌ Wrong parameters — SKIPPED
+public boolean myTest(int x) { ... }  // won't work
+```
+
+---
+
+## Common Test Patterns
+
+### Pattern 1: Device Connectivity Check
+
+```java
+@RobotAction(name = "Motor Connected", order = 1)
+public boolean testConnected() {
+    return motor.isConnected();
+}
+```
+
+### Pattern 2: Motor Spin Test
+
+```java
+@RobotAction(name = "Motor Spins", order = 2, timeoutSeconds = 3.0)
+public boolean testMotorSpins(DiagnosticContext ctx) {
+    ctx.info("Applying 2V...");
+    motor.setControl(new VoltageOut(2.0));
+    Timer.delay(0.5);
+    
+    double velocity = motor.getVelocity().getValueAsDouble();
+    motor.setControl(new VoltageOut(0));
+    
+    if (Math.abs(velocity) < 0.1) {
+        ctx.error("Motor did not move! Velocity: " + velocity);
+        return false;
+    }
+    ctx.info("Spinning at " + velocity + " rot/s");
+    return true;
+}
+```
+
+### Pattern 3: Motor Velocity Profile
+
+```java
+@RobotAction(name = "Motor Ramp-Up Profile", order = 3)
+public boolean testMotorProfile(DiagnosticContext ctx) {
+    motor.setControl(new VoltageOut(6.0));
+    
+    for (int i = 0; i < 50; i++) {
+        ctx.sample("Velocity (RPM)", motor.getVelocity().getValueAsDouble());
+        ctx.sample("Current (A)", motor.getStatorCurrent().getValueAsDouble());
+        Timer.delay(0.02);
+    }
+    
+    double finalVel = motor.getVelocity().getValueAsDouble();
+    motor.setControl(new VoltageOut(0));
+    
+    return finalVel > 1000;  // pass if reached target RPM
+}
+```
+
+The `ctx.sample()` calls create **Chart.js line charts** on the live diagnostic dashboard, showing velocity and current over time.
+
+### Pattern 4: Position Control Check
+
+```java
+@RobotAction(name = "Position Hold", order = 4, timeoutSeconds = 4.0)
+public boolean testPositionHold(DiagnosticContext ctx) {
+    double targetPosition = 10.0;  // rotations
+    motor.setControl(new PositionVoltage(targetPosition));
+    Timer.delay(2.0);
+    
+    double actual = motor.getPosition().getValueAsDouble();
+    double error = Math.abs(actual - targetPosition);
+    
+    motor.setControl(new VoltageOut(0));
+    
+    if (error > 0.5) {
+        ctx.error("Position error too large: " + error + " rotations");
+        return false;
+    }
+    ctx.info("Position error: " + error + " rotations");
+    return true;
+}
+```
+
+---
+
+## Adding a Safety Check
+
+Prevent tests from running unless the driver holds both triggers:
+
+```java
+rootTester.setSafetyCheck(() -> {
+    boolean triggersHeld = controller.getLeftTriggerAxis() > 0.5 
+                        && controller.getRightTriggerAxis() > 0.5;
+    return triggersHeld ? null : "Hold both triggers to start tests";
+});
+```
+
+If the check returns a `String`, tests pause and the message is shown on the dashboard.
+
+---
+
+## Full Subsystem Example
+
+```java
+public class ShooterSubsystem extends SubsystemBase {
+    private final TalonFX flywheelMotor;
+    private final TalonFX hoodMotor;
+
+    public ShooterSubsystem() {
+        flywheelMotor = new TalonFX(10);
+        hoodMotor = new TalonFX(11);
+        
+        // Register for continuous health monitoring
+        SubsystemStatusManager.addSubsystem(getName(), flywheelMotor, hoodMotor);
+        DeviceTempReporter.addDevices(flywheelMotor, hoodMotor);
+    }
+
+    @RobotAction(name = "Flywheel Connected", order = 1)
+    public boolean testFlywheelConnected() {
+        return flywheelMotor.isConnected();
+    }
+
+    @RobotAction(name = "Hood Connected", order = 2)
+    public boolean testHoodConnected() {
+        return hoodMotor.isConnected();
+    }
+
+    @RobotAction(name = "Flywheel Spin-Up", order = 3, timeoutSeconds = 4.0)
+    public boolean testFlywheelSpinUp(DiagnosticContext ctx) {
+        ctx.info("Ramping to 3000 RPM...");
+        flywheelMotor.setControl(new VoltageOut(8.0));
+        
+        for (int i = 0; i < 100; i++) {
+            ctx.sample("RPM", flywheelMotor.getVelocity().getValueAsDouble() * 60.0);
+            Timer.delay(0.02);
+        }
+        
+        double rpm = flywheelMotor.getVelocity().getValueAsDouble() * 60.0;
+        flywheelMotor.setControl(new VoltageOut(0));
+        
+        if (rpm < 2500) {
+            ctx.error("Flywheel only reached " + rpm + " RPM");
+            return false;
+        }
+        ctx.info("Reached " + rpm + " RPM ✓");
+        return true;
+    }
+
+    @RobotAction(name = "Hood Movement", order = 4, timeoutSeconds = 3.0)
+    public boolean testHoodMovement(DiagnosticContext ctx) {
+        double target = 15.0;
+        hoodMotor.setControl(new PositionVoltage(target));
+        Timer.delay(1.5);
+        
+        double pos = hoodMotor.getPosition().getValueAsDouble();
+        hoodMotor.setControl(new VoltageOut(0));
+        
+        return Math.abs(pos - target) < 1.0;
+    }
+}
+```
