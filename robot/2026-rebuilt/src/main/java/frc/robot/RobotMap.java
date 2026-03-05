@@ -135,7 +135,27 @@ public final class RobotMap {
         // This map is used to determine the velocity of the shooter based on the distance to the target. 
         //The key is the distance to the target in meters, and the value is the velocity of the shooter in rotations per second.`
         public static final InterpolatingDoubleTreeMap kShootingVelocityMap = InterpolatingDoubleTreeMap.ofEntries(
-            Map.entry(0.0, 0.0)
+            Map.entry(1.565, 27.0),
+            Map.entry(1.7, 27.0),
+            Map.entry(2.07, 28.0),
+            Map.entry(2.47, 31.0),
+            Map.entry(3.2, 34.0),
+            Map.entry(3.38, 35.0),
+            Map.entry(4.03, 38.0),
+            Map.entry(2.07, 39.0),
+            Map.entry(100.0, 39.0)//far off top limit to prevent unwanted scaling past this distance 
+        );
+
+        public static final InterpolatingDoubleTreeMap kShootingPositionMap = InterpolatingDoubleTreeMap.ofEntries(
+            Map.entry(1.565, 13.0),
+            Map.entry(1.7, 11.0),
+            Map.entry(2.07, 15.0),
+            Map.entry(2.4, 18.0),
+            Map.entry(3.2, 24.0),
+            Map.entry(3.38, 24.5),
+            Map.entry(4.03, 27.0),
+            Map.entry(4.41, 27.0),
+            Map.entry(100.0, 27.0) //far off top limit to prevent unwanted scaling past this distance 
         );
 
         public static final InterpolatingDoubleTreeMap kPassingVelocityMap = InterpolatingDoubleTreeMap.ofEntries(
@@ -147,9 +167,7 @@ public final class RobotMap {
             Map.entry(0.0, 0.0)
         );
 
-         public static final InterpolatingDoubleTreeMap kShootingPositionMap = InterpolatingDoubleTreeMap.ofEntries(
-            Map.entry(0.0, 0.0)
-        );
+         
 
         //TODO: tune
         public static final InterpolatingDoubleTreeMap kFlightTimeMap =

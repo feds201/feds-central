@@ -12,8 +12,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.RobotMap.DrivetrainConstants;
 import frc.robot.RobotMap.ShooterConstants;
 import frc.robot.commands.swerve.HubDrive;
-// import frc.robot.commands.swerve.PassingDrive;
-// import frc.robot.commands.swerve.PathfindToPose;
+import frc.robot.commands.swerve.PassingDrive;
 import frc.robot.commands.swerve.TeleopSwerve;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.intake.RollersSubsystem;
@@ -203,103 +202,102 @@ public class RobotContainer {
     //   operaterController.b()
     //     .onTrue(new InstantCommand(()-> shooterHood.updateHoodAngleMultiplier(-.01)));
     // }
-    // private void configureBindingsDriver() {
-    //   //Button to reset field centric direction (backup if vision fails)
-    //   controller.start()
-    //      .onTrue(new InstantCommand(drivetrain::seedFieldCentric));
-    //   controller.povUp()
-    //      .whileTrue(new PathfindToPose(drivetrain, new Pose2d(2.0, 2.0, new Rotation2d())));
-    //   // -------- INTAKE CONTROLS --------- 
-    //   //Button to extend intake and run rollers
-    //   controller.leftTrigger()
-    //       .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED)
-    //       .andThen(rollersSubsystem.RollersCommand(RollerState.ON)))
-    //       .onFalse(rollersSubsystem.RollersCommand(RollerState.OFF));
-    //   //Button to retract intake
-    //   controller.leftBumper()
-    //       .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT));
-    //   // Default drive command: field-centric swerve with left stick + right stick rotation
-    //   if (swerveEnabled) {
-    //     drivetrain.setDefaultCommand(new TeleopSwerve(drivetrain, controller, swerveMultiplier));
-    //   } else {
-    //     // Swerve disabled for test mode: bind a no-op command that *does* require drivetrain
-    //     // so nothing else can steal it during tests.
-    //     drivetrain.setDefaultCommand(Commands.runOnce(() -> {}, drivetrain));
-    //   }
-    //   // M key (Right bumper): intake rollers
-    //   controller.rightBumper()
-    //       .whileTrue(rollersSubsystem.RollersCommand(RollerState.ON))
-    //       .onFalse(rollersSubsystem.RollersCommand(RollerState.OFF));
-    //   // Hood aiming: A = aim down, B = aim up (ShooterSim adjusts angle at fixed rate)
-    //   if(Robot.isSimulation()){
-    //   controller.a()
-    //       .onTrue(shooterHood.setStateCommand(shooterhood_state.AIMING_DOWN))
-    //       .onFalse(shooterHood.setStateCommand(shooterhood_state.IN));
-    //   controller.b()
-    //       .onTrue(shooterHood.setStateCommand(shooterhood_state.AIMING_UP))
-    //       .onFalse(shooterHood.setStateCommand(shooterhood_state.IN)); 
-    //   }
-    //Button to shoot from against trench side
-    // controller.y()
-    //   .onTrue(Commands.sequence(
-    //     feederSubsystem.setStateCommand(feeder_state.RUN),
-    //     spinDexer.setStateCommand(spindexer_state.RUN),
-    //     shooterHood.setStateCommand(shooterhood_state.HALFCOURT),
-    //     shooterWheels.setStateCommand(shooter_state.HALFCOURT)))
-    //   .onFalse(Commands.sequence(
-    //     feederSubsystem.setStateCommand(feeder_state.STOP),
-    //     spinDexer.setStateCommand(spindexer_state.STOP),
-    //     shooterWheels.setStateCommand(shooter_state.IDLE),
-    //     shooterHood.setStateCommand(shooterhood_state.IN)));
-    //Button to shoot from against hub
-    // controller.x()
-    //   .onTrue(Commands.sequence(
-    //     feederSubsystem.setStateCommand(feeder_state.RUN),
-    //     spinDexer.setStateCommand(spindexer_state.RUN),
-    //     shooterWheels.setStateCommand(shooter_state.LAYUP),
-    //     shooterHood.setStateCommand(shooterhood_state.LAYUP)))
-    //   .onFalse(Commands.sequence(
-    //     feederSubsystem.setStateCommand(feeder_state.STOP),
-    //     spinDexer.setStateCommand(spindexer_state.STOP),
-    //     shooterWheels.setStateCommand(shooter_state.IDLE),
-    //     shooterHood.setStateCommand(shooterhood_state.IN)));
-    //   controller.x().onTrue(shooterHood.setStateCommand(shooterhood_state.TEST).andThen(shooterWheels.setStateCommand(shooter_state.TEST)));
-    //   controller.y().onTrue(feederSubsystem.commandRun().andThen(spinDexer.setStateCommand(spindexer_state.RUN))).onFalse(feederSubsystem.commandStop().andThen(spinDexer.setStateCommand(spindexer_state.STOP)));
-    //   // If out of neutral zone, face hub and ready shoot
-    //   controller.povRight().and(()->!ShooterConstants.neutralZone.contains(drivetrain.getState().Pose.getTranslation())).whileTrue(
-    //     Commands.sequence(
-    //       shooterHood.setStateCommand(shooterhood_state.SHOOTING), 
-    //       shooterWheels.setStateCommand(shooter_state.SHOOTING)
-    //     ).alongWith(new HubDrive(drivetrain, controller)))
-    //   .onFalse(
-    //     Commands.sequence(
-    //       shooterHood.setStateCommand(shooterhood_state.OUT), 
-    //       shooterWheels.setStateCommand(shooter_state.IDLE)
-    //     ));
-    //   // If in neutral zone, face outpost and ready shoot (passing shot)
-    //   controller.povRight().and(()->ShooterConstants.neutralZone.contains(drivetrain.getState().Pose.getTranslation())).whileTrue(
-    //      Commands.sequence(
-    //       shooterHood.setStateCommand(shooterhood_state.PASSING), 
-    //       shooterWheels.setStateCommand(shooter_state.PASSING)
-    //     ).alongWith(new PassingDrive(drivetrain, controller)))
-    //   .onFalse(
-    //     Commands.sequence(
-    //       shooterHood.setStateCommand(shooterhood_state.OUT), 
-    //       shooterWheels.setStateCommand(shooter_state.IDLE)
-    //     ));
-    //   //Button to fire, if swerve is aimed and shooter is at speed.
-    //   controller.rightTrigger().and(HubDrive::pidAtSetpoint).and(shooterWheels::atSetpoint).whileTrue(
-    //     Commands.sequence(
-    //     feederSubsystem.setStateCommand(feeder_state.RUN),
-    //     spinDexer.setStateCommand(spindexer_state.RUN)
-    //     )
-    //   ).onFalse(
-    //     Commands.sequence(
-    //     feederSubsystem.setStateCommand(feeder_state.STOP),
-    //     spinDexer.setStateCommand(spindexer_state.STOP)
-    //     )
-    //   );
-    // }
+    private void configureBindingsDriver() {
+      //Button to reset field centric direction (backup if vision fails)
+      controller.start()
+         .onTrue(new InstantCommand(drivetrain::seedFieldCentric));
+    
+      // -------- INTAKE CONTROLS --------- 
+      //Button to extend intake and run rollers
+      controller.leftTrigger()
+          .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED)
+          .andThen(rollersSubsystem.RollersCommand(RollerState.ON)))
+          .onFalse(rollersSubsystem.RollersCommand(RollerState.OFF));
+      //Button to retract intake
+      controller.leftBumper()
+          .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT));
+      // Default drive command: field-centric swerve with left stick + right stick rotation
+      if (swerveEnabled) {
+        drivetrain.setDefaultCommand(new TeleopSwerve(drivetrain, controller, swerveMultiplier));
+      } else {
+        // Swerve disabled for test mode: bind a no-op command that *does* require drivetrain
+        // so nothing else can steal it during tests.
+        drivetrain.setDefaultCommand(Commands.runOnce(() -> {}, drivetrain));
+      }
+      // M key (Right bumper): intake rollers
+      controller.rightBumper()
+          .whileTrue(rollersSubsystem.RollersCommand(RollerState.ON))
+          .onFalse(rollersSubsystem.RollersCommand(RollerState.OFF));
+      // Hood aiming: A = aim down, B = aim up (ShooterSim adjusts angle at fixed rate)
+      if(Robot.isSimulation()){
+      controller.a()
+          .onTrue(shooterHood.setStateCommand(shooterhood_state.AIMING_DOWN))
+          .onFalse(shooterHood.setStateCommand(shooterhood_state.IN));
+      controller.b()
+          .onTrue(shooterHood.setStateCommand(shooterhood_state.AIMING_UP))
+          .onFalse(shooterHood.setStateCommand(shooterhood_state.IN)); 
+      }
+    // Button to shoot from against trench side
+    controller.y()
+      .onTrue(Commands.sequence(
+        feederSubsystem.setStateCommand(feeder_state.RUN),
+        spinDexer.setStateCommand(spindexer_state.RUN),
+        shooterHood.setStateCommand(shooterhood_state.HALFCOURT),
+        shooterWheels.setStateCommand(shooter_state.HALFCOURT)))
+      .onFalse(Commands.sequence(
+        feederSubsystem.setStateCommand(feeder_state.STOP),
+        spinDexer.setStateCommand(spindexer_state.STOP),
+        shooterWheels.setStateCommand(shooter_state.IDLE),
+        shooterHood.setStateCommand(shooterhood_state.IN)));
+    // Button to shoot from against hub
+    controller.x()
+      .onTrue(Commands.sequence(
+        feederSubsystem.setStateCommand(feeder_state.RUN),
+        spinDexer.setStateCommand(spindexer_state.RUN),
+        shooterWheels.setStateCommand(shooter_state.LAYUP),
+        shooterHood.setStateCommand(shooterhood_state.LAYUP)))
+      .onFalse(Commands.sequence(
+        feederSubsystem.setStateCommand(feeder_state.STOP),
+        spinDexer.setStateCommand(spindexer_state.STOP),
+        shooterWheels.setStateCommand(shooter_state.IDLE),
+        shooterHood.setStateCommand(shooterhood_state.IN)));
+      controller.x().onTrue(shooterHood.setStateCommand(shooterhood_state.TEST).andThen(shooterWheels.setStateCommand(shooter_state.TEST)));
+      controller.y().onTrue(feederSubsystem.commandRun().andThen(spinDexer.setStateCommand(spindexer_state.RUN))).onFalse(feederSubsystem.commandStop().andThen(spinDexer.setStateCommand(spindexer_state.STOP)));
+      // If out of neutral zone, face hub and ready shoot
+      controller.povRight().and(()->!ShooterConstants.neutralZone.contains(drivetrain.getState().Pose.getTranslation())).whileTrue(
+        Commands.sequence(
+          shooterHood.setStateCommand(shooterhood_state.SHOOTING), 
+          shooterWheels.setStateCommand(shooter_state.SHOOTING)
+        ).alongWith(new HubDrive(drivetrain, controller)))
+      .onFalse(
+        Commands.sequence(
+          shooterHood.setStateCommand(shooterhood_state.OUT), 
+          shooterWheels.setStateCommand(shooter_state.IDLE)
+        ));
+      // If in neutral zone, face outpost and ready shoot (passing shot)
+      controller.povRight().and(()->ShooterConstants.neutralZone.contains(drivetrain.getState().Pose.getTranslation())).whileTrue(
+         Commands.sequence(
+          shooterHood.setStateCommand(shooterhood_state.PASSING), 
+          shooterWheels.setStateCommand(shooter_state.PASSING)
+        ).alongWith(new PassingDrive(drivetrain, controller)))
+      .onFalse(
+        Commands.sequence(
+          shooterHood.setStateCommand(shooterhood_state.OUT), 
+          shooterWheels.setStateCommand(shooter_state.IDLE)
+        ));
+      //Button to fire, if swerve is aimed and shooter is at speed.
+      controller.rightTrigger().and(HubDrive::pidAtSetpoint).and(shooterWheels::atSetpoint).whileTrue(
+        Commands.sequence(
+        feederSubsystem.setStateCommand(feeder_state.RUN),
+        spinDexer.setStateCommand(spindexer_state.RUN)
+        )
+      ).onFalse(
+        Commands.sequence(
+        feederSubsystem.setStateCommand(feeder_state.STOP),
+        spinDexer.setStateCommand(spindexer_state.STOP)
+        )
+      );
+    }
     /**
      * Test-only bindings per user request. - Disables swerve default driving -
      * D-pad up/down control hood angle (slow) - X runs shooter velocity using
