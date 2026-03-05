@@ -19,6 +19,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
@@ -35,7 +36,9 @@ public class ShooterWheels extends SubsystemBase {
     public enum shooter_state {
     SHOOTING(RotationsPerSecond.of(0)),
     IDLE(RotationsPerSecond.of(0)),
-    PASSING(RotationsPerSecond.of(0));
+    PASSING(RotationsPerSecond.of(0)),
+    LAYUP(RotationsPerSecond.of(0)), //TUNE
+    HALFCOURT (RotationsPerSecond.of(1)); //TUNE
 
     private final AngularVelocity targetVelocity;
 
@@ -116,17 +119,21 @@ public class ShooterWheels extends SubsystemBase {
   @Override
   public void periodic() {
 
+    Logger.recordOutput("Robot/Shooter/IsShooting", currentState == shooter_state.SHOOTING);
+
     switch (currentState) {
       case SHOOTING:
-      shooterLeader.setControl(motionMagicControl.withVelocity(getTargetVelocityShooting()));
+      shooterLeader.setControl(motionMagicControl.withVelocity(getTargetVelocityShooting()
+      .times(velocityMultiplier)));
 
         break;
-    
+
       case IDLE:
         break;
 
       case PASSING:
-      shooterLeader.setControl(motionMagicControl.withVelocity(getTargetVelocityPassing())); //from passing table
+      shooterLeader.setControl(motionMagicControl.withVelocity(getTargetVelocityPassing()
+      .times(velocityMultiplier))); //from passing table
         break;
     }
   }
@@ -170,5 +177,11 @@ public class ShooterWheels extends SubsystemBase {
 
   public Command setStateCommand(shooter_state state) {
     return runOnce(() -> setState(state));
+  }
+
+  public double velocityMultiplier = 1.0;
+
+  public void changeMultiplier(double toAdd){
+    velocityMultiplier += toAdd;
   }
 }
