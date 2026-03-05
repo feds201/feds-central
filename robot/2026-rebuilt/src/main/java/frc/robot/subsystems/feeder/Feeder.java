@@ -61,7 +61,7 @@ public class Feeder extends SubsystemBase {
     config = new TalonFXConfiguration();
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-    config.CurrentLimits.StatorCurrentLimit = 40;
+    // config.CurrentLimits.StatorCurrentLimit = 40;
     for (int i = 0; i < 2; ++i) {
       var status = feederMotor.getConfigurator().apply(config);
       if (status.isOK())

@@ -105,6 +105,8 @@ public class Robot extends LoggedRobot {
   public void robotPeriodic() {
     m_robotContainer.updateLocalization();
     CommandScheduler.getInstance().run();
+    // Publish a small set of live telemetry for the RTU dashboard
+    m_robotContainer.publishTelemetry();
     // DeviceTempReporter.pollAll();
     // SubsystemStatusManager.pollAll();
   }

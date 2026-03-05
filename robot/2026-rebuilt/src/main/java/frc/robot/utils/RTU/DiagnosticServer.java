@@ -18,27 +18,28 @@ import frc.robot.utils.RTU.TestResult.DataSample;
 
 
 
-/**
- * Lightweight embedded HTTP server that serves a diagnostic dashboard for
- * the Root Testing Utility.  Uses the JDK built-in {@code com.sun.net.httpserver}
- * -- no external dependencies required.  Works on both roboRIO and desktop (sim).
- *
- * <h3>Usage</h3>
- * <pre>{@code
- * DiagnosticServer server = new DiagnosticServer(5800);
- * server.start();
- * // ... run tests ...
- * server.updateResults(results);
- * // Console: "Diagnostic dashboard: http://<ip>:5800/diag/<session-id>"
- * }</pre>
- */
 public final class DiagnosticServer {
 
     private final int port;
     private HttpServer server;
     private List<TestResult> latestResults = List.of();
+    private final List<CollectedSample> collectedSamples = new java.util.ArrayList<>();
     private final String sessionId = UUID.randomUUID().toString().substring(0, 8);
     private String safetyMessage = null;
+
+    private static class CollectedSample {
+        final long t;
+        final double velocityRps;
+        final double hoodDeg;
+        final double distanceM;
+
+        CollectedSample(long t, double velocityRps, double hoodDeg, double distanceM) {
+            this.t = t;
+            this.velocityRps = velocityRps;
+            this.hoodDeg = hoodDeg;
+            this.distanceM = distanceM;
+        }
+    }
 
     private static final DateTimeFormatter TIME_FMT =
         DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
@@ -70,6 +71,163 @@ public final class DiagnosticServer {
                 try (OutputStream os = exchange.getResponseBody()) {
                     os.write(bytes);
                 }
+            });
+            // Telemetry JSON endpoint (live values published by robotPeriodic)
+            server.createContext("/diag/" + sessionId + "/telemetry", exchange -> {
+                String json = String.format(
+                    "{\"shooterRps\":%.4f,\"hoodDeg\":%.3f,\"distM\":%.3f}",
+                    frc.robot.utils.RTU.TelemetryPublisher.getShooterVelocityRps(),
+                    frc.robot.utils.RTU.TelemetryPublisher.getHoodAngleDeg(),
+                    frc.robot.utils.RTU.TelemetryPublisher.getDistanceToHubM()
+                );
+                byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+                exchange.getResponseHeaders().set("Content-Type", "application/json; charset=UTF-8");
+                exchange.sendResponseHeaders(200, bytes.length);
+                try (OutputStream os = exchange.getResponseBody()) { os.write(bytes); }
+            });
+
+            // Collector: record a 'hit' (POST) — snapshot current telemetry and store it
+            server.createContext("/diag/" + sessionId + "/collector/hit", exchange -> {
+                if (!"POST".equals(exchange.getRequestMethod())) {
+                    exchange.sendResponseHeaders(405, -1);
+                    return;
+                }
+                double v = frc.robot.utils.RTU.TelemetryPublisher.getShooterVelocityRps();
+                double h = frc.robot.utils.RTU.TelemetryPublisher.getHoodAngleDeg();
+                double d = frc.robot.utils.RTU.TelemetryPublisher.getDistanceToHubM();
+                CollectedSample s = new CollectedSample(System.currentTimeMillis(), v, h, d);
+                synchronized (collectedSamples) { collectedSamples.add(s); }
+                String resp = "OK";
+                byte[] bytes = resp.getBytes(StandardCharsets.UTF_8);
+                exchange.sendResponseHeaders(200, bytes.length);
+                try (OutputStream os = exchange.getResponseBody()) { os.write(bytes); }
+            });
+
+            // Collector: list samples (JSON)
+            server.createContext("/diag/" + sessionId + "/collector/list", exchange -> {
+                StringBuilder jb = new StringBuilder();
+                jb.append("[");
+                synchronized (collectedSamples) {
+                    for (int i = 0; i < collectedSamples.size(); i++) {
+                        if (i > 0) jb.append(',');
+                        CollectedSample s = collectedSamples.get(i);
+                        jb.append(String.format("{\"t\":%d,\"v\":%.4f,\"h\":%.3f,\"d\":%.3f}",
+                            s.t, s.velocityRps, s.hoodDeg, s.distanceM));
+                    }
+                }
+                jb.append("]");
+                byte[] bytes = jb.toString().getBytes(StandardCharsets.UTF_8);
+                exchange.getResponseHeaders().set("Content-Type", "application/json; charset=UTF-8");
+                exchange.sendResponseHeaders(200, bytes.length);
+                try (OutputStream os = exchange.getResponseBody()) { os.write(bytes); }
+            });
+
+            // Collector: CSV download
+            server.createContext("/diag/" + sessionId + "/collector/csv", exchange -> {
+                StringBuilder cb = new StringBuilder();
+                cb.append("timestamp_ms,shooter_rps,hood_deg,distance_m\n");
+                synchronized (collectedSamples) {
+                    for (CollectedSample s : collectedSamples) {
+                        cb.append(String.format("%d,%.6f,%.4f,%.4f\n", s.t, s.velocityRps, s.hoodDeg, s.distanceM));
+                    }
+                }
+                byte[] bytes = cb.toString().getBytes(StandardCharsets.UTF_8);
+                exchange.getResponseHeaders().set("Content-Type", "text/csv; charset=UTF-8");
+                exchange.getResponseHeaders().set("Content-Disposition", "attachment; filename=collected_samples.csv");
+                exchange.sendResponseHeaders(200, bytes.length);
+                try (OutputStream os = exchange.getResponseBody()) { os.write(bytes); }
+            });
+            // Collector: set shooter/hood directly via query params
+            server.createContext("/diag/" + sessionId + "/collector/set", exchange -> {
+                try {
+                    var q = exchange.getRequestURI().getQuery();
+                    double velocity = Double.NaN;
+                    double hood = Double.NaN;
+                    if (q != null) {
+                        for (String part : q.split("&")) {
+                            String[] kv = part.split("=");
+                            if (kv.length != 2) continue;
+                            String k = kv[0];
+                            String v = java.net.URLDecoder.decode(kv[1], StandardCharsets.UTF_8);
+                            try {
+                                if (k.equals("velocity")) velocity = Double.parseDouble(v);
+                                if (k.equals("hoodDeg")) hood = Double.parseDouble(v);
+                            } catch (NumberFormatException nfe) { }
+                        }
+                    }
+                    var rc = frc.robot.RobotContainer.getInstance();
+                    if (rc != null) {
+                        if (!Double.isNaN(velocity)) rc.setShooterVelocityRps(velocity);
+                        if (!Double.isNaN(hood)) rc.setHoodAngleDeg(hood);
+                    }
+                    String resp = "{\"ok\":true}\n";
+                    byte[] bytes = resp.getBytes(StandardCharsets.UTF_8);
+                    exchange.getResponseHeaders().set("Content-Type", "application/json; charset=UTF-8");
+                    exchange.sendResponseHeaders(200, bytes.length);
+                    try (OutputStream os = exchange.getResponseBody()) { os.write(bytes); }
+                } catch (Exception e) {
+                    exchange.sendResponseHeaders(500, -1);
+                }
+            });
+
+            // Collector: automatic sweep
+            server.createContext("/diag/" + sessionId + "/collector/auto", exchange -> {
+                try {
+                    var q = exchange.getRequestURI().getQuery();
+                    double min = Double.NaN, max = Double.NaN, step = Double.NaN, hoodDeg = Double.NaN;
+                    int holdMs = 1000;
+                    if (q != null) {
+                        for (String part : q.split("&")) {
+                            String[] kv = part.split("=");
+                            if (kv.length != 2) continue;
+                            String k = kv[0];
+                            String v = java.net.URLDecoder.decode(kv[1], StandardCharsets.UTF_8);
+                            try {
+                                if (k.equals("min")) min = Double.parseDouble(v);
+                                if (k.equals("max")) max = Double.parseDouble(v);
+                                if (k.equals("step")) step = Double.parseDouble(v);
+                                if (k.equals("hoodDeg")) hoodDeg = Double.parseDouble(v);
+                                if (k.equals("holdMs")) holdMs = Integer.parseInt(v);
+                            } catch (NumberFormatException nfe) { }
+                        }
+                    }
+                    var rc = frc.robot.RobotContainer.getInstance();
+                    if (rc != null && !Double.isNaN(min) && !Double.isNaN(max) && !Double.isNaN(step)) {
+                        rc.startAutoSweep(min, max, step, Double.isNaN(hoodDeg) ? 0.0 : hoodDeg, holdMs);
+                        String resp = "{\"started\":true}\n";
+                        byte[] bytes = resp.getBytes(StandardCharsets.UTF_8);
+                        exchange.getResponseHeaders().set("Content-Type", "application/json; charset=UTF-8");
+                        exchange.sendResponseHeaders(200, bytes.length);
+                        try (OutputStream os = exchange.getResponseBody()) { os.write(bytes); }
+                        return;
+                    }
+                    exchange.sendResponseHeaders(400, -1);
+                } catch (Exception e) {
+                    exchange.sendResponseHeaders(500, -1);
+                }
+            });
+
+            // Collector: auto stop
+            server.createContext("/diag/" + sessionId + "/collector/auto/stop", exchange -> {
+                var rc = frc.robot.RobotContainer.getInstance();
+                if (rc != null) rc.stopAutoSweep();
+                String resp = "{\"stopped\":true}\n";
+                byte[] bytes = resp.getBytes(StandardCharsets.UTF_8);
+                exchange.getResponseHeaders().set("Content-Type", "application/json; charset=UTF-8");
+                exchange.sendResponseHeaders(200, bytes.length);
+                try (OutputStream os = exchange.getResponseBody()) { os.write(bytes); }
+            });
+
+            // Collector: auto status
+            server.createContext("/diag/" + sessionId + "/collector/auto/status", exchange -> {
+                var rc = frc.robot.RobotContainer.getInstance();
+                boolean running = rc != null && rc.isAutoRunning();
+                double current = rc != null ? rc.getAutoCurrent() : 0.0;
+                String resp = String.format("{\"running\":%b,\"current\":%.4f}\n", running, current);
+                byte[] bytes = resp.getBytes(StandardCharsets.UTF_8);
+                exchange.getResponseHeaders().set("Content-Type", "application/json; charset=UTF-8");
+                exchange.sendResponseHeaders(200, bytes.length);
+                try (OutputStream os = exchange.getResponseBody()) { os.write(bytes); }
             });
             server.setExecutor(null);
             server.start();
@@ -143,7 +301,49 @@ public final class DiagnosticServer {
         sb.append("<span>Failed: <b>").append(failed).append("</b></span>");
         sb.append("</div>");
 
-        // Per-test cards
+        // Collector UI: live telemetry and hit recording
+        sb.append("<div class='card'>");
+        sb.append("<h2>Interactive Data Collector</h2>");
+        sb.append("<p>Live telemetry and operator-driven sample recording. Click 'Record Hit' when the ball goes in.</p>");
+        sb.append("<div style='display:flex;gap:12px;align-items:center;margin-bottom:12px;'>");
+        sb.append("<div>Shooter RPS: <b id='tel_shooter'>--</b></div>");
+        sb.append("<div>Hood (deg): <b id='tel_hood'>--</b></div>");
+        sb.append("<div>Distance (m): <b id='tel_dist'>--</b></div>");
+        sb.append("</div>");
+        sb.append("<div style='display:flex;gap:12px;margin-bottom:12px;'>");
+        sb.append("<button id='btn_record'>Record Hit</button>");
+        sb.append("<a id='btn_csv' href='/diag/").append(sessionId).append("/collector/csv' target='_blank'><button>Download CSV</button></a>");
+        sb.append("</div>");
+    sb.append("<div style='display:flex;gap:12px;align-items:center;margin-bottom:12px;'>");
+    sb.append("<label>min RPS: <input id='in_min' style='width:90px' value='0'></label>");
+    sb.append("<label>max RPS: <input id='in_max' style='width:90px' value='60'></label>");
+    sb.append("<label>step: <input id='in_step' style='width:70px' value='5'></label>");
+    sb.append("<label>hood (deg): <input id='in_hood' style='width:70px' value='15'></label>");
+    sb.append("<label>hold(ms): <input id='in_hold' style='width:70px' value='1500'></label>");
+    sb.append("<button id='btn_start_auto'>Start Sweep</button>");
+    sb.append("<button id='btn_stop_auto'>Stop Sweep</button>");
+    sb.append("<div id='auto_status' style='margin-left:12px;color:#93c5fd'>Status: idle</div>");
+    sb.append("</div>");
+        sb.append("<div>");
+        sb.append("<h3>Recorded Samples</h3>");
+        sb.append("<table id='samples_tbl' style='width:100%;border-collapse:collapse;'><thead><tr><th>t</th><th>shooter_rps</th><th>hood_deg</th><th>distance_m</th></tr></thead><tbody></tbody></table>");
+        sb.append("</div>");
+        sb.append("</div>");
+
+        // Client-side JS for polling telemetry and recording hits
+        sb.append("<script>");
+        sb.append("const base = '/diag/").append(sessionId).append("';\n");
+        sb.append("async function pollTelemetry(){try{const r=await fetch(base+'/telemetry'); if(r.ok){const j=await r.json();document.getElementById('tel_shooter').textContent=j.shooterRps.toFixed(3);document.getElementById('tel_hood').textContent=j.hoodDeg.toFixed(2);document.getElementById('tel_dist').textContent=j.distM.toFixed(2);} }catch(e){} finally{setTimeout(pollTelemetry,250);} }\n");
+    sb.append("async function recordHit(){ try{ const r=await fetch(base+'/collector/hit',{method:'POST'}); if(r.ok){ await refreshList(); } }catch(e){ alert('Record failed: '+e); } }\n");
+    sb.append("async function refreshList(){ try{ const r=await fetch(base+'/collector/list'); if(!r.ok) return; const arr=await r.json(); const tb=document.querySelector('#samples_tbl tbody'); tb.innerHTML=''; for(const s of arr){ const tr=document.createElement('tr'); tr.innerHTML=`<td>${s.t}</td><td>${s.v.toFixed(4)}</td><td>${s.h.toFixed(3)}</td><td>${s.d.toFixed(3)}</td>`; tb.appendChild(tr);} }catch(e){} }\n");
+    sb.append("async function startAuto(){ try{ const min=document.getElementById('in_min').value; const max=document.getElementById('in_max').value; const step=document.getElementById('in_step').value; const hood=document.getElementById('in_hood').value; const hold=document.getElementById('in_hold').value; const q='?min='+encodeURIComponent(min)+'&max='+encodeURIComponent(max)+'&step='+encodeURIComponent(step)+'&hoodDeg='+encodeURIComponent(hood)+'&holdMs='+encodeURIComponent(hold); const r=await fetch(base+'/collector/auto'+q); if(r.ok){ document.getElementById('auto_status').textContent='Status: running'; pollAutoStatus(); } else { alert('Failed to start'); } }catch(e){ alert('Start failed:'+e);} }\n");
+    sb.append("async function stopAuto(){ try{ await fetch(base+'/collector/auto/stop'); document.getElementById('auto_status').textContent='Status: stopped'; }catch(e){ alert('Stop failed:'+e);} }\n");
+    sb.append("async function pollAutoStatus(){ try{ const r=await fetch(base+'/collector/auto/status'); if(r.ok){ const j=await r.json(); document.getElementById('auto_status').textContent='Status: '+(j.running?('running @ '+j.current.toFixed(3)+' rps'):'idle'); } }catch(e){} finally{ setTimeout(pollAutoStatus,1000); } }\n");
+    sb.append("document.getElementById('btn_record').addEventListener('click', ()=>recordHit());\n");
+    sb.append("document.getElementById('btn_start_auto').addEventListener('click', ()=>startAuto());\n");
+    sb.append("document.getElementById('btn_stop_auto').addEventListener('click', ()=>stopAuto());\n");
+    sb.append("window.addEventListener('load', ()=>{ pollTelemetry(); refreshList(); pollAutoStatus(); });");
+    sb.append("</script>");
         int chartIndex = 0;
         for (TestResult r : latestResults) {
             String cardClass = r.isPassed() ? "card pass" : "card fail";

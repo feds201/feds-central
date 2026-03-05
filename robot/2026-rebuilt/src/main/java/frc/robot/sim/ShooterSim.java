@@ -9,6 +9,7 @@ import frc.sim.gamepiece.LaunchParameters;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
+import org.littletonrobotics.junction.Logger;
 
 /**
  * Connects the shooter subsystem state to the sim game piece system.
@@ -22,8 +23,8 @@ public class ShooterSim {
     private final GamePieceManager gamePieceManager;
     private final GamePieceConfig fuelConfig;
     private final Supplier<Pose2d> robotPoseSupplier;
-    private final DoubleSupplier hoodAngleSupplier;       // rad
-    private final DoubleSupplier launchVelocitySupplier;  // m/s
+    private final DoubleSupplier hoodAngleSupplier;       // rotations
+    private final DoubleSupplier flywheelVelocitySupplier; // rps
     private final BooleanSupplier shootingSupplier;
     private final DoubleSupplier robotVxSupplier;  // world frame m/s
     private final DoubleSupplier robotVySupplier;  // world frame m/s
@@ -44,22 +45,28 @@ public class ShooterSim {
 
     private double cooldownTimer = 0;
 
+    /** Wheel diameter in meters. */
+    private static final double WHEEL_DIAMETER = 0.1016; // 4 inches
+
+    /** Velocity loss factor due to ball slip/compression (placeholder). */
+    private static final double LAUNCH_EFFICIENCY = 0.8;
+
     /**
      * Create the shooter simulation bridge.
      *
-     * @param gamePieceManager     manages piece lifecycle (intake counter and spawning)
-     * @param fuelConfig           game piece config for launched balls
-     * @param robotPoseSupplier    supplies the current robot 2D pose (for launch direction)
-     * @param hoodAngleSupplier    supplies the current hood angle in radians (0 = horizontal)
-     * @param launchVelocitySupplier supplies the launch speed in m/s
-     * @param shootingSupplier     returns true when the shooter is actively firing
-     * @param robotVxSupplier      supplies the robot's world-frame X velocity (m/s)
-     * @param robotVySupplier      supplies the robot's world-frame Y velocity (m/s)
+     * @param gamePieceManager       manages piece lifecycle (intake counter and spawning)
+     * @param fuelConfig             game piece config for launched balls
+     * @param robotPoseSupplier      supplies the current robot 2D pose (for launch direction)
+     * @param hoodAngleSupplier      supplies the current hood angle in rotations (0 = horizontal)
+     * @param flywheelVelocitySupplier supplies the flywheel velocity in rotations per second
+     * @param shootingSupplier       returns true when the shooter is actively firing
+     * @param robotVxSupplier        supplies the robot's world-frame X velocity (m/s)
+     * @param robotVySupplier        supplies the robot's world-frame Y velocity (m/s)
      */
     public ShooterSim(GamePieceManager gamePieceManager, GamePieceConfig fuelConfig,
                       Supplier<Pose2d> robotPoseSupplier,
                       DoubleSupplier hoodAngleSupplier,
-                      DoubleSupplier launchVelocitySupplier,
+                      DoubleSupplier flywheelVelocitySupplier,
                       BooleanSupplier shootingSupplier,
                       DoubleSupplier robotVxSupplier,
                       DoubleSupplier robotVySupplier) {
@@ -67,7 +74,7 @@ public class ShooterSim {
         this.fuelConfig = fuelConfig;
         this.robotPoseSupplier = robotPoseSupplier;
         this.hoodAngleSupplier = hoodAngleSupplier;
-        this.launchVelocitySupplier = launchVelocitySupplier;
+        this.flywheelVelocitySupplier = flywheelVelocitySupplier;
         this.shootingSupplier = shootingSupplier;
         this.robotVxSupplier = robotVxSupplier;
         this.robotVySupplier = robotVySupplier;
@@ -84,17 +91,29 @@ public class ShooterSim {
             Pose2d robotPose = robotPoseSupplier.get();
             if (robotPose == null) return;
 
-            LaunchParameters params = new LaunchParameters(
-                    launchVelocitySupplier.getAsDouble(),
-                    hoodAngleSupplier.getAsDouble(),
+            // Convert flywheel velocity (RPS) to linear launch velocity (m/s)
+            // v = omega * r = (RPS * 2pi) * (diameter / 2) = RPS * pi * diameter
+            double launchSpeed = flywheelVelocitySupplier.getAsDouble() * Math.PI * WHEEL_DIAMETER * LAUNCH_EFFICIENCY;
+
+            // Convert hood rotations to radians (assuming 1 rotation = 360 degrees for sim bridge)
+            double hoodAngleRad = hoodAngleSupplier.getAsDouble() * 2 * Math.PI;
+
+        LaunchParameters params = new LaunchParameters(
+                    launchSpeed,
+                    hoodAngleRad,
                     LAUNCH_HEIGHT,
                     0,  // no turret offset (turretless robot)
                     MUZZLE_FORWARD_OFFSET,
                     BARREL_LATERAL_OFFSET
             );
 
-            Translation3d velocity = params.getLaunchVelocity(robotPose,
-                    robotVxSupplier.getAsDouble(), robotVySupplier.getAsDouble());
+        // Record telemetry so we can see launches in Shuffleboard / AdvantageScope
+        Logger.recordOutput("Sim/Shooter/LastLaunchSpeed_mps", launchSpeed);
+        Logger.recordOutput("Sim/Shooter/LastHoodRotations", hoodAngleSupplier.getAsDouble());
+        Logger.recordOutput("Sim/Shooter/HeldBeforeLaunch", gamePieceManager.getHeldCount());
+
+        Translation3d velocity = params.getLaunchVelocity(robotPose,
+            robotVxSupplier.getAsDouble(), robotVySupplier.getAsDouble());
             Translation3d[] positions = params.getLaunchPositions(robotPose);
 
             // Fire from both barrels (left then right), checking held count before each
@@ -105,6 +124,41 @@ public class ShooterSim {
             }
 
             cooldownTimer = 1.0 / SHOTS_PER_SECOND;
+        }
+    }
+
+    /**
+     * Force a single spawn using current subsystem state (ignores cooldown and shootingSupplier).
+     * Useful for debugging/troubleshooting to immediately shoot a ball from the current pose.
+     */
+    public void forceSpawn() {
+        Pose2d robotPose = robotPoseSupplier.get();
+        if (robotPose == null) return;
+
+        double launchSpeed = flywheelVelocitySupplier.getAsDouble() * Math.PI * WHEEL_DIAMETER * LAUNCH_EFFICIENCY;
+        double hoodAngleRad = hoodAngleSupplier.getAsDouble() * 2 * Math.PI;
+
+        LaunchParameters params = new LaunchParameters(
+                launchSpeed,
+                hoodAngleRad,
+                LAUNCH_HEIGHT,
+                0,
+                MUZZLE_FORWARD_OFFSET,
+                BARREL_LATERAL_OFFSET
+        );
+
+        Logger.recordOutput("Sim/Shooter/ForceSpawnSpeed_mps", launchSpeed);
+        Logger.recordOutput("Sim/Shooter/ForceSpawnHoodRotations", hoodAngleSupplier.getAsDouble());
+        Logger.recordOutput("Sim/Shooter/ForceSpawnHeldBefore", gamePieceManager.getHeldCount());
+
+        Translation3d velocity = params.getLaunchVelocity(robotPose,
+                robotVxSupplier.getAsDouble(), robotVySupplier.getAsDouble());
+        Translation3d[] positions = params.getLaunchPositions(robotPose);
+
+        for (Translation3d pos : positions) {
+            if (gamePieceManager.getHeldCount() > 0) {
+                gamePieceManager.launchPiece(fuelConfig, pos, velocity);
+            }
         }
     }
 }

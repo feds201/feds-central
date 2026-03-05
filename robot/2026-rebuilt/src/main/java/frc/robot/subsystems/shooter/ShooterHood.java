@@ -41,7 +41,7 @@ public class ShooterHood extends SubsystemBase {
       IN(ShooterConstants.minHoodAngle),
       OUT(ShooterConstants.maxHoodAngle),
       PASSING(Rotations.of(0)),
-      SHOOTING(Rotations.of(0)),
+      SHOOTING(Rotations.of(30)),
       LAYUP(ShooterConstants.maxHoodAngle),
       HALFCOURT(ShooterConstants.minHoodAngle),
       MANUAL(Rotations.of(0)),
@@ -193,5 +193,9 @@ public class ShooterHood extends SubsystemBase {
    public Command setMotorPower(Double power){
     setState(shooterhood_state.MANUAL);
     return runOnce(()->  hoodMotor.set(power));
+  }
+
+  public Command resetHoodAngle(){
+    return runOnce(() -> hoodMotor.setPosition(0));
   }
 }

@@ -48,8 +48,8 @@ public class ShooterWheels extends SubsystemBase {
     SHOOTING(RotationsPerSecond.of(0)),
     IDLE(RotationsPerSecond.of(0)),
     PASSING(RotationsPerSecond.of(0)),
-    LAYUP(RotationsPerSecond.of(45)), //TUNE
-    HALFCOURT (RotationsPerSecond.of(1)); //TUNE
+    LAYUP(RotationsPerSecond.of(30)), 
+    HALFCOURT (RotationsPerSecond.of(85)); 
 
     private final AngularVelocity targetVelocity;
 
@@ -86,7 +86,7 @@ public class ShooterWheels extends SubsystemBase {
     shooterFollower2.setControl(new Follower(shooterLeader.getDeviceID(), MotorAlignmentValue.Aligned));
     shooterFollower3.setControl(new Follower(shooterLeader.getDeviceID(), MotorAlignmentValue.Opposed));
     velocityVoltageControl = new VelocityVoltage(0.0);
-    velocityVoltageControl.Acceleration = 150;
+    velocityVoltageControl.Acceleration = 200;
 
     m_flywheelSysId = new SysIdRoutine(
     new SysIdRoutine.Config(
@@ -114,15 +114,15 @@ public class ShooterWheels extends SubsystemBase {
     config = new TalonFXConfiguration();
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-    config.CurrentLimits.StatorCurrentLimit = 40;
-
-    //Lines commented because changing ratio will require retuning, TODO after first comp
+    config.CurrentLimits.StatorCurrentLimit = 80; // Increased for faster recovery between shots
+    config.CurrentLimits.SupplyCurrentLimit = 60;
+    config.ClosedLoopRamps.VoltageClosedLoopRampPeriod = 0.02;
     // config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
     // config.Feedback.SensorToMechanismRatio = 2/3;
 
     //Following values would need to be tuned.
     config.Slot0.kS = 0.34; // Constant applied for friction compensation (static gain)
-    config.Slot0.kP = 0.2; // Proportional gain
+    config.Slot0.kP = 0.4; // Proportional gain
     config.Slot0.kV = 0.12;// Velocity gain
     for (int i = 0; i < 2; ++i){
       var status = shooterLeader.getConfigurator().apply(config);
