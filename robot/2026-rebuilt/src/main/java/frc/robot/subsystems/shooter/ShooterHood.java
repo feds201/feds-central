@@ -69,7 +69,7 @@ public class ShooterHood extends SubsystemBase {
   private final CommandSwerveDrivetrain dt;
   private double HoodAngleMultiplier = 1;
   private ShuffleboardTab tab = Shuffleboard.getTab("testing");
-    private DoubleSupplier pos = ()->0.0;
+    public DoubleSupplier pos = ()->0.0;
 
   /** Creates a new Shooter. */
   public ShooterHood(CommandSwerveDrivetrain dt) {
