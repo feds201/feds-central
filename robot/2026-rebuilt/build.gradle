@@ -162,11 +162,29 @@ task fetchModels(type: Exec) {
     def relPath = gitRoot.toPath().relativize(project.projectDir.toPath()).toString()
                        .replace('\\', '/')
     workingDir gitRoot
-    commandLine 'git', 'lfs', 'pull', '-I', "${relPath}/sim_models/**"
+    commandLine 'git', 'lfs', 'pull', '-X', '', '-I', "${relPath}/sim_models/**"
     ignoreExitValue = true
     doLast {
-        if (execResult.exitValue != 0) {
-            logger.warn('Git LFS not available — 3D models will not be downloaded.')
+        if (executionResult.get().exitValue != 0) {
+            logger.warn('')
+            logger.warn('~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~')
+            logger.warn('')
+            logger.warn('  Git LFS not available — 3D models will not be downloaded.')
+            logger.warn('  The simulation will still work, but AdvantageScope won\'t')
+            logger.warn('  render our robot models.')
+            logger.warn('')
+            logger.warn('  To fix, install Git LFS:')
+            logger.warn('    Windows: Reinstall Git for Windows and check "Git LFS" during setup')
+            logger.warn('    macOS:   brew install git-lfs && git lfs install')
+            logger.warn('    Linux:   sudo apt install git-lfs && git lfs install')
+            logger.warn('')
+            logger.warn('  Then run:  ./gradlew simulateJava')
+            logger.warn('  Models download automatically unless you pass -PskipFetchModels.')
+            logger.warn('')
+            logger.warn('  More info: https://operational-manual.feds201.com/Home/Programming/FRC/Simulation/QuickStart#troubleshooting')
+            logger.warn('')
+            logger.warn('~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~')
+            logger.warn('')
         }
     }
 }
