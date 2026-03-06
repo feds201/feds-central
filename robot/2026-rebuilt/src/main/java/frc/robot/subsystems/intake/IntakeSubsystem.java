@@ -1,5 +1,4 @@
 package frc.robot.subsystems.intake;
-
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VoltageOut;
@@ -8,6 +7,7 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import org.littletonrobotics.junction.Logger;
 import frc.robot.RobotMap;
@@ -20,9 +20,11 @@ import edu.wpi.first.wpilibj.simulation.DIOSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.Timer;
 
 public class IntakeSubsystem extends SubsystemBase {
 
@@ -35,6 +37,7 @@ public class IntakeSubsystem extends SubsystemBase {
   private final double extendedRotations = 78.0;
   private final double retractedRotations = 0.0;
   private static final double ROLLER_OUTPUT = 0.5;
+  private final Timer timer = new Timer();
 
 
   // Simulation + Visualization values (only initialized when running in sim, can't be final)
@@ -52,7 +55,8 @@ public class IntakeSubsystem extends SubsystemBase {
   public enum IntakeState {
     DEFAULT,
     EXTENDED,
-    INTAKING
+    INTAKING,
+    AGITATE
   }
 
   public enum RollerState {
@@ -79,6 +83,10 @@ public class IntakeSubsystem extends SubsystemBase {
         moveIntakeWithPosition(extendedRotations);
         setRollerState(RollerState.ON);
       }
+      case AGITATE -> {
+        agitateTimed();
+      }
+
     }
   }
 
@@ -88,6 +96,10 @@ public class IntakeSubsystem extends SubsystemBase {
 
   public Command retractIntake() {
     return runOnce(() -> setState(IntakeState.DEFAULT));
+  }
+
+  public Command agitateIntake() {
+    return runOnce(() -> setState(IntakeState.AGITATE));
   }
 
   public IntakeState getState() {
@@ -109,6 +121,17 @@ public class IntakeSubsystem extends SubsystemBase {
   public void setRollerState(RollerState desiredState) {
     this.currentRollerState = desiredState;
   }
+  public void agitateTimed() {
+
+
+    for(int i = 0; i < 20; i++){
+      extendIntake().withTimeout(2);
+      retractIntake().withTimeout(2);
+    } 
+          setState(IntakeState.DEFAULT);
+
+  }
+
 
   public Command emergencyStop() {
     return runOnce(() -> {
@@ -249,6 +272,9 @@ public class IntakeSubsystem extends SubsystemBase {
       rollerMotor.getSimState().setRotorVelocity(rollerMotorSim.getAngularVelocity().in(Units.RotationsPerSecond));
       rollerLigament.setAngle(rollerMotorSim.getAngularPosition().in(Units.Degrees));
     }
+
+    SmartDashboard.putData(rollerMech2d);
+    SmartDashboard.putData(intakeMech2d);
   }
 
 

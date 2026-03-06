@@ -57,8 +57,8 @@ public class RobotContainer {
 
   public RobotContainer() {
     ll4.getSettings().withImuMode(ImuMode.ExternalImu).save();
-    // configureBindings();
-    configureTestBindings();
+    configureBindings();
+    // configureTestBindings();
     
     configureRootTests();
     
@@ -81,6 +81,8 @@ public class RobotContainer {
     controller.x().onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED));
 
     controller.y().onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT));
+        controller.b()
+      .onTrue(intakeSubsystem.agitateIntake());
   }
 
   private void configureBindings() {
@@ -95,6 +97,8 @@ public class RobotContainer {
 
     controller.leftBumper()
         .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT));
+
+
 
     // Default drive command: field-centric swerve with left stick + right stick rotation
     drivetrain.setDefaultCommand(
