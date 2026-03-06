@@ -11,7 +11,9 @@ Run from the `robot/20xx-<game>/` directory.
 | `./gradlew build` | Compile and run all tests |
 | `./gradlew test` | Run tests only |
 | `./gradlew deploy` | Deploy robot code to the roboRIO |
-| `./gradlew simulateJava` | Run robot code in simulation (opens Glass + Driver Station) |
+| `./gradlew simulateJava` | Run robot code in simulation (opens Glass + Driver Station). Automatically downloads 3D models via Git LFS. |
+| `./gradlew simulateJava -PskipFetchModels` | Run simulation without downloading 3D models |
+| `./gradlew fetchModels` | Download 3D simulation models from Git LFS |
 | `./gradlew clean` | Delete the build directory |
 | `./gradlew Glass` | Launch the Glass dashboard tool |
 | `./gradlew ShuffleBoard` | Launch the ShuffleBoard dashboard tool |
@@ -20,7 +22,3 @@ Run from the `robot/20xx-<game>/` directory.
 | `./gradlew dependencies` | Display all project dependencies |
 
 Test report is generated at `build/reports/tests/test/index.html`.
-
-## Dependencies
-
-This project includes [sim-core](../sim-core/) as a composite build for physics simulation. See `settings.gradle` for the include.
