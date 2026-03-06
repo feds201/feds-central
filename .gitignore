@@ -60,6 +60,8 @@ hs_err_pid*
 *.aab
 # Keep Gradle wrapper jar (overrides *.jar above)
 !**/gradle-wrapper.jar
+# Keep field collision meshes used by simulation (overrides *.obj above)
+!**/src/main/resources/**/*.obj
 
 
 
