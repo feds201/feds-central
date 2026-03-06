@@ -32,6 +32,18 @@ Download the [WPILib installer](https://docs.wpilib.org/en/stable/docs/zero-to-r
 - **AdvantageScope** (3D visualization)
 - Java, Gradle, and all FRC vendor deps
 
+### Install Git + Git LFS
+
+You need **Git** for version control. **Git LFS** is recommended (but not required) — it downloads our 3D robot models for AdvantageScope. Without it the sim still works, but you'll only be able to use KitBot in AdvantageScope.
+
+| Platform | Git | Git LFS |
+|----------|-----|---------|
+| **Windows** | Install [Git for Windows](https://gitforwindows.org/) | Included — make sure the **"Git LFS"** checkbox is checked during setup |
+| **macOS** | Included with Xcode Command Line Tools (`xcode-select --install`) | `brew install git-lfs && git lfs install` |
+| **Linux** | `sudo apt install git` (Ubuntu/Debian) | `sudo apt install git-lfs && git lfs install` |
+
+See [Troubleshooting](#git-lfs-not-installed) if you run into issues with Git LFS.
+
 ### Get the Code
 
 Clone the repo (if you haven't already):
@@ -75,9 +87,10 @@ cd robot/2026-rebuilt
 
 Either way, a **WPILib simulation GUI** window will open. Don't close it — you'll need it in a moment.
 
-<Callout type="info">
-First build takes a while (downloading deps + compiling). Subsequent runs are much faster.
-After launching, **wait ~30 seconds** for the sim to fully initialize before doing anything.
+<Callout type="warning">
+**You need internet access** for the first run. Gradle downloads dependencies (~500MB) and 3D robot models (~100MB via [Git LFS](#git-lfs-not-installed)) from GitHub. School Wi-Fi may block these downloads, and hotspot can be very slow for files this large. **We recommend using home internet for your first build.**
+
+The first build takes a while (downloading + compiling). After that, everything is cached locally — subsequent runs are fast and don't need internet. Once the sim launches, wait a few seconds for it to fully initialize before doing anything.
 </Callout>
 
 ---
@@ -99,49 +112,25 @@ In the **WPILib simulation GUI** that opened:
 2. Connect via **NetworkTables 4 (AdvantageKit)**
 3. Click the **+** button (top right) → select **3D Field**
 4. In the bottom-right **Field** section, select this year's game
-5. **Add the robot:**
+5. **Add game pieces:**
+   - In the left panel, find `RealOutputs` → `Sim` → `GamePieces`
+   - Drag the game piece type into the **Poses** section (bottom center)
+   - From the dropdown, select the matching game piece model
+6. *(Optional — required for our robot models)* **Set custom assets folder:**
+   - In the AdvantageScope menu, select **"Use custom assets folder"**
+   - Point it to the current year's `sim_models` directory (e.g. for 2026: `feds-central/robot/2026-rebuilt/sim_models`)
+   - Our robot models will now appear in the robot model dropdown
+7. **Add the robot:**
    - In the left panel, expand `RealOutputs` → `Sim`
-   - Drag `RobotPose` into the **Poses** section (bottom center)
-   - From the dropdown, select a robot model (use **KitBot** for now — instructions for adding our real robot model coming soon)
-6. **Add game pieces (2026 example — "Fuel" is the REBUILT ball):**
-   - In the left panel, find `RealOutputs` → `Sim` → `GamePieces` → `Fuel`
-   - Drag it into the **Poses** section
-   - From the dropdown, select **Game Pieces → Fuel**
+   - Drag `RobotPose` into the **Poses** section
+   - From the robot model dropdown, pick one of these:
+     - **KitBot** — no setup needed, but doesn't look like our robot
+     - **FEDS (Static)** — our actual CAD, looks like our robot but mechanisms don't animate (requires step 6)
+     - **FEDS (Components)** — our CAD with animated mechanisms like rollers and hood (requires steps 6 and 8)
+8. *(Optional — required for FEDS (Components))* **Add component poses:**
+   - Drag `Sim/ComponentPoses` from the left panel onto the **robot pose** you added in step 7, so the component animations are tied to the robot
 
 You should now see the field, robot, and game pieces rendered in 3D.
-
-### AdvantageScope Telemetry Keys
-
-All sim telemetry is under `RealOutputs` in AdvantageScope. Values are split into two namespaces:
-
-**`Sim/` — simulation-only values** (don't exist on the real robot):
-
-| Key | Type | What it shows |
-|-----|------|---------------|
-| `Sim/RobotPose` | Pose3d | Ground-truth robot pose (perfect — no sensor noise) |
-| `Sim/RobotGroundClearance` | double | Height of chassis above ground (m) |
-| `Sim/RobotIsAirborne` | boolean | Whether the robot is off the ground |
-| `Sim/FuelHeld` | int | Number of fuel balls in the hopper |
-| `Sim/Score` | int | Total scored points |
-| `Sim/ComponentPoses` | Pose3d[] | Individual mechanism poses for 3D rendering (COMING SOON) |
-| `Sim/GamePieces/Fuel` | Pose3d[] | All fuel ball positions (drag into 3D field) |
-| `Sim/Limelights/{name}/DirectionLine` | Pose3d[] | Camera aim direction (2-point line) |
-
-**`Robot/` — values that exist on both sim and real robot:**
-
-| Key | Type | What it shows |
-|-----|------|---------------|
-| `Robot/Intake/Extended` | boolean | Intake deployed |
-| `Robot/Intake/RollersOn` | boolean | Intake rollers spinning |
-| `Robot/Intake/FuelDetected` | boolean | Limelight sees a fuel ball |
-| `Robot/Limelights/limelight-one/TV` | boolean | Target visible |
-| `Robot/Limelights/limelight-one/TX` | double | Target horizontal angle (°) |
-| `Robot/Limelights/limelight-one/TY` | double | Target vertical angle (°) |
-| `Robot/Limelights/limelight-one/TA` | double | Target area (% of image) |
-| `Robot/Shooter/HoodAngleDeg` | double | Hood angle in degrees |
-| `Robot/Shooter/IsShooting` | boolean | Shooter wheels at speed |
-| `Robot/Shooter/SpindexerOn` | boolean | Spindexer running |
-| `Robot/Shooter/FeederOn` | boolean | Feeder running |
 
 ---
 
@@ -192,6 +181,43 @@ All sim telemetry is under `RealOutputs` in AdvantageScope. Values are split int
 
 ---
 
+---
+
+# Reference
+
+## AdvantageScope Telemetry Keys
+
+All sim telemetry is under `RealOutputs` in AdvantageScope. Values are split into two namespaces:
+
+**`Sim/` — simulation-only values** (don't exist on the real robot):
+
+| Key | Type | What it shows |
+|-----|------|---------------|
+| `Sim/RobotPose` | Pose3d | Ground-truth robot pose (perfect — no sensor noise) |
+| `Sim/RobotGroundClearance` | double | Height of chassis above ground (m) |
+| `Sim/RobotIsAirborne` | boolean | Whether the robot is off the ground |
+| `Sim/FuelHeld` | int | Number of fuel balls in the hopper |
+| `Sim/Score` | int | Total scored points |
+| `Sim/ComponentPoses` | Pose3d[] | Individual mechanism poses for 3D rendering (use with Robot_Components model) |
+| `Sim/GamePieces/Fuel` | Pose3d[] | All fuel ball positions (drag into 3D field) |
+| `Sim/Limelights/{name}/DirectionLine` | Pose3d[] | Camera aim direction (2-point line) |
+
+**`Robot/` — values that exist on both sim and real robot:**
+
+| Key | Type | What it shows |
+|-----|------|---------------|
+| `Robot/Intake/Extended` | boolean | Intake deployed |
+| `Robot/Intake/RollersOn` | boolean | Intake rollers spinning |
+| `Robot/Intake/FuelDetected` | boolean | Limelight sees a fuel ball |
+| `Robot/Limelights/limelight-one/TV` | boolean | Target visible |
+| `Robot/Limelights/limelight-one/TX` | double | Target horizontal angle (°) |
+| `Robot/Limelights/limelight-one/TY` | double | Target vertical angle (°) |
+| `Robot/Limelights/limelight-one/TA` | double | Target area (% of image) |
+| `Robot/Shooter/HoodAngleDeg` | double | Hood angle in degrees |
+| `Robot/Shooter/IsShooting` | boolean | Shooter wheels at speed |
+| `Robot/Shooter/SpindexerOn` | boolean | Spindexer running |
+| `Robot/Shooter/FeederOn` | boolean | Feeder running |
+
 ## Useful Flags
 
 ### Save Log Files (`simLogging`)
@@ -215,6 +241,59 @@ SimulatedArena.overrideSimulationTimings(Seconds.of(DT), 1);
 
 Change the second argument to `2` for 2x speed, `5` for 5x, etc. (There's no command-line flag for this yet — see future improvements below.)
 
+## Adding or Updating 3D Models
+
+To add new models or update existing ones, just treat them like any other file:
+
+1. Export your CAD as `.glb` files (binary glTF — the only format AdvantageScope supports)
+2. Drop them into your year's `sim_models/` directory (e.g. `Robot_Components/` or `Robot_Static/`)
+3. Update the `config.json` if you added/changed components
+4. `git add` and `git commit` as usual
+
+That's it. Git LFS handles the rest behind the scenes — your `.glb` files are automatically routed through LFS so they don't bloat the repo. To your teammates, pulling your changes works normally; their next `./gradlew simulateJava` will download the updated models.
+
+---
+
+## Troubleshooting
+
+### Git LFS Not Installed
+
+If you see this warning when running the sim:
+
+```
+Git LFS not available — 3D models will not be downloaded.
+```
+
+You need to install Git LFS. The simulation still works without it — you just won't see the robot model in AdvantageScope.
+
+| Platform | How to install |
+|----------|---------------|
+| **Windows** | Reinstall [Git for Windows](https://gitforwindows.org/) and make sure the **"Git LFS"** checkbox is checked during setup. It's enabled by default, but may have been unchecked. |
+| **macOS** | Run: `brew install git-lfs && git lfs install` |
+| **Linux (Ubuntu/Debian)** | Run: `sudo apt install git-lfs && git lfs install` |
+| **Linux (Fedora)** | Run: `sudo dnf install git-lfs && git lfs install` |
+
+After installing, run `./gradlew simulateJava` — the models will download automatically.
+
+<Callout type="info">
+On macOS/Linux, the two commands do different things: `brew/apt install` puts the git-lfs binary on your machine, and `git lfs install` registers git hooks so that pull/checkout triggers LFS downloads. You need both.
+</Callout>
+
+### Models Not Showing in AdvantageScope
+
+If the simulation runs but you don't see the robot model in AdvantageScope:
+
+1. **Check that models are downloaded:** Look in your year's `sim_models/` directory — the `.glb` files should be several MB each, not ~130 bytes. If they're tiny, they're still pointer files. Run `./gradlew fetchModels` to download them.
+2. **Check AdvantageScope config:** Make sure you selected **"Use custom assets folder"** and pointed it to the correct `sim_models` directory (see [Set Up AdvantageScope](#set-up-advantagescope) step 7).
+3. **Check your network:** The first model download needs internet access to pull from GitHub's LFS servers. After that, files are cached locally.
+
+### Robot Model Has No Moving Parts
+
+If the robot model appears but mechanisms don't animate:
+
+1. Make sure you're using **FEDS (Components)**, not **FEDS (Static)** (single static mesh)
+2. Drag `Sim/ComponentPoses` onto the **robot pose** in the Poses section — the component poses must be tied to the robot pose, not added as a separate entry
+
 ---
 
 ## Future Improvements
@@ -225,4 +304,3 @@ Change the second argument to `2` for 2x speed, `5` for 5x, etc. (There's no com
 - Magnus effect on shot balls
 - Better ramp physics (robot can't "fly off" yet)
 - Reduce ground physics jitter on settled balls
-- Faster initialization
