@@ -13,32 +13,36 @@
         {
           "incKey": 46
         },
-        {},
+        {
+          "incKey": 79
+        },
         {
           "decKey": 81,
           "incKey": 69
         }
       ],
       "axisCount": 6,
-      "buttonCount": 6,
+      "buttonCount": 8,
       "buttonKeys": [
         59,
         39,
         91,
         93,
         44,
-        47
+        47,
+        0,
+        88
       ],
       "povConfig": [
         {
-          "key0": 328,
+          "key0": 90,
           "key135": 323,
           "key180": 322,
           "key225": 321,
           "key270": 324,
           "key315": 327,
           "key45": 329,
-          "key90": 326
+          "key90": 80
         }
       ],
       "povCount": 1
