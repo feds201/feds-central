@@ -105,21 +105,19 @@ public class RobotContainer {
 
     controller.leftTrigger()
         .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED)
-        .andThen(rollersSubsystem.RollersCommand(RollerState.ON)))
-        .onFalse(rollersSubsystem.RollersCommand(RollerState.OFF));
-    .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.INTAKING))
-    .onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT));
+        .andThen(intakeSubsystem.setRollerStateCommand(RollerState.ON)))
+        .onFalse(intakeSubsystem.setRollerStateCommand(RollerState.OFF));
 
     controller.leftBumper()
         .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT));
 
-    operaterController.rightBumper()
-        .onTrue(intakeSubsystem.setMotorPower(0.1))
-        .onFalse(intakeSubsystem.setMotorPower( 0.0));
+    // operaterController.rightBumper()
+    //     .onTrue(intakeSubsystem.setMotorPower(0.1))
+    //     .onFalse(intakeSubsystem.setMotorPower( 0.0));
 
-    operaterController.rightBumper()
-        .onTrue(intakeSubsystem.setMotorPower(-0.1))
-        .onFalse(intakeSubsystem.setMotorPower( 0.0));
+    // operaterController.rightBumper()
+    //     .onTrue(intakeSubsystem.setMotorPower(-0.1))
+    //     .onFalse(intakeSubsystem.setMotorPower( 0.0));
 
 
 
