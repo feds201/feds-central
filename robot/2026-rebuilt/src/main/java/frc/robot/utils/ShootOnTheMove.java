@@ -105,7 +105,6 @@ public class ShootOnTheMove {
         Translation2d rotationalVelocity = getRotationalVelocityContribution(
                 robotPose.getRotation(),
                 speeds.omegaRadiansPerSecond);
-
         return robotFieldVelocity.plus(rotationalVelocity);
     }
 

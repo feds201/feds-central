@@ -131,7 +131,7 @@ public class ShooterHood extends SubsystemBase {
       setAngle(Rotations.of(pos.getAsDouble()));
       break;
     }
-    Logger.recordOutput("Robot/Shooter/HoodAngleDeg", getPosition().in(Degrees));
+    Logger.recordOutput("Robot/Shooter/HoodAngleRotations", getPosition().in(Rotations));
     // This method will be called once per scheduler run
   }
 
@@ -159,8 +159,8 @@ public class ShooterHood extends SubsystemBase {
 
   public Angle getTargetPositionShooting()
   {
-     Distance d = dt.getDistanceToVirtualHub();
-      return Rotations.of(RobotMap.ShooterConstants.kShootingPositionMap.get(d.in(Meters)));
+     double d = dt.getState().Pose.getTranslation().getDistance(ShooterConstants.hubCenter);
+      return Rotations.of(RobotMap.ShooterConstants.kShootingPositionMap.get(d));
   }
 
    public Angle getTargetPositionPassing()

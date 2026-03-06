@@ -89,8 +89,8 @@ public class RobotContainer {
     public RobotContainer() {
         instance = this;
         ll4.getSettings().withImuMode(ImuMode.ExternalImu).save();
-        //configureBindingsDriver(); // commented out for test bindings
-        testBindings(); // use test bindings as requested (swerves disabled)
+        configureBindingsDriver(); // commented out for test bindings
+        // testBindings(); // use test bindings as requested (swerves disabled)
         // configureBindingsOperator();
 
         configureRootTests();

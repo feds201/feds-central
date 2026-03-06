@@ -139,12 +139,14 @@ public class ShooterWheels extends SubsystemBase {
 
   @Override
   public void periodic() {
+        Logger.recordOutput("Robot/Shooter/ShooterVelocity", getVelocity().in(RotationsPerSecond));
 
     Logger.recordOutput("Robot/Shooter/IsShooting", currentState == shooter_state.SHOOTING);
     Logger.recordOutput("Robot/Shooter/ShooterState", currentState.toString());
     switch (currentState) {
       case SHOOTING:
       shooterLeader.setControl(velocityVoltageControl.withVelocity(getTargetVelocityShooting()));
+             Logger.recordOutput("Robot/Shooter/ExpectedVelocity", getTargetVelocityShooting().in(RotationsPerSecond));
 
         break;
 
@@ -185,8 +187,9 @@ public class ShooterWheels extends SubsystemBase {
 
   public AngularVelocity getTargetVelocityShooting()
   {
-     Distance d = dt.getDistanceToVirtualHub();
-      return RotationsPerSecond.of(RobotMap.ShooterConstants.kShootingVelocityMap.get(d.in(Meters)));
+     
+     double d = dt.getState().Pose.getTranslation().getDistance(ShooterConstants.hubCenter);
+      return RotationsPerSecond.of(RobotMap.ShooterConstants.kShootingVelocityMap.get(d));
   }
 
   //METHOD DYSFUNCTIONAL: Passing doesnt shoot to hub, find position on field to pass to.

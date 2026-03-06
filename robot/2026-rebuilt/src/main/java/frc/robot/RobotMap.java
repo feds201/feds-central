@@ -142,15 +142,15 @@ public final class RobotMap {
             Map.entry(3.2, 34.0),
             Map.entry(3.38, 35.0),
             Map.entry(4.03, 38.0),
-            Map.entry(2.07, 39.0),
+            Map.entry(4.41, 39.0),
             Map.entry(100.0, 39.0)//far off top limit to prevent unwanted scaling past this distance 
         );
 
         public static final InterpolatingDoubleTreeMap kShootingPositionMap = InterpolatingDoubleTreeMap.ofEntries(
             Map.entry(1.565, 13.0),
             Map.entry(1.7, 11.0),
-            Map.entry(2.07, 15.0),
-            Map.entry(2.4, 18.0),
+            Map.entry(2.07, 16.0),
+            Map.entry(2.47, 19.0),
             Map.entry(3.2, 24.0),
             Map.entry(3.38, 24.5),
             Map.entry(4.03, 27.0),
@@ -172,16 +172,9 @@ public final class RobotMap {
         //TODO: tune
         public static final InterpolatingDoubleTreeMap kFlightTimeMap =
         InterpolatingDoubleTreeMap.ofEntries(
-            Map.entry(1.0, 0.35),
-            Map.entry(2.0, 0.45),
-            Map.entry(3.0, 0.55),
-            Map.entry(4.0, 0.65),
-            Map.entry(5.0, 0.78),
-            Map.entry(6.0, 0.90),
-            Map.entry(7.0, 1.02),
-            Map.entry(8.0, 1.15),
-            Map.entry(9.0, 1.28),
-            Map.entry(10.0, 1.40)
+            Map.entry(2.93, 1.15),
+            Map.entry(3.84, 1.3),
+            Map.entry(100.0, 1.3)
         );
 
         
