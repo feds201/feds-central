@@ -31,7 +31,7 @@ import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.subsystems.feeder.Feeder.feeder_state;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem.IntakeState;
-import frc.robot.subsystems.intake.RollersSubsystem;
+import frc.robot.subsystems.intake.IntakeSubsystem.RollerState;
 import frc.robot.subsystems.shooter.ShooterHood;
 import frc.robot.subsystems.shooter.ShooterHood.shooterhood_state;
 import frc.robot.subsystems.shooter.ShooterWheels;
@@ -122,14 +122,6 @@ public class RebuiltSimManager {
 
     /** ODE4J→MapleSim position correction gain (1cm error → 0.5 m/s correction). */
     private static final double POSITION_CORRECTION_KP = 50.0;
-    /**
-     * ODE4J→MapleSim rotation correction gain (rad/s per radian of error).
-     * Without this, ODE4J heading drifts from MapleSim over time because angular
-     * damping and numerical integration differences cause systematic undershoot.
-     * A gain of 8.0 corrects drift within a fraction of a second without causing
-     * violent angular corrections during transients.
-     */
-    private static final double ROTATION_CORRECTION_KP = 8.0;
 
     // ── Sim hood parameters ────────────────────────────────────────────────
 
@@ -180,9 +172,8 @@ public class RebuiltSimManager {
     private final SwerveModuleSimulation[] moduleSimulations;
 
     // References to robot subsystems
-    private final CommandSwerveDrivetrain drivetrain;
-    private final RollersSubsystem intake;
-    private final IntakeSubsystem intakeSubsystem;
+        private final CommandSwerveDrivetrain drivetrain;
+        private final IntakeSubsystem intakeSubsystem;
     private final Feeder feeder;
     private final ShooterWheels shooterWheels;
     private final ShooterHood shooterHood;
@@ -207,19 +198,17 @@ public class RebuiltSimManager {
      * intake/shooter/scoring systems.
      *
      * @param drivetrain      the swerve drivetrain subsystem (motor and encoder references)
-     * @param intake          the rollers subsystem (roller active state)
-     * @param intakeSubsystem the intake deploy subsystem (extended/retracted state)
+        * @param intakeSubsystem the unified intake subsystem (deployment + roller state)
      * @param feeder          the feeder subsystem (run/stop state)
      * @param shooterWheels   the shooter wheels subsystem (flywheel state)
      * @param shooterHood     the shooter hood subsystem (aiming state)
      * @param spindexer       the spindexer subsystem (run/stop state)
      */
-    public RebuiltSimManager(CommandSwerveDrivetrain drivetrain, RollersSubsystem intake,
-                             IntakeSubsystem intakeSubsystem, Feeder feeder,
+        public RebuiltSimManager(CommandSwerveDrivetrain drivetrain,
+                                                         IntakeSubsystem intakeSubsystem, Feeder feeder,
                              ShooterWheels shooterWheels, ShooterHood shooterHood,
                              Spindexer spindexer) {
         this.drivetrain = drivetrain;
-        this.intake = intake;
         this.intakeSubsystem = intakeSubsystem;
         this.feeder = feeder;
         this.shooterWheels = shooterWheels;
@@ -308,8 +297,8 @@ public class RebuiltSimManager {
         // --- Intake Zone ---
         Logger.recordOutput("Sim/State", "Loading intake");
         intakeZone = new IntakeZone(INTAKE_X_MIN, INTAKE_X_MAX, INTAKE_Y_MIN, INTAKE_Y_MAX, INTAKE_Z_MAX,
-                () -> intake.getState() == RollersSubsystem.RollerState.ON
-                        && intakeSubsystem.getState() == IntakeState.EXTENDED,
+                () -> intakeSubsystem.getRollerState() == RollerState.ON
+                                && intakeSubsystem.getState() == IntakeState.EXTENDED,
                 () -> chassis.getPose2d());
 
         // --- Shooter ---
@@ -401,25 +390,16 @@ public class RebuiltSimManager {
         double worldVx = robotSpeeds.vxMetersPerSecond * cos - robotSpeeds.vyMetersPerSecond * sin;
         double worldVy = robotSpeeds.vxMetersPerSecond * sin + robotSpeeds.vyMetersPerSecond * cos;
 
-        // 4. Set velocity with position AND rotation correction to prevent ODE4J drift
-        // from MapleSim. Pure velocity-following drifts over time because ODE4J and
-        // MapleSim integrate independently. Adding proportional correction keeps them
-        // synced while still allowing the contact solver to deflect the chassis on
-        // ramps (the correction is a force, not a position override, so the solver
-        // can oppose it).
+        // 4. Set velocity with position correction to prevent ODE4J drift from MapleSim.
+        // Pure velocity-following drifts over time because ODE4J and MapleSim integrate
+        // independently. Adding a proportional position correction keeps them synced
+        // while still allowing the contact solver to deflect the chassis on ramps
+        // (the correction is a force, not a position override, so the solver can oppose it).
         double odeX = chassis.getPose2d().getX();
         double odeY = chassis.getPose2d().getY();
-        double odeYaw = chassis.getPose2d().getRotation().getRadians();
-        double mapleYaw = pose.getRotation().getRadians();
-
         double correctedVx = worldVx + POSITION_CORRECTION_KP * (pose.getX() - odeX);
         double correctedVy = worldVy + POSITION_CORRECTION_KP * (pose.getY() - odeY);
-        // atan2(sin,cos) gives shortest-path error in [-pi, pi], avoiding
-        // discontinuities at the +/-180° boundary.
-        double yawError = Math.atan2(Math.sin(mapleYaw - odeYaw), Math.cos(mapleYaw - odeYaw));
-        double correctedOmega = robotSpeeds.omegaRadiansPerSecond + ROTATION_CORRECTION_KP * yawError;
-
-        chassis.setVelocity(correctedVx, correctedVy, correctedOmega, DT);
+        chassis.setVelocity(correctedVx, correctedVy, robotSpeeds.omegaRadiansPerSecond, DT);
 
         // 5. Proximity activation — only wake balls near the robot
         gamePieceManager.updateProximity(
@@ -492,7 +472,7 @@ public class RebuiltSimManager {
                 }
 
         // 13. Update animation accumulators
-        if (intake.getState() == RollersSubsystem.RollerState.ON) {
+                if (intakeSubsystem.getRollerState() == RollerState.ON) {
             rollerAngleAccum += INTAKE_ROLLER_SPEED * DT;
         }
         if (shooterWheels.getCurrentState() == shooter_state.SHOOTING) {
@@ -523,7 +503,7 @@ public class RebuiltSimManager {
         gamePieceManager.publishPoses((key, poses) -> Logger.recordOutput(key, poses));
 
         // Component poses for articulated AdvantageScope robot model
-        boolean intaking = intake.getState() == RollersSubsystem.RollerState.ON;
+        boolean intaking = intakeSubsystem.getRollerState() == RollerState.ON;
         boolean shooting = shooterWheels.getCurrentState() == shooter_state.SHOOTING;
 
         Pose3d shooterHoodPose = new Pose3d(

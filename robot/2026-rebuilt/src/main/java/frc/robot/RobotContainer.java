@@ -15,9 +15,8 @@ import frc.robot.commands.swerve.HubDrive;
 import frc.robot.commands.swerve.PassingDrive;
 import frc.robot.commands.swerve.TeleopSwerve;
 import frc.robot.subsystems.intake.IntakeSubsystem;
-import frc.robot.subsystems.intake.RollersSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem.IntakeState;
-import frc.robot.subsystems.intake.RollersSubsystem.RollerState;
+import frc.robot.subsystems.intake.IntakeSubsystem.RollerState;
 import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.subsystems.feeder.Feeder.feeder_state;
 import frc.robot.subsystems.shooter.ShooterHood;
@@ -61,11 +60,9 @@ public class RobotContainer {
 
     private final Telemetry telemetry = new Telemetry(TunerConstants.kSpeedAt12Volts.in(MetersPerSecond));
 
-    private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
-
-    private final RollersSubsystem rollersSubsystem = RollersSubsystem.getInstance();
-
-    private final Feeder feederSubsystem = new Feeder();
+  private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
+  
+  private final Feeder feederSubsystem = new Feeder();
 
     private final ShooterHood shooterHood = new ShooterHood(drivetrain);
     private final ShooterWheels shooterWheels = new ShooterWheels(drivetrain);
@@ -169,6 +166,17 @@ public class RobotContainer {
         }
     }
 
+
+  private void configureTestBindings() {
+    controller.a().onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.INTAKING))
+      .onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED));
+    controller.x().onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED));
+
+    controller.y().onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT));
+        controller.b()
+      .onTrue(intakeSubsystem.agitateIntake());
+  }
+
     /** Publish a small set of live telemetry values for the RTU dashboard. Called from Robot.robotPeriodic(). */
     public void publishTelemetry() {
         try {
@@ -207,37 +215,36 @@ public class RobotContainer {
       controller.start()
          .onTrue(new InstantCommand(drivetrain::seedFieldCentric));
     
-      // -------- INTAKE CONTROLS --------- 
-      //Button to extend intake and run rollers
-      controller.leftTrigger()
-          .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED)
-          .andThen(rollersSubsystem.RollersCommand(RollerState.ON)))
-          .onFalse(rollersSubsystem.RollersCommand(RollerState.OFF));
-      //Button to retract intake
-      controller.leftBumper()
-          .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT));
-      // Default drive command: field-centric swerve with left stick + right stick rotation
-      if (swerveEnabled) {
-        drivetrain.setDefaultCommand(new TeleopSwerve(drivetrain, controller, swerveMultiplier));
-      } else {
-        // Swerve disabled for test mode: bind a no-op command that *does* require drivetrain
-        // so nothing else can steal it during tests.
-        drivetrain.setDefaultCommand(Commands.runOnce(() -> {}, drivetrain));
-      }
-      // M key (Right bumper): intake rollers
-      controller.rightBumper()
-          .whileTrue(rollersSubsystem.RollersCommand(RollerState.ON))
-          .onFalse(rollersSubsystem.RollersCommand(RollerState.OFF));
-      // Hood aiming: A = aim down, B = aim up (ShooterSim adjusts angle at fixed rate)
-      if(Robot.isSimulation()){
-      controller.a()
-          .onTrue(shooterHood.setStateCommand(shooterhood_state.AIMING_DOWN))
-          .onFalse(shooterHood.setStateCommand(shooterhood_state.IN));
-      controller.b()
-          .onTrue(shooterHood.setStateCommand(shooterhood_state.AIMING_UP))
-          .onFalse(shooterHood.setStateCommand(shooterhood_state.IN)); 
-      }
-    // Button to shoot from against trench side
+    // -------- INTAKE CONTROLS ---------
+
+    controller.leftTrigger()
+        .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED)
+        .andThen(intakeSubsystem.setRollerStateCommand(RollerState.ON)))
+        .onFalse(intakeSubsystem.setRollerStateCommand(RollerState.OFF));
+
+    controller.leftBumper()
+        .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT));
+
+    // operaterController.rightBumper()
+    //     .onTrue(intakeSubsystem.setMotorPower(0.1))
+    //     .onFalse(intakeSubsystem.setMotorPower( 0.0));
+
+    // operaterController.rightBumper()
+    //     .onTrue(intakeSubsystem.setMotorPower(-0.1))
+    //     .onFalse(intakeSubsystem.setMotorPower( 0.0));
+
+
+
+
+    // Default drive command: field-centric swerve with left stick + right stick rotation
+    drivetrain.setDefaultCommand(
+        new TeleopSwerve(drivetrain, controller));
+
+    // M key (Right bumper): intake rollers
+    controller.rightBumper()
+    .whileTrue(intakeSubsystem.setRollerStateCommand(RollerState.ON))
+    .onFalse(intakeSubsystem.setRollerStateCommand(RollerState.OFF));
+
     controller.y()
       .onTrue(Commands.sequence(
         feederSubsystem.setStateCommand(feeder_state.RUN),
@@ -309,7 +316,7 @@ public class RobotContainer {
         swerveEnabled = true;
 
         if (swerveEnabled) {
-        drivetrain.setDefaultCommand(new TeleopSwerve(drivetrain, controller, swerveMultiplier));
+        drivetrain.setDefaultCommand(new TeleopSwerve(drivetrain, controller));
       } else {
         // Swerve disabled for test mode: bind a no-op command that *does* require drivetrain
         // so nothing else can steal it during tests.
@@ -356,7 +363,7 @@ public class RobotContainer {
      * Called from Robot.simulationInit().
      */
     public void initSimulation() {
-        simManager = new RebuiltSimManager(drivetrain, rollersSubsystem,
+        simManager = new RebuiltSimManager(drivetrain,
                 intakeSubsystem, feederSubsystem, shooterWheels, shooterHood, spinDexer);
         Logger.recordOutput("Sim/State", "Ready");
         drivetrain.resetPose(RebuiltSimManager.STARTING_POSE);
