@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.utils.DeviceTempReporter;
+import frc.robot.utils.HubShiftUtil;
 import frc.robot.utils.SubsystemStatusManager;
 import frc.robot.utils.DeviceTempReporter;
 import frc.robot.utils.SubsystemStatusManager;
@@ -107,6 +108,11 @@ public class Robot extends LoggedRobot {
     CommandScheduler.getInstance().run();
     // Publish a small set of live telemetry for the RTU dashboard
     m_robotContainer.publishTelemetry();
+    //Log Hub shift times
+    Logger.recordOutput("Robot/HubShift/RemainingTime", HubShiftUtil.getOfficialShiftInfo().remainingTime());
+    Logger.recordOutput("Robot/HubShift/ElapsedTime", HubShiftUtil.getOfficialShiftInfo().elapsedTime());
+    Logger.recordOutput("Robot/HubShift/Active", HubShiftUtil.getOfficialShiftInfo().active());
+    Logger.recordOutput("Robot/HubShift/CurrentShift", HubShiftUtil.getOfficialShiftInfo().currentShift().toString());
     // DeviceTempReporter.pollAll();
     // SubsystemStatusManager.pollAll();
   }
@@ -127,6 +133,7 @@ public class Robot extends LoggedRobot {
     if (m_autonomousCommand != null) {
       CommandScheduler.getInstance().schedule(m_autonomousCommand);
     }
+    HubShiftUtil.initialize();
   }
 
 
@@ -141,6 +148,7 @@ public class Robot extends LoggedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    HubShiftUtil.initialize();
   }
 
   @Override
