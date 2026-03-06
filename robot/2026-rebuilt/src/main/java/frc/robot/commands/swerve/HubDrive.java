@@ -26,7 +26,7 @@ public class HubDrive extends Command {
 
   public static final double MAX_SPEED = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
   public static final double MAX_ANGULAR_RATE = RotationsPerSecond.of(2).in(RadiansPerSecond);
-  private static final PIDController hubRotPID = new PIDController(20, 0, 0);
+  private static final PIDController hubRotPID = new PIDController(7.5, 0, 0);
   private CommandSwerveDrivetrain dt;
   private CommandXboxController controller;
   

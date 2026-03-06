@@ -268,8 +268,7 @@ public class RobotContainer {
         spinDexer.setStateCommand(spindexer_state.STOP),
         shooterWheels.setStateCommand(shooter_state.IDLE),
         shooterHood.setStateCommand(shooterhood_state.IN)));
-      controller.x().onTrue(shooterHood.setStateCommand(shooterhood_state.TEST).andThen(shooterWheels.setStateCommand(shooter_state.TEST)));
-      controller.y().onTrue(feederSubsystem.commandRun().andThen(spinDexer.setStateCommand(spindexer_state.RUN))).onFalse(feederSubsystem.commandStop().andThen(spinDexer.setStateCommand(spindexer_state.STOP)));
+
       // If out of neutral zone, face hub and ready shoot
       controller.povRight().and(()->!ShooterConstants.neutralZone.contains(drivetrain.getState().Pose.getTranslation())).whileTrue(
         Commands.sequence(

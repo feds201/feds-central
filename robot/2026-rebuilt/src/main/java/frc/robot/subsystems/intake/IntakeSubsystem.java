@@ -36,7 +36,7 @@ public class IntakeSubsystem extends SubsystemBase {
   private final LedsSubsystem leds = LedsSubsystem.getInstance();
   private final double extendedRotations = 78.0;
   private final double retractedRotations = 0.0;
-  private static final double ROLLER_OUTPUT = 0.5;
+  private static final double ROLLER_OUTPUT = 0.4;
   private final Timer timer = new Timer();
 
 
