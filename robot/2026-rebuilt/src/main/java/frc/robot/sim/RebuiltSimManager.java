@@ -31,7 +31,7 @@ import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.subsystems.feeder.Feeder.feeder_state;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem.IntakeState;
-import frc.robot.subsystems.intake.RollersSubsystem;
+import frc.robot.subsystems.intake.IntakeSubsystem.RollerState;
 import frc.robot.subsystems.shooter.ShooterHood;
 import frc.robot.subsystems.shooter.ShooterHood.shooterhood_state;
 import frc.robot.subsystems.shooter.ShooterWheels;
@@ -197,9 +197,8 @@ public class RebuiltSimManager {
     private final SwerveModuleSimulation[] moduleSimulations;
 
     // References to robot subsystems
-    private final CommandSwerveDrivetrain drivetrain;
-    private final RollersSubsystem intake;
-    private final IntakeSubsystem intakeSubsystem;
+        private final CommandSwerveDrivetrain drivetrain;
+        private final IntakeSubsystem intakeSubsystem;
     private final Feeder feeder;
     private final ShooterWheels shooterWheels;
     private final ShooterHood shooterHood;
@@ -225,19 +224,17 @@ public class RebuiltSimManager {
      * intake/shooter/scoring systems.
      *
      * @param drivetrain      the swerve drivetrain subsystem (motor and encoder references)
-     * @param intake          the rollers subsystem (roller active state)
-     * @param intakeSubsystem the intake deploy subsystem (extended/retracted state)
+        * @param intakeSubsystem the unified intake subsystem (deployment + roller state)
      * @param feeder          the feeder subsystem (run/stop state)
      * @param shooterWheels   the shooter wheels subsystem (flywheel state)
      * @param shooterHood     the shooter hood subsystem (aiming state)
      * @param spindexer       the spindexer subsystem (run/stop state)
      */
-    public RebuiltSimManager(CommandSwerveDrivetrain drivetrain, RollersSubsystem intake,
-                             IntakeSubsystem intakeSubsystem, Feeder feeder,
+        public RebuiltSimManager(CommandSwerveDrivetrain drivetrain,
+                                                         IntakeSubsystem intakeSubsystem, Feeder feeder,
                              ShooterWheels shooterWheels, ShooterHood shooterHood,
                              Spindexer spindexer) {
         this.drivetrain = drivetrain;
-        this.intake = intake;
         this.intakeSubsystem = intakeSubsystem;
         this.feeder = feeder;
         this.shooterWheels = shooterWheels;
@@ -326,8 +323,8 @@ public class RebuiltSimManager {
         // --- Intake Zone ---
         Logger.recordOutput("Sim/State", "Loading intake");
         intakeZone = new IntakeZone(INTAKE_X_MIN, INTAKE_X_MAX, INTAKE_Y_MIN, INTAKE_Y_MAX, INTAKE_Z_MAX,
-                () -> intake.getState() == RollersSubsystem.RollerState.ON
-                        && intakeSubsystem.getState() == IntakeState.EXTENDED,
+                () -> intakeSubsystem.getRollerState() == RollerState.ON
+                                && intakeSubsystem.getState() == IntakeState.EXTENDED,
                 () -> chassis.getPose2d());
 
         // --- Shooter ---
@@ -483,7 +480,7 @@ public class RebuiltSimManager {
         shooterSim.update(DT);
 
         // 13. Update animation accumulators
-        if (intake.getState() == RollersSubsystem.RollerState.ON) {
+                if (intakeSubsystem.getRollerState() == RollerState.ON) {
             rollerAngleAccum += INTAKE_ROLLER_SPEED * DT;
         }
         if (spindexer.getCurrentState() == spindexer_state.RUN) {
@@ -545,7 +542,7 @@ public class RebuiltSimManager {
         // 14: Shooter - Hood               (Y rotation, hood angle)
         // 15: Shooter - Wheels             (Y rotation)
 
-        boolean intaking = intake.getState() == RollersSubsystem.RollerState.ON;
+        boolean intaking = intakeSubsystem.getRollerState() == RollerState.ON;
         boolean shooting = shooterWheels.getCurrentState() == shooter_state.SHOOTING;
 
         // Intake extension: rollers and hopper translate out when deployed

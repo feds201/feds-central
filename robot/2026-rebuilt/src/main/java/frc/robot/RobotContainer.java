@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.MetersPerSecond;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -17,9 +15,8 @@ import frc.robot.commands.swerve.HubDrive;
 import frc.robot.commands.swerve.PathfindToPose;
 import frc.robot.commands.swerve.TeleopSwerve;
 import frc.robot.subsystems.intake.IntakeSubsystem;
-import frc.robot.subsystems.intake.RollersSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem.IntakeState;
-import frc.robot.subsystems.intake.RollersSubsystem.RollerState;
+import frc.robot.subsystems.intake.IntakeSubsystem.RollerState;
 import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.subsystems.feeder.Feeder.feeder_state;
 import frc.robot.subsystems.shooter.ShooterHood;
@@ -51,8 +48,6 @@ public class RobotContainer {
 
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
   
-  private final RollersSubsystem rollersSubsystem = RollersSubsystem.getInstance();
-
   private final Feeder feederSubsystem = new Feeder();
 
   private final ShooterHood shooterHood = new ShooterHood(drivetrain);
@@ -70,9 +65,8 @@ public class RobotContainer {
 
   public RobotContainer() {
     ll4.getSettings().withImuMode(ImuMode.ExternalImu).save();
-    hubDrive = new HubDrive(drivetrain, null);
     configureBindings();
-    
+    // configureTestBindings();
     
     configureRootTests();
     
@@ -82,9 +76,21 @@ public class RobotContainer {
   public void updateLocalization() {
     if (ll4.getNTTable().containsKey("tv")) {
       ll4.updateLocalizationLimelight(drivetrain);
+
     } else {
       ll3.updateLocalizationLimelight(drivetrain);
     }
+  }
+
+
+  private void configureTestBindings() {
+    controller.a().onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.INTAKING))
+      .onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED));
+    controller.x().onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED));
+
+    controller.y().onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT));
+        controller.b()
+      .onTrue(intakeSubsystem.agitateIntake());
   }
 
   private void configureBindings() {
@@ -99,19 +105,21 @@ public class RobotContainer {
 
     controller.leftTrigger()
         .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED)
-        .andThen(rollersSubsystem.RollersCommand(RollerState.ON)))
-        .onFalse(rollersSubsystem.RollersCommand(RollerState.OFF));
+        .andThen(intakeSubsystem.setRollerStateCommand(RollerState.ON)))
+        .onFalse(intakeSubsystem.setRollerStateCommand(RollerState.OFF));
 
     controller.leftBumper()
         .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT));
 
-    operaterController.rightBumper()
-        .onTrue(intakeSubsystem.setMotorPower(0.1))
-        .onFalse(intakeSubsystem.setMotorPower( 0.0));
+    // operaterController.rightBumper()
+    //     .onTrue(intakeSubsystem.setMotorPower(0.1))
+    //     .onFalse(intakeSubsystem.setMotorPower( 0.0));
 
-    operaterController.rightBumper()
-        .onTrue(intakeSubsystem.setMotorPower(-0.1))
-        .onFalse(intakeSubsystem.setMotorPower( 0.0));
+    // operaterController.rightBumper()
+    //     .onTrue(intakeSubsystem.setMotorPower(-0.1))
+    //     .onFalse(intakeSubsystem.setMotorPower( 0.0));
+
+
 
 
     // Default drive command: field-centric swerve with left stick + right stick rotation
@@ -120,8 +128,8 @@ public class RobotContainer {
 
     // M key (Right bumper): intake rollers
     controller.rightBumper()
-        .whileTrue(rollersSubsystem.RollersCommand(RollerState.ON))
-        .onFalse(rollersSubsystem.RollersCommand(RollerState.OFF));
+    .whileTrue(intakeSubsystem.setRollerStateCommand(RollerState.ON))
+    .onFalse(intakeSubsystem.setRollerStateCommand(RollerState.OFF));
 
     controller.y()
       .onTrue(Commands.sequence(
@@ -161,14 +169,14 @@ public class RobotContainer {
       Commands.sequence(
         shooterHood.setStateCommand(shooterhood_state.SHOOTING), 
         shooterWheels.setStateCommand(shooter_state.SHOOTING)
-      ).alongWith(new HubDrive(drivetrain, controller)))
+      ))
     .onFalse(
       Commands.sequence(
         shooterHood.setStateCommand(shooterhood_state.OUT), 
         shooterWheels.setStateCommand(shooter_state.IDLE)
       ));
 
-    controller.rightTrigger().and(HubDrive::pidAtSetpoint).and(shooterWheels::atSetpoint).whileTrue(
+    controller.rightTrigger().and(shooterWheels::atSetpoint).whileTrue(
       Commands.sequence(
       feederSubsystem.setStateCommand(feeder_state.RUN),
       spinDexer.setStateCommand(spindexer_state.RUN)
@@ -188,8 +196,8 @@ public class RobotContainer {
 
   /** Called from Robot.simulationInit(). */
   public void initSimulation() {
-    simManager = new RebuiltSimManager(drivetrain, rollersSubsystem,
-        intakeSubsystem, feederSubsystem, shooterWheels, shooterHood, spinDexer);
+  simManager = new RebuiltSimManager(drivetrain,
+    intakeSubsystem, feederSubsystem, shooterWheels, shooterHood, spinDexer);
     Logger.recordOutput("Sim/State", "Ready");
     drivetrain.resetPose(RebuiltSimManager.STARTING_POSE);
   }
