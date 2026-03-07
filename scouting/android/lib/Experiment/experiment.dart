@@ -57,7 +57,9 @@ class _ExperimentState extends State<Experiment> {
         children: <Widget>[
           ListTile(
             title: const Text('Template Studio'),
-            textColor: islightmode() ? Colors.grey.withOpacity(0.4) : lightColors.white,
+            textColor: islightmode()
+                ? Colors.grey.withOpacity(0.4)
+                : lightColors.white,
             trailing: Switch(
               value: templateStudioEnabled,
               onChanged: (bool value) {
@@ -85,7 +87,9 @@ class _ExperimentState extends State<Experiment> {
             ),
           ListTile(
             title: const Text('Card Builder'),
-            textColor: islightmode() ? Colors.grey.withOpacity(0.4) : lightColors.white,
+            textColor: islightmode()
+                ? Colors.grey.withOpacity(0.4)
+                : lightColors.white,
             trailing: Switch(
               value: cardBuilderEnabled,
               onChanged: (bool value) {

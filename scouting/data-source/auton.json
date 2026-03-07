@@ -8,7 +8,7 @@
     },
     "fuel_pickup": {
       "from_depot": false,                // True or False
-      "from_outpost": false               // True or False
+      "from_outpost": false,             // True or False
       "grabbed_balls_from_neutral_zone": true,  //  Did the robot go neutral zone to get balls
     },
     

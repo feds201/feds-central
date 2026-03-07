@@ -87,6 +87,8 @@ dependencies {
 
     // Use the local sim-core project instead of requiring a published artifact.
     implementation project(':sim-core')
+    simulationDebug project(':sim-core')
+    simulationRelease project(':sim-core')
     // Explicit ode4j — composite build doesn't reliably propagate transitive api deps
     implementation 'org.ode4j:core:0.5.4'
 
@@ -145,3 +147,48 @@ gversion {
 }
 
 project.compileJava.dependsOn(createVersionFile)
+
+// Download 3D simulation model assets from Git LFS.
+// Models are excluded from clone by default (see .lfsconfig). Run this task
+// to fetch them on demand:  ./gradlew fetchModels
+// Automatically runs before simulateJava. Skip with: ./gradlew simulateJava -PskipFetchModels
+task fetchModels(type: Exec) {
+    description = 'Downloads 3D model assets via Git LFS'
+    group = 'simulation'
+    enabled = !project.hasProperty('skipFetchModels')
+    def gitRoot = { ->
+        def dir = project.projectDir
+        while (dir != null && !new File(dir, '.git').exists()) dir = dir.parentFile
+        return dir
+    }()
+    def relPath = gitRoot.toPath().relativize(project.projectDir.toPath()).toString()
+                       .replace('\\', '/')
+    workingDir gitRoot
+    commandLine 'git', 'lfs', 'pull', '-X', '', '-I', "${relPath}/sim_models/**"
+    ignoreExitValue = true
+    doLast {
+        if (executionResult.get().exitValue != 0) {
+            logger.warn('')
+            logger.warn('~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~')
+            logger.warn('')
+            logger.warn('  Git LFS not available — 3D models will not be downloaded.')
+            logger.warn('  The simulation will still work, but AdvantageScope won\'t')
+            logger.warn('  render our robot models.')
+            logger.warn('')
+            logger.warn('  To fix, install Git LFS:')
+            logger.warn('    Windows: Reinstall Git for Windows and check "Git LFS" during setup')
+            logger.warn('    macOS:   brew install git-lfs && git lfs install')
+            logger.warn('    Linux:   sudo apt install git-lfs && git lfs install')
+            logger.warn('')
+            logger.warn('  Then run:  ./gradlew simulateJava')
+            logger.warn('  Models download automatically unless you pass -PskipFetchModels.')
+            logger.warn('')
+            logger.warn('  More info: https://operational-manual.feds201.com/Home/Programming/FRC/Simulation/QuickStart#troubleshooting')
+            logger.warn('')
+            logger.warn('~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~')
+            logger.warn('')
+        }
+    }
+}
+
+simulateJava.dependsOn fetchModels

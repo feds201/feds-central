@@ -32,8 +32,8 @@ class MultiPointSelectorState extends State<MultiPointSelector> {
   bool _isErasing = false;
   final GlobalKey _imageKey = GlobalKey();
 
-  static const int _rows = 33;
-  static const int _cols = 58;
+  static const int _rows = 10;
+  static const int _cols = 20;
 
   @override
   void initState() {
@@ -97,8 +97,8 @@ class MultiPointSelectorState extends State<MultiPointSelector> {
     int centerCol = (dx / cellWidth).floor();
     int centerRow = (dy / cellHeight).floor();
 
-    // Radius 2 = 5x5 block.
-    int radius = 2;
+    // Radius 0 = 1x1 block.
+    int radius = 0;
 
     Set<int> cellsMod = {};
 
@@ -117,11 +117,13 @@ class MultiPointSelectorState extends State<MultiPointSelector> {
       } else {
         _selectedCells.addAll(cellsMod);
       }
+      _notifyChanged();
     });
   }
 
   void _notifyChanged() {
     widget.onDataChanged?.call(_selectedCells.toList());
+    print('Selected cells: $_selectedCells');
   }
 
   @override
@@ -282,29 +284,44 @@ class _GridPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    if (selectedCells.isEmpty) return;
-
     double cellWidth = size.width / cols;
     double cellHeight = size.height / rows;
 
-    final paint = Paint()
-      ..color = color.withOpacity(0.5)
-      ..style = PaintingStyle.fill;
+    final gridPaint = Paint()
+      ..color = Colors.black.withOpacity(0.3)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 0.5;
 
-    for (int id in selectedCells) {
-      if (id < 1) continue;
-      // 1-based ID -> 0-based index
-      int index = id - 1;
-      int r = index ~/ cols;
-      int c = index % cols;
+    for (int c = 0; c <= cols; c++) {
+      double x = c * cellWidth;
+      canvas.drawLine(Offset(x, 0), Offset(x, size.height), gridPaint);
+    }
 
-      Rect rect = Rect.fromLTWH(
-        c * cellWidth,
-        r * cellHeight,
-        cellWidth,
-        cellHeight,
-      );
-      canvas.drawRect(rect, paint);
+    for (int r = 0; r <= rows; r++) {
+      double y = r * cellHeight;
+      canvas.drawLine(Offset(0, y), Offset(size.width, y), gridPaint);
+    }
+
+    if (selectedCells.isNotEmpty) {
+      final paint = Paint()
+        ..color = color.withOpacity(0.5)
+        ..style = PaintingStyle.fill;
+
+      for (int id in selectedCells) {
+        if (id < 1) continue;
+        // 1-based ID -> 0-based index
+        int index = id - 1;
+        int r = index ~/ cols;
+        int c = index % cols;
+
+        Rect rect = Rect.fromLTWH(
+          c * cellWidth,
+          r * cellHeight,
+          cellWidth,
+          cellHeight,
+        );
+        canvas.drawRect(rect, paint);
+      }
     }
   }
 

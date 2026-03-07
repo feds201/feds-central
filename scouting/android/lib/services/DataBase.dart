@@ -113,6 +113,21 @@ class PitRecord {
   final String botImage2;
   final String botImage3;
 
+  // New FRC 2026 Fields
+  final List<String> autoRoutes;
+  final int autoFuel;
+  final bool gameData;
+  final double weight;
+  final double speed;
+  final String driveMotorType;
+  final double groundClearance;
+  final int maxFuelCapacity;
+  final double avgCycleTime;
+  final double climbSuccessProb;
+  final int batteries;
+  final String framePerimeter;
+  final double shootingRate;
+
   PitRecord(
       {required this.teamNumber,
       required this.scouterName,
@@ -125,7 +140,20 @@ class PitRecord {
       required this.climbType,
       required this.botImage1,
       required this.botImage2,
-      required this.botImage3});
+      required this.botImage3,
+      this.autoRoutes = const [],
+      this.autoFuel = 0,
+      this.gameData = false,
+      this.weight = 0.0,
+      this.speed = 0.0,
+      this.driveMotorType = '',
+      this.groundClearance = 0.0,
+      this.maxFuelCapacity = 0,
+      this.avgCycleTime = 0.0,
+      this.climbSuccessProb = 0.0,
+      this.batteries = 0,
+      this.framePerimeter = '',
+      this.shootingRate = 0.0});
 
   Map<String, dynamic> toJson() {
     return {
@@ -140,7 +168,20 @@ class PitRecord {
       "climbType": climbType,
       "botImage1": botImage1,
       "botImage2": botImage2,
-      "botImage3": botImage3
+      "botImage3": botImage3,
+      "autoRoutes": autoRoutes,
+      "autoFuel": autoFuel,
+      "gameData": gameData,
+      "weight": weight,
+      "speed": speed,
+      "driveMotorType": driveMotorType,
+      "groundClearance": groundClearance,
+      "maxFuelCapacity": maxFuelCapacity,
+      "avgCycleTime": avgCycleTime,
+      "climbSuccessProb": climbSuccessProb,
+      "batteries": batteries,
+      "framePerimeter": framePerimeter,
+      "shootingRate": shootingRate
     };
   }
 
@@ -196,6 +237,22 @@ class PitRecord {
       botImage1: json['botImage1'] ?? '',
       botImage2: json['botImage2'] ?? '',
       botImage3: json['botImage3'] ?? '',
+
+      autoRoutes: json['autoRoutes'] != null
+          ? List<String>.from(json['autoRoutes'])
+          : [],
+      autoFuel: json['autoFuel'] ?? 0,
+      gameData: json['gameData'] ?? false,
+      weight: (json['weight'] ?? 0.0).toDouble(),
+      speed: (json['speed'] ?? 0.0).toDouble(),
+      driveMotorType: json['driveMotorType'] ?? '',
+      groundClearance: (json['groundClearance'] ?? 0.0).toDouble(),
+      maxFuelCapacity: json['maxFuelCapacity'] ?? 0,
+      avgCycleTime: (json['avgCycleTime'] ?? 0.0).toDouble(),
+      climbSuccessProb: (json['climbSuccessProb'] ?? 0.0).toDouble(),
+      batteries: json['batteries'] ?? 0,
+      framePerimeter: json['framePerimeter'] ?? '',
+      shootingRate: (json['shootingRate'] ?? 0.0).toDouble(),
     );
   }
 }
@@ -706,7 +763,7 @@ class AutonPoints {
   }
 
   String toCsv() {
-    return '${left_starting_position ? 1 : 0},${fuel_pickup_from_Depot ? 1 : 0},${fuel_pickup_from_Outpost ? 1 : 0},${fuel_pickup_from_Neutral_Zone ? 1 : 0},$total_shooting_time,$amountOfShooting,${climb ? 1 : 0},$winAfterAuton,${starting_location.toCsv()}';
+    return '${left_starting_position ? 1 : 0},${fuel_pickup_from_Depot ? 1 : 0},${fuel_pickup_from_Outpost ? 1 : 0},${fuel_pickup_from_Neutral_Zone ? 1 : 0},${total_shooting_time.toStringAsFixed(2)},$amountOfShooting,${climb ? 1 : 0},$winAfterAuton,${starting_location.toCsv()}';
   }
 
   static AutonPoints fromJson(Map<String, dynamic> json) {
@@ -872,7 +929,7 @@ class TeleOpPoints {
   }
 
   String toCsv() {
-    return '${TotalShootingTime1},${TotalShootingTimeA1},${TotalShootingTimeA2},${ShootingI1 ? 1 : 0},${ShootingI2 ? 1 : 0},${TotalAmount1},${TotalAmountA1},${TotalAmountA2},${TotalAmountI1},${TotalAmountI2},${TripAmount1},${NeutralTrips},${NeutralTripsA1},${NeutralTripsA2},${NeutralTripsI1},${NeutralTripsI2},${Defense ? 1 : 0},${DefenseA1 ? 1 : 0},${DefenseA2 ? 1 : 0},${DefenseI1 ? 1 : 0},${DefenseI2 ? 1 : 0},${FeedToHPStation ? 1 : 0},${FeedToHPStationA1 ? 1 : 0},${FeedToHPStationA2 ? 1 : 0},${FeedToHPStationI1 ? 1 : 0},${FeedToHPStationI2 ? 1 : 0},${passing ? 1 : 0},${passingA1 ? 1 : 0},${passingA2 ? 1 : 0},${passingI1 ? 1 : 0},${passingI2 ? 1 : 0}';
+    return '${TotalShootingTime1.toStringAsFixed(2)},${TotalShootingTimeA1.toStringAsFixed(2)},${TotalShootingTimeA2.toStringAsFixed(2)},${ShootingI1 ? 1 : 0},${ShootingI2 ? 1 : 0},${TotalAmount1},${TotalAmountA1},${TotalAmountA2},${TotalAmountI1},${TotalAmountI2},${TripAmount1},${NeutralTrips},${NeutralTripsA1},${NeutralTripsA2},${NeutralTripsI1},${NeutralTripsI2},${Defense ? 1 : 0},${DefenseA1 ? 1 : 0},${DefenseA2 ? 1 : 0},${DefenseI1 ? 1 : 0},${DefenseI2 ? 1 : 0},${FeedToHPStation ? 1 : 0},${FeedToHPStationA1 ? 1 : 0},${FeedToHPStationA2 ? 1 : 0},${FeedToHPStationI1 ? 1 : 0},${FeedToHPStationI2 ? 1 : 0},${passing ? 1 : 0},${passingA1 ? 1 : 0},${passingA2 ? 1 : 0},${passingI1 ? 1 : 0},${passingI2 ? 1 : 0}';
   }
 
   static TeleOpPoints fromJson(Map<String, dynamic> json) {
@@ -1048,7 +1105,8 @@ class EndPoints {
   bool Park = false;
   bool FeedToHP = false;
   bool Passing = false;
-  int EndNeutralTrips =0;
+  bool robotBroken = false;
+  int EndNeutralTrips = 0;
   int ShootingAccuracy;
   double endgameTime;
   int endgameActions;
@@ -1060,6 +1118,7 @@ class EndPoints {
     this.Park,
     this.FeedToHP,
     this.Passing,
+    this.robotBroken,
     this.Comments,
     this.EndNeutralTrips,
     this.ShootingAccuracy,
@@ -1080,6 +1139,7 @@ class EndPoints {
       "endgameActions": endgameActions,
       "Comments": Comments,
       "DrawingData": drawingData,
+      "robotBroken": robotBroken,
     };
   }
 
@@ -1089,6 +1149,7 @@ class EndPoints {
       json['Park'] ?? false,
       json['FeedToHP'] ?? false,
       json['Passing'] ?? false,
+      json['robotBroken'] ?? false,
       json['Comments'] ?? '',
       json['EndNeutralTrips'] ?? 0,
       (json['ShootingAccuracy'] as int?) ?? 3,
@@ -1101,11 +1162,11 @@ class EndPoints {
 
   @override
   String toString() {
-    return 'EndPoints{ClimbStatus: $ClimbStatus, Park: $Park, FeedToHP: $FeedToHP, Passing: $Passing, EndNeutralTrips: $EndNeutralTrips, ShootingAccuracy: $ShootingAccuracy, endgameTime: $endgameTime, endgameActions: $endgameActions, Comments: $Comments, DrawingData: $drawingData}';
+    return 'EndPoints{ClimbStatus: $ClimbStatus, Park: $Park, FeedToHP: $FeedToHP, Passing: $Passing, EndNeutralTrips: $EndNeutralTrips, ShootingAccuracy: $ShootingAccuracy, endgameTime: $endgameTime, endgameActions: $endgameActions, Comments: $Comments, DrawingData: $drawingData, robotBroken: $robotBroken }';
   }
 
   String toCsv() {
-    return '$ClimbStatus,${Park ? 1 : 0},${FeedToHP ? 1 : 0},${Passing ? 1 : 0},$EndNeutralTrips, $ShootingAccuracy,$endgameActions,$Comments,$drawingData';
+    return '$ClimbStatus,${Park ? 1 : 0},${FeedToHP ? 1 : 0},${Passing ? 1 : 0},$EndNeutralTrips, $ShootingAccuracy,$endgameTime,$Comments,${_encodeDrawingData()}';
   }
 
   String _encodeDrawingData() {
@@ -1307,6 +1368,7 @@ class LocalDataBase {
       data['Park'] ?? false,
       data['FeedToHP'] ?? false,
       data['Passing'] ?? false,
+      data['robotBroken'] ?? false,
       data['Comments'] ?? "",
       data['EndNeutralTrips'] ?? 0,
       data['ShootingAccuracy'] ?? 3,
@@ -1364,68 +1426,6 @@ class BotLocation {
 class PitChecklistItem {
   String note = "";
   String matchkey = "";
-  bool chassis_drive_motors = false;
-  bool chassis_steer_motors = false;
-  bool chassis_gearboxes = false;
-  bool chassis_tread_conditions = false;
-  bool chassis_wires = false;
-  bool chassis_bumpers = false;
-  bool chassis_camera = false;
-  bool chassis_limelight_protectors = false;
-
-  bool ethernet_front_left_limelight = false;
-  bool ethernet_front_right_limelight = false;
-  bool ethernet_back_right_limelight = false;
-  bool ethernet_switch = false; // Changed from ethernet_swtich
-  bool ethernet_radio = false;
-
-  bool climber_bumper = false;
-  bool climber_hooks = false;
-  bool climber_string = false;
-  bool climber_springs = false;
-  bool climber_gearbox = false;
-  bool climber_motors = false;
-  bool climber_wires = false;
-  bool climber_nuts_and_bolts = false;
-  bool climber_reset = false;
-  bool climber_clips = false;
-
-  bool elevator_rod_of_doom = false;
-  bool elevator_stage_0 = false;
-  bool elevator_stage_1 = false;
-  bool elevator_stage_2 = false;
-  bool elevator_chain = false;
-  bool elevator_gearbox = false;
-  bool elevator_limit_switch = false;
-  bool elevator_motors = false;
-  bool elevator_wires = false;
-  bool elevator_nuts_and_bolts = false;
-  bool elevator_belts = false;
-  bool elevator_string = false;
-
-  bool trapdoor_panels = false;
-  bool trapdoor_supports = false;
-  bool trapdoor_hinges = false;
-  bool trapdoor_tensioners = false;
-  bool trapdoor_wires = false;
-  bool trapdoor_nuts_and_bolts = false;
-  bool trapdoor_reset = false;
-
-  bool carriage_gearbox = false;
-  bool carriage_beltbox = false;
-  bool carriage_motors = false;
-  bool carriage_wires = false;
-  bool carriage_nuts_and_bolts = false;
-  bool carriage_coral_slide = false;
-  bool carriage_reset = false;
-  bool carriage_carriage = false;
-
-  bool gooseneck_panels = false;
-  bool gooseneck_wheels = false;
-  bool gooseneck_belts = false;
-  bool gooseneck_nuts_and_bolts = false;
-  bool gooseneck_gears = false;
-  bool gooseneck_wires = false;
 
   double returning_battery_voltage = 0.0;
   double returning_battery_cca = 0.0;
@@ -1434,6 +1434,64 @@ class PitChecklistItem {
   double outgoing_battery_cca = 0.0;
   double outgoing_number = 0.0;
   bool outgoing_battery_replaced = false;
+
+  //drivetrain
+  bool drive_motors = false;
+  bool drive_wheels = false;
+  bool drive_gearboxes = false;
+  bool drive_encoders = false;
+  bool drive_wires = false;
+  bool drive_lime_lights = false;
+  bool drive_nuts_and_bolts = false;
+  bool drive_steer_motors = false;
+
+  //structure
+  bool structure_frame = false;
+  bool structure_hopper_panels = false;
+  bool structure_brain_pan = false;
+  bool structure_belly_pan = false;
+  bool structure_nuts_and_bolts = false;
+
+  //intake
+  bool intake_rack = false;
+  bool intake_pinion = false;
+  bool intake_belts = false;
+  bool intake_roller = false;
+  bool intake_boot = false; // New field for Boot
+  bool intake_motors = false;
+  bool intake_limit_switches = false;
+  bool intake_lime_lights = false;
+  bool intake_nuts_and_bolts = false;
+  bool intake_wires = false;
+
+  //spindexer
+  bool spindexer_panel = false;
+  bool spindexer_churros = false;
+  bool spindexer_3d_prints = false; // New field for 3D Prints
+  bool spindexer_motor = false;
+  bool spindexer_wheels = false;
+  bool spindexer_nuts_and_bolts = false;
+
+  //kicker
+  bool kicker_plates = false;
+  bool kicker_roller = false;
+  bool kicker_belts = false;
+  bool kicker_gears = false;
+  bool kicker_motor = false;
+  bool kicker_radio = false;
+  bool kicker_ethernet_switch = false;
+  bool kicker_nuts_and_bolts = false;
+  bool kicker_wires = false;
+
+  //shooter
+  bool shooter_flywheels = false;
+  bool shooter_hood = false;
+  bool shooter_hood_gears = false;
+  bool shooter_gears = false;
+  bool shooter_motors = false;
+  bool shooter_nuts_and_bolts = false;
+  bool shooter_wires = false;
+
   String alliance_color = "Blue";
   Map<String, dynamic>? alliance_selection_data;
   String img1 = "";
@@ -1444,62 +1502,6 @@ class PitChecklistItem {
 
   PitChecklistItem({
     required this.matchkey,
-    required this.chassis_drive_motors,
-    required this.chassis_steer_motors,
-    required this.chassis_gearboxes,
-    required this.chassis_tread_conditions,
-    required this.chassis_camera,
-    required this.chassis_wires,
-    required this.chassis_bumpers,
-    required this.chassis_limelight_protectors,
-    required this.ethernet_front_left_limelight,
-    required this.ethernet_front_right_limelight,
-    required this.ethernet_back_right_limelight,
-    required this.ethernet_switch, // Changed from ethernet_swtich
-    required this.ethernet_radio,
-    required this.climber_string,
-    required this.climber_bumper,
-    required this.climber_hooks,
-    required this.climber_clips,
-    required this.climber_springs,
-    required this.climber_gearbox,
-    required this.climber_motors,
-    required this.climber_wires,
-    required this.climber_nuts_and_bolts,
-    required this.climber_reset,
-    required this.elevator_rod_of_doom,
-    required this.elevator_stage_0,
-    required this.elevator_stage_1,
-    required this.elevator_stage_2,
-    required this.elevator_chain,
-    required this.elevator_gearbox,
-    required this.elevator_motors,
-    required this.elevator_limit_switch,
-    required this.elevator_wires,
-    required this.elevator_nuts_and_bolts,
-    required this.elevator_belts,
-    required this.elevator_string,
-    required this.trapdoor_panels,
-    required this.trapdoor_supports,
-    required this.trapdoor_hinges,
-    required this.trapdoor_tensioners,
-    required this.trapdoor_wires,
-    required this.trapdoor_nuts_and_bolts,
-    required this.trapdoor_reset,
-    required this.carriage_gearbox,
-    required this.carriage_beltbox,
-    required this.carriage_motors,
-    required this.carriage_wires,
-    required this.carriage_nuts_and_bolts,
-    required this.carriage_coral_slide,
-    required this.carriage_reset,
-    required this.carriage_carriage,
-    required this.gooseneck_panels,
-    required this.gooseneck_wheels,
-    required this.gooseneck_belts,
-    required this.gooseneck_nuts_and_bolts,
-    required this.gooseneck_gears,
-    required this.gooseneck_wires,
     required this.returning_battery_voltage,
     required this.returning_battery_cca,
     required this.returning_number,
@@ -1507,6 +1509,57 @@ class PitChecklistItem {
     required this.outgoing_battery_cca,
     required this.outgoing_number,
     required this.outgoing_battery_replaced,
+    //drivetrain
+    required this.drive_motors,
+    required this.drive_wheels,
+    required this.drive_gearboxes,
+    required this.drive_encoders,
+    required this.drive_wires,
+    required this.drive_lime_lights,
+    required this.drive_nuts_and_bolts,
+    required this.drive_steer_motors,
+    //structure
+    required this.structure_frame,
+    required this.structure_hopper_panels,
+    required this.structure_brain_pan,
+    required this.structure_belly_pan,
+    required this.structure_nuts_and_bolts,
+    //intake
+    required this.intake_rack,
+    required this.intake_pinion,
+    required this.intake_belts,
+    required this.intake_roller,
+    required this.intake_boot, // New required field
+    required this.intake_motors,
+    required this.intake_limit_switches,
+    required this.intake_lime_lights,
+    required this.intake_nuts_and_bolts,
+    required this.intake_wires,
+    //spindexer
+    required this.spindexer_panel,
+    required this.spindexer_churros,
+    required this.spindexer_3d_prints, // New required field
+    required this.spindexer_motor,
+    required this.spindexer_wheels,
+    required this.spindexer_nuts_and_bolts,
+    //kicker
+    required this.kicker_plates,
+    required this.kicker_roller,
+    required this.kicker_belts,
+    required this.kicker_gears,
+    required this.kicker_motor,
+    required this.kicker_radio,
+    required this.kicker_ethernet_switch,
+    required this.kicker_nuts_and_bolts,
+    required this.kicker_wires,
+    //shooter
+    required this.shooter_flywheels,
+    required this.shooter_hood,
+    required this.shooter_hood_gears,
+    required this.shooter_gears,
+    required this.shooter_motors,
+    required this.shooter_nuts_and_bolts,
+    required this.shooter_wires,
     required this.img1,
     required this.img2,
     required this.img3,
@@ -1523,77 +1576,27 @@ class PitChecklistItem {
 
   String to_Csv() {
     return '$matchkey,'
-        '$chassis_drive_motors, $chassis_camera, $chassis_steer_motors,$chassis_gearboxes,$chassis_tread_conditions,$chassis_wires,$chassis_bumpers,$chassis_limelight_protectors,'
-        '$ethernet_front_left_limelight,$ethernet_front_right_limelight,$ethernet_switch,$ethernet_radio,' // Changed from ethernet_swtich
-        '$climber_string,$climber_springs,$climber_gearbox,$climber_motors,$climber_wires,$climber_nuts_and_bolts,$climber_bumper,$climber_reset,$climber_bumper,$climber_clips,'
-        '$elevator_rod_of_doom,$elevator_limit_switch,$elevator_belts,$elevator_stage_0,$elevator_stage_1,$elevator_stage_2,$elevator_chain,$elevator_gearbox, $elevator_string,$elevator_motors,$elevator_wires,$elevator_nuts_and_bolts,'
-        '$trapdoor_panels,$trapdoor_supports,$trapdoor_hinges,$trapdoor_tensioners,$trapdoor_nuts_and_bolts,$trapdoor_reset,$trapdoor_wires,'
-        '$carriage_gearbox,$carriage_beltbox,$carriage_motors,$carriage_wires,$carriage_nuts_and_bolts,$carriage_coral_slide,$carriage_carriage,'
-        '$gooseneck_panels,$gooseneck_wheels,$gooseneck_belts,$gooseneck_nuts_and_bolts,'
         '$returning_battery_voltage,$returning_battery_cca,$returning_number,'
         '$outgoing_battery_voltage,$outgoing_battery_cca,$outgoing_number,$outgoing_battery_replaced,'
+        //drivetrain
+        '$drive_motors,$drive_wheels,$drive_gearboxes,$drive_encoders,$drive_wires,$drive_lime_lights,$drive_nuts_and_bolts,$drive_steer_motors,'
+        //structure
+        '$structure_frame,$structure_hopper_panels,$structure_brain_pan,$structure_belly_pan,$structure_nuts_and_bolts'
+        //intake
+        '$intake_rack,$intake_pinion,$intake_belts,$intake_roller,$intake_boot,$intake_motors,$intake_limit_switches,$intake_lime_lights,$intake_nuts_and_bolts,$intake_wires,'
+        //spindexer
+        '$spindexer_panel,$spindexer_churros,$spindexer_3d_prints,$spindexer_motor,$spindexer_wheels,$spindexer_nuts_and_bolts'
+        //kicker
+        '$kicker_plates,$kicker_roller,$kicker_belts,$kicker_gears,$kicker_motor,$kicker_radio,$kicker_ethernet_switch,$kicker_nuts_and_bolts,$kicker_wires,'
+        //shooter
+        '$shooter_flywheels,$shooter_hood,$shooter_hood_gears,$shooter_gears,$shooter_motors,$shooter_nuts_and_bolts,$shooter_wires,'
         '$alliance_color';
   }
 
   Map<String, dynamic> toJson() {
     return {
       'matchkey': matchkey,
-      'chassis_drive_motors': chassis_drive_motors,
-      'chassis_steer_motors': chassis_steer_motors,
-      'chassis_gearboxes': chassis_gearboxes,
-      'chassis_tread_conditions': chassis_tread_conditions,
-      'chassis_wires': chassis_wires,
-      'chassis_camera': chassis_camera,
-      'chassis_bumpers': chassis_bumpers,
-      'chassis_limelight_protectors': chassis_limelight_protectors,
-      'ethernet_front_left_limelight': ethernet_front_left_limelight,
-      'ethernet_front_right_limelight': ethernet_front_right_limelight,
-      'ethernet_back_right_limelight': ethernet_back_right_limelight,
-      'ethernet_switch': ethernet_switch, // Changed from ethernet_swtich
-      'ethernet_radio': ethernet_radio,
-      'climber_string': climber_string,
-      'climber_clips': climber_clips,
-      'climber_springs': climber_springs,
-      'climber_hooks': climber_hooks,
-      'climber_gearbox': climber_gearbox,
-      'climber_motors': climber_motors,
-      'climber_wires': climber_wires,
-      'climber_nuts_and_bolts': climber_nuts_and_bolts,
-      'climber_reset': climber_reset,
-      'climber_bumper': climber_bumper,
-      'elevator_rod_of_doom': elevator_rod_of_doom,
-      'elevator_stage_0': elevator_stage_0,
-      'elevator_stage_1': elevator_stage_1,
-      'elevator_belts': elevator_belts,
-      'elevator_stage_2': elevator_stage_2,
-      'elevator_chain': elevator_chain,
-      'elevator_gearbox': elevator_gearbox,
-      'elevator_motors': elevator_motors,
-      'elevator_limit_switch': elevator_limit_switch,
-      'elevator_string': elevator_string,
-      'elevator_wires': elevator_wires,
-      'elevator_nuts_and_bolts': elevator_nuts_and_bolts,
-      'trapdoor_panels': trapdoor_panels,
-      'trapdoor_wires': trapdoor_wires,
-      'trapdoor_supports': trapdoor_supports,
-      'trapdoor_hinges': trapdoor_hinges,
-      'trapdoor_tensioners': trapdoor_tensioners,
-      'trapdoor_nuts_and_bolts': trapdoor_nuts_and_bolts,
-      'trapdoor_reset': trapdoor_reset,
-      'carriage_gearbox': carriage_gearbox,
-      'carriage_beltbox': carriage_beltbox,
-      'carriage_motors': carriage_motors,
-      'carriage_wires': carriage_wires,
-      'carriage_nuts_and_bolts': carriage_nuts_and_bolts,
-      'carriage_coral_slide': carriage_coral_slide,
-      'carriage_reset': carriage_reset,
-      'carriage_carriage': carriage_carriage,
-      'gooseneck_panels': gooseneck_panels,
-      'gooseneck_wheels': gooseneck_wheels,
-      'gooseneck_belts': gooseneck_belts,
-      'gooseneck_wires': gooseneck_wires,
-      'gooseneck_nuts_and_bolts': gooseneck_nuts_and_bolts,
-      'gooseneck_gears': gooseneck_gears,
+
       'returning_battery_voltage': returning_battery_voltage,
       'returning_battery_cca': returning_battery_cca,
       'returning_number': returning_number,
@@ -1601,6 +1604,58 @@ class PitChecklistItem {
       'outgoing_battery_cca': outgoing_battery_cca,
       'outgoing_number': outgoing_number,
       'outgoing_battery_replaced': outgoing_battery_replaced,
+      //drivetrain
+      'drive_motors': drive_motors,
+      'drive_wheels': drive_wheels,
+      'drive_gearboxes': drive_gearboxes,
+      'drive_encoders': drive_encoders,
+      'drive_wires': drive_wires,
+      'drive_lime_lights': drive_lime_lights,
+      'drive_nuts_and_bolts': drive_nuts_and_bolts,
+      'drive_steer_motors': drive_steer_motors,
+      //structure
+      'structure_frame': structure_frame,
+      'structure_hopper_panels': structure_hopper_panels,
+      'structure_brain_pan': structure_brain_pan,
+      'structure_belly_pan': structure_belly_pan,
+      'structure_nuts_and_bolts': structure_nuts_and_bolts,
+      //intake
+      'intake_rack': intake_rack,
+      'intake_pinion': intake_pinion,
+      'intake_belts': intake_belts,
+      'intake_roller': intake_roller,
+      'intake_boot': intake_boot,
+      'intake_motors': intake_motors,
+      'intake_limit_switches': intake_limit_switches,
+      'intake_lime_lights': intake_lime_lights,
+      'intake_nuts_and_bolts': intake_nuts_and_bolts,
+      'intake_wires': intake_wires,
+      //spindexer
+      'spindexer_panel': spindexer_panel,
+      'spindexer_churros': spindexer_churros,
+      'spindexer_3d_prints': spindexer_3d_prints,
+      'spindexer_motor': spindexer_motor,
+      'spindexer_wheels': spindexer_wheels,
+      'spindexer_nuts_and_bolts': spindexer_nuts_and_bolts,
+      //kicker
+      'kicker_plates': kicker_plates,
+      'kicker_roller': kicker_roller,
+      'kicker_belts': kicker_belts,
+      'kicker_gears': kicker_gears,
+      'kicker_motor': kicker_motor,
+      'kicker_radio': kicker_radio,
+      'kicker_ethernet_switch': kicker_ethernet_switch,
+      'kicker_nuts_and_bolts': kicker_nuts_and_bolts,
+      'kicker_wires': kicker_wires,
+      //shooter
+      'shooter_flywheels': shooter_flywheels,
+      'shooter_hood': shooter_hood,
+      'shooter_hood_gears': shooter_hood_gears,
+      'shooter_gears': shooter_gears,
+      'shooter_motors': shooter_motors,
+      'shooter_nuts_and_bolts': shooter_nuts_and_bolts,
+      'shooter_wires': shooter_wires,
+
       'alliance_color': alliance_color,
       'note': note,
       'alliance_selection_data': alliance_selection_data,
@@ -1616,65 +1671,7 @@ class PitChecklistItem {
       PitChecklistItem(
         note: json['note'] ?? "",
         matchkey: json['matchkey'] ?? " ",
-        gooseneck_wires: json['gooseneck_wires'] ?? false,
-        chassis_drive_motors: json['chassis_drive_motors'] ?? false,
-        chassis_steer_motors: json['chassis_steer_motors'] ?? false,
-        chassis_gearboxes: json['chassis_gearboxes'] ?? false,
-        chassis_tread_conditions: json['chassis_tread_conditions'] ?? false,
-        chassis_wires: json['chassis_wires'] ?? false,
-        chassis_camera: json['chassi_camera'] ?? false,
-        chassis_bumpers: json['chassis_bumpers'] ?? false,
-        chassis_limelight_protectors:
-            json['chassis_limelight_protectors'] ?? false,
-        ethernet_front_left_limelight:
-            json['ethernet_front_left_limelight'] ?? false,
-        ethernet_front_right_limelight:
-            json['ethernet_front_right_limelight'] ?? false,
-        ethernet_back_right_limelight:
-            json['ethernet_back_right_limelight'] ?? false,
-        ethernet_radio: json['ethernet_radio'] ?? false,
-        climber_hooks: json['climber_hooks'] ?? false,
-        carriage_reset: json['carriage_reset'] ?? false,
-        climber_wires: json['climber_wires'] ?? false,
-        climber_clips: json['climber_clips'] ?? false,
-        climber_bumper: json['climber_bumper'] ?? false,
-        climber_string: json['climber_string'] ?? false,
-        climber_springs: json['climber_springs'] ?? false,
-        climber_gearbox: json['climber_gearbox'] ?? false,
-        climber_motors: json['climber_motors'] ?? false,
-        climber_nuts_and_bolts: json['climber_nuts_and_bolts'] ?? false,
-        climber_reset: json['climber_reset'] ?? false,
-        elevator_rod_of_doom: json['elevator_rod_of_doom'] ?? false,
-        elevator_belts: json['elevator_belts'] ?? false,
-        elevator_stage_0: json['elevator_stage_0'] ?? false,
-        elevator_stage_1: json['elevator_stage_1'] ?? false,
-        elevator_stage_2: json['elevator_stage_2'] ?? false,
-        elevator_chain: json['elevator_chain'] ?? false,
-        elevator_gearbox: json['elevator_gearbox'] ?? false,
-        elevator_motors: json['elevator_motors'] ?? false,
-        elevator_limit_switch: json['elevator_limit_switch'] ?? false,
-        elevator_string: json['elevator_string'] ?? false,
-        elevator_wires: json['elevator_wires'] ?? false,
-        elevator_nuts_and_bolts: json['elevator_nuts_and_bolts'] ?? false,
-        trapdoor_panels: json['trapdoor_panels'] ?? false,
-        trapdoor_wires: json['trapdoor_wires'] ?? false,
-        trapdoor_supports: json['trapdoor_supports'] ?? false,
-        trapdoor_hinges: json['trapdoor_hinges'] ?? false,
-        trapdoor_tensioners: json['trapdoor_tensioners'] ?? false,
-        trapdoor_nuts_and_bolts: json['trapdoor_nuts_and_bolts'] ?? false,
-        trapdoor_reset: json['trapdoor_reset'] ?? false,
-        carriage_gearbox: json['carriage_gearbox'] ?? false,
-        carriage_beltbox: json['carriage_beltbox'] ?? false,
-        carriage_motors: json['carriage_motors'] ?? false,
-        carriage_wires: json['carriage_wires'] ?? false,
-        carriage_nuts_and_bolts: json['carriage_nuts_and_bolts'] ?? false,
-        carriage_coral_slide: json['carriage_coral_slide'] ?? false,
-        carriage_carriage: json['carriage_carriage'] ?? false,
-        gooseneck_panels: json['gooseneck_panels'] ?? false,
-        gooseneck_gears: json['gooseneck_gears'] ?? false,
-        gooseneck_wheels: json['gooseneck_wheels'] ?? false,
-        gooseneck_belts: json['gooseneck_belts'] ?? false,
-        gooseneck_nuts_and_bolts: json['gooseneck_nuts_and_bolts'] ?? false,
+
         returning_battery_voltage:
             (json['returning_battery_voltage'] ?? 0.0).toDouble(),
         returning_battery_cca:
@@ -1685,6 +1682,58 @@ class PitChecklistItem {
         outgoing_battery_cca: (json['outgoing_battery_cca'] ?? 0.0).toDouble(),
         outgoing_number: (json['outgoing_number'] ?? 0.0).toDouble(),
         outgoing_battery_replaced: json['outgoing_battery_replaced'] ?? false,
+        //drivetrain
+        drive_motors: json['drive_motors'] ?? false,
+        drive_wheels: json['drive_wheels'] ?? false,
+        drive_gearboxes: json['drive_gearboxes'] ?? false,
+        drive_encoders: json['drive_encoders'] ?? false,
+        drive_wires: json['drive_wires'] ?? false,
+        drive_lime_lights: json['drive_lime_lights'] ?? false,
+        drive_nuts_and_bolts: json['drive_nuts_and_bolts'] ?? false,
+        drive_steer_motors: json['drive_steer_motors'] ?? false,
+        //structure
+        structure_frame: json['structure_frame'] ?? false,
+        structure_hopper_panels: json['structure_hopper_panels'] ?? false,
+        structure_brain_pan: json['structure_brain_pan'] ?? false,
+        structure_belly_pan: json['structure_belly_pan'] ?? false,
+        structure_nuts_and_bolts: json['structure_nuts_and_bolts'] ?? false,
+        //intake
+        intake_rack: json['intake_rack'] ?? false,
+        intake_pinion: json['intake_pinion'] ?? false,
+        intake_belts: json['intake_belts'] ?? false,
+        intake_roller: json['intake_roller'] ?? false,
+        intake_boot: json['intake_boot'] ?? false,
+        intake_motors: json['intake_motors'] ?? false,
+        intake_limit_switches: json['intake_limit_switches'] ?? false,
+        intake_lime_lights: json['intake_lime_lights'] ?? false,
+        intake_nuts_and_bolts: json['intake_nuts_and_bolts'] ?? false,
+        intake_wires: json['intake_wires'] ?? false,
+        //spindexer
+        spindexer_panel: json['spindexer_panel'] ?? false,
+        spindexer_churros: json['spindexer_churros'] ?? false,
+        spindexer_3d_prints: json['spindexer_3d_prints'] ?? false,
+        spindexer_motor: json['spindexer_motor'] ?? false,
+        spindexer_wheels: json['spindexer_wheels'] ?? false,
+        spindexer_nuts_and_bolts: json['spindexer_nuts_and_bolts'] ?? false,
+        //kicker
+        kicker_plates: json['kicker_plates'] ?? false,
+        kicker_roller: json['kicker_roller'] ?? false,
+        kicker_belts: json['kicker_belts'] ?? false,
+        kicker_gears: json['kicker_gears'] ?? false,
+        kicker_motor: json['kicker_motor'] ?? false,
+        kicker_radio: json['kicker_radio'] ?? false,
+        kicker_ethernet_switch: json['kicker_ethernet_switch'] ?? false,
+        kicker_nuts_and_bolts: json['kicker_nuts_and_bolts'] ?? false,
+        kicker_wires: json['kicker_wires'] ?? false,
+        //shooter
+        shooter_flywheels: json['shooter_flywheels'] ?? false,
+        shooter_hood: json['shooter_hood'] ?? false,
+        shooter_hood_gears: json['shooter_hood_gears'] ?? false,
+        shooter_gears: json['shooter_gears'] ?? false,
+        shooter_motors: json['shooter_motors'] ?? false,
+        shooter_nuts_and_bolts: json['shooter_nuts_and_bolts'] ?? false,
+        shooter_wires: json['shooter_wires'] ?? false,
+
         img1: json['img1'] ?? "",
         img2: json['img2'] ?? "",
         img3: json['img3'] ?? "",
@@ -1692,7 +1741,6 @@ class PitChecklistItem {
         img5: json['img5'] ?? "",
         alliance_color: json['alliance_color'] ?? "",
         alliance_selection_data: json['alliance_selection_data'],
-        ethernet_switch: json['ethernet_switch'] ?? false, // Corrected spelling
       );
 }
 
@@ -1755,6 +1803,26 @@ class PitCheckListDatabase {
 
   static void PrintAll() {
     log(_storage.toString());
+  }
+
+  static Map<String, double> getMostRecentBatteryInfo() {
+    LoadAll();
+    double latestBatteryNumber = 0.0;
+    double latestBatteryVoltage = 0.0;
+    int highestMatch = -1;
+    for (var record in _storage.values) {
+      final RegExp regExp = RegExp(r'(?:qm|sf|qf|f)(\d+)');
+      final match = regExp.firstMatch(record.matchkey);
+      if (match != null) {
+        int mNum = int.parse(match.group(1)!);
+        if (mNum > highestMatch && record.outgoing_number != 0.0) {
+          highestMatch = mNum;
+          latestBatteryNumber = record.outgoing_number;
+          latestBatteryVoltage = record.outgoing_battery_voltage;
+        }
+      }
+    }
+    return {'number': latestBatteryNumber, 'voltage': latestBatteryVoltage};
   }
 
   static List<dynamic> GetRecorderTeam() {
@@ -1832,5 +1900,4 @@ class PitCheckListDatabase {
       return false;
     }
   }
-
 }

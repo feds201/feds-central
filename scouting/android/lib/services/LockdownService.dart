@@ -1,7 +1,8 @@
 import 'package:flutter/services.dart';
 
 class LockdownService {
-  static const MethodChannel _channel = MethodChannel('com.pyintel.scoutOps/lockTask');
+  static const MethodChannel _channel =
+      MethodChannel('com.pyintel.scoutOps/lockTask');
 
   static Future<void> startLockTask() async {
     try {

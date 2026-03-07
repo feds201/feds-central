@@ -47,9 +47,7 @@ class _StarRatingState extends State<StarRating> {
             duration: const Duration(milliseconds: 150),
             scale: _currentRating == index + 1 ? 1.2 : 1.0,
             child: Icon(
-              index < _currentRating
-                  ? Icons.star
-                  : Icons.star_border,
+              index < _currentRating ? Icons.star : Icons.star_border,
               color: index < _currentRating
                   ? widget.activeColor
                   : widget.inactiveColor,

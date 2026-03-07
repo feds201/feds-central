@@ -4,11 +4,11 @@ import 'dart:developer' as developer;
 import 'dart:math';
 
 import 'package:confetti/confetti.dart';
+import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:scouting_app/components/CameraComposit.dart';
-import 'package:scouting_app/components/CheckBox.dart';
 import 'package:scouting_app/components/TextBox.dart';
 import 'package:scouting_app/main.dart';
 import 'package:scouting_app/services/Colors.dart';
@@ -30,105 +30,67 @@ class _Checklist_recordState extends State<Checklist_record> {
 
   late String matchkey;
 
-  late bool chassis_drive_motors;
-  late bool chassis_steer_motors;
-  late bool chassis_gearboxes;
-  late bool chassis_tread_conditions;
-  late bool chassis_wires;
-  late bool chassis_bumpers;
-  late bool chassis_limelight_protectors;
-  late List<String> chassis;
-  late bool chassis_select_all;
+  //drive train
+  late bool drive_motors,
+      drive_wheels,
+      drive_gearboxes,
+      drive_wires,
+      drive_steer_motors,
+      drive_encoders,
+      drive_lime_lights,
+      drive_nuts_and_bolts;
+  late List<String> drivetrain;
 
-  late bool ethernet_front_left_limelight;
-  late bool ethernet_front_right_limelight;
-  late bool ethernet_back_right_limelight;
-  late bool ethernet_switch;
-  late bool ethernet_radio;
-  late List<String> ethernet;
+  //structure
+  late bool structure_frame,
+      structure_hopper_panels,
+      structure_brain_pan,
+      structure_belly_pan,
+      structure_nuts_and_bolts;
+  late List<String> structure;
 
-  late bool climber_bumper;
-  late bool climber_clips;
-  late bool climber_string;
-  late bool climber_springs;
-  late bool climber_hooks;
-  late bool climber_gearbox;
-  late bool climber_motors;
-  late bool climber_wires;
-  late bool climber_nuts_and_bolts;
-  late bool climber_reset;
-
-  late List<String> climber;
-
-  late bool elevator_rod_of_doom;
-  late bool elevator_stage_0;
-  late bool elevator_stage_1;
-  late bool elevator_stage_2;
-  late bool elevator_chain;
-  late bool elevator_belts;
-  late bool elevator_limit_switch;
-  late bool elevator_string;
-  late bool elevator_gearbox;
-  late bool elevator_motors;
-  late bool elevator_wires;
-  late bool elevator_nuts_and_bolts;
-  late List<String> elevator, drivetrain;
-
-  late bool drive_motors, drive_wheels, drive_gearboxes, drive_wires;
-
-  late bool trapdoor_panels;
-  late bool trapdoor_supports;
-  late bool trapdoor_hinges;
-  late bool trapdoor_tensioners;
-  late bool trapdoor_nuts_and_bolts;
-  late bool trapdoor_reset;
-  late bool trapdoor_wires;
-  late List<String> trapdoor;
-
-  late bool carriage_gearbox;
-  late bool carriage_beltbox;
-  late bool carriage_motors;
-  late bool carriage_wires;
-  late bool carriage_nuts_and_bolts;
-  late bool carriage_coral_slide;
-  late bool carriage_carriage;
-  late bool carriage_reset;
-  late List<String> carriage;
-
-  late bool gooseneck_panels;
-  late bool gooseneck_wheels;
-  late bool gooseneck_belts;
-  late bool gooseneck_gears;
-  late bool gooseneck_nuts_and_bolts;
-  late bool gooseneck_wires;
-  late List<String> gooseneck;
-
-  late bool shooter_hood;
-  late bool shooter_motors;
-  late bool shooter_gears;
-  late bool shooter_gearboxes;
-  late bool shooter_space;
-  late bool shooter_rollers;
-  late bool shooter_fuel_pusher;
-  late bool shooter_belts;
-  late List<String> shooter;
-
-  late bool spinD_gears;
-  late bool spinD_belts;
-  late bool spinD_gearboxes;
-  late bool spinD_combinedWheels;
-  late bool spinD_motor;
-  late bool spinD_feederBar;
-  late bool spinD_nuts;
-  late List<String> spinDexer;
-
-  late bool intake_rollers;
-  late bool intake_rollerMotor;
-  late bool intake_iMotors;
-  late bool intake_gears;
-  late bool intake_limelight;
+  //intake
+  late bool intake_rack,
+      intake_pinion,
+      intake_belts,
+      intake_rollers,
+      intake_boot,
+      intake_motors,
+      intake_limit_switches,
+      intake_lime_lights,
+      intake_nuts_and_bolts,
+      intake_wires;
   late List<String> intake;
 
+  //spindexer
+  late bool spindexer_panel,
+      spindexer_churros,
+      spindexer_3d_prints,
+      spindexer_motor,
+      spindexer_wheels,
+      spindexer_nuts_and_bolts;
+  late List<String> spindexer;
+
+  //kicker
+  late bool kicker_plates,
+      kicker_rollers,
+      kicker_belts,
+      kicker_gears,
+      kicker_motor,
+      kicker_radio,
+      kicker_ethernet_switch,
+      kicker_nuts_and_bolts,
+      kicker_wires;
+  late List<String> kicker;
+
+  //shooter
+  late bool shooter_flywheels,
+      shooter_hood,
+      shooter_gears,
+      shooter_motors,
+      shooter_nuts_and_bolts,
+      shooter_wires;
+  late List<String> shooter;
   late double outgoing_number;
   late double outgoing_battery_voltage;
   late double outgoing_battery_cca;
@@ -139,8 +101,12 @@ class _Checklist_recordState extends State<Checklist_record> {
   late bool outgoing_battery_replaced;
 
   late String alliance_color;
+  late String bumper_color;
+  late String last_battery_tag;
+  late String last_bumper_color;
 
   late TextEditingController notes;
+  late TextEditingController notes2;
 
   late bool isPlayoffMatch;
   late String manualPlayoffMatchType; // "Quarterfinal", "Semifinal", "Final"
@@ -160,8 +126,15 @@ class _Checklist_recordState extends State<Checklist_record> {
         ConfettiController(duration: const Duration(seconds: 2));
 
     notes = TextEditingController();
+    notes2 = TextEditingController();
     // Initialize with empty values
     matchkey = widget.list_item.matchkey;
+    bumper_color = "";
+    last_battery_tag = "";
+    last_bumper_color = "";
+
+    // Get battery tag & bumper color from most recently pit checked match
+    _loadLastMatchData();
     isPlayoffMatch = widget.list_item.matchkey.contains('_qf') ||
         widget.list_item.matchkey.contains('_sf') ||
         widget.list_item.matchkey.contains('_f');
@@ -173,15 +146,19 @@ class _Checklist_recordState extends State<Checklist_record> {
       manualAlliancePosition =
           widget.list_item.alliance_selection_data!['position'] ?? 'Captain';
 
-      if (widget.list_item.matchkey.contains('_qf')) {
-        manualPlayoffMatchType = "Quarterfinal";
-      } else if (widget.list_item.matchkey.contains('_sf')) {
-        manualPlayoffMatchType = "Semifinal";
+      // Combine playoffs and finals as requested
+      if (widget.list_item.matchkey.contains('_qf') ||
+          widget.list_item.matchkey.contains('_sf') ||
+          widget.list_item.matchkey.contains('_f')) {
+        manualPlayoffMatchType = "Playoff";
+      } else if (widget.list_item.matchkey.contains('_practice')) {
+        // Practice should be similar to playoff
+        manualPlayoffMatchType = "Practice";
       } else {
-        manualPlayoffMatchType = "Final";
+        manualPlayoffMatchType = "Qualification";
       }
     } else {
-      manualPlayoffMatchType = "Quarterfinal";
+      manualPlayoffMatchType = "Playoff";
       manualAllianceNumber = 1;
       manualAlliancePosition = "Captain";
     }
@@ -190,111 +167,70 @@ class _Checklist_recordState extends State<Checklist_record> {
     if (widget.list_item.alliance_color.isNotEmpty) {
       alliance_color = widget.list_item.alliance_color;
     }
-
-    chassis_drive_motors = false;
-    chassis_steer_motors = false;
-    chassis_gearboxes = false;
-    chassis_tread_conditions = false;
-    chassis_wires = false;
-    chassis_bumpers = false;
-    chassis_limelight_protectors = false;
-    chassis = [];
-    chassis_select_all = false;
-
     alliance_color = "";
+    bumper_color = "";
 
-    climber_bumper = false;
-    climber_clips = false;
-    climber_hooks = false;
-    climber_string = false;
-    climber_springs = false;
-    climber_gearbox = false;
-    climber_motors = false;
-    climber_wires = false;
-    climber_nuts_and_bolts = false;
-    climber_reset = false;
-    climber = [];
-
-    ethernet_front_left_limelight = false;
-    ethernet_front_right_limelight = false;
-    ethernet_back_right_limelight = false;
-    ethernet_switch = false;
-    ethernet_radio = false;
-    ethernet = [];
-
-    elevator_rod_of_doom = false;
-    elevator_stage_0 = false;
-    elevator_stage_1 = false;
-    elevator_stage_2 = false;
-    elevator_chain = false;
-    elevator_belts = false;
-    elevator_string = false;
-    elevator_gearbox = false;
-    elevator_motors = false;
-    elevator_wires = false;
-    elevator_nuts_and_bolts = false;
-
+    //drive train
     drive_motors = false;
     drive_wheels = false;
     drive_gearboxes = false;
     drive_wires = false;
+    drive_encoders = false;
+    drive_lime_lights = false;
+    drive_nuts_and_bolts = false;
+    drive_steer_motors = false;
     drivetrain = [];
-    elevator = [];
 
-   shooter_hood = false;
-   shooter_motors = false;
-   shooter_gears = false;
-   shooter_gearboxes = false;
-   shooter_space = false;
-    shooter_rollers = false;
-    shooter_fuel_pusher = false;
-    shooter_belts = false;
-    shooter = [];
+    //structure
+    structure_frame = false;
+    structure_hopper_panels = false;
+    structure_brain_pan = false;
+    structure_belly_pan = false;
+    structure_nuts_and_bolts = false;
+    structure = [];
 
-    spinD_gears = false;
-    spinD_belts = false;
-    spinD_gearboxes = false;
-    spinD_combinedWheels = false;
-    spinD_motor = false;
-    spinD_feederBar = false;
-    spinD_nuts = false;
-
-    spinDexer = [];
-
-    trapdoor_panels = false;
-    trapdoor_supports = false;
-    trapdoor_hinges = false;
-    trapdoor_tensioners = false;
-    trapdoor_nuts_and_bolts = false;
-    trapdoor_reset = false;
-    trapdoor_wires = false;
-    trapdoor = [];
-
-    carriage_carriage = false;
-    carriage_gearbox = false;
-    carriage_beltbox = false;
-    carriage_motors = false;
-    carriage_coral_slide = false;
-    carriage_wires = false;
-    carriage_nuts_and_bolts = false;
-    carriage_reset = false;
-    carriage = [];
-
-    gooseneck_panels = false;
-    gooseneck_wheels = false;
-    gooseneck_belts = false;
-    gooseneck_nuts_and_bolts = false;
-    gooseneck_gears = false;
-    gooseneck_wires = false;
-    gooseneck = [];
-
+    //intake
+    intake_rack = false;
+    intake_pinion = false;
+    intake_belts = false;
     intake_rollers = false;
-    intake_rollerMotor = false;
-    intake_iMotors = false;
-    intake_gears = false;
-    intake_limelight = false;
+    intake_boot = false;
+    intake_motors = false;
+    intake_limit_switches = false;
+    intake_lime_lights = false;
+    intake_nuts_and_bolts = false;
+    intake_wires = false;
     intake = [];
 
+    //spindexer
+    spindexer_panel = false;
+    spindexer_churros = false;
+    spindexer_3d_prints = false;
+    spindexer_motor = false;
+    spindexer_wheels = false;
+    spindexer_nuts_and_bolts = false;
+    spindexer = [];
+
+    //kicker
+    kicker_plates = false;
+    kicker_rollers = false;
+    kicker_belts = false;
+    kicker_gears = false;
+    kicker_motor = false;
+    kicker_radio = false;
+    kicker_ethernet_switch = false;
+    kicker_nuts_and_bolts = false;
+    kicker_wires = false;
+    kicker = [];
+
+    //shooter
+    shooter_flywheels = false;
+    shooter_hood = false;
+    shooter_gears = false;
+    shooter_motors = false;
+    shooter_nuts_and_bolts = false;
+    shooter_wires = false;
+    shooter = [];
     returning_battery_voltage = 0;
     returning_battery_cca = 0;
     returning_number = 0;
@@ -319,79 +255,7 @@ class _Checklist_recordState extends State<Checklist_record> {
       if (existingRecord != null) {
         // Populate UI state variables with existing data
 
-        print(existingRecord.climber_hooks);
-
         setState(() {
-          chassis_drive_motors = existingRecord.chassis_drive_motors;
-          chassis_steer_motors = existingRecord.chassis_steer_motors;
-          chassis_gearboxes = existingRecord.chassis_gearboxes;
-          chassis_tread_conditions = existingRecord.chassis_tread_conditions;
-          chassis_wires = existingRecord.chassis_wires;
-          chassis_bumpers = existingRecord.chassis_bumpers;
-          chassis_limelight_protectors =
-              existingRecord.chassis_limelight_protectors;
-
-          ethernet_front_left_limelight =
-              existingRecord.ethernet_front_left_limelight;
-          ethernet_front_right_limelight =
-              existingRecord.ethernet_front_right_limelight;
-
-          existingRecord.ethernet_front_right_limelight;
-          ethernet_back_right_limelight =
-              existingRecord.ethernet_front_right_limelight;
-
-          ethernet_switch = existingRecord.ethernet_switch;
-          ethernet_radio = existingRecord.ethernet_radio;
-
-          climber_bumper = existingRecord.climber_bumper;
-          climber_clips = existingRecord.climber_clips;
-          climber_hooks = existingRecord.climber_hooks;
-          climber_string = existingRecord.climber_string;
-          climber_string = existingRecord.climber_string;
-          climber_springs = existingRecord.climber_springs;
-          climber_gearbox = existingRecord.climber_gearbox;
-          climber_motors = existingRecord.climber_motors;
-          climber_wires = existingRecord.climber_wires;
-          climber_nuts_and_bolts = existingRecord.climber_nuts_and_bolts;
-          climber_reset = existingRecord.climber_reset;
-
-          elevator_rod_of_doom = existingRecord.elevator_rod_of_doom;
-          elevator_stage_0 = existingRecord.elevator_stage_0;
-          elevator_stage_1 = existingRecord.elevator_stage_1;
-          elevator_stage_2 = existingRecord.elevator_stage_2;
-          elevator_string = existingRecord.elevator_string;
-          elevator_chain = existingRecord.elevator_chain;
-          elevator_gearbox = existingRecord.elevator_gearbox;
-          elevator_motors = existingRecord.elevator_motors;
-          elevator_wires = existingRecord.elevator_wires;
-          elevator_nuts_and_bolts = existingRecord.elevator_nuts_and_bolts;
-          elevator_belts = existingRecord.elevator_belts;
-          elevator_limit_switch = existingRecord.elevator_limit_switch;
-
-          trapdoor_panels = existingRecord.trapdoor_panels;
-          trapdoor_supports = existingRecord.trapdoor_supports;
-          trapdoor_hinges = existingRecord.trapdoor_hinges;
-          trapdoor_tensioners = existingRecord.trapdoor_tensioners;
-          trapdoor_nuts_and_bolts = existingRecord.trapdoor_nuts_and_bolts;
-          trapdoor_reset = existingRecord.trapdoor_reset;
-          trapdoor_wires = existingRecord.trapdoor_wires;
-
-          carriage_gearbox = existingRecord.carriage_gearbox;
-          carriage_beltbox = existingRecord.carriage_beltbox;
-          carriage_motors = existingRecord.carriage_motors;
-          carriage_wires = existingRecord.carriage_wires;
-          carriage_nuts_and_bolts = existingRecord.carriage_nuts_and_bolts;
-          carriage_coral_slide = existingRecord.carriage_coral_slide;
-          carriage_carriage = existingRecord.carriage_carriage;
-          carriage_reset = existingRecord.carriage_reset;
-
-          gooseneck_panels = existingRecord.gooseneck_panels;
-          gooseneck_wheels = existingRecord.gooseneck_wheels;
-          gooseneck_belts = existingRecord.gooseneck_belts;
-          gooseneck_nuts_and_bolts = existingRecord.gooseneck_nuts_and_bolts;
-          gooseneck_gears = existingRecord.gooseneck_gears;
-          gooseneck_wires = existingRecord.gooseneck_wires;
-
           returning_battery_voltage = existingRecord.returning_battery_voltage;
           returning_battery_cca = existingRecord.returning_battery_cca;
           returning_number = existingRecord.returning_number;
@@ -402,126 +266,145 @@ class _Checklist_recordState extends State<Checklist_record> {
           returning_battery_replacd = existingRecord.outgoing_battery_replaced;
 
           alliance_color = existingRecord.alliance_color;
+          bumper_color = existingRecord
+              .alliance_color; // Use alliance_color as bumper_color for backwards compatibility
           image1 = existingRecord.img1;
           image2 = existingRecord.img2;
           image3 = existingRecord.img3;
           image4 = existingRecord.img4;
           image5 = existingRecord.img5;
 
-          notes.text = existingRecord.note;
+          //drivetrain
+          drive_motors = existingRecord.drive_motors;
+          drive_wheels = existingRecord.drive_wheels;
+          drive_gearboxes = existingRecord.drive_gearboxes;
+          drive_wires = existingRecord.drive_wires;
+          drive_lime_lights = existingRecord.drive_lime_lights;
+          drive_steer_motors = existingRecord.drive_steer_motors;
+          drive_nuts_and_bolts = existingRecord.drive_nuts_and_bolts;
+          drive_encoders = existingRecord.drive_encoders;
+
+          //structure
+          structure_frame = existingRecord.structure_frame;
+          structure_hopper_panels = existingRecord.structure_hopper_panels;
+          structure_brain_pan = existingRecord.structure_brain_pan;
+          structure_belly_pan = existingRecord.structure_belly_pan;
+          structure_nuts_and_bolts = existingRecord.structure_nuts_and_bolts;
+
+          //intake
+          intake_rack = existingRecord.intake_rack;
+          intake_pinion = existingRecord.intake_pinion;
+          intake_belts = existingRecord.intake_belts;
+          intake_rollers = existingRecord.intake_roller;
+          intake_boot = existingRecord.intake_boot; // Load new field
+          intake_motors = existingRecord.intake_motors;
+          intake_limit_switches = existingRecord.intake_limit_switches;
+          intake_lime_lights = existingRecord.intake_lime_lights;
+          intake_nuts_and_bolts = existingRecord.intake_nuts_and_bolts;
+          intake_wires = existingRecord.intake_wires;
+
+          //spindexer
+          spindexer_panel = existingRecord.spindexer_panel;
+          spindexer_churros = existingRecord.spindexer_churros;
+          spindexer_3d_prints =
+              existingRecord.spindexer_3d_prints; // Load new field
+          spindexer_motor = existingRecord.spindexer_motor;
+          spindexer_wheels = existingRecord.spindexer_wheels;
+          spindexer_nuts_and_bolts = existingRecord.spindexer_nuts_and_bolts;
+
+          //kicker
+          kicker_plates = existingRecord.kicker_plates;
+          kicker_rollers = existingRecord.kicker_roller;
+          kicker_belts = existingRecord.kicker_belts;
+          kicker_gears = existingRecord.kicker_gears;
+          kicker_motor = existingRecord.kicker_motor;
+          kicker_radio = existingRecord.kicker_radio;
+          kicker_ethernet_switch = existingRecord.kicker_ethernet_switch;
+          kicker_nuts_and_bolts = existingRecord.kicker_nuts_and_bolts;
+          kicker_wires = existingRecord.kicker_wires;
+
+          //shooter
+          shooter_flywheels = existingRecord.shooter_flywheels;
+          shooter_hood = existingRecord.shooter_hood;
+          shooter_gears = existingRecord.shooter_gears;
+          shooter_motors = existingRecord.shooter_motors;
+          shooter_nuts_and_bolts = existingRecord.shooter_nuts_and_bolts;
+          shooter_wires = existingRecord.shooter_wires;
+          // Properly split the combined note back into notes1 and notes2
+          String fullNote = existingRecord.note;
+          if (fullNote.contains('---NOTES 2---')) {
+            List<String> parts = fullNote.split('---NOTES 2---');
+            notes.text = parts[0].trim();
+            notes2.text = parts.length > 1 ? parts[1].trim() : '';
+          } else {
+            notes.text = fullNote;
+            notes2.text = '';
+          }
 
           // Populate lists from boolean values
-          // Chassis list
-          chassis = [];
-          if (chassis_drive_motors) chassis.add("Drive motors");
-          if (chassis_steer_motors) chassis.add("Steer motors");
-          if (chassis_gearboxes) chassis.add("Gearboxes");
-          if (chassis_tread_conditions) chassis.add("Tread condition");
-          if (chassis_wires) chassis.add("Wires");
-          if (chassis_bumpers) chassis.add("Bumpers");
-          if (chassis_limelight_protectors) chassis.add("LL Protectors");
 
-          // Ethernet list
-          ethernet = [];
-          if (ethernet_front_left_limelight) ethernet.add("FL Limelight");
-          if (ethernet_front_right_limelight) ethernet.add("FR Limelight");
-          if (ethernet_back_right_limelight) ethernet.add("BR Limelight");
-          if (ethernet_switch) ethernet.add("Ethernet Switch");
-          if (ethernet_radio) ethernet.add("Radio");
-
-          // Climber list
-          climber = [];
-
-          if (climber_bumper) climber.add("Bumper");
-          if (climber_clips) climber.add("Clips");
-          if (climber_string) climber.add("String");
-          if (climber_springs) climber.add("Springs");
-          if (climber_gearbox) climber.add("Gearbox");
-          if (climber_motors) climber.add("Motors");
-          if (climber_wires) climber.add("Wires");
-          if (climber_nuts_and_bolts) climber.add("Nuts and Bolts");
-          if (climber_reset) climber.add("Reset");
-          if (climber_hooks) climber.add("Hooks");
-
-          // Elevator list
-          elevator = [];
-          if (elevator_rod_of_doom) elevator.add("Rod of Doom");
-          if (elevator_stage_0) elevator.add("Stage 0");
-          if (elevator_stage_1) elevator.add("Stage 1");
-          if (elevator_stage_2) elevator.add("Stage 2");
-          if (elevator_chain) elevator.add("Chain");
-          if (elevator_belts) elevator.add("Belts");
-          if (elevator_gearbox) elevator.add("Gearbox");
-          if (elevator_motors) elevator.add("Motors");
-          if (elevator_wires) elevator.add("Wires");
-          if (elevator_nuts_and_bolts) elevator.add("Nuts and Bolts");
-          if (elevator_string) elevator.add("String");
-          if (elevator_limit_switch) elevator.add("Limit Switch");
-
+          //drivetrain
           drivetrain = [];
-          if (drive_motors) drivetrain.add("Motors");
+          if (drive_motors) drivetrain.add("Drive Motors");
           if (drive_wheels) drivetrain.add("Wheels");
           if (drive_wires) drivetrain.add("Wires");
           if (drive_gearboxes) drivetrain.add("Gearboxes");
+          if (drive_steer_motors) drivetrain.add("Steer Motors");
+          if (drive_nuts_and_bolts) drivetrain.add("Nuts and Bolts");
+          if (drive_lime_lights) drivetrain.add("Lime Lights");
+          if (drive_encoders) drivetrain.add("Encoders");
 
-          // Trapdoor list
-          trapdoor = [];
-          if (trapdoor_panels) trapdoor.add("Panels");
-          if (trapdoor_supports) trapdoor.add("Supports");
-          if (trapdoor_hinges) trapdoor.add("Hinges");
-          if (trapdoor_wires) trapdoor.add("Wires");
-          if (trapdoor_tensioners) trapdoor.add("Tensioners");
-          if (trapdoor_nuts_and_bolts) trapdoor.add("Nuts and Bolts");
-          if (trapdoor_reset) trapdoor.add("Reset");
+          //structure
+          structure = [];
+          if (structure_frame) structure.add("Frame");
+          if (structure_hopper_panels) structure.add("Hopper Panels");
+          if (structure_brain_pan) structure.add("BrainPan");
+          if (structure_belly_pan) structure.add("Belly Pan");
+          if (structure_nuts_and_bolts) structure.add("Nuts and Bolts");
 
-          // Carriage list
-          carriage = [];
-          if (carriage_gearbox) carriage.add("Gearbox");
-          if (carriage_beltbox) carriage.add("Beltbox");
-          if (carriage_motors) carriage.add("Motors");
-          if (carriage_wires) carriage.add("Wires");
-          if (carriage_nuts_and_bolts) carriage.add("Nuts and Bolts");
-          if (carriage_coral_slide) carriage.add("Coral Slide");
-          if (carriage_carriage) carriage.add("Carriage");
-          if (carriage_reset) carriage.add("Reset");
-
-          // Gooseneck list
-          gooseneck = [];
-          if (gooseneck_panels) gooseneck.add("Panels");
-          if (gooseneck_wheels) gooseneck.add("Wheels");
-          if (gooseneck_belts) gooseneck.add("Belts");
-          if (gooseneck_gears) gooseneck.add("Gears");
-          if (gooseneck_wires) gooseneck.add("Wires");
-          if (gooseneck_nuts_and_bolts) gooseneck.add("Nuts and Bolts");
-
-          // Shooter List
-          shooter = [];
-          if (shooter_hood) shooter.add("Hood");
-          if (shooter_motors) shooter.add("Motors");
-          if (shooter_gears) shooter.add("Gears");
-          if (shooter_gearboxes) shooter.add("Gearboxes");
-          if(shooter_space) shooter.add("Space");
-          if(shooter_rollers) shooter.add("Rollers");
-          if(shooter_fuel_pusher) shooter.add("Fuelpusher");
-          if(shooter_belts) shooter.add("Belts");
-
-          // Spindexer List
-          if (spinD_gears) spinDexer.add("Gears");
-          if (spinD_belts) spinDexer.add("Belts");
-          if (spinD_gearboxes) spinDexer.add("Gearboxes");
-          if (spinD_combinedWheels) spinDexer.add("Combined Wheels");
-          if (spinD_motor) spinDexer.add("Motor");
-          if (spinD_feederBar) spinDexer.add("Feeder Bar");
-          if (spinD_nuts) spinDexer.add("Nuts");
-
-          // Intake List
+          //intake
+          intake = [];
+          if (intake_rack) intake.add("Rack");
+          if (intake_pinion) intake.add("Pinion");
+          if (intake_belts) intake.add("Belts");
           if (intake_rollers) intake.add("Rollers");
-          if (intake_rollerMotor) intake.add("Roller Motors");
-          if (intake_iMotors) intake.add("Intake Motors");
-          if (intake_gears) intake.add("Gears");
-          if (intake_limelight) spinDexer.add("Limelight");
+          if (intake_boot) intake.add("Boot");
+          if (intake_motors) intake.add("Motors");
+          if (intake_limit_switches) intake.add("Limit Switches");
+          if (intake_lime_lights) intake.add("Lime Lights");
+          if (intake_nuts_and_bolts) intake.add("Nuts and Bolts");
+          if (intake_wires) intake.add("Wires");
 
-          // Set matchkey from existing record
+          //spindexer
+          spindexer = [];
+          if (spindexer_panel) spindexer.add("Panel");
+          if (spindexer_churros) spindexer.add("Churros");
+          if (spindexer_3d_prints) spindexer.add("3D Prints");
+          if (spindexer_motor) spindexer.add("Motor");
+          if (spindexer_wheels) spindexer.add("Wheels");
+          if (spindexer_nuts_and_bolts) spindexer.add("Nuts and Bolts");
+
+          //kicker
+          kicker = [];
+          if (kicker_plates) kicker.add("Plates");
+          if (kicker_rollers) kicker.add("Rollers");
+          if (kicker_belts) kicker.add("Belts");
+          if (kicker_gears) kicker.add("Gears");
+          if (kicker_motor) kicker.add("Motor");
+          if (kicker_radio) kicker.add("Radio");
+          if (kicker_ethernet_switch) kicker.add("Ethernet Switch");
+          if (kicker_nuts_and_bolts) kicker.add("Nuts and Bolts");
+          if (kicker_wires) kicker.add("Wires");
+
+          //shooter
+          shooter = [];
+          if (shooter_flywheels) shooter.add("Flywheels");
+          if (shooter_hood) shooter.add("Hood");
+          if (shooter_gears) shooter.add("Gears");
+          if (shooter_motors) shooter.add("Motors");
+          if (shooter_nuts_and_bolts) shooter.add("Nuts and Bolts");
+          if (shooter_wires)
+            shooter.add("Wires"); // Set matchkey from existing record
           matchkey = existingRecord.matchkey;
         });
         print("Loaded existing data for match ${widget.list_item.matchkey}");
@@ -534,15 +417,67 @@ class _Checklist_recordState extends State<Checklist_record> {
     } finally {}
   }
 
+  // Load battery tag from most recently pit checked match
+  void _loadLastMatchData() {
+    try {
+      // Get all pit checklist records
+      PitCheckListDatabase.LoadAll();
+      var allRecords = PitCheckListDatabase.Export();
+
+      if (allRecords.isNotEmpty) {
+        // Find the most recent record that has a battery tag
+        PitChecklistItem? mostRecentWithBattery;
+        PitChecklistItem? mostRecentWithBumper;
+
+        for (var record in allRecords.values) {
+          if (record is PitChecklistItem) {
+            if (record.outgoing_number > 0) mostRecentWithBattery = record;
+            if (record.alliance_color.isNotEmpty) mostRecentWithBumper = record;
+          }
+        }
+
+        setState(() {
+          if (mostRecentWithBattery != null) {
+            last_battery_tag = mostRecentWithBattery.outgoing_number.toString();
+          }
+          if (mostRecentWithBumper != null) {
+            last_bumper_color = mostRecentWithBumper.alliance_color;
+          }
+        });
+      }
+    } catch (e) {
+      print("Error loading last match data: $e");
+    }
+  }
+
+  // Check if all checklist items are completed
+  bool _areAllItemsChecked() {
+    return drivetrain.isNotEmpty &&
+        structure.isNotEmpty &&
+        intake.isNotEmpty &&
+        spindexer.isNotEmpty &&
+        kicker.isNotEmpty &&
+        shooter.isNotEmpty &&
+        outgoing_battery_voltage > 0 &&
+        outgoing_number > 0 &&
+        returning_battery_voltage > 0 &&
+        returning_number > 0 &&
+        bumper_color.isNotEmpty &&
+        notes.text.isNotEmpty;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         leading: Builder(builder: (context) {
           return IconButton(
-              icon: const Icon(Icons.menu),
-              color: !islightmode() ? Colors.transparent : Colors.transparent,
-              onPressed: () => {});
+              icon: const Icon(Icons.arrow_back),
+              color: !islightmode() ? Colors.white : Colors.black,
+              onPressed: () {
+                _recordData();
+                Navigator.pop(context);
+              });
         }),
         backgroundColor: islightmode() ? Colors.white : darkColors.goodblack,
         centerTitle: true,
@@ -566,9 +501,89 @@ class _Checklist_recordState extends State<Checklist_record> {
   }
 
   Widget _buildQuestions() {
+    // Calculate if all checklist items are valid/checked
+    bool allItemsChecked = _areAllItemsChecked();
+
     return SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Column(children: [
+          // Overall completion indicator
+          Container(
+            margin: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(12.0),
+            decoration: BoxDecoration(
+              color: allItemsChecked
+                  ? Colors.green.withOpacity(0.1)
+                  : Colors.orange.withOpacity(0.1),
+              border: Border.all(
+                color: allItemsChecked ? Colors.green : Colors.orange,
+                width: 2,
+              ),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  allItemsChecked ? Icons.check_circle : Icons.warning,
+                  color:
+                      allItemsChecked ? Colors.green[700] : Colors.orange[700],
+                  size: 24,
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  allItemsChecked
+                      ? 'All checklist items completed'
+                      : 'Checklist incomplete - please review all sections',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: allItemsChecked
+                        ? Colors.green[700]
+                        : Colors.orange[700],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // Battery Display at front
+          if (last_battery_tag.isNotEmpty || last_bumper_color.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Container(
+                padding: const EdgeInsets.all(12.0),
+                decoration: BoxDecoration(
+                  color: Colors.blue.withOpacity(0.1),
+                  border: Border.all(color: Colors.blue),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (last_battery_tag.isNotEmpty)
+                      Text(
+                        'Last Battery Tag: $last_battery_tag',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue[700],
+                        ),
+                      ),
+                    if (last_battery_tag.isNotEmpty &&
+                        last_bumper_color.isNotEmpty)
+                      const SizedBox(height: 8),
+                    if (last_bumper_color.isNotEmpty)
+                      Text(
+                        'Last Bumper Color: $last_bumper_color',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue[700],
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
           // MatchInfo(
           //   assignedTeam: assignedTeam,
           //   assignedStation: assignedStation,
@@ -599,46 +614,19 @@ class _Checklist_recordState extends State<Checklist_record> {
                   image5 = base64Images[4];
                 });
               }),
-          buildTextBox("Notes", "", Icon(Icons.note), notes),
-          buildMultiChoiceBox(
-              "Chassis",
-              Icon(Icons.mood_rounded, size: 30, color: Colors.blue),
-              [
-                "Drive motors",
-                "Steer motors",
-                "Gearboxes",
-                "Tread condition",
-                "Wires",
-                "Bumpers",
-                "LL Protectors"
-              ],
-              chassis, (value) {
-            setState(() {
-              chassis = value;
-            });
-          }),
-          buildMultiChoiceBox(
-              "Ethernet",
-              Icon(Icons.star_outline, size: 30, color: Colors.blue),
-              [
-                "Limelight 3",
-                "Limelight 4",
-                "Ethernet Switch",
-                "Radio",
-              ],
-              ethernet, (value) {
-            setState(() {
-              ethernet = value;
-            });
-          }),
+          buildTextBox("Notes 1", "", Icon(Icons.note), notes),
           buildMultiChoiceBox(
               "DriveTrain",
               Icon(Icons.star_outline, size: 30, color: Colors.blue),
               [
-                "motors",
-                "wheels",
-                "gearboxes",
-                "wires",
+                "Wheels",
+                "Gearboxes",
+                "Steer Motors",
+                "Drive Motors",
+                "Encoders",
+                "Lime Lights",
+                "Nuts and Bolts",
+                "Wires",
               ],
               drivetrain, (value) {
             setState(() {
@@ -646,88 +634,104 @@ class _Checklist_recordState extends State<Checklist_record> {
             });
           }),
           buildMultiChoiceBox(
-              "Climber",
+              "Structure",
               Icon(Icons.star_outline, size: 30, color: Colors.blue),
               [
-                "Bumper",
-                "Hooks",
-                "Clips",
-                // "String",
-                "Springs",
-                "Gearbox",
-                "Motors",
-                "Wires",
+                "Frame",
+                "Hopper Panels",
+                "BrainPan",
+                "Belly Pan",
                 "Nuts and Bolts",
-                "Reset",
               ],
-              climber, (value) {
+              structure, (value) {
             setState(() {
-              climber = value;
-            });
-          }),
-          buildMultiChoiceBox(
-              "Shooter",
-              Icon(Icons.star_outline, size: 30, color: Colors.blue),
-              [
-                "Hood",
-                "Motors",
-                "Gears",
-                "Gearboxes",
-                // "Space",
-                "Rollers",
-                "Fuel Pusher",
-                // "Belts",
-              ],
-              shooter, (value) {
-            setState(() {
-              shooter = value;
-            });
-          }),
-          buildMultiChoiceBox(
-              "SpinDexer",
-              Icon(Icons.star_outline, size: 30, color: Colors.blue),
-              [
-                "Gears",
-                // "Belts",
-                "Gearboxes",
-                "Combined Wheels",
-                "Motor",
-                "Feeder Bar",
-                "Nuts",
-              ],
-              carriage, (value) {
-            setState(() {
-              carriage = value;
+              structure = value;
             });
           }),
           buildMultiChoiceBox(
               "Intake",
               Icon(Icons.star_outline, size: 30, color: Colors.blue),
               [
+                "Rack",
+                "Pinion",
+                "Belts",
                 "Rollers",
-                "Roller Motor",
-                "Intake Motors",
-                "Gears",
-                "Limelight",
+                "Boot", // Added between Rollers and Motors as requested
+                "Motors",
+                "Limit Switches",
+                "Lime Lights",
+                "Nuts and Bolts",
+                "Wires",
               ],
-              gooseneck, (value) {
+              intake, (value) {
             setState(() {
-              gooseneck = value;
+              intake = value;
+            });
+          }),
+          buildMultiChoiceBox(
+              "Spindexer",
+              Icon(Icons.star_outline, size: 30, color: Colors.blue),
+              [
+                "Panel",
+                "Churros",
+                "3D Prints", // Added before Motor as requested
+                "Motor",
+                "Wheels",
+                "Nuts and Bolts",
+              ],
+              spindexer, (value) {
+            setState(() {
+              spindexer = value;
+            });
+          }),
+          buildMultiChoiceBox(
+              "Kicker",
+              Icon(Icons.star_outline, size: 30, color: Colors.blue),
+              [
+                "Plates",
+                "Rollers",
+                "Belts",
+                "Gears",
+                "Motor",
+                "Radio",
+                "Ethernet Switch",
+                "Nuts and Bolts",
+                "Wires",
+              ],
+              kicker, (value) {
+            setState(() {
+              kicker = value;
+            });
+          }),
+          buildMultiChoiceBox(
+              "Shooter",
+              Icon(Icons.star_outline, size: 30, color: Colors.blue),
+              [
+                "Flywheels",
+                "Hood",
+                "Gears",
+                "Motors",
+                "Nuts and Bolts",
+                "Wires",
+              ],
+              shooter, (value) {
+            setState(() {
+              shooter = value;
             });
           }),
           buildTextBoxs(
               "Outgoing Battery",
               [
-                buildNumberBox("Battery Voltage", outgoing_battery_voltage,
-                    Icon(Icons.tag), (value) {
-                  setState(() {
-                    outgoing_battery_voltage = (double.tryParse(value) ?? 0);
-                  });
-                }),
                 buildNumberBox("Battery Tag", outgoing_number, Icon(Icons.tag),
                     (value) {
                   setState(() {
                     outgoing_number = (double.tryParse(value) ?? 0);
+                  });
+                }),
+                buildNumberBox("Battery Voltage", outgoing_battery_voltage,
+                    Icon(Icons.tag), (value) {
+                  setState(() {
+                    outgoing_battery_voltage = (double.tryParse(value) ?? 0);
                   });
                 }),
                 buildNumberBox(
@@ -776,7 +780,15 @@ class _Checklist_recordState extends State<Checklist_record> {
                 })
               ],
               Icon(Icons.add_ic_call_outlined)),
-          buildTextBox("Notes", "", Icon(Icons.note), notes),
+          buildTextBox("Notes 2", "", Icon(Icons.note), notes2),
+          // Bumper color selection at end as requested
+
+          buildBumperChooser(context, (color) {
+            setState(() {
+              bumper_color = color;
+            });
+          }, bumper_color),
+
           const SizedBox(height: 20),
           _buildFunButton(),
         ]));
@@ -850,65 +862,9 @@ class _Checklist_recordState extends State<Checklist_record> {
   }
 
   void _recordData() {
-    print(climber.contains("Hooks"));
     PitChecklistItem record = PitChecklistItem(
-      gooseneck_wires: gooseneck.contains("Wires"),
-      gooseneck_gears: gooseneck.contains("Gears"),
       matchkey: matchkey,
-      chassis_steer_motors: chassis.contains("Steer motors"),
-      chassis_drive_motors: chassis.contains("Drive motors"),
-      chassis_gearboxes: chassis.contains("Gearboxes"),
-      chassis_tread_conditions: chassis.contains("Tread condition"),
-      chassis_wires: chassis.contains("Wires"),
-      chassis_bumpers: chassis.contains("Bumpers"),
-      chassis_limelight_protectors: chassis.contains("LL Protectors"),
-      chassis_camera: chassis.contains("Camera"),
-      ethernet_front_left_limelight: ethernet.contains("FL Limelight"),
-      ethernet_front_right_limelight: ethernet.contains("FR Limelight"),
-      ethernet_back_right_limelight: ethernet.contains("BR Limelight"),
-      ethernet_switch: ethernet.contains("Ethernet Switch"),
-      ethernet_radio: ethernet.contains("Radio"),
-      climber_hooks: climber.contains("Hooks"),
-      climber_bumper: climber.contains("Bumper"),
-      climber_clips: climber.contains("Clips"),
-      climber_string: climber.contains("String"),
-      climber_springs: climber.contains("Springs"),
-      climber_gearbox: climber.contains("Gearbox"),
-      climber_motors: climber.contains("Motors"),
-      climber_wires: climber.contains("Wires"),
-      climber_nuts_and_bolts: climber.contains("Nuts and Bolts"),
-      climber_reset: climber.contains("Reset"),
-      elevator_rod_of_doom: elevator.contains("Rod of Doom"),
-      elevator_stage_0: elevator.contains("Stage 0"),
-      elevator_stage_1: elevator.contains("Stage 1"),
-      elevator_stage_2: elevator.contains("Stage 2"),
-      elevator_chain: elevator.contains("Chain"),
-      elevator_limit_switch: elevator.contains("Limit Switch"),
-      elevator_belts: elevator.contains("Belts"),
-      elevator_string: elevator.contains("String"),
-      elevator_gearbox: elevator.contains("Gearbox"),
-      elevator_motors: elevator.contains("Motors"),
-      elevator_wires: elevator.contains("Wires"),
-      elevator_nuts_and_bolts: elevator.contains("Nuts and Bolts"),
-      trapdoor_panels: trapdoor.contains("Panels"),
-      trapdoor_supports: trapdoor.contains("Supports"),
-      trapdoor_hinges: trapdoor.contains("Hinges"),
-      trapdoor_tensioners: trapdoor.contains("Tensioners"),
-      trapdoor_wires: trapdoor.contains("Wires"),
-      trapdoor_nuts_and_bolts: trapdoor.contains("Nuts and Bolts"),
-      trapdoor_reset: trapdoor.contains("Reset"),
-      carriage_gearbox: carriage.contains("Gearbox"),
-      carriage_beltbox: carriage.contains("Beltbox"),
-      carriage_motors: carriage.contains("Motors"),
-      carriage_wires: carriage.contains("Wires"),
-      carriage_nuts_and_bolts: carriage.contains("Nuts and Bolts"),
-      carriage_coral_slide: carriage.contains("Coral Slide"),
-      carriage_reset: carriage.contains("Reset"),
-      carriage_carriage: carriage.contains("Carriage"),
-      gooseneck_panels: gooseneck.contains("Panels"),
-      gooseneck_wheels: gooseneck.contains("Wheels"),
-      gooseneck_belts: gooseneck.contains("Belts"),
-      gooseneck_nuts_and_bolts: gooseneck.contains("Nuts and Bolts"),
+
       returning_battery_voltage: returning_battery_voltage,
       returning_battery_cca: returning_battery_cca,
       returning_number: returning_number,
@@ -916,8 +872,61 @@ class _Checklist_recordState extends State<Checklist_record> {
       outgoing_battery_cca: outgoing_battery_cca,
       outgoing_number: outgoing_number,
       outgoing_battery_replaced: outgoing_battery_replaced,
-      alliance_color: alliance_color,
-      note: notes.text,
+      //drivetrain
+      drive_motors: drivetrain.contains("Drive Motors"),
+      drive_wheels: drivetrain.contains("Wheels"),
+      drive_gearboxes: drivetrain.contains("Gearboxes"),
+      drive_wires: drivetrain.contains("Wires"),
+      drive_lime_lights: drivetrain.contains("Lime Lights"),
+      drive_steer_motors: drivetrain.contains("Steer Motors"),
+      drive_nuts_and_bolts: drivetrain.contains("Nuts and Bolts"),
+      drive_encoders: drivetrain.contains("Encoders"),
+      //structure
+      structure_frame: structure.contains("Frame"),
+      structure_hopper_panels: structure.contains("Hopper Panels"),
+      structure_brain_pan: structure.contains("BrainPan"),
+      structure_belly_pan: structure.contains("Belly Pan"),
+      structure_nuts_and_bolts: structure.contains("Nuts and Bolts"),
+      //intake
+      intake_rack: intake.contains("Rack"),
+      intake_pinion: intake.contains("Pinion"),
+      intake_belts: intake.contains("Belts"),
+      intake_roller: intake.contains("Rollers"),
+      intake_boot: intake.contains("Boot"), // Now properly supported
+      intake_motors: intake.contains("Motors"),
+      intake_limit_switches: intake.contains("Limit Switches"),
+      intake_lime_lights: intake.contains("Lime Lights"),
+      intake_nuts_and_bolts: intake.contains("Nuts and Bolts"),
+      intake_wires: intake.contains("Wires"),
+      //spindexer
+      spindexer_panel: spindexer.contains("Panel"),
+      spindexer_churros: spindexer.contains("Churros"),
+      spindexer_3d_prints:
+          spindexer.contains("3D Prints"), // Now properly supported
+      spindexer_motor: spindexer.contains("Motor"),
+      spindexer_wheels: spindexer.contains("Wheels"),
+      spindexer_nuts_and_bolts: spindexer.contains("Nuts and Bolts"),
+      //kicker
+      kicker_plates: kicker.contains("Plates"),
+      kicker_roller: kicker.contains("Rollers"),
+      kicker_belts: kicker.contains("Belts"),
+      kicker_gears: kicker.contains("Gears"),
+      kicker_motor: kicker.contains("Motor"),
+      kicker_radio: kicker.contains("Radio"),
+      kicker_ethernet_switch: kicker.contains("Ethernet Switch"),
+      kicker_nuts_and_bolts: kicker.contains("Nuts and Bolts"),
+      kicker_wires: kicker.contains("Wires"),
+      //shooter
+      shooter_flywheels: shooter.contains("Flywheels"),
+      shooter_hood: shooter.contains("Hood"),
+      shooter_hood_gears: false, // Not using Hood Gears anymore
+      shooter_gears: shooter.contains("Gears"),
+      shooter_motors: shooter.contains("Motors"),
+      shooter_nuts_and_bolts: shooter.contains("Nuts and Bolts"),
+      shooter_wires: shooter.contains("Wires"),
+
+      alliance_color: bumper_color.isNotEmpty ? bumper_color : alliance_color,
+      note: "${notes.text}\n---NOTES 2---\n${notes2.text}",
       img1: image1,
       img2: image2,
       img3: image3,
@@ -938,5 +947,129 @@ class _Checklist_recordState extends State<Checklist_record> {
 
   void PopBoard(BuildContext context) {
     Navigator.pop(context);
+  }
+
+  Widget buildBumperChooser(BuildContext context,
+      Function(String winner) onclick, String selectedWinner) {
+    // Helper function to build the styled buttons to avoid code repetition
+    Widget buildSelectionButton({
+      required String label,
+      required String value,
+      required Color baseColor,
+      required bool isSelected,
+    }) {
+      return Expanded(
+        // Ensures buttons share width equally
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 6.0),
+          child: GestureDetector(
+            onTap: () => onclick(value),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200), // Smooth transition
+              curve: Curves.easeInOut,
+              height: 70,
+              decoration: BoxDecoration(
+                // If selected, use full color. If not, use a very dark transparent version.
+                color: isSelected ? baseColor : baseColor.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  // Add a subtle border to unselected items so they are visible
+                  color: isSelected
+                      ? Colors.transparent
+                      : baseColor.withOpacity(0.3),
+                  width: 2,
+                ),
+              ),
+              child: Center(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    label,
+                    style: TextStyle(
+                      // Text is bright white when selected, dimmed when not
+                      color: isSelected
+                          ? (value == "Tie" ? Colors.black : Colors.white)
+                          : (islightmode() ? Colors.black54 : Colors.white38),
+                      fontSize: 30, // Slightly reduced base size for safety
+                      fontFamily: 'MuseoModerno',
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Container(
+        // Keep height minimal or remove it to let content expand
+        // height: 160,
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: islightmode()
+              ? const Color.fromARGB(255, 255, 255, 255)
+              : const Color.fromRGBO(34, 34, 34, 1),
+          borderRadius: BorderRadius.circular(12),
+          // Subtle shadow for the main container card
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: DottedBorder(
+            borderType: BorderType.RRect,
+            radius: const Radius.circular(12),
+            dashPattern: const [8, 4],
+            strokeWidth: 2,
+            color: const Color(0xBF254EEA),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Bumper Color?',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: islightmode() ? Colors.black : Colors.white,
+                      fontSize: 22,
+                      fontFamily: 'MuseoModerno',
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.0,
+                    ),
+                  ),
+                  const SizedBox(height: 15),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        // Red Button
+                        buildSelectionButton(
+                          label: "RED",
+                          value: "Red",
+                          baseColor: Colors.redAccent,
+                          isSelected: selectedWinner == "Red",
+                        ),
+
+                        // Blue Button
+                        buildSelectionButton(
+                          label: "BLUE",
+                          value: "Blue",
+                          baseColor: Colors.blueAccent,
+                          isSelected: selectedWinner == "Blue",
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 
-
-
-
-Widget buildRatings(List<Widget> WidgetChildren ) {
-
+Widget buildRatings(List<Widget> WidgetChildren) {
   return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(
@@ -22,10 +18,13 @@ Widget buildRatings(List<Widget> WidgetChildren ) {
           ),
           child: Padding(
               padding: const EdgeInsets.all(16.0),
-          child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 8, width: double.infinity,),
-                ...WidgetChildren
-              ]))));
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(
+                      height: 8,
+                      width: double.infinity,
+                    ),
+                    ...WidgetChildren
+                  ]))));
 }

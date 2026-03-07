@@ -10,8 +10,7 @@ class InfiniteZoomImage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Score Sheet'),
       ),
-      body:
-        Center(
+      body: Center(
         child: PhotoView(
           imageProvider: const AssetImage('assets/ref/Cheat-Sheet.jpg'),
           minScale: PhotoViewComputedScale.contained,

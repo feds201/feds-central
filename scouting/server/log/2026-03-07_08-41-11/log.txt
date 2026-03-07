@@ -1,0 +1,49 @@
+[2026-03-07 08:36:40] [Scout Ops Server] Logs cleared via keyboard 'c'
+[2026-03-07 08:36:51] [Scout Ops Server] Incoming HTTP POST request for /send_data from 10.232.195.222
+[2026-03-07 08:36:51] [Scout Ops Server] Data inserted for device 1
+[2026-03-07 08:36:58] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 08:36:58] [Scout Ops Server] Data fetched
+[2026-03-07 08:36:58] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 08:36:58] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:36:58] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 08:37:00] [Scout Ops Server] Incoming HTTP GET request for /logs from 127.0.0.1
+[2026-03-07 08:37:00] [Scout Ops Server] Incoming HTTP GET request for /static/styles.css from 127.0.0.1
+[2026-03-07 08:37:00] [Scout Ops Server] Incoming HTTP GET request for /static/script.js from 127.0.0.1
+[2026-03-07 08:37:02] [Scout Ops Server] Incoming HTTP GET request for /get_data from 127.0.0.1
+[2026-03-07 08:37:02] [Scout Ops Server] Data fetched
+[2026-03-07 08:37:02] [Scout Ops Server] Incoming HTTP GET request for /static/styles.css from 127.0.0.1
+[2026-03-07 08:37:02] [Scout Ops Server] Incoming HTTP GET request for /static/script.js from 127.0.0.1
+[2026-03-07 08:37:58] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 08:37:58] [Scout Ops Server] Data fetched
+[2026-03-07 08:37:58] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 08:37:58] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:37:58] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 08:38:09] [Scout Ops Server] Incoming HTTP POST request for /receive_match_csv from 10.232.195.222
+[2026-03-07 08:38:21] [Scout Ops Server] Incoming HTTP POST request for /receive_match_csv from 10.232.195.222
+[2026-03-07 08:38:26] [Scout Ops Server] Incoming HTTP GET request for /alive from 10.232.195.222
+[2026-03-07 08:38:26] [Scout Ops Server] Server Communication Tested
+[2026-03-07 08:38:26] [Scout Ops Server] Incoming HTTP POST request for /register from 10.232.195.222
+[2026-03-07 08:38:26] [Scout Ops Server] Device with IP: 10.232.195.222 already registered. Refreshed with new name: Ritesh Raj
+[2026-03-07 08:38:28] [Scout Ops Server] Incoming HTTP GET request for /api/get_event_file from 10.232.195.222
+[2026-03-07 08:38:28] [Scout Ops Server] /api/get_event_file requested
+[2026-03-07 08:38:28] [Scout Ops Server] Event data fetched
+[2026-03-07 08:38:36] [Scout Ops Server] Incoming HTTP POST request for /receive_match_csv from 10.232.195.222
+[2026-03-07 08:38:58] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 08:38:58] [Scout Ops Server] Data fetched
+[2026-03-07 08:38:58] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 08:38:58] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:38:58] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 08:39:58] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 08:39:58] [Scout Ops Server] Data fetched
+[2026-03-07 08:39:58] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 08:39:58] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:39:58] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 08:40:58] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 08:40:58] [Scout Ops Server] Data fetched
+[2026-03-07 08:40:58] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 08:40:58] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:40:58] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 08:41:11] [Scout Ops Server] 
+[2026-03-07 08:41:11] [Scout Ops Server] Gracefully stopping the server...
+[2026-03-07 08:41:11] [Scout Ops Server] 
+Server stopped.

@@ -109,6 +109,7 @@ class SimPipelineTest {
         // Spawn a ball just in front of the chassis
         GamePieceConfig ballConfig = createBallConfig();
         GamePiece ball = new GamePiece(world, ballConfig, 2.6, 4, 0.075);
+        ball.initializePhysics();
         ball.getBody().setAutoDisableFlag(false);
 
         // Apply forward force for 2 seconds
@@ -137,6 +138,7 @@ class SimPipelineTest {
         // Spawn a ball just in front of the chassis
         GamePieceConfig ballConfig = createBallConfig();
         GamePiece ball = new GamePiece(world, ballConfig, 2.6, 4, 0.075);
+        ball.initializePhysics();
         ball.getBody().setAutoDisableFlag(false);
 
         double ballStartX = ball.getPosition3d().getX();

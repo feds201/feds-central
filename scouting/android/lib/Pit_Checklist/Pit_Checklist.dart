@@ -292,22 +292,16 @@ class PitCheckListPageState extends State<PitCheckListPage>
                 currentSelectedMatchType == 2,
               ),
               _buildNavDestination(
-                Icons.sports_rugby,
-                'Finals',
-                Colors.red,
-                currentSelectedMatchType == 3,
-              ),
-              _buildNavDestination(
                 Icons.settings,
                 'Settings',
                 Colors.purple,
-                currentSelectedMatchType == 4,
+                currentSelectedMatchType == 3,
               ),
               _buildNavDestination(
                 Icons.cloud,
                 'Share',
                 Colors.purple,
-                currentSelectedMatchType == 5,
+                currentSelectedMatchType == 4,
               ),
             ],
           ),
@@ -352,21 +346,28 @@ class PitCheckListPageState extends State<PitCheckListPage>
   }
 
   // Fix the _hasTeam201 method
-  bool _hasTeam201(dynamic match) {
+  bool _hasOurTeam(dynamic match) {
     if (match == null || match['alliances'] == null) return false;
 
-    // Check if team 201 is in red alliance
+    // Dynamically read the team number from settings
+    String teamNum = Hive.box('settings')
+        .get('filteredTeam', defaultValue: '201')
+        .toString()
+        .trim();
+    if (teamNum.isEmpty) teamNum = '201';
+
+    // Check if our team is in red alliance
     if (match['alliances']['red'] != null &&
         match['alliances']['red']['team_keys'] != null) {
       List<dynamic> redTeams = match['alliances']['red']['team_keys'];
-      if (redTeams.contains('frc201')) return true;
+      if (redTeams.any((t) => t.toString().contains(teamNum))) return true;
     }
 
-    // Check if team 201 is in blue alliance
+    // Check if our team is in blue alliance
     if (match['alliances']['blue'] != null &&
         match['alliances']['blue']['team_keys'] != null) {
       List<dynamic> blueTeams = match['alliances']['blue']['team_keys'];
-      if (blueTeams.contains('frc201')) return true;
+      if (blueTeams.any((t) => t.toString().contains(teamNum))) return true;
     }
 
     return false;
@@ -382,22 +383,37 @@ class PitCheckListPageState extends State<PitCheckListPage>
     // Filter matches by filtered team if enabled
     List<dynamic> filteredByTeam = _getFilteredMatches(allMatches);
 
-    // Filter matches where Team 201 is participating if no team filter active
+    // Filter matches where our team is participating if no team filter active
     List<dynamic> matches = _filteredTeam.isEmpty && !_isFilterActive
-        ? filteredByTeam.where((match) => _hasTeam201(match)).toList()
+        ? filteredByTeam.where((match) => _hasOurTeam(match)).toList()
         : filteredByTeam;
 
     switch (selectedMatchType) {
       case 0:
-        final String jsonString =
-            await rootBundle.loadString('assets/day_zero.json');
-        List<dynamic> practiceMatches = jsonDecode(jsonString);
-        // Apply team filter to practice matches too
+        var filteredMatches = matches
+            .where((match) =>
+                match['comp_level'] == 'p' || match['comp_level'] == 'pr')
+            .toList();
+            
+        // Add manual practice matches
+        List<dynamic> manualPMatches = _loadManualMatches()
+            .where((m) => m['comp_level'] == 'p' || m['comp_level'] == 'pr')
+            .toList();
+        
+        // Apply team filter to manual matches too
         if (_filteredTeam.isNotEmpty || _isFilterActive) {
-          practiceMatches = _getFilteredMatches(practiceMatches);
+          manualPMatches = _getFilteredMatches(manualPMatches);
+        } else {
+          manualPMatches = manualPMatches.where((match) => _hasOurTeam(match)).toList();
         }
-        return _buildMatchListView(
-          practiceMatches,
+        
+        filteredMatches.addAll(manualPMatches);
+        
+        filteredMatches.sort((a, b) => int.parse(a['match_number'].toString())
+            .compareTo(int.parse(b['match_number'].toString())));
+
+        return _buildPlayoffsMatchList(
+          filteredMatches,
           'Practice',
           Icons.flag_circle,
           Colors.pink,
@@ -405,13 +421,25 @@ class PitCheckListPageState extends State<PitCheckListPage>
         );
 
       case 1:
+        // Add manual qual matches
+        List<dynamic> manualQMatches = _loadManualMatches().where((m) => m['comp_level'] == 'qm').toList();
+        
+        // Filter those by our team too
+        if (_filteredTeam.isNotEmpty || _isFilterActive) {
+          manualQMatches = _getFilteredMatches(manualQMatches);
+        } else {
+          manualQMatches = manualQMatches.where((match) => _hasOurTeam(match)).toList();
+        }
+        
+        matches.addAll(manualQMatches);
+        
         var filteredMatches = matches
             .where((match) => match['comp_level'] == 'qm')
             .toList()
           ..sort((a, b) => int.parse(a['match_number'].toString())
               .compareTo(int.parse(b['match_number'].toString())));
 
-        return _buildMatchListView(
+        return _buildPlayoffsMatchList(
           filteredMatches,
           'Qualification',
           Icons.sports_soccer,
@@ -420,10 +448,10 @@ class PitCheckListPageState extends State<PitCheckListPage>
         );
 
       case 2:
-        // Modified - Playoff matches including manual entries
+        // Modified - Playoff matches including manual entries (sf, qf, f)
         var filteredMatches = matches
             .where((match) =>
-                match['comp_level'] == 'sf' || match['comp_level'] == 'qf')
+                match['comp_level'] == 'sf' || match['comp_level'] == 'qf' || match['comp_level'] == 'f')
             .toList();
 
         // Add manual playoff matches
@@ -432,11 +460,13 @@ class PitCheckListPageState extends State<PitCheckListPage>
         // Apply team filter to manual matches too
         if (_filteredTeam.isNotEmpty || _isFilterActive) {
           manualMatches = _getFilteredMatches(manualMatches);
+        } else {
+          manualMatches = manualMatches.where((match) => _hasOurTeam(match)).toList();
         }
 
         var manualPlayoffMatches = manualMatches
             .where((match) =>
-                match['comp_level'] == 'sf' || match['comp_level'] == 'qf')
+                match['comp_level'] == 'sf' || match['comp_level'] == 'qf' || match['comp_level'] == 'f')
             .toList();
 
         // Combine TBA and manual matches
@@ -444,13 +474,19 @@ class PitCheckListPageState extends State<PitCheckListPage>
 
         // Sort all matches
         filteredMatches.sort((a, b) {
-          // First sort by comp_level (qf before sf)
-          int compLevelComparison = a['comp_level'].compareTo(b['comp_level']);
+          // First sort by comp_level (qf before sf before f)
+          int getCompLevelValue(String comp) {
+            if (comp.startsWith('qf')) return 0;
+            if (comp.startsWith('sf')) return 1;
+            if (comp.startsWith('f')) return 2;
+            return 3;
+          }
+          int compLevelComparison = getCompLevelValue(a['comp_level']).compareTo(getCompLevelValue(b['comp_level']));
           if (compLevelComparison != 0) return compLevelComparison;
 
-          // Then by set number
-          int aSet = int.parse(a['set_number'].toString());
-          int bSet = int.parse(b['set_number'].toString());
+          // Then by set number (fallback to match number if no set number)
+          int aSet = (a['set_number'] != null) ? int.parse(a['set_number'].toString()) : int.parse(a['match_number'].toString());
+          int bSet = (b['set_number'] != null) ? int.parse(b['set_number'].toString()) : int.parse(b['match_number'].toString());
           int setComparison = aSet.compareTo(bSet);
           if (setComparison != 0) return setComparison;
 
@@ -465,45 +501,15 @@ class PitCheckListPageState extends State<PitCheckListPage>
           'Playoff',
           Icons.sports_basketball,
           Colors.orange,
-          (match) => match['comp_level'].startsWith('sf')
+          (match) => match['comp_level'].startsWith('sf') || match['comp_level'].startsWith('qf')
               ? int.parse(match['set_number'].toString())
               : int.parse(match['match_number'].toString()),
         );
 
       case 3:
-        var filteredMatches =
-            matches.where((match) => match['comp_level'] == 'f').toList();
-
-        // Add manual final matches
-        List<dynamic> manualMatches = _loadManualMatches();
-
-        // Apply team filter to manual matches too
-        if (_filteredTeam.isNotEmpty || _isFilterActive) {
-          manualMatches = _getFilteredMatches(manualMatches);
-        }
-
-        var manualFinalMatches =
-            manualMatches.where((match) => match['comp_level'] == 'f').toList();
-
-        // Combine TBA and manual matches
-        filteredMatches.addAll(manualFinalMatches);
-
-        // Sort all matches
-        filteredMatches.sort((a, b) => int.parse(a['match_number'].toString())
-            .compareTo(int.parse(b['match_number'].toString())));
-
-        return _buildMatchListView(
-          filteredMatches,
-          'Final',
-          Icons.sports_rugby,
-          Colors.red,
-          (match) => int.parse(match['match_number'].toString()),
-        );
-
-      case 4:
         return _buildSettingsView(matches, allMatches);
 
-      case 5:
+      case 4:
         return buildShare(context);
 
       default:
@@ -511,83 +517,7 @@ class PitCheckListPageState extends State<PitCheckListPage>
     }
   }
 
-  Widget _buildMatchListView(
-    List<dynamic> matches,
-    String matchTypeName,
-    IconData matchIcon,
-    Color themeColor,
-    Function(dynamic) getMatchNumber,
-  ) {
-    // Extract all teams from these matches
-    _extractTeamsFromMatches(matches);
 
-    if (matches.isEmpty) {
-      return Column(
-        children: [
-          // Add team filter at the top
-
-          Expanded(
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    matchIcon,
-                    size: 60,
-                    color: themeColor.withOpacity(0.3),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    _isFilterActive
-                        ? 'No matches found with selected teams'
-                        : 'No $matchTypeName Matches for Team 201',
-                    style: GoogleFonts.museoModerno(
-                      fontSize: 20,
-                      color: Colors.grey.shade600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      );
-    }
-
-    return Column(
-      children: [
-        // Add team filter at the top
-
-        Expanded(
-          child: ListView.builder(
-            controller: _scrollController,
-            physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.fromLTRB(8, 8, 8, 24),
-            itemCount: matches.length + 1,
-            itemBuilder: (BuildContext context, int index) {
-              if (index == 0) {
-                return ShowInsults();
-              }
-              index -= 1;
-
-              final match = matches[index];
-              final matchNumber = getMatchNumber(match);
-
-              return _buildEnhancedMatchCard(
-                context,
-                match,
-                matchTypeName,
-                matchIcon,
-                themeColor,
-                matchNumber,
-                index,
-              );
-            },
-          ),
-        ),
-      ],
-    );
-  }
 
   Widget _buildEnhancedMatchCard(
     BuildContext context,
@@ -599,14 +529,66 @@ class PitCheckListPageState extends State<PitCheckListPage>
     int index,
   ) {
     PitCheckListDatabase.LoadAll();
+    final String matchKey = match['key'];
+    final PitChecklistItem? saved = PitCheckListDatabase.GetData(matchKey);
+
+    bool drivetrainDone = saved != null &&
+        saved.drive_motors &&
+        saved.drive_wheels &&
+        saved.drive_gearboxes &&
+        saved.drive_wires &&
+        saved.drive_steer_motors &&
+        saved.drive_encoders &&
+        saved.drive_lime_lights &&
+        saved.drive_nuts_and_bolts;
+    bool structureDone = saved != null &&
+        saved.structure_frame &&
+        saved.structure_hopper_panels &&
+        saved.structure_brain_pan &&
+        saved.structure_belly_pan &&
+        saved.structure_nuts_and_bolts;
+    bool intakeDone = saved != null &&
+        saved.intake_rack &&
+        saved.intake_pinion &&
+        saved.intake_belts &&
+        saved.intake_roller &&
+        saved.intake_motors &&
+        saved.intake_limit_switches &&
+        saved.intake_lime_lights &&
+        saved.intake_nuts_and_bolts &&
+        saved.intake_wires;
+    bool spindexerDone = saved != null &&
+        saved.spindexer_panel &&
+        saved.spindexer_churros &&
+        saved.spindexer_motor &&
+        saved.spindexer_wheels &&
+        saved.spindexer_nuts_and_bolts;
+    bool kickerDone = saved != null &&
+        saved.kicker_plates &&
+        saved.kicker_roller &&
+        saved.kicker_belts &&
+        saved.kicker_gears &&
+        saved.kicker_motor &&
+        saved.kicker_radio &&
+        saved.kicker_ethernet_switch &&
+        saved.kicker_nuts_and_bolts &&
+        saved.kicker_wires;
+    bool shooterDone = saved != null &&
+        saved.shooter_flywheels &&
+        saved.shooter_hood &&
+        saved.shooter_gears &&
+        saved.shooter_motors &&
+        saved.shooter_nuts_and_bolts &&
+        saved.shooter_wires;
+
     // Check if this is a manual entry
     final bool isManual = match['manual_entry'] == true;
 
+    // Fetch the recent battery info
+    Map<String, double> recentBattery = PitCheckListDatabase.getMostRecentBatteryInfo();
+
     // Create alliance teams lists
     final redAlliance = match['alliances']['red']['team_keys']
-        .map((team) => team.toString().replaceAll('frc', ''))
-        .toList();
-    final blueAlliance = match['alliances']['blue']['team_keys']
         .map((team) => team.toString().replaceAll('frc', ''))
         .toList();
 
@@ -746,106 +728,23 @@ class PitCheckListPageState extends State<PitCheckListPage>
 
                     const SizedBox(height: 12),
                     const Divider(),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 12),
 
-                    // Alliance information with Team 201 highlighted
-                    Row(
+                    _buildBatteryDetails(saved, recentBattery),
+
+                    const SizedBox(height: 12),
+
+                    // Fluid Status Indicators
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
                       children: [
-                        // Red Alliance
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Container(
-                                    width: 12,
-                                    height: 12,
-                                    decoration: BoxDecoration(
-                                      color: Colors.red,
-                                      borderRadius: BorderRadius.circular(6),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    'Red Alliance',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.red.shade700,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 6),
-                              ...redAlliance.map((team) => Padding(
-                                    padding:
-                                        const EdgeInsets.only(left: 20, top: 2),
-                                    child: Text(
-                                      team,
-                                      style: TextStyle(
-                                        color: team == '201'
-                                            ? Colors.red.shade700
-                                            : (_filteredTeam == team
-                                                ? Colors.purple.shade700
-                                                : Colors.grey.shade700),
-                                        fontWeight: (team == '201' ||
-                                                _filteredTeam == team)
-                                            ? FontWeight.bold
-                                            : FontWeight.normal,
-                                      ),
-                                    ),
-                                  )),
-                            ],
-                          ),
-                        ),
-
-                        // Blue Alliance
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Container(
-                                    width: 12,
-                                    height: 12,
-                                    decoration: BoxDecoration(
-                                      color: Colors.blue,
-                                      borderRadius: BorderRadius.circular(6),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    'Blue Alliance',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.blue.shade700,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 6),
-                              ...blueAlliance.map((team) => Padding(
-                                    padding:
-                                        const EdgeInsets.only(left: 20, top: 2),
-                                    child: Text(
-                                      team,
-                                      style: TextStyle(
-                                        color: team == '201'
-                                            ? Colors.blue.shade700
-                                            : (_filteredTeam == team
-                                                ? Colors.purple.shade700
-                                                : Colors.grey.shade700),
-                                        fontWeight: (team == '201' ||
-                                                _filteredTeam == team)
-                                            ? FontWeight.bold
-                                            : FontWeight.normal,
-                                      ),
-                                    ),
-                                  )),
-                            ],
-                          ),
-                        ),
+                        _buildStatusIndicator("Drivetrain", drivetrainDone),
+                        _buildStatusIndicator("Structure", structureDone),
+                        _buildStatusIndicator("Intake", intakeDone),
+                        _buildStatusIndicator("Spindexer", spindexerDone),
+                        _buildStatusIndicator("Kicker", kickerDone),
+                        _buildStatusIndicator("Shooter", shooterDone),
                       ],
                     ),
                   ],
@@ -860,6 +759,117 @@ class PitCheckListPageState extends State<PitCheckListPage>
     );
   }
 
+  Widget _buildBatteryDetails(PitChecklistItem? saved, Map<String, double> recentBattery) {
+    double inTag = saved?.returning_number ?? 0.0;
+    double inVoltage = saved?.returning_battery_voltage ?? 0.0;
+    
+    // If not filled out yet, predict incoming from recent outgoing
+    if (inTag == 0.0) {
+      inTag = recentBattery['number'] ?? 0.0;
+      inVoltage = recentBattery['voltage'] ?? 0.0;
+    }
+
+    double outTag = saved?.outgoing_number ?? 0.0;
+    double outVoltage = saved?.outgoing_battery_voltage ?? 0.0;
+
+    return Row(
+      children: [
+        Expanded(child: _buildBatteryInfoCard('Incoming', inTag, inVoltage, Colors.blue)),
+        const SizedBox(width: 12),
+        Expanded(child: _buildBatteryInfoCard('Outgoing', outTag, outVoltage, Colors.green)),
+      ],
+    );
+  }
+
+  Widget _buildBatteryInfoCard(String title, double tag, double voltage, MaterialColor color) {
+    bool hasData = tag > 0;
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: hasData 
+            ? color.withOpacity(0.1) 
+            : (islightmode() ? Colors.grey.shade100 : Colors.grey.shade900),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: hasData 
+              ? color.withOpacity(0.3) 
+              : Colors.grey.withOpacity(0.2),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(hasData ? Icons.battery_charging_full : Icons.battery_unknown, size: 16, color: hasData ? color.shade600 : Colors.grey),
+              const SizedBox(width: 6),
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: hasData 
+                      ? color.shade700 
+                      : (islightmode() ? Colors.grey.shade700 : Colors.grey.shade400),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          if (hasData)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Tag: ${tag.toInt()}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: islightmode() ? darkColors.goodblack : lightColors.white)),
+                Text('${voltage.toStringAsFixed(1)}V', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: islightmode() ? darkColors.goodblack : lightColors.white)),
+              ],
+            )
+          else
+            Text('No Data', style: TextStyle(fontSize: 13, color: Colors.grey.shade500)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatusIndicator(String label, bool done) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: done 
+            ? Colors.green.withOpacity(0.15) 
+            : (islightmode() ? Colors.grey.shade100 : Colors.grey.shade900),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: done 
+              ? Colors.green.withOpacity(0.5) 
+              : Colors.grey.withOpacity(0.3),
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            done ? Icons.check_circle : Icons.radio_button_unchecked,
+            size: 14,
+            color: done ? Colors.green : Colors.grey.shade500,
+          ),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: done ? FontWeight.bold : FontWeight.normal,
+              color: done 
+                  ? Colors.green.shade700 
+                  : (islightmode() ? Colors.grey.shade700 : Colors.grey.shade400),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _handleMatchSelection(dynamic match) {
     PitChecklistItem record = PitChecklistItem.defaultConstructor(match['key']);
 
@@ -869,26 +879,30 @@ class PitCheckListPageState extends State<PitCheckListPage>
           builder: (context) => Checklist_record(list_item: record),
           fullscreenDialog: true),
     ).then((_) {
+      setState(() {});
       print('Returned to Pit Checklist Page');
     });
   }
 
   Widget _buildSettingsView(
-      List<dynamic> team201Matches, List<dynamic> allMatches) {
+      List<dynamic> teamMatches, List<dynamic> allMatches) {
     // Extract event information
     int totalMatches = allMatches.length;
-    int team201MatchCount = team201Matches.length;
+    int teamMatchCount = teamMatches.length;
     int qualMatches =
-        team201Matches.where((m) => m['comp_level'] == 'qm').length;
+        teamMatches.where((m) => m['comp_level'] == 'qm').length;
     int playoffMatches =
-        team201Matches.where((m) => m['comp_level'] == 'sf').length;
+        teamMatches.where((m) => m['comp_level'] == 'sf').length;
     int finalMatches =
-        team201Matches.where((m) => m['comp_level'] == 'f').length;
+        teamMatches.where((m) => m['comp_level'] == 'f').length;
 
     String eventKey =
         allMatches.isNotEmpty ? allMatches[0]['event_key'] : 'Unknown';
     String eventName = _formatEventName(eventKey);
-    String eventYear = eventKey.substring(0, 4);
+    String eventYear = eventKey.length >= 4 ? eventKey.substring(0, 4) : '2026';
+
+    String teamNum = Hive.box('settings').get('filteredTeam', defaultValue: '201').toString().trim();
+    if (teamNum.isEmpty) teamNum = '201';
 
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
@@ -957,7 +971,61 @@ class PitCheckListPageState extends State<PitCheckListPage>
             ),
           ),
 
-          // Team 201 Match Statistics Card
+          // App Configuration Card
+          Card(
+            color: Colors.white,
+            margin: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(18),
+            ),
+            elevation: 6,
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.settings,
+                          color: Theme.of(context).colorScheme.primary,
+                          size: 24),
+                      const SizedBox(width: 10),
+                      Text(
+                        'App Configuration',
+                        style: GoogleFonts.roboto(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    initialValue: teamNum,
+                    decoration: InputDecoration(
+                      labelText: 'Primary Team Number',
+                      hintText: 'e.g. 201',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      prefixIcon: const Icon(Icons.numbers),
+                    ),
+                    keyboardType: TextInputType.number,
+                    onChanged: (value) {
+                      String trimmed = value.trim();
+                      if (trimmed.isNotEmpty) {
+                        Hive.box('settings').put('filteredTeam', trimmed);
+                        setState(() {});
+                      }
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // Team Match Statistics Card
           Card(
             color: Colors.white,
             margin: const EdgeInsets.fromLTRB(16, 8, 16, 16),
@@ -977,7 +1045,7 @@ class PitCheckListPageState extends State<PitCheckListPage>
                           size: 24),
                       const SizedBox(width: 10),
                       Text(
-                        'Team 201 Match Statistics',
+                        'Team $teamNum Match Statistics',
                         style: GoogleFonts.roboto(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -990,8 +1058,8 @@ class PitCheckListPageState extends State<PitCheckListPage>
                   _buildStatisticRow(
                       context,
                       Icons.sports_score,
-                      'Team 201 Matches',
-                      team201MatchCount.toString(),
+                      'Team $teamNum Matches',
+                      teamMatchCount.toString(),
                       Colors.purple.shade800),
                   const SizedBox(height: 12),
                   _buildStatisticRow(
@@ -1540,7 +1608,7 @@ class PitCheckListPageState extends State<PitCheckListPage>
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
           child: ElevatedButton.icon(
             icon: const Icon(Icons.add_circle_outline),
-            label: const Text('Create Manual Playoff Match'),
+            label: const Text('Create Manual Match'),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.orange,
               foregroundColor: Colors.white,
@@ -1599,16 +1667,80 @@ class PitCheckListPageState extends State<PitCheckListPage>
 
                     final match = matches[index];
                     final matchNumber = getMatchNumber(match);
+                    final bool isManual = match['manual_entry'] == true;
 
-                    return _buildEnhancedMatchCard(
+                    String dynamicMatchTypeName = matchTypeName;
+                    if (matchTypeName == 'Playoff' && match['comp_level'] != null) {
+                      String comp = match['comp_level'].toString();
+                      if (comp.startsWith('f')) {
+                        dynamicMatchTypeName = 'Final';
+                      } else if (comp.startsWith('sf')) {
+                        dynamicMatchTypeName = 'Semifinal';
+                      } else if (comp.startsWith('qf')) {
+                        dynamicMatchTypeName = 'Quarterfinal';
+                      }
+                    }
+
+                    final card = _buildEnhancedMatchCard(
                       context,
                       match,
-                      matchTypeName,
+                      dynamicMatchTypeName,
                       matchIcon,
                       themeColor,
                       matchNumber,
                       index,
                     );
+
+                    if (isManual) {
+                      return Dismissible(
+                        key: Key(match['key']?.toString() ?? 'manual_$index'),
+                        direction: DismissDirection.endToStart,
+                        background: Container(
+                          margin: const EdgeInsets.only(bottom: 16),
+                          decoration: BoxDecoration(
+                            color: Colors.red.shade400,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          alignment: Alignment.centerRight,
+                          padding: const EdgeInsets.only(right: 24),
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.delete_outline, color: Colors.white, size: 24),
+                              SizedBox(width: 8),
+                              Text('Delete', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                            ],
+                          ),
+                        ),
+                        confirmDismiss: (direction) async {
+                          return await showDialog<bool>(
+                            context: context,
+                            builder: (ctx) => AlertDialog(
+                              title: const Text('Delete Match?'),
+                              content: Text('Remove match ${match['match_number']}?'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.of(ctx).pop(false),
+                                  child: const Text('Cancel'),
+                                ),
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                                  onPressed: () => Navigator.of(ctx).pop(true),
+                                  child: const Text('Delete', style: TextStyle(color: Colors.white)),
+                                ),
+                              ],
+                            ),
+                          ) ?? false;
+                        },
+                        onDismissed: (direction) {
+                          _deleteManualMatch(match['key']?.toString() ?? '');
+                          setState(() {});
+                        },
+                        child: card,
+                      );
+                    }
+
+                    return card;
                   },
                 ),
         ),
@@ -1616,21 +1748,18 @@ class PitCheckListPageState extends State<PitCheckListPage>
     );
   }
 
-  // Dialog for creating manual playoff matches
+  // Dialog for creating manual playoff or practice matches
   void _showCreatePlayoffMatchDialog(BuildContext context) {
-    String selectedMatchType = 'Quarterfinal';
-    int allianceNumber = 1;
-    String alliancePosition = 'Captain';
+    String selectedMatchType = 'Playoff';
     int matchNumber = 1;
     String allianceColor = 'Red';
-    int setNumber = 1;
 
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
           title: Text(
-            'Create Playoff Match',
+            'Create Match',
             style: GoogleFonts.museoModerno(
               fontWeight: FontWeight.bold,
               color: Colors.orange,
@@ -1649,7 +1778,7 @@ class PitCheckListPageState extends State<PitCheckListPage>
                         borderRadius: BorderRadius.circular(12)),
                   ),
                   value: selectedMatchType,
-                  items: ['Quarterfinal', 'Semifinal', 'Final'].map((type) {
+                  items: ['Practice', 'Qualification', 'Playoff', 'Final'].map((type) {
                     return DropdownMenuItem(
                       value: type,
                       child: Text(type),
@@ -1661,79 +1790,18 @@ class PitCheckListPageState extends State<PitCheckListPage>
                 ),
                 const SizedBox(height: 16),
 
-                // Alliance Number
-                DropdownButtonFormField<int>(
+                // Match Number
+                TextFormField(
                   decoration: InputDecoration(
-                    labelText: 'Alliance Number',
+                    labelText: 'Match Number',
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12)),
                   ),
-                  value: allianceNumber,
-                  items: List.generate(8, (index) {
-                    return DropdownMenuItem(
-                      value: index + 1,
-                      child: Text('Alliance ${index + 1}'),
-                    );
-                  }),
+                  keyboardType: TextInputType.number,
+                  initialValue: matchNumber.toString(),
                   onChanged: (value) {
-                    allianceNumber = value!;
+                    matchNumber = int.tryParse(value) ?? 1;
                   },
-                ),
-                const SizedBox(height: 16),
-
-                // Alliance Position
-                DropdownButtonFormField<String>(
-                  decoration: InputDecoration(
-                    labelText: 'Team 201 Position',
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12)),
-                  ),
-                  value: alliancePosition,
-                  items: ['Captain', 'First Pick', 'Second Pick'].map((pos) {
-                    return DropdownMenuItem(
-                      value: pos,
-                      child: Text(pos),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    alliancePosition = value!;
-                  },
-                ),
-                const SizedBox(height: 16),
-
-                // Match Number and Set Number in a row
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextFormField(
-                        decoration: InputDecoration(
-                          labelText: 'Match Number',
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12)),
-                        ),
-                        keyboardType: TextInputType.number,
-                        initialValue: matchNumber.toString(),
-                        onChanged: (value) {
-                          matchNumber = int.tryParse(value) ?? 1;
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: TextFormField(
-                        decoration: InputDecoration(
-                          labelText: 'Set Number',
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12)),
-                        ),
-                        keyboardType: TextInputType.number,
-                        initialValue: setNumber.toString(),
-                        onChanged: (value) {
-                          setNumber = int.tryParse(value) ?? 1;
-                        },
-                      ),
-                    ),
-                  ],
                 ),
                 const SizedBox(height: 16),
 
@@ -1772,14 +1840,21 @@ class PitCheckListPageState extends State<PitCheckListPage>
               child: const Text('Create Match'),
               onPressed: () {
                 // Generate match ID based on match type
-                String matchTypeCode = selectedMatchType == 'Quarterfinal'
-                    ? 'qf'
-                    : selectedMatchType == 'Semifinal'
-                        ? 'sf'
-                        : 'f';
+                String matchTypeCode = 'p';
+                if (selectedMatchType == 'Qualification') matchTypeCode = 'qm';
+                else if (selectedMatchType == 'Playoff') matchTypeCode = 'sf';
+                else if (selectedMatchType == 'Final') matchTypeCode = 'f';
 
-                String matchKey =
-                    '2025mimid_${matchTypeCode}${setNumber}m$matchNumber';
+                int setNumber = 1; // Default to 1
+
+                String suffix = (selectedMatchType == 'Playoff' || selectedMatchType == 'Final')
+                    ? '${setNumber}m$matchNumber'
+                    : 'm$matchNumber';
+                String matchKey = '2026mimid_$matchTypeCode$suffix';
+
+                // Real team number using settings, falling back to '201'
+                String teamNum = Hive.box('settings').get('filteredTeam', defaultValue: '201').toString().trim();
+                if (teamNum.isEmpty) teamNum = '201';
 
                 // Create synthetic match object
                 Map<String, dynamic> syntheticMatch = {
@@ -1787,22 +1862,22 @@ class PitCheckListPageState extends State<PitCheckListPage>
                   'comp_level': matchTypeCode,
                   'match_number': matchNumber,
                   'set_number': setNumber,
-                  'event_key': '2025mimid',
+                  'event_key': '2026mimid',
                   'manual_entry': true,
                   'alliance_selection_data': {
-                    'alliance_number': allianceNumber,
-                    'position': alliancePosition,
+                    'alliance_number': 1,
+                    'position': 'Captain',
                   },
                   'alliances': {
                     'red': {
                       'team_keys': allianceColor == 'Red'
-                          ? ['frc201', 'frcXXXX', 'frcYYYY']
-                          : ['frcAAAA', 'frcBBBB', 'frcCCCC'],
+                          ? ['frc$teamNum', 'frc0000', 'frc0000']
+                          : ['frc0000', 'frc0000', 'frc0000'],
                     },
                     'blue': {
                       'team_keys': allianceColor == 'Blue'
-                          ? ['frc201', 'frcXXXX', 'frcYYYY']
-                          : ['frcAAAA', 'frcBBBB', 'frcCCCC'],
+                          ? ['frc$teamNum', 'frc0000', 'frc0000']
+                          : ['frc0000', 'frc0000', 'frc0000'],
                     },
                   }
                 };
@@ -1869,7 +1944,22 @@ class PitCheckListPageState extends State<PitCheckListPage>
     return [];
   }
 
-  // Add this method to extract all teams from matches
+  void _deleteManualMatch(String matchKey) {
+    if (matchKey.isEmpty) return;
+    final box = Hive.box('matchData');
+    final existingData = box.get('manualMatches');
+    if (existingData == null) return;
+
+    try {
+      List<dynamic> manualMatches = jsonDecode(existingData);
+      manualMatches.removeWhere((m) => m['key']?.toString() == matchKey);
+      box.put('manualMatches', jsonEncode(manualMatches));
+    } catch (e) {
+      print('Error deleting manual match: $e');
+    }
+  }
+
+  // Add this method to the PitCheckListPageState class
   List<String> _extractTeamsFromMatches(List<dynamic> matches) {
     Set<String> teams = {};
 
@@ -2617,57 +2707,6 @@ class PitCheckListPageState extends State<PitCheckListPage>
     return {
       "type": "checklist",
       "matchKey": checklistData.matchkey,
-      "chassisDriveMotors": checklistData.chassis_drive_motors,
-      "chassisSteerMotors": checklistData.chassis_steer_motors,
-      "chassisGearboxes": checklistData.chassis_gearboxes,
-      "chassisTreadConditions": checklistData.chassis_tread_conditions,
-      "chassisWires": checklistData.chassis_wires,
-      "chassisBumpers": checklistData.chassis_bumpers,
-      "chassisCamera": checklistData.chassis_camera,
-      "chassisLimelightProtectors": checklistData.chassis_limelight_protectors,
-      "ethernetFrontLeftLimelight": checklistData.ethernet_front_left_limelight,
-      "ethernetFrontRightLimelight":
-          checklistData.ethernet_front_right_limelight,
-      "ethernetBackRightLimelight": checklistData.ethernet_back_right_limelight,
-      "ethernetSwitch": checklistData.ethernet_switch,
-      "ethernetRadio": checklistData.ethernet_radio,
-      "climberString": checklistData.climber_string,
-      "climberClips": checklistData.climber_clips,
-      "climberSprings": checklistData.climber_springs,
-      "climberBumper": checklistData.climber_bumper,
-      "climberGearbox": checklistData.climber_gearbox,
-      "climberMotors": checklistData.climber_motors,
-      "climberWires": checklistData.climber_wires,
-      "climberNutsAndBolts": checklistData.climber_nuts_and_bolts,
-      "climberReset": checklistData.climber_reset,
-      "climberNumber": checklistData.climber_hooks,
-      "elevatorRodOfDoom": checklistData.elevator_rod_of_doom,
-      "elevatorStage0": checklistData.elevator_stage_0,
-      "elevatorStage1": checklistData.elevator_stage_1,
-      "elevatorStage2": checklistData.elevator_stage_2,
-      "elevatorChain": checklistData.elevator_chain,
-      "elevatorGearbox": checklistData.elevator_gearbox,
-      "elevatorMotors": checklistData.elevator_motors,
-      "elevatorWires": checklistData.elevator_wires,
-      "elevatorNutsAndBolts": checklistData.elevator_nuts_and_bolts,
-      "trapdoorPanels": checklistData.trapdoor_panels,
-      "trapdoorWires": checklistData.trapdoor_wires,
-      "trapdoorSupports": checklistData.trapdoor_supports,
-      "trapdoorHinges": checklistData.trapdoor_hinges,
-      "trapdoorTensioners": checklistData.trapdoor_tensioners,
-      "trapdoorNutsAndBolts": checklistData.trapdoor_nuts_and_bolts,
-      "trapdoorReset": checklistData.trapdoor_reset,
-      "carriageGearbox": checklistData.carriage_gearbox,
-      "carriageBeltbox": checklistData.carriage_beltbox,
-      "carriageMotors": checklistData.carriage_motors,
-      "carriageWires": checklistData.carriage_wires,
-      "carriageNutsAndBolts": checklistData.carriage_nuts_and_bolts,
-      "carriageCoralSlide": checklistData.carriage_coral_slide,
-      "carriageCarriage": checklistData.carriage_carriage,
-      "gooseneckPanels": checklistData.gooseneck_panels,
-      "gooseneckWheels": checklistData.gooseneck_wheels,
-      "gooseneckBelts": checklistData.gooseneck_belts,
-      "gooseneckNutsAndBolts": checklistData.gooseneck_nuts_and_bolts,
       "returningBatteryVoltage": checklistData.returning_battery_voltage,
       "returningBatteryCCA": checklistData.returning_battery_cca,
       "returningNumber": checklistData.returning_number,
@@ -2675,6 +2714,49 @@ class PitCheckListPageState extends State<PitCheckListPage>
       "outgoingBatteryCCA": checklistData.outgoing_battery_cca,
       "outgoingNumber": checklistData.outgoing_number,
       "outgoingBatteryReplaced": checklistData.outgoing_battery_replaced,
+      "drivetrainWheels": checklistData.drive_wheels,
+      "drivetrainGearboxes": checklistData.drive_gearboxes,
+      "drivetrainSteerMotors": checklistData.drive_steer_motors,
+      "drivetrainMotors": checklistData.drive_motors,
+      "drivetrainEncoders": checklistData.drive_encoders,
+      "drivetrainWires": checklistData.drive_wires,
+      "drivetrainLimeLights": checklistData.drive_lime_lights,
+      "drivetrainNutsAndBolts": checklistData.drive_nuts_and_bolts,
+      "structureFrame": checklistData.structure_frame,
+      "structureHopperPanels": checklistData.structure_hopper_panels,
+      "structureBrainPan": checklistData.structure_brain_pan,
+      "structureBellyPan": checklistData.structure_belly_pan,
+      "structureNutsAndBolts": checklistData.structure_nuts_and_bolts,
+      "intakeRack": checklistData.intake_rack,
+      "intakePinion": checklistData.intake_pinion,
+      "intakeBelts": checklistData.intake_belts,
+      "intakeRollers": checklistData.intake_roller,
+      "intakeMotors": checklistData.intake_motors,
+      "intakeLimitSwitches": checklistData.intake_limit_switches,
+      "intakeLimeLights": checklistData.intake_lime_lights,
+      "intakeNutsAndBolts": checklistData.intake_nuts_and_bolts,
+      "intakeWires": checklistData.intake_wires,
+      "spindexerPanel": checklistData.spindexer_panel,
+      "spindexerChurros": checklistData.spindexer_churros,
+      "spindexerMotor": checklistData.spindexer_motor,
+      "spindexerWheels": checklistData.spindexer_wheels,
+      "spindexerNutsAndBolts": checklistData.spindexer_nuts_and_bolts,
+      "kickerPlates": checklistData.kicker_plates,
+      "kickerRollers": checklistData.kicker_roller,
+      "kickerBelts": checklistData.kicker_belts,
+      "kickerGears": checklistData.kicker_gears,
+      "kickerMotor": checklistData.kicker_motor,
+      "kickerRadio": checklistData.kicker_radio,
+      "kickerEthernetSwitch": checklistData.kicker_ethernet_switch,
+      "kickerNutsAndBolts": checklistData.kicker_nuts_and_bolts,
+      "kickerWires": checklistData.kicker_wires,
+      "shooterFlywheels": checklistData.shooter_flywheels,
+      "shooterHood": checklistData.shooter_hood,
+      "shooterHoodGears": checklistData.shooter_hood_gears,
+      "shooterGears": checklistData.shooter_gears,
+      "shooterMotors": checklistData.shooter_motors,
+      "shooterNutsAndBolts": checklistData.shooter_nuts_and_bolts,
+      "shooterWires": checklistData.shooter_wires,
       "allianceColor": checklistData.alliance_color,
       "notes": checklistData.note,
     };
