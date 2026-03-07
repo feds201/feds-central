@@ -120,6 +120,6 @@ class ChassisSimulationTest {
         var pose = chassis.getPose3d();
         assertEquals(5.0, pose.getX(), 0.01);
         assertEquals(4.0, pose.getY(), 0.01);
-        assertTrue(pose.getZ() > 0, "Chassis should be above ground");
+        assertEquals(0.0, pose.getZ(), 0.01, "Chassis on flat ground should report z≈0");
     }
 }
