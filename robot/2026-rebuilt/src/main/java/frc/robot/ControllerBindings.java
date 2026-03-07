@@ -128,7 +128,7 @@ public class ControllerBindings {
                         // Pulse intake extend/retract while held (5 roller rotations per pulse, 0.3s retract dwell)
                         shooterWheels.setStateCommand(shooter_state.SHOOTING),
                         shooterHood.setStateCommand(shooterhood_state.SHOOTING),
-                        intakeSubsystem.agitateWhileHeldRotations(5)
+                        intakeSubsystem.aggitateIntake()
                 ))
                 .onFalse(Commands.sequence(
                         feederSubsystem.setStateCommand(feeder_state.STOP),

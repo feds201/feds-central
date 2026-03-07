@@ -21,6 +21,7 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 
 import frc.robot.RobotMap;
 import frc.robot.subsystems.led.LedsSubsystem;
+import frc.robot.subsystems.shooter.ShooterWheels.shooter_state;
 import frc.robot.utils.LimelightHelpers;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -57,6 +58,9 @@ public class IntakeSubsystem extends SubsystemBase {
   private static final double ROLLER_OUTPUT = 0.45;
   private final Timer timer = new Timer();
 
+  private final double agitatedPosOut = 10.0; // TUNE 
+  private final double agitatedPosIn = 2; // TUNE
+
   // MotionMagic helper (create once and reuse)
   private final MotionMagicVoltage positionOut = new MotionMagicVoltage(Rotations.of(0));
 
@@ -76,8 +80,7 @@ public class IntakeSubsystem extends SubsystemBase {
   public enum IntakeState {
     DEFAULT,
     EXTENDED,
-    INTAKING,
-    AGITATE
+    INTAKING
   }
 
   public enum RollerState {
@@ -104,12 +107,11 @@ public class IntakeSubsystem extends SubsystemBase {
         moveIntakeWithPosition(extendedRotations);
         setRollerState(RollerState.ON);
       }
-      case AGITATE -> {
-        agitateTimed();
-      }
+    
+    }
 
     }
-  }
+  
 
   public Command extendIntake(){
     return runOnce(() -> setState(IntakeState.EXTENDED));
@@ -119,11 +121,13 @@ public class IntakeSubsystem extends SubsystemBase {
     return runOnce(() -> setState(IntakeState.DEFAULT));
   }
 
-  public Command agitateIntake() {
-    // Default agitate: 3 pulses, 20 roller rotations per pulse
-    // 4.11 Rotations / inch
-    return agitateByRotations(3, 20.0);
-  }
+ public Command aggitateIntake(){
+  moveIntakeWithPosition(agitatedPosOut); // MAKE A BREAK BETWEEN BOTH
+  moveIntakeWithPosition(agitatedPosIn);
+  return null;
+ }
+
+ 
 
   public IntakeState getState() {
     return this.currentState;
@@ -308,6 +312,7 @@ public class IntakeSubsystem extends SubsystemBase {
   public Command resetIntakeEncoder() {
     return runOnce(() -> motor.setPosition(0));
   }
+
 
 
 
