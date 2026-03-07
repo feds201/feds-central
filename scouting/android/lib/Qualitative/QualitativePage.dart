@@ -22,6 +22,7 @@ class _QualitativePage extends State<QualitativePage> {
   TextEditingController robotMatchStrategy = TextEditingController();
   TextEditingController defensePlay = TextEditingController();
   TextEditingController humanPlayerRole = TextEditingController();
+  TextEditingController stabilityReliability = TextEditingController();
 
   @override
   void initState() {
@@ -37,6 +38,7 @@ class _QualitativePage extends State<QualitativePage> {
     robotMatchStrategy.text = widget.record.getQ1();
     defensePlay.text = widget.record.getQ2();
     humanPlayerRole.text = widget.record.getQ3();
+    stabilityReliability.text = widget.record.getQ4();
   }
 
   @override
@@ -137,6 +139,13 @@ class _QualitativePage extends State<QualitativePage> {
         "question": "What does the human player do?",
         "observation": "Observe: Feeding, controlling, assisting",
         "controller": humanPlayerRole
+      },
+      {
+        "title": "Stability & Reliability",
+        "icon": Icon(Icons.build_circle),
+        "question": "Did the robot experience any issues?",
+        "observation": "Observe: Breaking, tipping, comms failure",
+        "controller": stabilityReliability
       }
     ];
 
@@ -166,7 +175,8 @@ class _QualitativePage extends State<QualitativePage> {
     widget.record.q2 = defensePlay.text.isNotEmpty ? defensePlay.text : "N/A";
     widget.record.q3 =
         humanPlayerRole.text.isNotEmpty ? humanPlayerRole.text : "N/A";
-    widget.record.q4 = "N/A";
+    widget.record.q4 =
+        stabilityReliability.text.isNotEmpty ? stabilityReliability.text : "N/A";
 
     QualitativeDataBase.PutData(widget.record.matchKey, widget.record.toJson());
     QualitativeDataBase.PrintAll();
@@ -182,6 +192,7 @@ class _QualitativePage extends State<QualitativePage> {
     robotMatchStrategy.dispose();
     defensePlay.dispose();
     humanPlayerRole.dispose();
+    stabilityReliability.dispose();
     super.dispose();
   }
 }

@@ -329,9 +329,16 @@ class _Checklist_recordState extends State<Checklist_record> {
           shooter_motors = existingRecord.shooter_motors;
           shooter_nuts_and_bolts = existingRecord.shooter_nuts_and_bolts;
           shooter_wires = existingRecord.shooter_wires;
-          notes.text = existingRecord.note;
-          notes2.text = existingRecord
-              .note; // Initialize second notes with same content initially
+          // Properly split the combined note back into notes1 and notes2
+          String fullNote = existingRecord.note;
+          if (fullNote.contains('---NOTES 2---')) {
+            List<String> parts = fullNote.split('---NOTES 2---');
+            notes.text = parts[0].trim();
+            notes2.text = parts.length > 1 ? parts[1].trim() : '';
+          } else {
+            notes.text = fullNote;
+            notes2.text = '';
+          }
 
           // Populate lists from boolean values
 

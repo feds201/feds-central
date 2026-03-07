@@ -260,6 +260,170 @@ Widget buildNumberBox(
   );
 }
 
+Widget buildNumberWithUnitBox(
+    String question,
+    double number,
+    Icon titleIcon,
+    List<String> units,
+    String selectedUnit,
+    Function(String) onValueChange,
+    Function(String) onUnitChange) {
+  return Padding(
+    padding: const EdgeInsets.all(8.0),
+    child: Container(
+      decoration: BoxDecoration(
+        color: islightmode() ? lightColors.white : darkColors.goodblack,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: islightmode()
+                ? Colors.grey.withOpacity(0.2)
+                : Colors.black.withOpacity(0.3),
+            spreadRadius: 2,
+            blurRadius: 5,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                IconTheme(
+                  data: IconThemeData(
+                    color: islightmode() ? Colors.black : lightColors.white,
+                  ),
+                  child: titleIcon,
+                ),
+                const SizedBox(width: 2),
+                Text("NUMBER + UNIT",
+                    style: GoogleFonts.museoModerno(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey)),
+              ],
+            ),
+            Wrap(
+              children: [
+                const SizedBox(width: 8),
+                Text(question,
+                    style: GoogleFonts.museoModerno(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: islightmode() ? Colors.black : lightColors.white,
+                    )),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: TextField(
+                    keyboardType:
+                        const TextInputType.numberWithOptions(decimal: true),
+                    style: TextStyle(
+                      color: islightmode() ? Colors.black : lightColors.white,
+                    ),
+                    decoration: InputDecoration(
+                      hintText: number > 0 ? number.toString() : '0',
+                      hintStyle: TextStyle(
+                        color:
+                            islightmode() ? Colors.grey : Colors.grey.shade400,
+                      ),
+                      filled: true,
+                      fillColor: islightmode()
+                          ? Colors.white
+                          : darkColors.goodblack.withOpacity(0.7),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(
+                          color: islightmode()
+                              ? Colors.grey
+                              : lightColors.light_grey,
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(
+                          color: islightmode()
+                              ? Colors.grey
+                              : lightColors.light_grey,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(
+                          color: islightmode()
+                              ? lightColors.light_blue
+                              : darkColors.advay_dark_blue,
+                          width: 2,
+                        ),
+                      ),
+                    ),
+                    onChanged: (value) {
+                      onValueChange(value);
+                    },
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  flex: 2,
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: islightmode()
+                          ? Colors.white
+                          : darkColors.goodblack.withOpacity(0.7),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color:
+                            islightmode() ? Colors.grey : lightColors.light_grey,
+                      ),
+                    ),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<String>(
+                        value: selectedUnit,
+                        isExpanded: true,
+                        dropdownColor: islightmode()
+                            ? Colors.white
+                            : const Color.fromARGB(255, 40, 40, 40),
+                        style: GoogleFonts.museoModerno(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: islightmode() ? Colors.black : Colors.white,
+                        ),
+                        icon: Icon(Icons.arrow_drop_down,
+                            color:
+                                islightmode() ? Colors.black54 : Colors.white54),
+                        items: units.map((String unit) {
+                          return DropdownMenuItem<String>(
+                            value: unit,
+                            child: Text(unit),
+                          );
+                        }).toList(),
+                        onChanged: (String? newValue) {
+                          if (newValue != null) {
+                            onUnitChange(newValue);
+                          }
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
 Widget buildDualBox(String question, Icon titleIcon, List<String> choices,
     String selectedValue, Function(String) onchange) {
   return Padding(

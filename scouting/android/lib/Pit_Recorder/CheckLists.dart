@@ -52,6 +52,13 @@ class _RecordState extends State<Record> {
   late double ClimbSuccessProbController;
   late int BatteriesController;
   late TextEditingController FramePerimeterController;
+  late double ShootingRateController;
+
+  // Unit selectors
+  String weightUnit = 'lbs';
+  String speedUnit = 'ft/s';
+  String clearanceUnit = 'in';
+  String shootingRateUnit = 'balls/sec';
 
   @override
   void initState() {
@@ -86,6 +93,7 @@ class _RecordState extends State<Record> {
     ClimbSuccessProbController = 0.0;
     BatteriesController = 0;
     FramePerimeterController = TextEditingController();
+    ShootingRateController = 0.0;
 
     // Load database and try to get existing data for this team
     PitDataBase.LoadAll();
@@ -117,6 +125,7 @@ class _RecordState extends State<Record> {
           ClimbSuccessProbController = existingRecord.climbSuccessProb;
           BatteriesController = existingRecord.batteries;
           FramePerimeterController.text = existingRecord.framePerimeter;
+          ShootingRateController = existingRecord.shootingRate;
 
           // Combine the existing images into ImageBlob
           // Filter out empty images and join with comma
@@ -200,30 +209,59 @@ class _RecordState extends State<Record> {
           buildTextBoxs(
             "Physical & Drive Stats",
             [
-              buildNumberBox("Total Weight (lbs)", WeightController,
+              buildNumberWithUnitBox(
+                  "Total Weight",
+                  WeightController,
                   Icon(Icons.monitor_weight, size: 30, color: Colors.grey),
+                  ['lbs', 'kg'],
+                  weightUnit,
                   (value) {
-                setState(() {
-                  WeightController = double.tryParse(value) ?? 0.0;
-                });
-              }),
-              buildNumberBox("Top Speed (ft/s)", SpeedController,
-                  Icon(Icons.speed, size: 30, color: Colors.red), (value) {
-                setState(() {
-                  SpeedController = double.tryParse(value) ?? 0.0;
-                });
-              }),
+                    setState(() {
+                      WeightController = double.tryParse(value) ?? 0.0;
+                    });
+                  },
+                  (unit) {
+                    setState(() {
+                      weightUnit = unit;
+                    });
+                  }),
+              buildNumberWithUnitBox(
+                  "Top Speed",
+                  SpeedController,
+                  Icon(Icons.speed, size: 30, color: Colors.red),
+                  ['ft/s', 'm/s', 'mph'],
+                  speedUnit,
+                  (value) {
+                    setState(() {
+                      SpeedController = double.tryParse(value) ?? 0.0;
+                    });
+                  },
+                  (unit) {
+                    setState(() {
+                      speedUnit = unit;
+                    });
+                  }),
               buildTextBox(
                   "Drive Motors",
                   "e.g. 4x Kraken",
                   Icon(Icons.motorcycle, size: 30, color: Colors.black),
                   DriveMotorTypeController),
-              buildNumberBox("Ground Clearance (in)", GroundClearanceController,
-                  Icon(Icons.height, size: 30, color: Colors.brown), (value) {
-                setState(() {
-                  GroundClearanceController = double.tryParse(value) ?? 0.0;
-                });
-              }),
+              buildNumberWithUnitBox(
+                  "Ground Clearance",
+                  GroundClearanceController,
+                  Icon(Icons.height, size: 30, color: Colors.brown),
+                  ['in', 'cm', 'mm'],
+                  clearanceUnit,
+                  (value) {
+                    setState(() {
+                      GroundClearanceController = double.tryParse(value) ?? 0.0;
+                    });
+                  },
+                  (unit) {
+                    setState(() {
+                      clearanceUnit = unit;
+                    });
+                  }),
               buildChoiceBox(
                   "Drive Train Type",
                   Icon(Icons.car_crash_outlined,
@@ -255,6 +293,22 @@ class _RecordState extends State<Record> {
                   AvgCycleTimeController = double.tryParse(value) ?? 0.0;
                 });
               }),
+              buildNumberWithUnitBox(
+                  "Shooting Rate",
+                  ShootingRateController,
+                  Icon(Icons.rocket_launch, size: 30, color: Colors.deepOrange),
+                  ['balls/sec', 'balls/min'],
+                  shootingRateUnit,
+                  (value) {
+                    setState(() {
+                      ShootingRateController = double.tryParse(value) ?? 0.0;
+                    });
+                  },
+                  (unit) {
+                    setState(() {
+                      shootingRateUnit = unit;
+                    });
+                  }),
               buildMultiChoiceBox(
                   "Intake Type",
                   Icon(Icons.shopping_cart_checkout_outlined,
@@ -440,13 +494,30 @@ class _RecordState extends State<Record> {
     // Ensure lists are specialized
     List<String> finalScoreObject = ["Fuel"]; // Default for 2026
 
+    // Convert weight to lbs for storage
+    double storedWeight = WeightController;
+    if (weightUnit == 'kg') storedWeight = WeightController * 2.20462;
+
+    // Convert speed to ft/s for storage
+    double storedSpeed = SpeedController;
+    if (speedUnit == 'm/s') storedSpeed = SpeedController * 3.28084;
+    if (speedUnit == 'mph') storedSpeed = SpeedController * 1.46667;
+
+    // Convert ground clearance to inches for storage
+    double storedClearance = GroundClearanceController;
+    if (clearanceUnit == 'cm') storedClearance = GroundClearanceController / 2.54;
+    if (clearanceUnit == 'mm') storedClearance = GroundClearanceController / 25.4;
+
+    // Convert shooting rate to balls/sec for storage
+    double storedShootingRate = ShootingRateController;
+    if (shootingRateUnit == 'balls/min') storedShootingRate = ShootingRateController / 60.0;
+
     PitRecord record = PitRecord(
         teamNumber: widget.team.teamNumber,
         scouterName: deviceName,
         eventKey: eventKey,
         driveTrainType: DrivetrainController,
-        autonType:
-            AutonController, // Might be empty if widget removed, relying on loaded or default
+        autonType: AutonController,
         scoreType: ScoreTypeController,
         intake: IntakeController,
         climbType: ClimbTypeController,
@@ -459,15 +530,16 @@ class _RecordState extends State<Record> {
         autoRoutes: AutoRoutesController,
         autoFuel: AutoFuelController,
         gameData: GameDataController == "Yes",
-        weight: WeightController,
-        speed: SpeedController,
+        weight: storedWeight,
+        speed: storedSpeed,
         driveMotorType: DriveMotorTypeController.text,
-        groundClearance: GroundClearanceController,
+        groundClearance: storedClearance,
         maxFuelCapacity: MaxFuelCapacityController,
         avgCycleTime: AvgCycleTimeController,
         climbSuccessProb: ClimbSuccessProbController,
         batteries: BatteriesController,
-        framePerimeter: FramePerimeterController.text);
+        framePerimeter: FramePerimeterController.text,
+        shootingRate: storedShootingRate);
 
     print('Recording data: $record');
     print("Hiv ${record.toJson()}");

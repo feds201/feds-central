@@ -126,6 +126,7 @@ class PitRecord {
   final double climbSuccessProb;
   final int batteries;
   final String framePerimeter;
+  final double shootingRate;
 
   PitRecord(
       {required this.teamNumber,
@@ -151,7 +152,8 @@ class PitRecord {
       this.avgCycleTime = 0.0,
       this.climbSuccessProb = 0.0,
       this.batteries = 0,
-      this.framePerimeter = ''});
+      this.framePerimeter = '',
+      this.shootingRate = 0.0});
 
   Map<String, dynamic> toJson() {
     return {
@@ -178,7 +180,8 @@ class PitRecord {
       "avgCycleTime": avgCycleTime,
       "climbSuccessProb": climbSuccessProb,
       "batteries": batteries,
-      "framePerimeter": framePerimeter
+      "framePerimeter": framePerimeter,
+      "shootingRate": shootingRate
     };
   }
 
@@ -249,6 +252,7 @@ class PitRecord {
       climbSuccessProb: (json['climbSuccessProb'] ?? 0.0).toDouble(),
       batteries: json['batteries'] ?? 0,
       framePerimeter: json['framePerimeter'] ?? '',
+      shootingRate: (json['shootingRate'] ?? 0.0).toDouble(),
     );
   }
 }
@@ -1794,6 +1798,26 @@ class PitCheckListDatabase {
 
   static void PrintAll() {
     log(_storage.toString());
+  }
+
+  static Map<String, double> getMostRecentBatteryInfo() {
+    LoadAll();
+    double latestBatteryNumber = 0.0;
+    double latestBatteryVoltage = 0.0;
+    int highestMatch = -1;
+    for (var record in _storage.values) {
+      final RegExp regExp = RegExp(r'(?:qm|sf|qf|f)(\d+)');
+      final match = regExp.firstMatch(record.matchkey);
+      if (match != null) {
+         int mNum = int.parse(match.group(1)!);
+         if (mNum > highestMatch && record.outgoing_number != 0.0) {
+           highestMatch = mNum;
+           latestBatteryNumber = record.outgoing_number;
+           latestBatteryVoltage = record.outgoing_battery_voltage;
+         }
+      }
+    }
+    return {'number': latestBatteryNumber, 'voltage': latestBatteryVoltage};
   }
 
   static List<dynamic> GetRecorderTeam() {

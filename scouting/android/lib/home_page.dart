@@ -4,7 +4,6 @@ import 'package:hive/hive.dart';
 import 'package:scouting_app/Pit_Checklist/Pit_Checklist.dart';
 import 'services/LockdownService.dart';
 import 'package:scouting_app/Qualitative/qualitative.dart';
-import 'package:scouting_app/services/DataBase.dart';
 import 'services/Colors.dart';
 import 'Experiment/ExpStateManager.dart';
 import 'Match_Pages/match_page.dart';
@@ -139,7 +138,7 @@ class _HomePageState extends State<HomePage>
       const SizedBox(height: 12),
       buildButton(
         context: context,
-        text: 'Record Pit',
+        text: 'PIT Scouting',
         color:
             islightmode() ? Colors.blue.shade100 : darkColors.advay_dark_blue,
         borderColor: Colors.blueAccent,
@@ -356,84 +355,9 @@ class _HomePageState extends State<HomePage>
             ),
           ),
           const SizedBox(height: 30),
-          _buildStatusWidget(),
           _ReminderWidget(),
           // Add more content here
         ],
-      ),
-    );
-  }
-
-  Widget _buildStatusWidget() {
-    PitCheckListDatabase.LoadAll();
-    var allRecords = PitCheckListDatabase.Export();
-    String lastBattery = "Unknown";
-    String bumperColor = "Unknown";
-
-    if (allRecords.isNotEmpty) {
-      for (var record in List.from(allRecords.values).reversed) {
-        if (record is PitChecklistItem && record.outgoing_number != 0.0) {
-          lastBattery = record.outgoing_number.toString();
-          bumperColor = record.alliance_color.isNotEmpty
-              ? record.alliance_color
-              : "Unknown";
-          break;
-        }
-      }
-    }
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-      child: Container(
-        padding: const EdgeInsets.all(16.0),
-        decoration: BoxDecoration(
-          color: islightmode()
-              ? Colors.white.withOpacity(0.8)
-              : Colors.black.withOpacity(0.4),
-          borderRadius: BorderRadius.circular(15),
-          border: Border.all(
-            color: Colors.blueAccent.withOpacity(0.5),
-            width: 1.5,
-          ),
-        ),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                Icon(Icons.battery_full, color: Colors.green),
-                SizedBox(width: 10),
-                Text(
-                  "Battery Tag: $lastBattery",
-                  style: GoogleFonts.museoModerno(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: islightmode() ? Colors.black87 : Colors.white,
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 10),
-            Row(
-              children: [
-                Icon(Icons.car_crash,
-                    color: bumperColor.toLowerCase() == 'red'
-                        ? Colors.red
-                        : (bumperColor.toLowerCase() == 'blue'
-                            ? Colors.blue
-                            : Colors.orange)),
-                SizedBox(width: 10),
-                Text(
-                  "Bumper Color: $bumperColor",
-                  style: GoogleFonts.museoModerno(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: islightmode() ? Colors.black87 : Colors.white,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -484,15 +408,8 @@ Widget _buildCustomAppBar(BuildContext context) {
     elevation: 0, // Remove shadow for a cleaner look
     actions: [
       IconButton(
-        icon: ShaderMask(
-          shaderCallback: (bounds) => const LinearGradient(
-            colors: [Colors.redAccent, Colors.lightBlueAccent],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ).createShader(bounds),
-          child: const Icon(Icons.attach_file_rounded,
-              size: 30, color: Colors.white),
-        ),
+        icon: const Icon(Icons.attach_file_rounded,
+            size: 30, color: Colors.white),
         onPressed: () {
           Route route = MaterialPageRoute(
               builder: (context) => const InfiniteZoomImage());
@@ -500,14 +417,7 @@ Widget _buildCustomAppBar(BuildContext context) {
         },
       ),
       IconButton(
-        icon: ShaderMask(
-          shaderCallback: (bounds) => const LinearGradient(
-            colors: [Colors.red, Colors.lightBlueAccent],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomLeft,
-          ).createShader(bounds),
-          child: const Icon(Icons.extension, size: 30, color: Colors.white),
-        ),
+        icon:   const Icon(Icons.extension, size: 30, color: Colors.white),
         onPressed: () {
           Route route = MaterialPageRoute(
               builder: (context) => const Plugins(), fullscreenDialog: true);
