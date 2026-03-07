@@ -210,7 +210,15 @@ public class IntakeSubsystem extends SubsystemBase {
   public void periodic() {
     switch (currentRollerState) {
       case ON:
-        rollerMotor.set(ROLLER_OUTPUT);
+        if (getState() == IntakeState.INTAKING){
+            setRollerState(RollerState.ON);
+        }
+
+        else {
+          setIntakeStateCommand(IntakeState.INTAKING);
+          setRollerState(RollerState.ON);
+        }
+
         leds.intakeSignal();
         break;
       case REVERSE:
