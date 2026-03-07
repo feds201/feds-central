@@ -51,9 +51,10 @@ public final class RobotMap {
         SIM,REAL,REPLAY;
     }
     public static final class IntakeSubsystemConstants {
-        public static final int kMotorID = 1;
+        public static final int kMotorID = 61;
         public static final int kLimit_switch_rID = 2;
         public static final int kLimit_switch_lID = 3; 
+        public static final int kRollerMotorID = 62;
 
     }
 
@@ -98,6 +99,18 @@ public final class RobotMap {
     }
 
     //All values subject to change, just placeholders for now
+    public static class PathfindConstants {
+        public static final double xP = 0.0;
+        public static final double xI = 0.0;
+        public static final double xD = 0.0;
+        public static final double yP = 0.0;
+        public static final double yI = 0.0;
+        public static final double yD = 0.0;
+        public static final double rotP = 0.0;
+        public static final double rotI = 0.0;
+        public static final double rotD = 0.0;
+    }
+
     public static class ShooterConstants {
         public static final int ShooterRightTop = 53;
         public static final int ShooterRightBottom = 52;
@@ -154,4 +167,5 @@ public final class RobotMap {
     }
 }
 
-  
+
+

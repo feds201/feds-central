@@ -270,17 +270,16 @@ class MatchPageState extends State<MatchPage>
 
     switch (selectedMatchType) {
       case 0:
-        var filteredMatches = matches
-            .where((match) => match['comp_level'] == 'qm')
-            .toList();
-            
+        var filteredMatches =
+            matches.where((match) => match['comp_level'] == 'qm').toList();
+
         // Add manual qualification matches
         List<dynamic> manualMatches = _loadManualMatches();
         var manualQualMatches = manualMatches
             .where((match) => match['comp_level'] == 'qm')
             .toList();
         filteredMatches.addAll(manualQualMatches);
-        
+
         filteredMatches.sort((a, b) => int.parse(a['match_number'].toString())
             .compareTo(int.parse(b['match_number'].toString())));
 
@@ -317,7 +316,9 @@ class MatchPageState extends State<MatchPage>
             if (comp.startsWith('f')) return 2;
             return 3;
           }
-          int compLevelComparison = getCompLevelValue(a['comp_level']).compareTo(getCompLevelValue(b['comp_level']));
+
+          int compLevelComparison = getCompLevelValue(a['comp_level'])
+              .compareTo(getCompLevelValue(b['comp_level']));
           if (compLevelComparison != 0) return compLevelComparison;
 
           int aValue = (a['set_number'] != null)
@@ -338,8 +339,10 @@ class MatchPageState extends State<MatchPage>
           'Playoff',
           Icons.sports_basketball,
           Colors.orange,
-          (match) => match['comp_level'].startsWith('sf') || match['comp_level'].startsWith('qf')
-              ? int.parse(match['set_number']?.toString() ?? match['match_number'].toString())
+          (match) => match['comp_level'].startsWith('sf') ||
+                  match['comp_level'].startsWith('qf')
+              ? int.parse(match['set_number']?.toString() ??
+                  match['match_number'].toString())
               : int.parse(match['match_number'].toString()),
         );
 
@@ -424,7 +427,7 @@ class MatchPageState extends State<MatchPage>
 
           final match = matches[index];
           final matchNumber = getMatchNumber(match);
-          
+
           String dynamicMatchTypeName = matchTypeName;
           if (matchTypeName == 'Playoff' && match['comp_level'] != null) {
             String comp = match['comp_level'].toString();
@@ -764,7 +767,7 @@ class MatchPageState extends State<MatchPage>
             false,
             false,
             false),
-        EndPoints(0, false, false, false, "", 0, 0, 0.0, 0, []),
+        EndPoints(0, false, false, false, false, "", 0, 0, 0.0, 0, []),
         teamNumber: teamNNumber.replaceAll('frc', ''),
         scouterName: _scouterName,
         matchKey: match['key'].toString(),
@@ -889,31 +892,42 @@ class MatchPageState extends State<MatchPage>
                           child: const Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(Icons.delete_outline, color: Colors.white, size: 24),
+                              Icon(Icons.delete_outline,
+                                  color: Colors.white, size: 24),
                               SizedBox(width: 8),
-                              Text('Delete', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                              Text('Delete',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold)),
                             ],
                           ),
                         ),
                         confirmDismiss: (direction) async {
                           return await showDialog<bool>(
-                            context: context,
-                            builder: (ctx) => AlertDialog(
-                              title: const Text('Delete Match?'),
-                              content: Text('Remove practice match ${match['match_number']}?'),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.of(ctx).pop(false),
-                                  child: const Text('Cancel'),
+                                context: context,
+                                builder: (ctx) => AlertDialog(
+                                  title: const Text('Delete Match?'),
+                                  content: Text(
+                                      'Remove practice match ${match['match_number']}?'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.of(ctx).pop(false),
+                                      child: const Text('Cancel'),
+                                    ),
+                                    ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.red),
+                                      onPressed: () =>
+                                          Navigator.of(ctx).pop(true),
+                                      child: const Text('Delete',
+                                          style:
+                                              TextStyle(color: Colors.white)),
+                                    ),
+                                  ],
                                 ),
-                                ElevatedButton(
-                                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                                  onPressed: () => Navigator.of(ctx).pop(true),
-                                  child: const Text('Delete', style: TextStyle(color: Colors.white)),
-                                ),
-                              ],
-                            ),
-                          ) ?? false;
+                              ) ??
+                              false;
                         },
                         onDismissed: (direction) {
                           _deleteManualMatch(match['key']?.toString() ?? '');
@@ -997,8 +1011,7 @@ class MatchPageState extends State<MatchPage>
               onPressed: () {
                 if (teamNumber.isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text('Please enter a team number')),
+                    const SnackBar(content: Text('Please enter a team number')),
                   );
                   return;
                 }
@@ -1008,19 +1021,18 @@ class MatchPageState extends State<MatchPage>
                                 Hive.box('matchData').get('matches')))
                             as List<dynamic>)
                         .firstWhere(
-                          (m) => m['event_key'] != null,
-                          orElse: () => {'event_key': 'practice'},
-                        )['event_key']
+                        (m) => m['event_key'] != null,
+                        orElse: () => {'event_key': 'practice'},
+                      )['event_key']
                     : 'practice';
 
-                String matchKey =
-                    '${eventKey}_pm$matchNumber';
+                String matchKey = '${eventKey}_pm$matchNumber';
 
-                String _allianceColor =
-                    (Hive.box('userData').get('alliance', defaultValue: 'Red') ??
-                            'Red')
-                        .toString()
-                        .trim();
+                String _allianceColor = (Hive.box('userData')
+                            .get('alliance', defaultValue: 'Red') ??
+                        'Red')
+                    .toString()
+                    .trim();
                 if (_allianceColor.isEmpty) _allianceColor = 'Red';
 
                 // Create synthetic match object

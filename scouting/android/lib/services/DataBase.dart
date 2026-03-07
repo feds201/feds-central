@@ -1105,6 +1105,7 @@ class EndPoints {
   bool Park = false;
   bool FeedToHP = false;
   bool Passing = false;
+  bool robotBroken = false;
   int EndNeutralTrips = 0;
   int ShootingAccuracy;
   double endgameTime;
@@ -1117,6 +1118,7 @@ class EndPoints {
     this.Park,
     this.FeedToHP,
     this.Passing,
+    this.robotBroken,
     this.Comments,
     this.EndNeutralTrips,
     this.ShootingAccuracy,
@@ -1137,6 +1139,7 @@ class EndPoints {
       "endgameActions": endgameActions,
       "Comments": Comments,
       "DrawingData": drawingData,
+      "robotBroken": robotBroken,
     };
   }
 
@@ -1146,6 +1149,7 @@ class EndPoints {
       json['Park'] ?? false,
       json['FeedToHP'] ?? false,
       json['Passing'] ?? false,
+      json['robotBroken'] ?? false,
       json['Comments'] ?? '',
       json['EndNeutralTrips'] ?? 0,
       (json['ShootingAccuracy'] as int?) ?? 3,
@@ -1158,7 +1162,7 @@ class EndPoints {
 
   @override
   String toString() {
-    return 'EndPoints{ClimbStatus: $ClimbStatus, Park: $Park, FeedToHP: $FeedToHP, Passing: $Passing, EndNeutralTrips: $EndNeutralTrips, ShootingAccuracy: $ShootingAccuracy, endgameTime: $endgameTime, endgameActions: $endgameActions, Comments: $Comments, DrawingData: $drawingData}';
+    return 'EndPoints{ClimbStatus: $ClimbStatus, Park: $Park, FeedToHP: $FeedToHP, Passing: $Passing, EndNeutralTrips: $EndNeutralTrips, ShootingAccuracy: $ShootingAccuracy, endgameTime: $endgameTime, endgameActions: $endgameActions, Comments: $Comments, DrawingData: $drawingData, robotBroken: $robotBroken }';
   }
 
   String toCsv() {
@@ -1364,6 +1368,7 @@ class LocalDataBase {
       data['Park'] ?? false,
       data['FeedToHP'] ?? false,
       data['Passing'] ?? false,
+      data['robotBroken'] ?? false,
       data['Comments'] ?? "",
       data['EndNeutralTrips'] ?? 0,
       data['ShootingAccuracy'] ?? 3,
@@ -1809,12 +1814,12 @@ class PitCheckListDatabase {
       final RegExp regExp = RegExp(r'(?:qm|sf|qf|f)(\d+)');
       final match = regExp.firstMatch(record.matchkey);
       if (match != null) {
-         int mNum = int.parse(match.group(1)!);
-         if (mNum > highestMatch && record.outgoing_number != 0.0) {
-           highestMatch = mNum;
-           latestBatteryNumber = record.outgoing_number;
-           latestBatteryVoltage = record.outgoing_battery_voltage;
-         }
+        int mNum = int.parse(match.group(1)!);
+        if (mNum > highestMatch && record.outgoing_number != 0.0) {
+          highestMatch = mNum;
+          latestBatteryNumber = record.outgoing_number;
+          latestBatteryVoltage = record.outgoing_battery_voltage;
+        }
       }
     }
     return {'number': latestBatteryNumber, 'voltage': latestBatteryVoltage};

@@ -381,8 +381,9 @@ Widget buildNumberWithUnitBox(
                           : darkColors.goodblack.withOpacity(0.7),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color:
-                            islightmode() ? Colors.grey : lightColors.light_grey,
+                        color: islightmode()
+                            ? Colors.grey
+                            : lightColors.light_grey,
                       ),
                     ),
                     child: DropdownButtonHideUnderline(
@@ -398,8 +399,9 @@ Widget buildNumberWithUnitBox(
                           color: islightmode() ? Colors.black : Colors.white,
                         ),
                         icon: Icon(Icons.arrow_drop_down,
-                            color:
-                                islightmode() ? Colors.black54 : Colors.white54),
+                            color: islightmode()
+                                ? Colors.black54
+                                : Colors.white54),
                         items: units.map((String unit) {
                           return DropdownMenuItem<String>(
                             value: unit,
@@ -696,6 +698,142 @@ Widget buildMultiChoiceBox(
                             onchange([]);
                           }
                         },
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+
+            Wrap(
+              children: [
+                const SizedBox(width: 8),
+                Text(
+                  question,
+                  style: GoogleFonts.museoModerno(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: islightmode() ? Colors.black : lightColors.white,
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 16),
+
+            Column(
+              children: choices.map((String choice) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.4),
+                          spreadRadius: 2,
+                          blurRadius: 5,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: ChoiceChip(
+                      label: Center(
+                        child: Text(
+                          choice,
+                          style: GoogleFonts.museoModerno(fontSize: 25),
+                        ),
+                      ),
+                      selectedColor: const Color.fromARGB(147, 0, 122, 248),
+                      backgroundColor: islightmode()
+                          ? lightColors.white
+                          : lightColors.light_grey,
+                      selected: selectedValues.contains(choice),
+                      side: const BorderSide(color: Colors.black),
+                      onSelected: (bool selected) {
+                        List<String> newSelectedValues =
+                            List.from(selectedValues);
+                        if (selected) {
+                          newSelectedValues.add(choice);
+                        } else {
+                          newSelectedValues.remove(choice);
+                        }
+                        onchange(newSelectedValues);
+                      },
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
+Widget buildBumperColorBox(
+  String question,
+  Icon titleIcon,
+  List<String> choices,
+  List<String> selectedValues,
+  Function(List<String>) onchange,
+) {
+  return Padding(
+    padding: const EdgeInsets.all(8.0),
+    child: Container(
+      decoration: BoxDecoration(
+        color: islightmode() ? lightColors.white : darkColors.goodblack,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.2),
+            spreadRadius: 2,
+            blurRadius: 5,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // -------------------------------
+            // TOP ROW WITH TITLE + SELECT ALL
+            // -------------------------------
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    titleIcon,
+                    const SizedBox(width: 2),
+                    Text(
+                      "MULTIPLE CHOICE",
+                      style: GoogleFonts.museoModerno(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ],
+                ),
+
+                // SELECT ALL CHECKBOX (top right)
+                Row(
+                  children: [
+                    Transform.scale(
+                      scale: 1.8, // <— THIS makes the checkbox itself bigger
+                      child: Container(
+                        height: 25,
+                        width: 25,
+                        decoration: BoxDecoration(
+                          color: const Color.fromARGB(255, 80, 80, 80),
+                          borderRadius: BorderRadius.circular(4),
+                          border: Border.all(
+                              color: const Color.fromARGB(255, 253, 253, 253),
+                              width: 1),
+                        ),
                       ),
                     ),
                   ],
