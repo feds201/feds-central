@@ -737,3 +737,13 @@
 [2026-03-07 08:55:58] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
 [2026-03-07 08:55:58] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
 [2026-03-07 08:55:58] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 08:56:58] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 08:56:58] [Scout Ops Server] Data fetched
+[2026-03-07 08:56:58] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 08:56:58] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 08:56:58] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 08:57:58] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 08:57:58] [Scout Ops Server] Data fetched
+[2026-03-07 08:57:58] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 08:57:58] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 08:57:58] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
