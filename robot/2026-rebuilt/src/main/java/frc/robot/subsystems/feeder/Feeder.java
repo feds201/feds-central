@@ -33,6 +33,7 @@ public class Feeder extends SubsystemBase {
   // subsystem states
   public enum feeder_state {
     RUN(Volts.of(7)),
+    REVERSE(Volts.of(-7)),
     STOP(Volts.of(0));
 
     private final Voltage targetVoltage;
@@ -61,6 +62,8 @@ public class Feeder extends SubsystemBase {
     config = new TalonFXConfiguration();
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    config.CurrentLimits.StatorCurrentLimitEnable = true;
+    config.CurrentLimits.StatorCurrentLimit = 60;
     // config.CurrentLimits.StatorCurrentLimit = 40;
     for (int i = 0; i < 2; ++i) {
       var status = feederMotor.getConfigurator().apply(config);

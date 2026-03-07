@@ -26,5 +26,6 @@ public final class TelemetryPublisher {
 
   public static synchronized double getShooterVelocityRps() { return shooterVelocityRps; }
   public static synchronized double getHoodAngleDeg() { return hoodAngleDeg; }
+  public static synchronized double getHoodPositionRotations() { return hoodAngleDeg / 360.0; }
   public static synchronized double getDistanceToHubM() { return distanceToHubM; }
 }

@@ -65,7 +65,8 @@ public class RobotContainer extends ControllerBindings {
         instance = this;
         ll4.getSettings().withImuMode(ImuMode.ExternalImu).save();
         setupDriveBindings(controller);
-        setupOperatorBindings(operaterController);
+        // setupOperatorBindings(operaterController);
+        // setupTestBindings(controller);
 
         // Configure RTU via RTUManager (separated from sim)
         configureRootTests();
@@ -120,9 +121,7 @@ public class RobotContainer extends ControllerBindings {
             pos -> {
                 try {
                     shooterHood.setStateCommand(ShooterHood.shooterhood_state.TEST).execute();
-                    pos ->{
-                      shooterHood.pos = () -> pos;
-                    }
+                    shooterHood.setAngle(Rotations.of(pos)); // pos is already in rotations (0-30)
                 } catch (Exception e) {
                 }
             });

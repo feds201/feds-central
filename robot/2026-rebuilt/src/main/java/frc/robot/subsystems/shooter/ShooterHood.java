@@ -159,7 +159,9 @@ public class ShooterHood extends SubsystemBase {
 
   public Angle getTargetPositionShooting()
   {
-     double d = dt.getState().Pose.getTranslation().getDistance(ShooterConstants.hubCenter);
+    //  double d = dt.getState().Pose.getTranslation().getDistance(ShooterConstants.hubCenter);
+              double d = dt.getDistanceToVirtualHub().in(Meters);
+
       return Rotations.of(RobotMap.ShooterConstants.kShootingPositionMap.get(d));
   }
 

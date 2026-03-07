@@ -109,9 +109,10 @@ public final class DiagnosticServer {
             // Telemetry JSON endpoint (live values published by robotPeriodic)
             server.createContext("/diag/" + sessionId + "/telemetry", exchange -> {
                 String json = String.format(
-                        "{\"shooterRps\":%.4f,\"hoodDeg\":%.3f,\"distM\":%.3f}",
+                        "{\"shooterRps\":%.4f,\"hoodDeg\":%.3f,\"hoodRot\":%.3f,\"distM\":%.3f}",
                         frc.robot.utils.RTU.TelemetryPublisher.getShooterVelocityRps(),
                         frc.robot.utils.RTU.TelemetryPublisher.getHoodAngleDeg(),
+                        frc.robot.utils.RTU.TelemetryPublisher.getHoodPositionRotations(),
                         frc.robot.utils.RTU.TelemetryPublisher.getDistanceToHubM()
                 );
                 byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
@@ -129,7 +130,7 @@ public final class DiagnosticServer {
                     return;
                 }
                 double v = frc.robot.utils.RTU.TelemetryPublisher.getShooterVelocityRps();
-                double h = frc.robot.utils.RTU.TelemetryPublisher.getHoodAngleDeg();
+                double h = frc.robot.utils.RTU.TelemetryPublisher.getHoodPositionRotations();
                 double d = frc.robot.utils.RTU.TelemetryPublisher.getDistanceToHubM();
                 CollectedSample s = new CollectedSample(System.currentTimeMillis(), v, h, d);
                 synchronized (collectedSamples) {
@@ -215,7 +216,7 @@ public final class DiagnosticServer {
                             rc.setShooterVelocityRps(velocity);
                         }
                         if (!Double.isNaN(hood)) {
-                            rc.setHoodAngleDeg(hood);
+                            rc.setHoodPosition(hood);
                         }
                     }
                     String resp = "{\"ok\":true}\n";
@@ -322,7 +323,7 @@ public final class DiagnosticServer {
                 try {
                     var q = exchange.getRequestURI().getQuery();
                     double velocity = frc.robot.utils.RTU.TelemetryPublisher.getShooterVelocityRps();
-                    double hood = frc.robot.utils.RTU.TelemetryPublisher.getHoodAngleDeg();
+                    double hood = frc.robot.utils.RTU.TelemetryPublisher.getHoodPositionRotations();
                     double distance = frc.robot.utils.RTU.TelemetryPublisher.getDistanceToHubM();
                     int rating = 3; // default middle rating
                     String notes = "";
@@ -640,7 +641,7 @@ public final class DiagnosticServer {
         sb.append("<h3>Live Telemetry</h3>");
         sb.append("<div class='telemetry-grid'>");
         sb.append("<div class='telemetry-item'><label>Shooter RPS:</label><span id='tel_shooter' class='telemetry-value'>--</span></div>");
-        sb.append("<div class='telemetry-item'><label>Hood Angle:</label><span id='tel_hood' class='telemetry-value'>--°</span></div>");
+        sb.append("<div class='telemetry-item'><label>Hood Position:</label><span id='tel_hood' class='telemetry-value'>-- rot</span></div>");
         sb.append("<div class='telemetry-item'><label>Distance:</label><span id='tel_dist' class='telemetry-value'>-- m</span></div>");
         sb.append("</div></div>");
 
@@ -660,12 +661,12 @@ public final class DiagnosticServer {
 
         // Hood angle controls
         sb.append("<div class='control-group'>");
-        sb.append("<label class='control-label'>Hood Angle (degrees):</label>");
+        sb.append("<label class='control-label'>Hood Position (rotations):</label>");
         sb.append("<div class='slider-control'>");
         sb.append("<button onclick='adjustHood(-0.5)'>-</button>");
-        sb.append("<input type='range' id='hood-slider' min='0' max='45' value='15' step='0.1' oninput='updateHoodDisplay()'>");
+        sb.append("<input type='range' id='hood-slider' min='0' max='30' value='15' step='0.1' oninput='updateHoodDisplay()'>");
         sb.append("<button onclick='adjustHood(0.5)'>+</button>");
-        sb.append("<input type='number' id='hood-input' value='15' min='0' max='45' step='0.1' onchange='syncHoodSlider()'>");
+        sb.append("<input type='number' id='hood-input' value='15' min='0' max='30' step='0.1' onchange='syncHoodSlider()'>");
         sb.append("</div></div>");
 
         // Action buttons
@@ -761,7 +762,7 @@ public final class DiagnosticServer {
             sb.append("    if(r.ok){\n");
             sb.append("      const j=await r.json();\n");
             sb.append("      document.getElementById('tel_shooter').textContent=j.shooterRps.toFixed(3);\n");
-            sb.append("      document.getElementById('tel_hood').textContent=j.hoodDeg.toFixed(2)+'°';\n");
+            sb.append("      document.getElementById('tel_hood').textContent=j.hoodRot.toFixed(2)+' rot';\n");
             sb.append("      document.getElementById('tel_dist').textContent=j.distM.toFixed(2)+' m';\n");
             sb.append("    }\n");
             sb.append("  }catch(e){}\n");
@@ -778,7 +779,7 @@ public final class DiagnosticServer {
 
             sb.append("function adjustHood(delta){\n");
             sb.append("  const input=document.getElementById('hood-input');\n");
-            sb.append("  const val=Math.max(0,Math.min(45,parseFloat(input.value)+delta));\n");
+            sb.append("  const val=Math.max(0,Math.min(30,parseFloat(input.value)+delta));\n");
             sb.append("  input.value=val.toFixed(1);\n");
             sb.append("  syncHoodSlider();\n");
             sb.append("}\n");

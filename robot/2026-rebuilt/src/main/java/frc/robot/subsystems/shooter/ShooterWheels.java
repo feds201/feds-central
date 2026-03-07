@@ -48,8 +48,8 @@ public class ShooterWheels extends SubsystemBase {
     SHOOTING(RotationsPerSecond.of(0)),
     IDLE(RotationsPerSecond.of(0)),
     PASSING(RotationsPerSecond.of(0)),
-    LAYUP(RotationsPerSecond.of(30)), 
-    HALFCOURT (RotationsPerSecond.of(85)); 
+    LAYUP(RotationsPerSecond.of(30)), // 30
+    HALFCOURT (RotationsPerSecond.of(85)); // 85 
 
     private final AngularVelocity targetVelocity;
 
@@ -188,7 +188,8 @@ public class ShooterWheels extends SubsystemBase {
   public AngularVelocity getTargetVelocityShooting()
   {
      
-     double d = dt.getState().Pose.getTranslation().getDistance(ShooterConstants.hubCenter);
+    //  double d = dt.getState().Pose.getTranslation().getDistance(ShooterConstants.hubCenter);
+         double d = dt.getDistanceToVirtualHub().in(Meters);
       return RotationsPerSecond.of(RobotMap.ShooterConstants.kShootingVelocityMap.get(d));
   }
 

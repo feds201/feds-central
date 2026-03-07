@@ -46,6 +46,7 @@ public class TeleopSwerve extends Command {
   public static final double MAX_SPEED = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
   public static final double MAX_ANGULAR_RATE = RotationsPerSecond.of(2).in(RadiansPerSecond);
   private final PIDController hubRotPID = new PIDController(25, 0, 0);
+  private double speedMultiplier = 1.0;
   private CommandSwerveDrivetrain dt;
   private CommandXboxController controller;
   
@@ -93,6 +94,33 @@ public class TeleopSwerve extends Command {
                           .andThen(new RunCommand(()->{}))
                           .finallyDo(()-> mode = driveMode.NORMALDRIVE));
   }
+
+  /** Command used to control swerve in teleop. */
+  public TeleopSwerve(CommandSwerveDrivetrain dt, CommandXboxController controller, double speedMultiplier) {
+    this.dt = dt;
+    this.controller = controller;
+    this.speedMultiplier = speedMultiplier;
+
+    currentRotation = dt.getState().Pose.getRotation();
+
+  driveNormal = new SwerveRequest.FieldCentric()
+  .withDeadband(MAX_SPEED*.07)
+  .withRotationalDeadband(MAX_ANGULAR_RATE*.07);
+    hubRotPID.enableContinuousInput(-180, 180);
+  falconDrive = new SwerveRequest.FieldCentric()
+  .withDeadband(MAX_SPEED*0.07)
+  .withRotationalDeadband(0);
+
+    swerveCommandEntry= tab.add("Swerve Command Status", swerveCommandType).getEntry();
+    tab.addDouble("Controller Pointing Angle", ()-> -(Math.atan2(controller.getRightX(), -controller.getRightY())/ (2*Math.PI) * 360));
+    tab.addDouble("Snapped Controller Pointing angle", ()-> currentJoystickAngle.in(Degrees));
+    addRequirements(this.dt);
+    controller.povLeft()
+            .toggleOnTrue(new InstantCommand(()-> mode = driveMode.FALCONDRIVE)
+                          .andThen(new RunCommand(()->{}))
+                          .finallyDo(()-> mode = driveMode.NORMALDRIVE));
+  }
+
 
   // Called when the command is initially scheduled.
   @Override
@@ -152,8 +180,8 @@ public class TeleopSwerve extends Command {
         AngularVelocity rotationalRateRadPerSec = errorRad.div(Seconds.of(0.1666));
 
   dt.setControl(falconDrive
-  .withVelocityX(-controller.getLeftY() * MAX_SPEED)
-  .withVelocityY(-controller.getLeftX() * MAX_SPEED)
+  .withVelocityX(-controller.getLeftY() * MAX_SPEED * speedMultiplier)
+  .withVelocityY(-controller.getLeftX() * MAX_SPEED * speedMultiplier)
   .withRotationalRate(rotationalRateRadPerSec));
 
         swerveCommandType = "FALCON";
@@ -191,8 +219,8 @@ public class TeleopSwerve extends Command {
           // We use FieldCentric so your Left Stick (driving) remains intuitive 
           // regardless of where the robot is facing.
       dt.setControl(driveNormal
-        .withVelocityX(-controller.getLeftY() *2)
-        .withVelocityY(-controller.getLeftX() *2)
+        .withVelocityX(-controller.getLeftY() *2 * speedMultiplier)
+        .withVelocityY(-controller.getLeftX() *2 * speedMultiplier)
         .withRotationalRate(DegreesPerSecond.of(rotationOutput)));
           
           swerveCommandType = "HUB_AIM";
