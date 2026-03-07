@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}Event Data{% endblock %}
+
+{% block header %}Event matches{% endblock %}
+
+{% block content %}
+{% if matches %}
+<ul class="data-list">
+{% for m in matches %}
+    <li class="data-item">
+        <strong>{{ m.key }}</strong> &ndash; {{ m.comp_level }} {{ m.match_number }}
+    </li>
+{% endfor %}
+</ul>
+{% else %}
+<p>No matches uploaded yet.</p>
+{% endif %}
+
+<form action="/post_event_file" method="post" enctype="multipart/form-data">
+    <label>Upload JSON file: <input type="file" name="Event"></label>
+    <button type="submit">Upload</button>
+</form>
+{% endblock %}

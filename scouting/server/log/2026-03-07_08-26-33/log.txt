@@ -1,0 +1,13 @@
+[2026-03-07 08:26:29] [Scout Ops Server] Logs cleared via keyboard 'c'
+[2026-03-07 08:26:30] [Scout Ops Server] Data fetched
+[2026-03-07 08:26:30] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:26:31] [Scout Ops Server] Data fetched
+[2026-03-07 08:26:31] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:26:32] [Scout Ops Server] Data fetched
+[2026-03-07 08:26:32] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:26:33] [Scout Ops Server] Data fetched
+[2026-03-07 08:26:33] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:26:33] [Scout Ops Server] 
+[2026-03-07 08:26:33] [Scout Ops Server] Gracefully stopping the server...
+[2026-03-07 08:26:33] [Scout Ops Server] 
+Server stopped.

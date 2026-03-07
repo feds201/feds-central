@@ -161,15 +161,17 @@ class QrCoder extends State<Qrgenerator> {
     bool serverStatus =
         await pluginStateManager.getPluginState("intergrateWithPyintelScoutz");
     if (serverStatus) {
-      String url = 'http://$ipAddress/send_data';
+      String url = 'http://$ipAddress/receive_match_csv';
       try {
-        print('Attempting to send data...');
+        print('Attempting to send CSV data...');
+        // Send raw CSV (not JSON) as requested
+        final csvBody = widget.matchRecord.toCsv();
         final response = await http.post(
           Uri.parse(url),
           headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'text/csv',
           },
-          body: jsonEncode({'device_name': deviceName, 'data': qrData}),
+          body: csvBody,
         );
 
         print('Response status: ${response.statusCode}');

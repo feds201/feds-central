@@ -35,11 +35,29 @@ class SettingsPageState extends State<SettingsPage> {
   TextEditingController eventKeyController = TextEditingController();
   String ApiKey = Hive.box('settings').get('ApiKey', defaultValue: '');
 
+  String? serverIp;
+
+  Future<void> fetchServerIp() async {
+    try {
+      final response =
+          await http.get(Uri.parse('http://<server-ip>:201/api/server_info'));
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        setState(() {
+          serverIp = data['server_ip'];
+        });
+      } else {
+        throw Exception('Failed to fetch server IP');
+      }
+    } catch (e) {
+      print('Error fetching server IP: $e');
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-    _checkInitialPermissions();
-    Settings.setApiKey(ApiKey);
+    fetchServerIp();
   }
 
   Future<void> _checkInitialPermissions() async {
@@ -576,11 +594,17 @@ class SettingsPageState extends State<SettingsPage> {
                           side: const BorderSide(color: Colors.black),
                           onSelected: (bool selected) {
                             setState(() {
-                              Hive.box('userData').deleteAll;
-                              Hive.box('matchData').deleteAll;
-                              Hive.box('settings').deleteAll;
-                              Hive.box('pitData').deleteAll;
-                              Hive.box('matchData').delete('matches');
+                              // Clear all data from Hive boxes
+                              Hive.box('userData').clear();
+                              Hive.box('matchData').clear();
+                              Hive.box('settings').clear();
+                              Hive.box('pitData').clear();
+
+                              // Log the action
+                              developer.log('All data cleared by user',
+                                  name: 'Data Cleared');
+
+                              print('All data cleared successfully.');
                             });
                           },
                         ),
@@ -657,6 +681,50 @@ class SettingsPageState extends State<SettingsPage> {
                         ),
                       ),
                     ],
+                  ),
+                  ElevatedButton(
+                    onPressed: serverIp == null
+                        ? null
+                        : () async {
+                            try {
+                              final response = await http.get(
+                                Uri.parse(
+                                    'http://$serverIp:201/api/download_event_file'),
+                              );
+
+                              if (response.statusCode == 200) {
+                                final directory =
+                                    await getApplicationDocumentsDirectory();
+                                final filePath = '${directory.path}/event.json';
+                                final file = File(filePath);
+                                await file.writeAsBytes(response.bodyBytes);
+
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                        'Event file downloaded successfully!'),
+                                    backgroundColor: Colors.green,
+                                  ),
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content:
+                                        Text('Failed to download event file.'),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                              }
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Error: $e'),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            }
+                          },
+                    child: Text('Download Event File'),
                   ),
                 ],
               ),
