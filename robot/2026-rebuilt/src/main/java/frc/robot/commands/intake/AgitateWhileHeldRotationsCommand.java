@@ -30,10 +30,10 @@ public class AgitateWhileHeldRotationsCommand extends Command {
 	}
 
 	/** Convenience: 0.3 s retract dwell by default. */
-	public AgitateWhileHeldRotationsCommand(IntakeSubsystem intake, double rotationsPerPulse) {
+  /* 	public AgitateWhileHeldRotationsCommand(IntakeSubsystem intake, double rotationsPerPulse) {
 		this(intake, rotationsPerPulse, 0.3);
 	}
-
+*/
 	@Override
 	public void initialize() {
 		moveAwayFromHome = true;

@@ -53,8 +53,7 @@ public class ControllerBindings {
                         shooterHood.setStateCommand(shooterhood_state.SHOOTING),
                         feederSubsystem.setStateCommand(feeder_state.RUN),
                         spinDexer.setStateCommand(spindexer_state.RUN),
-                      
-                        intakeSubsystem.agitateWhileHeldRotations(5.0)
+                        intakeSubsystem.setIntakeStateCommand(IntakeState.AGITATE)
                 ))
                 .onFalse(Commands.sequence(
                         feederSubsystem.setStateCommand(feeder_state.STOP),
@@ -128,7 +127,7 @@ public class ControllerBindings {
                         // Pulse intake extend/retract while held (5 roller rotations per pulse, 0.3s retract dwell)
                         shooterWheels.setStateCommand(shooter_state.SHOOTING),
                         shooterHood.setStateCommand(shooterhood_state.SHOOTING),
-                        intakeSubsystem.aggitateIntake()
+                        intakeSubsystem.setIntakeStateCommand(IntakeState.AGITATE)
                 ))
                 .onFalse(Commands.sequence(
                         feederSubsystem.setStateCommand(feeder_state.STOP),
@@ -169,8 +168,7 @@ public class ControllerBindings {
                 Commands.sequence(
                         feederSubsystem.setStateCommand(feeder_state.RUN),
                         spinDexer.setStateCommand(spindexer_state.RUN),
-                        // Pulse the intake while firing (run until release). 5 rotations per pulse.
-                        intakeSubsystem.agitateWhileHeldRotations(5.0)
+                        intakeSubsystem.setIntakeStateCommand(IntakeState.AGITATE)
                 )
         ).onFalse(
                 Commands.sequence(
