@@ -1,0 +1,37 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "RightTrenchToMid"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "RightIntake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "MidIntakeToRightBump"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "RightShootingToOutpost"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}
