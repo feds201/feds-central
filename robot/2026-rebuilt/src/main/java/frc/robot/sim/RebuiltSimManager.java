@@ -191,7 +191,6 @@ public class RebuiltSimManager {
     private final ScoringTracker scoringTracker;
     private final GroundClearance groundClearance;
     private final SimTelemetry telemetry;
-        private final edu.wpi.first.networktables.NetworkTableEntry simShooterForceSpawnEntry;
 
     // MapleSim swerve simulation
     private final SwerveDriveSimulation mapleSimDrive;
@@ -338,12 +337,8 @@ public class RebuiltSimManager {
                 gamePieceManager,
                 RebuiltGamePieces.FUEL,
                 () -> chassis.getPose2d(),
-                // ShooterSim expects hood angle in rotations (1.0 == 360°). simHoodAngleRad
-                // is stored in radians, so convert to rotations here.
-                () -> simHoodAngleRad / (2 * Math.PI),
-                // Use the real flywheel angular velocity (rotations per second) from
-                // the ShooterWheels subsystem so the simulated launch speed matches.
-                () -> shooterWheels.getVelocity().in(RotationsPerSecond),
+                () -> simHoodAngleRad,
+                () -> LAUNCH_SPEED_MPS,
                 () -> shooterWheels.getCurrentState() == shooter_state.SHOOTING
                         && feeder.getCurrentState() == feeder_state.RUN
                         && spindexer.getCurrentState() == spindexer_state.RUN,
@@ -353,13 +348,6 @@ public class RebuiltSimManager {
                 MUZZLE_FORWARD_OFFSET,
                 BARREL_LATERAL_OFFSET,
                 SHOTS_PER_SECOND);
-
-        // NetworkTables entry to force spawn a fuel from the shooter for testing
-        var nt = edu.wpi.first.networktables.NetworkTableInstance.getDefault();
-        var simTable = nt.getTable("Sim").getSubTable("Shooter");
-        simShooterForceSpawnEntry = simTable.getEntry("ForceSpawn");
-        // default false
-        simShooterForceSpawnEntry.setBoolean(false);
 
         // --- Scoring & Telemetry ---
         Logger.recordOutput("Sim/State", "Loading scoring");
@@ -490,16 +478,6 @@ public class RebuiltSimManager {
 
         // 12. Update shooter
         shooterSim.update(DT);
-
-                // If user sets Sim/Shooter/ForceSpawn = true from Shuffleboard/Scope, force a spawn
-                try {
-                        if (simShooterForceSpawnEntry.getBoolean(false)) {
-                                simShooterForceSpawnEntry.setBoolean(false);
-                                shooterSim.forceSpawn();
-                        }
-                } catch (Exception ignored) {
-                        // networktables may not be ready early in startup
-                }
 
         // 13. Update animation accumulators
                 if (intakeSubsystem.getRollerState() == RollerState.ON) {
