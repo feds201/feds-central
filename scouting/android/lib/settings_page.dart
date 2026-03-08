@@ -682,50 +682,6 @@ class SettingsPageState extends State<SettingsPage> {
                       ),
                     ],
                   ),
-                  ElevatedButton(
-                    onPressed: serverIp == null
-                        ? null
-                        : () async {
-                            try {
-                              final response = await http.get(
-                                Uri.parse(
-                                    'http://$serverIp:201/api/download_event_file'),
-                              );
-
-                              if (response.statusCode == 200) {
-                                final directory =
-                                    await getApplicationDocumentsDirectory();
-                                final filePath = '${directory.path}/event.json';
-                                final file = File(filePath);
-                                await file.writeAsBytes(response.bodyBytes);
-
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                        'Event file downloaded successfully!'),
-                                    backgroundColor: Colors.green,
-                                  ),
-                                );
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content:
-                                        Text('Failed to download event file.'),
-                                    backgroundColor: Colors.red,
-                                  ),
-                                );
-                              }
-                            } catch (e) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text('Error: $e'),
-                                  backgroundColor: Colors.red,
-                                ),
-                              );
-                            }
-                          },
-                    child: Text('Download Event File'),
-                  ),
                 ],
               ),
             ), // Load Match, Eject Match, Clear Data
