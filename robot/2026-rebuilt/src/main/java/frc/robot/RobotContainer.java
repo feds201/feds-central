@@ -72,6 +72,8 @@ public class RobotContainer extends ControllerBindings {
  
 
     private final RTUManager rtumanager = new RTUManager();
+
+
   private final SendableChooser<Command> autoChooser;
 
     public static RobotContainer getInstance() {
