@@ -48,8 +48,8 @@ public class ShooterWheels extends SubsystemBase {
     SHOOTING(RotationsPerSecond.of(0)),
     IDLE(RotationsPerSecond.of(0)),
     PASSING(RotationsPerSecond.of(0)),
-    LAYUP(RotationsPerSecond.of(30)), // 30
-    HALFCOURT (RotationsPerSecond.of(85)); // 85 
+    LAYUP(RotationsPerSecond.of(25)), // 30
+    HALFCOURT (RotationsPerSecond.of(35)); // 85 
 
     private final AngularVelocity targetVelocity;
 

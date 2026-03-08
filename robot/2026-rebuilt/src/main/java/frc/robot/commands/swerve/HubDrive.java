@@ -91,6 +91,12 @@ public class HubDrive extends Command {
           double smoothVelX = xLimiter.calculate(targetVelX);
           double smoothVelY = yLimiter.calculate(targetVelY);
 
+          if(smoothRotation > 0){
+            smoothRotation+= 15;
+          } else {
+            smoothRotation -= 15;
+          }
+
           dt.setControl(driveNormal
               .withVelocityX(smoothVelX)
               .withVelocityY(smoothVelY)
@@ -99,6 +105,7 @@ public class HubDrive extends Command {
          Logger.recordOutput("angular velocity (deg/s)", smoothRotation);
          Logger.recordOutput("targetVelX", smoothVelX);
          Logger.recordOutput("targetVelY", smoothVelY);
+         Logger.recordOutput("angular velocity (deg/Error", hubRotPID.getError());
           
     }
   
