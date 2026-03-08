@@ -117,12 +117,15 @@ export async function resumeAgentSession(
 // --- Streaming variants (for web chat SSE) ---
 
 export interface StreamEvent {
-  type: 'session' | 'delta' | 'tool' | 'result' | 'done' | 'error';
+  type: 'session' | 'delta' | 'tool' | 'tool_progress' | 'tool_done' | 'result' | 'done' | 'error';
   sessionId?: string;
   text?: string;
   toolName?: string;
+  toolUseId?: string;
   toolInput?: Record<string, unknown>;
   message?: string;
+  elapsedSeconds?: number;
+  isError?: boolean;
 }
 
 function* yieldAssistantContent(content: any[]): Generator<StreamEvent> {
@@ -130,7 +133,48 @@ function* yieldAssistantContent(content: any[]): Generator<StreamEvent> {
     if (block.type === 'text' && block.text) {
       yield { type: 'delta', text: block.text };
     } else if (block.type === 'tool_use') {
-      yield { type: 'tool', toolName: block.name, toolInput: block.input };
+      yield { type: 'tool', toolUseId: block.id, toolName: block.name, toolInput: block.input };
+    }
+  }
+}
+
+function* yieldToolResults(content: any[]): Generator<StreamEvent> {
+  for (const block of content) {
+    if (block.type === 'tool_result') {
+      const errorText = block.is_error
+        ? (typeof block.content === 'string' ? block.content : 'Tool error')
+        : undefined;
+      yield {
+        type: 'tool_done',
+        toolUseId: block.tool_use_id,
+        isError: !!block.is_error,
+        text: errorText,
+      };
+    }
+  }
+}
+
+function* handleStreamMessage(msg: any): Generator<StreamEvent> {
+  if (msg.type === 'assistant') {
+    const content = msg.message?.content;
+    if (Array.isArray(content)) {
+      yield* yieldAssistantContent(content);
+    }
+  }
+
+  if (msg.type === 'tool_progress') {
+    yield {
+      type: 'tool_progress',
+      toolUseId: msg.tool_use_id,
+      toolName: msg.tool_name,
+      elapsedSeconds: msg.elapsed_time_seconds,
+    };
+  }
+
+  if (msg.type === 'user' && msg.isSynthetic) {
+    const content = msg.message?.content;
+    if (Array.isArray(content)) {
+      yield* yieldToolResults(content);
     }
   }
 }
@@ -150,24 +194,19 @@ export async function* streamAgentSession(
     let sessionId = '';
     let sessionEmitted = false;
     for await (const msg of session.stream()) {
-      sessionId = msg.session_id ?? sessionId;
+      sessionId = (msg as any).session_id ?? sessionId;
 
       if (sessionId && !sessionEmitted) {
         yield { type: 'session', sessionId };
         sessionEmitted = true;
       }
 
-      if (msg.type === 'assistant') {
-        const content = (msg as any).message?.content;
-        if (Array.isArray(content)) {
-          yield* yieldAssistantContent(content);
-        }
-      }
+      yield* handleStreamMessage(msg);
 
-      if (msg.type === 'result') {
+      if ((msg as any).type === 'result') {
         const r = msg as any;
         if (r.is_error) {
-          yield { type: 'error', message: 'Agent encountered an error.' };
+          yield { type: 'error', message: r.errors?.join('; ') ?? 'Agent encountered an error.' };
         } else if (r.result) {
           yield { type: 'result', text: r.result };
         }
@@ -194,19 +233,14 @@ export async function* streamResumeAgentSession(
     await session.send(message);
     let currentSessionId = sessionId;
     for await (const msg of session.stream()) {
-      currentSessionId = msg.session_id ?? currentSessionId;
+      currentSessionId = (msg as any).session_id ?? currentSessionId;
 
-      if (msg.type === 'assistant') {
-        const content = (msg as any).message?.content;
-        if (Array.isArray(content)) {
-          yield* yieldAssistantContent(content);
-        }
-      }
+      yield* handleStreamMessage(msg);
 
-      if (msg.type === 'result') {
+      if ((msg as any).type === 'result') {
         const r = msg as any;
         if (r.is_error) {
-          yield { type: 'error', message: 'Agent encountered an error.' };
+          yield { type: 'error', message: r.errors?.join('; ') ?? 'Agent encountered an error.' };
         } else if (r.result) {
           yield { type: 'result', text: r.result };
         }

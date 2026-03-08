@@ -11,7 +11,7 @@ class lightColors {
 }
 
 class darkColors {
-  static final goodblack = const Color(0xFF151515);
+  static final goodblack = const Color(0xFF000000);
   static final advay_dark_red = Color.fromARGB(100, 161, 36, 37);
   static final dark_green = Color.fromARGB(255, 0, 128, 0);
   static final advay_dark_green = Color.fromARGB(100, 58, 106, 29);

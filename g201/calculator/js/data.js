@@ -88,7 +88,7 @@ export const modules = {
             options: [
                 { label: "Crystal Geyser, Nestle Pure Life, Dasani, Aquafina, Fiji, and Evian", eco_impact: "high", value: 3 },
                 { label: "Klean Kanteen, Hydro Flask, S'wheat, Ocean Bottle", eco_impact: "low", value: 1 },
-                { label: "None of the above", eco_impact: "medium", value: 0 },
+                { label: "None of the above", eco_impact: "medium", value: 1 },
             ],
             eco_tip: "Choose what kind of pack you use",
             eco_impact: "medium",
@@ -156,6 +156,7 @@ export const modules = {
         hint: "Pick the option that best describes your situation",
         type: "multiple-choice",
         options: [
+            { label: "Don't use lumber", eco_impact: "low", value: 1 },
             { label: "Throw it away", eco_impact: "high", value: 3 },
             { label: "Save it for next year", eco_impact: "medium", value: 2 },
             { label: "Repurpose/Donate/Sell", eco_impact: "low", value: 1 },
@@ -268,7 +269,7 @@ export const modules = {
 
     // --- FAB ---
     {
-        section: "III. Fab",
+        section: "III. Fabrication",
         question: "How often do you buy filament?",
         hint: "Pick the option that best describes your situation",
         type: "multiple-choice",
@@ -282,7 +283,7 @@ export const modules = {
         category: "materials"
     },
     {
-        section: "III. Fab",
+        section: "III. Fabrication",
         question: "What do you do with your extra lexan/polycarbonate?",
         hint: "Pick the option that best describes your situation",
         type: "multiple-choice",
@@ -297,7 +298,7 @@ export const modules = {
         category: "materials"
     },
     {
-        section: "III. Fab",
+        section: "III. Fabrication",
         question: "Do you use cardboard for prototyping?",
         hint: "Pick the option that best describes your situation",
         type: "multiple-choice",
@@ -310,7 +311,7 @@ export const modules = {
         category: "materials"
     },
     {
-        section: "III. Fab",
+        section: "III. Fabrication",
         question: "How many cardboard boxes/pieces did you use for prototyping?",
         hint: "Enter an integer value",
         type: "int",

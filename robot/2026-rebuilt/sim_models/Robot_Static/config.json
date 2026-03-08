@@ -1,0 +1,12 @@
+{
+  "name": "FEDS (Static)",
+  "sourceUrl": "",
+  "disableSimplification": true,
+  "rotations": [
+    { "axis": "x", "degrees": 180 },
+    { "axis": "z", "degrees": -90 }
+  ],
+  "position": [0, 0, 0],
+  "cameras": [],
+  "components": []
+}

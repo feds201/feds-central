@@ -9,7 +9,7 @@ class TklKeyboard extends StatefulWidget {
   final Function() doChange;
   final Function() doChangeNoIncrement;
   final Function() doChangeResetter;
-  double currentTime;
+  final double currentTime;
 
   TklKeyboard(
       {super.key,

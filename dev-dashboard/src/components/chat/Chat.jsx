@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback, useSyncExternalStore } from 'react'
 import {
-  AssistantRuntimeProvider, useLocalRuntime, useThread,
+  AssistantRuntimeProvider, useLocalRuntime, useThread, useMessage,
   ThreadPrimitive, MessagePrimitive, ComposerPrimitive,
 } from '@assistant-ui/react'
 import { MarkdownTextPrimitive } from '@assistant-ui/react-markdown'
@@ -9,6 +9,7 @@ import '@assistant-ui/react-markdown/styles/dot.css'
 import { MessageCircle, Plus, Trash2, Pencil, Check, X, Menu } from 'lucide-react'
 import { createChatAdapter } from '@/lib/chat/chatAdapter'
 import { onThreadsChanged } from '@/lib/chat/chatManager'
+import { getToolEmoji } from '@/lib/chat/toolUtils'
 import { getThreads, saveThread, deleteThread as removeThread, renameThread, getMessages } from '@/lib/chat/chatStorage'
 
 function MdText() {
@@ -25,15 +26,44 @@ function UserMessage() {
   )
 }
 
+function ToolCallBlock({ toolName, inputSummary, elapsedSeconds, done, error }) {
+  const emoji = getToolEmoji(toolName)
+  const time = done
+    ? `${(elapsedSeconds ?? 0).toFixed(1)}s`
+    : null
+
+  return (
+    <div className={`my-1 pl-2.5 border-l-2 ${error ? 'border-red-500/70' : done ? 'border-emerald-500/50' : 'border-yellow-500/50'}`}>
+      <div className="flex items-center gap-1.5 text-xs font-mono text-slate-400">
+        <span>{emoji}</span>
+        <span className="font-medium text-slate-300">{toolName}</span>
+        {inputSummary && (
+          <>
+            <span className="text-slate-600">—</span>
+            <span className="truncate text-slate-500">{inputSummary}</span>
+          </>
+        )}
+        {time && <span className="text-slate-600 ml-auto shrink-0">{time}</span>}
+        {!done && <span className="ml-auto shrink-0 inline-block h-2 w-2 rounded-full bg-yellow-500/60 animate-pulse" />}
+      </div>
+      {error && (
+        <div className="text-xs text-red-400/80 mt-0.5 truncate">
+          error: {error.length > 50 ? error.slice(0, 47) + '...' : error}
+        </div>
+      )}
+    </div>
+  )
+}
+
 function AssistantMessage() {
+  const isLast = useMessage((s) => s.isLast)
+
   return (
     <div className="flex justify-start mb-4">
       <div className="max-w-[80%] px-4 py-3 rounded-2xl bg-slate-800/80 border border-slate-700/50 text-slate-100">
         <MessagePrimitive.Parts components={{
           Text: MdText,
-          tools: { Fallback: ({ toolName }) => (
-            <div className="text-xs font-mono text-slate-400 my-1">⚙ {toolName}</div>
-          )},
+          tools: { Fallback: isLast ? ToolCallBlock : () => null },
         }} />
       </div>
     </div>

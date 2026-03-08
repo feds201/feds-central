@@ -1,5 +1,9 @@
 import threading
-import curses
+# curses is only used for the local dashboard; may not be available on Windows
+try:
+    import curses
+except ImportError:
+    curses = None
 import logging
 import os
 import shutil
@@ -11,15 +15,51 @@ import time
 import warnings
 from datetime import datetime
 from gevent.pywsgi import WSGIServer
-from flask import Flask, request, jsonify, send_file, render_template
+from flask import Flask, request, jsonify, send_file, render_template, redirect
+from flask_cors import CORS
 import json
 import psutil
 import requests
+import io
+import qrcode
 
-app = Flask(__name__)
+# Rebranding the server as Scout Ops Server
+app = Flask("Scout Ops Server")
+# allow cross‑origin requests from clients (Android/desktop web UI)
+CORS(app)
 
 TBA_API_KEY = os.environ.get('TBA_API_KEY')
 
+# base directories for file operations
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+OUTPUT_DIR = os.path.join(BASE_DIR, 'output_jsons')
+LOG_FILE = os.path.join(OUTPUT_DIR, 'log.txt')
+
+# ensure output directory and log file exist
+if not os.path.exists(OUTPUT_DIR):
+    os.makedirs(OUTPUT_DIR)
+if not os.path.exists(LOG_FILE):
+    with open(LOG_FILE, 'w') as f:
+        f.write('')
+
+# monkey‑patch sqlite3.connect so that any relative database path is resolved
+# inside the output directory. This saves us from changing dozens of calls.
+_original_sqlite_connect = sqlite3.connect
+
+def _sqlite_connect(path, *args, **kwargs):
+    if not os.path.isabs(path):
+        path = os.path.join(OUTPUT_DIR, path)
+    return _original_sqlite_connect(path, *args, **kwargs)
+
+sqlite3.connect = _sqlite_connect
+
+# Improved logging function
+def log_message(message):
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    formatted_message = f"[{timestamp}] [Scout Ops Server] {message}"
+    with open(LOG_FILE, 'a') as file:
+        file.write(formatted_message + '\n')
+    print(formatted_message)
 
 # Function to take input and save it
 def process_json_input():
@@ -29,7 +69,7 @@ def process_json_input():
         input_data = input(f"Enter JSON object {count} (or type 'exit' to stop): ")
 
         if input_data.lower() == 'exit':
-            print("Exiting...")
+            log_message("Exiting JSON input mode.")
             break
 
         try:
@@ -40,77 +80,56 @@ def process_json_input():
             output_filename = f"output_{count}.json"
 
             # Write the JSON data to a file
-            with open(output_filename, "w") as f:
+            with open(os.path.join(OUTPUT_DIR, output_filename), "w") as f:
                 json.dump(json_data, f, indent=4)
 
-            print(f"Processed and saved JSON object {count} as {output_filename}")
+            log_message(f"Processed and saved JSON object {count} as {output_filename}")
             count += 1
         except json.JSONDecodeError as e:
-            print(f"Error processing JSON input: {e}. Please check the format.")
+            log_message(f"Error processing JSON input: {e}. Please check the format.")
 
 # Create output directory if not exists
-if not os.path.exists("output_jsons"):
-    os.makedirs("output_jsons")
+if not os.path.exists(OUTPUT_DIR):
+    os.makedirs(OUTPUT_DIR)
 
-# Change to the directory where outputs will be saved
-os.chdir("output_jsons")
-
-
-def log_message(message):
-    with open('log.txt', 'a') as file:
-        file.write(f"{datetime.now()}: {message}\n")
-        file.close()
+# we no longer change working directory; paths will be constructed explicitly
 
 
 def get_server_info():
-    # Get server IP address
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.connect(('8.8.8.8', 80))
         server_ip = s.getsockname()[0]
         s.close()
-    except Exception as e:
+    except Exception:
         server_ip = "Unable to get IP Address"
 
-    # Get server status
-    server_status = "Running"  # Example, replace with actual status if available
+    try:
+        cpu_usage = psutil.cpu_percent()
+        memory_usage = psutil.virtual_memory().percent
+        storage_usage = psutil.disk_usage(BASE_DIR).percent
+        battery = psutil.sensors_battery()
+        battery_status = f"{battery.percent}%" if battery else "N/A"
+    except Exception:
+        cpu_usage = 0
+        memory_usage = 0
+        storage_usage = 0
+        battery_status = "N/A"
 
-    # Get server health
-    battery = psutil.sensors_battery()
-    plugged = battery.power_plugged
-    percent = str(battery.percent)
-    plugged = "Plugged In" if plugged else "Not Plugged In"
-    server_battery = percent + '% | ' + plugged
-    # Get server CPU usage
-    server_cpu_usage = psutil.cpu_percent(interval=1)
-
-    # Get server memory usage
-    memory_info = psutil.virtual_memory()
-    server_memory_usage = memory_info.percent
-
-    # Get server storage usage
-    storage_info = psutil.disk_usage('/')
-    server_storage_usage = storage_info.percent
-
-    # Create a dictionary with all the information
-    server_info = {
+    return {
         "ServerIP": server_ip,
-        "ServerStatus": server_status,
-        "ServerBattery": server_battery,
-        "ServerCPUUsage": server_cpu_usage,
-        "ServerMemoryUsage": server_memory_usage,
-        "ServerStorageUsage": server_storage_usage
+        "ServerBattery": battery_status,
+        "ServerCPUUsage": cpu_usage,
+        "ServerMemoryUsage": memory_usage,
+        "ServerStorageUsage": storage_usage
     }
-
-    # Return the information as a JSON string
-    return json.dumps(server_info, indent=4)
 
 
 # Initialize SQLite database
 def init_db():
     clear_log_file()
 
-    Devicesconn = sqlite3.connect('devices.db')
+    Devicesconn = sqlite3.connect(os.path.join(OUTPUT_DIR, 'devices.db'))
     Devicescursor = Devicesconn.cursor()
     Devicescursor.execute('''
         CREATE TABLE IF NOT EXISTS devices (
@@ -131,7 +150,7 @@ def init_db():
     Devicesconn.close()
     log_message("Device database initialized")
 
-    Matchconn = sqlite3.connect('match.db')
+    Matchconn = sqlite3.connect(os.path.join(OUTPUT_DIR, 'match.db'))
     Matchcursor = Matchconn.cursor()
     Matchcursor.execute('''
         CREATE TABLE IF NOT EXISTS event (
@@ -155,9 +174,12 @@ def create_log_folder():
     backup_dir = os.path.join(log_dir, timestamp)
     os.makedirs(backup_dir)
 
-    shutil.move('devices.db', os.path.join(backup_dir, 'devices.db'))
-    shutil.move('match.db', os.path.join(backup_dir, 'match.db'))
-    shutil.move('log.txt', os.path.join(backup_dir, 'log.txt'))
+    shutil.move(os.path.join(OUTPUT_DIR, 'devices.db'), os.path.join(backup_dir, 'devices.db'))
+    shutil.move(os.path.join(OUTPUT_DIR, 'match.db'), os.path.join(backup_dir, 'match.db'))
+    shutil.move(LOG_FILE, os.path.join(backup_dir, 'log.txt'))
+    pit_path = os.path.join(OUTPUT_DIR, 'pit_data.json')
+    if os.path.exists(pit_path):
+        shutil.move(pit_path, os.path.join(backup_dir, 'pit_data.json'))
     print(f"Moved databases to {backup_dir}")
 
 
@@ -166,23 +188,30 @@ def signal_handler(sig, frame):
     log_message("Gracefully stopping the server...")
     log_message("\nServer stopped.")
     create_log_folder()
-    curses.endwin()  # Restore terminal to original state
+    if curses:
+        try:
+            curses.endwin()  # Restore terminal to original state
+        except Exception:
+            pass
     sys.exit(0)
 
 
 # Function to run the Flask app in a separate thread
 def run_flask_app():
-    http_server = WSGIServer(('0.0.0.0', 201), app)
+    # allow PORT override (e.g. for Heroku, docker, etc.)
+    port = int(os.environ.get('PORT', 201))
+    http_server = WSGIServer(('0.0.0.0', port), app)
+    print(f"Starting HTTP server on port {port}")
     http_server.serve_forever()
 
 
 def read_log_file():
-    with open('log.txt', 'r') as file:
+    with open(LOG_FILE, 'r') as file:
         return file.readlines()
 
 
 def clear_log_file():
-    with open('log.txt', 'w') as file:
+    with open(LOG_FILE, 'w') as file:
         file.write('')
         file.close()
 
@@ -199,7 +228,7 @@ def curses_interface(stdscr):
     curses.start_color()
     curses.init_pair(1, curses.COLOR_GREEN, curses.COLOR_BLACK)
 
-    info = json.loads(get_server_info())  # Convert JSON string to dictionary
+    info = get_server_info()
 
     # Display the logo at the top
     logo = r"""
@@ -230,6 +259,8 @@ def curses_interface(stdscr):
     log_message("----------------------------------------------------")
     log_message("")
     # Loop to update the status and keep the UI responsive
+    help_shown_until = 0
+    help_text = "Press 'c' to clear logs | 'h' for help | Ctrl+C to exit"
     while True:
         details_box = curses.newwin(7, 37, 0 + 1, 3)
         details_box.box()
@@ -255,11 +286,47 @@ def curses_interface(stdscr):
         exit_box.box()
         exit_box.addstr(1, 10, "Press Ctrl+C to stop the server", curses.A_BOLD)
         exit_box.refresh()
+
+        # Non-blocking key handling
+        key = stdscr.getch()
+        if key != -1:
+            try:
+                ch = chr(key).lower()
+            except Exception:
+                ch = ''
+
+            if ch == 'c':
+                clear_log_file()
+                log_message("Logs cleared via keyboard 'c'")
+            elif ch == 'h':
+                help_shown_until = time.time() + 5
+
+        # If help requested, show a short help box above the exit box
+        if time.time() < help_shown_until:
+            help_w = len(help_text) + 4
+            help_box = curses.newwin(3, help_w, height - 6, width // 2 - help_w // 2)
+            help_box.box()
+            try:
+                help_box.addstr(1, 2, help_text, curses.A_BOLD)
+            except Exception:
+                pass
+            help_box.refresh()
+
         stdscr.refresh()
         time.sleep(1)
 
 
 # Flask routes
+@app.before_request
+def log_incoming_request():
+    try:
+        remote = request.remote_addr
+        path = request.path
+        method = request.method
+        log_message(f"Incoming HTTP {method} request for {path} from {remote}")
+    except Exception:
+        pass
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -282,8 +349,11 @@ def get_devices_json():
     conn = sqlite3.connect('devices.db')
     cursor = conn.cursor()
     cursor.execute('SELECT id, device_name, ip_address FROM devices')
-    devices = cursor.fetchall()
+    rows = cursor.fetchall()
     conn.close()
+    devices = []
+    for r in rows:
+        devices.append({"id": r[0], "device_name": r[1], "ip_address": r[2]})
     log_message(f"Devices fetched: {devices}")
     return jsonify(devices)
 
@@ -293,8 +363,9 @@ def get_devices_json():
 def get_data_all():
     conn = sqlite3.connect('devices.db')
     cursor = conn.cursor()
+    # include device id as third column so the page can clear by device
     cursor.execute('''
-        SELECT d.device_name, dd.data
+        SELECT d.id, d.device_name, dd.data
         FROM device_data dd
         JOIN devices d ON dd.device_id = d.id
     ''')
@@ -309,14 +380,22 @@ def get_data_all_json():
     conn = sqlite3.connect('devices.db')
     cursor = conn.cursor()
     cursor.execute('''
-        SELECT d.device_name, dd.data
+        SELECT d.id, d.device_name, dd.data
         FROM device_data dd
         JOIN devices d ON dd.device_id = d.id
     ''')
-    data = cursor.fetchall()
+    rows = cursor.fetchall()
     conn.close()
+    out = []
+    for r in rows:
+        # r: (device_id, device_name, data)
+        try:
+            parsed = json.loads(r[2])
+        except Exception:
+            parsed = r[2]
+        out.append({"device_id": r[0], "device_name": r[1], "data": parsed})
     log_message(f"Data fetched")
-    return jsonify(data)
+    return jsonify(out)
 
 
 # HTML and JSON endpoints for device-specific data
@@ -325,7 +404,7 @@ def get_data(device_id):
     conn = sqlite3.connect('devices.db')
     cursor = conn.cursor()
     cursor.execute('''
-        SELECT d.device_name, dd.data
+        SELECT d.id, d.device_name, dd.data
         FROM device_data dd
         JOIN devices d ON dd.device_id = d.id
         WHERE d.id = ?
@@ -341,15 +420,22 @@ def get_data_json(device_id):
     conn = sqlite3.connect('devices.db')
     cursor = conn.cursor()
     cursor.execute('''
-        SELECT d.device_name, dd.data
+        SELECT d.id, d.device_name, dd.data
         FROM device_data dd
         JOIN devices d ON dd.device_id = d.id
         WHERE d.id = ?
     ''', (device_id,))
-    data = cursor.fetchall()
+    rows = cursor.fetchall()
     conn.close()
+    out = []
+    for r in rows:
+        try:
+            parsed = json.loads(r[2])
+        except Exception:
+            parsed = r[2]
+        out.append({"device_id": r[0], "device_name": r[1], "data": parsed})
     log_message(f"Data fetched for device {device_id}")
-    return jsonify(data)
+    return jsonify(out)
 
 
 @app.route('/send_data', methods=['POST'])
@@ -397,19 +483,19 @@ def register():
 
 @app.route('/client_images/getAndroid', methods=['POST'])
 def getAndroid():
-    file_path = os.path.join(os.getcwd(), 'App', 'app-release.apk')
+    file_path = os.path.join(BASE_DIR, 'App', 'app-release.apk')
     return send_file(file_path, as_attachment=True)
 
 
 @app.route('/client_images/getServer', methods=['GET'])
 def getServer():
-    file_path = os.path.join(os.getcwd(), 'App', 'server.exe')
+    file_path = os.path.join(BASE_DIR, 'App', 'server.exe')
     return send_file(file_path, as_attachment=True)
 
 
 @app.route('/client_images/getWindows', methods=['GET'])
 def getWindows():
-    return send_file('./App/app-release.apk', as_attachment=True)
+    return send_file(os.path.join(BASE_DIR, 'App', 'app-release.apk'), as_attachment=True)
 
 
 @app.route('/client_images', methods=['GET'])
@@ -471,7 +557,7 @@ def send_pit_data():
 
     try:
         log_message(f"Pit data received: {data}")
-        with open('pit_data.json', 'w') as file:
+        with open(os.path.join(OUTPUT_DIR, 'pit_data.json'), 'w') as file:
             json.dump(data, file, indent=4)
         print("")
         return jsonify({"status": "success"})
@@ -521,16 +607,120 @@ def clear_data_for_device(device_id):
     return jsonify({"status": "success"})
 
 
+@app.route('/generate_qrcode/<device_id>', methods=['POST'])
+def generate_qrcode(device_id):
+    # create a simple QR code containing all data rows for the given device
+    conn = sqlite3.connect('devices.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT dd.data FROM device_data dd WHERE dd.device_id = ?', (device_id,))
+    rows = cursor.fetchall()
+    conn.close()
+    text = "\n".join(r[0] for r in rows)
+    img = qrcode.make(text or "")
+    buf = io.BytesIO()
+    img.save(buf, format='PNG')
+    buf.seek(0)
+    return send_file(buf, mimetype='image/png')
+
+
 @app.route('/get_event_file', methods=['GET'])
 def get_event_file():
+    # API that returns raw event JSON stored in the database
     conn = sqlite3.connect('match.db')
     cursor = conn.cursor()
     cursor.execute('SELECT match_data FROM event')
-    data = cursor.fetchall()
-    data = [json.loads(row[0]) for row in data]
+    rows = cursor.fetchall()
+    data = []
+    for row in rows:
+        raw = row[0]
+        try:
+            data.append(json.loads(raw))
+        except Exception:
+            # not JSON — return raw string so clients can handle CSV or plain text
+            data.append(raw)
     conn.close()
     log_message(f"Event data fetched")
     return jsonify(data)
+
+
+@app.route('/api/get_event_file', methods=['GET'])
+def get_event_file_api():
+    log_message("/api/get_event_file requested")
+    return get_event_file()
+
+
+@app.route('/api/get_event_file.csv', methods=['GET'])
+def get_event_file_csv():
+    """Return the stored event rows as a single CSV text response.
+
+    If the stored match_data rows look like CSV (contain commas), join them
+    with newlines and return with Content-Type text/csv. Otherwise return
+    a 204 No Content.
+    """
+    conn = sqlite3.connect('match.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT match_data FROM event')
+    rows = cursor.fetchall()
+    conn.close()
+
+    csv_lines = []
+    for row in rows:
+        raw = row[0]
+        # treat row as CSV if it contains a comma or newline
+        if isinstance(raw, str) and (',' in raw or '\n' in raw):
+            csv_lines.append(raw.strip())
+
+    if not csv_lines:
+        log_message('/api/get_event_file.csv: no CSV rows found')
+        return ('', 204)
+
+    csv_text = '\n'.join(csv_lines)
+    log_message('/api/get_event_file.csv: serving CSV')
+    return (csv_text, 200, {'Content-Type': 'text/csv; charset=utf-8'})
+
+
+@app.route('/receive_match_csv', methods=['POST'])
+def receive_match_csv():
+    # Accept raw CSV in the request body and store as a single row in match.db
+    content_type = request.headers.get('Content-Type', '')
+    if 'text/csv' not in content_type and 'text/plain' not in content_type:
+        return jsonify({"status": "error", "message": "Content-Type must be text/csv or text/plain"}), 400
+
+    csv_text = request.get_data(as_text=True)
+    if not csv_text:
+        return jsonify({"status": "error", "message": "Empty body"}), 400
+
+    conn = sqlite3.connect('match.db')
+    cursor = conn.cursor()
+    match_id = datetime.now().strftime('csv_%Y%m%d%H%M%S')
+    cursor.execute('INSERT INTO event (match_id, match_data) VALUES (?, ?)', (match_id, csv_text))
+    conn.commit()
+    conn.close()
+    log_message(f"Received match CSV stored as {match_id}")
+    return jsonify({"status": "success", "match_id": match_id})
+
+
+@app.route('/event', methods=['GET'])
+def event_page():
+    # render simple HTML list of matches stored in the database
+    conn = sqlite3.connect('match.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT match_data FROM event')
+    rows = cursor.fetchall()
+    matches = [json.loads(r[0]) for r in rows]
+    conn.close()
+    return render_template('event.html', matches=matches)
+
+
+@app.route('/logs', methods=['GET'])
+def view_logs():
+    # show log file contents in a preformatted block
+    try:
+        lines = read_log_file()
+        message = '<pre>' + '\n'.join(lines) + '</pre>'
+    except FileNotFoundError:
+        message = 'no log file yet'
+    return render_template('info.html', message=message)
 
 
 
@@ -540,6 +730,7 @@ def post_match():
         return jsonify({"status": "error", "message": "No file provided"}), 400
 
     file = request.files['Event']
+    # note: file.read() will be used below, no change needed
     try:
         data = json.load(file)
     except json.JSONDecodeError:
@@ -555,9 +746,16 @@ def post_match():
         conn.commit()
         conn.close()
         log_message(f"{len(data)} matches posted")
+        # if this request came from an HTML form, redirect back to UI
+        if request.content_type and request.content_type.startswith('multipart/form-data'):
+            return redirect('/event')
         return jsonify({"status": "success", "message": f"{len(data)} matches posted"}), 200
     except Exception as e:
         conn.close()
+        if request.content_type and request.content_type.startswith('multipart/form-data'):
+            # flash or log then redirect
+            log_message(f"Error posting event via form: {e}")
+            return redirect('/event')
         return jsonify({"status": "error", "message": str(e)}), 500
 
 
@@ -575,7 +773,7 @@ def clear_event_data():
 
 @app.route('/api/get_health', methods=['GET'])
 def get_health():
-    server_info = json.loads(get_server_info())
+    server_info = get_server_info()
     return jsonify(server_info)
 
 
@@ -599,9 +797,21 @@ def get_tba_team_data(team_number):
         return jsonify({"error": str(e)}), 500
 
 
+@app.route('/api/server_info', methods=['GET'])
+def get_server_info_endpoint():
+    return jsonify(get_server_info())
+
+
 # Main function
 def main():
-    mode = input("Enter mode (server/interpreter): ").strip().lower()
+    # simple argument-based mode selection; fallback to interactive prompt
+    args = [a.lower() for a in sys.argv[1:]]
+    if 'server' in args:
+        mode = 'server'
+    elif 'interpreter' in args or 'cli' in args:
+        mode = 'interpreter'
+    else:
+        mode = input("Enter mode (server/interpreter): ").strip().lower()
 
     if mode == "server":
         # Suppress specific warnings
@@ -614,8 +824,19 @@ def main():
         flask_thread.daemon = True
         flask_thread.start()
 
-        # Start the curses interface
-        curses.wrapper(curses_interface)
+        headless = ('--headless' in args) or os.environ.get('HEADLESS') == '1'
+        if headless or not curses:
+            if not curses and not headless:
+                print("curses module unavailable; falling back to headless mode")
+            print("Running server in headless mode (no curses interface)")
+            try:
+                while True:
+                    time.sleep(1)
+            except KeyboardInterrupt:
+                signal_handler(None, None)
+        else:
+            # Start the curses interface, will block until exit
+            curses.wrapper(curses_interface)
     elif mode == "interpreter":
         while True:
             process_json_input()

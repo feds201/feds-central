@@ -202,7 +202,6 @@ class AutonState extends State<Auton> {
           TklKeyboard(
             currentTime: shootingTime,
             onChange: (double time) {
-
               shootingTime = time;
             },
             doChange: () {

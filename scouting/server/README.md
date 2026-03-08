@@ -1,18 +1,18 @@
-# 🚀 ScoutOps Server
+# 🚀 Scout Ops Server
 
-The ScoutOps Server is the backbone of communication between the ScoutOps Android app and the ScoutOps Windows app. It utilizes SQL for data processing and storage and uses Python's requests library to communicate with devices. Additionally, it hosts all the necessary apps for download.
+The Scout Ops Server is the backbone of communication between the Scout Ops Android app and the Scout Ops Windows app. It utilizes SQL for data processing and storage and uses Python's requests library to communicate with devices. Additionally, it hosts all the necessary apps for download.
 
 ## 🔍 General Information
 
-- **Name:** ScoutOps Server
-- **Primary Purpose:** To facilitate communication and data exchange between the ScoutOps Android app and ScoutOps Windows app.
-- **Intended Users:** Admins and developers working with the ScoutOps ecosystem.
+- **Name:** Scout Ops Server
+- **Primary Purpose:** To facilitate communication and data exchange between the Scout Ops Android app and Scout Ops Windows app.
+- **Intended Users:** Admins and developers working with the Scout Ops ecosystem.
 - **Platforms Supported:** Server can be hosted on any platform that supports Python and SQL.
 
 ## ✨ Features and Functionality
 
 - **Main Features:**
-  - Facilitates communication between ScoutOps Android and Windows apps.
+  - Facilitates communication between Scout Ops Android and Windows apps.
   - Hosts downloadable apps for easy access.
   - Stores and processes data using SQL.
 
@@ -47,7 +47,7 @@ The ScoutOps Server is the backbone of communication between the ScoutOps Androi
 
 ### 📥 Installation and Configuration
 
-1. Clone the ScoutOps Server repository to your server.
+1. Clone the Scout Ops Server repository to your server.
 2. Install the necessary Python packages using `pip install -r requirements.txt`.
 3. Configure your SQL database connection in the server settings.
 4. Start the server using `python server.py`.
@@ -55,16 +55,17 @@ The ScoutOps Server is the backbone of communication between the ScoutOps Androi
 ### 🌐 Endpoints
 
 - **Download Android App:**
-  - `GET /getApp` - Downloads the ScoutOps Android app.
+  - `GET /getApp` - Downloads the Scout Ops Android app.
   
 - **Download Windows Client:**
-  - `GET /getDashboard` - Downloads the ScoutOps Windows client.
+  - `GET /getDashboard` - Downloads the Scout Ops Windows client.
 
 ### 🚀 Starting the Server
 
-- Run `python server.py` to start the ScoutOps Server.
+- Run `python server.py server` to start the Scout Ops Server.
+- Use `--headless` mode if running on a system without `curses` support.
 
-## 🛠️ Maintenance and Support
+### 🛠️ Maintenance and Support
 
 ### 🐛 Known Issues and Limitations
 
@@ -78,3 +79,7 @@ The ScoutOps Server is the backbone of communication between the ScoutOps Androi
 
 - Implement additional security measures.
 - Add more endpoints for enhanced functionality.
+
+---
+
+**Scout Ops Server** – Empowering FRC teams with seamless data management and communication.

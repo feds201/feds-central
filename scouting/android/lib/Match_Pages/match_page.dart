@@ -211,9 +211,9 @@ class MatchPageState extends State<MatchPage>
                 currentSelectedMatchType == 1,
               ),
               _buildNavDestination(
-                Icons.sports_rugby,
-                'Finals',
-                Colors.red,
+                Icons.sports_tennis,
+                'Practice',
+                Colors.green,
                 currentSelectedMatchType == 2,
               ),
               _buildNavDestination(
@@ -270,11 +270,18 @@ class MatchPageState extends State<MatchPage>
 
     switch (selectedMatchType) {
       case 0:
-        var filteredMatches = matches
+        var filteredMatches =
+            matches.where((match) => match['comp_level'] == 'qm').toList();
+
+        // Add manual qualification matches
+        List<dynamic> manualMatches = _loadManualMatches();
+        var manualQualMatches = manualMatches
             .where((match) => match['comp_level'] == 'qm')
-            .toList()
-          ..sort((a, b) => int.parse(a['match_number'].toString())
-              .compareTo(int.parse(b['match_number'].toString())));
+            .toList();
+        filteredMatches.addAll(manualQualMatches);
+
+        filteredMatches.sort((a, b) => int.parse(a['match_number'].toString())
+            .compareTo(int.parse(b['match_number'].toString())));
 
         return _buildMatchListView(
           filteredMatches,
@@ -285,40 +292,83 @@ class MatchPageState extends State<MatchPage>
         );
 
       case 1:
-        var filteredMatches =
-            matches.where((match) => match['comp_level'] == 'sf').toList()
-              ..sort((a, b) {
-                int aValue = a['comp_level'].startsWith('sf')
-                    ? int.parse(a['set_number'].toString())
-                    : int.parse(a['match_number'].toString());
-                int bValue = b['comp_level'].startsWith('sf')
-                    ? int.parse(b['set_number'].toString())
-                    : int.parse(b['match_number'].toString());
-                return aValue.compareTo(bValue);
-              });
+        var filteredMatches = matches
+            .where((match) =>
+                match['comp_level'] == 'sf' ||
+                match['comp_level'] == 'f' ||
+                match['comp_level'] == 'qf')
+            .toList();
+
+        // Add manual playoff matches
+        List<dynamic> manualMatchesForPlayoff = _loadManualMatches();
+        var manualPlayoffMatches = manualMatchesForPlayoff
+            .where((match) =>
+                match['comp_level'] == 'sf' ||
+                match['comp_level'] == 'f' ||
+                match['comp_level'] == 'qf')
+            .toList();
+        filteredMatches.addAll(manualPlayoffMatches);
+
+        filteredMatches.sort((a, b) {
+          int getCompLevelValue(String comp) {
+            if (comp.startsWith('qf')) return 0;
+            if (comp.startsWith('sf')) return 1;
+            if (comp.startsWith('f')) return 2;
+            return 3;
+          }
+
+          int compLevelComparison = getCompLevelValue(a['comp_level'])
+              .compareTo(getCompLevelValue(b['comp_level']));
+          if (compLevelComparison != 0) return compLevelComparison;
+
+          int aValue = (a['set_number'] != null)
+              ? int.parse(a['set_number'].toString())
+              : int.parse(a['match_number'].toString());
+          int bValue = (b['set_number'] != null)
+              ? int.parse(b['set_number'].toString())
+              : int.parse(b['match_number'].toString());
+          if (aValue == bValue) {
+            return int.parse(a['match_number'].toString())
+                .compareTo(int.parse(b['match_number'].toString()));
+          }
+          return aValue.compareTo(bValue);
+        });
 
         return _buildMatchListView(
           filteredMatches,
-          'Semifinal',
+          'Playoff',
           Icons.sports_basketball,
           Colors.orange,
-          (match) => match['comp_level'].startsWith('sf')
-              ? int.parse(match['set_number'].toString())
+          (match) => match['comp_level'].startsWith('sf') ||
+                  match['comp_level'].startsWith('qf')
+              ? int.parse(match['set_number']?.toString() ??
+                  match['match_number'].toString())
               : int.parse(match['match_number'].toString()),
         );
 
       case 2:
         var filteredMatches = matches
-            .where((match) => match['comp_level'] == 'f')
-            .toList()
-          ..sort((a, b) => int.parse(a['match_number'].toString())
-              .compareTo(int.parse(b['match_number'].toString())));
+            .where((match) =>
+                match['comp_level'] == 'p' || match['comp_level'] == 'pr')
+            .toList();
 
-        return _buildMatchListView(
+        // Add manual practice matches
+        List<dynamic> manualMatches = _loadManualMatches();
+        var manualPracticeMatches = manualMatches
+            .where((match) =>
+                match['comp_level'] == 'p' || match['comp_level'] == 'pr')
+            .toList();
+        filteredMatches.addAll(manualPracticeMatches);
+
+        // Sort all practice matches
+        filteredMatches.sort((a, b) => int.parse(a['match_number'].toString())
+            .compareTo(int.parse(b['match_number'].toString())));
+
+        return _buildPracticeMatchList(
           filteredMatches,
-          'Final',
-          Icons.sports_rugby,
-          Colors.red,
+          'Practice',
+          Icons.sports_tennis,
+          Colors.green,
           (match) => int.parse(match['match_number'].toString()),
         );
 
@@ -354,7 +404,7 @@ class MatchPageState extends State<MatchPage>
               'No $matchTypeName Matches',
               style: GoogleFonts.museoModerno(
                 fontSize: 20,
-                color: Colors.grey.shade600,
+                color: islightmode() ? darkColors.goodblack : lightColors.white,
               ),
             ),
           ],
@@ -362,30 +412,45 @@ class MatchPageState extends State<MatchPage>
       );
     }
 
-    return ListView.builder(
-      controller: _scrollController,
-      physics: const BouncingScrollPhysics(),
-      padding: const EdgeInsets.fromLTRB(8, 16, 8, 24),
-      itemCount: matches.length + 1,
-      itemBuilder: (BuildContext context, int index) {
-        if (index == 0) {
-          return ShowInsults();
-        }
-        index -= 1;
+    return Container(
+      color: islightmode() ? lightColors.white : darkColors.goodblack,
+      child: ListView.builder(
+        controller: _scrollController,
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(8, 16, 8, 24),
+        itemCount: matches.length + 1,
+        itemBuilder: (BuildContext context, int index) {
+          if (index == 0) {
+            return ShowInsults();
+          }
+          index -= 1;
 
-        final match = matches[index];
-        final matchNumber = getMatchNumber(match);
+          final match = matches[index];
+          final matchNumber = getMatchNumber(match);
 
-        return _buildEnhancedMatchCard(
-          context,
-          match,
-          matchTypeName,
-          matchIcon,
-          themeColor,
-          matchNumber,
-          index,
-        );
-      },
+          String dynamicMatchTypeName = matchTypeName;
+          if (matchTypeName == 'Playoff' && match['comp_level'] != null) {
+            String comp = match['comp_level'].toString();
+            if (comp.startsWith('f')) {
+              dynamicMatchTypeName = 'Final';
+            } else if (comp.startsWith('sf')) {
+              dynamicMatchTypeName = 'Semifinal';
+            } else if (comp.startsWith('qf')) {
+              dynamicMatchTypeName = 'Quarterfinal';
+            }
+          }
+
+          return _buildEnhancedMatchCard(
+            context,
+            match,
+            dynamicMatchTypeName,
+            matchIcon,
+            themeColor,
+            matchNumber,
+            index,
+          );
+        },
+      ),
     );
   }
 
@@ -412,12 +477,14 @@ class MatchPageState extends State<MatchPage>
       margin: const EdgeInsets.only(bottom: 16),
       child: Card(
         elevation: 4,
-        color: islightmode() ? Colors.white : Colors.grey[850],
+        color: islightmode() ? lightColors.white : darkColors.goodblack,
         shadowColor: themeColor.withOpacity(0.3),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
           side: BorderSide(
-            color: isScouted ? Colors.green : themeColor.withOpacity(0.2),
+            color: isScouted
+                ? lightColors.light_green
+                : themeColor.withOpacity(0.2),
             width: isScouted ? 2 : 1,
           ),
         ),
@@ -700,7 +767,7 @@ class MatchPageState extends State<MatchPage>
             false,
             false,
             false),
-        EndPoints(0, false, false, false, "", 0,0, 0.0, 0, []),
+        EndPoints(0, false, false, false, false, "", 0, 0, 0.0, 0, []),
         teamNumber: teamNNumber.replaceAll('frc', ''),
         scouterName: _scouterName,
         matchKey: match['key'].toString(),
@@ -723,6 +790,344 @@ class MatchPageState extends State<MatchPage>
         // Refresh to update Scouted status icons
       });
     });
+  }
+
+  Widget _buildPracticeMatchList(
+    List<dynamic> matches,
+    String matchTypeName,
+    IconData matchIcon,
+    Color themeColor,
+    Function(dynamic) getMatchNumber,
+  ) {
+    return Column(
+      children: [
+        // "Create Practice Match" button
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+          child: ElevatedButton.icon(
+            icon: const Icon(Icons.add_circle_outline),
+            label: const Text('Create Practice Match'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+              minimumSize: const Size(double.infinity, 50),
+            ),
+            onPressed: () => _showCreatePracticeMatchDialog(context),
+          ),
+        ),
+
+        // Show existing matches or empty message
+        Expanded(
+          child: matches.isEmpty
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        matchIcon,
+                        size: 60,
+                        color: themeColor.withOpacity(0.3),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'No $matchTypeName Matches',
+                        style: GoogleFonts.museoModerno(
+                          fontSize: 20,
+                          color: islightmode()
+                              ? darkColors.goodblack
+                              : lightColors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Use the button above to create a practice match',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey.shade500,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : ListView.builder(
+                  controller: _scrollController,
+                  physics: const BouncingScrollPhysics(),
+                  padding: const EdgeInsets.fromLTRB(8, 8, 8, 24),
+                  itemCount: matches.length + 1,
+                  itemBuilder: (BuildContext context, int index) {
+                    if (index == 0) {
+                      return ShowInsults();
+                    }
+                    index -= 1;
+
+                    final match = matches[index];
+                    final matchNumber = getMatchNumber(match);
+                    final bool isManual = match['manual_entry'] == true;
+
+                    final card = _buildEnhancedMatchCard(
+                      context,
+                      match,
+                      matchTypeName,
+                      matchIcon,
+                      themeColor,
+                      matchNumber,
+                      index,
+                    );
+
+                    if (isManual) {
+                      return Dismissible(
+                        key: Key(match['key']?.toString() ?? 'manual_$index'),
+                        direction: DismissDirection.endToStart,
+                        background: Container(
+                          margin: const EdgeInsets.only(bottom: 16),
+                          decoration: BoxDecoration(
+                            color: Colors.red.shade400,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          alignment: Alignment.centerRight,
+                          padding: const EdgeInsets.only(right: 24),
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.delete_outline,
+                                  color: Colors.white, size: 24),
+                              SizedBox(width: 8),
+                              Text('Delete',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold)),
+                            ],
+                          ),
+                        ),
+                        confirmDismiss: (direction) async {
+                          return await showDialog<bool>(
+                                context: context,
+                                builder: (ctx) => AlertDialog(
+                                  title: const Text('Delete Match?'),
+                                  content: Text(
+                                      'Remove practice match ${match['match_number']}?'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.of(ctx).pop(false),
+                                      child: const Text('Cancel'),
+                                    ),
+                                    ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.red),
+                                      onPressed: () =>
+                                          Navigator.of(ctx).pop(true),
+                                      child: const Text('Delete',
+                                          style:
+                                              TextStyle(color: Colors.white)),
+                                    ),
+                                  ],
+                                ),
+                              ) ??
+                              false;
+                        },
+                        onDismissed: (direction) {
+                          _deleteManualMatch(match['key']?.toString() ?? '');
+                          setState(() {});
+                        },
+                        child: card,
+                      );
+                    }
+
+                    return card;
+                  },
+                ),
+        ),
+      ],
+    );
+  }
+
+  void _showCreatePracticeMatchDialog(BuildContext context) {
+    int matchNumber = 1;
+    String teamNumber = '';
+
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: Text(
+            'Create Practice Match',
+            style: GoogleFonts.museoModerno(
+              fontWeight: FontWeight.bold,
+              color: Colors.green,
+            ),
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Match Number
+                TextFormField(
+                  decoration: InputDecoration(
+                    labelText: 'Match Number',
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                  ),
+                  keyboardType: TextInputType.number,
+                  initialValue: matchNumber.toString(),
+                  onChanged: (value) {
+                    matchNumber = int.tryParse(value) ?? 1;
+                  },
+                ),
+                const SizedBox(height: 16),
+
+                // Team Number
+                TextFormField(
+                  decoration: InputDecoration(
+                    labelText: 'Team Number to Scout',
+                    hintText: 'e.g. 201',
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                  ),
+                  keyboardType: TextInputType.number,
+                  onChanged: (value) {
+                    teamNumber = value.trim();
+                  },
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child:
+                  Text('Cancel', style: TextStyle(color: Colors.grey.shade700)),
+              onPressed: () => Navigator.of(dialogContext).pop(),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Create Match'),
+              onPressed: () {
+                if (teamNumber.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Please enter a team number')),
+                  );
+                  return;
+                }
+
+                String eventKey = Hive.box('matchData').get('matches') != null
+                    ? (jsonDecode(jsonEncode(
+                                Hive.box('matchData').get('matches')))
+                            as List<dynamic>)
+                        .firstWhere(
+                        (m) => m['event_key'] != null,
+                        orElse: () => {'event_key': 'practice'},
+                      )['event_key']
+                    : 'practice';
+
+                String matchKey = '${eventKey}_pm$matchNumber';
+
+                String _allianceColor = (Hive.box('userData')
+                            .get('alliance', defaultValue: 'Red') ??
+                        'Red')
+                    .toString()
+                    .trim();
+                if (_allianceColor.isEmpty) _allianceColor = 'Red';
+
+                // Create synthetic match object
+                Map<String, dynamic> syntheticMatch = {
+                  'key': matchKey,
+                  'comp_level': 'p',
+                  'match_number': matchNumber,
+                  'set_number': 1,
+                  'event_key': eventKey,
+                  'manual_entry': true,
+                  'alliances': {
+                    'red': {
+                      'team_keys': _allianceColor == 'Red'
+                          ? ['frc$teamNumber', 'frc0000', 'frc0000']
+                          : ['frc0000', 'frc0000', 'frc0000'],
+                    },
+                    'blue': {
+                      'team_keys': _allianceColor == 'Blue'
+                          ? ['frc$teamNumber', 'frc0000', 'frc0000']
+                          : ['frc0000', 'frc0000', 'frc0000'],
+                    },
+                  }
+                };
+
+                // Store the manual match in Hive
+                _saveManualMatch(syntheticMatch);
+
+                // Navigate to the match
+                _handleMatchSelection(syntheticMatch);
+                Navigator.of(dialogContext).pop();
+
+                // Refresh the UI
+                setState(() {});
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _saveManualMatch(Map<String, dynamic> match) {
+    List<Map<String, dynamic>> manualMatches = [];
+    final box = Hive.box('matchData');
+    final existingData = box.get('manualMatches');
+
+    if (existingData != null) {
+      try {
+        List<dynamic> decodedData = jsonDecode(existingData);
+        manualMatches = List<Map<String, dynamic>>.from(decodedData);
+      } catch (e) {
+        print('Error loading manual matches: $e');
+      }
+    }
+
+    // Check if a match with this key already exists
+    final matchIndex =
+        manualMatches.indexWhere((m) => m['key'] == match['key']);
+    if (matchIndex >= 0) {
+      manualMatches[matchIndex] = match;
+    } else {
+      manualMatches.add(match);
+    }
+
+    box.put('manualMatches', jsonEncode(manualMatches));
+  }
+
+  List<dynamic> _loadManualMatches() {
+    final box = Hive.box('matchData');
+    final existingData = box.get('manualMatches');
+
+    if (existingData != null) {
+      try {
+        List<dynamic> decodedData = jsonDecode(existingData);
+        return decodedData;
+      } catch (e) {
+        print('Error loading manual matches: $e');
+      }
+    }
+    return [];
+  }
+
+  void _deleteManualMatch(String matchKey) {
+    if (matchKey.isEmpty) return;
+    final box = Hive.box('matchData');
+    final existingData = box.get('manualMatches');
+    if (existingData == null) return;
+
+    try {
+      List<dynamic> manualMatches = jsonDecode(existingData);
+      manualMatches.removeWhere((m) => m['key']?.toString() == matchKey);
+      box.put('manualMatches', jsonEncode(manualMatches));
+    } catch (e) {
+      print('Error deleting manual match: $e');
+    }
   }
 
   Widget _buildSettingsView(List<dynamic> allMatches) {

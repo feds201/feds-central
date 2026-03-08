@@ -181,12 +181,6 @@ class QualitativeState extends State<Qualitative>
                 Colors.orange,
                 currentSelectedMatchType == 1,
               ),
-              _buildNavDestination(
-                Icons.sports_rugby,
-                'Finals',
-                Colors.red,
-                currentSelectedMatchType == 2,
-              ),
             ],
           ),
         ),
@@ -252,40 +246,41 @@ class QualitativeState extends State<Qualitative>
 
       case 1:
         var filteredMatches =
-            matches.where((match) => match['comp_level'] == 'sf').toList()
+            matches.where((match) => match['comp_level'] == 'sf' || match['comp_level'] == 'f' || match['comp_level'] == 'qf').toList()
               ..sort((a, b) {
-                int aValue = a['comp_level'].startsWith('sf')
-                    ? int.parse(a['set_number'].toString())
+                // First sort by comp_level (qf before sf before f)
+                int getCompLevelValue(String comp) {
+                  if (comp.startsWith('qf')) return 0;
+                  if (comp.startsWith('sf')) return 1;
+                  if (comp.startsWith('f')) return 2;
+                  return 3;
+                }
+                int compLevelComparison = getCompLevelValue(a['comp_level']).compareTo(getCompLevelValue(b['comp_level']));
+                if (compLevelComparison != 0) return compLevelComparison;
+
+                int aValue = a['comp_level'].startsWith('sf') || a['comp_level'].startsWith('qf')
+                    ? (a['set_number'] != null ? int.parse(a['set_number'].toString()) : 1)
                     : int.parse(a['match_number'].toString());
-                int bValue = b['comp_level'].startsWith('sf')
-                    ? int.parse(b['set_number'].toString())
+                int bValue = b['comp_level'].startsWith('sf') || b['comp_level'].startsWith('qf')
+                    ? (b['set_number'] != null ? int.parse(b['set_number'].toString()) : 1)
                     : int.parse(b['match_number'].toString());
-                return aValue.compareTo(bValue);
+                
+                int setComparison = aValue.compareTo(bValue);
+                if (setComparison != 0) return setComparison;
+
+                int aMatch = int.parse(a['match_number'].toString());
+                int bMatch = int.parse(b['match_number'].toString());
+                return aMatch.compareTo(bMatch);
               });
 
         return _buildMatchListView(
           filteredMatches,
-          'Semifinal',
+          'Playoff',
           Icons.sports_basketball,
           Colors.orange,
-          (match) => match['comp_level'].startsWith('sf')
-              ? int.parse(match['set_number'].toString())
+          (match) => match['comp_level'].startsWith('sf') || match['comp_level'].startsWith('qf')
+              ? (match['set_number'] != null ? int.parse(match['set_number'].toString()) : int.parse(match['match_number'].toString()))
               : int.parse(match['match_number'].toString()),
-        );
-
-      case 2:
-        var filteredMatches = matches
-            .where((match) => match['comp_level'] == 'f')
-            .toList()
-          ..sort((a, b) => int.parse(a['match_number'].toString())
-              .compareTo(int.parse(b['match_number'].toString())));
-
-        return _buildMatchListView(
-          filteredMatches,
-          'Final',
-          Icons.sports_rugby,
-          Colors.red,
-          (match) => int.parse(match['match_number'].toString()),
         );
 
       default:
@@ -337,10 +332,22 @@ class QualitativeState extends State<Qualitative>
         final match = matches[index];
         final matchNumber = getMatchNumber(match);
 
+        String dynamicMatchTypeName = matchTypeName;
+        if (matchTypeName == 'Playoff' && match['comp_level'] != null) {
+          String comp = match['comp_level'].toString();
+          if (comp.startsWith('f')) {
+            dynamicMatchTypeName = 'Final';
+          } else if (comp.startsWith('sf')) {
+            dynamicMatchTypeName = 'Semifinal';
+          } else if (comp.startsWith('qf')) {
+            dynamicMatchTypeName = 'Quarterfinal';
+          }
+        }
+
         return _buildQualitativeMatchCard(
           context,
           match,
-          matchTypeName,
+          dynamicMatchTypeName,
           matchIcon,
           themeColor,
           matchNumber,
@@ -359,17 +366,27 @@ class QualitativeState extends State<Qualitative>
     int matchNumber,
     int index,
   ) {
+    QualitativeDataBase.LoadAll();
+    bool isCompleted = QualitativeDataBase.GetData(match['key']) != null;
+
+    List<dynamic> redTeams = match['alliances']?['red']?['team_keys'] ?? [];
+    List<dynamic> blueTeams = match['alliances']?['blue']?['team_keys'] ?? [];
+    
+    String formatTeamList(List<dynamic> teams) {
+      return teams.map((t) => t.toString().replaceAll('frc', '')).join(', ');
+    }
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       child: Card(
-        color: islightmode() ? Colors.white : Colors.grey[850],
+        color: isCompleted ? Colors.green.withOpacity(0.1) : (islightmode() ? Colors.white : Colors.grey[850]),
         elevation: 4,
         shadowColor: themeColor.withOpacity(0.3),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
           side: BorderSide(
-            color: themeColor.withOpacity(0.2),
-            width: 1,
+            color: isCompleted ? Colors.green.withOpacity(0.5) : themeColor.withOpacity(0.2),
+            width: isCompleted ? 2.0 : 1.0,
           ),
         ),
         child: InkWell(
@@ -392,8 +409,8 @@ class QualitativeState extends State<Qualitative>
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Icon(
-                        matchIcon,
-                        color: themeColor,
+                        isCompleted ? Icons.check_circle : matchIcon,
+                        color: isCompleted ? Colors.green : themeColor,
                         size: 24,
                       ),
                     ),
@@ -407,27 +424,120 @@ class QualitativeState extends State<Qualitative>
                             style: GoogleFonts.museoModerno(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
-                              color: themeColor,
+                              color: isCompleted ? Colors.green.shade700 : themeColor,
                             ),
                           ),
                           Text(
                             '$matchTypeName Match',
                             style: TextStyle(
                               fontSize: 14,
-                              color:
-                                  islightmode() ? Colors.black : Colors.white,
+                              color: islightmode() ? Colors.black : Colors.white,
                             ),
                           ),
                         ],
                       ),
                     ),
-                    Icon(
-                      Icons.arrow_forward_ios_rounded,
-                      color: themeColor.withOpacity(0.6),
-                      size: 18,
-                    ),
+                    if (isCompleted)
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Colors.green.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          'COMPLETED',
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.green.shade800,
+                          ),
+                        ),
+                      )
+                    else
+                      Icon(
+                        Icons.arrow_forward_ios_rounded,
+                        color: themeColor.withOpacity(0.6),
+                        size: 18,
+                      ),
                   ],
                 ),
+                if (redTeams.isNotEmpty || blueTeams.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  const Divider(),
+                  const SizedBox(height: 8),
+                  
+                  // Alliance Teams Row
+                  Row(
+                    children: [
+                      // Red Alliance
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Red Alliance',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.red.shade400,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              formatTeamList(redTeams),
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: islightmode() ? Colors.black87 : Colors.white70,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      
+                      // VS divider
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          'VS',
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey.shade600,
+                          ),
+                        ),
+                      ),
+                      
+                      // Blue Alliance
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              'Blue Alliance',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.blue.shade400,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              formatTeamList(blueTeams),
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: islightmode() ? Colors.black87 : Colors.white70,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ],
             ),
           ),

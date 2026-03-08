@@ -1,0 +1,15 @@
+[2026-03-07 08:27:13] [Scout Ops Server] Logs cleared via keyboard 'c'
+[2026-03-07 08:27:14] [Scout Ops Server] Data fetched
+[2026-03-07 08:27:14] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:27:20] [Scout Ops Server] Server Communication Tested
+[2026-03-07 08:27:20] [Scout Ops Server] Device with IP: 10.232.195.222 already registered. Refreshed with new name: Ritesh Raj
+[2026-03-07 08:27:42] [Scout Ops Server] Server Communication Tested
+[2026-03-07 08:27:43] [Scout Ops Server] Device with IP: 10.232.195.222 already registered. Refreshed with new name: Ritesh Raj
+[2026-03-07 08:27:58] [Scout Ops Server] Data fetched
+[2026-03-07 08:27:58] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:28:58] [Scout Ops Server] Data fetched
+[2026-03-07 08:28:58] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:29:15] [Scout Ops Server] 
+[2026-03-07 08:29:15] [Scout Ops Server] Gracefully stopping the server...
+[2026-03-07 08:29:15] [Scout Ops Server] 
+Server stopped.

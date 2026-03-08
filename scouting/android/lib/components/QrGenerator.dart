@@ -11,20 +11,17 @@ import 'package:scouting_app/main.dart';
 import '../Match_Pages/match_page.dart';
 import '../Plugins/plugin_state_manager.dart';
 import '../services/DataBase.dart';
-import 'package:archive/archive.dart';
-import 'dart:io';
-import 'dart:convert';
 
 String compressToBase64(String data) {
-  final bytes = utf8.encode(data);
-  final compressed = GZipEncoder().encode(bytes)!;
-  return base64Url.encode(compressed);
+  print('Compressing data...');
+  print(data);
+  return data;
 }
 
 String decompressFromBase64(String encoded) {
-  final compressed = base64Url.decode(encoded);
-  final bytes = GZipDecoder().decodeBytes(compressed);
-  return utf8.decode(bytes);
+  print('Decompressing data...');
+  print(encoded);
+  return encoded;
 }
 
 class Qrgenerator extends StatefulWidget {
@@ -59,7 +56,6 @@ class QrCoder extends State<Qrgenerator> {
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-
           children: <Widget>[
             QrImageView(
               backgroundColor: Colors.white,
@@ -155,115 +151,117 @@ class QrCoder extends State<Qrgenerator> {
   }
 
   Future<void> InititiateTransactions(String qrData) async {
-    var box = Hive.box('settings');
-    String? ipAddress = box.get('ipAddress');
-    String? deviceName = box.get('deviceName');
+    // var box = Hive.box('settings');
+    // String? ipAddress = box.get('ipAddress');
+    // String? deviceName = box.get('deviceName');
 
-    print('IP Address: $ipAddress');
-    print('Device Name: $deviceName');
+    // print('IP Address: $ipAddress');
+    // print('Device Name: $deviceName');
 
-    bool serverStatus =
-        await pluginStateManager.getPluginState("intergrateWithPyintelScoutz");
-    if (serverStatus) {
-      String url = 'http://$ipAddress/send_data';
-      try {
-        print('Attempting to send data...');
-        final response = await http.post(
-          Uri.parse(url),
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: jsonEncode({'device_name': deviceName, 'data': qrData}),
-        );
+    // bool serverStatus =
+    //     await pluginStateManager.getPluginState("intergrateWithPyintelScoutz");
+    // if (serverStatus) {
+    //   String url = 'http://$ipAddress/receive_match_csv';
+    //   try {
+    //     print('Attempting to send CSV data...');
+    //     // Send raw CSV (not JSON) as requested
+    //     final csvBody = widget.matchRecord.toCsv();
+    //     final response = await http.post(
+    //       Uri.parse(url),
+    //       headers: {
+    //         'Content-Type': 'text/csv',
+    //       },
+    //       body: csvBody,
+    //     );
 
-        print('Response status: ${response.statusCode}');
-        if (response.statusCode == 200) {
-          final responseBody = jsonDecode(response.body);
-          print('Response body: $responseBody');
+    //     print('Response status: ${response.statusCode}');
+    //     if (response.statusCode == 200) {
+    //       final responseBody = jsonDecode(response.body);
+    //       print('Response body: $responseBody');
 
-          // Confirm function completion
-          print('Data sent successfully.');
+    //       // Confirm function completion
+    //       print('Data sent successfully.');
 
-          // Example: Confirm whether data clearing and navigation are happening
+    //       // Example: Confirm whether data clearing and navigation are happening
 
-          print(LocalDataBase.getData('Settings.apiKey'));
+    //       print(LocalDataBase.getData('Settings.apiKey'));
 
-          print("Data Cleared");
+    //       print("Data Cleared");
 
-          await Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => const MatchPage(),
-                fullscreenDialog: true),
-          );
+    //       await Navigator.push(
+    //         context,
+    //         MaterialPageRoute(
+    //             builder: (context) => const MatchPage(),
+    //             fullscreenDialog: true),
+    //       );
 
-          // Confirm navigation completion
-          print('Navigation to HomePage completed.');
-        } else {
-          // Handle non-200 responses
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: const Text('Error'),
-                content:
-                    Text('Server returned an error: ${response.statusCode}'),
-                actions: <Widget>[
-                  TextButton(
-                    child: const Text('OK'),
-                    onPressed: () async {
-                      await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const MatchPage(),
-                            fullscreenDialog: true),
-                      );
-                    },
-                  ),
-                ],
-              );
-            },
-          );
-        }
-      } catch (e) {
-        print('Error: $e');
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text('Error'),
-              content: const Text('Failed to communicate with the server.'),
-              actions: <Widget>[
-                TextButton(
-                  child: const Text('OK'),
-                  onPressed: () {
-                    print(LocalDataBase.getData('Settings.apiKey'));
-                    print("Data Cleared");
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const MatchPage(),
-                          fullscreenDialog: true),
-                    );
-                  },
-                ),
-              ],
-            );
-          },
-        );
-      }
-    } else {
-      print('Server is not running.');
-      print(LocalDataBase.getData('Settings.apiKey'));
-      print("Data Cleared");
+    //       // Confirm navigation completion
+    //       print('Navigation to HomePage completed.');
+    //     } else {
+    //       // Handle non-200 responses
+    //       showDialog(
+    //         context: context,
+    //         builder: (BuildContext context) {
+    //           return AlertDialog(
+    //             title: const Text('Error'),
+    //             content:
+    //                 Text('Server returned an error: ${response.statusCode}'),
+    //             actions: <Widget>[
+    //               TextButton(
+    //                 child: const Text('OK'),
+    //                 onPressed: () async {
+    //                   await Navigator.push(
+    //                     context,
+    //                     MaterialPageRoute(
+    //                         builder: (context) => const MatchPage(),
+    //                         fullscreenDialog: true),
+    //                   );
+    //                 },
+    //               ),
+    //             ],
+    //           );
+    //         },
+    //       );
+    //     }
+    //   } catch (e) {
+    //     print('Error: $e');
+    //     showDialog(
+    //       context: context,
+    //       builder: (BuildContext context) {
+    //         return AlertDialog(
+    //           title: const Text('Error'),
+    //           content: const Text('Failed to communicate with the server.'),
+    //           actions: <Widget>[
+    //             TextButton(
+    //               child: const Text('OK'),
+    //               onPressed: () {
+    //                 print(LocalDataBase.getData('Settings.apiKey'));
+    //                 print("Data Cleared");
+    //                 Navigator.push(
+    //                   context,
+    //                   MaterialPageRoute(
+    //                       builder: (context) => const MatchPage(),
+    //                       fullscreenDialog: true),
+    //                 );
+    //               },
+    //             ),
+    //           ],
+    //         );
+    //       },
+    //     );
+    //   }
+    // } else {
+    //   print('Server is not running.');
+    //   print(LocalDataBase.getData('Settings.apiKey'));
+    //   print("Data Cleared");
 
-      await Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(
-            builder: (context) => const MatchPage(), fullscreenDialog: true),
-        (Route<dynamic> route) => false,
-      );
-    }
+    //   await Navigator.pushAndRemoveUntil(
+    //     context,
+    //     MaterialPageRoute(
+    //         builder: (context) => const MatchPage(), fullscreenDialog: true),
+    //     (Route<dynamic> route) => false,
+    //   );
+    // }
   }
 }
 

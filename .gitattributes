@@ -1,0 +1,2 @@
+# 3D model files stored in Git LFS
+*.glb filter=lfs diff=lfs merge=lfs -text
