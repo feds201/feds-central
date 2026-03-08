@@ -1,5 +1,6 @@
 package frc.robot;
 
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -16,6 +17,7 @@ import frc.robot.commands.swerve.HubDrive;
 import frc.robot.commands.swerve.PassingDrive;
 import frc.robot.commands.swerve.TeleopSwerve;
 import frc.robot.RobotMap.ShooterConstants;
+import frc.robot.commands.intake.*;
 
 /**
  * Helper that wires controller buttons to subsystem commands. Dependencies
@@ -99,24 +101,26 @@ public class ControllerBindings {
 
         // Default drive command: field-centric swerve with left stick + right stick rotation
         drivetrain.setDefaultCommand(new TeleopSwerve(drivetrain, driver, 0.1));
-
+        driver.b().onTrue(feederSubsystem.setStateCommand(feeder_state.REVERSE).andThen(spinDexer.setStateCommand(spindexer_state.REVERSE)))
+        .onFalse(feederSubsystem.commandStop().andThen(spinDexer.setStateCommand(spindexer_state.STOP)));
         // M key (Right bumper): intake rollers
         driver.rightBumper()
                 .whileTrue(intakeSubsystem.setRollerStateCommand(RollerState.ON))
                 .onFalse(intakeSubsystem.setRollerStateCommand(RollerState.OFF));
 
-        driver.y()
-                .onTrue(Commands.sequence(
-                        feederSubsystem.setStateCommand(feeder_state.RUN),
-                        spinDexer.setStateCommand(spindexer_state.RUN),
-                        shooterHood.setStateCommand(shooterhood_state.HALFCOURT),
-                        shooterWheels.setStateCommand(shooter_state.HALFCOURT)))
-                .onFalse(Commands.sequence(
-                        feederSubsystem.setStateCommand(feeder_state.STOP),
-                        spinDexer.setStateCommand(spindexer_state.STOP),
-                        shooterWheels.setStateCommand(shooter_state.IDLE),
-                        shooterHood.setStateCommand(shooterhood_state.IN)));
-
+        // driver.y()
+        //         .onTrue(Commands.sequence(
+        //                 feederSubsystem.setStateCommand(feeder_state.RUN),
+        //                 spinDexer.setStateCommand(spindexer_state.RUN),
+        //                 shooterHood.setStateCommand(shooterhood_state.HALFCOURT),
+        //                 shooterWheels.setStateCommand(shooter_state.HALFCOURT)))
+        //         .onFalse(Commands.sequence(
+        //                 feederSubsystem.setStateCommand(feeder_state.STOP),
+        //                 spinDexer.setStateCommand(spindexer_state.STOP),
+        //                 shooterWheels.setStateCommand(shooter_state.IDLE),
+        //                 shooterHood.setStateCommand(shooterhood_state.IN)));
+        driver.y().onTrue(feederSubsystem.commandRun().andThen(spinDexer.setStateCommand(spindexer_state.RUN))).onFalse(feederSubsystem.commandStop().andThen(spinDexer.setStateCommand(spindexer_state.STOP)));
+        
 
         // Button to shoot from against hub — run shooter/feeder/spindexer + agitate in parallel while held
         driver.x()
