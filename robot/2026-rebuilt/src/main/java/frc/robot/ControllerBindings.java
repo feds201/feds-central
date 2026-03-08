@@ -104,9 +104,9 @@ public class ControllerBindings {
         drivetrain.setDefaultCommand(new TeleopSwerve(drivetrain, driver, 0.1));
         driver.b().onTrue(feederSubsystem.setStateCommand(feeder_state.REVERSE).andThen(spinDexer.setStateCommand(spindexer_state.REVERSE)))
         .onFalse(feederSubsystem.commandStop().andThen(spinDexer.setStateCommand(spindexer_state.STOP)));
-        // M key (Right bumper): intake rollers
+        // M key (Right bumper): reverse intake rollers
         driver.rightBumper()
-                .whileTrue(intakeSubsystem.setRollerStateCommand(RollerState.ON))
+                .whileTrue(intakeSubsystem.setRollerStateCommand(RollerState.REVERSE))
                 .onFalse(intakeSubsystem.setRollerStateCommand(RollerState.OFF));
 
         // driver.y()
@@ -155,24 +155,38 @@ public class ControllerBindings {
                 ).alongWith(new HubDrive(drivetrain, driver)))
                 .onFalse(
                         Commands.sequence(
-                                shooterHood.setStateCommand(shooterhood_state.OUT),
+                                shooterHood.setStateCommand(shooterhood_state.IN),
                                 shooterWheels.setStateCommand(shooter_state.IDLE)
                         ));
 
         // If in neutral zone, face outpost and ready shoot (passing shot)
         driver.povRight().and(() -> ShooterConstants.neutralZone.contains(drivetrain.getState().Pose.getTranslation())).whileTrue(
                 Commands.sequence(
-                        shooterHood.setStateCommand(shooterhood_state.PASSING),
-                        shooterWheels.setStateCommand(shooter_state.PASSING)
+                        shooterHood.setStateCommand(shooterhood_state.OUT),
+                        shooterWheels.setStateCommand(shooter_state.LAYUP)
                 ).alongWith(new PassingDrive(drivetrain, driver)))
                 .onFalse(
                         Commands.sequence(
-                                shooterHood.setStateCommand(shooterhood_state.OUT),
+                                shooterHood.setStateCommand(shooterhood_state.IN),
                                 shooterWheels.setStateCommand(shooter_state.IDLE)
                         ));
 
         // Button to fire, if swerve is aimed and shooter is at speed.
         driver.rightTrigger().and(HubDrive::pidAtSetpoint).and(shooterWheels::atSetpoint).whileTrue(
+                Commands.sequence(
+                        feederSubsystem.setStateCommand(feeder_state.RUN),
+                        spinDexer.setStateCommand(spindexer_state.RUN)
+                        // Pulse the intake while firing (run until release). 5 rotations per pulse.
+                        // intakeSubsystem.agitateWhileHeldRotations(15.0)
+                )
+        ).onFalse(
+                Commands.sequence(
+                        feederSubsystem.setStateCommand(feeder_state.STOP),
+                        spinDexer.setStateCommand(spindexer_state.STOP)
+                )
+        );
+
+        driver.rightTrigger().and(PassingDrive::pidAtSetpoint).whileTrue(
                 Commands.sequence(
                         feederSubsystem.setStateCommand(feeder_state.RUN),
                         spinDexer.setStateCommand(spindexer_state.RUN)
@@ -205,9 +219,11 @@ public class ControllerBindings {
         operator.leftBumper()
                 .onTrue(shooterHood.setMotorPower(-0.1))
                 .onFalse(shooterHood.setMotorPower(0.0));
+
+        operator.rightTrigger().onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED));
+        operator.rightBumper().onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT));
+        
         //Add multiplier to hood angle
-        operator.x().
-        onTrue(new InstantCommand(() -> feederSubsystem.setStateCommand(feeder_state.REVERSE)));
         operator.a()
                 .onTrue(new InstantCommand(() -> shooterHood.updateHoodAngleMultiplier(.01)));
         operator.b()

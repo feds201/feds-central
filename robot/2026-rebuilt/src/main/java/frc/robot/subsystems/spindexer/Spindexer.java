@@ -20,6 +20,7 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -61,6 +62,8 @@ public class Spindexer extends SubsystemBase {
   private final VoltageOut vOut = new VoltageOut(0);
   private spindexer_state currentState = spindexer_state.STOP;
   private final SysIdRoutine m_spindexerSysId;
+  //Timer to switch between forward and reverse during indexing
+  private Timer washingMachineTimer = new Timer();
 
   // private final SysIdRoutine m_SpindexerSysId;
 
@@ -109,8 +112,35 @@ public class Spindexer extends SubsystemBase {
    
   @Override
   public void periodic() {
-    Logger.recordOutput("Robot/Shooter/SpindexerOn", currentState == spindexer_state.RUN);
+    Logger.recordOutput("Robot/Shooter/SpindexerOn", currentState == spindexer_state.RUN || currentState == spindexer_state.REVERSE);
     Logger.recordOutput("Robot/Shooter/SpindexerState", currentState.toString());
+
+    switch (currentState) {
+      case RUN:
+        if(!washingMachineTimer.isRunning()){
+          washingMachineTimer.start();
+        }
+        if(washingMachineTimer.hasElapsed(2)){
+          setState(spindexer_state.REVERSE);
+          washingMachineTimer.stop();
+          washingMachineTimer.reset();
+        }
+        break;
+      case REVERSE:
+        if(!washingMachineTimer.isRunning()){
+          washingMachineTimer.start();
+        }
+        if(washingMachineTimer.hasElapsed(0.5)){
+          setState(spindexer_state.RUN);
+          washingMachineTimer.stop();
+          washingMachineTimer.reset();
+        }
+        break;
+
+
+      case STOP:
+        break;
+    }
   }
 
   // subsystem getters

@@ -19,6 +19,7 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -55,6 +56,8 @@ public class Feeder extends SubsystemBase {
   private final VoltageOut vOut = new VoltageOut(0);
   private feeder_state currentState = feeder_state.STOP;
   private final SysIdRoutine m_feederSysId;
+  //Timer to switch between forward and reverse during indexing
+  private Timer washingMachineTimer = new Timer();
 
   public Feeder() {
     feederMotor = new TalonFX(FeederConstants.kFeederKickerMotorId);
@@ -103,6 +106,32 @@ public class Feeder extends SubsystemBase {
   public void periodic() {
     Logger.recordOutput("Robot/Shooter/FeederOn", currentState == feeder_state.RUN);
     Logger.recordOutput("Robot/Shooter/FeederState", currentState.toString());
+     switch (currentState) {
+      case RUN:
+        if(!washingMachineTimer.isRunning()){
+          washingMachineTimer.start();
+        }
+        if(washingMachineTimer.hasElapsed(2)){
+          setState(feeder_state.REVERSE);
+          washingMachineTimer.stop();
+          washingMachineTimer.reset();
+        }
+        break;
+      case REVERSE:
+        if(!washingMachineTimer.isRunning()){
+          washingMachineTimer.start();
+        }
+        if(washingMachineTimer.hasElapsed(0.5)){
+          setState(feeder_state.RUN);
+          washingMachineTimer.stop();
+          washingMachineTimer.reset();
+        }
+        break;
+
+
+      case STOP:
+        break;
+    }
   }
 
   // subsystem getters

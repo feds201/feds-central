@@ -6,8 +6,12 @@ package frc.robot.utils;
 
 import org.littletonrobotics.junction.Logger;
 
+import com.pathplanner.lib.util.FlippingUtil;
+
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.RobotMap;
 import frc.robot.RobotMap.ShooterConstants;
 
@@ -21,17 +25,22 @@ public class ShootOnTheMove {
      */
     public static Translation2d calculateVirtualGoal(Pose2d robotPose, ChassisSpeeds chassisSpeeds) {
         // Get shooter field position
+        Translation2d hubCenter = RobotMap.ShooterConstants.hubCenter;
+         if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
+                hubCenter = FlippingUtil.flipFieldPosition(RobotMap.ShooterConstants.hubCenter);
+            }
+        
         Translation2d shooterFieldPosition = getShooterFieldPosition(robotPose);
 
         // Compute shooter field velocity
         Translation2d shooterVelocity = getShooterFieldVelocity(robotPose, chassisSpeeds);
 
         // Compute approximate flight time
-        double distToGoal = shooterFieldPosition.getDistance(RobotMap.ShooterConstants.hubCenter);
+        double distToGoal = shooterFieldPosition.getDistance(hubCenter);
 
         // Adjust goal position for motion
         double flightTime = ShooterConstants.kFlightTimeMap.get(distToGoal);
-        Translation2d virtualGoal = ShooterConstants.hubCenter.minus(shooterVelocity.times(flightTime));
+        Translation2d virtualGoal = hubCenter.minus(shooterVelocity.times(flightTime));
 
         return virtualGoal;
 

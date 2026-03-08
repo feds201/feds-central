@@ -471,12 +471,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     public Distance getDistanceToVirtualHub() {
         Translation2d pose = getState().Pose.getTranslation();
+        //virtual goal calculation flips itself to opposing alliance automatically
         Translation2d virtualGoal = ShootOnTheMove.calculateVirtualGoal(getState().Pose, getState().Speeds);
 
-          if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
-                virtualGoal = FlippingUtil.flipFieldPosition(virtualGoal);
-            }
-            
         return Meters.of(pose.getDistance(virtualGoal));
     }
 }

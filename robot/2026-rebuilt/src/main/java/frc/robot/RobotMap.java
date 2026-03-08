@@ -121,7 +121,7 @@ public final class RobotMap {
         public static final AngularVelocity velocityTolerance = RotationsPerSecond.of(3);
          public static final Angle postionTolerance = Rotations.of(.05);
 
-         public static final Angle maxHoodAngle = Rotations.of(30); //tune
+         public static final Angle maxHoodAngle = Rotations.of(27); //tune
          public static final Angle minHoodAngle = Rotations.of(.5); //tune
 
         //offset of the shooter from robot center
