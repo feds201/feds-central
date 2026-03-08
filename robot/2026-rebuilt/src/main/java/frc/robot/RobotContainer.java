@@ -16,10 +16,16 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.RobotMap.DrivetrainConstants;
 import frc.robot.subsystems.intake.IntakeSubsystem;
+import frc.robot.subsystems.intake.IntakeSubsystem.IntakeState;
+import frc.robot.subsystems.intake.IntakeSubsystem.RollerState;
 import frc.robot.subsystems.feeder.Feeder;
+import frc.robot.subsystems.feeder.Feeder.feeder_state;
 import frc.robot.subsystems.shooter.ShooterHood;
+import frc.robot.subsystems.shooter.ShooterHood.shooterhood_state;
 import frc.robot.subsystems.shooter.ShooterWheels;
+import frc.robot.subsystems.shooter.ShooterWheels.shooter_state;
 import frc.robot.subsystems.spindexer.Spindexer;
+import frc.robot.subsystems.spindexer.Spindexer.spindexer_state;
 import frc.robot.sim.RebuiltSimManager;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
@@ -67,19 +73,6 @@ public class RobotContainer extends ControllerBindings {
 
     private final RTUManager rtumanager = new RTUManager();
   private final SendableChooser<Command> autoChooser;
-
-
-    public RobotContainer() {
-        instance = this;
-        ll4.getSettings().withImuMode(ImuMode.ExternalImu).save();
-        setupDriveBindings(controller);
-        // setupOperatorBindings(operaterController);
-        // setupTestBindings(controller);
-
-        // Configure RTU via RTUManager (separated from sim)
-        configureRootTests();
-        drivetrain.registerTelemetry(telemetry::telemeterize);
-    }
 
     public static RobotContainer getInstance() {
         return instance;
@@ -213,16 +206,15 @@ public class RobotContainer extends ControllerBindings {
     }
   public RobotContainer() {
     ll4.getSettings().withImuMode(ImuMode.ExternalImu).save();
-    hubDrive = new HubDrive(drivetrain, null);
-    configureBindings();
-    
-    
+    setupDriveBindings(controller);
+    setupOperatorBindings(operaterController);
     configureRootTests();
 
     // TODO: migrate to LoggedDashboardChooser from AdvantageKit
     registerNamedCommands();
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
+    drivetrain.registerTelemetry(telemetry::telemeterize);
   }
 
     public void updateLocalization() {
@@ -296,8 +288,8 @@ public class RobotContainer extends ControllerBindings {
 public void registerNamedCommands() {
   NamedCommands.registerCommand("Extend Hopper", intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED));
   NamedCommands.registerCommand("Extend Intake", intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED));
-  NamedCommands.registerCommand("Run Rollers", rollersSubsystem.RollersCommand(RollerState.ON));
-  NamedCommands.registerCommand("Stop Rollers", rollersSubsystem.RollersCommand(RollerState.OFF));
+  NamedCommands.registerCommand("Run Rollers", intakeSubsystem.setRollerStateCommand(RollerState.ON));
+  NamedCommands.registerCommand("Stop Rollers", intakeSubsystem.setRollerStateCommand(RollerState.OFF));
   NamedCommands.registerCommand("Start Shooter Spin", shooterWheels.setStateCommand(shooter_state.SHOOTING).alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
   NamedCommands.registerCommand("End Shooter Spin", shooterWheels.setStateCommand(shooter_state.IDLE));
   NamedCommands.registerCommand("Run Shooter", shooterWheels.setStateCommand(shooter_state.SHOOTING).alongWith(feederSubsystem.setStateCommand(feeder_state.RUN)).alongWith(spinDexer.setStateCommand(spindexer_state.RUN)).alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
