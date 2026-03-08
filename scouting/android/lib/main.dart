@@ -48,23 +48,31 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    _isDarkMode = Hive.box('settings').get('isDarkMode', defaultValue: true);
-    isDarkMode = _isDarkMode;
+    if (Hive.isBoxOpen('settings')) {
+      _isDarkMode = Hive.box('settings').get('isDarkMode', defaultValue: true);
+      isDarkMode = _isDarkMode;
 
-    // Check for lockdown mode
-    if (Hive.box('settings').get('isLockdown', defaultValue: false)) {
-      LockdownService.startLockTask();
+      // Check for lockdown mode
+      if (Hive.box('settings').get('isLockdown', defaultValue: false)) {
+        LockdownService.startLockTask();
+      }
+
+      // Listen for theme changes
+      Hive.box('settings')
+          .listenable(keys: ['isDarkMode']).addListener(_onThemeChanged);
+    } else {
+      // Default values when Hive boxes aren't available (eg. in tests)
+      _isDarkMode = true;
+      isDarkMode = _isDarkMode;
     }
-
-    // Listen for theme changes
-    Hive.box('settings')
-        .listenable(keys: ['isDarkMode']).addListener(_onThemeChanged);
   }
 
   @override
   void dispose() {
-    Hive.box('settings')
-        .listenable(keys: ['isDarkMode']).removeListener(_onThemeChanged);
+    if (Hive.isBoxOpen('settings')) {
+      Hive.box('settings')
+          .listenable(keys: ['isDarkMode']).removeListener(_onThemeChanged);
+    }
     super.dispose();
   }
 
@@ -76,7 +84,9 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    Hive.box('userData').get('scouterNames', defaultValue: []);
+    if (Hive.isBoxOpen('userData')) {
+      Hive.box('userData').get('scouterNames', defaultValue: []);
+    }
     return MaterialApp(
       title: 'Scout Ops',
       theme: ThemeData(

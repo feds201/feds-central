@@ -18,5 +18,8 @@
         "**/bower_components": false,
         "**/node_modules": false
     },
-    "java.configuration.updateBuildConfiguration": "automatic"
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "chat.tools.terminal.autoApprove": {
+        "flutter": true
+    }
 }
