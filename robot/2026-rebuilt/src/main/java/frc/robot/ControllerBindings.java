@@ -100,7 +100,7 @@ public class ControllerBindings {
                 .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT));
 
         // Default drive command: field-centric swerve with left stick + right stick rotation
-        drivetrain.setDefaultCommand(new TeleopSwerve(drivetrain, driver, 0.1));
+        drivetrain.setDefaultCommand(new TeleopSwerve(drivetrain, driver, 1));
         driver.b().onTrue(feederSubsystem.setStateCommand(feeder_state.REVERSE).andThen(spinDexer.setStateCommand(spindexer_state.REVERSE)))
         .onFalse(feederSubsystem.commandStop().andThen(spinDexer.setStateCommand(spindexer_state.STOP)));
         // M key (Right bumper): reverse intake rollers

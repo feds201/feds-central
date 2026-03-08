@@ -112,6 +112,19 @@ public class RobotContainer extends ControllerBindings {
         return drivetrain;
     }
 
+    public RobotContainer() {
+    ll4.getSettings().withImuMode(ImuMode.ExternalImu).save();
+    setupDriveBindings(controller);
+    setupOperatorBindings(operaterController);
+    configureRootTests();
+
+    // TODO: migrate to LoggedDashboardChooser from AdvantageKit
+    registerNamedCommands();
+    autoChooser = AutoBuilder.buildAutoChooser();
+    SmartDashboard.putData("Auto Chooser", autoChooser);
+    drivetrain.registerTelemetry(telemetry::telemeterize);
+  }
+  
     // --- APIs used by the diagnostic server / UI to command shooter/hood ---
     private final AutoSweeper autoSweeper = new AutoSweeper(
             rps -> {
@@ -206,18 +219,7 @@ public class RobotContainer extends ControllerBindings {
             holdMs
         );
     }
-  public RobotContainer() {
-    ll4.getSettings().withImuMode(ImuMode.ExternalImu).save();
-    setupDriveBindings(controller);
-    setupOperatorBindings(operaterController);
-    configureRootTests();
-
-    // TODO: migrate to LoggedDashboardChooser from AdvantageKit
-    registerNamedCommands();
-    autoChooser = AutoBuilder.buildAutoChooser();
-    SmartDashboard.putData("Auto Chooser", autoChooser);
-    drivetrain.registerTelemetry(telemetry::telemeterize);
-  }
+  
 
     public void updateLocalization() {
         if (ll4.getNTTable().containsKey("tv")) {
