@@ -1,0 +1,59 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 4.353653618030843,
+        "y": 7.182064056939502
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.340790164215583,
+        "y": 7.45126425988652
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.49594306049822,
+        "y": 6.730177935943061
+      },
+      "prevControl": {
+        "x": 8.463665480427045,
+        "y": 7.676986951364177
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "LeftFarIntakeStart"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.30923076923077036,
+      "rotationDegrees": 90.0
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 4.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 360.0,
+    "nominalVoltage": 11.8,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 3.0,
+    "rotation": -90.0
+  },
+  "reversed": false,
+  "folder": "DoublePassTest",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 90.0
+  },
+  "useDefaultConstraints": true
+}

@@ -3,8 +3,14 @@
 // the WPILib BSD license file in the root directory of this project.
 package frc.robot;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -60,6 +66,8 @@ public class RobotContainer extends ControllerBindings {
  
 
     private final RTUManager rtumanager = new RTUManager();
+  private final SendableChooser<Command> autoChooser;
+
 
     public RobotContainer() {
         instance = this;
@@ -203,6 +211,19 @@ public class RobotContainer extends ControllerBindings {
             holdMs
         );
     }
+  public RobotContainer() {
+    ll4.getSettings().withImuMode(ImuMode.ExternalImu).save();
+    hubDrive = new HubDrive(drivetrain, null);
+    configureBindings();
+    
+    
+    configureRootTests();
+
+    // TODO: migrate to LoggedDashboardChooser from AdvantageKit
+    registerNamedCommands();
+    autoChooser = AutoBuilder.buildAutoChooser();
+    SmartDashboard.putData("Auto Chooser", autoChooser);
+  }
 
     public void updateLocalization() {
         if (ll4.getNTTable().containsKey("tv")) {
@@ -236,9 +257,9 @@ public class RobotContainer extends ControllerBindings {
         }
     }
 
-    public Command getAutonomousCommand() {
-        return Commands.print("No autonomous command configured");
-    }
+  public Command getAutonomousCommand() {
+    return autoChooser.getSelected();
+  }
 
     private void configureRootTests() {
         // Keep this method for compatibility but delegate to RTUManager
@@ -266,6 +287,41 @@ public class RobotContainer extends ControllerBindings {
     }
 
     public void updateRootTests() {
+
+
         rtumanager.periodic();
     }
+
+
+public void registerNamedCommands() {
+  NamedCommands.registerCommand("Extend Hopper", intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED));
+  NamedCommands.registerCommand("Extend Intake", intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED));
+  NamedCommands.registerCommand("Run Rollers", rollersSubsystem.RollersCommand(RollerState.ON));
+  NamedCommands.registerCommand("Stop Rollers", rollersSubsystem.RollersCommand(RollerState.OFF));
+  NamedCommands.registerCommand("Start Shooter Spin", shooterWheels.setStateCommand(shooter_state.SHOOTING).alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
+  NamedCommands.registerCommand("End Shooter Spin", shooterWheels.setStateCommand(shooter_state.IDLE));
+  NamedCommands.registerCommand("Run Shooter", shooterWheels.setStateCommand(shooter_state.SHOOTING).alongWith(feederSubsystem.setStateCommand(feeder_state.RUN)).alongWith(spinDexer.setStateCommand(spindexer_state.RUN)).alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
+  NamedCommands.registerCommand("Shooting", shooterWheels.setStateCommand(shooter_state.SHOOTING).alongWith(feederSubsystem.setStateCommand(feeder_state.RUN)).alongWith(spinDexer.setStateCommand(spindexer_state.RUN)).alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
