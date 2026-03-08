@@ -11,9 +11,7 @@ Widget buildTextBoxs(
     padding: const EdgeInsets.all(8.0),
     child: Container(
       decoration: BoxDecoration(
-        color: islightmode()
-            ? lightColors.white
-            : const Color.fromARGB(255, 34, 34, 34),
+        color: islightmode() ? lightColors.white : darkColors.goodblack,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(

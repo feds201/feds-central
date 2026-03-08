@@ -566,6 +566,7 @@ class _TeleOperatedState extends State<TeleOperated> {
           });
           UpdateData();
         }, color: Colors.yellow),
+        SizedBox(height: 8),
         buildCheckBoxFull("Shooting", shootingI2, (bool value) {
           setState(() {
             shootingI2 = value;

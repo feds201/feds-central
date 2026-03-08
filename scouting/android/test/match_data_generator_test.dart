@@ -223,6 +223,7 @@ class RealisticMatchDataGenerator {
       endgamePark,
       teleOpFeedHP && _random.nextDouble() > 0.4,
       performanceLevel > 0.7 && _random.nextDouble() > 0.6,
+      true,
       '',
       (teleOpNeutralTrips / 2).toInt(),
       shootingAccuracy,

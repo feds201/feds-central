@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'package:archive/archive.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
@@ -13,15 +13,16 @@ import '../Plugins/plugin_state_manager.dart';
 import '../services/DataBase.dart';
 
 String compressToBase64(String data) {
-  print('Compressing data...');
-  print(data);
-  return data;
+  final bytes = utf8.encode(data);
+  final compressed = GZipEncoder().encode(bytes);
+  if (compressed == null) return data;
+  return base64.encode(compressed);
 }
 
 String decompressFromBase64(String encoded) {
-  print('Decompressing data...');
-  print(encoded);
-  return encoded;
+  final bytes = base64.decode(encoded);
+  final decompressed = GZipDecoder().decodeBytes(bytes);
+  return utf8.decode(decompressed);
 }
 
 class Qrgenerator extends StatefulWidget {
@@ -151,117 +152,13 @@ class QrCoder extends State<Qrgenerator> {
   }
 
   Future<void> InititiateTransactions(String qrData) async {
-    // var box = Hive.box('settings');
-    // String? ipAddress = box.get('ipAddress');
-    // String? deviceName = box.get('deviceName');
-
-    // print('IP Address: $ipAddress');
-    // print('Device Name: $deviceName');
-
-    // bool serverStatus =
-    //     await pluginStateManager.getPluginState("intergrateWithPyintelScoutz");
-    // if (serverStatus) {
-    //   String url = 'http://$ipAddress/receive_match_csv';
-    //   try {
-    //     print('Attempting to send CSV data...');
-    //     // Send raw CSV (not JSON) as requested
-    //     final csvBody = widget.matchRecord.toCsv();
-    //     final response = await http.post(
-    //       Uri.parse(url),
-    //       headers: {
-    //         'Content-Type': 'text/csv',
-    //       },
-    //       body: csvBody,
-    //     );
-
-    //     print('Response status: ${response.statusCode}');
-    //     if (response.statusCode == 200) {
-    //       final responseBody = jsonDecode(response.body);
-    //       print('Response body: $responseBody');
-
-    //       // Confirm function completion
-    //       print('Data sent successfully.');
-
-    //       // Example: Confirm whether data clearing and navigation are happening
-
-    //       print(LocalDataBase.getData('Settings.apiKey'));
-
-    //       print("Data Cleared");
-
-    //       await Navigator.push(
-    //         context,
-    //         MaterialPageRoute(
-    //             builder: (context) => const MatchPage(),
-    //             fullscreenDialog: true),
-    //       );
-
-    //       // Confirm navigation completion
-    //       print('Navigation to HomePage completed.');
-    //     } else {
-    //       // Handle non-200 responses
-    //       showDialog(
-    //         context: context,
-    //         builder: (BuildContext context) {
-    //           return AlertDialog(
-    //             title: const Text('Error'),
-    //             content:
-    //                 Text('Server returned an error: ${response.statusCode}'),
-    //             actions: <Widget>[
-    //               TextButton(
-    //                 child: const Text('OK'),
-    //                 onPressed: () async {
-    //                   await Navigator.push(
-    //                     context,
-    //                     MaterialPageRoute(
-    //                         builder: (context) => const MatchPage(),
-    //                         fullscreenDialog: true),
-    //                   );
-    //                 },
-    //               ),
-    //             ],
-    //           );
-    //         },
-    //       );
-    //     }
-    //   } catch (e) {
-    //     print('Error: $e');
-    //     showDialog(
-    //       context: context,
-    //       builder: (BuildContext context) {
-    //         return AlertDialog(
-    //           title: const Text('Error'),
-    //           content: const Text('Failed to communicate with the server.'),
-    //           actions: <Widget>[
-    //             TextButton(
-    //               child: const Text('OK'),
-    //               onPressed: () {
-    //                 print(LocalDataBase.getData('Settings.apiKey'));
-    //                 print("Data Cleared");
-    //                 Navigator.push(
-    //                   context,
-    //                   MaterialPageRoute(
-    //                       builder: (context) => const MatchPage(),
-    //                       fullscreenDialog: true),
-    //                 );
-    //               },
-    //             ),
-    //           ],
-    //         );
-    //       },
-    //     );
-    //   }
-    // } else {
-    //   print('Server is not running.');
-    //   print(LocalDataBase.getData('Settings.apiKey'));
-    //   print("Data Cleared");
-
-    //   await Navigator.pushAndRemoveUntil(
-    //     context,
-    //     MaterialPageRoute(
-    //         builder: (context) => const MatchPage(), fullscreenDialog: true),
-    //     (Route<dynamic> route) => false,
-    //   );
-    // }
+    // Navigation back to MatchPage to allow scouting the next match
+    await Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(
+          builder: (context) => const MatchPage(), fullscreenDialog: true),
+      (Route<dynamic> route) => false,
+    );
   }
 }
 

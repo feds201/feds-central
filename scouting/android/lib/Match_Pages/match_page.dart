@@ -137,7 +137,7 @@ class MatchPageState extends State<MatchPage>
           Icon(
             Icons.sports_score_outlined,
             size: 80,
-            color: Colors.grey.shade400,
+            color: Colors.white,
           ),
           const SizedBox(height: 24),
           Text(
@@ -145,7 +145,7 @@ class MatchPageState extends State<MatchPage>
             style: GoogleFonts.museoModerno(
               fontSize: 22,
               fontWeight: FontWeight.w500,
-              color: Colors.grey.shade700,
+              color: Colors.white,
             ),
           ),
           const SizedBox(height: 12),
@@ -172,7 +172,11 @@ class MatchPageState extends State<MatchPage>
         // Enhanced Navigation Rail
         Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: (currentSelectedMatchType == 2 ||
+                    currentSelectedMatchType == 3 ||
+                    !islightmode())
+                ? darkColors.goodblack
+                : Colors.white,
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.05),
@@ -182,8 +186,11 @@ class MatchPageState extends State<MatchPage>
             ],
           ),
           child: NavigationRail(
-            backgroundColor:
-                islightmode() ? lightColors.white : darkColors.goodblack,
+            backgroundColor: (currentSelectedMatchType == 2 ||
+                    currentSelectedMatchType == 3 ||
+                    !islightmode())
+                ? darkColors.goodblack
+                : lightColors.white,
             selectedIndex: currentSelectedMatchType,
             onDestinationSelected: (int index) {
               onMatchTypeSelected(index);
@@ -194,7 +201,11 @@ class MatchPageState extends State<MatchPage>
               fontWeight: FontWeight.w600,
             ),
             unselectedLabelTextStyle: GoogleFonts.museoModerno(
-              color: Colors.grey.shade600,
+              color: (currentSelectedMatchType == 2 ||
+                      currentSelectedMatchType == 3 ||
+                      !islightmode())
+                  ? Colors.grey.shade400
+                  : Colors.grey.shade600,
             ),
             indicatorShape: SnakeShapeBorder(),
             destinations: [
@@ -229,7 +240,11 @@ class MatchPageState extends State<MatchPage>
         VerticalDivider(
           thickness: 1,
           width: 1,
-          color: islightmode() ? lightColors.white : darkColors.goodblack,
+          color: (currentSelectedMatchType == 2 ||
+                  currentSelectedMatchType == 3 ||
+                  !islightmode())
+              ? const Color.fromARGB(255, 31, 29, 29)
+              : lightColors.white,
         ),
         // Match List with Animation
         Expanded(
@@ -247,7 +262,7 @@ class MatchPageState extends State<MatchPage>
     return NavigationRailDestination(
       icon: Icon(
         icon,
-        color: isSelected ? color : Colors.grey.shade500,
+        color: isSelected ? color : Colors.white,
       ),
       selectedIcon: Container(
         padding: const EdgeInsets.all(8),
@@ -374,8 +389,16 @@ class MatchPageState extends State<MatchPage>
 
       case 3:
         // Settings Page
-        // Using the existing settings page implementation
-        return _buildSettingsView(matches);
+        return Theme(
+          data: ThemeData(
+            brightness: Brightness.dark,
+            useMaterial3: true,
+          ),
+          child: Container(
+            color: Colors.black,
+            child: _buildSettingsView(matches),
+          ),
+        );
 
       default:
         return const Center(child: Text('Unknown Match Type'));
@@ -477,7 +500,9 @@ class MatchPageState extends State<MatchPage>
       margin: const EdgeInsets.only(bottom: 16),
       child: Card(
         elevation: 4,
-        color: islightmode() ? lightColors.white : darkColors.goodblack,
+        color: (matchTypeName == 'Practice' || !islightmode())
+            ? darkColors.goodblack
+            : lightColors.white,
         shadowColor: themeColor.withOpacity(0.3),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
@@ -532,8 +557,10 @@ class MatchPageState extends State<MatchPage>
                             isScouted ? 'Scouted' : '$matchTypeName Match',
                             style: TextStyle(
                               fontSize: 14,
-                              color:
-                                  islightmode() ? Colors.black : Colors.white,
+                              color: (matchTypeName == 'Practice' ||
+                                      !islightmode())
+                                  ? Colors.white
+                                  : Colors.black,
                               fontWeight: isScouted
                                   ? FontWeight.bold
                                   : FontWeight.normal,
@@ -590,9 +617,10 @@ class MatchPageState extends State<MatchPage>
                                     child: Text(
                                       team,
                                       style: TextStyle(
-                                        color: islightmode()
-                                            ? Colors.black
-                                            : Colors.white,
+                                        color: (matchTypeName == 'Practice' ||
+                                                !islightmode())
+                                            ? Colors.white
+                                            : Colors.black,
                                       ),
                                     ),
                                   ))
@@ -634,9 +662,10 @@ class MatchPageState extends State<MatchPage>
                                     child: Text(
                                       team,
                                       style: TextStyle(
-                                        color: islightmode()
-                                            ? Colors.black
-                                            : Colors.white,
+                                        color: (matchTypeName == 'Practice' ||
+                                                !islightmode())
+                                            ? Colors.white
+                                            : Colors.black,
                                       ),
                                     ),
                                   ))
@@ -799,149 +828,154 @@ class MatchPageState extends State<MatchPage>
     Color themeColor,
     Function(dynamic) getMatchNumber,
   ) {
-    return Column(
-      children: [
-        // "Create Practice Match" button
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-          child: ElevatedButton.icon(
-            icon: const Icon(Icons.add_circle_outline),
-            label: const Text('Create Practice Match'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
-              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-              minimumSize: const Size(double.infinity, 50),
+    return Container(
+      color: Colors.black,
+      child: Column(
+        children: [
+          // "Create Practice Match" button
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+            child: ElevatedButton.icon(
+              icon: const Icon(Icons.add_circle_outline),
+              label: const Text('Create Practice Match'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                minimumSize: const Size(double.infinity, 50),
+              ),
+              onPressed: () => _showCreatePracticeMatchDialog(context),
             ),
-            onPressed: () => _showCreatePracticeMatchDialog(context),
           ),
-        ),
 
-        // Show existing matches or empty message
-        Expanded(
-          child: matches.isEmpty
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
+          // Show existing matches or empty message
+          Expanded(
+            child: matches.isEmpty
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          matchIcon,
+                          size: 60,
+                          color: themeColor.withOpacity(0.3),
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'No $matchTypeName Matches',
+                          style: GoogleFonts.museoModerno(
+                            fontSize: 20,
+                            color:
+                                (matchTypeName == 'Practice' || !islightmode())
+                                    ? lightColors.white
+                                    : darkColors.goodblack,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Use the button above to create a practice match',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey.shade500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                : ListView.builder(
+                    controller: _scrollController,
+                    physics: const BouncingScrollPhysics(),
+                    padding: const EdgeInsets.fromLTRB(8, 8, 8, 24),
+                    itemCount: matches.length + 1,
+                    itemBuilder: (BuildContext context, int index) {
+                      if (index == 0) {
+                        return ShowInsults();
+                      }
+                      index -= 1;
+
+                      final match = matches[index];
+                      final matchNumber = getMatchNumber(match);
+                      final bool isManual = match['manual_entry'] == true;
+
+                      final card = _buildEnhancedMatchCard(
+                        context,
+                        match,
+                        matchTypeName,
                         matchIcon,
-                        size: 60,
-                        color: themeColor.withOpacity(0.3),
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'No $matchTypeName Matches',
-                        style: GoogleFonts.museoModerno(
-                          fontSize: 20,
-                          color: islightmode()
-                              ? darkColors.goodblack
-                              : lightColors.white,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Use the button above to create a practice match',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey.shade500,
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              : ListView.builder(
-                  controller: _scrollController,
-                  physics: const BouncingScrollPhysics(),
-                  padding: const EdgeInsets.fromLTRB(8, 8, 8, 24),
-                  itemCount: matches.length + 1,
-                  itemBuilder: (BuildContext context, int index) {
-                    if (index == 0) {
-                      return ShowInsults();
-                    }
-                    index -= 1;
-
-                    final match = matches[index];
-                    final matchNumber = getMatchNumber(match);
-                    final bool isManual = match['manual_entry'] == true;
-
-                    final card = _buildEnhancedMatchCard(
-                      context,
-                      match,
-                      matchTypeName,
-                      matchIcon,
-                      themeColor,
-                      matchNumber,
-                      index,
-                    );
-
-                    if (isManual) {
-                      return Dismissible(
-                        key: Key(match['key']?.toString() ?? 'manual_$index'),
-                        direction: DismissDirection.endToStart,
-                        background: Container(
-                          margin: const EdgeInsets.only(bottom: 16),
-                          decoration: BoxDecoration(
-                            color: Colors.red.shade400,
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          alignment: Alignment.centerRight,
-                          padding: const EdgeInsets.only(right: 24),
-                          child: const Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(Icons.delete_outline,
-                                  color: Colors.white, size: 24),
-                              SizedBox(width: 8),
-                              Text('Delete',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold)),
-                            ],
-                          ),
-                        ),
-                        confirmDismiss: (direction) async {
-                          return await showDialog<bool>(
-                                context: context,
-                                builder: (ctx) => AlertDialog(
-                                  title: const Text('Delete Match?'),
-                                  content: Text(
-                                      'Remove practice match ${match['match_number']}?'),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () =>
-                                          Navigator.of(ctx).pop(false),
-                                      child: const Text('Cancel'),
-                                    ),
-                                    ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                          backgroundColor: Colors.red),
-                                      onPressed: () =>
-                                          Navigator.of(ctx).pop(true),
-                                      child: const Text('Delete',
-                                          style:
-                                              TextStyle(color: Colors.white)),
-                                    ),
-                                  ],
-                                ),
-                              ) ??
-                              false;
-                        },
-                        onDismissed: (direction) {
-                          _deleteManualMatch(match['key']?.toString() ?? '');
-                          setState(() {});
-                        },
-                        child: card,
+                        themeColor,
+                        matchNumber,
+                        index,
                       );
-                    }
 
-                    return card;
-                  },
-                ),
-        ),
-      ],
+                      if (isManual) {
+                        return Dismissible(
+                          key: Key(match['key']?.toString() ?? 'manual_$index'),
+                          direction: DismissDirection.endToStart,
+                          background: Container(
+                            margin: const EdgeInsets.only(bottom: 16),
+                            decoration: BoxDecoration(
+                              color: Colors.red.shade400,
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            alignment: Alignment.centerRight,
+                            padding: const EdgeInsets.only(right: 24),
+                            child: const Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.delete_outline,
+                                    color: Colors.white, size: 24),
+                                SizedBox(width: 8),
+                                Text('Delete',
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold)),
+                              ],
+                            ),
+                          ),
+                          confirmDismiss: (direction) async {
+                            return await showDialog<bool>(
+                                  context: context,
+                                  builder: (ctx) => AlertDialog(
+                                    title: const Text('Delete Match?'),
+                                    content: Text(
+                                        'Remove practice match ${match['match_number']}?'),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () =>
+                                            Navigator.of(ctx).pop(false),
+                                        child: const Text('Cancel'),
+                                      ),
+                                      ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.red),
+                                        onPressed: () =>
+                                            Navigator.of(ctx).pop(true),
+                                        child: const Text('Delete',
+                                            style:
+                                                TextStyle(color: Colors.white)),
+                                      ),
+                                    ],
+                                  ),
+                                ) ??
+                                false;
+                          },
+                          onDismissed: (direction) {
+                            _deleteManualMatch(match['key']?.toString() ?? '');
+                            setState(() {});
+                          },
+                          child: card,
+                        );
+                      }
+
+                      return card;
+                    },
+                  ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -1212,9 +1246,9 @@ class MatchPageState extends State<MatchPage>
 
           // Match Statistics Card with enhanced visual appeal
           Card(
-            color: islightmode()
-                ? Colors.white
-                : const Color.fromARGB(255, 33, 31, 31),
+            color: !islightmode()
+                ? const Color.fromARGB(255, 33, 31, 31)
+                : const Color.fromARGB(255, 20, 20, 20),
             margin: const EdgeInsets.fromLTRB(16, 8, 16, 16),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(18),
@@ -1277,9 +1311,9 @@ class MatchPageState extends State<MatchPage>
           // Scouter Configuration with enhanced visual appeal
           Card(
             margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-            color: islightmode()
-                ? Colors.white
-                : const Color.fromARGB(255, 33, 31, 31),
+            color: !islightmode()
+                ? const Color.fromARGB(255, 33, 31, 31)
+                : const Color.fromARGB(255, 20, 20, 20),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(18),
             ),
@@ -1335,8 +1369,7 @@ class MatchPageState extends State<MatchPage>
                               style: TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.bold,
-                                color:
-                                    islightmode() ? Colors.black : Colors.white,
+                                color: Colors.white,
                               ),
                             ),
                             const SizedBox(height: 4),
@@ -1481,9 +1514,7 @@ class MatchPageState extends State<MatchPage>
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w500,
-            color: !islightmode()
-                ? Colors.white
-                : const Color.fromARGB(255, 33, 31, 31),
+            color: Colors.white,
           ),
         ),
         const Spacer(),

@@ -46,6 +46,7 @@ class _QualitativePage extends State<QualitativePage> {
     final backgroundColor = Colors.transparent;
 
     return Scaffold(
+      backgroundColor: islightmode() ? lightColors.white : Colors.black,
       appBar: AppBar(
         leading: Builder(builder: (context) {
           return IconButton(
@@ -175,8 +176,9 @@ class _QualitativePage extends State<QualitativePage> {
     widget.record.q2 = defensePlay.text.isNotEmpty ? defensePlay.text : "N/A";
     widget.record.q3 =
         humanPlayerRole.text.isNotEmpty ? humanPlayerRole.text : "N/A";
-    widget.record.q4 =
-        stabilityReliability.text.isNotEmpty ? stabilityReliability.text : "N/A";
+    widget.record.q4 = stabilityReliability.text.isNotEmpty
+        ? stabilityReliability.text
+        : "N/A";
 
     QualitativeDataBase.PutData(widget.record.matchKey, widget.record.toJson());
     QualitativeDataBase.PrintAll();

@@ -469,6 +469,7 @@ class _Checklist_recordState extends State<Checklist_record> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: islightmode() ? lightColors.white : Colors.black,
       appBar: AppBar(
         leading: Builder(builder: (context) {
           return IconButton(
@@ -479,7 +480,7 @@ class _Checklist_recordState extends State<Checklist_record> {
                 Navigator.pop(context);
               });
         }),
-        backgroundColor: islightmode() ? Colors.white : darkColors.goodblack,
+        backgroundColor: islightmode() ? Colors.white : Colors.black,
         centerTitle: true,
         title: ShaderMask(
             shaderCallback: (bounds) => const LinearGradient(
@@ -530,16 +531,22 @@ class _Checklist_recordState extends State<Checklist_record> {
                   size: 24,
                 ),
                 const SizedBox(width: 12),
-                Text(
-                  allItemsChecked
-                      ? 'All checklist items completed'
-                      : 'Checklist incomplete - please review all sections',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: allItemsChecked
-                        ? Colors.green[700]
-                        : Colors.orange[700],
+                Expanded(
+                  child: Text(
+                    allItemsChecked
+                        ? 'All checklist items completed'
+                        : 'Checklist incomplete - please review all sections',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: allItemsChecked
+                          ? (islightmode()
+                              ? Colors.green[700]
+                              : Colors.green[400])
+                          : (islightmode()
+                              ? Colors.orange[700]
+                              : Colors.orange[400]),
+                    ),
                   ),
                 ),
               ],
@@ -565,7 +572,9 @@ class _Checklist_recordState extends State<Checklist_record> {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: Colors.blue[700],
+                          color: islightmode()
+                              ? Colors.blue[700]
+                              : Colors.blue[300],
                         ),
                       ),
                     if (last_battery_tag.isNotEmpty &&
@@ -577,7 +586,9 @@ class _Checklist_recordState extends State<Checklist_record> {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: Colors.blue[700],
+                          color: islightmode()
+                              ? Colors.blue[700]
+                              : Colors.blue[300],
                         ),
                       ),
                   ],
