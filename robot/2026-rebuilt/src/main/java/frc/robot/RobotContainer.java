@@ -65,6 +65,7 @@ public class RobotContainer extends ControllerBindings {
         instance = this;
         ll4.getSettings().withImuMode(ImuMode.ExternalImu).save();
         setupDriveBindings(controller);
+        setupOperatorBindings(operaterController);
         // setupOperatorBindings(operaterController);
         // setupTestBindings(controller);
 

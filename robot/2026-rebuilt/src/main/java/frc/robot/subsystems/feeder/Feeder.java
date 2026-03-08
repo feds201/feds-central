@@ -36,6 +36,7 @@ public class Feeder extends SubsystemBase {
   public enum feeder_state {
     RUN(Volts.of(7)),
     REVERSE(Volts.of(-7)),
+    PREVERSE(Volts.of(-6)),
     STOP(Volts.of(0));
 
     private final Voltage targetVoltage;
@@ -127,8 +128,8 @@ public class Feeder extends SubsystemBase {
           washingMachineTimer.stop();
           washingMachineTimer.reset();
         }
+        
         break;
-
 
       case STOP:
         break;
