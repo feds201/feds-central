@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import frc.robot.RobotMap.SpindexerConstants;
+import frc.robot.RobotMap.indexingConstants;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import frc.robot.utils.DeviceTempReporter;
 import frc.robot.utils.SubsystemStatusManager;
@@ -120,7 +121,7 @@ public class Spindexer extends SubsystemBase {
         if(!washingMachineTimer.isRunning()){
           washingMachineTimer.start();
         }
-        if(washingMachineTimer.hasElapsed(2)){
+        if(washingMachineTimer.hasElapsed(indexingConstants.forwardTime)){
           setState(spindexer_state.REVERSE);
           washingMachineTimer.stop();
           washingMachineTimer.reset();
@@ -130,7 +131,7 @@ public class Spindexer extends SubsystemBase {
         if(!washingMachineTimer.isRunning()){
           washingMachineTimer.start();
         }
-        if(washingMachineTimer.hasElapsed(0.5)){
+        if(washingMachineTimer.hasElapsed(indexingConstants.reverseTime)){
           setState(spindexer_state.RUN);
           washingMachineTimer.stop();
           washingMachineTimer.reset();

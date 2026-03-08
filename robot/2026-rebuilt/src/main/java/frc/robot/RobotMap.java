@@ -93,6 +93,11 @@ public final class RobotMap {
         public static final int kSpindexerMotorId = 57;
     }
 
+    public static class indexingConstants {
+        public static final double forwardTime = 2;
+        public static final double reverseTime = .5;
+    }
+
     public static class FeederConstants
     {
         public static final int kFeederKickerMotorId = 56;

@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.RobotMap.FeederConstants;
+import frc.robot.RobotMap.indexingConstants;
 import frc.robot.utils.DeviceTempReporter;
 import frc.robot.utils.SubsystemStatusManager;
 
@@ -111,7 +112,7 @@ public class Feeder extends SubsystemBase {
         if(!washingMachineTimer.isRunning()){
           washingMachineTimer.start();
         }
-        if(washingMachineTimer.hasElapsed(2)){
+        if(washingMachineTimer.hasElapsed(indexingConstants.forwardTime)){
           setState(feeder_state.REVERSE);
           washingMachineTimer.stop();
           washingMachineTimer.reset();
@@ -121,7 +122,7 @@ public class Feeder extends SubsystemBase {
         if(!washingMachineTimer.isRunning()){
           washingMachineTimer.start();
         }
-        if(washingMachineTimer.hasElapsed(0.5)){
+        if(washingMachineTimer.hasElapsed(indexingConstants.reverseTime)){
           setState(feeder_state.RUN);
           washingMachineTimer.stop();
           washingMachineTimer.reset();
