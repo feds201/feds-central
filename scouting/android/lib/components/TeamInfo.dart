@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:scouting_app/main.dart';
+import 'package:scout_ops_android/main.dart';
 
 class MatchInfo extends StatelessWidget {
   final String assignedTeam;

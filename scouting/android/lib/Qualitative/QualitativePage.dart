@@ -1,12 +1,12 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:scouting_app/components/Button.dart';
-import 'package:scouting_app/components/FullScreenQrCodePage.dart';
-import 'package:scouting_app/main.dart';
-import 'package:scouting_app/services/DataBase.dart';
-import 'package:scouting_app/components/TextBox.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:scout_ops_android/components/Button.dart';
+import 'package:scout_ops_android/components/FullScreenQrCodePage.dart';
+import 'package:scout_ops_android/components/TextBox.dart';
+import 'package:scout_ops_android/main.dart';
+import 'package:scout_ops_android/services/DataBase.dart';
 
 import '../services/Colors.dart';
 

@@ -2,10 +2,10 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:scouting_app/components/CheckBox.dart';
-import 'package:scouting_app/components/CounterShelf.dart';
-import 'package:scouting_app/components/ScoutersList.dart';
-import 'package:scouting_app/components/gameSpecifics/winAfterAuton.dart';
+import 'package:scout_ops_android/components/CheckBox.dart';
+import 'package:scout_ops_android/components/CounterShelf.dart';
+import 'package:scout_ops_android/components/ScoutersList.dart';
+import 'package:scout_ops_android/components/gameSpecifics/winAfterAuton.dart';
 
 import '../../components/TeamInfo.dart';
 import '../../components/gameSpecifics/heatmap.dart';

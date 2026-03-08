@@ -3,11 +3,11 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:scouting_app/components/CameraComposit.dart';
-import 'package:scouting_app/main.dart';
-import 'package:scouting_app/services/Colors.dart';
-import 'package:scouting_app/services/DataBase.dart';
-import 'package:scouting_app/components/TextBox.dart';
+import 'package:scout_ops_android/components/CameraComposit.dart';
+import 'package:scout_ops_android/main.dart';
+import 'package:scout_ops_android/services/Colors.dart';
+import 'package:scout_ops_android/services/DataBase.dart';
+import 'package:scout_ops_android/components/TextBox.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:confetti/confetti.dart';
@@ -214,33 +214,29 @@ class _RecordState extends State<Record> {
                   WeightController,
                   Icon(Icons.monitor_weight, size: 30, color: Colors.grey),
                   ['lbs', 'kg'],
-                  weightUnit,
-                  (value) {
-                    setState(() {
-                      WeightController = double.tryParse(value) ?? 0.0;
-                    });
-                  },
-                  (unit) {
-                    setState(() {
-                      weightUnit = unit;
-                    });
-                  }),
+                  weightUnit, (value) {
+                setState(() {
+                  WeightController = double.tryParse(value) ?? 0.0;
+                });
+              }, (unit) {
+                setState(() {
+                  weightUnit = unit;
+                });
+              }),
               buildNumberWithUnitBox(
                   "Top Speed",
                   SpeedController,
                   Icon(Icons.speed, size: 30, color: Colors.red),
                   ['ft/s', 'm/s', 'mph'],
-                  speedUnit,
-                  (value) {
-                    setState(() {
-                      SpeedController = double.tryParse(value) ?? 0.0;
-                    });
-                  },
-                  (unit) {
-                    setState(() {
-                      speedUnit = unit;
-                    });
-                  }),
+                  speedUnit, (value) {
+                setState(() {
+                  SpeedController = double.tryParse(value) ?? 0.0;
+                });
+              }, (unit) {
+                setState(() {
+                  speedUnit = unit;
+                });
+              }),
               buildTextBox(
                   "Drive Motors",
                   "e.g. 4x Kraken",
@@ -251,17 +247,15 @@ class _RecordState extends State<Record> {
                   GroundClearanceController,
                   Icon(Icons.height, size: 30, color: Colors.brown),
                   ['in', 'cm', 'mm'],
-                  clearanceUnit,
-                  (value) {
-                    setState(() {
-                      GroundClearanceController = double.tryParse(value) ?? 0.0;
-                    });
-                  },
-                  (unit) {
-                    setState(() {
-                      clearanceUnit = unit;
-                    });
-                  }),
+                  clearanceUnit, (value) {
+                setState(() {
+                  GroundClearanceController = double.tryParse(value) ?? 0.0;
+                });
+              }, (unit) {
+                setState(() {
+                  clearanceUnit = unit;
+                });
+              }),
               buildChoiceBox(
                   "Drive Train Type",
                   Icon(Icons.car_crash_outlined,
@@ -298,17 +292,15 @@ class _RecordState extends State<Record> {
                   ShootingRateController,
                   Icon(Icons.rocket_launch, size: 30, color: Colors.deepOrange),
                   ['balls/sec', 'balls/min'],
-                  shootingRateUnit,
-                  (value) {
-                    setState(() {
-                      ShootingRateController = double.tryParse(value) ?? 0.0;
-                    });
-                  },
-                  (unit) {
-                    setState(() {
-                      shootingRateUnit = unit;
-                    });
-                  }),
+                  shootingRateUnit, (value) {
+                setState(() {
+                  ShootingRateController = double.tryParse(value) ?? 0.0;
+                });
+              }, (unit) {
+                setState(() {
+                  shootingRateUnit = unit;
+                });
+              }),
               buildMultiChoiceBox(
                   "Intake Type",
                   Icon(Icons.shopping_cart_checkout_outlined,
@@ -505,12 +497,15 @@ class _RecordState extends State<Record> {
 
     // Convert ground clearance to inches for storage
     double storedClearance = GroundClearanceController;
-    if (clearanceUnit == 'cm') storedClearance = GroundClearanceController / 2.54;
-    if (clearanceUnit == 'mm') storedClearance = GroundClearanceController / 25.4;
+    if (clearanceUnit == 'cm')
+      storedClearance = GroundClearanceController / 2.54;
+    if (clearanceUnit == 'mm')
+      storedClearance = GroundClearanceController / 25.4;
 
     // Convert shooting rate to balls/sec for storage
     double storedShootingRate = ShootingRateController;
-    if (shootingRateUnit == 'balls/min') storedShootingRate = ShootingRateController / 60.0;
+    if (shootingRateUnit == 'balls/min')
+      storedShootingRate = ShootingRateController / 60.0;
 
     PitRecord record = PitRecord(
         teamNumber: widget.team.teamNumber,

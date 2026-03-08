@@ -7,8 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:scouting_app/main.dart';
-
+import 'package:scout_ops_android/main.dart';
 import 'services/DataBase.dart';
 import 'services/LockdownService.dart';
 import 'components/MatchSelection.dart';

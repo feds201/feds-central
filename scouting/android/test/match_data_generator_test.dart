@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:scouting_app/services/DataBase.dart';
+import 'package:scout_ops_android/services/DataBase.dart';
 import 'dart:math';
 import 'dart:io';
 

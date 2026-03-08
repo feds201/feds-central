@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:scouting_app/Qualitative/qualitative.dart';
+import 'package:scout_ops_android/Qualitative/qualitative.dart';
 import 'Pit_Recorder/Pit_Recorder.dart';
 import 'about_page.dart';
 import 'Match_Pages/match_page.dart';

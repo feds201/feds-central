@@ -8,11 +8,11 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:scouting_app/components/CameraComposit.dart';
-import 'package:scouting_app/components/TextBox.dart';
-import 'package:scouting_app/main.dart';
-import 'package:scouting_app/services/Colors.dart';
-import 'package:scouting_app/services/DataBase.dart';
+import 'package:scout_ops_android/components/CameraComposit.dart';
+import 'package:scout_ops_android/components/TextBox.dart';
+import 'package:scout_ops_android/main.dart';
+import 'package:scout_ops_android/services/Colors.dart';
+import 'package:scout_ops_android/services/DataBase.dart';
 
 class Checklist_record extends StatefulWidget {
   final PitChecklistItem list_item;

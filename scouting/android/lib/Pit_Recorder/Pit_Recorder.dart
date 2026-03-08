@@ -4,9 +4,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
-import 'package:scouting_app/Pit_Recorder/Send_Pitdata.dart';
-import 'package:scouting_app/main.dart';
-import 'package:scouting_app/services/DataBase.dart';
+import 'package:scout_ops_android/Pit_Recorder/Send_Pitdata.dart';
+import 'package:scout_ops_android/main.dart';
+import 'package:scout_ops_android/services/DataBase.dart';
 
 import 'CheckLists.dart';
 
@@ -63,7 +63,7 @@ class PitRecorderState extends State<PitRecorder>
             team.teamNumber.toString().contains(query);
         final scouted = isScouted(team.teamNumber, _recorded_team);
         final assigned = _assignedTeams.contains(team.teamNumber);
-        
+
         if (_showScoutedOnly) return matchesQuery && scouted;
         if (_showUnscoutedOnly) return matchesQuery && !scouted;
         if (_showAssignedOnly) return matchesQuery && assigned;
@@ -209,7 +209,8 @@ class PitRecorderState extends State<PitRecorder>
                 );
               }),
         ],
-        backgroundColor: dark ? const Color(0xFF111111) : const Color(0xFFF5F5F7),
+        backgroundColor:
+            dark ? const Color(0xFF111111) : const Color(0xFFF5F5F7),
         elevation: 0,
         title: ShaderMask(
             shaderCallback: (bounds) => const LinearGradient(
@@ -262,9 +263,8 @@ class PitRecorderState extends State<PitRecorder>
                         CircularProgressIndicator(
                           value: progress,
                           strokeWidth: 5,
-                          backgroundColor: dark
-                              ? Colors.white12
-                              : Colors.blue.shade100,
+                          backgroundColor:
+                              dark ? Colors.white12 : Colors.blue.shade100,
                           valueColor: AlwaysStoppedAnimation<Color>(
                             progress == 1.0
                                 ? Colors.green
@@ -301,9 +301,8 @@ class PitRecorderState extends State<PitRecorder>
                           child: LinearProgressIndicator(
                             value: progress,
                             minHeight: 6,
-                            backgroundColor: dark
-                                ? Colors.white12
-                                : Colors.blue.shade100,
+                            backgroundColor:
+                                dark ? Colors.white12 : Colors.blue.shade100,
                             valueColor: AlwaysStoppedAnimation<Color>(
                               progress == 1.0
                                   ? Colors.green
@@ -342,7 +341,10 @@ class PitRecorderState extends State<PitRecorder>
                 ),
                 prefixIcon: Icon(Icons.search,
                     color: dark ? Colors.white54 : Colors.black45),
-                suffixIcon: (_searchController.text.isNotEmpty || _showScoutedOnly || _showUnscoutedOnly || _showAssignedOnly)
+                suffixIcon: (_searchController.text.isNotEmpty ||
+                        _showScoutedOnly ||
+                        _showUnscoutedOnly ||
+                        _showAssignedOnly)
                     ? IconButton(
                         icon: Icon(Icons.clear,
                             color: dark ? Colors.white38 : Colors.black38),
@@ -358,9 +360,7 @@ class PitRecorderState extends State<PitRecorder>
                       )
                     : null,
                 filled: true,
-                fillColor: dark
-                    ? const Color(0xFF1E1E1E)
-                    : Colors.white,
+                fillColor: dark ? const Color(0xFF1E1E1E) : Colors.white,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
                   borderSide: BorderSide.none,
@@ -390,8 +390,13 @@ class PitRecorderState extends State<PitRecorder>
             physics: const BouncingScrollPhysics(),
             child: Row(
               children: [
-                _buildFilterChip('All', !_showScoutedOnly && !_showUnscoutedOnly && !_showAssignedOnly,
-                    Colors.blue, dark, () {
+                _buildFilterChip(
+                    'All',
+                    !_showScoutedOnly &&
+                        !_showUnscoutedOnly &&
+                        !_showAssignedOnly,
+                    Colors.blue,
+                    dark, () {
                   setState(() {
                     _showScoutedOnly = false;
                     _showUnscoutedOnly = false;
@@ -400,11 +405,8 @@ class PitRecorderState extends State<PitRecorder>
                   _filterTeams(_searchController.text);
                 }),
                 const SizedBox(width: 8),
-                _buildFilterChip(
-                    'Assigned (${_assignedTeams.length})',
-                    _showAssignedOnly,
-                    Colors.purple,
-                    dark, () {
+                _buildFilterChip('Assigned (${_assignedTeams.length})',
+                    _showAssignedOnly, Colors.purple, dark, () {
                   setState(() {
                     _showAssignedOnly = !_showAssignedOnly;
                     _showScoutedOnly = false;
@@ -413,11 +415,8 @@ class PitRecorderState extends State<PitRecorder>
                   _filterTeams(_searchController.text);
                 }),
                 const SizedBox(width: 8),
-                _buildFilterChip(
-                    'Scouted ($scoutedCount)',
-                    _showScoutedOnly,
-                    Colors.green,
-                    dark, () {
+                _buildFilterChip('Scouted ($scoutedCount)', _showScoutedOnly,
+                    Colors.green, dark, () {
                   setState(() {
                     _showScoutedOnly = !_showScoutedOnly;
                     _showUnscoutedOnly = false;
@@ -426,11 +425,8 @@ class PitRecorderState extends State<PitRecorder>
                   _filterTeams(_searchController.text);
                 }),
                 const SizedBox(width: 8),
-                _buildFilterChip(
-                    'Remaining (${totalCount - scoutedCount})',
-                    _showUnscoutedOnly,
-                    Colors.orange,
-                    dark, () {
+                _buildFilterChip('Remaining (${totalCount - scoutedCount})',
+                    _showUnscoutedOnly, Colors.orange, dark, () {
                   setState(() {
                     _showUnscoutedOnly = !_showUnscoutedOnly;
                     _showScoutedOnly = false;
@@ -482,7 +478,8 @@ class PitRecorderState extends State<PitRecorder>
                             color: Colors.green.shade600.withOpacity(0.8),
                             borderRadius: BorderRadius.circular(14),
                           ),
-                          child: const Icon(Icons.assignment_ind, color: Colors.white),
+                          child: const Icon(Icons.assignment_ind,
+                              color: Colors.white),
                         ),
                         secondaryBackground: Container(
                           margin: const EdgeInsets.symmetric(vertical: 4),
@@ -492,16 +489,19 @@ class PitRecorderState extends State<PitRecorder>
                             color: Colors.red.shade600.withOpacity(0.8),
                             borderRadius: BorderRadius.circular(14),
                           ),
-                          child: const Icon(Icons.assignment_return, color: Colors.white),
+                          child: const Icon(Icons.assignment_return,
+                              color: Colors.white),
                         ),
                         confirmDismiss: (direction) async {
                           if (direction == DismissDirection.startToEnd) {
                             if (!_assignedTeams.contains(team.teamNumber)) {
                               _toggleAssignment(team.teamNumber);
-                              ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                              ScaffoldMessenger.of(context)
+                                  .removeCurrentSnackBar();
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: Text('Assigned Team ${team.teamNumber}'),
+                                  content:
+                                      Text('Assigned Team ${team.teamNumber}'),
                                   duration: const Duration(seconds: 1),
                                   behavior: SnackBarBehavior.floating,
                                   backgroundColor: Colors.green.shade700,
@@ -511,10 +511,12 @@ class PitRecorderState extends State<PitRecorder>
                           } else {
                             if (_assignedTeams.contains(team.teamNumber)) {
                               _toggleAssignment(team.teamNumber);
-                              ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                              ScaffoldMessenger.of(context)
+                                  .removeCurrentSnackBar();
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: Text('Unassigned Team ${team.teamNumber}'),
+                                  content: Text(
+                                      'Unassigned Team ${team.teamNumber}'),
                                   duration: const Duration(seconds: 1),
                                   behavior: SnackBarBehavior.floating,
                                   backgroundColor: Colors.red.shade700,
@@ -559,9 +561,7 @@ class PitRecorderState extends State<PitRecorder>
           style: GoogleFonts.museoModerno(
             fontSize: 12,
             fontWeight: FontWeight.w600,
-            color: selected
-                ? color
-                : (dark ? Colors.white54 : Colors.black45),
+            color: selected ? color : (dark ? Colors.white54 : Colors.black45),
           ),
         ),
       ),
@@ -638,9 +638,14 @@ class PitRecorderState extends State<PitRecorder>
                           decoration: BoxDecoration(
                             color: Colors.amber,
                             shape: BoxShape.circle,
-                            border: Border.all(color: dark ? const Color(0xFF1A1A1A) : Colors.white, width: 2),
+                            border: Border.all(
+                                color: dark
+                                    ? const Color(0xFF1A1A1A)
+                                    : Colors.white,
+                                width: 2),
                           ),
-                          child: const Icon(Icons.star, size: 10, color: Colors.white),
+                          child: const Icon(Icons.star,
+                              size: 10, color: Colors.white),
                         ),
                       ),
                   ],
@@ -794,8 +799,8 @@ class PitRecorderState extends State<PitRecorder>
                 actions: [
                   TextButton(
                     onPressed: () => Navigator.of(context).pop(true),
-                    child: const Text('Yes',
-                        style: TextStyle(color: Colors.red)),
+                    child:
+                        const Text('Yes', style: TextStyle(color: Colors.red)),
                   ),
                   TextButton(
                     onPressed: () => Navigator.of(context).pop(false),
@@ -826,9 +831,8 @@ class PitRecorderState extends State<PitRecorder>
         margin: const EdgeInsets.fromLTRB(16, 4, 16, 16),
         padding: const EdgeInsets.symmetric(vertical: 14),
         decoration: BoxDecoration(
-          color: dark
-              ? Colors.red.shade900.withOpacity(0.3)
-              : Colors.red.shade50,
+          color:
+              dark ? Colors.red.shade900.withOpacity(0.3) : Colors.red.shade50,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: Colors.red.withOpacity(0.3),
@@ -837,8 +841,7 @@ class PitRecorderState extends State<PitRecorder>
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.delete_outline,
-                color: Colors.red.shade400, size: 18),
+            Icon(Icons.delete_outline, color: Colors.red.shade400, size: 18),
             const SizedBox(width: 8),
             Text(
               'Delete All Data',

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:scouting_app/main.dart';
-import 'package:scouting_app/services/Colors.dart';
+import 'package:scout_ops_android/main.dart';
+import 'package:scout_ops_android/services/Colors.dart';
 import 'ExpStateManager.dart';
 
 class Experiment extends StatefulWidget {

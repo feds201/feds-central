@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
-import 'package:scouting_app/Experiment/experiment.dart';
-import 'package:scouting_app/logs.dart';
-import 'package:scouting_app/main.dart';
+import 'package:scout_ops_android/Experiment/experiment.dart';
+import 'package:scout_ops_android/logs.dart';
+import 'package:scout_ops_android/main.dart';
 import '../about_page.dart';
 import '../Match_Pages/match_page.dart';
 import '../Qualitative/qualitative.dart';

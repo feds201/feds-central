@@ -2,12 +2,12 @@ import 'dart:developer';
 
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
-import 'package:scouting_app/components/CheckBox.dart';
-import 'package:scouting_app/components/CounterShelf.dart';
-import 'package:scouting_app/components/QrGenerator.dart';
-import 'package:scouting_app/components/gameSpecifics/MultiPointSelector.dart';
-import 'package:scouting_app/components/gameSpecifics/climb.dart';
-import 'package:scouting_app/main.dart';
+import 'package:scout_ops_android/components/CheckBox.dart';
+import 'package:scout_ops_android/components/CounterShelf.dart';
+import 'package:scout_ops_android/components/QrGenerator.dart';
+import 'package:scout_ops_android/components/gameSpecifics/MultiPointSelector.dart';
+import 'package:scout_ops_android/components/gameSpecifics/climb.dart';
+import 'package:scout_ops_android/main.dart';
 
 import '../../components/TeamInfo.dart';
 import '../../components/gameSpecifics/starRate.dart';

@@ -1,12 +1,12 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-// import 'package:scouting_app/components/CheckBox.dart';
-// import 'package:scouting_app/components/CommentBox.dart';
-import 'package:scouting_app/components/CounterShelf.dart';
-import 'package:scouting_app/components/gameSpecifics/timer.dart';
+// import 'package:scout_ops_android/components/CheckBox.dart';
+// import 'package:scout_ops_android/components/CommentBox.dart';
+import 'package:scout_ops_android/components/CounterShelf.dart';
+import 'package:scout_ops_android/components/gameSpecifics/timer.dart';
 
-// import 'package:scouting_app/main.dart';
+// import 'package:scout_ops_android/main.dart';
 import '../../components/CheckBox.dart';
 import '../../components/TeamInfo.dart';
 import '../../components/gameSpecifics/PhaseSelection.dart';

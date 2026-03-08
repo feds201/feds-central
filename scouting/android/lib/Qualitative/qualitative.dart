@@ -3,12 +3,12 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
-import 'package:scouting_app/components/Facts.dart';
-import 'package:scouting_app/home_page.dart';
-import 'package:scouting_app/Qualitative/QualitativePage.dart';
-import 'package:scouting_app/main.dart';
-import '../services/Colors.dart';
-import '../services/DataBase.dart';
+import 'package:scout_ops_android/Qualitative/QualitativePage.dart';
+import 'package:scout_ops_android/components/Facts.dart';
+import 'package:scout_ops_android/home_page.dart';
+import 'package:scout_ops_android/main.dart';
+import 'package:scout_ops_android/services/Colors.dart';
+import 'package:scout_ops_android/services/DataBase.dart';
 
 class Qualitative extends StatefulWidget {
   const Qualitative({super.key});

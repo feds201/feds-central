@@ -3,13 +3,13 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
-import 'package:scouting_app/Pit_Checklist/CheckLists.dart';
-import 'package:scouting_app/components/Inspiration.dart';
-import 'package:scouting_app/components/ScoutersList.dart';
-import 'package:scouting_app/components/Facts.dart';
-import 'package:scouting_app/home_page.dart';
-import 'package:scouting_app/main.dart';
-import 'package:scouting_app/services/Colors.dart';
+import 'package:scout_ops_android/Pit_Checklist/CheckLists.dart';
+import 'package:scout_ops_android/components/Inspiration.dart';
+import 'package:scout_ops_android/components/ScoutersList.dart';
+import 'package:scout_ops_android/components/Facts.dart';
+import 'package:scout_ops_android/home_page.dart';
+import 'package:scout_ops_android/main.dart';
+import 'package:scout_ops_android/services/Colors.dart';
 import '../services/DataBase.dart';
 
 class PitCheckListPage extends StatefulWidget {

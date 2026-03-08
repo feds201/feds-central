@@ -4,9 +4,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
-import 'package:scouting_app/components/Button.dart';
-import 'package:scouting_app/services/Colors.dart';
-import 'package:scouting_app/services/DataBase.dart';
+import 'package:scout_ops_android/components/Button.dart';
+import 'package:scout_ops_android/services/Colors.dart';
+import 'package:scout_ops_android/services/DataBase.dart';
 
 import '../main.dart';
 

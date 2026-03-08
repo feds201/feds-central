@@ -5,8 +5,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:scouting_app/components/slider.dart';
-import 'package:scouting_app/main.dart';
+import 'package:scout_ops_android/components/slider.dart';
+import 'package:scout_ops_android/main.dart';
 
 import '../Match_Pages/match_page.dart';
 import '../Plugins/plugin_state_manager.dart';
