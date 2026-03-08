@@ -51,6 +51,7 @@ public class IntakeSubsystem extends SubsystemBase {
   private final LedsSubsystem leds = LedsSubsystem.getInstance();
   private final double extendedRotations = 78.0;
   private final double retractedRotations = 0.1;
+  private final double agitateOut = 5.0;
   // Desired motion timing: target to complete extend/retract in under 1s
   private static final double MOVE_TARGET_SECONDS = 0.9;
   // Aggressive acceleration multiplier requested (20x faster than default)
@@ -58,8 +59,7 @@ public class IntakeSubsystem extends SubsystemBase {
   private static final double ROLLER_OUTPUT = 0.45;
   private final Timer timer = new Timer();
 
-  private final double agitatedPosOut = 10.0; // TUNE 
-  private final double agitatedPosIn = 2; // TUNE
+
 
   // MotionMagic helper (create once and reuse)
   private final MotionMagicVoltage positionOut = new MotionMagicVoltage(Rotations.of(0));
@@ -80,7 +80,8 @@ public class IntakeSubsystem extends SubsystemBase {
   public enum IntakeState {
     DEFAULT,
     EXTENDED,
-    INTAKING
+    INTAKING,
+    AGITATE
   }
 
   public enum RollerState {
@@ -88,8 +89,15 @@ public class IntakeSubsystem extends SubsystemBase {
     OFF,
     REVERSE
   }
+
+  private enum AgitateState{
+    IN,
+    OUT
+  }
+
   private IntakeState currentState = IntakeState.DEFAULT;
   private RollerState currentRollerState = RollerState.OFF;
+  private AgitateState currentAgitateState = AgitateState.IN;
   
 
   public void setState(IntakeState targetState) {
@@ -121,13 +129,14 @@ public class IntakeSubsystem extends SubsystemBase {
     return runOnce(() -> setState(IntakeState.DEFAULT));
   }
 
- public Command aggitateIntake(){
-  moveIntakeWithPosition(agitatedPosOut); // MAKE A BREAK BETWEEN BOTH
-  moveIntakeWithPosition(agitatedPosIn);
-  return null;
- }
-
- 
+  // public Command agitateIntake(){
+  // setState(IntakeState.AGITATE);
+  // timer.start();
+  //   for(int i =0; i<10; i++){
+      
+  //   }
+  
+  // }
 
   public IntakeState getState() {
     return this.currentState;
@@ -207,7 +216,7 @@ public class IntakeSubsystem extends SubsystemBase {
    * roller for a target number of rotations before retracting.
    * @param rotationsPerPulse roller rotations to run during each extend phase
    */
-  public Command agitateWhileHeldRotations(double rotationsPerPulse) {
+  /*public Command agitateWhileHeldRotations(double rotationsPerPulse) {
     return new AgitateWhileHeldRotationsCommand(this, rotationsPerPulse);
   }
 
@@ -384,9 +393,27 @@ public class IntakeSubsystem extends SubsystemBase {
   rollerLigament = rollerMechRoot.append(
     new MechanismLigament2d("Roller", 1, 0, 6, new Color8Bit(Color.kBlue)));
   }
+  private void aggitateStart(){
+    if (currentAgitateState == AgitateState.IN) {
+      moveIntakeWithPosition(10);
+      currentAgitateState = AgitateState.OUT;
+    }
+    else{
+      moveIntakeWithPosition(0);
+      currentAgitateState = AgitateState.IN;
+    }
+  }
 
   @Override
   public void periodic() {
+    switch (currentState) {
+      case AGITATE:
+        aggitateStart();
+        break;
+    
+      default:
+        break;
+    }
     switch (currentRollerState) {
       case ON:
         rollerMotor.set(ROLLER_OUTPUT);

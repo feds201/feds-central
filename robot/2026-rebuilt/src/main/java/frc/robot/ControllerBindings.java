@@ -54,9 +54,8 @@ public class ControllerBindings {
                         shooterWheels.setStateCommand(shooter_state.SHOOTING),
                         shooterHood.setStateCommand(shooterhood_state.SHOOTING),
                         feederSubsystem.setStateCommand(feeder_state.RUN),
-                        spinDexer.setStateCommand(spindexer_state.RUN)
-                      
-                        //intakeSubsystem.agitateWhileHeldRotations(5.0)
+                        spinDexer.setStateCommand(spindexer_state.RUN),
+                        intakeSubsystem.setIntakeStateCommand(IntakeState.AGITATE)
                 ))
                 .onFalse(Commands.sequence(
                         feederSubsystem.setStateCommand(feeder_state.STOP),
@@ -124,26 +123,23 @@ public class ControllerBindings {
         
 
         // Button to shoot from against hub — run shooter/feeder/spindexer + agitate in parallel while held
-        // driver.x()
-        //         .whileTrue(Commands.sequence(
-                        
-        //                 // Pulse intake extend/retract while held (10 roller rotations per pulse, 0.3s retract dwell)
-        //                 feederSubsystem.setStateCommand(feeder_state.RUN),
-        //                 spinDexer.setStateCommand(spindexer_state.RUN),
-        //                 shooterWheels.setStateCommand(shooter_state.LAYUP),
-        //                 shooterHood.setStateCommand(shooterhood_state.LAYUP)
-        //         )
-        //         // .alongWith( new AgitateWhileHeldRotationsCommand(intakeSubsystem, 15.0))
-        //         )
-        //         .onFalse(Commands.sequence(
-        //                 feederSubsystem.setStateCommand(feeder_state.STOP),
-        //                 spinDexer.setStateCommand(spindexer_state.STOP),
-        //                 shooterWheels.setStateCommand(shooter_state.IDLE),
-        //                 shooterHood.setStateCommand(shooterhood_state.IN),
-        //                 intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT)
-        //         ));
-                driver.x().onTrue(shooterHood.setStateCommand(shooterhood_state.TEST).andThen(shooterWheels.setStateCommand(shooter_state.TEST)))
-                .onFalse(shooterHood.setStateCommand(shooterhood_state.IN).andThen(shooterWheels.setStateCommand(shooter_state.IDLE)));
+        driver.x()
+                .whileTrue(Commands.sequence(
+                  intakeSubsystem.setRollerStateCommand(RollerState.ON),
+                        feederSubsystem.setStateCommand(feeder_state.RUN),
+                        spinDexer.setStateCommand(spindexer_state.RUN),
+                        // Pulse intake extend/retract while held (5 roller rotations per pulse, 0.3s retract dwell)
+                        shooterWheels.setStateCommand(shooter_state.SHOOTING),
+                        shooterHood.setStateCommand(shooterhood_state.SHOOTING),
+                        intakeSubsystem.setIntakeStateCommand(IntakeState.AGITATE)
+                ))
+                .onFalse(Commands.sequence(
+                        feederSubsystem.setStateCommand(feeder_state.STOP),
+                        spinDexer.setStateCommand(spindexer_state.STOP),
+                        shooterWheels.setStateCommand(shooter_state.IDLE),
+                        shooterHood.setStateCommand(shooterhood_state.IN),
+                        intakeSubsystem.setRollerStateCommand(RollerState.OFF)
+                ));
 
         
 
@@ -175,9 +171,8 @@ public class ControllerBindings {
         driver.rightTrigger().and(HubDrive::pidAtSetpoint).and(shooterWheels::atSetpoint).whileTrue(
                 Commands.sequence(
                         feederSubsystem.setStateCommand(feeder_state.RUN),
-                        spinDexer.setStateCommand(spindexer_state.RUN)
-                        // Pulse the intake while firing (run until release). 5 rotations per pulse.
-                        // intakeSubsystem.agitateWhileHeldRotations(15.0)
+                        spinDexer.setStateCommand(spindexer_state.RUN),
+                        intakeSubsystem.setIntakeStateCommand(IntakeState.AGITATE)
                 )
         ).onFalse(
                 Commands.sequence(
