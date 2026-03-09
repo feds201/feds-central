@@ -200,7 +200,7 @@ public class LimelightWrapper extends Limelight {
                 if (poseEstimate.tagCount > 1
                         && Math.abs(Units.radiansToRotations(drivetrain.getState().Speeds.omegaRadiansPerSecond)) < 2) {
                     // Add it to the pose estimator.
-                    drivetrain.addVisionMeasurement(poseEstimate.pose.toPose2d(), poseEstimate.timestampSeconds,
+                    drivetrain.addVisionMeasurement(poseEstimate.pose.toPose2d(), poseEstimate.timestampSeconds+0.001,
                             getEstimationStdDevsLimelightMT1(poseEstimate));
                 }
             });

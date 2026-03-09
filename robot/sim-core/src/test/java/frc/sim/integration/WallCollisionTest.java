@@ -160,6 +160,7 @@ class WallCollisionTest {
         PhysicsWorld world = createWorldWithBoxWalls();
         GamePiece ball = new GamePiece(world, createBallConfig(),
                 FIELD_SIZE / 2, FIELD_SIZE / 2, BALL_RADIUS);
+        ball.initializePhysics();
         ball.getBody().setAutoDisableFlag(false);
         ball.getBody().setLinearVel(2.0, 0, 0); // 2 m/s toward east wall
 
@@ -189,6 +190,7 @@ class WallCollisionTest {
         PhysicsWorld world = createWorldWithBoxWalls();
         GamePiece ball = new GamePiece(world, createBallConfig(),
                 FIELD_SIZE - 0.5, FIELD_SIZE / 2, BALL_RADIUS);
+        ball.initializePhysics();
         ball.getBody().setAutoDisableFlag(false);
         ball.getBody().setLinearVel(15.0, 0, 0); // 15 m/s
 
@@ -217,6 +219,7 @@ class WallCollisionTest {
         PhysicsWorld world = createWorldWithBoxWalls();
         GamePiece ball = new GamePiece(world, createBallConfig(),
                 FIELD_SIZE / 2, FIELD_SIZE / 2, BALL_RADIUS);
+        ball.initializePhysics();
         ball.getBody().setAutoDisableFlag(false);
         ball.getBody().setLinearVel(30.0, 0, 0); // 30 m/s (67 mph)
 
@@ -259,6 +262,7 @@ class WallCollisionTest {
 
             GamePiece ball = new GamePiece(world, ballConfig,
                     FIELD_SIZE / 2, FIELD_SIZE / 2, BALL_RADIUS);
+            ball.initializePhysics();
             ball.getBody().setAutoDisableFlag(false);
             ball.getBody().setLinearVel(vx, vy, 0);
 

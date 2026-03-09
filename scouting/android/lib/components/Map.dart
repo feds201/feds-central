@@ -47,7 +47,7 @@ class _InteractiveMapMarkerState extends State<InteractiveMapMarker> {
   Widget build(BuildContext context) {
     final Image backgroundImage = widget.backgroundImage ??
         Image.asset(
-            'assets/2025/${widget.allianceColor}Alliance_StartPosition_2025.png');
+            'assets/2026/${widget.allianceColor}Alliance_StartPosition.png');
 
     final double _size =
         math.max(_botLocation.size.width, _botLocation.size.height);
@@ -248,8 +248,8 @@ Widget buildMap(
 
   // Otherwise use the original implementation
   onTap ??= (_) {};
-  image ??= Image.asset(
-      'assets/2025/${allianceColor}Alliance_StartPosition_2025.png');
+  image ??=
+      Image.asset('assets/2026/${allianceColor}Alliance_StartPosition.png');
 
   return Padding(
     padding: const EdgeInsets.all(8.0),

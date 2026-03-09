@@ -13,7 +13,7 @@ columns = [
     "auton_LeftBarge", "auton_AlgaeScoringProcessor", "auton_AlgaeScoringBarge", "botLocation",
     "teleop_CoralScoringLevel1", "teleop_CoralScoringLevel2", "teleop_CoralScoringLevel3", "teleop_CoralScoringLevel4",
     "teleop_AlgaeScoringBarge", "teleop_AlgaeScoringProcessor", "teleop_AlgaePickUp", "teleop_Defense",
-    "endgame_Deep_Climb", "endgame_Shallow_Climb", "endgame_Park", "endgame_Comments"
+    "endgame_Deep_Climb", "endgame_Shallow_Climb", "endgame_Park", "endgame_Comments", "endgame_DrawingData"
 ]
 
 def generate_data():
@@ -22,19 +22,20 @@ def generate_data():
     data = []
 
     for match in range(1, num_matches + 1):
-        match_key = f"2025mitry_qm{match}"
+        match_key = f"2026mitry_qm{match}"
         for alliance_color in ["Red", "Blue"]:
             for station in range(1, 4):
                 team = random.choice([t for t in teams if team_matches[t] < matches_per_team])
                 team_matches[team] += 1
                 row = [
-                    team, fake.name(), match_key, alliance_color, "2025mitry", station, match,
+                    team, fake.name(), match_key, alliance_color, "2026mitry", station, match,
                     *[random.randint(0, 5) for _ in range(4)], random.choice([True, False]),
                     random.randint(0, 3), random.randint(0, 2), "null",
                     *[random.randint(0, 10) for _ in range(4)], random.randint(0, 5), random.randint(0, 5),
                     random.randint(0, 10), random.choice([True, False]),
                     random.choice([True, False]), random.choice([True, False]), random.choice([True, False]),
-                    fake.sentence() if random.random() > 0.8 else ""
+                    fake.sentence() if random.random() > 0.8 else "",
+                    ""
                 ]
                 data.append(row)
     return data

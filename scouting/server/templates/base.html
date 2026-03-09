@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ScoutOps Server{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="toggle-switch">
+        <input type="checkbox" id="darkModeToggle">
+        <label for="darkModeToggle"><span></span></label>
+    </div>
+    <header>
+        <h1>{% block header %}Pyintel Network Management System{% endblock %}</h1>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/devices">Devices</a></li>
+            <li><a href="/get_data">Data</a></li>
+            <li><a href="/client_images">Apps</a></li>
+            <li><a href="/get_event_file">Events</a></li>
+            <li><a href="/logs">Logs</a></li>
+        </ul>
+    </nav>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

@@ -10,6 +10,10 @@ scouting/Assets/
 # Fedsbot
 fedsbot/sessions.json
 
+# Accidental nested repo clones. First added as a submodule in c3b6d277, has been
+# removed multiple times and keeps getting re-added by git add --all. Do not remove.
+**/feds-central
+
 # TEMP
 .sync-cache/
 sync-source-repos.sh
@@ -56,6 +60,9 @@ hs_err_pid*
 *.aab
 # Keep Gradle wrapper jar (overrides *.jar above)
 !**/gradle-wrapper.jar
+# Allow tiny OBJ resource files that are needed for the simulator+tests (e.g. field collision meshes for simulation)
+!**/src/main/resources/**/*.obj
+!**/src/test/resources/**/*.obj
 
 
 

@@ -65,6 +65,7 @@ dependencies:
   open_file: ^3.5.10
   camera: 0.11.0+1
   battery_plus: ^6.2.2
+  http: ^1.1.0
 
 
 dev_dependencies:
@@ -101,8 +102,6 @@ flutter:
     - assets/thumb.png
     - assets/ref/Cheat-Sheet.jpg
     - assets/ref/Cheat-Sheet-2.jpg
-    - assets/day_zero.json
-    - assets/response.json
   # To add assets to your application, add an assets section, like this:
   # assets:
   #     - images/a_dot_burr.jpeg

@@ -25,7 +25,7 @@ class _GeminiPredictionPageState extends State<GeminiPredictionPage> {
     try {
       // Replace with the actual input data for predictions
       Map<String, dynamic> inputData = {
-        'eventKey': '2025FRC',
+        'eventKey': '2026FRC',
         'teamData': [
           {'teamNumber': 123, 'performance': 85},
           {'teamNumber': 456, 'performance': 90},

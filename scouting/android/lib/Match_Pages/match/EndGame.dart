@@ -39,6 +39,8 @@ class EndGameState extends State<EndGame> {
   late String allianceColor;
   late int matchNumber;
   late int neutralTrips;
+  late bool robotBroken;
+
   //timer
   double endgameTime = 0.0;
   int endgameActions = 0;
@@ -77,6 +79,8 @@ class EndGameState extends State<EndGame> {
     endgameTime = widget.matchRecord.endPoints.endgameTime;
     endgameActions = widget.matchRecord.endPoints.endgameActions;
     drawingData = widget.matchRecord.endPoints.drawingData;
+    robotBroken =
+        false; // Default to false, as this is a new field and may not be in older records
   }
 
   void UpdateData() {
@@ -264,50 +268,49 @@ class EndGameState extends State<EndGame> {
                         ),
                       ],
                     ),
-
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      height: 135,
-                      decoration: BoxDecoration(
-                        color: Colors.grey,
-                        borderRadius:BorderRadius.circular(12),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(1.5),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Color.fromARGB(255, 34, 34, 34),
-                            borderRadius:BorderRadius.circular(12),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Container(
+                        height: 135,
+                        decoration: BoxDecoration(
+                          color: Colors.grey,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(1.5),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Color.fromARGB(255, 34, 34, 34),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: StarRating(
+                              initialRating: shootingAccuracy,
+                              onRatingChanged: (rating) {
+                                setState(() {
+                                  shootingAccuracy = rating;
+                                  print(shootingAccuracy);
+                                });
+                              },
+                            ),
                           ),
-                          child:StarRating(
                             initialRating: shootingAccuracy,
-                            onRatingChanged: (rating) {
-                              setState(() {
-                                shootingAccuracy = rating;
-<<<<<<< HEAD
-<<<<<<< HEAD
-                                if (kDebugMode) {
-                                  log('shootingAccuracy: $shootingAccuracy');
-                                }
-=======
-                                print(shootingAccuracy);
->>>>>>> origin/main
-=======
-                                print(shootingAccuracy);
->>>>>>> origin/main
-                              });
-                            },
-                          ),
                         ),
                       ),
                     ),
-                  ),
                   ],
                 ),
               ),
             ),
           ),
+          const SizedBox(height: 12),
+
+          buildCheckBox("Did the robot break down?", robotBroken, (bool value) {
+            setState(() {
+              robotBroken = value;
+            });
+            UpdateData();
+          }),
+
           const SizedBox(height: 12),
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),

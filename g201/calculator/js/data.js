@@ -87,7 +87,7 @@ export const modules = {
             options: [
                 { label: "Crystal Geyser, Nestle Pure Life, Dasani, Aquafina, Fiji, and Evian", eco_impact: "high", value: 3 },
                 { label: "Klean Kanteen, Hydro Flask, S'wheat, Ocean Bottle", eco_impact: "low", value: 1 },
-                { label: "None of the above", eco_impact: "medium", value: 0 },
+                { label: "None of the above", eco_impact: "medium", value: 1 },
             ],
             eco_tip: "Choose what kind of pack you use",
             eco_impact: "medium",

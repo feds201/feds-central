@@ -30,8 +30,6 @@ class _WaveGridState extends State<WaveGrid> with TickerProviderStateMixin {
     super.dispose();
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -44,7 +42,7 @@ class _WaveGridState extends State<WaveGrid> with TickerProviderStateMixin {
           return CustomPaint(
             painter: _WaveGridPainter(
               waveAnimation:
-              _controller.drive(Tween(begin: 1 * pi, end: 5 * pi)),
+                  _controller.drive(Tween(begin: 1 * pi, end: 5 * pi)),
               isDark: widget.isDark,
             ),
             size: Size.infinite,
@@ -67,7 +65,9 @@ class _WaveGridPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = isDark ? invertColor(const Color(0x15040404)) : const Color(0x15040404)
+      ..color = isDark
+          ? invertColor(const Color(0x15040404))
+          : const Color(0x15040404)
       ..style = PaintingStyle.fill;
 
     final linePaint = Paint()
@@ -127,7 +127,6 @@ class _WaveGridPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_WaveGridPainter oldDelegate) => true;
-
 }
 
 class Cell {

@@ -242,6 +242,57 @@ The SimManager maintains rotation accumulators for animated mechanisms (rollers,
 
 ---
 
+## 3D Models & Git LFS
+
+AdvantageScope can render the actual robot CAD in its 3D view using **GLB** (binary glTF) model files. These files live in `sim_models/` inside each year's robot project.
+
+### Directory Structure
+
+```
+robot/2026-rebuilt/sim_models/
+├── Robot_Components/           # Articulated model (individual components)
+│   ├── config.json             # AdvantageScope config (maps components to GLB files)
+│   ├── model.glb               # Base chassis
+│   └── model_0.glb ... model_15.glb  # Individual mechanism parts
+└── Robot_Static/      # Single-mesh model (no moving parts)
+    ├── config.json
+    └── model.glb
+```
+
+### Git LFS (Large File Storage)
+
+GLB files are binary and can be large (the 2026 models total ~100MB). To keep the repo lean:
+
+- **GLB files are stored via [Git LFS](https://git-lfs.github.com/)** — the `.gitattributes` at the repo root routes all `*.glb` files through LFS automatically
+- **Models are excluded from clone** — the `.lfsconfig` at the repo root sets `fetchexclude = **/sim_models/**`, so cloning the repo downloads tiny pointer files (~130 bytes) instead of the real models
+- **Models download on demand** — each year's `build.gradle` has a `fetchModels` task that pulls only that year's models via `git lfs pull`
+- **`config.json` is NOT in LFS** — it's a small JSON file tracked normally by git, always available on clone
+
+### How It Works for Developers
+
+From a developer's perspective, this is invisible:
+
+1. **Adding models:** Just `git add` / `git commit` your GLB files. LFS handles the rest behind the scenes.
+2. **Getting models:** Run `./gradlew simulateJava` — the `fetchModels` task runs automatically and downloads any missing models. You can also run `./gradlew fetchModels` directly.
+3. **Skipping model download:** Pass `-PskipFetchModels` to skip the download (e.g. `./gradlew simulateJava -PskipFetchModels`).
+4. **No LFS installed?** The build still works. You just won't see the robot model in AdvantageScope. The Gradle task prints install instructions.
+
+<Callout type="info">
+Git LFS is included by default with Git for Windows. On macOS/Linux, install it separately — see the [Troubleshooting](/Home/Programming/FRC/Simulation/QuickStart#troubleshooting) section in the Quick Start guide.
+</Callout>
+
+### New Year Setup
+
+When creating a new year's robot project from the template:
+
+1. The `fetchModels` Gradle task is already included in the template's `build.gradle`
+2. The `sim_models/Robot_Components/` and `sim_models/Robot_Static/` directories exist with placeholder `config.json` files
+3. Export your CAD as GLB files into the appropriate folder — `Robot_Components/` for articulated models (separate mechanism parts) and `Robot_Static/` for a single static mesh
+4. Update the `config.json` files with your component rotations and positions
+5. Commit and push — LFS tracks the GLB files automatically
+
+---
+
 ## 2026 REBUILT Specifics
 
 **Code:** `robot/2026-rebuilt/src/main/java/frc/robot/sim/`

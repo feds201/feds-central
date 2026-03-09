@@ -219,6 +219,9 @@ export function handleBack() {
     }
 }
 
+
+
+
 function updateEcoScore(question, value) {
     applyImpact(question, value);
     if (elements.ecoScore) elements.ecoScore.textContent = Math.round(currentEcoScore);
@@ -304,6 +307,7 @@ function finishQuiz() {
             }
         }
     }
+}
 
     updateImpactTexts();
     generateRecommendations();
@@ -321,8 +325,23 @@ function finishQuiz() {
         overallSummaryEl.innerHTML = html;
     }
 }
+}
 
 function updateImpactTexts() {
+    const moduleCategories = {
+        '1': ['materials'],
+        '2': ['materials'],
+        '3': ['materials', 'energy'],
+        '4': ['transport'],
+        '5': ['transport'],
+        'secret': []
+    };
+    const relevantCategories = moduleCategories[activeModuleId] || ['materials', 'transport', 'energy'];
+
+    document.querySelectorAll('.impact-item').forEach(item => {
+        item.style.display = relevantCategories.includes(item.dataset.category) ? 'flex' : 'none';
+    });
+
     const matImpact = calculateCategoryImpact('materials', activeQuestions, answers);
     const transImpact = calculateCategoryImpact('transport', activeQuestions, answers);
     const enImpact = calculateCategoryImpact('energy', activeQuestions, answers);

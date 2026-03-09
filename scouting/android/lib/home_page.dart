@@ -71,7 +71,8 @@ class _HomePageState extends State<HomePage>
       body: Stack(
         children: [
           Positioned.fill(
-            child: WaveGrid(isDark: Theme.of(context).brightness == Brightness.dark),
+            child: WaveGrid(
+                isDark: Theme.of(context).brightness == Brightness.dark),
           ),
           Column(
             children: [
@@ -114,9 +115,8 @@ class _HomePageState extends State<HomePage>
       buildButton(
         context: context,
         text: 'Match Scouting',
-        color: islightmode()
-            ? Colors.green.shade100
-            : darkColors.advay_dark_green,
+        color:
+            islightmode() ? Colors.green.shade100 : darkColors.advay_dark_green,
         borderColor: islightmode()
             ? Colors.green.shade800
             : const Color.fromARGB(255, 80, 218, 87),
@@ -138,10 +138,9 @@ class _HomePageState extends State<HomePage>
       const SizedBox(height: 12),
       buildButton(
         context: context,
-        text: 'Record Pit',
-        color: islightmode()
-            ? Colors.blue.shade100
-            : darkColors.advay_dark_blue,
+        text: 'PIT Scouting',
+        color:
+            islightmode() ? Colors.blue.shade100 : darkColors.advay_dark_blue,
         borderColor: Colors.blueAccent,
         icon: Icons.bookmark_add_outlined,
         textColor: Colors.blueAccent,
@@ -168,7 +167,7 @@ class _HomePageState extends State<HomePage>
         textColor: islightmode()
             ? const Color.fromARGB(255, 78, 26, 96)
             : const Color.fromARGB(255, 174, 111, 219),
-            iconColor: const Color.fromARGB(255, 174, 111, 219),
+        iconColor: const Color.fromARGB(255, 174, 111, 219),
         onPressed: () {
           Navigator.push(
               context,
@@ -409,15 +408,8 @@ Widget _buildCustomAppBar(BuildContext context) {
     elevation: 0, // Remove shadow for a cleaner look
     actions: [
       IconButton(
-        icon: ShaderMask(
-          shaderCallback: (bounds) => const LinearGradient(
-            colors: [Colors.redAccent, Colors.lightBlueAccent],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ).createShader(bounds),
-          child: const Icon(Icons.attach_file_rounded,
-              size: 30, color: Colors.white),
-        ),
+        icon: const Icon(Icons.attach_file_rounded,
+            size: 30, color: Colors.white),
         onPressed: () {
           Route route = MaterialPageRoute(
               builder: (context) => const InfiniteZoomImage());
@@ -425,14 +417,7 @@ Widget _buildCustomAppBar(BuildContext context) {
         },
       ),
       IconButton(
-        icon: ShaderMask(
-          shaderCallback: (bounds) => const LinearGradient(
-            colors: [Colors.red, Colors.lightBlueAccent],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomLeft,
-          ).createShader(bounds),
-          child: const Icon(Icons.extension, size: 30, color: Colors.white),
-        ),
+        icon:   const Icon(Icons.extension, size: 30, color: Colors.white),
         onPressed: () {
           Route route = MaterialPageRoute(
               builder: (context) => const Plugins(), fullscreenDialog: true);

@@ -84,3 +84,30 @@ def test_get_tba_team_data_missing_key(client):
         assert response.status_code == 500
         data = json.loads(response.data)
         assert "TBA_API_KEY environment variable is not set" in data['error']
+
+
+def test_event_page_and_api(client):
+    # ensure event page renders empty list by default
+    response = client.get('/event')
+    assert response.status_code == 200
+    assert b'No matches uploaded yet' in response.data or b'Event matches' in response.data
+
+    # api should return json even if empty
+    resp2 = client.get('/get_event_file')
+    assert resp2.status_code == 200
+    data = json.loads(resp2.data)
+    assert isinstance(data, list)
+
+
+def test_qr_generation_empty(client):
+    # create empty db and call qr endpoint
+    response = client.post('/generate_qrcode/1')
+    assert response.status_code == 200
+    assert response.content_type == 'image/png'
+
+
+def test_logs_page(client):
+    r = client.get('/logs')
+    assert r.status_code == 200
+    assert b'log' in r.data.lower() or b'no log' in r.data.lower()
+kk

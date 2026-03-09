@@ -14,6 +14,8 @@ import java.util.function.BiConsumer;
  * lifecycle, intake consumption, launching, and NT publishing.
  */
 public class GamePieceManager {
+    public static final double CHUNK_SIZE = 2.0;
+
     private final PhysicsWorld physicsWorld;
     private final List<GamePiece> pieces = new ArrayList<>();
     private final Map<String, List<GamePiece>> piecesByType = new HashMap<>();
@@ -142,12 +144,6 @@ public class GamePieceManager {
         return active;
     }
 
-    // Reusable lists to avoid allocation every tick
-    private final List<double[]> wakeZones = new ArrayList<>();
-    private static final int INITIAL_WAKE_ZONE_POOL = 32;
-    private final List<double[]> wakeZonePool = new ArrayList<>();
-    private int wakeZonePoolIndex = 0;
-
     /** Speed above which a ball is considered "moving" and becomes a wake zone (m/s). */
     private static final double MOVING_SPEED_THRESHOLD = 0.5;
     /** Speed below which a ball is considered "settled" and eligible for sleep (m/s). */
@@ -156,86 +152,59 @@ public class GamePieceManager {
     private static final double MOVING_SPEED_THRESHOLD_SQ = MOVING_SPEED_THRESHOLD * MOVING_SPEED_THRESHOLD;
     private static final double SLEEP_SPEED_THRESHOLD_SQ = SLEEP_SPEED_THRESHOLD * SLEEP_SPEED_THRESHOLD;
 
-    {
-        // Pre-allocate wake zone coordinate pairs to avoid per-tick allocation
-        for (int i = 0; i < INITIAL_WAKE_ZONE_POOL; i++) {
-            wakeZonePool.add(new double[2]);
-        }
-    }
-
-    /** Borrow a double[2] from the pool, growing the pool if needed. */
-    private double[] borrowWakeZone(double x, double y) {
-        if (wakeZonePoolIndex >= wakeZonePool.size()) {
-            wakeZonePool.add(new double[2]);
-        }
-        double[] zone = wakeZonePool.get(wakeZonePoolIndex++);
-        zone[0] = x;
-        zone[1] = y;
-        return zone;
-    }
-
     /**
-     * Proximity-based body activation for performance.
+     * Proximity-based body activation for performance using a Minecraft-style chunk system.
      *
-     * <p>Wake zones include the robot position plus every fast-moving piece
-     * (speed &gt; 0.5 m/s). Bodies within {@code wakeRadius} of any wake zone are
-     * enabled; bodies beyond {@code sleepRadius} of ALL wake zones that have
-     * settled (speed &lt; 0.1 m/s) are disabled. This means only pieces near the
-     * action are simulated — distant settled balls cost nearly zero CPU.
-     *
-     * <p>Example: if the shooter launches a ball at 20 m/s, the ball itself becomes
-     * a wake zone, so pieces near its landing spot wake up for collision response.
+     * <p>The field is divided into chunks (e.g., 2x2 meters). Active chunks include
+     * the chunk the robot is in, chunks containing any fast-moving piece, and the
+     * 8 neighbors of all those chunks. Pieces in active chunks have their physics
+     * initialized (if needed) and enabled. Pieces in inactive chunks that have
+     * settled are disabled to save CPU.
      *
      * <p>Call this each tick BEFORE {@link frc.sim.core.PhysicsWorld#step(double)}.
      *
      * @param robotPos    robot position on the field (2D)
-     * @param wakeRadius  enable bodies within this distance of a wake zone (meters)
-     * @param sleepRadius disable settled bodies beyond this distance of ALL wake zones (meters)
+     * @param wakeRadius  (ignored, using chunk logic)
+     * @param sleepRadius (ignored, using chunk logic)
      */
     public void updateProximity(Translation2d robotPos, double wakeRadius, double sleepRadius) {
-        double wakeR2 = wakeRadius * wakeRadius;
-        double sleepR2 = sleepRadius * sleepRadius;
+        Set<Long> activeChunks = new HashSet<>();
 
-        // Build wake zones from pool: robot position + every fast-moving ball
-        wakeZones.clear();
-        wakeZonePoolIndex = 0;
-        wakeZones.add(borrowWakeZone(robotPos.getX(), robotPos.getY()));
+        // Add robot chunk and its neighbors
+        int robotCx = (int) Math.floor(robotPos.getX() / CHUNK_SIZE);
+        int robotCy = (int) Math.floor(robotPos.getY() / CHUNK_SIZE);
+        addChunkAndNeighbors(activeChunks, robotCx, robotCy);
 
+        // Add fast-moving pieces' chunks
         for (GamePiece piece : pieces) {
-            if (!piece.isActive() || !piece.getBody().isEnabled()) continue;
+            if (!piece.isActive() || !piece.hasPhysics() || !piece.getBody().isEnabled()) continue;
             DVector3C vel = piece.getBody().getLinearVel();
             double speed2 = vel.get0() * vel.get0() + vel.get1() * vel.get1() + vel.get2() * vel.get2();
             if (speed2 >= MOVING_SPEED_THRESHOLD_SQ) {
-                DVector3C pos = piece.getBody().getPosition();
-                wakeZones.add(borrowWakeZone(pos.get0(), pos.get1()));
+                Translation3d pos = piece.getPosition3d();
+                int cx = (int) Math.floor(pos.getX() / CHUNK_SIZE);
+                int cy = (int) Math.floor(pos.getY() / CHUNK_SIZE);
+                addChunkAndNeighbors(activeChunks, cx, cy);
             }
         }
 
-        // Wake/sleep pieces based on proximity to ANY wake zone
+        // Enable/disable pieces based on active chunks
         for (GamePiece piece : pieces) {
             if (!piece.isActive()) continue;
 
-            DVector3C pos = piece.getBody().getPosition();
-            double px = pos.get0();
-            double py = pos.get1();
+            Translation3d pos = piece.getPosition3d();
+            int cx = (int) Math.floor(pos.getX() / CHUNK_SIZE);
+            int cy = (int) Math.floor(pos.getY() / CHUNK_SIZE);
+            long chunkKey = packChunk(cx, cy);
 
-            // Find closest wake zone (squared distance avoids sqrt)
-            double minDist2 = Double.MAX_VALUE;
-            for (double[] zone : wakeZones) {
-                double dx = px - zone[0];
-                double dy = py - zone[1];
-                double d2 = dx * dx + dy * dy;
-                if (d2 < minDist2) minDist2 = d2;
-            }
-
-            if (minDist2 <= wakeR2) {
+            if (activeChunks.contains(chunkKey)) {
+                if (!piece.hasPhysics()) {
+                    piece.initializePhysics();
+                }
                 if (!piece.getBody().isEnabled()) {
                     piece.getBody().enable();
                 }
-            } else if (minDist2 > sleepR2 && piece.getBody().isEnabled()) {
-                // Only sleep if piece has actually settled — reuse the velocity
-                // we already know is below MOVING threshold (otherwise it would
-                // be a wake zone itself), so just check the tighter sleep threshold
+            } else if (piece.hasPhysics() && piece.getBody().isEnabled()) {
                 DVector3C vel = piece.getBody().getLinearVel();
                 double speed2 = vel.get0() * vel.get0() + vel.get1() * vel.get1() + vel.get2() * vel.get2();
                 if (speed2 < SLEEP_SPEED_THRESHOLD_SQ) {
@@ -245,13 +214,25 @@ public class GamePieceManager {
         }
     }
 
+    private void addChunkAndNeighbors(Set<Long> chunks, int cx, int cy) {
+        for (int i = -1; i <= 1; i++) {
+            for (int j = -1; j <= 1; j++) {
+                chunks.add(packChunk(cx + i, cy + j));
+            }
+        }
+    }
+
+    private long packChunk(int cx, int cy) {
+        return ((long) cx << 32) | (cy & 0xFFFFFFFFL);
+    }
+
     /**
      * Disable all piece bodies (e.g., after spawning starting fuel so
      * they don't all simulate at once).
      */
     public void disableAll() {
         for (GamePiece piece : pieces) {
-            if (piece.isActive()) {
+            if (piece.isActive() && piece.hasPhysics()) {
                 piece.getBody().disable();
             }
         }
