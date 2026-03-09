@@ -18,14 +18,27 @@ process.chdir(repoRoot);
 console.log(`[agent] Working directory set to: ${process.cwd()}`);
 
 const claudeMd = fs.readFileSync(path.join(repoRoot, 'CLAUDE.md'), 'utf8');
+const generalFedsbotPrompt = fs.readFileSync(path.join(__dirname, '..', 'system-prompt-general.md'), 'utf8');
 const discordPrompt = fs.readFileSync(path.join(__dirname, '..', 'system-prompt-discord.md'), 'utf8');
 const chatPrompt = fs.readFileSync(path.join(__dirname, '..', 'system-prompt-chat.md'), 'utf8');
 
 export type UIType = 'discord' | 'chat';
 
 function getInitMessagePrefix(ui: UIType): string {
-  const uiPrompt = ui === 'chat' ? chatPrompt : discordPrompt;
-  return 'Here is the CLAUDE.md for reference:\n' + claudeMd + '\n\n --- And here is some additional context:\n' + uiPrompt + '\n\n --- And here is the user message:\n';
+  return `## CLAUDE.md:
+${claudeMd}
+
+---
+
+## SYSTEM PROMPT:
+${generalFedsbotPrompt}
+
+${ui === 'chat' ? chatPrompt : discordPrompt}
+
+---
+
+## USER MESSAGE:
+`;
 }
 
 function getSessionOptions() {
@@ -39,7 +52,7 @@ function getSessionOptions() {
     // bypassPermissions is broken in V2: https://github.com/anthropics/claude-code/issues/14279
     permissionMode: 'acceptEdits' as const,
     // Do not use `settingSources: ['project']` as it results in systemPrompt being ignored!
-    maxTurns: 5,
+    maxTurns: 15,
     canUseTool: async (toolName: string, input: Record<string, unknown>) => {
       if (toolName === 'Task' && input.subagent_type !== 'Explore') {
         return { behavior: 'deny' as const, message: 'Only Explore subagents are allowed' };
@@ -57,7 +70,7 @@ interface AgentResult {
 export async function createAgentSession(message: string, ui: UIType = 'discord'): Promise<AgentResult> {
   const session = unstable_v2_createSession(getSessionOptions());
   try {
-  await session.send(getInitMessagePrefix(ui) + message);
+    await session.send(getInitMessagePrefix(ui) + message);
 
     let responseText = '';
     let sessionId = '';

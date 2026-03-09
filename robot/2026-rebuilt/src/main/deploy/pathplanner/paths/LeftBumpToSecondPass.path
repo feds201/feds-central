@@ -69,7 +69,7 @@
   "folder": "DoublePassTest",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 135.0
+    "rotation": -45.0
   },
   "useDefaultConstraints": false
 }

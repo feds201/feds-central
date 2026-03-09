@@ -44,7 +44,7 @@ public class TeleopSwerve extends Command {
 
   public static final double MAX_SPEED = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
   public static final double MAX_ANGULAR_RATE = RotationsPerSecond.of(2).in(RadiansPerSecond);
-private final PIDController hubRotPID = new PIDController(25, 0, 0);
+  private final PIDController hubRotPID = new PIDController(25, 0, 0);
   private CommandSwerveDrivetrain dt;
   private CommandXboxController controller;
   
@@ -88,7 +88,7 @@ private final PIDController hubRotPID = new PIDController(25, 0, 0);
     tab.addDouble("Snapped Controller Pointing angle", ()-> currentJoystickAngle.in(Degrees));
     addRequirements(this.dt);
     controller.povLeft()
-            .toggleOnTrue(new InstantCommand(()-> mode = driveMode.HUBDRIVE)
+            .toggleOnTrue(new InstantCommand(()-> mode = driveMode.FALCONDRIVE)
                           .andThen(new RunCommand(()->{}))
                           .finallyDo(()-> mode = driveMode.NORMALDRIVE));
   }
