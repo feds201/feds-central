@@ -41,13 +41,13 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "LeftBumpCrossOver"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.0072440944881766,
-      "rotationDegrees": -45.0
+      "waypointRelativePos": 0.6511194029850746,
+      "rotationDegrees": -135.0
     }
   ],
   "constraintZones": [
@@ -77,7 +77,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -45.0
+    "rotation": -135.0
   },
   "reversed": false,
   "folder": "MidIntakeToLeftBump",
