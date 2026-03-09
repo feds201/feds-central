@@ -23,11 +23,19 @@ export function startModule(moduleId) {
         return;
     }
 
-    currentQuestionIndex = 0;
-    answers = [];
-    currentEcoScore = 100;
+    // Preserve answers if we are re-entering a completed module for review
+    if (moduleAnswers[moduleId]) {
+        answers = [...moduleAnswers[moduleId]];
+        recalculateScoreFromAnswers();
+    } else {
+        currentQuestionIndex = 0;
+        answers = [];
+        currentEcoScore = 100;
+    }
 
-    if (elements.ecoScore) elements.ecoScore.textContent = currentEcoScore;
+    currentQuestionIndex = 0;
+
+    if (elements.ecoScore) elements.ecoScore.textContent = Math.round(currentEcoScore);
     if (elements.totalQuestions) elements.totalQuestions.textContent = activeQuestions.length;
     if (elements.totalQuestionsDisplay) elements.totalQuestionsDisplay.textContent = activeQuestions.length;
 
@@ -41,9 +49,29 @@ export function startModule(moduleId) {
     updateProgressBar();
 }
 
+function recalculateScoreFromAnswers() {
+    currentEcoScore = 100;
+    activeQuestions.forEach((q, idx) => {
+        if (answers[idx]) {
+            const val = answers[idx].answerValue;
+            if (val !== undefined) {
+                applyImpact(q, val);
+            }
+        }
+    });
+}
+
 export function displayQuestion() {
     const question = activeQuestions[currentQuestionIndex];
     if (!question) return;
+
+    // Sync score to BEFORE this question was answered
+    if (answers[currentQuestionIndex]) {
+        currentEcoScore = answers[currentQuestionIndex].scoreBefore;
+    } else if (currentQuestionIndex === 0) {
+        currentEcoScore = 100;
+    }
+    if (elements.ecoScore) elements.ecoScore.textContent = Math.round(currentEcoScore);
 
     if (question.type === 'multiple-choice') {
         elements.answerInput.classList.add('hidden');
@@ -57,10 +85,8 @@ export function displayQuestion() {
 
         // Restore answer if exists
         if (answers[currentQuestionIndex]) {
-             const savedVal = answers[currentQuestionIndex].answer;
-             
-             // Find index by value
-             const idx = question.options.findIndex(o => o.value == savedVal);
+             const savedVal = answers[currentQuestionIndex].answerLabel;
+             const idx = question.options.findIndex(o => o.label === savedVal);
              if (idx !== -1) {
                  const radio = elements.mcContainer.querySelector(`input[value="${idx}"]`);
                  if (radio) radio.checked = true;
@@ -70,7 +96,7 @@ export function displayQuestion() {
         elements.answerInput.classList.remove('hidden');
         elements.mcContainer.classList.add('hidden');
 
-        elements.answerInput.value = answers[currentQuestionIndex] ? answers[currentQuestionIndex].answer : '';
+        elements.answerInput.value = answers[currentQuestionIndex] ? answers[currentQuestionIndex].answerValue : '';
         elements.answerInput.min = question.min;
         elements.answerInput.max = question.max;
         elements.answerInput.step = question.type === 'int' ? '1' : '0.01';
@@ -109,7 +135,7 @@ function updateProgressBar() {
 
 export function validateAnswer() {
     const question = activeQuestions[currentQuestionIndex];
-    let value;
+    if (!question) return false;
 
     if (question.type === 'multiple-choice') {
         const selected = elements.mcContainer.querySelector('input[name="mc-answer"]:checked');
@@ -119,7 +145,7 @@ export function validateAnswer() {
         }
         return true;
     } else {
-        value = elements.answerInput.value.trim();
+        const value = elements.answerInput.value.trim();
         if (value === '') {
             elements.errorMessage.textContent = 'Please enter a value';
             return false;
@@ -148,25 +174,27 @@ export function handleNext() {
     if (!validateAnswer()) return;
 
     const question = activeQuestions[currentQuestionIndex];
-    let savedAnswer;
+    let savedAnswerLabel;
     let valueForScore;
 
     if (question.type === 'multiple-choice') {
         const selected = elements.mcContainer.querySelector('input[name="mc-answer"]:checked');
         const selectedIndex = selected.value;
-        savedAnswer = question.options[selectedIndex].value;
-        valueForScore = savedAnswer;
+        savedAnswerLabel = question.options[selectedIndex].label;
+        valueForScore = question.options[selectedIndex].value;
     } else {
-        savedAnswer = elements.answerInput.value;
-        valueForScore = parseFloat(savedAnswer);
+        savedAnswerLabel = elements.answerInput.value;
+        valueForScore = parseFloat(savedAnswerLabel);
     }
 
     answers[currentQuestionIndex] = {
         question: question.question,
-        answer: savedAnswer,
+        answer: savedAnswerLabel, // backward compat for summary
+        answerLabel: savedAnswerLabel,
+        answerValue: valueForScore,
         section: question.section,
         category: question.category,
-        scoreBefore: currentEcoScore  // snapshot score before this question's impact
+        scoreBefore: currentEcoScore
     };
 
     updateEcoScore(question, valueForScore);
@@ -183,7 +211,6 @@ export function handleNext() {
 export function handleBack() {
     if (currentQuestionIndex > 0) {
         currentQuestionIndex--;
-        // Restore the score to what it was before this question was answered
         if (answers[currentQuestionIndex]) {
             currentEcoScore = answers[currentQuestionIndex].scoreBefore;
             if (elements.ecoScore) elements.ecoScore.textContent = Math.round(currentEcoScore);
@@ -192,12 +219,14 @@ export function handleBack() {
     }
 }
 
-
-
-
 function updateEcoScore(question, value) {
+    applyImpact(question, value);
+    if (elements.ecoScore) elements.ecoScore.textContent = Math.round(currentEcoScore);
+}
+
+function applyImpact(question, value) {
     let impactFactor;
-    switch (question.eco_impact) {
+    switch (question.eco_impact?.toLowerCase()) {
         case 'high': impactFactor = -20; break;
         case 'medium': impactFactor = -12; break;
         case 'low': impactFactor = -6; break;
@@ -206,7 +235,7 @@ function updateEcoScore(question, value) {
 
     let normalizedValue;
     if (question.type === 'multiple-choice') {
-        normalizedValue = (value - 1) / (3 - 1);
+        normalizedValue = (value - 1) / 2; // assuming values 1-3
     } else {
         const range = question.max - question.min;
         normalizedValue = range > 0 ? (value - question.min) / range : 0;
@@ -216,103 +245,84 @@ function updateEcoScore(question, value) {
     const impact = curvedImpact * impactFactor;
 
     currentEcoScore = Math.max(0, Math.min(100, currentEcoScore + impact));
-    if (elements.ecoScore) elements.ecoScore.textContent = Math.round(currentEcoScore);
 }
 
 function finishQuiz() {
     elements.questionCard.classList.add('hidden');
     elements.actionsContainer.classList.add('hidden');
     elements.resultContainer.classList.remove('hidden');
-    const moduleNames = {
-    '1': 'Shipping & Packaging',
-    '2': 'Disposable Meal Items',
-    '3': 'Build',
-    '4': 'Transportation (FIRST)',
-    '5': 'Transportation (Regional)'
-};
-const resultHeader = document.querySelector('.Eco-Friendly-text');
-if (resultHeader) {
-    resultHeader.textContent = `Module ${activeModuleId}: ${moduleNames[activeModuleId]} Complete!`;
-}
-   const finalScore = Math.round(currentEcoScore);
-
-if (activeModuleId === 'secret') {
-    if (elements.finalEcoScore) elements.finalEcoScore.textContent = '🤫';
-    const scoreLabel = document.querySelector('.result-score');
-    if (scoreLabel) scoreLabel.textContent = 'Team Vibe Score: IMMEASURABLE';
-    if (elements.meterPointer) elements.meterPointer.style.left = '100%';
-    if (elements.resultMessage) elements.resultMessage.textContent = "You have passed the vibe check. Clifford has been notified. Ritesh is proud. Lock in.";
-} else {
-    if (elements.finalEcoScore) elements.finalEcoScore.textContent = finalScore;
-    moduleScores[activeModuleId] = finalScore;
     
-    moduleAnswers[activeModuleId] = [...answers];
-    updateOverallScore();
-    const moduleScoreEl = document.getElementById(`eco-score-module-${activeModuleId}`);
-if (moduleScoreEl) {
-    moduleScoreEl.innerHTML = `<i class="fas fa-leaf"></i> Eco Score: ${finalScore}`;
-        moduleScoreEl.parentElement?.classList.add('completed');
+    const moduleNames = {
+        '1': 'Shipping & Packaging',
+        '2': 'Disposable Meal Items',
+        '3': 'Build',
+        '4': 'Transportation (FIRST)',
+        '5': 'Transportation (Regional)',
+        'secret': '🤫 Funny Team Stuff'
+    };
 
-}
-    if (elements.meterPointer) {
-        elements.meterPointer.style.left = `${finalScore}%`;
+    const resultHeader = document.querySelector('.Eco-Friendly-text');
+    if (resultHeader) {
+        resultHeader.textContent = `Module ${activeModuleId}: ${moduleNames[activeModuleId]} Complete!`;
     }
-    if (elements.resultMessage) {
-        if (finalScore >= 80) {
-            elements.resultMessage.textContent = "Excellent! Your team is very eco-conscious. Keep up the great work!";
-        } else if (finalScore >= 60) {
-            elements.resultMessage.textContent = "Your team is making good progress toward sustainability, but there's room for improvement.";
-        } else if (finalScore >= 40) {
-            elements.resultMessage.textContent = "Your team needs to make more efforts to reduce environmental impact.";
-        } else {
-            elements.resultMessage.textContent = "Your team has a significant environmental footprint. Urgent action is recommended.";
+    
+    const finalScore = Math.round(currentEcoScore);
+
+    if (activeModuleId === 'secret') {
+        if (elements.finalEcoScore) elements.finalEcoScore.textContent = '🤫';
+        const scoreLabel = document.querySelector('.result-score');
+        if (scoreLabel) scoreLabel.textContent = 'Team Vibe Score: IMMEASURABLE';
+        if (elements.meterPointer) elements.meterPointer.style.left = '100%';
+        if (elements.resultMessage) elements.resultMessage.textContent = "You have passed the vibe check. Clifford has been notified. Ritesh is proud. Lock in.";
+    } else {
+        if (elements.finalEcoScore) elements.finalEcoScore.textContent = finalScore;
+        moduleScores[activeModuleId] = finalScore;
+        
+        moduleAnswers[activeModuleId] = [...answers];
+        
+        updateOverallScore();
+        
+        const moduleScoreEl = document.getElementById(`eco-score-module-${activeModuleId}`);
+        if (moduleScoreEl) {
+            moduleScoreEl.innerHTML = `<i class="fas fa-leaf"></i> Eco Score: ${finalScore}`;
+            moduleScoreEl.parentElement?.classList.add('completed');
+        }
+        
+        if (elements.meterPointer) {
+            elements.meterPointer.style.left = `${finalScore}%`;
+        }
+        
+        if (elements.resultMessage) {
+            if (finalScore >= 80) {
+                elements.resultMessage.textContent = "Excellent! Your team is very eco-conscious. Keep up the great work!";
+            } else if (finalScore >= 60) {
+                elements.resultMessage.textContent = "Your team is making good progress toward sustainability, but there's room for improvement.";
+            } else if (finalScore >= 40) {
+                elements.resultMessage.textContent = "Your team needs to make more efforts to reduce environmental impact.";
+            } else {
+                elements.resultMessage.textContent = "Your team has a significant environmental footprint. Urgent action is recommended.";
+            }
         }
     }
-}
 
     updateImpactTexts();
     generateRecommendations();
     generateSummary();
 
-
     const overallSummaryEl = document.getElementById('overall-score-summary');
-if (overallSummaryEl) {
-    const moduleNames = {
-        '1': 'Shipping & Packaging',
-        '2': 'Disposable Meal Items',
-        '3': 'Mechanical/Programming/Fabrics',
-        '4': 'Transportation (First)',
-        '5': 'Transportation (Regional)',
-        'secret': '🤫 Funny Team Stuff'
-    };
-
-
-    let html = '';
-    for (const [id, score] of Object.entries(moduleScores)) {
-        html += `<div class="module-score-row">
-            <span>${moduleNames[id] || 'Module ' + id}</span>
-            <span>${score}/100</span>
-        </div>`;
+    if (overallSummaryEl) {
+        let html = '';
+        for (const [id, score] of Object.entries(moduleScores)) {
+            html += `<div class="module-score-row">
+                <span>${moduleNames[id] || 'Module ' + id}</span>
+                <span>${score}/100</span>
+            </div>`;
+        }
+        overallSummaryEl.innerHTML = html;
     }
-    overallSummaryEl.innerHTML = html;
-}
 }
 
 function updateImpactTexts() {
-    const moduleCategories = {
-        '1': ['materials'],
-        '2': ['materials'],
-        '3': ['materials', 'energy'],
-        '4': ['transport'],
-        '5': ['transport'],
-        'secret': []
-    };
-    const relevantCategories = moduleCategories[activeModuleId] || ['materials', 'transport', 'energy'];
-
-    document.querySelectorAll('.impact-item').forEach(item => {
-        item.style.display = relevantCategories.includes(item.dataset.category) ? 'flex' : 'none';
-    });
-
     const matImpact = calculateCategoryImpact('materials', activeQuestions, answers);
     const transImpact = calculateCategoryImpact('transport', activeQuestions, answers);
     const enImpact = calculateCategoryImpact('energy', activeQuestions, answers);
@@ -370,11 +380,11 @@ function generateRecommendations() {
             'Consider closer regional competitions to reduce your travel footprint',
         ],
         'secret': [
-    "Consider summoning fewer Cliffords. Or more. We honestly don't know.",
-    "Ritesh music hours should be maximized at all times.",
-    "Lock in. Always lock in.",
-    "Popcorn consumption is not yet regulated by FIRST. Enjoy responsibly.",
-],
+            "Consider summoning fewer Cliffords. Or more. We honestly don't know.",
+            "Ritesh music hours should be maximized at all times.",
+            "Lock in. Always lock in.",
+            "Popcorn consumption is not yet regulated by FIRST. Enjoy responsibly.",
+        ],
     };
 
     const recs = allRecommendations[activeModuleId] || [];
@@ -425,8 +435,12 @@ function generateSummary() {
     };
 
     let summaryHTML = '<h3>Your Detailed Responses:</h3>';
+    let hasAnswers = false;
 
     for (const [moduleId, moduleAnswerList] of Object.entries(moduleAnswers)) {
+        if (!moduleAnswerList || moduleAnswerList.length === 0) continue;
+        hasAnswers = true;
+        
         summaryHTML += `<h3>${moduleNames[moduleId] || 'Module ' + moduleId}</h3>`;
         let currentSection = '';
         moduleAnswerList.forEach((answer, index) => {
@@ -434,9 +448,13 @@ function generateSummary() {
                 currentSection = answer.section;
                 summaryHTML += `<h4>${currentSection}</h4>`;
             }
-            summaryHTML += `<p><strong>Q${index + 1}:</strong> ${answer.question}<br>
+            summaryHTML += `<p><strong>Q:</strong> ${answer.question}<br>
                           <strong>A:</strong> ${answer.answer}</p>`;
         });
+    }
+
+    if (!hasAnswers) {
+        summaryHTML += '<p>No responses recorded yet.</p>';
     }
 
     elements.resultSummary.innerHTML = summaryHTML;
@@ -450,12 +468,19 @@ export function restartQuiz() {
 
     currentQuestionIndex = 0;
     answers = [];
-    currentEcoScore = 0;
+    currentEcoScore = 100; // FIX: Start at 100
     activeModuleId = null;
     activeQuestions = [];
 
-    if (elements.ecoScore) elements.ecoScore.textContent = '0';
+    if (elements.ecoScore) elements.ecoScore.textContent = '100';
     if (elements.currentQuestion) elements.currentQuestion.textContent = '1';
     if (elements.progressBar) elements.progressBar.style.width = '0%';
 }
 
+export function reviewAnswers() {
+    currentQuestionIndex = 0;
+    elements.resultContainer.classList.add('hidden');
+    elements.questionCard.classList.remove('hidden');
+    elements.actionsContainer.classList.remove('hidden');
+    displayQuestion();
+}

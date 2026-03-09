@@ -13,18 +13,17 @@ export const modules = {
         },
         {
             section: "I. Shipping and Packaging of Products",
-            question: "How many parts did you have to order again in a weekly basis?",
+            question: "How many parts did you order on a weekly basis?",
             hint: "Pick the option that best describes your situation",
             type: "multiple-choice",
             options: [
-                { label: "A lot (10-15 parts)", eco_impact: "high", value: 3 },
+                { label: "A lot (10-15 parts)", eco_impact: "high", value: 3 },   
                 { label: "A good amount (5-8 parts)", eco_impact: "medium", value: 2 },
-                { label: "A little (2-3 parts)", eco_impact: "low", value: 1 },
+                { label: "A little (2-3 parts)", eco_impact: "low", value: 1 },   
             ],
             eco_tip: "if you buy without reusing somehow, you adding more to the pile of waste",
             category: "materials",
-        },
-        {
+        },        {
             section: "I. Shipping and Packaging of Products",
             question: "Where do you order from?",
             hint: "Pick the option that best describes your situation",
@@ -54,7 +53,7 @@ export const modules = {
         },
         {
             section: "II. Disposable Meal Items",
-            question: "How many boxes of 50 plastic forks did you use in a average competion?",
+            question: "How many boxes of 50 plastic forks did you use in a average competition?",
             hint: "Pick the option that best describes your situation",
             type: "multiple-choice",
             options: [

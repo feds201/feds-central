@@ -173,9 +173,45 @@
                 <p id="video-note" style="font-style: italic; color: var(--text-secondary);"><i class="fas fa-info-circle"></i> Click on "Watch tutorial" buttons to learn more about each recommendation.</p>
             </div>
             
-            <button class="restart-btn" id="restart-btn"><i class="fas fa-redo"></i> Start Again</button>
-        </div>         
-    </div>
+            <div class="impact-item" data-category="energy">
+                <div class="impact-icon"><i class="fas fa-bolt"></i></div>
+                <div class="impact-content">
+                    <h4>Energy Consumption</h4>
+                    <p id="energy-impact">Battery usage is within reasonable limits, but proper disposal and recycling are essential.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="result-summary" id="result-summary"></div>
+        
+        <div class="eco-recommendations">
+            <h3>Recommendations for Improvement</h3>
+            <div class="recommendation-item">
+                <i class="fas fa-check-circle"></i>
+                <span>Replace single-use plastic items with biodegradable alternatives</span>
+            </div>
+            <div class="recommendation-item">
+                <i class="fas fa-check-circle"></i>
+                <span>Implement a carpooling system for team travel to competitions</span>
+            </div>
+            <div class="recommendation-item">
+                <i class="fas fa-check-circle"></i>
+                <span>Set up a recycling station for scrap materials from robot building</span>
+            </div>
+            <div class="recommendation-item">
+                <i class="fas fa-check-circle"></i>
+                <span>Explore renewable energy options for powering practice sessions</span>
+            </div>
+            <div id="custom-recommendations"></div>
+            <p id="video-note" style="font-style: italic; color: var(--text-secondary);"><i class="fas fa-info-circle"></i> Click on "Watch tutorial" buttons to learn more about each recommendation.</p>
+        </div>
+        
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <button class="restart-btn" id="restart-btn" style="flex: 1;"><i class="fas fa-redo"></i> Start Again</button>
+            <button class="restart-btn" id="review-btn" style="flex: 1; background-color: #6c5ce7;"><i class="fas fa-edit"></i> Review Answers</button>
+        </div>
+    </div>         
+</div>
 
 
 <script type="module" src="js/main.js"></script>
