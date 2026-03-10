@@ -134,7 +134,8 @@ public final class RobotMap {
         //rotation of the shooter relative to robot forward
         public static final Rotation2d robotToShooterRotation = Rotation2d.fromDegrees(0.0);
         public static final Translation2d hubCenter = FieldConstants.Hub.innerCenterPoint.toTranslation2d();   
-        public static final Translation2d centerPointOutpost = FieldConstants.Outpost.centerPoint;
+        public static final Translation2d passingRight = FieldConstants.Outpost.centerPoint;
+        public static final Translation2d passingLeft = new Translation2d(0, 7.44);
         public static final Rectangle2d neutralZone = new Rectangle2d(FieldConstants.LeftTrench.openingTopLeft.toTranslation2d(), FieldConstants.RightTrench.oppOpeningTopRight.toTranslation2d());
     
         // This map is used to determine the velocity of the shooter based on the distance to the target. 

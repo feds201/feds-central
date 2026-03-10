@@ -2,7 +2,10 @@ package frc.robot.subsystems.swerve;
 
 import static edu.wpi.first.units.Units.*;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.function.Supplier;
+import java.util.logging.Logger;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
@@ -459,14 +462,17 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
 
     public Distance getDistanceToCorner() {
-        Translation2d distanceCorner = RobotMap.ShooterConstants.centerPointOutpost;
-
-          if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
-                distanceCorner = FlippingUtil.flipFieldPosition(distanceCorner);
+         Translation2d aimLeft = RobotMap.ShooterConstants.passingLeft;
+         Translation2d aimRight = RobotMap.ShooterConstants.passingRight;
+         Collection<Translation2d> aimPoints;
+         if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
+                aimLeft = FlippingUtil.flipFieldPosition(aimLeft);
+                aimRight = FlippingUtil.flipFieldPosition(aimRight);
             }
-
+         aimPoints = List.of(aimLeft, aimRight);
         Translation2d pose = getState().Pose.getTranslation();
-        return Meters.of(pose.getDistance(distanceCorner));
+        Translation2d aimTo = pose.nearest(aimPoints);
+        return Meters.of(pose.getDistance(aimTo));
     }
 
     public Distance getDistanceToVirtualHub() {

@@ -9,6 +9,9 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
+import java.util.Collection;
+import java.util.List;
+
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.util.FlippingUtil;
 
@@ -19,15 +22,17 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.RobotMap;
-import frc.robot.RobotMap.ShooterConstants;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
+import org.littletonrobotics.junction.Logger;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class PassingDrive extends Command {
-  public static final double MAX_SPEED = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
-  public static final double MAX_ANGULAR_RATE = RotationsPerSecond.of(2).in(RadiansPerSecond);
-
+  private static final double MAX_SPEED = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+  private static final double MAX_ANGULAR_RATE = RotationsPerSecond.of(2).in(RadiansPerSecond);
+  private Translation2d aimLeft = RobotMap.ShooterConstants.passingLeft;
+  private Translation2d aimRight = RobotMap.ShooterConstants.passingRight;
+  private Collection<Translation2d> aimPoints;
   private CommandSwerveDrivetrain dt;
   private CommandXboxController controller;
 
@@ -55,16 +60,22 @@ public class PassingDrive extends Command {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
+                aimLeft = FlippingUtil.flipFieldPosition(aimLeft);
+                aimRight = FlippingUtil.flipFieldPosition(aimRight);
+            }
+    
+    aimPoints = List.of(aimLeft, aimRight);
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     Translation2d robotPose = dt.getState().Pose.getTranslation();
-    Translation2d aimLoc = ShooterConstants.centerPointOutpost;
-    if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
-                aimLoc = FlippingUtil.flipFieldPosition(RobotMap.ShooterConstants.centerPointOutpost);
-            }
+    Translation2d aimLoc = robotPose.nearest(aimPoints);
+    Logger.recordOutput("Robot/distToPassLoc", robotPose.getDistance(aimLoc)); 
+
     double angleToTarget = Math.toDegrees(Math.atan2(aimLoc.getY() - robotPose.getY(), aimLoc.getX() - robotPose.getX()));
     double robotHeading = dt.getState().Pose.getRotation().getDegrees();
     double rotRate = passRotPID.calculate(robotHeading,angleToTarget);
