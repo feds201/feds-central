@@ -253,7 +253,7 @@ key.properties
 .pub/
 **/doc/api/
 **/ios/Flutter/.last_build_id
-flutter/ephemeral/
+**/flutter/ephemeral/
 app.*.symbols
 app.*.map.json
 .metro-health-check*
@@ -265,7 +265,12 @@ web-build/
 .idx/
 .run/
 migrate_working_dir/
+# Auto-generated plugin registrants (Java, C++, CMake)
 GeneratedPluginRegistrant.java
+generated_plugin_registrant.*
+generated_plugins.cmake
+# Dart codegen output (e.g. json_serializable / build_runner)
+*.g.dart
 
 
 
