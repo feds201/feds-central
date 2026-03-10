@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class ScoutHeader extends StatelessWidget {
   const ScoutHeader({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
       height: 100, // Increased height to account for status bar area
-      decoration: const BoxDecoration(
-        color: Color(0xFF1C1C1C),
-        borderRadius: BorderRadius.only(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        borderRadius: const BorderRadius.only(
           bottomLeft: Radius.circular(20),
           bottomRight: Radius.circular(20),
         ),
@@ -19,7 +19,8 @@ class ScoutHeader extends StatelessWidget {
         padding: const EdgeInsets.only(
           left: 16.0,
           right: 16.0,
-          top: 40.0, // Add top padding to push content down from status bar area
+          top:
+              40.0, // Add top padding to push content down from status bar area
           bottom: 16.0,
         ),
         child: Row(
@@ -29,23 +30,20 @@ class ScoutHeader extends StatelessWidget {
             Container(
               width: 12,
               height: 12,
-              decoration: const BoxDecoration(
-                color: Colors.red,
+              decoration: BoxDecoration(
+                color: theme.colorScheme.error,
                 shape: BoxShape.circle,
               ),
             ),
-            
+
             // Title
             Text(
               'SCOUT OPS DATA',
-              style: GoogleFonts.orbitron(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
+              style: theme.textTheme.titleLarge?.copyWith(
                 letterSpacing: 1.5,
               ),
             ),
-            
+
             // Spacer for alignment
             const SizedBox(width: 12),
           ],

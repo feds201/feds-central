@@ -41,12 +41,11 @@ By acting as a **central hub**, Scout-Ops Suite ensures:
 ## 🧩 Supported Apps
 
 Scout-Ops Suite is designed to store and support:
-- Match scouting apps
-- Pit scouting apps
-- Strategy and analytics tools
-- Post-match analysis tools
-
-*(Specific apps can be listed here as the ecosystem expands.)*
+- **Scout Ops Android**: The primary mobile scouting application.
+- **Scout Ops Scan**: A specialized QR code scanning and data entry tool.
+- **Scout Ops Desktop**: The Windows-based desktop client for data management and analysis.
+- **Scout Ops Server**: The backend server that handles data aggregation and API requests.
+- **Scout-Ops ToolChain**: A collection of tools for processing and strategizing with scouting data.
 
 ---
 
