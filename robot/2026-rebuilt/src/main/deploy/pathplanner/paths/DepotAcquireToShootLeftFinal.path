@@ -3,32 +3,37 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.1449036144578315,
-        "y": 5.379108433734939
+        "x": 0.4,
+        "y": 6.95
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.8809849861160726,
-        "y": 5.255048843614801
+        "x": 1.7606880189798346,
+        "y": 7.003795966785291
       },
       "isLocked": false,
-      "linkedName": "LeftBumpCrossOver"
+      "linkedName": "PickedUpFromDepot"
     },
     {
       "anchor": {
-        "x": 1.5777817319098464,
-        "y": 5.256168446026098
+        "x": 2.008149466192171,
+        "y": 5.7188137603795965
       },
       "prevControl": {
-        "x": 1.9758718861209972,
-        "y": 5.202372479240807
+        "x": 2.1265005931198107,
+        "y": 6.450438908659549
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "LeftReadyToShoot"
+      "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.1784615384615397,
+      "rotationDegrees": -90.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [
     {
@@ -37,29 +42,29 @@
         "y": 4.0
       },
       "rotationOffset": 0.0,
-      "minWaypointRelativePos": 0.0,
+      "minWaypointRelativePos": 0.38570084666039095,
       "maxWaypointRelativePos": 1.0,
       "name": "Point Towards Zone"
     }
   ],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 1.0,
+    "maxVelocity": 5.0,
     "maxAcceleration": 4.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 360.0,
-    "nominalVoltage": 12.0,
+    "nominalVoltage": 11.8,
     "unlimited": false
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -21.16125981682827
+    "rotation": -32.132895859980934
   },
   "reversed": false,
   "folder": "MidIntakeToLeftBump",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -135.0
+    "rotation": -90.0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }
