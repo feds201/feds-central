@@ -129,9 +129,8 @@ public class ControllerBindings {
                         feederSubsystem.setStateCommand(feeder_state.RUN),
                         spinDexer.setStateCommand(spindexer_state.RUN),
                         // Pulse intake extend/retract while held (5 roller rotations per pulse, 0.3s retract dwell)
-                        shooterWheels.setStateCommand(shooter_state.SHOOTING),
-                        shooterHood.setStateCommand(shooterhood_state.SHOOTING),
-                        intakeSubsystem.setIntakeStateCommand(IntakeState.AGITATE)
+                        shooterWheels.setStateCommand(shooter_state.TEST),
+                        shooterHood.setStateCommand(shooterhood_state.TEST)
                 ))
                 .onFalse(Commands.sequence(
                         feederSubsystem.setStateCommand(feeder_state.STOP),
