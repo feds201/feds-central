@@ -35,6 +35,7 @@ public class PassingDrive extends Command {
   private Collection<Translation2d> aimPoints;
   private CommandSwerveDrivetrain dt;
   private CommandXboxController controller;
+  private static boolean isFlipped = false;
 
   private static final PIDController passRotPID = new PIDController(6.7, 0, .2);
  private SwerveRequest.FieldCentric driveNormal;
@@ -61,13 +62,15 @@ public class PassingDrive extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
+    if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red && !isFlipped) {
                 aimLeft = FlippingUtil.flipFieldPosition(aimLeft);
                 aimRight = FlippingUtil.flipFieldPosition(aimRight);
             }
     
     aimPoints = List.of(aimLeft, aimRight);
   }
+
+ 
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
