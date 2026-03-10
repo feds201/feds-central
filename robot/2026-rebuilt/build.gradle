@@ -87,8 +87,6 @@ dependencies {
 
     // Use the local sim-core project instead of requiring a published artifact.
     implementation project(':sim-core')
-    simulationDebug project(':sim-core')
-    simulationRelease project(':sim-core')
     // Explicit ode4j — composite build doesn't reliably propagate transitive api deps
     implementation 'org.ode4j:core:0.5.4'
 
@@ -138,15 +136,15 @@ tasks.withType(JavaCompile) {
 }
 
 // Generate BuildConstants.java with git and build info
-// gversion {
-//     srcDir       = "src/main/java/"
-//     classPackage = "frc.robot"
-//     className    = "BuildConstants"
-//     dateFormat   = "yyyy-MM-dd HH:mm:ss z"
-//     indent       = "  "
-// }
+gversion {
+    srcDir       = "src/main/java/"
+    classPackage = "frc.robot"
+    className    = "BuildConstants"
+    dateFormat   = "yyyy-MM-dd HH:mm:ss z"
+    indent       = "  "
+}
 
-// project.compileJava.dependsOn(createVersionFile)
+project.compileJava.dependsOn(createVersionFile)
 
 // Download 3D simulation model assets from Git LFS.
 // Models are excluded from clone by default (see .lfsconfig). Run this task
