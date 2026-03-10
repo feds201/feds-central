@@ -108,19 +108,17 @@ public class ControllerBindings {
                 .whileTrue(intakeSubsystem.setRollerStateCommand(RollerState.REVERSE))
                 .onFalse(intakeSubsystem.setRollerStateCommand(RollerState.OFF));
 
-        // driver.y()
-        //         .onTrue(Commands.sequence(
-        //                 feederSubsystem.setStateCommand(feeder_state.RUN),
-        //                 spinDexer.setStateCommand(spindexer_state.RUN),
-        //                 shooterHood.setStateCommand(shooterhood_state.HALFCOURT),
-        //                 shooterWheels.setStateCommand(shooter_state.HALFCOURT)))
-        //         .onFalse(Commands.sequence(
-        //                 feederSubsystem.setStateCommand(feeder_state.STOP),
-        //                 spinDexer.setStateCommand(spindexer_state.STOP),
-        //                 shooterWheels.setStateCommand(shooter_state.IDLE),
-        //                 shooterHood.setStateCommand(shooterhood_state.IN)));
-        driver.y().onTrue(feederSubsystem.commandRun().andThen(spinDexer.setStateCommand(spindexer_state.RUN))).onFalse(feederSubsystem.commandStop().andThen(spinDexer.setStateCommand(spindexer_state.STOP)));
-        
+        driver.y()
+                .onTrue(Commands.sequence(
+                        feederSubsystem.setStateCommand(feeder_state.RUN),
+                        spinDexer.setStateCommand(spindexer_state.RUN),
+                        shooterHood.setStateCommand(shooterhood_state.HALFCOURT),
+                        shooterWheels.setStateCommand(shooter_state.HALFCOURT)))
+                .onFalse(Commands.sequence(
+                        feederSubsystem.setStateCommand(feeder_state.STOP),
+                        spinDexer.setStateCommand(spindexer_state.STOP),
+                        shooterWheels.setStateCommand(shooter_state.IDLE),
+                        shooterHood.setStateCommand(shooterhood_state.IN)));
 
         // Button to shoot from against hub — run shooter/feeder/spindexer + agitate in parallel while held
         driver.x()

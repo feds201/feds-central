@@ -129,15 +129,6 @@ public class IntakeSubsystem extends SubsystemBase {
     return runOnce(() -> setState(IntakeState.DEFAULT));
   }
 
-  // public Command agitateIntake(){
-  // setState(IntakeState.AGITATE);
-  // timer.start();
-  //   for(int i =0; i<10; i++){
-      
-  //   }
-  
-  // }
-
   public IntakeState getState() {
     return this.currentState;
   }
