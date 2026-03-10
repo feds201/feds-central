@@ -47,7 +47,7 @@ class _TeleOperatedState extends State<TeleOperated> {
       feedtoHPStationA2,
       feedtoHPStationI1,
       feedtoHPStationI2;
-  late bool passing, passingA1, passingA2, passingI1, passingI2;
+  late int passing, passingA1, passingA2, passingI1, passingI2;
   int _selectedPhase = 0;
   late String assignedTeam;
   late int assignedStation;
@@ -309,12 +309,12 @@ class _TeleOperatedState extends State<TeleOperated> {
                 }),
               ),
               Expanded(
-                child: buildCheckBoxHalf("Passing", passing, (bool value) {
+                child: buildCounter("Passing", passing, (int value) {
                   setState(() {
                     passing = value;
                   });
                   UpdateData();
-                }),
+                }, color: Colors.yellow),
               ),
             ],
           ),
@@ -396,12 +396,12 @@ class _TeleOperatedState extends State<TeleOperated> {
                 }),
               ),
               Expanded(
-                child: buildCheckBoxHalf("Passing", passingA1, (bool value) {
+                child: buildCounter("Passing", passingA1, (int value) {
                   setState(() {
                     passingA1 = value;
                   });
                   UpdateData();
-                }),
+                }, color: Colors.yellow),
               ),
             ],
           ),
@@ -482,12 +482,12 @@ class _TeleOperatedState extends State<TeleOperated> {
                 }),
               ),
               Expanded(
-                child: buildCheckBoxHalf("Passing", passingA2, (bool value) {
+                child: buildCounter("Passing", passingA2, (int value) {
                   setState(() {
                     passingA2 = value;
                   });
                   UpdateData();
-                }),
+                }, color: Colors.yellow),
               ),
             ],
           ),
@@ -536,12 +536,12 @@ class _TeleOperatedState extends State<TeleOperated> {
                 }),
               ),
               Expanded(
-                child: buildCheckBoxHalf("Passing", passingI1, (bool value) {
+                child: buildCounter("Passing", passingI1, (int value) {
                   setState(() {
                     passingI1 = value;
                   });
                   UpdateData();
-                }),
+                }, color: Colors.yellow),
               ),
             ],
           ),
@@ -588,12 +588,12 @@ class _TeleOperatedState extends State<TeleOperated> {
                 }),
               ),
               Expanded(
-                child: buildCheckBoxHalf("Passing", passingI2, (bool value) {
+                child: buildCounter("Passing", passingI2, (int value) {
                   setState(() {
                     passingI2 = value;
                   });
                   UpdateData();
-                }),
+                }, color: Colors.yellow),
               ),
             ],
           ),

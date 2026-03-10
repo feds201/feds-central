@@ -763,7 +763,7 @@ class MatchPageState extends State<MatchPage>
     } else {
       matchRecord = MatchRecord(
         AutonPoints(false, false, false, 0.0, 0, false, "",
-            BotLocation(const Offset(0, 0), const Size(0, 0), 0), false),
+            BotLocation(const Offset(0, 0), const Size(0, 0), 0), false, 0),
         TeleOpPoints(
             0.0,
             0.0,
@@ -791,12 +791,12 @@ class MatchPageState extends State<MatchPage>
             false,
             false,
             false,
-            false,
-            false,
-            false,
-            false,
-            false),
-        EndPoints(0, false, false, false, false, "", 0, 0, 0.0, 0, []),
+            0,
+            0,
+            0,
+            0,
+            0),
+        EndPoints(0, false, false, 0, false, "", 0, 0, 0.0, 0, []),
         teamNumber: teamNNumber.replaceAll('frc', ''),
         scouterName: _scouterName,
         matchKey: match['key'].toString(),

@@ -28,7 +28,7 @@ class EndGameState extends State<EndGame> {
   // late bool defense;
   late bool park;
   late bool feedToHP;
-  late bool passing;
+  late int passing;
   int? selectedLevel; // Now maps to ClimbStatus: 0=None, 1-9=IDs
 
   late EndPoints endPoints;
@@ -196,12 +196,12 @@ class EndGameState extends State<EndGame> {
                   }),
                 ),
                 Expanded(
-                  child: buildCheckBoxHalf("Passing", passing, (bool value) {
+                  child: buildCounter("Passing", passing, (int value) {
                     setState(() {
                       passing = value;
                     });
                     UpdateData();
-                  }),
+                  }, color: Colors.yellow),
                 ),
               ],
             ),

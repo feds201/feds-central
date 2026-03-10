@@ -177,7 +177,8 @@ class RealisticMatchDataGenerator {
         Size(_randomDouble(15, 35), _randomDouble(25, 40)),
         _randomDouble(0, 360),
       ),
-      _random.nextDouble() > 0.5,
+      _random.nextBool(),
+      _random.nextInt(3),
     );
 
     final teleOpShots1 = (teleOpShots * _randomDouble(0.6, 0.8)).toInt();
@@ -211,18 +212,18 @@ class RealisticMatchDataGenerator {
       performanceLevel > 0.6 && _random.nextDouble() > 0.5,
       performanceLevel > 0.7 && _random.nextDouble() > 0.5,
       performanceLevel > 0.7 && _random.nextDouble() > 0.5,
-      performanceLevel > 0.65 && _random.nextDouble() > 0.4,
-      performanceLevel > 0.70 && _random.nextDouble() > 0.5,
-      performanceLevel > 0.75 && _random.nextDouble() > 0.6,
-      performanceLevel > 0.75 && _random.nextDouble() > 0.6,
-      performanceLevel > 0.80 && _random.nextDouble() > 0.7,
+      _random.nextInt(4),
+      _random.nextInt(3),
+      _random.nextInt(3),
+      _random.nextInt(2),
+      _random.nextInt(2),
     );
 
     final endPoints = EndPoints(
       climbStatus,
       endgamePark,
       teleOpFeedHP && _random.nextDouble() > 0.4,
-      performanceLevel > 0.7 && _random.nextDouble() > 0.6,
+      _random.nextInt(3),
       true,
       '',
       (teleOpNeutralTrips / 2).toInt(),

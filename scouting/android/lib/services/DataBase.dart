@@ -6,6 +6,13 @@ import 'dart:typed_data';
 import 'package:flutter/painting.dart';
 import 'package:hive/hive.dart';
 
+int _toInt(dynamic value) {
+  if (value == null) return 0;
+  if (value is bool) return value ? 1 : 0;
+  if (value is num) return value.toInt();
+  return 0;
+}
+
 class Settings {
   static void setApiKey(String key) {
     LocalDataBase.putData('Settings.apiKey', key);
@@ -734,6 +741,7 @@ class AutonPoints {
   int amountOfShooting = 0;
   bool climb = false;
   String winAfterAuton = "";
+  int passing = 0;
   BotLocation starting_location;
 
   AutonPoints(
@@ -746,6 +754,7 @@ class AutonPoints {
     this.winAfterAuton,
     this.starting_location,
     this.left_starting_position,
+    this.passing,
   );
 
   Map<String, dynamic> toJson() {
@@ -758,12 +767,13 @@ class AutonPoints {
       "Climb": climb,
       "WinAfterAuton": winAfterAuton,
       "RobotLocation": starting_location.toJson(),
-      "LeftStartingPosition": left_starting_position
+      "LeftStartingPosition": left_starting_position,
+      "passing": passing
     };
   }
 
   String toCsv() {
-    return '${left_starting_position ? 1 : 0},${fuel_pickup_from_Depot ? 1 : 0},${fuel_pickup_from_Outpost ? 1 : 0},${fuel_pickup_from_Neutral_Zone ? 1 : 0},${total_shooting_time.toStringAsFixed(2)},$amountOfShooting,${climb ? 1 : 0},$winAfterAuton,${starting_location.toCsv()}';
+    return '${left_starting_position ? 1 : 0},${fuel_pickup_from_Depot ? 1 : 0},${fuel_pickup_from_Outpost ? 1 : 0},${fuel_pickup_from_Neutral_Zone ? 1 : 0},${total_shooting_time.toStringAsFixed(2)},$amountOfShooting,${climb ? 1 : 0},$winAfterAuton,${starting_location.toCsv()},$passing';
   }
 
   static AutonPoints fromJson(Map<String, dynamic> json) {
@@ -771,8 +781,8 @@ class AutonPoints {
       json['FuelPickUpFromDepot'] ?? false,
       json['FuelPickUpFromOutpost'] ?? false,
       json['FuelPickUpFromNeutralZone'] ?? false,
-      json['TotalShootingTime'] ?? 0,
-      json["AmountOfShooting"] ?? 0,
+      (json['TotalShootingTime'] ?? 0).toDouble(),
+      _toInt(json["AmountOfShooting"]),
       json['Climb'] ?? false,
       json['WinAfterAuton'] ?? "",
       BotLocation.fromJson(
@@ -784,12 +794,13 @@ class AutonPoints {
             },
       ),
       json['LeftStartingPosition'] ?? false,
+      _toInt(json['passing']),
     );
   }
 
   @override
   String toString() {
-    return 'AutonPoints{FuelPickUpFromDepot: $fuel_pickup_from_Depot, FuelPickUpFromOutpost: $fuel_pickup_from_Outpost, FuelPickUpFromNeutralZone: $fuel_pickup_from_Neutral_Zone, TotalShootingTime: $total_shooting_time, AmountOfShooting: $amountOfShooting, Climb: $climb, WinAfterAuton: $winAfterAuton, LeftStartingPosition: $left_starting_position, RobotLocation: $starting_location}';
+    return 'AutonPoints{FuelPickUpFromDepot: $fuel_pickup_from_Depot, FuelPickUpFromOutpost: $fuel_pickup_from_Outpost, FuelPickUpFromNeutralZone: $fuel_pickup_from_Neutral_Zone, TotalShootingTime: $total_shooting_time, AmountOfShooting: $amountOfShooting, Climb: $climb, WinAfterAuton: $winAfterAuton, LeftStartingPosition: $left_starting_position, RobotLocation: $starting_location, passing: $passing}';
   }
 
   void setFuelPickupFromDepot(bool value) {
@@ -823,6 +834,10 @@ class AutonPoints {
   setStartingLocation(BotLocation value) {
     starting_location = value;
   }
+
+  setPassing(int value) {
+    passing = value;
+  }
 }
 
 // TeleOpPoints
@@ -853,11 +868,11 @@ class TeleOpPoints {
   bool FeedToHPStationA2 = false;
   bool FeedToHPStationI1 = false;
   bool FeedToHPStationI2 = false;
-  bool passing = false;
-  bool passingA1 = false;
-  bool passingA2 = false;
-  bool passingI1 = false;
-  bool passingI2 = false;
+  int passing = 0;
+  int passingA1 = 0;
+  int passingA2 = 0;
+  int passingI1 = 0;
+  int passingI2 = 0;
 
   TeleOpPoints(
       this.TotalShootingTime1,
@@ -929,7 +944,7 @@ class TeleOpPoints {
   }
 
   String toCsv() {
-    return '${TotalShootingTime1.toStringAsFixed(2)},${TotalShootingTimeA1.toStringAsFixed(2)},${TotalShootingTimeA2.toStringAsFixed(2)},${ShootingI1 ? 1 : 0},${ShootingI2 ? 1 : 0},${TotalAmount1},${TotalAmountA1},${TotalAmountA2},${TotalAmountI1},${TotalAmountI2},${TripAmount1},${NeutralTrips},${NeutralTripsA1},${NeutralTripsA2},${NeutralTripsI1},${NeutralTripsI2},${Defense ? 1 : 0},${DefenseA1 ? 1 : 0},${DefenseA2 ? 1 : 0},${DefenseI1 ? 1 : 0},${DefenseI2 ? 1 : 0},${FeedToHPStation ? 1 : 0},${FeedToHPStationA1 ? 1 : 0},${FeedToHPStationA2 ? 1 : 0},${FeedToHPStationI1 ? 1 : 0},${FeedToHPStationI2 ? 1 : 0},${passing ? 1 : 0},${passingA1 ? 1 : 0},${passingA2 ? 1 : 0},${passingI1 ? 1 : 0},${passingI2 ? 1 : 0}';
+    return '${TotalShootingTime1.toStringAsFixed(2)},${TotalShootingTimeA1.toStringAsFixed(2)},${TotalShootingTimeA2.toStringAsFixed(2)},${ShootingI1 ? 1 : 0},${ShootingI2 ? 1 : 0},${TotalAmount1},${TotalAmountA1},${TotalAmountA2},${TotalAmountI1},${TotalAmountI2},${TripAmount1},${NeutralTrips},${NeutralTripsA1},${NeutralTripsA2},${NeutralTripsI1},${NeutralTripsI2},${Defense ? 1 : 0},${DefenseA1 ? 1 : 0},${DefenseA2 ? 1 : 0},${DefenseI1 ? 1 : 0},${DefenseI2 ? 1 : 0},${FeedToHPStation ? 1 : 0},${FeedToHPStationA1 ? 1 : 0},${FeedToHPStationA2 ? 1 : 0},${FeedToHPStationI1 ? 1 : 0},${FeedToHPStationI2 ? 1 : 0},${passing},${passingA1},${passingA2},${passingI1},${passingI2}';
   }
 
   static TeleOpPoints fromJson(Map<String, dynamic> json) {
@@ -939,32 +954,32 @@ class TeleOpPoints {
       (json['TotalShootingTimeA2'] ?? 0).toDouble(),
       json['ShootingI1'] ?? false,
       json['ShootingI2'] ?? false,
-      json['TotalAmount1'] ?? 0,
-      json['TotalAmountA1'] ?? 0,
-      json['TotalAmountA2'] ?? 0,
-      json['TotalAmountI1'] ?? 0,
-      json['TotalAmountI2'] ?? 0,
-      json['TripAmount1'] ?? 0,
+      _toInt(json['TotalAmount1']),
+      _toInt(json['TotalAmountA1']),
+      _toInt(json['TotalAmountA2']),
+      _toInt(json['TotalAmountI1']),
+      _toInt(json['TotalAmountI2']),
+      _toInt(json['TripAmount1']),
       json['Defense'] ?? false,
       json['DefenseA1'] ?? false,
       json['DefenseA2'] ?? false,
       json['DefenseI1'] ?? false,
       json['DefenseI2'] ?? false,
-      json['NeutralTrips'] ?? json['NeutralTips'] ?? 0,
-      json['NeutralTripsA1'] ?? json['NeutralTipsA1'] ?? 0,
-      json['NeutralTripsA2'] ?? json['NeutralTipsA2'] ?? 0,
-      json['NeutralTripsI1'] ?? json['NeutralTipsI1'] ?? 0,
-      json['NeutralTripsI2'] ?? json['NeutralTipsI2'] ?? 0,
+      _toInt(json['NeutralTrips'] ?? json['NeutralTips']),
+      _toInt(json['NeutralTripsA1'] ?? json['NeutralTipsA1']),
+      _toInt(json['NeutralTripsA2'] ?? json['NeutralTipsA2']),
+      _toInt(json['NeutralTripsI1'] ?? json['NeutralTipsI1']),
+      _toInt(json['NeutralTripsI2'] ?? json['NeutralTipsI2']),
       json['FeedToHPStation'] ?? false,
       json['FeedToHPStationA1'] ?? false,
       json['FeedToHPStationA2'] ?? false,
       json['FeedToHPStationI1'] ?? false,
       json['FeedToHPStationI2'] ?? false,
-      json['passing'] ?? false,
-      json['passingA1'] ?? false,
-      json['passingA2'] ?? false,
-      json['passingI1'] ?? false,
-      json['passingI2'] ?? false,
+      _toInt(json['passing']),
+      _toInt(json['passingA1']),
+      _toInt(json['passingA2']),
+      _toInt(json['passingI1']),
+      _toInt(json['passingI2']),
     );
   }
 
@@ -1077,23 +1092,23 @@ class TeleOpPoints {
     FeedToHPStationI2 = value;
   }
 
-  setPassing(bool value) {
+  setPassing(int value) {
     passing = value;
   }
 
-  setPassingA1(bool value) {
+  setPassingA1(int value) {
     passingA1 = value;
   }
 
-  setPassingA2(bool value) {
+  setPassingA2(int value) {
     passingA2 = value;
   }
 
-  setPassingI1(bool value) {
+  setPassingI1(int value) {
     passingI1 = value;
   }
 
-  setPassingI2(bool value) {
+  setPassingI2(int value) {
     passingI2 = value;
   }
 }
@@ -1104,7 +1119,7 @@ class EndPoints {
   int ClimbStatus = 0;
   bool Park = false;
   bool FeedToHP = false;
-  bool Passing = false;
+  int Passing = 0;
   bool robotBroken = false;
   int EndNeutralTrips = 0;
   int ShootingAccuracy;
@@ -1145,16 +1160,16 @@ class EndPoints {
 
   static EndPoints fromJson(Map<String, dynamic> json) {
     return EndPoints(
-      json['ClimbStatus'] ?? 0,
+      _toInt(json['ClimbStatus']),
       json['Park'] ?? false,
       json['FeedToHP'] ?? false,
-      json['Passing'] ?? false,
+      _toInt(json['Passing']),
       json['robotBroken'] ?? false,
       json['Comments'] ?? '',
-      json['EndNeutralTrips'] ?? 0,
-      (json['ShootingAccuracy'] as int?) ?? 3,
+      _toInt(json['EndNeutralTrips']),
+      _toInt(json['ShootingAccuracy'] ?? 3),
       (json['endgameTime'] ?? 0.0).toDouble(),
-      json['endgameActions'] ?? 0,
+      _toInt(json['endgameActions']),
       // Handle both list and legacy string/migration
       (json['DrawingData'] is List) ? List<int>.from(json['DrawingData']) : [],
     );
@@ -1166,7 +1181,7 @@ class EndPoints {
   }
 
   String toCsv() {
-    return '$ClimbStatus,${Park ? 1 : 0},${FeedToHP ? 1 : 0},${Passing ? 1 : 0},$EndNeutralTrips, $ShootingAccuracy,$endgameTime,$Comments,${_encodeDrawingData()}';
+    return '$ClimbStatus,${Park ? 1 : 0},${FeedToHP ? 1 : 0},${Passing},$EndNeutralTrips, $ShootingAccuracy,$endgameTime,$Comments,${_encodeDrawingData()}';
   }
 
   String _encodeDrawingData() {
@@ -1218,7 +1233,7 @@ class EndPoints {
     FeedToHP = value;
   }
 
-  setPassing(bool value) {
+  setPassing(int value) {
     Passing = value;
   }
 }
@@ -1310,8 +1325,8 @@ class LocalDataBase {
       data['FuelPickUpFromDepot'] ?? false,
       data['FuelPickUpFromOutpost'] ?? false,
       data['FuelPickUpFromNeutralZone'] ?? false,
-      data['TotalShootingTime'] ?? 0,
-      data['aMOUNT OF SHOOTING'] ?? 0,
+      (data['TotalShootingTime'] ?? 0).toDouble(),
+      _toInt(data['aMOUNT OF SHOOTING']),
       data['Climb'] ?? false,
       data['WinAfterAuton'] ?? "",
       BotLocation.fromJson(
@@ -1323,57 +1338,58 @@ class LocalDataBase {
             },
       ),
       true, // LeftStartingPosition, assuming default true or fetched differently if needed
+      _toInt(data['passing']),
     );
   }
 
   static TeleOpPoints fromJson(Map<String, dynamic> json) {
     return TeleOpPoints(
-        (json['TotalShootingTime1'] ?? json['TotalShootingTime'] ?? 0)
-            .toDouble(),
-        (json['TotalShootingTimeA1'] ?? 0).toDouble(),
-        (json['TotalShootingTimeA2'] ?? 0).toDouble(),
-        (json['TotalShootingTimeI1'] ?? 0).toDouble(),
-        (json['TotalShootingTimeI2'] ?? 0).toDouble(),
-        json['TotalAmount1'] ?? 0,
-        json['TotalAmountA1'] ?? 0,
-        json['TotalAmountA2'] ?? 0,
-        json['TotalAmountI1'] ?? 0,
-        json['TotalAmountI2'] ?? 0,
-        json['TripAmount1'] ?? 0,
-        json['Defense'] ?? false,
-        json['DefenseA1'] ?? false,
-        json['DefenseA2'] ?? false,
-        json['DefenseI1'] ?? false,
-        json['DefenseI2'] ?? false,
-        json['NeutralTrips'] ?? 0,
-        json['NeutralTripsA1'] ?? 0,
-        json['NeutralTripsA2'] ?? 0,
-        json['NeutralTripsI1'] ?? 0,
-        json['NeutralTripsI2'] ?? 0,
-        json['FeedToHPStation'] ?? false,
-        json['FeedToHPStationA1'] ?? false,
-        json['FeedToHPStationA2'] ?? false,
-        json['FeedToHPStationI1'] ?? false,
-        json['FeedToHPStationI2'] ?? false,
-        json['passing'] ?? false,
-        json['passingA1'] ?? false,
-        json['passingA2'] ?? false,
-        json['passingI1'] ?? false,
-        json['passingI2'] ?? false);
+      (json['TotalShootingTime1'] ?? json['TotalShootingTime'] ?? 0).toDouble(),
+      (json['TotalShootingTimeA1'] ?? 0).toDouble(),
+      (json['TotalShootingTimeA2'] ?? 0).toDouble(),
+      json['ShootingI1'] ?? false,
+      json['ShootingI2'] ?? false,
+      _toInt(json['TotalAmount1']),
+      _toInt(json['TotalAmountA1']),
+      _toInt(json['TotalAmountA2']),
+      _toInt(json['TotalAmountI1']),
+      _toInt(json['TotalAmountI2']),
+      _toInt(json['TripAmount1']),
+      json['Defense'] ?? false,
+      json['DefenseA1'] ?? false,
+      json['DefenseA2'] ?? false,
+      json['DefenseI1'] ?? false,
+      json['DefenseI2'] ?? false,
+      _toInt(json['NeutralTrips'] ?? json['NeutralTips']),
+      _toInt(json['NeutralTripsA1'] ?? json['NeutralTipsA1']),
+      _toInt(json['NeutralTripsA2'] ?? json['NeutralTipsA2']),
+      _toInt(json['NeutralTripsI1'] ?? json['NeutralTipsI1']),
+      _toInt(json['NeutralTripsI2'] ?? json['NeutralTipsI2']),
+      json['FeedToHPStation'] ?? false,
+      json['FeedToHPStationA1'] ?? false,
+      json['FeedToHPStationA2'] ?? false,
+      json['FeedToHPStationI1'] ?? false,
+      json['FeedToHPStationI2'] ?? false,
+      _toInt(json['passing']),
+      _toInt(json['passingA1']),
+      _toInt(json['passingA2']),
+      _toInt(json['passingI1']),
+      _toInt(json['passingI2']),
+    );
   }
 
   static EndPoints mapToEndPoints(Map<dynamic, dynamic> data) {
     return EndPoints(
-      data['ClimbStatus'] ?? 0,
+      _toInt(data['ClimbStatus']),
       data['Park'] ?? false,
       data['FeedToHP'] ?? false,
-      data['Passing'] ?? false,
+      _toInt(data['Passing']),
       data['robotBroken'] ?? false,
       data['Comments'] ?? "",
-      data['EndNeutralTrips'] ?? 0,
-      data['ShootingAccuracy'] ?? 3,
+      _toInt(data['EndNeutralTrips']),
+      _toInt(data['ShootingAccuracy'] ?? 3),
       (data['EndgameTime'] ?? 0).toDouble(),
-      data['EndgameActions'] ?? 0,
+      _toInt(data['EndgameActions']),
       (data['DrawingData'] is List) ? List<int>.from(data['DrawingData']) : [],
     );
   }

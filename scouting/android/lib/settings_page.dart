@@ -24,7 +24,7 @@ class SettingsPage extends StatefulWidget {
 }
 
 class SettingsPageState extends State<SettingsPage> {
-  String version = '3.1.1.1';
+  String version = '5.0.0.0';
   bool isLocationGranted = false;
   bool isBluetoothGranted = false;
   bool isNearbyDevicesGranted = false;
