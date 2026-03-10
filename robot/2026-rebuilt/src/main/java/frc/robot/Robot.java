@@ -39,11 +39,16 @@ public class Robot extends LoggedRobot {
 
 
   public Robot() {
+    // DO NOT COMMENT THIS OUT!
+    // If build fails the 1st time because no BuildConstant:
+    //  1. clean your workspace cache
+    //  2. run the buld command again
+    // WHY: BuildConstants is automatically generated during your build but sometimes that makes the build upset 
+    Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
+    Logger.recordMetadata("GitBranch", BuildConstants.GIT_BRANCH);
+    Logger.recordMetadata("GitDirty", BuildConstants.DIRTY == 1 ? "UNCOMMITTED CHANGES" : "clean");
+    Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
     Logger.recordMetadata("ProjectName", "2026-Rebuilt");
-    // Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
-    // Logger.recordMetadata("GitBranch", BuildConstants.GIT_BRANCH);
-    // Logger.recordMetadata("GitDirty", BuildConstants.DIRTY == 1 ? "UNCOMMITTED CHANGES" : "clean");
-    // Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
 
       switch (RobotMap.getRobotMode()) {
       case REAL:
