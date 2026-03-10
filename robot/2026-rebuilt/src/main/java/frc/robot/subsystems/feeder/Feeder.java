@@ -5,6 +5,7 @@
 package frc.robot.subsystems.feeder;
 
 import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.SignalLogger;
@@ -18,11 +19,13 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.RobotMap.FeederConstants;
+import frc.robot.RobotMap.indexingConstants;
 import frc.robot.utils.DeviceTempReporter;
 import frc.robot.utils.SubsystemStatusManager;
 
@@ -31,20 +34,23 @@ public class Feeder extends SubsystemBase {
 
   // subsystem states
   public enum feeder_state {
-    RUN(Volts.of(3)),
+    RUN(Volts.of(7)),
+    REVERSE(Volts.of(-7)),
+    PREVERSE(Volts.of(-6)),
     STOP(Volts.of(0));
 
-    private final Voltage targetPosition;
+    private final Voltage targetVoltage;
 
-    feeder_state(Voltage targetPosition) {
-      this.targetPosition = targetPosition;
+    feeder_state(Voltage targetVoltage) {
+      this.targetVoltage = targetVoltage;
     }
 
     public Voltage getVoltage() {
-      return targetPosition;
+      return targetVoltage;
     }
 
   }
+
 
   // susbsytem components
   private final TalonFX feederMotor;
@@ -52,14 +58,18 @@ public class Feeder extends SubsystemBase {
   private final VoltageOut vOut = new VoltageOut(0);
   private feeder_state currentState = feeder_state.STOP;
   private final SysIdRoutine m_feederSysId;
+  //Timer to switch between forward and reverse during indexing
+  private Timer washingMachineTimer = new Timer();
 
   public Feeder() {
     feederMotor = new TalonFX(FeederConstants.kFeederKickerMotorId);
 
     config = new TalonFXConfiguration();
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-    config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-    config.CurrentLimits.StatorCurrentLimit = 20;
+    config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    config.CurrentLimits.StatorCurrentLimitEnable = true;
+    config.CurrentLimits.StatorCurrentLimit = 60;
+    // config.CurrentLimits.StatorCurrentLimit = 40;
     for (int i = 0; i < 2; ++i) {
       var status = feederMotor.getConfigurator().apply(config);
       if (status.isOK())
@@ -73,7 +83,7 @@ public class Feeder extends SubsystemBase {
         new SysIdRoutine.Config(
             Volts.of(0.5).per(Second), // default ramp (or Volts.of(x).per(Second) if you want custom)
             Volts.of(3), // dynamic step voltage: start with something conservative (4-6 V)
-            null, // default timeout
+            Seconds.of(5), // default timeout
             state -> SignalLogger.writeString("SysId_Feeder_State", state.toString()) // log state string
         ),
         new SysIdRoutine.Mechanism(
@@ -97,6 +107,33 @@ public class Feeder extends SubsystemBase {
   @Override
   public void periodic() {
     Logger.recordOutput("Robot/Shooter/FeederOn", currentState == feeder_state.RUN);
+    Logger.recordOutput("Robot/Shooter/FeederState", currentState.toString());
+     switch (currentState) {
+      case RUN:
+        if(!washingMachineTimer.isRunning()){
+          washingMachineTimer.start();
+        }
+        if(washingMachineTimer.hasElapsed(indexingConstants.forwardTime)){
+          setState(feeder_state.REVERSE);
+          washingMachineTimer.stop();
+          washingMachineTimer.reset();
+        }
+        break;
+      case REVERSE:
+        if(!washingMachineTimer.isRunning()){
+          washingMachineTimer.start();
+        }
+        if(washingMachineTimer.hasElapsed(indexingConstants.reverseTime)){
+          setState(feeder_state.RUN);
+          washingMachineTimer.stop();
+          washingMachineTimer.reset();
+        }
+        
+        break;
+
+      case STOP:
+        break;
+    }
   }
 
   // subsystem getters
@@ -142,4 +179,7 @@ public class Feeder extends SubsystemBase {
   public Command commandStop() {
     return new InstantCommand(() -> setState(feeder_state.STOP));
   }
+
+  public Command feederSysIdQuasistatic(SysIdRoutine.Direction dir) { return m_feederSysId.quasistatic(dir); }
+  public Command feederSysIdDynamic(SysIdRoutine.Direction dir) { return m_feederSysId.dynamic(dir); }
 }

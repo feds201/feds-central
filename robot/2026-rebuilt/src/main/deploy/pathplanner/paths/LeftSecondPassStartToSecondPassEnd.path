@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 5.85994068801898,
+        "y": 7.268137603795967
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.8118130157120005,
+        "y": 6.295925732342558
+      },
+      "isLocked": false,
+      "linkedName": "LeftSecondPassStart"
+    },
+    {
+      "anchor": {
+        "x": 5.63399762752076,
+        "y": 4.976429418742586
+      },
+      "prevControl": {
+        "x": 5.647855590665475,
+        "y": 5.455091937376182
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "LeftSecondPassEnd"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 4.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 360.0,
+    "nominalVoltage": 11.8,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0.0,
+    "rotation": 90.0
+  },
+  "reversed": false,
+  "folder": "DoublePassTest",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 90.0
+  },
+  "useDefaultConstraints": true
+}

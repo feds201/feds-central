@@ -3,57 +3,57 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.5036773428232504,
-        "y": 7.300415183867142
+        "x": 1.2442467378410447,
+        "y": 7.397247924080664
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.81011511486342,
-        "y": 7.297093959211878
+        "x": 2.060211702108247,
+        "y": 6.931764803170746
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 7.215599051008305,
-        "y": 6.783973902728351
+        "x": 2.9549584816132866,
+        "y": 5.794128113879003
       },
       "prevControl": {
-        "x": 6.260497810707686,
-        "y": 7.9839737232675905
+        "x": 2.7977224279830546,
+        "y": 6.70943507376238
       },
       "nextControl": {
-        "x": 8.234020545037131,
-        "y": 5.504417811184344
+        "x": 3.1311345486797664,
+        "y": 4.76856701241528
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.854312913907284,
-        "y": 1.2326655629139076
+        "x": 2.266370106761567,
+        "y": 3.104329774614472
       },
       "prevControl": {
-        "x": 7.841657368021197,
-        "y": 2.233038870792309
+        "x": 2.377829041055497,
+        "y": 4.01237421238707
       },
       "nextControl": {
-        "x": 5.9817154221831235,
-        "y": 0.3485534016460382
+        "x": 2.1627601025693894,
+        "y": 2.260229760557311
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.7403795966785296,
-        "y": 0.6189561091340454
+        "x": 2.9549584816132866,
+        "y": 0.7050296559905087
       },
       "prevControl": {
-        "x": 4.75116866897088,
-        "y": 0.9395620902540565
+        "x": 2.756947309900866,
+        "y": 1.2008763981650978
       },
       "nextControl": null,
       "isLocked": false,
@@ -65,11 +65,11 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 6.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 5.0,
+    "maxAcceleration": 4.0,
     "maxAngularVelocity": 540.0,
-    "maxAngularAcceleration": 720.0,
-    "nominalVoltage": 12.0,
+    "maxAngularAcceleration": 360.0,
+    "nominalVoltage": 11.8,
     "unlimited": false
   },
   "goalEndState": {
@@ -77,10 +77,10 @@
     "rotation": 0.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "TestAutos",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

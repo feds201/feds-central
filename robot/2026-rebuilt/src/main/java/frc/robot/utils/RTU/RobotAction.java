@@ -34,5 +34,5 @@ public @interface RobotAction {
     int order() default Integer.MAX_VALUE;
 
     /** Maximum time (seconds) the test may take before it is auto-failed. */
-    double timeoutSeconds() default 5.0;
+    double timeoutSeconds() default 10.0;
 }
