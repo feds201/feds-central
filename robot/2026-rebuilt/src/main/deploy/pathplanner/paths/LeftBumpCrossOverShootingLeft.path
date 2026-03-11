@@ -37,7 +37,7 @@
         "y": 4.0
       },
       "rotationOffset": 0.0,
-      "minWaypointRelativePos": 0.0,
+      "minWaypointRelativePos": 0.36514719848052885,
       "maxWaypointRelativePos": 1.0,
       "name": "Point Towards Zone"
     }
@@ -58,7 +58,7 @@
   "reversed": false,
   "folder": "MidIntakeToLeftBump",
   "idealStartingState": {
-    "velocity": 0,
+    "velocity": 1.0,
     "rotation": -135.0
   },
   "useDefaultConstraints": false

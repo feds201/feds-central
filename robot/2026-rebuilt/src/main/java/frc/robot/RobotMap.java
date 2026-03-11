@@ -141,25 +141,27 @@ public final class RobotMap {
         // This map is used to determine the velocity of the shooter based on the distance to the target. 
         //The key is the distance to the target in meters, and the value is the velocity of the shooter in rotations per second.`
         public static final InterpolatingDoubleTreeMap kShootingVelocityMap = InterpolatingDoubleTreeMap.ofEntries(
-            Map.entry(1.44, 29.5),//done
-            Map.entry(1.61, 29.5),//done
-            Map.entry(1.97, 29.5),//done
-            Map.entry(2.52, 32.0),//done
-            Map.entry(2.85, 34.0),//done
-            Map.entry(3.42, 35.0),//done
-            Map.entry(4.13, 38.0),//done
+            Map.entry(1.44, 27.0),//done
+            Map.entry(1.63, 28.0),//done
+            Map.entry(1.98, 29.0),//done
+            Map.entry(2.57, 32.0),//done
+            Map.entry(2.83, 33.0),//done
+             Map.entry(3.09, 36.0),//done --- AUTON SHOOTING POSITION
+            Map.entry(3.42, 35.0),
+            Map.entry(4.13, 38.0),
             Map.entry(4.41, 39.0),
             Map.entry(100.0, 39.0)//far off top limit to prevent unwanted scaling past this distance 
         );
 
         public static final InterpolatingDoubleTreeMap kShootingPositionMap = InterpolatingDoubleTreeMap.ofEntries(
             Map.entry(1.44, 0.0),//done
-            Map.entry(1.61, 6.5),//done
-            Map.entry(1.97, 13.0),//done
-            Map.entry(2.52, 17.5),//done
-            Map.entry(2.85, 20.3),//done
-            Map.entry(3.42, 21.5),//done
-            Map.entry(4.13, 22.0),//done
+            Map.entry(1.63, 3.0),//done
+            Map.entry(1.98, 7.0),//done
+            Map.entry(2.57, 10.0),//done
+            Map.entry(2.83, 15.0),//done
+             Map.entry(3.09, 16.0),// -- AUTON SHOOTING POSITION
+            Map.entry(3.42, 21.5),
+            Map.entry(4.13, 22.0),
             Map.entry(4.41, 27.0),
             Map.entry(100.0, 27.0) //far off top limit to prevent unwanted scaling past this distance 
         );
