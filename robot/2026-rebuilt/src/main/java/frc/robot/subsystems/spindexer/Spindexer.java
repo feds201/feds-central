@@ -42,6 +42,7 @@ public class Spindexer extends SubsystemBase {
   public enum spindexer_state {
     RUN(Volts.of(5)),
     REVERSE(Volts.of(-5)),
+    PREVERSE(Volts.of(-5)),
     STOP(Volts.of(0));
 
     private final Voltage targetPosition;
@@ -139,7 +140,7 @@ public class Spindexer extends SubsystemBase {
         break;
 
 
-      case STOP:
+      case STOP, PREVERSE:
         break;
     }
   }

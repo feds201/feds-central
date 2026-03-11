@@ -12,6 +12,7 @@ import frc.robot.subsystems.shooter.ShooterHood;
 import frc.robot.subsystems.shooter.ShooterHood.shooterhood_state;
 import frc.robot.subsystems.shooter.ShooterWheels;
 import frc.robot.subsystems.shooter.ShooterWheels.shooter_state;
+import frc.robot.subsystems.spindexer.Spindexer;
 import frc.robot.subsystems.spindexer.Spindexer.spindexer_state;
 import frc.robot.commands.swerve.HubDrive;
 import frc.robot.commands.swerve.PassingDrive;
@@ -101,8 +102,8 @@ public class ControllerBindings {
 
         // Default drive command: field-centric swerve with left stick + right stick rotation
         drivetrain.setDefaultCommand(new TeleopSwerve(drivetrain, driver, 1));
-        driver.b().onTrue(feederSubsystem.setStateCommand(feeder_state.REVERSE).andThen(spinDexer.setStateCommand(spindexer_state.REVERSE)))
-        .onFalse(feederSubsystem.commandStop().andThen(spinDexer.setStateCommand(spindexer_state.STOP)));
+        driver.b().onTrue(feederSubsystem.setStateCommand(feeder_state.PREVERSE).andThen(spinDexer.setStateCommand(spindexer_state.PREVERSE)))
+        .onFalse(feederSubsystem.setStateCommand(feeder_state.STOP).andThen(spinDexer.setStateCommand(spindexer_state.STOP)));
         // M key (Right bumper): reverse intake rollers
         driver.rightBumper()
                 .whileTrue(intakeSubsystem.setRollerStateCommand(RollerState.REVERSE))
@@ -203,6 +204,7 @@ public class ControllerBindings {
         var feederSubsystem = container.getFeederSubsystem();
         var intakeSubsystem = container.getIntakeSubsystem();
         var shooterHood = container.getShooterHood();
+        var spindexerSubsystem = container.getSpindexer();
 
         // Manual way to change the angle of the shooter hood
         operator.leftTrigger()
@@ -215,8 +217,8 @@ public class ControllerBindings {
         operator.rightTrigger().onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED));
         operator.rightBumper().onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT));
 
-        operator.x().onTrue(feederSubsystem.setStateCommand(feeder_state.PREVERSE)).
-        onFalse(feederSubsystem.setStateCommand(feeder_state.STOP));
+        operator.x().onTrue(feederSubsystem.setStateCommand(feeder_state.PREVERSE).alongWith(spindexerSubsystem.setStateCommand(spindexer_state.PREVERSE))).
+        onFalse(feederSubsystem.setStateCommand(feeder_state.STOP).alongWith(spindexerSubsystem.setStateCommand(spindexer_state.PREVERSE)));
         
         //Add multiplier to hood angle
         operator.a()
