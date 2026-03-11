@@ -13,7 +13,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 3.0
+            "waitTime": 1.5
           }
         },
         {
@@ -73,7 +73,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 1.0
+            "waitTime": 5.0
           }
         },
         {
@@ -103,12 +103,6 @@
         {
           "type": "named",
           "data": {
-            "name": "Stop Rollers"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "Start Shooter Spin"
           }
         },
@@ -121,7 +115,19 @@
         {
           "type": "named",
           "data": {
+            "name": "Stop Rollers"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "Run Shooter"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Retract Intake"
           }
         }
       ]
