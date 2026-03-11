@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.8136091298145502,
-        "y": 4.921298145506419
+        "x": 2.3739620403321475,
+        "y": 4.029620403321471
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.6834308215851603,
-        "y": 5.673275205899722
+        "x": 2.64168330956414,
+        "y": 6.11165477888258
       },
       "isLocked": false,
-      "linkedName": "LeftReadyToShoot"
+      "linkedName": "CenterShootPosition"
     },
     {
       "anchor": {
-        "x": 0.7785164051355205,
-        "y": 5.982268188302426
+        "x": 0.467988587738177,
+        "y": 7.14674750356161
       },
       "prevControl": {
-        "x": 1.1535606276747497,
-        "y": 6.080984308131242
+        "x": 2.7322539229735554,
+        "y": 7.172624821678585
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "PickedUpFromDepot"
+      "linkedName": "IntakeAtDepot"
     }
   ],
   "rotationTargets": [],
@@ -33,7 +33,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 1.0,
+    "maxVelocity": 3.0,
     "maxAcceleration": 4.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 360.0,
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 90.0
   },
   "reversed": false,
-  "folder": "MidIntakeToLeftBump",
+  "folder": "CenterOverBump",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -17.48799737614853
+    "rotation": 0.0
   },
   "useDefaultConstraints": false
 }

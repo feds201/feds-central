@@ -33,6 +33,24 @@
           "data": {
             "name": "Stop Shooter Spin"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "IntakeAtDepot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "IntakeDepotEnd"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ShootAfterDepot"
+          }
         }
       ]
     }
