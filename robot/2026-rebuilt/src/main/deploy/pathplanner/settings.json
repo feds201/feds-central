@@ -1,6 +1,6 @@
 {
-  "robotWidth": 0.66,
-  "robotLength": 0.66,
+  "robotWidth": 0.86,
+  "robotLength": 0.86,
   "holonomicMode": true,
   "pathFolders": [
     "DoublePassTest",
@@ -32,5 +32,7 @@
   "brModuleY": -0.267,
   "bumperOffsetX": 0.0,
   "bumperOffsetY": 0.0,
-  "robotFeatures": []
+  "robotFeatures": [
+    "{\"name\":\"Rectangle\",\"type\":\"rounded_rect\",\"data\":{\"center\":{\"x\":-0.53,\"y\":0.0},\"size\":{\"width\":0.86,\"length\":0.2},\"borderRadius\":0.05,\"strokeWidth\":0.02,\"filled\":false}}"
+  ]
 }

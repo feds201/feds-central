@@ -3,45 +3,34 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.1449036144578315,
-        "y": 5.379108433734939
-      },
-      "prevControl": null,
-      "nextControl": {
-        "x": 2.8809849861160726,
-        "y": 5.255048843614801
-      },
-      "isLocked": false,
-      "linkedName": "LeftBumpCrossOver"
-    },
-    {
-      "anchor": {
         "x": 1.5777817319098464,
         "y": 5.256168446026098
       },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.4476034236804565,
+        "y": 6.0081455064194005
+      },
+      "isLocked": false,
+      "linkedName": "LeftReadyToShoot"
+    },
+    {
+      "anchor": {
+        "x": 0.7785164051355205,
+        "y": 5.982268188302426
+      },
       "prevControl": {
-        "x": 1.9758718861209972,
-        "y": 5.202372479240807
+        "x": 1.1535606276747497,
+        "y": 6.080984308131242
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "LeftReadyToShoot"
+      "linkedName": "PickedUpFromDepot"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
-  "pointTowardsZones": [
-    {
-      "fieldPosition": {
-        "x": 4.6,
-        "y": 4.0
-      },
-      "rotationOffset": 0.0,
-      "minWaypointRelativePos": 0.36514719848052885,
-      "maxWaypointRelativePos": 1.0,
-      "name": "Point Towards Zone"
-    }
-  ],
+  "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 1.0,
@@ -53,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -21.16125981682827
+    "rotation": 0.0
   },
   "reversed": false,
   "folder": "MidIntakeToLeftBump",
   "idealStartingState": {
-    "velocity": 1.0,
-    "rotation": -135.0
+    "velocity": 0,
+    "rotation": -21.16125981682827
   },
   "useDefaultConstraints": false
 }

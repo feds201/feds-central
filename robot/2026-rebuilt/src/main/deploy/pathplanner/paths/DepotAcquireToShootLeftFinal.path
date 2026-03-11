@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.636,
-        "y": 6.778
+        "x": 0.7785164051355205,
+        "y": 5.982268188302426
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.640530386915052,
-        "y": 5.751929129383938
+        "x": 1.3866333808844504,
+        "y": 5.904636233951498
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "PickedUpFromDepot"
     },
     {
       "anchor": {
-        "x": 7.636,
-        "y": 4.696690391459074
+        "x": 2.008149466192171,
+        "y": 5.7188137603795965
       },
       "prevControl": {
-        "x": 7.608207589971197,
-        "y": 6.09746725417262
+        "x": 1.6195292439372322,
+        "y": 5.89169757489301
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "FuelCloseLeft"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -33,8 +33,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 1.0,
-    "maxAcceleration": 4.0,
+    "maxVelocity": 5.0,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 360.0,
     "nominalVoltage": 12.0,
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 90.0
+    "rotation": -32.132895859980934
   },
   "reversed": false,
   "folder": "MidIntakeToLeftBump",
   "idealStartingState": {
-    "velocity": 1.0,
-    "rotation": 90.0
+    "velocity": 0,
+    "rotation": 0.0
   },
   "useDefaultConstraints": false
 }
