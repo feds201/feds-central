@@ -20,12 +20,14 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import frc.robot.RobotMap.SpindexerConstants;
+import frc.robot.RobotMap.indexingConstants;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import frc.robot.utils.DeviceTempReporter;
 import frc.robot.utils.SubsystemStatusManager;
@@ -38,7 +40,8 @@ public class Spindexer extends SubsystemBase {
 
   //subsystem states 
   public enum spindexer_state {
-    RUN(Volts.of(3)),
+    RUN(Volts.of(5)),
+    REVERSE(Volts.of(-5)),
     STOP(Volts.of(0));
 
     private final Voltage targetPosition;
@@ -60,6 +63,8 @@ public class Spindexer extends SubsystemBase {
   private final VoltageOut vOut = new VoltageOut(0);
   private spindexer_state currentState = spindexer_state.STOP;
   private final SysIdRoutine m_spindexerSysId;
+  //Timer to switch between forward and reverse during indexing
+  private Timer washingMachineTimer = new Timer();
 
   // private final SysIdRoutine m_SpindexerSysId;
 
@@ -71,7 +76,7 @@ public class Spindexer extends SubsystemBase {
     config = new TalonFXConfiguration();
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-    config.CurrentLimits.StatorCurrentLimit = 20;
+    config.CurrentLimits.StatorCurrentLimit = 40;
     for (int i = 0; i < 2; ++i){
       var status = spindexerMotor.getConfigurator().apply(config);
       if(status.isOK()) break;
@@ -108,7 +113,35 @@ public class Spindexer extends SubsystemBase {
    
   @Override
   public void periodic() {
-    Logger.recordOutput("Robot/Shooter/SpindexerOn", currentState == spindexer_state.RUN);
+    Logger.recordOutput("Robot/Shooter/SpindexerOn", currentState == spindexer_state.RUN || currentState == spindexer_state.REVERSE);
+    Logger.recordOutput("Robot/Shooter/SpindexerState", currentState.toString());
+
+    switch (currentState) {
+      case RUN:
+        if(!washingMachineTimer.isRunning()){
+          washingMachineTimer.start();
+        }
+        if(washingMachineTimer.hasElapsed(indexingConstants.forwardTime)){
+          setState(spindexer_state.REVERSE);
+          washingMachineTimer.stop();
+          washingMachineTimer.reset();
+        }
+        break;
+      case REVERSE:
+        if(!washingMachineTimer.isRunning()){
+          washingMachineTimer.start();
+        }
+        if(washingMachineTimer.hasElapsed(indexingConstants.reverseTime)){
+          setState(spindexer_state.RUN);
+          washingMachineTimer.stop();
+          washingMachineTimer.reset();
+        }
+        break;
+
+
+      case STOP:
+        break;
+    }
   }
 
   // subsystem getters

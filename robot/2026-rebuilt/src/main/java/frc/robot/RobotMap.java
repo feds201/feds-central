@@ -7,6 +7,7 @@ import java.util.Map;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Rectangle2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
@@ -27,16 +28,16 @@ public final class RobotMap {
    
     public static class VisionConstants {
         // MT1 is configured to be effectively ignored for X/Y position (very large stddev)
-        // while still being trusted for rotation. The 1e6 X/Y values indicate extremely
+        // while still being trusted for rotation. The 1e16 X/Y values indicate extremely
         // high uncertainty in translation so pose estimators will down‑weight MT1's
         // position contribution, but the relatively small rotational stddev (~3 degrees)
         // allows MT1 to meaningfully contribute to heading estimation.
-        public static final Matrix<N3, N1> MT1_STDDEV = VecBuilder.fill(1e6, 1e6, Math.PI / 60);
+        public static final Matrix<N3, N1> MT1_STDDEV = VecBuilder.fill(1e16, 1e16, Math.PI / 60);
         // MT2 is the complementary measurement source: it is trusted for X/Y translation
         // (small stddevs) and effectively ignored for rotation (very large stddev).
         // Together, these settings implement "use only x/y from MT2" and "use only
         // rotation from MT1" when fusing measurements.
-        public static final Matrix<N3, N1> MT2_STDDEV = VecBuilder.fill(0.5, 0.5, 1e6);
+        public static final Matrix<N3, N1> MT2_STDDEV = VecBuilder.fill(0.5, 0.5, 1e16);
     }
 
     public static class Constants {
@@ -92,6 +93,11 @@ public final class RobotMap {
         public static final int kSpindexerMotorId = 57;
     }
 
+    public static class indexingConstants {
+        public static final double forwardTime = 2;
+        public static final double reverseTime = .5;
+    }
+
     public static class FeederConstants
     {
         public static final int kFeederKickerMotorId = 56;
@@ -120,19 +126,44 @@ public final class RobotMap {
         public static final AngularVelocity velocityTolerance = RotationsPerSecond.of(3);
          public static final Angle postionTolerance = Rotations.of(.05);
 
-         public static final Angle maxHoodAngle = Rotations.of(0); //tune
-         public static final Angle minHoodAngle = Rotations.of(0); //tune
+         public static final Angle maxHoodAngle = Rotations.of(27); //tune
+         public static final Angle minHoodAngle = Rotations.of(.5); //tune
 
         //offset of the shooter from robot center
         public static final Translation2d robotShooterOffset = new Translation2d(.25, 0); //TODO: tune
         //rotation of the shooter relative to robot forward
         public static final Rotation2d robotToShooterRotation = Rotation2d.fromDegrees(0.0);
         public static final Translation2d hubCenter = FieldConstants.Hub.innerCenterPoint.toTranslation2d();   
-        public static final Translation2d centerPointOutpost = FieldConstants.Outpost.centerPoint;
+        public static final Translation2d passingRight = FieldConstants.Outpost.centerPoint;
+        public static final Translation2d passingLeft = new Translation2d(0, 7.44);
+        public static final Rectangle2d neutralZone = new Rectangle2d(FieldConstants.LeftTrench.openingTopLeft.toTranslation2d(), FieldConstants.RightTrench.oppOpeningTopRight.toTranslation2d());
+    
         // This map is used to determine the velocity of the shooter based on the distance to the target. 
         //The key is the distance to the target in meters, and the value is the velocity of the shooter in rotations per second.`
         public static final InterpolatingDoubleTreeMap kShootingVelocityMap = InterpolatingDoubleTreeMap.ofEntries(
-            Map.entry(0.0, 0.0)
+            Map.entry(1.44, 27.0),//done
+            Map.entry(1.63, 28.0),//done
+            Map.entry(1.98, 29.0),//done
+            Map.entry(2.57, 32.0),//done
+            Map.entry(2.83, 33.0),//done
+             Map.entry(3.09, 36.0),//done --- AUTON SHOOTING POSITION
+            Map.entry(3.42, 35.0),
+            Map.entry(4.13, 38.0),
+            Map.entry(4.41, 39.0),
+            Map.entry(100.0, 39.0)//far off top limit to prevent unwanted scaling past this distance 
+        );
+
+        public static final InterpolatingDoubleTreeMap kShootingPositionMap = InterpolatingDoubleTreeMap.ofEntries(
+            Map.entry(1.44, 0.0),//done
+            Map.entry(1.63, 3.0),//done
+            Map.entry(1.98, 7.0),//done
+            Map.entry(2.57, 10.0),//done
+            Map.entry(2.83, 15.0),//done
+             Map.entry(3.09, 16.0),// -- AUTON SHOOTING POSITION
+            Map.entry(3.42, 21.5),
+            Map.entry(4.13, 22.0),
+            Map.entry(4.41, 27.0),
+            Map.entry(100.0, 27.0) //far off top limit to prevent unwanted scaling past this distance 
         );
 
         public static final InterpolatingDoubleTreeMap kPassingVelocityMap = InterpolatingDoubleTreeMap.ofEntries(
@@ -144,23 +175,14 @@ public final class RobotMap {
             Map.entry(0.0, 0.0)
         );
 
-         public static final InterpolatingDoubleTreeMap kShootingPositionMap = InterpolatingDoubleTreeMap.ofEntries(
-            Map.entry(0.0, 0.0)
-        );
+         
 
         //TODO: tune
         public static final InterpolatingDoubleTreeMap kFlightTimeMap =
         InterpolatingDoubleTreeMap.ofEntries(
-            Map.entry(1.0, 0.35),
-            Map.entry(2.0, 0.45),
-            Map.entry(3.0, 0.55),
-            Map.entry(4.0, 0.65),
-            Map.entry(5.0, 0.78),
-            Map.entry(6.0, 0.90),
-            Map.entry(7.0, 1.02),
-            Map.entry(8.0, 1.15),
-            Map.entry(9.0, 1.28),
-            Map.entry(10.0, 1.40)
+            Map.entry(2.93, 1.15),
+            Map.entry(3.84, 1.3),
+            Map.entry(100.0, 1.3)
         );
 
         

@@ -15,6 +15,8 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
+import com.pathplanner.lib.commands.FollowPathCommand;
+import com.ctre.phoenix6.SignalLogger;
 
 import edu.wpi.first.hal.AllianceStationID;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -23,6 +25,7 @@ import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.utils.DeviceTempReporter;
+import frc.robot.utils.HubShiftUtil;
 import frc.robot.utils.SubsystemStatusManager;
 import frc.robot.utils.DeviceTempReporter;
 import frc.robot.utils.SubsystemStatusManager;
@@ -36,11 +39,16 @@ public class Robot extends LoggedRobot {
 
 
   public Robot() {
-    Logger.recordMetadata("ProjectName", "2026-Rebuilt");
+    // DO NOT COMMENT THIS OUT!
+    // If build fails the 1st time because no BuildConstant:
+    //  1. clean your workspace cache
+    //  2. run the buld command again
+    // WHY: BuildConstants is automatically generated during your build but sometimes that makes the build upset 
     Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
     Logger.recordMetadata("GitBranch", BuildConstants.GIT_BRANCH);
     Logger.recordMetadata("GitDirty", BuildConstants.DIRTY == 1 ? "UNCOMMITTED CHANGES" : "clean");
     Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
+    Logger.recordMetadata("ProjectName", "2026-Rebuilt");
 
       switch (RobotMap.getRobotMode()) {
       case REAL:
@@ -65,6 +73,8 @@ public class Robot extends LoggedRobot {
         break;
     }
 
+    SignalLogger.setPath("/media/sda1/CTRElogs/");
+    
     Logger.start();
 
      // Silence joystick alerts
@@ -96,16 +106,22 @@ public class Robot extends LoggedRobot {
     }
 
     m_robotContainer = new RobotContainer();
+    FollowPathCommand.warmupCommand().schedule();
   }
 
   @Override
   public void robotPeriodic() {
     m_robotContainer.updateLocalization();
     CommandScheduler.getInstance().run();
-    DeviceTempReporter.pollAll();
-    SubsystemStatusManager.pollAll();
-    DeviceTempReporter.pollAll();
-    SubsystemStatusManager.pollAll();
+    // Publish a small set of live telemetry for the RTU dashboard
+    m_robotContainer.publishTelemetry();
+    //Log Hub shift times
+    Logger.recordOutput("Robot/HubShift/RemainingTime", HubShiftUtil.getOfficialShiftInfo().remainingTime());
+    Logger.recordOutput("Robot/HubShift/ElapsedTime", HubShiftUtil.getOfficialShiftInfo().elapsedTime());
+    Logger.recordOutput("Robot/HubShift/Active", HubShiftUtil.getOfficialShiftInfo().active());
+    Logger.recordOutput("Robot/HubShift/CurrentShift", HubShiftUtil.getOfficialShiftInfo().currentShift().toString());
+    // DeviceTempReporter.pollAll();
+    // SubsystemStatusManager.pollAll();
   }
 
   @Override
@@ -124,6 +140,7 @@ public class Robot extends LoggedRobot {
     if (m_autonomousCommand != null) {
       CommandScheduler.getInstance().schedule(m_autonomousCommand);
     }
+    HubShiftUtil.initialize();
   }
 
 
@@ -138,6 +155,7 @@ public class Robot extends LoggedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    HubShiftUtil.initialize();
   }
 
   @Override
