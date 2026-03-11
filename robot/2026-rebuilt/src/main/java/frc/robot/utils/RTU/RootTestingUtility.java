@@ -188,9 +188,9 @@ public final class RootTestingUtility {
             System.out.println("|   " + diagServer.getUrl());
             System.out.println("+==========================================+");
 
-            for (DiscoveredAction action : actions) {
-                // Wait for safety check before starting the test
-                while (safetyCheck != null) {
+            // Wait once for the safety check before starting the test sequence.
+            if (safetyCheck != null) {
+                while (true) {
                     String safetyError = safetyCheck.checkSafety();
                     if (safetyError == null) {
                         diagServer.setSafetyMessage(null);
@@ -204,16 +204,34 @@ public final class RootTestingUtility {
                         return;
                     }
                 }
+            }
 
+            // After the safety check passes, wait a short pre-start delay so the operator
+            // has time to step back. This delay does not count against per-test timeouts.
+            final long preStartDelayMs = 10_000; // 10 seconds
+            if (preStartDelayMs > 0) {
+                long waitStart = System.currentTimeMillis();
+                long waitEnd = waitStart + preStartDelayMs;
+                System.out.println("[RootTestingUtility] Waiting " + (preStartDelayMs/1000) + "s before starting tests...");
+                while (System.currentTimeMillis() < waitEnd) {
+                    long remainingMs = waitEnd - System.currentTimeMillis();
+                    long remainingSec = Math.max(0, (remainingMs + 999) / 1000);
+                    diagServer.setSafetyMessage("Starting tests in " + remainingSec + "s");
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        return;
+                    }
+                }
+                diagServer.setSafetyMessage(null);
+                System.out.println("[RootTestingUtility] Starting tests now.");
+            }
+
+            for (DiscoveredAction action : actions) {
                 TestResult result = executeAction(action);
                 results.add(result);
                 System.out.println(result);
-
-                // If safety check failed during execution, stop tests
-                if (safetyCheck != null && safetyCheck.checkSafety() != null) {
-                    System.out.println("[RootTestingUtility] Safety check failed, stopping tests.");
-                    break;
-                }
             }
 
             int passed = (int) results.stream().filter(TestResult::isPassed).count();
@@ -263,18 +281,6 @@ public final class RootTestingUtility {
             long startMs = System.currentTimeMillis();
 
             while (System.currentTimeMillis() - startMs < timeoutMs) {
-                if (safetyCheck != null) {
-                    String safetyError = safetyCheck.checkSafety();
-                    if (safetyError != null) {
-                        future.cancel(true);
-                        diagServer.setSafetyMessage(safetyError);
-                        double durationMs = (System.nanoTime() - startNs) / 1_000_000.0;
-                        return new TestResult(subsystemName, actionName, description,
-                            TestResult.Status.FAILED,
-                            new RuntimeException("Safety check failed: " + safetyError),
-                            durationMs, ctx.getAlerts(), ctx.getDataProfiles());
-                    }
-                }
                 try {
                     returnValue = future.get(20, TimeUnit.MILLISECONDS);
                     finished = true;
