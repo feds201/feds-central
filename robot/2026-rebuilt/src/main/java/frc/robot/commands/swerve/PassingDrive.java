@@ -65,6 +65,7 @@ public class PassingDrive extends Command {
     if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red && !isFlipped) {
                 aimLeft = FlippingUtil.flipFieldPosition(aimLeft);
                 aimRight = FlippingUtil.flipFieldPosition(aimRight);
+                isFlipped = true;
             }
     
     aimPoints = List.of(aimLeft, aimRight);
