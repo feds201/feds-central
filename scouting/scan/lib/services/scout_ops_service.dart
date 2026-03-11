@@ -152,9 +152,25 @@ class ScoutOpsService {
       final db = NeonDatabase(config);
       await db.ensureTable();
 
+      // Test the connection first to give a clear error if auth/network fails.
+      final connOk = await db.testConnection();
+      if (!connOk) {
+        return SyncResult(
+            success: false,
+            message:
+                'Failed to connect to Neon. Check credentials and network.');
+      }
+
       final headers = csvHeaders.split(',');
       final count =
           await db.insertRecords(_currentData.scannedRecords, headers);
+
+      if (count == 0) {
+        return SyncResult(
+            success: false,
+            message:
+                'No records were inserted. Possible duplicates or parse errors.');
+      }
 
       return SyncResult(
         success: true,
