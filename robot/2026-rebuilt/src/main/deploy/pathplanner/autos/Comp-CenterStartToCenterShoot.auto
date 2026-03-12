@@ -35,12 +35,6 @@
           }
         },
         {
-          "type": "path",
-          "data": {
-            "pathName": "IntakeAtDepot"
-          }
-        },
-        {
           "type": "sequential",
           "data": {
             "commands": [
@@ -51,18 +45,18 @@
                 }
               },
               {
-                "type": "wait",
-                "data": {
-                  "waitTime": 2.0
-                }
-              },
-              {
                 "type": "named",
                 "data": {
                   "name": "Run Rollers"
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "IntakeAtDepot"
           }
         },
         {
