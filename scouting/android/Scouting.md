@@ -58,21 +58,20 @@ Below is the complete sequence of variables, exactly as they are ordered in the 
 45. **`FeedToHPA2`** (Integer: 1 or 0)
 46. **`FeedToHPI1`** (Integer: 1 or 0)
 47. **`FeedToHPI2`** (Integer: 1 or 0)
-48. **`Passing`** (Integer: 1 or 0)
-49. **`PassingA1`** (Integer: 1 or 0)
-50. **`PassingA2`** (Integer: 1 or 0)
-51. **`PassingI1`** (Integer: 1 or 0)
-52. **`PassingI2`** (Integer: 1 or 0)
+48. **`Passing`** (Integer) - Number of passing actions during TeleOp.
+49. **`PassingA1`** (Integer) - Number of passes involving the A1 position during TeleOp.
+50. **`PassingA2`** (Integer) - Number of passes involving the A2 position during TeleOp.
+51. **`PassingI1`** (Integer) - Number of passes involving the I1 position during TeleOp.
+52. **`PassingI2`** (Integer) - Number of passes involving the I2 position during TeleOp.
 
 ### 4. Endgame Data (`EndPoints`)
 53. **`ClimbStatus`** (String) - Final state of the climb (e.g., "Success", "Failed").
 54. **`Park`** (Integer: 1 or 0) - `1` if parked, `0` otherwise.
 55. **`FeedToHP`** (Integer: 1 or 0) - `1` if fed to human player, `0` otherwise.
-56. **`PassingEnd`** (Integer: 1 or 0) - `1` if the robot was passing during endgame.
+56. **`PassingEnd`** (Integer) - Number of passing actions during endgame.
 57. **`EndNeutralTrips`** (Integer) - Number of neutral trips during endgame.
 58. **`ShootingAccuracy`** (String / Number) - General shooting accuracy metric.
 59. **`EndgameTime`** (Double) - Time spent performing endgame actions.
-60. **`Comments`** (String) - Scouter comments and notes.
-61. **`DrawingData`** (String) - Bitmask encoded string representing path drawings on the field map.
+60. **`DrawingData`** (String) - Bitmask encoded string representing path drawings on the field map.
 
 *Note: The CSV strings use commas to separate each data point. For TeleOp and Endgame sections, a preceding space is sometimes used in the original source string after the comma depending on how the `MatchRecord` string is formulated.*
