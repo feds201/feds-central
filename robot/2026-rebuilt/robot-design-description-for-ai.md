@@ -19,7 +19,7 @@ Ball-scoring robot for the REBUILT game. Collects fuel (balls) from the floor, s
 - Limelight 3 aimed at the floor does ball detection
 
 ### Hopper
-- Storage capacity: ~70 balls max
+- Storage capacity: ~70 balls max in theory (currently 25)
 - Sits between intake and feeder
 
 ### Feeder
@@ -110,17 +110,5 @@ The sim-core library (in `robot/sim-core/`) provides the underlying physics engi
 ### Tuning Placeholder Values
 
 `RebuiltSimManager` has clearly marked placeholder constants at the top of the file. These should be updated as the physical robot design is finalized:
-
-| Parameter | Current Value | What to Measure |
-|---|---|---|
-| `ROBOT_MASS_KG` | 55.0 kg | Weigh the robot with bumpers and battery |
-| `ROBOT_MOI` | 6.0 kg*m^2 | Estimate from CAD or spin-down test |
-| `BUMPER_LENGTH_M` / `BUMPER_WIDTH_M` | 0.8m x 0.8m | Measure outer bumper dimensions |
-| `MODULE_OFFSET_M` | 0.2667m (10.5 in) | Distance from robot center to swerve module center |
-| `INTAKE_X_MIN/MAX`, `INTAKE_Y_MIN/MAX` | 0.35-0.5m forward, +/-0.25m wide | Match the physical intake geometry from CAD |
-| `INTAKE_Z_MAX` | 0.2m | Max height the intake can grab balls |
-| `HOPPER_CAPACITY` | 70 | Actual hopper ball capacity |
-| `LAUNCH_HEIGHT` (in ShooterSim) | 0.6m | Height of the shooter exit point above ground |
-| `SHOT_COOLDOWN` (in ShooterSim) | 0.1s | Time between consecutive shots |
 
 To tune these, open `RebuiltSimManager.java` and `ShooterSim.java`, update the constants, and re-run the sim. No other files need to change.
