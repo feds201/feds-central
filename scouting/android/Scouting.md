@@ -25,22 +25,21 @@ Below is the complete sequence of variables, exactly as they are ordered in the 
 14. **`AutonShots`** (Integer) - Total amount of shooting instances/cycles.
 15. **`AutonClimb`** (Integer: 1 or 0) - `1` if the robot climbed during Auton.
 16. **`AutonWinAfterAuton`** (String) - Represents who is winning after Auton.
-17. **`AutonPassing`** (Integer: 1 or 0) - `1` if the robot passed game pieces during Auton, `0` otherwise.
-18. **`BotPosX`** (Double, 1 decimal) - X coordinate of starting position on the map.
-19. **`BotPosY`** (Double, 1 decimal) - Y coordinate of starting position.
-20. **`BotSizeW`** (Double, 1 decimal) - Width of the robot bounding box.
-21. **`BotSizeH`** (Double, 1 decimal) - Height of the robot bounding box.
-22. **`BotAngle`** (Double, 1 decimal) - Starting orientation angle of the robot.
+17. **`BotPosX`** (Double, 1 decimal) - X coordinate of starting position on the map.
+18. **`BotPosY`** (Double, 1 decimal) - Y coordinate of starting position.
+19. **`BotSizeW`** (Double, 1 decimal) - Width of the robot bounding box.
+20. **`BotSizeH`** (Double, 1 decimal) - Height of the robot bounding box.
+21. **`BotAngle`** (Double, 1 decimal) - Starting orientation angle of the robot.
 
 ### 3. TeleOp Data (`TeleOpPoints`)
-23. **`TeleOpShootingTime1`** (Double, 2 decimals)
-24. **`TeleOpShootingTimeA1`** (Double, 2 decimals)
-25. **`TeleOpShootingTimeA2`** (Double, 2 decimals)
-26. **`ShootingI1`** (Integer: 1 or 0)
-27. **`ShootingI2`** (Integer: 1 or 0)
-28. **`TeleOpTotal1`** (Integer)
-29. **`TeleOpTotalA1`** (Integer)
-30. **`TeleOpTotalA2`** (Integer)
+22. **`TeleOpShootingTime1`** (Double, 2 decimals)
+23. **`TeleOpShootingTimeA1`** (Double, 2 decimals)
+24. **`TeleOpShootingTimeA2`** (Double, 2 decimals)
+25. **`ShootingI1`** (Integer: 1 or 0)
+26. **`ShootingI2`** (Integer: 1 or 0)
+27. **`TeleOpTotal1`** (Integer)
+28. **`TeleOpTotalA1`** (Integer)
+29. **`TeleOpTotalA2`** (Integer)
 30. **`TeleOpTotalI1`** (Integer)
 31. **`TeleOpTotalI2`** (Integer)
 32. **`TripAmount1`** (Integer)
