@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "1082997821459",
-    "project_id": "scout-ops-android",
-    "storage_bucket": "scout-ops-android.firebasestorage.app"
+    "project_number": "REPLACE_WITH_PROJECT_NUMBER",
+    "project_id": "REPLACE_WITH_PROJECT_ID",
+    "storage_bucket": "REPLACE_WITH_STORAGE_BUCKET"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1082997821459:android:96d5b1381fa59d791d2fe6",
+        "mobilesdk_app_id": "REPLACE_WITH_MOBILESDK_APP_ID",
         "android_client_info": {
-          "package_name": "com.feds.scoutopsandroid"
+          "package_name": "REPLACE_WITH_ANDROID_PACKAGE_NAME"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBW7xw5z-B6N56miuGwctSWPrq-kfFP7cg"
+          "current_key": "REPLACE_WITH_FIREBASE_API_KEY"
         }
       ],
       "services": {
