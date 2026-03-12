@@ -293,7 +293,6 @@ class EndGameState extends State<EndGame> {
                               },
                             ),
                           ),
-                            initialRating: shootingAccuracy,
                         ),
                       ),
                     ),
