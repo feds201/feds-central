@@ -57,7 +57,7 @@ public class HubDrive extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    
+    hubRotPID.reset();
   }
 
   public static boolean pidAtSetpoint(){

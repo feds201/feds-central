@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.5777817319098464,
-        "y": 5.256168446026098
+        "x": 1.8136091298145502,
+        "y": 4.921298145506419
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.4476034236804565,
-        "y": 6.0081455064194005
+        "x": 2.6834308215851603,
+        "y": 5.673275205899722
       },
       "isLocked": false,
       "linkedName": "LeftReadyToShoot"
@@ -48,7 +48,7 @@
   "folder": "MidIntakeToLeftBump",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -21.16125981682827
+    "rotation": -17.48799737614853
   },
   "useDefaultConstraints": false
 }

@@ -193,8 +193,10 @@ public class ShooterHood extends SubsystemBase {
   }
 
    public Command setMotorPower(Double power){
-    setState(shooterhood_state.MANUAL);
-    return runOnce(()->  hoodMotor.set(power));
+    return runOnce(()->{
+        setState(shooterhood_state.MANUAL);
+        hoodMotor.set(power);
+    });
   }
 
   public Command resetHoodAngle(){

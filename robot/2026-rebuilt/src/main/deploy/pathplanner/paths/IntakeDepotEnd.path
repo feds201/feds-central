@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.790844370860928,
-        "y": 6.9825331125827805
+        "x": 0.45668674698795175,
+        "y": 7.051048192771084
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.7953747577759795,
-        "y": 5.956462241966719
+        "x": 0.4530947758607403,
+        "y": 6.454164393687402
       },
       "isLocked": false,
-      "linkedName": "LeftCenterPickup"
+      "linkedName": "IntakeAtDepot"
     },
     {
       "anchor": {
-        "x": 7.791,
-        "y": 4.696690391459074
+        "x": 0.45668674698795175,
+        "y": 5.5
       },
       "prevControl": {
-        "x": 7.763207589971198,
-        "y": 6.09746725417262
+        "x": 0.46223247836146963,
+        "y": 5.749938482158176
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "FuelCloseLeft"
+      "linkedName": "IntakeDepotEnd"
     }
   ],
   "rotationTargets": [],
@@ -33,7 +33,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 1.0,
+    "maxVelocity": 0.75,
     "maxAcceleration": 4.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 360.0,
@@ -45,9 +45,9 @@
     "rotation": 90.0
   },
   "reversed": false,
-  "folder": "MidIntakeToLeftBump",
+  "folder": "CenterOverBump",
   "idealStartingState": {
-    "velocity": 1.0,
+    "velocity": 0,
     "rotation": 90.0
   },
   "useDefaultConstraints": false

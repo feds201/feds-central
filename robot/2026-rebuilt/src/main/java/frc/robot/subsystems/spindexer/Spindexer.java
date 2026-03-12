@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems.spindexer;
 
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
 
@@ -24,11 +22,8 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
-import com.ctre.phoenix6.controls.VoltageOut;
 import frc.robot.RobotMap.SpindexerConstants;
 import frc.robot.RobotMap.indexingConstants;
-import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import frc.robot.utils.DeviceTempReporter;
 import frc.robot.utils.SubsystemStatusManager;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -42,6 +37,7 @@ public class Spindexer extends SubsystemBase {
   public enum spindexer_state {
     RUN(Volts.of(5)),
     REVERSE(Volts.of(-5)),
+    PREVERSE(Volts.of(-5)),
     STOP(Volts.of(0));
 
     private final Voltage targetPosition;
@@ -139,7 +135,7 @@ public class Spindexer extends SubsystemBase {
         break;
 
 
-      case STOP:
+      case STOP, PREVERSE:
         break;
     }
   }
