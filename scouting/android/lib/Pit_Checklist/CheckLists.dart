@@ -237,7 +237,6 @@ class _Checklist_recordState extends State<Checklist_record> {
     outgoing_battery_voltage = 0;
     outgoing_battery_cca = 0;
     outgoing_number = 0;
-    returning_battery_replacd = false;
     outgoing_battery_replaced = false;
 
     image1 = "";
