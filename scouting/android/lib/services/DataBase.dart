@@ -1151,15 +1151,8 @@ class EndPoints {
       json['Passing'] ?? false,
       json['robotBroken'] ?? false,
       json['Comments'] ?? '',
-<<<<<<< HEAD
-<<<<<<< HEAD
+      json['EndNeutralTrips'] ?? 0,
       (json['ShootingAccuracy'] as int?) ?? 3,
-=======
-      json['ShootingAccuracy'] ?? 3,
->>>>>>> origin/main
-=======
-      (json['ShootingAccuracy'] as int?) ?? 3,
->>>>>>> origin/robot_intake
       (json['endgameTime'] ?? 0.0).toDouble(),
       json['endgameActions'] ?? 0,
       // Handle both list and legacy string/migration
@@ -1173,33 +1166,11 @@ class EndPoints {
   }
 
   String toCsv() {
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-    return '$ClimbStatus,$Park,$FeedToHP,$Passing,$ShootingAccuracy,$endgameTime,$endgameActions,$Comments,$drawingData';
-=======
-<<<<<<< HEAD
-    return '$ClimbStatus,$Park,$FeedToHP,$Passing,$ShootingAccuracy,$endgameTime,$endgameActions,$Comments,$drawingData';
-=======
-    return '$ClimbStatus,$Park,$FeedToHP,$Passing,$endgameTime,$endgameActions,$Comments,${_encodeDrawingData()}';
-=======
-    return '$ClimbStatus,${Park ? 1 : 0},${FeedToHP ? 1 : 0},${Passing ? 1 : 0},$ShootingAccuracy,$endgameTime,$endgameActions,$Comments,$drawingData';
->>>>>>> origin/robot_intake
-=======
-    return '$ClimbStatus,${Park ? 1 : 0},${FeedToHP ? 1 : 0},${Passing ? 1 : 0},$ShootingAccuracy,$endgameTime,$endgameActions,$Comments,$drawingData';
->>>>>>> origin/main
+    return '$ClimbStatus,${Park ? 1 : 0},${FeedToHP ? 1 : 0},${Passing ? 1 : 0},$EndNeutralTrips, $ShootingAccuracy,$endgameTime,$Comments,${_encodeDrawingData()}';
   }
 
   String _encodeDrawingData() {
     return DrawingBitmaskCodec.encode(drawingData);
->>>>>>> origin/main
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> origin/main
-=======
->>>>>>> origin/robot_intake
-=======
->>>>>>> origin/main
   }
 
   @override
