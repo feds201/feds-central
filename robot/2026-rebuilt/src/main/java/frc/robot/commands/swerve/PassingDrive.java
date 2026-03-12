@@ -69,6 +69,7 @@ public class PassingDrive extends Command {
             }
     
     aimPoints = List.of(aimLeft, aimRight);
+    passRotPID.reset();
   }
 
  
