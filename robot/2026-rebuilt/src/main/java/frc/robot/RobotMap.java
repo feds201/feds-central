@@ -147,10 +147,9 @@ public final class RobotMap {
             Map.entry(2.57, 32.0),//done
             Map.entry(2.83, 33.0),//done
              Map.entry(3.09, 36.0),//done --- AUTON SHOOTING POSITION
-            Map.entry(3.42, 35.0),
-            Map.entry(4.13, 38.0),
-            Map.entry(4.41, 39.0),
-            Map.entry(100.0, 39.0)//far off top limit to prevent unwanted scaling past this distance 
+            Map.entry(3.42, 38.0), //done
+            Map.entry(4.59, 40.5), //done
+            Map.entry(100.0, 40.5)//far off top limit to prevent unwanted scaling past this distance 
         );
 
         public static final InterpolatingDoubleTreeMap kShootingPositionMap = InterpolatingDoubleTreeMap.ofEntries(
@@ -160,10 +159,9 @@ public final class RobotMap {
             Map.entry(2.57, 10.0),//done
             Map.entry(2.83, 15.0),//done
              Map.entry(3.09, 16.0),// -- AUTON SHOOTING POSITION
-            Map.entry(3.42, 21.5),
-            Map.entry(4.13, 22.0),
-            Map.entry(4.41, 27.0),
-            Map.entry(100.0, 27.0) //far off top limit to prevent unwanted scaling past this distance 
+            Map.entry(3.42, 16.7),//done
+            Map.entry(4.59, 23.2), //done
+            Map.entry(100.0, 23.2) //far off top limit to prevent unwanted scaling past this distance 
         );
 
         public static final InterpolatingDoubleTreeMap kPassingVelocityMap = InterpolatingDoubleTreeMap.ofEntries(
@@ -180,9 +178,10 @@ public final class RobotMap {
         //TODO: tune
         public static final InterpolatingDoubleTreeMap kFlightTimeMap =
         InterpolatingDoubleTreeMap.ofEntries(
-            Map.entry(2.93, 1.15),
-            Map.entry(3.84, 1.3),
-            Map.entry(100.0, 1.3)
+            Map.entry(1.61, 1.01),
+            Map.entry(2.58, 0.84),
+            Map.entry(2.9, 0.98),
+            Map.entry(3.6, 1.27)
         );
 
         
