@@ -307,7 +307,6 @@ function finishQuiz() {
             }
         }
     }
-}
 
     updateImpactTexts();
     generateRecommendations();
@@ -324,7 +323,6 @@ function finishQuiz() {
         }
         overallSummaryEl.innerHTML = html;
     }
-}
 }
 
 function updateImpactTexts() {
