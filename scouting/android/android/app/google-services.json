@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "REPLACE_WITH_MOBILESDK_APP_ID",
         "android_client_info": {
-          "package_name": "REPLACE_WITH_ANDROID_PACKAGE_NAME"
+          "package_name": "com.feds.scoutopsandroid"
         }
       },
       "oauth_client": [],
