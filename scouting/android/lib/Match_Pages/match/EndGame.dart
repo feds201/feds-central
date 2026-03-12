@@ -76,8 +76,7 @@ class EndGameState extends State<EndGame> {
     endgameTime = widget.matchRecord.endPoints.endgameTime;
     endgameActions = widget.matchRecord.endPoints.endgameActions;
     drawingData = widget.matchRecord.endPoints.drawingData;
-    robotBroken =
-        false; // Default to false, as this is a new field and may not be in older records
+    robotBroken = widget.matchRecord.endPoints.robotBroken;
   }
 
   void UpdateData() {
