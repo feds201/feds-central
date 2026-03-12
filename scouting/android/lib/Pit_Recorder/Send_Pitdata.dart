@@ -3,10 +3,12 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:scout_ops_android/components/Button.dart';
 import 'package:scout_ops_android/services/Colors.dart';
 import 'package:scout_ops_android/services/DataBase.dart';
+import 'package:scout_ops_android/services/NeonService.dart';
 
 import '../main.dart';
 
@@ -270,42 +272,7 @@ class _SharePITDataScreenState extends State<SharePITDataScreen>
 
   // Convert PitRecord to FEDS Scouting Server format
   Map<String, dynamic> formatPitDataForFEDS(PitRecord record) {
-    // Map scoreType to appropriate format
-    String scoreLocation = "";
-    if (record.scoreType.contains("L1"))
-      scoreLocation = "L1 - 1 piece";
-    else if (record.scoreType.contains("L2"))
-      scoreLocation = "L2 - 3 pieces";
-    else if (record.scoreType.contains("L3"))
-      scoreLocation = "L3 - 5 pieces";
-    else if (record.scoreType.contains("L4")) scoreLocation = "L4 - 7 pieces";
-
-    // Determine climb type
-    String endgame = "Park";
-    if (record.climbType.contains("Deep")) {
-      endgame = "Deep Climb";
-    } else if (record.climbType.contains("Shallow")) {
-      endgame = "Shallow Climb";
-    }
-
-    // Ensure all 3 images are included
-    return {
-      "team": record.teamNumber.toString(),
-      "drivetrain": record.driveTrainType,
-      "auton": record.autonType,
-      "leaveAuton": "Yes", // Default to yes if they have auton
-      "scoreLocation": scoreLocation,
-      "scoreType": record.scoreType.join(", "),
-      "intakeCoral": record.intake,
-      "scoreCoral":
-          record.scoreObject.isNotEmpty ? record.scoreObject.join(", ") : "L1",
-      "intakeAlgae": "Can do ALL", // Default
-      "scoreAlgae": "Processor", // Default
-      "endgame": endgame,
-      "botImage1": record.botImage1,
-      "botImage2": record.botImage2,
-      "botImage3": record.botImage3
-    };
+    return record.toJson();
   }
 
   Widget buildProgressBar() {
@@ -418,19 +385,17 @@ class _SharePITDataScreenState extends State<SharePITDataScreen>
     PitDataBase.LoadAll();
 
     try {
-      print(Settings.getPitKey());
-      if (Settings.getPitKey() == "null") {
-        print('Error in sendDataToFeds: PitKey is empty');
+      final neonRest = Settings.getNeonRestUrl();
+      if (neonRest.isEmpty) {
         setState(() {
           _hasError = true;
-          _statusMessage = "Error: PitKey is empty";
+          _statusMessage = "Error: Neon REST URL is missing in Settings";
         });
-        // Show error dialog
-        showErrorDialog("PitKey is empty");
-        return; // Add return to exit the function early
+        showErrorDialog(
+            "Neon REST URL is not configured. Please add it in Settings.");
+        return;
       }
-      String scriptUrl =
-          "https://script.google.com/macros/s/${Settings.getPitKey()}/exec"; // Replace {} with the actual script ID
+
       List<int> teams = PitDataBase.GetRecorderTeam();
       _totalTeams = teams.length;
       print("Sending data for team");
@@ -450,69 +415,45 @@ class _SharePITDataScreenState extends State<SharePITDataScreen>
         PitRecord? record = PitDataBase.GetData(teamNumber);
         if (record != null) {
           // Format data for FEDS
-          var formattedData = {
-            "type": "pit",
-            "team": record.teamNumber.toString(),
-            "drivetrain": record.driveTrainType,
-            "auton": record.autonType,
-            "leaveAuton": "Yes", // Default to yes if they have auton
-            "scoreLocation": record.scoreType.contains("L1")
-                ? "L1 - 2 pieces"
-                : record.scoreType.contains("L2")
-                    ? "L2 - 3 pieces"
-                    : "L3 - 5 pieces", // Example mapping
-            "scoreType": record.scoreType.join(", "),
-            "intakeCoral": record.intake,
-            "scoreCoral": record.scoreObject.isNotEmpty
-                ? record.scoreObject.join(", ")
-                : "L1",
-            "intakeAlgae": "Source", // Default
-            "scoreAlgae": "Processor", // Default
-            "endgame": record.climbType.contains("Deep")
-                ? "Deep Climb"
-                : "Shallow Climb",
-            "botImage1": record.botImage1,
-            "botImage2": record.botImage2,
-            "botImage3": record.botImage3
-          };
+          var formattedData = record.toJson();
 
-          // Send to Google Apps Script using http.post
-          print("Sending data for team $teamNumber to $scriptUrl");
           setState(() {
             _statusMessage =
                 "Uploading data for Team $teamNumber (with 3 images)...";
           });
 
           try {
-            var response = await http
-                .post(
-                  Uri.parse(scriptUrl),
-                  headers: {'Content-Type': 'application/json'},
-                  body: jsonEncode(formattedData),
-                )
-                .timeout(const Duration(seconds: 30));
+            final eventKey =
+                Hive.box('userData').get('eventKey', defaultValue: 'event');
 
-            if (response.statusCode == 200 || response.statusCode == 302) {
-              print('Successfully sent data for team $teamNumber');
+            // Prepare payload — include team and JSON data
+            final payload = {
+              'id': '${teamNumber}_${DateTime.now().millisecondsSinceEpoch}',
+              'team_number': teamNumber,
+              'data': formattedData,
+              'created_at': DateTime.now().toIso8601String(),
+            };
+
+            bool sentToNeon = await NeonService.insert(eventKey, payload);
+            if (sentToNeon) {
+              print(
+                  'Successfully inserted data for team $teamNumber into Neon');
               _successCount++;
               setState(() {
                 _statusMessage = "Team $teamNumber data uploaded successfully!";
               });
             } else {
-              print(
-                  'Failed to send data for team $teamNumber: ${response.statusCode} ${response.reasonPhrase}');
+              print('Neon insert failed for team $teamNumber');
               setState(() {
                 _hasError = true;
-                _statusMessage =
-                    "Error uploading Team $teamNumber: ${response.reasonPhrase}";
+                _statusMessage = "Error uploading Team $teamNumber to Neon";
               });
             }
           } catch (e) {
-            print('Error sending data for team $teamNumber: $e');
+            print('Error sending data for team $teamNumber to Neon: $e');
             setState(() {
               _hasError = true;
-              _statusMessage =
-                  "Error uploading Team $teamNumber: Network error";
+              _statusMessage = "Error uploading Team $teamNumber: $e";
             });
           }
         }

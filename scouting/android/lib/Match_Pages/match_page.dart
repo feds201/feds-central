@@ -796,7 +796,7 @@ class MatchPageState extends State<MatchPage>
             0,
             0,
             0),
-        EndPoints(0, false, false, 0, false, "", 0, 0, 0.0, 0, []),
+        EndPoints(0, false, false, 0, false, 0, 0, 0.0, 0, []),
         teamNumber: teamNNumber.replaceAll('frc', ''),
         scouterName: _scouterName,
         matchKey: match['key'].toString(),
