@@ -29,7 +29,6 @@ class _RecordState extends State<Record> {
   late String DrivetrainController;
   late String AutonController;
   late List<String> ScoreTypeController;
-  late List<String> IntakeController;
   late List<String> ClimbTypeController;
   late List<String> ScoreObjectController;
   late bool? hello;
@@ -70,7 +69,6 @@ class _RecordState extends State<Record> {
     DrivetrainController = "";
     AutonController = "";
     ScoreTypeController = [];
-    IntakeController = [];
     ClimbTypeController = [];
     ScoreObjectController = [];
     hello = null;
@@ -105,7 +103,6 @@ class _RecordState extends State<Record> {
           DrivetrainController = existingRecord.driveTrainType;
           AutonController = existingRecord.autonType;
           ScoreTypeController = existingRecord.scoreType;
-          IntakeController = existingRecord.intake;
           ClimbTypeController = existingRecord.climbType;
           ScoreObjectController = existingRecord.scoreObject;
           ImageBlob1 = existingRecord.botImage1;
@@ -302,19 +299,9 @@ class _RecordState extends State<Record> {
                 });
               }),
               buildMultiChoiceBox(
-                  "Intake Type",
-                  Icon(Icons.shopping_cart_checkout_outlined,
-                      size: 30, color: Colors.green),
-                  ["Ground", "Source"],
-                  IntakeController, (value) {
-                setState(() {
-                  IntakeController = value;
-                });
-              }),
-              buildMultiChoiceBox(
                   "Score Locations",
                   Icon(Icons.star_outline, size: 30, color: Colors.blue),
-                  ["Low Goal", "High Goal", "Cross Obstacles"],
+                  ["Hub", "Feeder"],
                   ScoreTypeController, (value) {
                 setState(() {
                   ScoreTypeController = value;
@@ -336,7 +323,7 @@ class _RecordState extends State<Record> {
                   "Climb Type",
                   Icon(Icons.elevator,
                       size: 30, color: const Color.fromARGB(255, 200, 186, 34)),
-                  ["Climb", "Park", "None"],
+                  ["L1", "L2", "L3", "Park"],
                   ClimbTypeController, (value) {
                 setState(() {
                   ClimbTypeController = value;
@@ -514,7 +501,6 @@ class _RecordState extends State<Record> {
         driveTrainType: DrivetrainController,
         autonType: AutonController,
         scoreType: ScoreTypeController,
-        intake: IntakeController,
         climbType: ClimbTypeController,
         scoreObject: finalScoreObject,
         botImage1: ImageBlob1,

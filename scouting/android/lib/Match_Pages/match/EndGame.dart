@@ -49,8 +49,6 @@ class EndGameState extends State<EndGame> {
   bool isPageScrollable = true;
   int shootingAccuracy = 3;
 
-  TextEditingController commentController = TextEditingController();
-
   @override
   void initState() {
     super.initState();
@@ -73,7 +71,6 @@ class EndGameState extends State<EndGame> {
     feedToHP = widget.matchRecord.endPoints.FeedToHP;
     passing = widget.matchRecord.endPoints.Passing;
 
-    commentController.text = widget.matchRecord.endPoints.Comments;
     neutralTrips = widget.matchRecord.endPoints.EndNeutralTrips;
     shootingAccuracy = widget.matchRecord.endPoints.ShootingAccuracy;
     endgameTime = widget.matchRecord.endPoints.endgameTime;
@@ -93,8 +90,6 @@ class EndGameState extends State<EndGame> {
     widget.matchRecord.endPoints.Park = park;
     widget.matchRecord.endPoints.FeedToHP = feedToHP;
     widget.matchRecord.endPoints.Passing = passing;
-
-    widget.matchRecord.endPoints.Comments = commentController.text;
 
     // Timer and endgame actions
     widget.matchRecord.endPoints.endgameTime = endgameTime;
@@ -343,53 +338,6 @@ class EndGameState extends State<EndGame> {
                         ),
                       ),
                     ],
-                  ),
-                ),
-                Padding(
-                  padding:
-                      const EdgeInsets.only(left: 16, right: 16, bottom: 16),
-                  child: TextField(
-                    controller: commentController,
-                    maxLines: 4,
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: islightmode()
-                          ? const Color.fromARGB(
-                              255, 0, 0, 0) // Black for light mode
-                          : const Color.fromARGB(
-                              255, 255, 255, 255), // White for dark mode
-                    ),
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: islightmode()
-                          ? const Color.fromARGB(255, 255, 255, 255)
-                          : const Color.fromARGB(255, 34, 34, 34),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide:
-                            BorderSide(color: Colors.grey.shade300, width: 1),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide:
-                            BorderSide(color: Colors.grey.shade300, width: 1),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide:
-                            BorderSide(color: Colors.blueAccent, width: 2),
-                      ),
-                      hintText:
-                          'Add any relevant notes about the team\'s performance...',
-                      hintStyle: TextStyle(
-                        color: !islightmode()
-                            ? const Color.fromARGB(255, 255, 255, 255)
-                            : const Color.fromARGB(255, 34, 34, 34),
-                        fontSize: 15,
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                          vertical: 16, horizontal: 16),
-                    ),
                   ),
                 ),
               ],

@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/painting.dart';
 import 'package:hive/hive.dart';
 
@@ -23,11 +24,51 @@ class Settings {
   }
 
   static String getApiKey() {
-    return LocalDataBase.getData('Settings.apiKey');
+    return LocalDataBase.getData('Settings.apiKey') ?? '';
   }
 
   static String getPitKey() {
-    return LocalDataBase.getData('Settings.pitKey');
+    return LocalDataBase.getData('Settings.pitKey') ?? '';
+  }
+
+  static void setNeonHost(String host) {
+    LocalDataBase.putData('Settings.neonHost', host);
+  }
+
+  static String getNeonHost() {
+    return LocalDataBase.getData('Settings.neonHost') ?? '';
+  }
+
+  static void setNeonUser(String user) {
+    LocalDataBase.putData('Settings.neonUser', user);
+  }
+
+  static String getNeonUser() {
+    return LocalDataBase.getData('Settings.neonUser') ?? '';
+  }
+
+  static void setNeonPassword(String password) {
+    LocalDataBase.putData('Settings.neonPassword', password);
+  }
+
+  static String getNeonPassword() {
+    return LocalDataBase.getData('Settings.neonPassword') ?? '';
+  }
+
+  static void setNeonDatabase(String db) {
+    LocalDataBase.putData('Settings.neonDatabase', db);
+  }
+
+  static String getNeonDatabase() {
+    return LocalDataBase.getData('Settings.neonDatabase') ?? '';
+  }
+
+  static void setNeonRestUrl(String url) {
+    LocalDataBase.putData('Settings.neonRestUrl', url);
+  }
+
+  static String getNeonRestUrl() {
+    return LocalDataBase.getData('Settings.neonRestUrl') ?? '';
   }
 }
 
@@ -114,7 +155,6 @@ class PitRecord {
   final String autonType;
   final List<String> scoreObject;
   final List<String> scoreType;
-  final List<String> intake;
   final List<String> climbType;
   final String botImage1;
   final String botImage2;
@@ -143,7 +183,6 @@ class PitRecord {
       required this.autonType,
       required this.scoreObject,
       required this.scoreType,
-      required this.intake,
       required this.climbType,
       required this.botImage1,
       required this.botImage2,
@@ -171,7 +210,6 @@ class PitRecord {
       "auton": autonType,
       "scoreObject": scoreObject.toString(),
       "scoreType": scoreType,
-      "intake": intake,
       "climbType": climbType,
       "botImage1": botImage1,
       "botImage2": botImage2,
@@ -237,7 +275,6 @@ class PitRecord {
       scoreType:
           json['scoreType'] is List ? List<String>.from(json['scoreType']) : [],
       scoreObject: List<String>.from(parseScoreObject()),
-      intake: List<String>.from(parseIntake()),
       climbType:
           json['climbType'] is List ? List<String>.from(json['climbType']) : [],
 
@@ -1125,7 +1162,6 @@ class EndPoints {
   int ShootingAccuracy;
   double endgameTime;
   int endgameActions;
-  String Comments = '';
   List<int> drawingData = [];
 
   EndPoints(
@@ -1134,7 +1170,6 @@ class EndPoints {
     this.FeedToHP,
     this.Passing,
     this.robotBroken,
-    this.Comments,
     this.EndNeutralTrips,
     this.ShootingAccuracy,
     this.endgameTime,
@@ -1152,7 +1187,6 @@ class EndPoints {
       "ShootingAccuracy": ShootingAccuracy,
       "endgameTime": endgameTime,
       "endgameActions": endgameActions,
-      "Comments": Comments,
       "DrawingData": drawingData,
       "robotBroken": robotBroken,
     };
@@ -1165,7 +1199,6 @@ class EndPoints {
       json['FeedToHP'] ?? false,
       _toInt(json['Passing']),
       json['robotBroken'] ?? false,
-      json['Comments'] ?? '',
       _toInt(json['EndNeutralTrips']),
       _toInt(json['ShootingAccuracy'] ?? 3),
       (json['endgameTime'] ?? 0.0).toDouble(),
@@ -1177,11 +1210,11 @@ class EndPoints {
 
   @override
   String toString() {
-    return 'EndPoints{ClimbStatus: $ClimbStatus, Park: $Park, FeedToHP: $FeedToHP, Passing: $Passing, EndNeutralTrips: $EndNeutralTrips, ShootingAccuracy: $ShootingAccuracy, endgameTime: $endgameTime, endgameActions: $endgameActions, Comments: $Comments, DrawingData: $drawingData, robotBroken: $robotBroken }';
+    return 'EndPoints{ClimbStatus: $ClimbStatus, Park: $Park, FeedToHP: $FeedToHP, Passing: $Passing, EndNeutralTrips: $EndNeutralTrips, ShootingAccuracy: $ShootingAccuracy, endgameTime: $endgameTime, endgameActions: $endgameActions, DrawingData: $drawingData, robotBroken: $robotBroken }';
   }
 
   String toCsv() {
-    return '$ClimbStatus,${Park ? 1 : 0},${FeedToHP ? 1 : 0},${Passing},$EndNeutralTrips, $ShootingAccuracy,$endgameTime,$Comments,${_encodeDrawingData()}';
+    return '$ClimbStatus,${Park ? 1 : 0},${FeedToHP ? 1 : 0},${Passing},$EndNeutralTrips, $ShootingAccuracy,$endgameTime,${_encodeDrawingData()}';
   }
 
   String _encodeDrawingData() {
@@ -1199,7 +1232,10 @@ class EndPoints {
         other.FeedToHP == FeedToHP &&
         other.Passing == Passing &&
         other.ShootingAccuracy == ShootingAccuracy &&
-        other.Comments == Comments;
+        other.endgameTime == endgameTime &&
+        other.endgameActions == endgameActions &&
+        listEquals(other.drawingData, drawingData) &&
+        other.robotBroken == robotBroken;
   }
 
   @override
@@ -1210,7 +1246,10 @@ class EndPoints {
         FeedToHP.hashCode ^
         Passing.hashCode ^
         ShootingAccuracy.hashCode ^
-        Comments.hashCode;
+        endgameTime.hashCode ^
+        endgameActions.hashCode ^
+        drawingData.hashCode ^
+        robotBroken.hashCode;
   }
 
   setClimbStatus(int value) {
@@ -1385,7 +1424,6 @@ class LocalDataBase {
       data['FeedToHP'] ?? false,
       _toInt(data['Passing']),
       data['robotBroken'] ?? false,
-      data['Comments'] ?? "",
       _toInt(data['EndNeutralTrips']),
       _toInt(data['ShootingAccuracy'] ?? 3),
       (data['EndgameTime'] ?? 0).toDouble(),
@@ -1401,7 +1439,6 @@ class LocalDataBase {
         scouterName: data['scouterName'] ?? "",
         driveTrainType: data['driveTrainType'] ?? "",
         autonType: data['auton'] ?? "",
-        intake: data['intake'] ?? "",
         scoreObject: List<String>.from(data['scoreObject'] ?? []),
         climbType: List<String>.from(data['climbType'] ?? []),
         scoreType: List<String>.from(data['scoreType'] ?? []),

@@ -5,25 +5,36 @@
 package frc.robot.subsystems.shooter;
 
 import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Rotation;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
+
+import java.util.Map;
+import java.util.function.DoubleSupplier;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+// import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.RobotMap;
@@ -34,11 +45,12 @@ import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 public class ShooterWheels extends SubsystemBase {
 
     public enum shooter_state {
+    TEST(RotationsPerSecond.of(0)),
     SHOOTING(RotationsPerSecond.of(0)),
     IDLE(RotationsPerSecond.of(0)),
     PASSING(RotationsPerSecond.of(0)),
-    LAYUP(RotationsPerSecond.of(0)), //TUNE
-    HALFCOURT (RotationsPerSecond.of(1)); //TUNE
+    LAYUP(RotationsPerSecond.of(33)), // 30
+    HALFCOURT (RotationsPerSecond.of(35)); // 85 
 
     private final AngularVelocity targetVelocity;
 
@@ -57,10 +69,12 @@ public class ShooterWheels extends SubsystemBase {
     private final TalonFX shooterFollower2;
     private final TalonFX shooterFollower3;
     private final TalonFXConfiguration config;
-    private final MotionMagicVelocityVoltage motionMagicControl;
+    private final VelocityVoltage velocityVoltageControl;
     private shooter_state currentState = shooter_state.IDLE;
     private final CommandSwerveDrivetrain dt;
     private final SysIdRoutine m_flywheelSysId;
+    private ShuffleboardTab tab = Shuffleboard.getTab("testing");
+    private DoubleSupplier speed = ()->0.0;
   
   /** Creates a new Shooter. */
   public ShooterWheels(CommandSwerveDrivetrain dt) {
@@ -72,13 +86,14 @@ public class ShooterWheels extends SubsystemBase {
     shooterFollower1.setControl(new Follower(shooterLeader.getDeviceID(), MotorAlignmentValue.Opposed));
     shooterFollower2.setControl(new Follower(shooterLeader.getDeviceID(), MotorAlignmentValue.Aligned));
     shooterFollower3.setControl(new Follower(shooterLeader.getDeviceID(), MotorAlignmentValue.Opposed));
-    motionMagicControl = new MotionMagicVelocityVoltage(0.0);
+    velocityVoltageControl = new VelocityVoltage(0.0);
+    velocityVoltageControl.Acceleration = 200;
 
     m_flywheelSysId = new SysIdRoutine(
     new SysIdRoutine.Config(
       Volts.of(0.5).per(Second),                // default ramp (or Volts.of(x).per(Second) if you want custom)
       Volts.of(3),          // dynamic step voltage: start with something conservative (4-6 V)
-      null,                // default timeout
+      Seconds.of(5),                // default timeout
       state -> SignalLogger.writeString("SysId_Flywheel_State", state.toString()) // log state string
     ),
     new SysIdRoutine.Mechanism(
@@ -99,32 +114,40 @@ public class ShooterWheels extends SubsystemBase {
 
     config = new TalonFXConfiguration();
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-    config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-    config.CurrentLimits.StatorCurrentLimit = 40;
+    config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    config.CurrentLimits.StatorCurrentLimit = 80; // Increased for faster recovery between shots
+    config.CurrentLimits.SupplyCurrentLimit = 60;
+    config.ClosedLoopRamps.VoltageClosedLoopRampPeriod = 0.02;
+    // config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
+    // config.Feedback.SensorToMechanismRatio = 2/3;
+
     //Following values would need to be tuned.
-    config.Slot0.kS = 0.0; // Constant applied for friction compensation (static gain)///;;poy' qwertyhellooooooo
-    config.Slot0.kP = 0.0; // Proportional gain 
-    config.Slot0.kD = 0.0; // Derivative gain
-    config.Slot0.kV = 0.0;// Velocity gain
-    config.Slot0.kA = 0.0; // Acceleration gain
-    config.MotionMagic.MotionMagicCruiseVelocity = 0.0; // Max allowed velocity (Motor rot / sec)
-    config.MotionMagic.MotionMagicAcceleration = 0.0; // Max allowed acceleration (Motor rot / sec^2)
-    // Apply config multiple times to ensure application
+    config.Slot0.kS = 0.34; // Constant applied for friction compensation (static gain)
+    config.Slot0.kP = 0.4; // Proportional gain
+    config.Slot0.kV = 0.12;// Velocity gain
     for (int i = 0; i < 2; ++i){
       var status = shooterLeader.getConfigurator().apply(config);
       if(status.isOK()) break;
     }
+
+    GenericEntry swanNeckPivotSpeedSetter = tab.add("wheel speed", 0.0)
+                .withWidget(BuiltInWidgets.kNumberSlider)
+                .withProperties(Map.of("min", 0, "max", .2))
+                .getEntry();
+                speed = () -> swanNeckPivotSpeedSetter.getDouble(0);
+
   }
 
   @Override
   public void periodic() {
+        Logger.recordOutput("Robot/Shooter/ShooterVelocity", getVelocity().in(RotationsPerSecond));
 
     Logger.recordOutput("Robot/Shooter/IsShooting", currentState == shooter_state.SHOOTING);
-
+    Logger.recordOutput("Robot/Shooter/ShooterState", currentState.toString());
     switch (currentState) {
       case SHOOTING:
-      shooterLeader.setControl(motionMagicControl.withVelocity(getTargetVelocityShooting()
-      .times(velocityMultiplier)));
+      shooterLeader.setControl(velocityVoltageControl.withVelocity(getTargetVelocityShooting()));
+             Logger.recordOutput("Robot/Shooter/ExpectedVelocity", getTargetVelocityShooting().in(RotationsPerSecond));
 
         break;
 
@@ -132,14 +155,18 @@ public class ShooterWheels extends SubsystemBase {
         break;
 
       case PASSING:
-      shooterLeader.setControl(motionMagicControl.withVelocity(getTargetVelocityPassing()
-      .times(velocityMultiplier))); //from passing table
+      shooterLeader.setControl(velocityVoltageControl.withVelocity(getTargetVelocityPassing())); //from passing table
         break;
+      case LAYUP, HALFCOURT:
+      break;
+      case TEST:
+      setVelocity(RotationsPerSecond.of(speed.getAsDouble()));
+      break;
     }
   }
 
   public void setVelocity(AngularVelocity velocity){
-    shooterLeader.setControl(motionMagicControl.withVelocity(velocity));
+    shooterLeader.setControl(velocityVoltageControl.withVelocity(velocity));
   }
 
   public void setState(shooter_state state){
@@ -161,8 +188,10 @@ public class ShooterWheels extends SubsystemBase {
 
   public AngularVelocity getTargetVelocityShooting()
   {
-     Distance d = dt.getDistanceToVirtualHub();
-      return RotationsPerSecond.of(RobotMap.ShooterConstants.kShootingVelocityMap.get(d.in(Meters)));
+     
+    //  double d = dt.getState().Pose.getTranslation().getDistance(ShooterConstants.hubCenter);
+         double d = dt.getDistanceToVirtualHub().in(Meters);
+      return RotationsPerSecond.of(RobotMap.ShooterConstants.kShootingVelocityMap.get(d));
   }
 
   //METHOD DYSFUNCTIONAL: Passing doesnt shoot to hub, find position on field to pass to.
@@ -177,11 +206,5 @@ public class ShooterWheels extends SubsystemBase {
 
   public Command setStateCommand(shooter_state state) {
     return runOnce(() -> setState(state));
-  }
-
-  public double velocityMultiplier = 1.0;
-
-  public void changeMultiplier(double toAdd){
-    velocityMultiplier += toAdd;
-  }
+  } 
 }

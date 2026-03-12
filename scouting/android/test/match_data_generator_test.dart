@@ -225,7 +225,6 @@ class RealisticMatchDataGenerator {
       teleOpFeedHP && _random.nextDouble() > 0.4,
       _random.nextInt(3),
       true,
-      '',
       (teleOpNeutralTrips / 2).toInt(),
       shootingAccuracy,
       endgameTime,

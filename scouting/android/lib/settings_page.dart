@@ -32,6 +32,7 @@ class SettingsPageState extends State<SettingsPage> {
   bool isLoading = false;
   bool isjson = true;
   TextEditingController eventKeyController = TextEditingController();
+  TextEditingController neonRestController = TextEditingController();
   String ApiKey = Hive.box('settings').get('ApiKey', defaultValue: '');
 
   String? serverIp;
@@ -284,6 +285,49 @@ class SettingsPageState extends State<SettingsPage> {
                         onSubmitted: (String value) {
                           Hive.box('settings').put('ApiKey', value);
                           Settings.setApiKey(value);
+                        },
+                      ),
+                      const SizedBox(height: 10),
+                      // Neon Database Connection String
+                      TextField(
+                        controller: TextEditingController()
+                          ..text = Hive.box('settings').get('neonRestUrl',
+                              defaultValue: ''), // We reuse the key internally
+                        decoration: InputDecoration(
+                          labelText: 'Direct Postgres Connection String',
+                          hintText:
+                              'postgres://user:pass@ep-...neon.tech/neondb?sslmode=require',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          suffixIcon: IconButton(
+                            icon: const Icon(Icons.qr_code_scanner),
+                            color: islightmode() ? Colors.black : Colors.white,
+                            onPressed: () async {
+                              final qrCode = await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const QRCodeScannerPage(),
+                                    fullscreenDialog: true),
+                              );
+                              if (qrCode != null) {
+                                setState(() {
+                                  Hive.box('settings')
+                                      .put('neonRestUrl', qrCode);
+                                  neonRestController.text = qrCode;
+                                  Settings.setNeonRestUrl(qrCode);
+                                });
+                              }
+                            },
+                          ),
+                        ),
+                        style: GoogleFonts.museoModerno(
+                            fontSize: 18,
+                            color: islightmode() ? Colors.black : Colors.white),
+                        onSubmitted: (String value) {
+                          Hive.box('settings').put('neonRestUrl', value);
+                          Settings.setNeonRestUrl(value);
                         },
                       ),
                       SizedBox(height: 10),
