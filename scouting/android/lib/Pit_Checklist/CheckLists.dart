@@ -618,11 +618,11 @@ class _Checklist_recordState extends State<Checklist_record> {
                 }
 
                 setState(() {
-                  image1 = base64Images[0];
-                  image2 = base64Images[1];
-                  image3 = base64Images[2];
-                  image4 = base64Images[3];
-                  image5 = base64Images[4];
+                  image1 = base64Images.isNotEmpty ? base64Images[0] : '';
+                  image2 = base64Images.length > 1 ? base64Images[1] : '';
+                  image3 = base64Images.length > 2 ? base64Images[2] : '';
+                  image4 = base64Images.length > 3 ? base64Images[3] : '';
+                  image5 = base64Images.length > 4 ? base64Images[4] : '';
                 });
               }),
           buildTextBox("Notes 1", "", Icon(Icons.note), notes),

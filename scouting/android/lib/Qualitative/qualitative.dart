@@ -715,8 +715,8 @@ class QualitativeState extends State<Qualitative>
   }
 
   void _handleMatchSelection(dynamic match) {
-    String _scouterName = Hive.box('settings').get('deviceName');
-    String _allianceColor = Hive.box('userData').get('alliance');
+    String _scouterName = Hive.box('settings').get('deviceName', defaultValue: 'Unknown');
+    String _allianceColor = Hive.box('userData').get('alliance', defaultValue: 'Red');
 
     try {
       print("${match['key']}");

@@ -8,8 +8,8 @@ class NeonConfig {
   static const String _usernameKey = 'neon_username';
   static const String _passwordKey = 'neon_password';
   static const String _tableKey = 'neon_table';
-  static const String _defaultConnectionString =
-      'postgresql://data_owner:npg_qu3HCrEX8eFk@ep-weathered-base-a5ilny8n-pooler.us-east-2.aws.neon.tech/data?sslmode=require&channel_binding=require';
+  // Connection string must be configured at runtime via the settings UI.
+  // NEVER hardcode production credentials in source code.
 
   static NeonConfig? _instance;
   late Box _box;
@@ -22,9 +22,7 @@ class NeonConfig {
       final dir = await getApplicationDocumentsDirectory();
       Hive.init(dir.path);
       _instance!._box = await Hive.openBox(_boxName);
-      if (!_instance!.isConfigured) {
-        _instance!.parseConnectionString(_defaultConnectionString);
-      }
+      // No default credentials — user must configure via settings
     }
     return _instance!;
   }
