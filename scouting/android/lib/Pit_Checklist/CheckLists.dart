@@ -263,7 +263,7 @@ class _Checklist_recordState extends State<Checklist_record> {
           outgoing_battery_voltage = existingRecord.outgoing_battery_voltage;
           outgoing_battery_cca = existingRecord.outgoing_battery_cca;
           outgoing_number = existingRecord.outgoing_number;
-          returning_battery_replacd = existingRecord.outgoing_battery_replaced;
+          outgoing_battery_replaced = existingRecord.outgoing_battery_replaced;
 
           alliance_color = existingRecord.alliance_color;
           bumper_color = existingRecord
@@ -756,12 +756,12 @@ class _Checklist_recordState extends State<Checklist_record> {
                     "Battery Status",
                     Icon(Icons.battery_full),
                     ["Good", "Replace"],
-                    returning_battery_replacd == true ? "Good" : "Replace",
+                    outgoing_battery_replaced == true ? "Good" : "Replace",
                     (value) {
                   setState(() {
                     print(value);
                     if (value.isNotEmpty) {
-                      returning_battery_replacd = !returning_battery_replacd;
+                      outgoing_battery_replaced = !outgoing_battery_replaced;
                     }
                   });
                 }),

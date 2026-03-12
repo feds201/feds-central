@@ -8,7 +8,7 @@ scouting/server/match.db
 # Scouting assets
 scouting/Assets/
 # Scouting Data
-**/*.csv
+scouting/**/*.csv
 scouting/android/test_output/
 # Fedsbot
 fedsbot/sessions.json

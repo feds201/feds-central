@@ -43,7 +43,7 @@ class EndGameState extends State<EndGame> {
 
   //timer
   double endgameTime = 0.0;
-  int endgameActions = 0;
+  int endgameshootingCycles = 0;
   List<int> drawingData = [];
   Alliance mapcolor = Alliance.blue;
   bool isPageScrollable = true;
@@ -74,7 +74,7 @@ class EndGameState extends State<EndGame> {
     neutralTrips = widget.matchRecord.endPoints.EndNeutralTrips;
     shootingAccuracy = widget.matchRecord.endPoints.ShootingAccuracy;
     endgameTime = widget.matchRecord.endPoints.endgameTime;
-    endgameActions = widget.matchRecord.endPoints.endgameActions;
+    endgameshootingCycles = widget.matchRecord.endPoints.endgameshootingCycles;
     drawingData = widget.matchRecord.endPoints.drawingData;
     robotBroken = widget.matchRecord.endPoints.robotBroken;
   }
@@ -92,9 +92,9 @@ class EndGameState extends State<EndGame> {
 
     // Timer and endgame actions
     widget.matchRecord.endPoints.endgameTime = endgameTime;
-    widget.matchRecord.endPoints.endgameActions = endgameActions;
+    widget.matchRecord.endPoints.endgameshootingCycles = endgameshootingCycles;
     widget.matchRecord.endPoints.drawingData = drawingData;
-
+    widget.matchRecord.endPoints.robotBroken = robotBroken;
     endPoints = widget.matchRecord.endPoints;
     saveState();
   }
@@ -136,13 +136,13 @@ class EndGameState extends State<EndGame> {
             },
             doChange: () {
               setState(() {
-                endgameActions++;
+                endgameshootingCycles++;
               });
               UpdateData(); // Saves the updated endgame values
             },
             doChangeResetter: () {
               setState(() {
-                endgameActions = 0;
+                endgameshootingCycles = 0;
                 endgameTime = 0.0;
               });
               UpdateData(); // Resets the values in your matchRecord
@@ -156,10 +156,10 @@ class EndGameState extends State<EndGame> {
             child: Row(
               children: [
                 Expanded(
-                  child: buildCounter("Shooting Cycle", endgameActions,
+                  child: buildCounter("Shooting Cycle", endgameshootingCycles,
                       (int value) {
                     setState(() {
-                      endgameActions = value;
+                      endgameshootingCycles = value;
                     });
                     UpdateData();
                   }, color: Colors.yellow),
@@ -216,6 +216,7 @@ class EndGameState extends State<EndGame> {
                 selectedLevel = newLevel;
               });
               park = newLevel == null;
+              UpdateData();
             },
           ),
           const SizedBox(height: 12),
@@ -282,8 +283,8 @@ class EndGameState extends State<EndGame> {
                               onRatingChanged: (rating) {
                                 setState(() {
                                   shootingAccuracy = rating;
-                                  print(shootingAccuracy);
                                 });
+                                UpdateData();
                               },
                             ),
                           ),

@@ -85,8 +85,7 @@ class _QualitativePage extends State<QualitativePage> {
                 text: "Qr Code",
                 onPressed: () {
                   _recordData();
-                  PopBoard(context);
-                  Navigator.push(
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
                       builder: (context) => FullScreenQrCodePage(
@@ -186,7 +185,7 @@ class _QualitativePage extends State<QualitativePage> {
   }
 
   void PopBoard(BuildContext context) {
-    Navigator.pop(context);
+    Navigator.pop(context, true);
   }
 
   @override

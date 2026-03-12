@@ -200,7 +200,7 @@ class QualitativeState extends State<Qualitative>
     switch (selectedMatchType) {
       case 0:
         var filteredMatches = matches
-            .where((match) => match['comp_level'] == 'qm')
+            .where((match) => match['comp_level'] == 'qm' || match['comp_level'] == 'practice')
             .toList()
           ..sort((a, b) => int.parse(a['match_number'].toString())
               .compareTo(int.parse(b['match_number'].toString())));
@@ -812,7 +812,7 @@ class QualitativeState extends State<Qualitative>
         return StatefulBuilder(
           builder: (context, setDialogState) {
             String matchPreview =
-                "2026txbel_${selectedMatchLevel}${selectedMatchLevel == 'f' ? '' : setNumber}m$matchNumber";
+                "${Hive.box('userData').get('eventKey', defaultValue: '2026txbel')}_${selectedMatchLevel}${selectedMatchLevel == 'f' ? '' : setNumber}m$matchNumber";
 
             return AlertDialog(
               backgroundColor:
@@ -899,7 +899,7 @@ class QualitativeState extends State<Qualitative>
                       'match_number': matchNumber,
                       'set_number': setNumber,
                       'comp_level': selectedMatchLevel,
-                      'event_key': '2026txbel',
+                      'event_key': Hive.box('userData').get('eventKey', defaultValue: '2026txbel'),
                       'manual_entry': true,
                       'alliances': {
                         'red': {'team_keys': []},

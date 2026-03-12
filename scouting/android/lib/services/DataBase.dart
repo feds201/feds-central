@@ -962,11 +962,11 @@ class TeleOpPoints {
       "DefenseA2": DefenseA2,
       "DefenseI1": DefenseI1,
       "DefenseI2": DefenseI2,
-      "NeutralTips": NeutralTrips,
-      "NeutralTipsA1": NeutralTripsA1,
-      "NeutralTipsA2": NeutralTripsA2,
-      "NeutralTipsI1": NeutralTripsI1,
-      "NeutralTipsI2": NeutralTripsI2,
+      "NeutralTrips": NeutralTrips,
+      "NeutralTripsA1": NeutralTripsA1,
+      "NeutralTripsA2": NeutralTripsA2,
+      "NeutralTripsI1": NeutralTripsI1,
+      "NeutralTripsI2": NeutralTripsI2,
       "FeedToHPStation": FeedToHPStation,
       "FeedToHPStationA1": FeedToHPStationA1,
       "FeedToHPStationA2": FeedToHPStationA2,
@@ -981,7 +981,7 @@ class TeleOpPoints {
   }
 
   String toCsv() {
-    return '${TotalShootingTime1.toStringAsFixed(2)},${TotalShootingTimeA1.toStringAsFixed(2)},${TotalShootingTimeA2.toStringAsFixed(2)},${ShootingI1 ? 1 : 0},${ShootingI2 ? 1 : 0},${TotalAmount1},${TotalAmountA1},${TotalAmountA2},${TotalAmountI1},${TotalAmountI2},${TripAmount1},${NeutralTrips},${NeutralTripsA1},${NeutralTripsA2},${NeutralTripsI1},${NeutralTripsI2},${Defense ? 1 : 0},${DefenseA1 ? 1 : 0},${DefenseA2 ? 1 : 0},${DefenseI1 ? 1 : 0},${DefenseI2 ? 1 : 0},${FeedToHPStation ? 1 : 0},${FeedToHPStationA1 ? 1 : 0},${FeedToHPStationA2 ? 1 : 0},${FeedToHPStationI1 ? 1 : 0},${FeedToHPStationI2 ? 1 : 0},${passing},${passingA1},${passingA2},${passingI1},${passingI2}';
+    return '${TotalShootingTime1.toStringAsFixed(2)},${TotalShootingTimeA1.toStringAsFixed(2)},${TotalShootingTimeA2.toStringAsFixed(2)},${ShootingI1 ? 1 : 0},${ShootingI2 ? 1 : 0},${TotalAmount1},${TotalAmountA1},${TotalAmountA2},${TotalAmountI1},${TotalAmountI2},${TripAmount1},${Defense ? 1 : 0},${DefenseA1 ? 1 : 0},${DefenseA2 ? 1 : 0},${DefenseI1 ? 1 : 0},${DefenseI2 ? 1 : 0},${NeutralTrips},${NeutralTripsA1},${NeutralTripsA2},${NeutralTripsI1},${NeutralTripsI2},${FeedToHPStation ? 1 : 0},${FeedToHPStationA1 ? 1 : 0},${FeedToHPStationA2 ? 1 : 0},${FeedToHPStationI1 ? 1 : 0},${FeedToHPStationI2 ? 1 : 0},${passing},${passingA1},${passingA2},${passingI1},${passingI2}';
   }
 
   static TeleOpPoints fromJson(Map<String, dynamic> json) {
@@ -1161,7 +1161,7 @@ class EndPoints {
   int EndNeutralTrips = 0;
   int ShootingAccuracy;
   double endgameTime;
-  int endgameActions;
+  int endgameshootingCycles;
   List<int> drawingData = [];
 
   EndPoints(
@@ -1173,7 +1173,7 @@ class EndPoints {
     this.EndNeutralTrips,
     this.ShootingAccuracy,
     this.endgameTime,
-    this.endgameActions,
+    this.endgameshootingCycles,
     this.drawingData,
   );
 
@@ -1186,7 +1186,7 @@ class EndPoints {
       "EndNeutralTrips": EndNeutralTrips,
       "ShootingAccuracy": ShootingAccuracy,
       "endgameTime": endgameTime,
-      "endgameActions": endgameActions,
+      "endgameshootingCycles": endgameshootingCycles,
       "DrawingData": drawingData,
       "robotBroken": robotBroken,
     };
@@ -1202,7 +1202,7 @@ class EndPoints {
       _toInt(json['EndNeutralTrips']),
       _toInt(json['ShootingAccuracy'] ?? 3),
       (json['endgameTime'] ?? 0.0).toDouble(),
-      _toInt(json['endgameActions']),
+      _toInt(json['endgameshootingCycles']),
       // Handle both list and legacy string/migration
       (json['DrawingData'] is List) ? List<int>.from(json['DrawingData']) : [],
     );
@@ -1210,11 +1210,11 @@ class EndPoints {
 
   @override
   String toString() {
-    return 'EndPoints{ClimbStatus: $ClimbStatus, Park: $Park, FeedToHP: $FeedToHP, Passing: $Passing, EndNeutralTrips: $EndNeutralTrips, ShootingAccuracy: $ShootingAccuracy, endgameTime: $endgameTime, endgameActions: $endgameActions, DrawingData: $drawingData, robotBroken: $robotBroken }';
+    return 'EndPoints{ClimbStatus: $ClimbStatus, Park: $Park, FeedToHP: $FeedToHP, Passing: $Passing, EndNeutralTrips: $EndNeutralTrips, ShootingAccuracy: $ShootingAccuracy, endgameTime: $endgameTime, endgameshootingCycles: $endgameshootingCycles, DrawingData: $drawingData, robotBroken: $robotBroken }';
   }
 
   String toCsv() {
-    return '$ClimbStatus,${Park ? 1 : 0},${FeedToHP ? 1 : 0},${Passing},$EndNeutralTrips, $ShootingAccuracy,$endgameTime,${_encodeDrawingData()}';
+    return '$ClimbStatus,${Park ? 1 : 0},${FeedToHP ? 1 : 0},$Passing,$EndNeutralTrips,$ShootingAccuracy,$endgameTime,$endgameshootingCycles,,${_encodeDrawingData()}';
   }
 
   String _encodeDrawingData() {
@@ -1233,7 +1233,7 @@ class EndPoints {
         other.Passing == Passing &&
         other.ShootingAccuracy == ShootingAccuracy &&
         other.endgameTime == endgameTime &&
-        other.endgameActions == endgameActions &&
+        other.endgameshootingCycles == endgameshootingCycles &&
         listEquals(other.drawingData, drawingData) &&
         other.robotBroken == robotBroken;
   }
@@ -1247,7 +1247,7 @@ class EndPoints {
         Passing.hashCode ^
         ShootingAccuracy.hashCode ^
         endgameTime.hashCode ^
-        endgameActions.hashCode ^
+        endgameshootingCycles.hashCode ^
         drawingData.hashCode ^
         robotBroken.hashCode;
   }
@@ -1427,7 +1427,7 @@ class LocalDataBase {
       _toInt(data['EndNeutralTrips']),
       _toInt(data['ShootingAccuracy'] ?? 3),
       (data['EndgameTime'] ?? 0).toDouble(),
-      _toInt(data['EndgameActions']),
+      _toInt(data['endgameshootingCycles']),
       (data['DrawingData'] is List) ? List<int>.from(data['DrawingData']) : [],
     );
   }

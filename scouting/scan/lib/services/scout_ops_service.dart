@@ -32,7 +32,7 @@ class ScoutOpsService {
   ScoutOpsData get currentData => _currentData;
 
   static const String csvHeaders =
-      'Battery%,Team,Scout,MatchKey,Alliance,Event,Station,MatchNumber,LeftStartingPos,FuelDepot,FuelOutpost,FuelNeutralZone,AutonShootingTime,AutonShots,AutonClimb,AutonWinAfterAuton,BotPosX,BotPosY,BotSizeW,BotSizeH,BotAngle,AutonPassing,TeleOpShootingTime1,TeleOpShootingTimeA1,TeleOpShootingTimeA2,ShootingI1,ShootingI2,TeleOpTotal1,TeleOpTotalA1,TeleOpTotalA2,TeleOpTotalI1,TeleOpTotalI2,TripAmount1,Defense,DefenseA1,DefenseA2,DefenseI1,DefenseI2,NeutralTrips,NeutralTripsA1,NeutralTripsA2,NeutralTripsI1,NeutralTripsI2,FeedToHPStation,FeedToHPA1,FeedToHPA2,FeedToHPI1,FeedToHPI2,Passing,PassingA1,PassingA2,PassingI1,PassingI2,ClimbStatus,Park,FeedToHP,PassingEnd,EndNeutralTrips,ShootingAccuracy,EndgameTime,Comments,DrawingData';
+      'Battery%,Team,Scout,MatchKey,Alliance,Event,Station,MatchNumber,LeftStartingPos,FuelDepot,FuelOutpost,FuelNeutralZone,AutonShootingTime,AutonShots,AutonClimb,AutonWinAfterAuton,BotPosX,BotPosY,BotSizeW,BotSizeH,BotAngle,AutonPassing,TeleOpShootingTime1,TeleOpShootingTimeA1,TeleOpShootingTimeA2,ShootingI1,ShootingI2,TeleOpTotal1,TeleOpTotalA1,TeleOpTotalA2,TeleOpTotalI1,TeleOpTotalI2,TripAmount1,Defense,DefenseA1,DefenseA2,DefenseI1,DefenseI2,NeutralTrips,NeutralTripsA1,NeutralTripsA2,NeutralTripsI1,NeutralTripsI2,FeedToHPStation,FeedToHPA1,FeedToHPA2,FeedToHPI1,FeedToHPI2,Passing,PassingA1,PassingA2,PassingI1,PassingI2,ClimbStatus,Park,FeedToHP,PassingEnd,EndNeutralTrips,ShootingAccuracy,EndgameTime,EndgameActions,Comments,DrawingData';
 
   void updateBatteryLevels(int moduleBattery, int targetBattery) {
     _currentData = _currentData.copyWith(

@@ -33,6 +33,7 @@ class SettingsPageState extends State<SettingsPage> {
   bool isjson = true;
   TextEditingController eventKeyController = TextEditingController();
   TextEditingController neonRestController = TextEditingController();
+  TextEditingController apiKeyController = TextEditingController();
   String ApiKey = Hive.box('settings').get('ApiKey', defaultValue: '');
 
   String? serverIp;
@@ -57,7 +58,19 @@ class SettingsPageState extends State<SettingsPage> {
   @override
   void initState() {
     super.initState();
+    apiKeyController.text =
+        Hive.box('settings').get('ApiKey', defaultValue: '');
+    neonRestController.text =
+        Hive.box('settings').get('neonRestUrl', defaultValue: '');
     fetchServerIp();
+  }
+
+  @override
+  void dispose() {
+    eventKeyController.dispose();
+    neonRestController.dispose();
+    apiKeyController.dispose();
+    super.dispose();
   }
 
   Future<void> _checkInitialPermissions() async {
@@ -191,7 +204,6 @@ class SettingsPageState extends State<SettingsPage> {
               toggle();
               Hive.box('settings').put('isDarkMode', isDarkMode);
               setState(() {});
-              Navigator.of(context).pop();
             },
           ),
         ],
@@ -230,9 +242,7 @@ class SettingsPageState extends State<SettingsPage> {
                   child: Column(
                     children: [
                       TextField(
-                        controller: TextEditingController()
-                          ..text = Hive.box('settings')
-                              .get('ApiKey', defaultValue: ''),
+                        controller: apiKeyController,
                         decoration: InputDecoration(
                           labelText: 'BlueAlliance API Key',
                           labelStyle: GoogleFonts.museoModerno(
@@ -290,9 +300,7 @@ class SettingsPageState extends State<SettingsPage> {
                       const SizedBox(height: 10),
                       // Neon Database Connection String
                       TextField(
-                        controller: TextEditingController()
-                          ..text = Hive.box('settings').get('neonRestUrl',
-                              defaultValue: ''), // We reuse the key internally
+                        controller: neonRestController,
                         decoration: InputDecoration(
                           labelText: 'Direct Postgres Connection String',
                           hintText:
@@ -636,19 +644,36 @@ class SettingsPageState extends State<SettingsPage> {
                           showCheckmark: false,
                           side: const BorderSide(color: Colors.black),
                           onSelected: (bool selected) {
-                            setState(() {
-                              // Clear all data from Hive boxes
-                              Hive.box('userData').clear();
-                              Hive.box('matchData').clear();
-                              Hive.box('settings').clear();
-                              Hive.box('pitData').clear();
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: const Text('Clear All Data?'),
+                                content: const Text(
+                                    'This will delete all settings, API keys, match data, and scouter config. This cannot be undone.'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: const Text('CANCEL'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                      setState(() {
+                                        Hive.box('userData').clear();
+                                        Hive.box('matchData').clear();
+                                        Hive.box('settings').clear();
+                                        Hive.box('pitData').clear();
 
-                              // Log the action
-                              developer.log('All data cleared by user',
-                                  name: 'Data Cleared');
-
-                              print('All data cleared successfully.');
-                            });
+                                        developer.log('All data cleared by user',
+                                            name: 'Data Cleared');
+                                      });
+                                    },
+                                    child: const Text('CLEAR',
+                                        style: TextStyle(color: Colors.red)),
+                                  ),
+                                ],
+                              ),
+                            );
                           },
                         ),
                       ),
