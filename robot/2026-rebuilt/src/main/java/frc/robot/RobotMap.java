@@ -3,6 +3,7 @@ package frc.robot;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
+import java.lang.reflect.Field;
 import java.util.Map;
 
 import edu.wpi.first.math.Matrix;
@@ -134,8 +135,26 @@ public final class RobotMap {
         //rotation of the shooter relative to robot forward
         public static final Rotation2d robotToShooterRotation = Rotation2d.fromDegrees(0.0);
         public static final Translation2d hubCenter = FieldConstants.Hub.innerCenterPoint.toTranslation2d();   
+        public static final Rectangle2d trench = new Rectangle2d(robotShooterOffset, hubCenter);
         public static final Translation2d passingRight = FieldConstants.Outpost.centerPoint;
         public static final Translation2d passingLeft = new Translation2d(0, 7.44);
+
+        public static final Translation2d BlueLeftTopLeft = new Translation2d(4.0, 8.208);
+        public static final Translation2d BlueLeftBottomRight = new Translation2d(5.17, 6.75);
+        public static final Rectangle2d BlueLeftTrench = new Rectangle2d(BlueLeftTopLeft, BlueLeftBottomRight);
+
+        public static final Translation2d RedLeftTopLeft = new Translation2d(11.3, 7.2);
+        public static final Translation2d RedLeftBottomRight = new Translation2d(12.6, 0.082);
+        public static final Rectangle2d RedLeftTrench = new Rectangle2d(BlueLeftTopLeft, BlueLeftBottomRight);
+
+        public static final Translation2d BlueRightTopLeft = new Translation2d(5.2, 0.018);
+        public static final Translation2d BlueRightBottomRight = new Translation2d(4, 1.26);
+        public static final Rectangle2d BlueRightTrench = new Rectangle2d(BlueLeftTopLeft, BlueLeftBottomRight);
+
+        public static final Translation2d RedRightTopRight = new Translation2d(12.56, 6.88);
+        public static final Translation2d RedRightBottomRight = new Translation2d(5.225, 6.772);
+        public static final Rectangle2d RedRightTrench = new Rectangle2d(BlueLeftTopLeft, BlueLeftBottomRight);
+
         public static final Rectangle2d neutralZone = new Rectangle2d(FieldConstants.LeftTrench.openingTopLeft.toTranslation2d(), FieldConstants.RightTrench.oppOpeningTopRight.toTranslation2d());
     
         // This map is used to determine the velocity of the shooter based on the distance to the target. 

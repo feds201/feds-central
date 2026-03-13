@@ -3,9 +3,10 @@
   "robotLength": 0.86,
   "holonomicMode": true,
   "pathFolders": [
+    "CenterOverBump",
     "DoublePassTest",
     "MidIntakeToLeftBump",
-    "CenterOverBump",
+    "Trenches",
     "TestAutos"
   ],
   "autoFolders": [],
