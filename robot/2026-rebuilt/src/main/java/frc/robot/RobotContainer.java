@@ -10,10 +10,10 @@ import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.RobotMap.DrivetrainConstants;
@@ -119,7 +119,8 @@ public class RobotContainer extends ControllerBindings {
     setupDriveBindings(controller);
     setupOperatorBindings(operaterController);
     configureRootTests();
-    new Trigger(drivetrain::withinTrench).onTrue(shooterHood.setStateCommand(shooterhood_state.IN).andThen(intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED)));
+    new Trigger(drivetrain::withinTrench).and(DriverStation::isTeleop).onTrue(shooterHood.setStateCommand(shooterhood_state.IN).andThen(intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED)));
+
     // TODO: migrate to LoggedDashboardChooser from AdvantageKit
     registerNamedCommands();
     autoChooser = AutoBuilder.buildAutoChooser();

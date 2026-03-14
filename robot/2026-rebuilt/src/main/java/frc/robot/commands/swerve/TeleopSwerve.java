@@ -15,9 +15,12 @@ import static edu.wpi.first.units.Units.Seconds;
 import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.pathplanner.lib.util.FlippingUtil;
+
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -67,6 +70,7 @@ public class TeleopSwerve extends Command {
    private Time currentTime;
    private Time deltaTime;
    private Angle currentJoystickAngle = Degrees.of(0);
+   private Translation2d redHub = FlippingUtil.flipFieldPosition(ShooterConstants.hubCenter);
 
    private driveMode mode = driveMode.NORMALDRIVE;
 
@@ -132,6 +136,8 @@ public class TeleopSwerve extends Command {
   @Override
   public void execute() {
     SmartDashboard.putNumber("Dist to hub", dt.getState().Pose.getTranslation().getDistance(ShooterConstants.hubCenter));
+    SmartDashboard.putNumber("Dist to Red hub", dt.getState().Pose.getTranslation().getDistance(redHub));
+    
     Logger.recordOutput("CTRERobotPose", dt.getState().Pose);
     switch (mode) {
       case FALCONDRIVE:

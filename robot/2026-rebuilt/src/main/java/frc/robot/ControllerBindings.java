@@ -212,7 +212,7 @@ public class ControllerBindings {
         operator.rightBumper().onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT));
 
         operator.x().onTrue(feederSubsystem.setStateCommand(feeder_state.PREVERSE).alongWith(spindexerSubsystem.setStateCommand(spindexer_state.PREVERSE))).
-        onFalse(feederSubsystem.setStateCommand(feeder_state.STOP).alongWith(spindexerSubsystem.setStateCommand(spindexer_state.PREVERSE)));
+        onFalse(feederSubsystem.setStateCommand(feeder_state.STOP).alongWith(spindexerSubsystem.setStateCommand(spindexer_state.STOP)));
         
         //Add multiplier to hood angle
         operator.a()

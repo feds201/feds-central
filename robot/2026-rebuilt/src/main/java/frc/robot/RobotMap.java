@@ -143,17 +143,17 @@ public final class RobotMap {
         public static final Translation2d BlueLeftBottomRight = new Translation2d(5.17, 6.75);
         public static final Rectangle2d BlueLeftTrench = new Rectangle2d(BlueLeftTopLeft, BlueLeftBottomRight);
 
-        public static final Translation2d RedLeftTopLeft = new Translation2d(11.3, 7.2);
+        public static final Translation2d RedLeftTopLeft = new Translation2d(11.375, 1.221);
         public static final Translation2d RedLeftBottomRight = new Translation2d(12.6, 0.082);
-        public static final Rectangle2d RedLeftTrench = new Rectangle2d(BlueLeftTopLeft, BlueLeftBottomRight);
+        public static final Rectangle2d RedLeftTrench = new Rectangle2d(RedLeftTopLeft, RedLeftBottomRight);
 
         public static final Translation2d BlueRightTopLeft = new Translation2d(5.2, 0.018);
         public static final Translation2d BlueRightBottomRight = new Translation2d(4, 1.26);
-        public static final Rectangle2d BlueRightTrench = new Rectangle2d(BlueLeftTopLeft, BlueLeftBottomRight);
+        public static final Rectangle2d BlueRightTrench = new Rectangle2d(BlueRightTopLeft, BlueRightBottomRight);
 
         public static final Translation2d RedRightTopRight = new Translation2d(12.56, 6.88);
-        public static final Translation2d RedRightBottomRight = new Translation2d(5.225, 6.772);
-        public static final Rectangle2d RedRightTrench = new Rectangle2d(BlueLeftTopLeft, BlueLeftBottomRight);
+        public static final Translation2d RedRightBottomRight = new Translation2d(11.181, 8.104);
+        public static final Rectangle2d RedRightTrench = new Rectangle2d(RedRightTopRight, RedRightBottomRight);
 
         public static final Rectangle2d neutralZone = new Rectangle2d(FieldConstants.LeftTrench.openingTopLeft.toTranslation2d(), FieldConstants.RightTrench.oppOpeningTopRight.toTranslation2d());
     
@@ -163,21 +163,21 @@ public final class RobotMap {
             Map.entry(1.44, 27.0),//done
             Map.entry(1.63, 28.0),//done
             Map.entry(1.98, 29.0),//done
-            Map.entry(2.57, 32.0),//done
-            Map.entry(2.83, 33.0),//done
-             Map.entry(3.09, 36.0),//done --- AUTON SHOOTING POSITION
+            Map.entry(2.57, 31.5),//done
+            Map.entry(2.83, 33.7),//done
+             Map.entry(3.09, 36.5),//done --- AUTON SHOOTING POSITION
             Map.entry(3.42, 38.0), //done
-            Map.entry(4.59, 40.5), //done
+            Map.entry(4.59, 41.0), //done
             Map.entry(100.0, 40.5)//far off top limit to prevent unwanted scaling past this distance 
         );
 
         public static final InterpolatingDoubleTreeMap kShootingPositionMap = InterpolatingDoubleTreeMap.ofEntries(
             Map.entry(1.44, 0.0),//done
-            Map.entry(1.63, 3.0),//done
-            Map.entry(1.98, 7.0),//done
-            Map.entry(2.57, 10.0),//done
+            Map.entry(1.63, 3.3),//done
+            Map.entry(1.98, 7.3),//done
+            Map.entry(2.57, 11.3),//done
             Map.entry(2.83, 15.0),//done
-             Map.entry(3.09, 16.0),// -- AUTON SHOOTING POSITION
+             Map.entry(3.09, 15.0),// -- AUTON SHOOTING POSITION
             Map.entry(3.42, 16.7),//done
             Map.entry(4.59, 23.2), //done
             Map.entry(100.0, 23.2) //far off top limit to prevent unwanted scaling past this distance 
