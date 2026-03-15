@@ -56,7 +56,9 @@ public class IntakeSubsystem extends SubsystemBase {
   private static final double MOVE_TARGET_SECONDS = 0.9;
   // Aggressive acceleration multiplier requested (20x faster than default)
   private static final double MOTION_MAGIC_ACCEL_MULTIPLIER = 40.0;
-  private static final double ROLLER_OUTPUT = 0.70;
+  private static final double ROLLER_OUTPUT = 0.60 //60% for rollers, 70% originally
+  
+  ;
   private final Timer timer = new Timer();
 
 

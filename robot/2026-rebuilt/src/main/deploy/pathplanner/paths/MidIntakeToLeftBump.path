@@ -4,12 +4,12 @@
     {
       "anchor": {
         "x": 7.791,
-        "y": 4.696690391459074
+        "y": 5.65
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.587074163932517,
-        "y": 5.020884672998857
+        "x": 7.157275320970041,
+        "y": 5.775249643366619
       },
       "isLocked": false,
       "linkedName": "FuelCloseLeft"
