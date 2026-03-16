@@ -201,8 +201,6 @@ public class ControllerBindings {
         var intakeSubsystem = container.getIntakeSubsystem();
         var shooterHood = container.getShooterHood();
         var spindexerSubsystem = container.getSpindexer();
-        var spindexerSubsystem = container.getSpindexer();
-
         // Manual way to change the angle of the shooter hood
         operator.leftTrigger()
                 .onTrue(shooterHood.setMotorPower(0.1))
