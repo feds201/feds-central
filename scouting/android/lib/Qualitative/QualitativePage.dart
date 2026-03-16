@@ -1,12 +1,12 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:scouting_app/components/Button.dart';
-import 'package:scouting_app/components/FullScreenQrCodePage.dart';
-import 'package:scouting_app/main.dart';
-import 'package:scouting_app/services/DataBase.dart';
-import 'package:scouting_app/components/TextBox.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:scout_ops_android/components/Button.dart';
+import 'package:scout_ops_android/components/FullScreenQrCodePage.dart';
+import 'package:scout_ops_android/components/TextBox.dart';
+import 'package:scout_ops_android/main.dart';
+import 'package:scout_ops_android/services/DataBase.dart';
 
 import '../services/Colors.dart';
 
@@ -46,6 +46,7 @@ class _QualitativePage extends State<QualitativePage> {
     final backgroundColor = Colors.transparent;
 
     return Scaffold(
+      backgroundColor: islightmode() ? lightColors.white : Colors.black,
       appBar: AppBar(
         leading: Builder(builder: (context) {
           return IconButton(
@@ -84,8 +85,7 @@ class _QualitativePage extends State<QualitativePage> {
                 text: "Qr Code",
                 onPressed: () {
                   _recordData();
-                  PopBoard(context);
-                  Navigator.push(
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
                       builder: (context) => FullScreenQrCodePage(
@@ -175,8 +175,9 @@ class _QualitativePage extends State<QualitativePage> {
     widget.record.q2 = defensePlay.text.isNotEmpty ? defensePlay.text : "N/A";
     widget.record.q3 =
         humanPlayerRole.text.isNotEmpty ? humanPlayerRole.text : "N/A";
-    widget.record.q4 =
-        stabilityReliability.text.isNotEmpty ? stabilityReliability.text : "N/A";
+    widget.record.q4 = stabilityReliability.text.isNotEmpty
+        ? stabilityReliability.text
+        : "N/A";
 
     QualitativeDataBase.PutData(widget.record.matchKey, widget.record.toJson());
     QualitativeDataBase.PrintAll();
@@ -184,7 +185,7 @@ class _QualitativePage extends State<QualitativePage> {
   }
 
   void PopBoard(BuildContext context) {
-    Navigator.pop(context);
+    Navigator.pop(context, true);
   }
 
   @override

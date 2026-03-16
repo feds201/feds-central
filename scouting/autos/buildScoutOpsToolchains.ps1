@@ -1,9 +1,10 @@
 # Script to compile Scout-Ops-ToolChain and move executable to Assets folder
 
 # Set paths
-$sourcePath = "P:\FEDS201\Scouting_Suite\Scout-Ops-Toolchains"
-$assetsDest = "P:\FEDS201\Scouting_Suite\Assets"
-$iconPath = "P:\FEDS201\Scouting_Suite\logo.ico"
+$BASE_DIR = "$PSScriptRoot\.."
+$sourcePath = "$BASE_DIR\toolchains"
+$assetsDest = "$BASE_DIR\Assets"
+$iconPath = "$BASE_DIR\logo.ico"
 
 # Create Assets directory if it doesn't exist
 if (-not (Test-Path -Path $assetsDest)) {
@@ -48,18 +49,19 @@ if (-not $pyInstallerInstalled) {
 }
 
 # Run PyInstaller to compile the application
-Write-Host "Compiling Scout-Ops-ToolChain Analysis..."
-deactivate
+Write-Host "Compiling Scout-Ops-ToolChain (ThirdPartyScouter)..."
+Set-Location "$sourcePath"
+
 try {
     & python -m PyInstaller --noconfirm --onefile --console --icon "$iconPath" `
-        "$sourcePath\cache.py"
+        "ThirdPartyScouter.py"
 
     # Check if compilation was successful
     if ($LASTEXITCODE -eq 0) {
         Write-Host "Compilation successful."
         
         # Get the executable path (PyInstaller puts it in the dist folder)
-        $exePath = ".\dist\cache`.exe"
+        $exePath = ".\dist\ThirdPartyScouter.exe"
         
         # Check if executable was created
         if (Test-Path -Path $exePath) {
@@ -67,15 +69,15 @@ try {
             Write-Host "Moving executable to Assets folder..."
             
             try {
-                Move-Item -Path $exePath -Destination "$assetsDest\Scout-Ops-ToolChain-Analysis.exe" -Force
-                Write-Host "Executable successfully moved to $assetsDest\Scout-Ops-ToolChain-Analysis.exe"
+                Move-Item -Path $exePath -Destination "$assetsDest\Scout-Ops-ToolChain-Scouter.exe" -Force
+                Write-Host "Executable successfully moved to $assetsDest\Scout-Ops-ToolChain-Scouter.exe"
             }
             catch {
                 Write-Host "Error moving executable: $_" -ForegroundColor Red
                 exit 1
             }
             
-            # Clean up dist and build folders (optional)
+            # Clean up dist and build folders
             Write-Host "Cleaning up build files..."
             Remove-Item -Path ".\dist" -Recurse -Force -ErrorAction SilentlyContinue
             Remove-Item -Path ".\build" -Recurse -Force -ErrorAction SilentlyContinue
@@ -95,57 +97,7 @@ try {
 }
 catch {
     Write-Host "Error running PyInstaller: $_" -ForegroundColor Red
-    Write-Host "Please ensure that the source files and PyInstaller are correctly configured." -ForegroundColor Yellow
     exit 1
 }
 
-# Run PyInstaller to compile the application
-Write-Host "Compiling Scout-Ops-ToolChain Blue Alliance..."
-try {
-    & python -m PyInstaller --noconfirm --onefile --console --icon "$iconPath" `
-        "$sourcePath\adit.py"
-
-    # Check if compilation was successful
-    if ($LASTEXITCODE -eq 0) {
-        Write-Host "Compilation successful."
-        
-        # Get the executable path (PyInstaller puts it in the dist folder)
-        $exePath = ".\dist\adit`.exe"
-        
-        # Check if executable was created
-        if (Test-Path -Path $exePath) {
-            # Move executable to Assets folder
-            Write-Host "Moving executable to Assets folder..."
-            
-            try {
-                Move-Item -Path $exePath -Destination "$assetsDest\Scout-Ops-ToolChain-Blue-Analysis.exe" -Force
-                Write-Host "Executable successfully moved to $assetsDest\Scout-Ops-ToolChain-Blue-Analysis.exe"
-            }
-            catch {
-                Write-Host "Error moving executable: $_" -ForegroundColor Red
-                exit 1
-            }
-            
-            # Clean up dist and build folders (optional)
-            Write-Host "Cleaning up build files..."
-            Remove-Item -Path ".\dist" -Recurse -Force -ErrorAction SilentlyContinue
-            Remove-Item -Path ".\build" -Recurse -Force -ErrorAction SilentlyContinue
-            Remove-Item -Path ".\*.spec" -Force -ErrorAction SilentlyContinue
-            
-            Write-Host "Build process completed successfully." -ForegroundColor Green
-        }
-        else {
-            Write-Host "Error: Executable not found at $exePath" -ForegroundColor Red
-            exit 1
-        }
-    }
-    else {
-        Write-Host "Compilation failed. Please check the output for errors." -ForegroundColor Red
-        exit 1
-    }
-}
-catch {
-    Write-Host "Error running PyInstaller: $_" -ForegroundColor Red
-    Write-Host "Please ensure that the source files and PyInstaller are correctly configured." -ForegroundColor Yellow
-    exit 1
-}
+Set-Location "$BASE_DIR"

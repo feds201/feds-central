@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:scouting_app/components/plugin-tile.dart';
+import 'package:scout_ops_android/components/plugin-tile.dart';
 
 import '../main.dart';
 import 'plugin_state_manager.dart'; // Import the state manager
@@ -61,7 +61,8 @@ class _PluginsState extends State<Plugins> {
             },
             onTap_Widget: () {
               setState(() {
-                integrateWithScoutOps_expanded = !integrateWithScoutOps_expanded;
+                integrateWithScoutOps_expanded =
+                    !integrateWithScoutOps_expanded;
               });
             },
             Expanded_Widget: const ScoutOpsServerWidget(),

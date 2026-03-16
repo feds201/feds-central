@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class BatteryIndicator extends StatelessWidget {
   final int percentage;
@@ -15,42 +14,38 @@ class BatteryIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color batteryColor = color ?? _getBatteryColor(percentage);
-    
+    final theme = Theme.of(context);
+    Color batteryColor = color ?? _getBatteryColor(percentage, theme);
+
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: const Color(0xFF2C2C2C),
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            '${percentage}%',
-            style: GoogleFonts.orbitron(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
+            '$percentage%',
+            style: theme.textTheme.titleLarge?.copyWith(
               color: batteryColor,
             ),
           ),
           const SizedBox(height: 4),
           Text(
             label,
-            style: GoogleFonts.orbitron(
-              fontSize: 10,
-              color: Colors.white70,
-            ),
+            style: theme.textTheme.bodySmall,
           ),
         ],
       ),
     );
   }
 
-  Color _getBatteryColor(int percentage) {
-    if (percentage >= 80) return Colors.green;
-    if (percentage >= 50) return Colors.yellow;
-    if (percentage >= 20) return Colors.orange;
-    return Colors.red;
+  Color _getBatteryColor(int percentage, ThemeData theme) {
+    if (percentage >= 80) return theme.colorScheme.primary;
+    if (percentage >= 50) return theme.colorScheme.secondary;
+    if (percentage >= 20) return theme.colorScheme.tertiary;
+    return theme.colorScheme.error;
   }
 }

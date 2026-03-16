@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
-import 'package:scouting_app/Pit_Checklist/Pit_Checklist.dart';
+import 'package:scout_ops_android/Pit_Checklist/Pit_Checklist.dart';
+import 'package:scout_ops_android/Qualitative/qualitative.dart';
 import 'services/LockdownService.dart';
-import 'package:scouting_app/Qualitative/qualitative.dart';
 import 'services/Colors.dart';
 import 'Experiment/ExpStateManager.dart';
 import 'Match_Pages/match_page.dart';
@@ -417,7 +417,7 @@ Widget _buildCustomAppBar(BuildContext context) {
         },
       ),
       IconButton(
-        icon:   const Icon(Icons.extension, size: 30, color: Colors.white),
+        icon: const Icon(Icons.extension, size: 30, color: Colors.white),
         onPressed: () {
           Route route = MaterialPageRoute(
               builder: (context) => const Plugins(), fullscreenDialog: true);

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class ControlButton extends StatelessWidget {
   final String text;
@@ -19,6 +18,7 @@ class ControlButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return SizedBox(
       width: width ?? 80,
       height: 40,
@@ -31,13 +31,10 @@ class ControlButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(8),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 8),
+          textStyle: theme.textTheme.labelLarge,
         ),
         child: Text(
           text,
-          style: GoogleFonts.orbitron(
-            fontSize: 12,
-            fontWeight: FontWeight.bold,
-          ),
         ),
       ),
     );

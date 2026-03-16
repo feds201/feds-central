@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:scouting_app/main.dart';
-import 'package:scouting_app/services/Colors.dart';
+import 'package:scout_ops_android/main.dart';
+import 'package:scout_ops_android/services/Colors.dart';
 
 import 'CounterShelf.dart';
 
@@ -11,9 +11,7 @@ Widget buildTextBoxs(
     padding: const EdgeInsets.all(8.0),
     child: Container(
       decoration: BoxDecoration(
-        color: islightmode()
-            ? lightColors.white
-            : const Color.fromARGB(255, 34, 34, 34),
+        color: islightmode() ? lightColors.white : darkColors.goodblack,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(

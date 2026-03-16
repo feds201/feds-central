@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 
-import 'package:scouting_app/services/DataBase.dart';
+import 'package:scout_ops_android/services/DataBase.dart';
 
 /// BotLocation position update callback
 typedef BotLocationCallback = void Function(BotLocation location);

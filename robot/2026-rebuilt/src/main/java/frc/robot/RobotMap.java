@@ -201,6 +201,10 @@ public final class RobotMap {
             Map.entry(2.58, 0.84),
             Map.entry(2.9, 0.98),
             Map.entry(3.6, 1.27)
+            Map.entry(1.61, 1.01),
+            Map.entry(2.58, 0.84),
+            Map.entry(2.9, 0.98),
+            Map.entry(3.6, 1.27)
         );
 
         

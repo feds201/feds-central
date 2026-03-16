@@ -356,6 +356,7 @@ class _ScouterListState extends State<ScouterList>
 
   @override
   Widget build(BuildContext context) {
+    bool isLight = Theme.of(context).brightness == Brightness.light;
     return Stack(
       alignment: Alignment.topCenter,
       children: [
@@ -363,17 +364,17 @@ class _ScouterListState extends State<ScouterList>
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
           child: Container(
             decoration: BoxDecoration(
-              color: islightmode() ? Colors.white : const Color(0xFF2A2A2A),
+              color: isLight ? Colors.white : const Color(0xFF2A2A2A),
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(islightmode() ? 0.08 : 0.3),
+                  color: Colors.black.withOpacity(isLight ? 0.08 : 0.3),
                   blurRadius: 16,
                   offset: const Offset(0, 4),
                 ),
               ],
               border: Border.all(
-                color: islightmode()
+                color: isLight
                     ? Colors.grey.withOpacity(0.2)
                     : Colors.white.withOpacity(0.05),
                 width: 1,
@@ -406,16 +407,14 @@ class _ScouterListState extends State<ScouterList>
                               style: GoogleFonts.museoModerno(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
-                                color: islightmode()
-                                    ? Colors.black87
-                                    : Colors.white,
+                                color: isLight ? Colors.black87 : Colors.white,
                               ),
                             ),
                             Text(
                               '${_scouterNames.length} Members',
                               style: GoogleFonts.roboto(
                                 fontSize: 12,
-                                color: islightmode()
+                                color: isLight
                                     ? Colors.grey[600]
                                     : Colors.grey[400],
                                 fontWeight: FontWeight.w500,
@@ -427,15 +426,13 @@ class _ScouterListState extends State<ScouterList>
                     ),
                     IconButton(
                         icon: Icon(Icons.shuffle,
-                            color: islightmode()
-                                ? Colors.grey[700]
-                                : Colors.grey[300]),
+                            color:
+                                isLight ? Colors.grey[700] : Colors.grey[300]),
                         tooltip: 'Pick Random Scouter',
                         onPressed: _selectRandomScouter,
                         style: IconButton.styleFrom(
-                          backgroundColor: islightmode()
-                              ? Colors.grey[100]
-                              : Colors.grey[800],
+                          backgroundColor:
+                              isLight ? Colors.grey[100] : Colors.grey[800],
                           highlightColor: Colors.blueAccent.withOpacity(0.2),
                         )),
                   ],
@@ -499,7 +496,7 @@ class _ScouterListState extends State<ScouterList>
                               'Add your first scouter!',
                               textStyle: GoogleFonts.museoModerno(
                                 fontSize: 18,
-                                color: islightmode()
+                                color: isLight
                                     ? Colors.blueGrey
                                     : const Color.fromARGB(255, 167, 169, 197),
                               ),
@@ -571,7 +568,8 @@ class _ScouterListState extends State<ScouterList>
                                       name,
                                       style: GoogleFonts.museoModerno(
                                           fontSize: 16,
-                                          color: islightmode() &&
+                                          color: Theme.of(context).brightness ==
+                                                      Brightness.light &&
                                                   _selectedChip != name
                                               ? Colors.black
                                               : Colors.white),
@@ -589,7 +587,8 @@ class _ScouterListState extends State<ScouterList>
                                   });
                                 },
                                 selectedColor: color.withAlpha(80),
-                                backgroundColor: islightmode()
+                                backgroundColor: Theme.of(context).brightness ==
+                                        Brightness.light
                                     ? Colors.grey[300]
                                     : Colors.black,
                                 labelPadding: EdgeInsets.symmetric(

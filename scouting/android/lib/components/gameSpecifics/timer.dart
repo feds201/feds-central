@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
-import 'package:scouting_app/main.dart';
+import 'package:scout_ops_android/main.dart';
 
 class TklKeyboard extends StatefulWidget {
   final Function(double) onChange;

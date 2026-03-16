@@ -33,7 +33,8 @@ document.addEventListener('DOMContentLoaded', () => {
         unitToggle: document.getElementById('unit-toggle'),
         modulesWrapper: document.querySelector('.modules-wrapper'),
         mcContainer: document.getElementById('mc-container'),
-        questionText: document.getElementById('question')
+        questionText: document.getElementById('question'),
+        reviewButton: document.getElementById('review-btn')
     };
 
     // Pass elements to quiz module
@@ -70,6 +71,12 @@ startButtons.forEach(btn => {
 
     if (elements.restartButton) {
         elements.restartButton.addEventListener('click', restartQuiz);
+    }
+
+    if (elements.reviewButton) {
+        elements.reviewButton.addEventListener('click', () => {
+            import('./quiz.js').then(m => m.reviewAnswers());
+        });
     }
 
     // Input handling
@@ -110,25 +117,10 @@ startButtons.forEach(btn => {
             localStorage.setItem('unit', newUnit);
         });
     }
-   let typedSequence = '';
-    const SECRET_CODE = '201';
-
-    document.addEventListener('keydown', (e) => {
-        typedSequence += e.key;
-        typedSequence = typedSequence.slice(-SECRET_CODE.length);
-    });
-
     const secretBtn = document.getElementById('secret-btn');
-    if (secretBtn) {
-        secretBtn.addEventListener('click', () => {
-            if (typedSequence === SECRET_CODE) {   
-                startModule('secret');
-                typedSequence = '';
-            }else {
-            // optionally: shake the button, show a hint, etc.
-            console.log('Type 201 first!');
-        }
-        });
-    }
-
+if (secretBtn) {
+    secretBtn.addEventListener('click', () => {
+        startModule('secret');
+    });
+}
 });

@@ -60,9 +60,8 @@ class _LogsPageState extends State<LogsPage>
           ? pitExport
           : <String, PitRecord>{};
       final qualExport = QualitativeDataBase.Export();
-      _qualRecords = qualExport is Map<String, dynamic>
-          ? qualExport
-          : <String, dynamic>{};
+      _qualRecords =
+          qualExport is Map<String, dynamic> ? qualExport : <String, dynamic>{};
       final pitCheckExport = PitCheckListDatabase.Export();
       _pitCheckRecords = pitCheckExport is Map<String, PitChecklistItem>
           ? pitCheckExport
@@ -206,9 +205,8 @@ class _LogsPageState extends State<LogsPage>
           Expanded(
             child: TabBarView(
               controller: _tabController,
-              physics: _isSelecting
-                  ? const NeverScrollableScrollPhysics()
-                  : null,
+              physics:
+                  _isSelecting ? const NeverScrollableScrollPhysics() : null,
               children: [
                 _buildMatchTab(dark),
                 _buildPitTab(dark),
@@ -230,8 +228,8 @@ class _LogsPageState extends State<LogsPage>
         elevation: 0,
         backgroundColor: dark ? const Color(0xFF1A1A2E) : Colors.blue.shade50,
         leading: IconButton(
-          icon: Icon(Icons.close,
-              color: dark ? Colors.white70 : Colors.black54),
+          icon:
+              Icon(Icons.close, color: dark ? Colors.white70 : Colors.black54),
           onPressed: () => setState(() => _exitSelectionMode()),
         ),
         title: Text(
@@ -364,9 +362,8 @@ class _LogsPageState extends State<LogsPage>
               child: Row(
                 children: [
                   Icon(Icons.delete_sweep,
-                      color: _currentTabCount > 0
-                          ? Colors.redAccent
-                          : Colors.grey,
+                      color:
+                          _currentTabCount > 0 ? Colors.redAccent : Colors.grey,
                       size: 20),
                   const SizedBox(width: 10),
                   Text(
@@ -390,8 +387,8 @@ class _LogsPageState extends State<LogsPage>
         unselectedLabelColor: dark ? Colors.white38 : Colors.black38,
         indicatorColor: Colors.blueAccent,
         indicatorWeight: 3,
-        labelStyle: GoogleFonts.museoModerno(
-            fontSize: 12, fontWeight: FontWeight.w600),
+        labelStyle:
+            GoogleFonts.museoModerno(fontSize: 12, fontWeight: FontWeight.w600),
         unselectedLabelStyle: GoogleFonts.museoModerno(fontSize: 12),
         tabs: [
           Tab(icon: Icon(Icons.sports_score, size: 18), text: 'Match'),
@@ -433,8 +430,8 @@ class _LogsPageState extends State<LogsPage>
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
             child: Text('Cancel',
-                style: TextStyle(
-                    color: dark ? Colors.white54 : Colors.black45)),
+                style:
+                    TextStyle(color: dark ? Colors.white54 : Colors.black45)),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -467,8 +464,8 @@ class _LogsPageState extends State<LogsPage>
           hintText: 'Search logs...',
           hintStyle: TextStyle(
               color: dark ? Colors.white38 : Colors.black38, fontSize: 14),
-          prefixIcon: Icon(Icons.search,
-              color: dark ? Colors.white38 : Colors.black38),
+          prefixIcon:
+              Icon(Icons.search, color: dark ? Colors.white38 : Colors.black38),
           suffixIcon: _searchQuery.isNotEmpty
               ? IconButton(
                   icon: Icon(Icons.clear,
@@ -509,7 +506,8 @@ class _LogsPageState extends State<LogsPage>
         ),
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-            color: dark ? Colors.redAccent.withOpacity(0.3) : Colors.red.shade100),
+            color:
+                dark ? Colors.redAccent.withOpacity(0.3) : Colors.red.shade100),
       ),
       child: Row(
         children: [
@@ -519,8 +517,7 @@ class _LogsPageState extends State<LogsPage>
             child: Text(
               'Tap cards to select • Swipe left to delete one',
               style: TextStyle(
-                  fontSize: 12,
-                  color: dark ? Colors.white54 : Colors.black54),
+                  fontSize: 12, color: dark ? Colors.white54 : Colors.black54),
             ),
           ),
         ],
@@ -543,8 +540,7 @@ class _LogsPageState extends State<LogsPage>
           end: Alignment.centerRight,
         ),
         borderRadius: BorderRadius.circular(14),
-        border:
-            Border.all(color: dark ? Colors.white10 : Colors.grey.shade200),
+        border: Border.all(color: dark ? Colors.white10 : Colors.grey.shade200),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -593,8 +589,7 @@ class _LogsPageState extends State<LogsPage>
 
   // ─── Empty State ─────────────────────────────────────────
 
-  Widget _buildEmptyTab(
-      bool dark, IconData icon, String title, Color color) {
+  Widget _buildEmptyTab(bool dark, IconData icon, String title, Color color) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -611,13 +606,11 @@ class _LogsPageState extends State<LogsPage>
           const SizedBox(height: 16),
           Text(title,
               style: GoogleFonts.museoModerno(
-                  fontSize: 18,
-                  color: dark ? Colors.white54 : Colors.black45)),
+                  fontSize: 18, color: dark ? Colors.white54 : Colors.black45)),
           const SizedBox(height: 6),
           Text('Scouted data will appear here',
               style: TextStyle(
-                  fontSize: 13,
-                  color: dark ? Colors.white30 : Colors.black26)),
+                  fontSize: 13, color: dark ? Colors.white30 : Colors.black26)),
         ],
       ),
     );
@@ -640,8 +633,8 @@ class _LogsPageState extends State<LogsPage>
           Icon(Icons.delete_outline, color: Colors.white, size: 22),
           SizedBox(width: 6),
           Text('Delete',
-              style: TextStyle(
-                  color: Colors.white, fontWeight: FontWeight.bold)),
+              style:
+                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         ],
       ),
     );
@@ -707,8 +700,7 @@ class _LogsPageState extends State<LogsPage>
         return await showDialog<bool>(
               context: context,
               builder: (ctx) => AlertDialog(
-                backgroundColor:
-                    dark ? const Color(0xFF1E1E1E) : Colors.white,
+                backgroundColor: dark ? const Color(0xFF1E1E1E) : Colors.white,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16)),
                 title: const Text('Delete this log?'),
@@ -829,15 +821,13 @@ class _LogsPageState extends State<LogsPage>
                               style: GoogleFonts.museoModerno(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
-                                  color:
-                                      dark ? Colors.white : Colors.black87),
+                                  color: dark ? Colors.white : Colors.black87),
                               overflow: TextOverflow.ellipsis),
                           const SizedBox(height: 3),
                           Row(children: [
                             Icon(Icons.person_outline,
                                 size: 13,
-                                color:
-                                    dark ? Colors.white54 : Colors.black45),
+                                color: dark ? Colors.white54 : Colors.black45),
                             const SizedBox(width: 4),
                             Text(m.scouterName,
                                 style: TextStyle(
@@ -887,8 +877,7 @@ class _LogsPageState extends State<LogsPage>
                     ? [Colors.red, Colors.redAccent]
                     : [Colors.blue, Colors.blueAccent],
               ).createShader(bounds),
-              child: Text(
-                  'Team ${match.teamNumber.replaceAll('frc', '')}',
+              child: Text('Team ${match.teamNumber.replaceAll('frc', '')}',
                   style: GoogleFonts.museoModerno(
                       fontSize: 24,
                       fontWeight: FontWeight.w600,
@@ -988,8 +977,7 @@ class _LogsPageState extends State<LogsPage>
                               style: GoogleFonts.museoModerno(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
-                                  color:
-                                      dark ? Colors.white : Colors.black87)),
+                                  color: dark ? Colors.white : Colors.black87)),
                           const SizedBox(height: 4),
                           Row(children: [
                             Icon(Icons.person_outline,
@@ -1022,7 +1010,8 @@ class _LogsPageState extends State<LogsPage>
                               if (r.climbType.isNotEmpty)
                                 _chip(r.climbType.first, Colors.purple, dark),
                               if (r.batteries > 0)
-                                _chip('${r.batteries} batt', Colors.green, dark),
+                                _chip(
+                                    '${r.batteries} batt', Colors.green, dark),
                             ],
                           ),
                         ],
@@ -1089,7 +1078,10 @@ class _LogsPageState extends State<LogsPage>
                         height: 56,
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
-                            colors: [Colors.blue.shade700, Colors.blue.shade400],
+                            colors: [
+                              Colors.blue.shade700,
+                              Colors.blue.shade400
+                            ],
                           ),
                           borderRadius: BorderRadius.circular(14),
                         ),
@@ -1113,7 +1105,8 @@ class _LogsPageState extends State<LogsPage>
                                     color: textColor)),
                             if (r.scouterName.isNotEmpty)
                               Text('Scouted by ${r.scouterName}',
-                                  style: TextStyle(fontSize: 13, color: subColor)),
+                                  style:
+                                      TextStyle(fontSize: 13, color: subColor)),
                           ],
                         ),
                       ),
@@ -1122,27 +1115,61 @@ class _LogsPageState extends State<LogsPage>
                   const SizedBox(height: 20),
 
                   // Robot Specs
-                  Text('Robot Specs', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: subColor)),
+                  Text('Robot Specs',
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: subColor)),
                   const SizedBox(height: 8),
                   Row(
                     children: [
-                      Expanded(child: _pitStatTile('Drivetrain', r.driveTrainType.isNotEmpty ? r.driveTrainType : '—', Colors.blue, dark)),
+                      Expanded(
+                          child: _pitStatTile(
+                              'Drivetrain',
+                              r.driveTrainType.isNotEmpty
+                                  ? r.driveTrainType
+                                  : '—',
+                              Colors.blue,
+                              dark)),
                       const SizedBox(width: 10),
-                      Expanded(child: _pitStatTile('Weight', r.weight > 0 ? '${r.weight.toStringAsFixed(1)} lbs' : '—', Colors.teal, dark)),
+                      Expanded(
+                          child: _pitStatTile(
+                              'Weight',
+                              r.weight > 0
+                                  ? '${r.weight.toStringAsFixed(1)} lbs'
+                                  : '—',
+                              Colors.teal,
+                              dark)),
                     ],
                   ),
                   const SizedBox(height: 10),
                   Row(
                     children: [
-                      Expanded(child: _pitStatTile('Speed', r.speed > 0 ? '${r.speed.toStringAsFixed(1)} ft/s' : '—', Colors.orange, dark)),
+                      Expanded(
+                          child: _pitStatTile(
+                              'Speed',
+                              r.speed > 0
+                                  ? '${r.speed.toStringAsFixed(1)} ft/s'
+                                  : '—',
+                              Colors.orange,
+                              dark)),
                       const SizedBox(width: 10),
-                      Expanded(child: _pitStatTile('Batteries', r.batteries > 0 ? '${r.batteries}' : '—', Colors.green, dark)),
+                      Expanded(
+                          child: _pitStatTile(
+                              'Batteries',
+                              r.batteries > 0 ? '${r.batteries}' : '—',
+                              Colors.green,
+                              dark)),
                     ],
                   ),
                   const SizedBox(height: 20),
 
                   // Capabilities
-                  Text('Capabilities', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: subColor)),
+                  Text('Capabilities',
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: subColor)),
                   const SizedBox(height: 8),
                   Wrap(
                     spacing: 8,
@@ -1150,29 +1177,43 @@ class _LogsPageState extends State<LogsPage>
                     children: [
                       if (r.autonType.isNotEmpty)
                         _chip('Auto: ${r.autonType}', Colors.indigo, dark),
-                      ...r.scoreType.map((s) => _chip(s, Colors.amber.shade700, dark)),
-                      ...r.scoreObject.map((s) => _chip(s, Colors.deepOrange, dark)),
-                      ...r.intake.map((s) => _chip('Intake: $s', Colors.cyan, dark)),
-                      ...r.climbType.map((s) => _chip('Climb: $s', Colors.purple, dark)),
+                      ...r.scoreType
+                          .map((s) => _chip(s, Colors.amber.shade700, dark)),
+                      ...r.scoreObject
+                          .map((s) => _chip(s, Colors.deepOrange, dark)),
+                      ...r.climbType
+                          .map((s) => _chip('Climb: $s', Colors.purple, dark)),
                     ],
                   ),
 
-                  if (r.driveMotorType.isNotEmpty || r.framePerimeter.isNotEmpty || r.groundClearance > 0) ...[
+                  if (r.driveMotorType.isNotEmpty ||
+                      r.framePerimeter.isNotEmpty ||
+                      r.groundClearance > 0) ...[
                     const SizedBox(height: 20),
-                    Text('Details', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: subColor)),
+                    Text('Details',
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: subColor)),
                     const SizedBox(height: 8),
                     Wrap(
                       spacing: 8,
                       runSpacing: 8,
                       children: [
                         if (r.driveMotorType.isNotEmpty)
-                          _chip('Motor: ${r.driveMotorType}', Colors.blueGrey, dark),
+                          _chip('Motor: ${r.driveMotorType}', Colors.blueGrey,
+                              dark),
                         if (r.framePerimeter.isNotEmpty)
-                          _chip('Frame: ${r.framePerimeter}', Colors.brown, dark),
+                          _chip(
+                              'Frame: ${r.framePerimeter}', Colors.brown, dark),
                         if (r.groundClearance > 0)
-                          _chip('Clearance: ${r.groundClearance.toStringAsFixed(1)}"', Colors.lime.shade700, dark),
+                          _chip(
+                              'Clearance: ${r.groundClearance.toStringAsFixed(1)}"',
+                              Colors.lime.shade700,
+                              dark),
                         if (r.avgCycleTime > 0)
-                          _chip('Cycle: ${r.avgCycleTime.toStringAsFixed(1)}s', Colors.pink, dark),
+                          _chip('Cycle: ${r.avgCycleTime.toStringAsFixed(1)}s',
+                              Colors.pink, dark),
                       ],
                     ),
                   ],
@@ -1198,9 +1239,7 @@ class _LogsPageState extends State<LogsPage>
         children: [
           Text(label,
               style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                  color: color)),
+                  fontSize: 11, fontWeight: FontWeight.w600, color: color)),
           const SizedBox(height: 4),
           Text(value,
               style: TextStyle(
@@ -1299,12 +1338,14 @@ class _LogsPageState extends State<LogsPage>
             color: cardBg,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(14),
-              side: BorderSide(
-                  color: progressColor.withOpacity(0.3), width: 1),
+              side: BorderSide(color: progressColor.withOpacity(0.3), width: 1),
             ),
             child: InkWell(
               borderRadius: BorderRadius.circular(14),
-              onTap: _isSelecting ? null : () => _showChecklistDetail(dark, key, item, done, total, progress, progressColor),
+              onTap: _isSelecting
+                  ? null
+                  : () => _showChecklistDetail(
+                      dark, key, item, done, total, progress, progressColor),
               child: Padding(
                 padding: const EdgeInsets.all(14),
                 child: Row(
@@ -1334,13 +1375,11 @@ class _LogsPageState extends State<LogsPage>
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                              item.matchkey.isNotEmpty ? item.matchkey : key,
+                          Text(item.matchkey.isNotEmpty ? item.matchkey : key,
                               style: GoogleFonts.museoModerno(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
-                                  color:
-                                      dark ? Colors.white : Colors.black87),
+                                  color: dark ? Colors.white : Colors.black87),
                               overflow: TextOverflow.ellipsis),
                           const SizedBox(height: 6),
                           Row(
@@ -1353,11 +1392,13 @@ class _LogsPageState extends State<LogsPage>
                                   dark),
                               if (item.returning_number > 0) ...[
                                 const SizedBox(width: 6),
-                                _chip('In: ${item.returning_number.toInt()}', Colors.blueGrey, dark),
+                                _chip('In: ${item.returning_number.toInt()}',
+                                    Colors.blueGrey, dark),
                               ],
                               if (item.outgoing_number > 0) ...[
                                 const SizedBox(width: 6),
-                                _chip('Out: ${item.outgoing_number.toInt()}', Colors.teal, dark),
+                                _chip('Out: ${item.outgoing_number.toInt()}',
+                                    Colors.teal, dark),
                               ],
                             ],
                           ),
@@ -1387,8 +1428,7 @@ class _LogsPageState extends State<LogsPage>
           ),
         );
 
-        return _wrapCard(
-            key, card, () => _deletePitCheckByKey(key), dark);
+        return _wrapCard(key, card, () => _deletePitCheckByKey(key), dark);
       },
     );
   }
@@ -1399,22 +1439,37 @@ class _LogsPageState extends State<LogsPage>
     final subColor = dark ? Colors.white54 : Colors.black54;
 
     // Build subsystem status list
-    bool drivetrainDone = item.drive_motors && item.drive_wheels &&
-        item.drive_gearboxes && item.drive_wires && item.drive_nuts_and_bolts;
-    bool structureDone = item.structure_frame && item.structure_hopper_panels &&
-        item.structure_brain_pan && item.structure_belly_pan &&
+    bool drivetrainDone = item.drive_motors &&
+        item.drive_wheels &&
+        item.drive_gearboxes &&
+        item.drive_wires &&
+        item.drive_nuts_and_bolts;
+    bool structureDone = item.structure_frame &&
+        item.structure_hopper_panels &&
+        item.structure_brain_pan &&
+        item.structure_belly_pan &&
         item.structure_nuts_and_bolts;
-    bool intakeDone = item.intake_rack && item.intake_pinion &&
-        item.intake_belts && item.intake_roller && item.intake_motors &&
+    bool intakeDone = item.intake_rack &&
+        item.intake_pinion &&
+        item.intake_belts &&
+        item.intake_roller &&
+        item.intake_motors &&
         item.intake_nuts_and_bolts;
-    bool spindexerDone = item.spindexer_panel && item.spindexer_churros &&
-        item.spindexer_motor && item.spindexer_wheels &&
+    bool spindexerDone = item.spindexer_panel &&
+        item.spindexer_churros &&
+        item.spindexer_motor &&
+        item.spindexer_wheels &&
         item.spindexer_nuts_and_bolts;
-    bool kickerDone = item.kicker_plates && item.kicker_roller &&
-        item.kicker_belts && item.kicker_gears && item.kicker_motor &&
+    bool kickerDone = item.kicker_plates &&
+        item.kicker_roller &&
+        item.kicker_belts &&
+        item.kicker_gears &&
+        item.kicker_motor &&
         item.kicker_nuts_and_bolts;
-    bool shooterDone = item.shooter_flywheels && item.shooter_hood &&
-        item.shooter_gears && item.shooter_motors &&
+    bool shooterDone = item.shooter_flywheels &&
+        item.shooter_hood &&
+        item.shooter_gears &&
+        item.shooter_motors &&
         item.shooter_nuts_and_bolts;
 
     showModalBottomSheet(
@@ -1492,23 +1547,41 @@ class _LogsPageState extends State<LogsPage>
                   const SizedBox(height: 20),
 
                   // Battery Section
-                  Text('Battery', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: subColor)),
+                  Text('Battery',
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: subColor)),
                   const SizedBox(height: 8),
                   Row(
                     children: [
                       Expanded(
-                        child: _batteryDetailTile('Incoming', item.returning_number, item.returning_battery_voltage, Colors.blueGrey, dark),
+                        child: _batteryDetailTile(
+                            'Incoming',
+                            item.returning_number,
+                            item.returning_battery_voltage,
+                            Colors.blueGrey,
+                            dark),
                       ),
                       const SizedBox(width: 10),
                       Expanded(
-                        child: _batteryDetailTile('Outgoing', item.outgoing_number, item.outgoing_battery_voltage, Colors.teal, dark),
+                        child: _batteryDetailTile(
+                            'Outgoing',
+                            item.outgoing_number,
+                            item.outgoing_battery_voltage,
+                            Colors.teal,
+                            dark),
                       ),
                     ],
                   ),
                   const SizedBox(height: 20),
 
                   // Subsystem Section
-                  Text('Subsystems', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: subColor)),
+                  Text('Subsystems',
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: subColor)),
                   const SizedBox(height: 8),
                   Wrap(
                     spacing: 8,
@@ -1526,16 +1599,23 @@ class _LogsPageState extends State<LogsPage>
 
                   // Notes Section
                   if (item.note.isNotEmpty) ...[
-                    Text('Notes', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: subColor)),
+                    Text('Notes',
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: subColor)),
                     const SizedBox(height: 8),
                     Container(
                       width: double.infinity,
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: dark ? Colors.white.withOpacity(0.05) : Colors.grey.shade50,
+                        color: dark
+                            ? Colors.white.withOpacity(0.05)
+                            : Colors.grey.shade50,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                            color: dark ? Colors.white10 : Colors.grey.shade200),
+                            color:
+                                dark ? Colors.white10 : Colors.grey.shade200),
                       ),
                       child: Text(item.note,
                           style: TextStyle(
@@ -1552,7 +1632,8 @@ class _LogsPageState extends State<LogsPage>
     );
   }
 
-  Widget _batteryDetailTile(String label, double tag, double voltage, Color color, bool dark) {
+  Widget _batteryDetailTile(
+      String label, double tag, double voltage, Color color, bool dark) {
     bool hasData = tag > 0;
     return Container(
       padding: const EdgeInsets.all(10),
@@ -1573,7 +1654,9 @@ class _LogsPageState extends State<LogsPage>
               style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
-                  color: hasData ? color : (dark ? Colors.white38 : Colors.black38))),
+                  color: hasData
+                      ? color
+                      : (dark ? Colors.white38 : Colors.black38))),
           const SizedBox(height: 4),
           if (hasData)
             Row(
@@ -1652,16 +1735,14 @@ class _LogsPageState extends State<LogsPage>
                   (v['Match_Key']?.toString() ?? '')
                       .toLowerCase()
                       .contains(q) ||
-                  (v['Alliance']?.toString() ?? '')
-                      .toLowerCase()
-                      .contains(q);
+                  (v['Alliance']?.toString() ?? '').toLowerCase().contains(q);
             }
             return e.key.toLowerCase().contains(q);
           }).toList();
 
     if (entries.isEmpty) {
-      return _buildEmptyTab(dark, Icons.question_answer,
-          'No Qualitative Logs', Colors.purple);
+      return _buildEmptyTab(
+          dark, Icons.question_answer, 'No Qualitative Logs', Colors.purple);
     }
     if (filtered.isEmpty) return _buildNoResults(dark);
 
@@ -1709,8 +1790,7 @@ class _LogsPageState extends State<LogsPage>
             color: cardBg,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(14),
-              side: BorderSide(
-                  color: accent.withOpacity(0.3), width: 1),
+              side: BorderSide(color: accent.withOpacity(0.3), width: 1),
             ),
             child: InkWell(
               borderRadius: BorderRadius.circular(14),
@@ -1750,18 +1830,15 @@ class _LogsPageState extends State<LogsPage>
                               style: GoogleFonts.museoModerno(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
-                                  color: dark
-                                      ? Colors.white
-                                      : Colors.black87),
+                                  color: dark ? Colors.white : Colors.black87),
                               overflow: TextOverflow.ellipsis),
                           const SizedBox(height: 3),
                           Row(children: [
                             if (scouter.isNotEmpty) ...[
                               Icon(Icons.person_outline,
                                   size: 13,
-                                  color: dark
-                                      ? Colors.white54
-                                      : Colors.black45),
+                                  color:
+                                      dark ? Colors.white54 : Colors.black45),
                               const SizedBox(width: 4),
                               Text(scouter,
                                   style: TextStyle(
@@ -1861,8 +1938,7 @@ class _LogsPageState extends State<LogsPage>
       decoration: BoxDecoration(
         color: dark ? Colors.white.withOpacity(0.05) : Colors.grey.shade50,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-            color: dark ? Colors.white10 : Colors.grey.shade200),
+        border: Border.all(color: dark ? Colors.white10 : Colors.grey.shade200),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1875,8 +1951,7 @@ class _LogsPageState extends State<LogsPage>
           const SizedBox(height: 4),
           Text(answer.isEmpty ? '—' : answer,
               style: TextStyle(
-                  fontSize: 14,
-                  color: dark ? Colors.white70 : Colors.black87)),
+                  fontSize: 14, color: dark ? Colors.white70 : Colors.black87)),
         ],
       ),
     );
@@ -1903,13 +1978,11 @@ class _LogsPageState extends State<LogsPage>
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Icons.search_off,
-              size: 50,
-              color: dark ? Colors.white24 : Colors.grey.shade400),
+              size: 50, color: dark ? Colors.white24 : Colors.grey.shade400),
           const SizedBox(height: 12),
           Text('No results found',
               style: GoogleFonts.museoModerno(
-                  fontSize: 16,
-                  color: dark ? Colors.white38 : Colors.black38)),
+                  fontSize: 16, color: dark ? Colors.white38 : Colors.black38)),
         ],
       ),
     );
