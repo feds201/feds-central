@@ -1,12 +1,12 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:scouting_app/components/Button.dart';
-import 'package:scouting_app/components/FullScreenQrCodePage.dart';
-import 'package:scouting_app/main.dart';
-import 'package:scouting_app/services/DataBase.dart';
-import 'package:scouting_app/components/TextBox.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:scout_ops_android/components/Button.dart';
+import 'package:scout_ops_android/components/FullScreenQrCodePage.dart';
+import 'package:scout_ops_android/components/TextBox.dart';
+import 'package:scout_ops_android/main.dart';
+import 'package:scout_ops_android/services/DataBase.dart';
 
 import '../services/Colors.dart';
 
@@ -22,6 +22,7 @@ class _QualitativePage extends State<QualitativePage> {
   TextEditingController robotMatchStrategy = TextEditingController();
   TextEditingController defensePlay = TextEditingController();
   TextEditingController humanPlayerRole = TextEditingController();
+  TextEditingController stabilityReliability = TextEditingController();
 
   @override
   void initState() {
@@ -37,6 +38,7 @@ class _QualitativePage extends State<QualitativePage> {
     robotMatchStrategy.text = widget.record.getQ1();
     defensePlay.text = widget.record.getQ2();
     humanPlayerRole.text = widget.record.getQ3();
+    stabilityReliability.text = widget.record.getQ4();
   }
 
   @override
@@ -44,6 +46,7 @@ class _QualitativePage extends State<QualitativePage> {
     final backgroundColor = Colors.transparent;
 
     return Scaffold(
+      backgroundColor: islightmode() ? lightColors.white : Colors.black,
       appBar: AppBar(
         leading: Builder(builder: (context) {
           return IconButton(
@@ -82,8 +85,7 @@ class _QualitativePage extends State<QualitativePage> {
                 text: "Qr Code",
                 onPressed: () {
                   _recordData();
-                  PopBoard(context);
-                  Navigator.push(
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
                       builder: (context) => FullScreenQrCodePage(
@@ -137,6 +139,13 @@ class _QualitativePage extends State<QualitativePage> {
         "question": "What does the human player do?",
         "observation": "Observe: Feeding, controlling, assisting",
         "controller": humanPlayerRole
+      },
+      {
+        "title": "Stability & Reliability",
+        "icon": Icon(Icons.build_circle),
+        "question": "Did the robot experience any issues?",
+        "observation": "Observe: Breaking, tipping, comms failure",
+        "controller": stabilityReliability
       }
     ];
 
@@ -166,7 +175,9 @@ class _QualitativePage extends State<QualitativePage> {
     widget.record.q2 = defensePlay.text.isNotEmpty ? defensePlay.text : "N/A";
     widget.record.q3 =
         humanPlayerRole.text.isNotEmpty ? humanPlayerRole.text : "N/A";
-    widget.record.q4 = "N/A";
+    widget.record.q4 = stabilityReliability.text.isNotEmpty
+        ? stabilityReliability.text
+        : "N/A";
 
     QualitativeDataBase.PutData(widget.record.matchKey, widget.record.toJson());
     QualitativeDataBase.PrintAll();
@@ -174,7 +185,7 @@ class _QualitativePage extends State<QualitativePage> {
   }
 
   void PopBoard(BuildContext context) {
-    Navigator.pop(context);
+    Navigator.pop(context, true);
   }
 
   @override
@@ -182,6 +193,7 @@ class _QualitativePage extends State<QualitativePage> {
     robotMatchStrategy.dispose();
     defensePlay.dispose();
     humanPlayerRole.dispose();
+    stabilityReliability.dispose();
     super.dispose();
   }
 }

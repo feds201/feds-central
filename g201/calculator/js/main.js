@@ -33,7 +33,8 @@ document.addEventListener('DOMContentLoaded', () => {
         unitToggle: document.getElementById('unit-toggle'),
         modulesWrapper: document.querySelector('.modules-wrapper'),
         mcContainer: document.getElementById('mc-container'),
-        questionText: document.getElementById('question')
+        questionText: document.getElementById('question'),
+        reviewButton: document.getElementById('review-btn')
     };
 
     // Pass elements to quiz module
@@ -70,6 +71,12 @@ startButtons.forEach(btn => {
 
     if (elements.restartButton) {
         elements.restartButton.addEventListener('click', restartQuiz);
+    }
+
+    if (elements.reviewButton) {
+        elements.reviewButton.addEventListener('click', () => {
+            import('./quiz.js').then(m => m.reviewAnswers());
+        });
     }
 
     // Input handling

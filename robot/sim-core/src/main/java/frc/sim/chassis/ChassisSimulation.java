@@ -177,9 +177,14 @@ public class ChassisSimulation {
         return new Pose2d(pos.get0(), pos.get1(), new Rotation2d(getYawRad()));
     }
 
-    /** Get the full 3D pose of the chassis. */
+    /** Get the full 3D pose of the chassis with origin at floor level. */
     public Pose3d getPose3d() {
-        return SimMath.odeToPose3d(chassisBody);
+        Pose3d centerPose = SimMath.odeToPose3d(chassisBody);
+        return new Pose3d(
+                centerPose.getX(),
+                centerPose.getY(),
+                centerPose.getZ() - config.getBumperHeight() / 2.0,
+                centerPose.getRotation());
     }
 
     /** Extract yaw from ODE4J rotation matrix. */

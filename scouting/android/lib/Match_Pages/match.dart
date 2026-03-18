@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:scouting_app/main.dart';
-import 'package:scouting_app/services/Colors.dart';
+import 'package:scout_ops_android/main.dart';
+import 'package:scout_ops_android/services/Colors.dart';
 
 import '../Experiment/ExpStateManager.dart';
 import '../components/QrGenerator.dart';

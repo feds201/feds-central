@@ -70,7 +70,7 @@ public class LimelightWrapper extends Limelight {
 
         // if no tags detected, ignorse the pose by returning very high std devs
         if (numTags == 0) {
-            return VecBuilder.fill(1e6, 1e6, 1e6);
+            return VecBuilder.fill(1e16, 1e16, 1e16);
         }
 
         // Calculate the averages
@@ -84,7 +84,7 @@ public class LimelightWrapper extends Limelight {
 
         // If the average ambiguity is too high, return very high std devs to ignore the pose
         if (avgAmbiguity > 0.3) {
-            return VecBuilder.fill(1e6, 1e6, 1e6);
+            return VecBuilder.fill(1e16, 1e16, 1e16);
         }
 
         // Scale the standard deviations based on the average ambiguity
@@ -93,7 +93,7 @@ public class LimelightWrapper extends Limelight {
         // If the average distance is too far, return very high std devs to ignore the
         // pose
         if (numTags == 1 && avgDist > 2) {
-            estStdDevs = VecBuilder.fill(1e6, 1e6, 1e6);
+            estStdDevs = VecBuilder.fill(1e16, 1e16, 1e16);
         } else { // Scale the standard deviations based on the average distance
             stddevScalar *= (1 + (avgDist * avgDist / 30));
         }
@@ -125,7 +125,7 @@ public class LimelightWrapper extends Limelight {
 
         // if no tags detected, ignorse the pose by returning very high std devs
         if (numTags == 0) {
-            return VecBuilder.fill(1e6, 1e6, 1e6);
+            return VecBuilder.fill(1e16, 1e16, 1e16);
         }
 
         avgDist /= numTags;
@@ -142,7 +142,7 @@ public class LimelightWrapper extends Limelight {
 
         // Increase std devs based on (average) distance
         if (numTags == 1 && avgDist > 5) {
-            estStdDevs = VecBuilder.fill(1e6, 1e6, 1e6);
+            estStdDevs = VecBuilder.fill(1e16, 1e16, 1e16);
         } else {
             stddevScalar *= (1 + (avgDist * avgDist * .2));
         }
@@ -200,7 +200,7 @@ public class LimelightWrapper extends Limelight {
                 if (poseEstimate.tagCount > 1
                         && Math.abs(Units.radiansToRotations(drivetrain.getState().Speeds.omegaRadiansPerSecond)) < 2) {
                     // Add it to the pose estimator.
-                    drivetrain.addVisionMeasurement(poseEstimate.pose.toPose2d(), poseEstimate.timestampSeconds,
+                    drivetrain.addVisionMeasurement(poseEstimate.pose.toPose2d(), poseEstimate.timestampSeconds+0.001,
                             getEstimationStdDevsLimelightMT1(poseEstimate));
                 }
             });

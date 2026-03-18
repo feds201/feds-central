@@ -1,245 +1,326 @@
+//Push it
 // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
-
 package frc.robot;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.RobotMap.DrivetrainConstants;
-import frc.robot.commands.swerve.HubDrive;
-import frc.robot.commands.swerve.TeleopSwerve;
 import frc.robot.subsystems.intake.IntakeSubsystem;
-import frc.robot.subsystems.intake.RollersSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem.IntakeState;
-import frc.robot.subsystems.intake.RollersSubsystem.RollerState;
-import frc.robot.subsystems.led.LedsSubsystem;
+import frc.robot.subsystems.intake.IntakeSubsystem.RollerState;
 import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.subsystems.feeder.Feeder.feeder_state;
 import frc.robot.subsystems.shooter.ShooterHood;
-import frc.robot.subsystems.shooter.ShooterWheels;
 import frc.robot.subsystems.shooter.ShooterHood.shooterhood_state;
+import frc.robot.subsystems.shooter.ShooterWheels;
 import frc.robot.subsystems.shooter.ShooterWheels.shooter_state;
 import frc.robot.subsystems.spindexer.Spindexer;
 import frc.robot.subsystems.spindexer.Spindexer.spindexer_state;
 import frc.robot.sim.RebuiltSimManager;
+
+
 import org.littletonrobotics.junction.Logger;
+
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
+import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.utils.LimelightWrapper;
 import frc.robot.utils.RTU.RootTestingUtility;
+import frc.robot.rtu.RTUManager;
+import frc.robot.utils.AutoSweeper;
 import limelight.networktables.LimelightSettings.ImuMode;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Rotations;
 
+public class RobotContainer extends ControllerBindings {
 
-public class RobotContainer {
-  
-  private final CommandSwerveDrivetrain drivetrain = DrivetrainConstants.createDrivetrain();
-  //Limelight naming conventions are based on physical inventory system, hence "limelight-two" and "limelight-five" represent our second and fifth limelights respectively.
-  private final LimelightWrapper ll4 = new LimelightWrapper("limelight-two", true);
-  private final LimelightWrapper ll3 = new LimelightWrapper("limelight-five", false);
+    // Singleton accessor so external code (DiagnosticServer) can command
+    // shooter/hood.
+    private static RobotContainer instance;
 
-  private HubDrive hubDrive;
+    private final CommandSwerveDrivetrain drivetrain = DrivetrainConstants.createDrivetrain();
+    // Limelight naming conventions are based on physical inventory system, hence
+    // "limelight-two" and "limelight-five" represent our second and fifth
+    // limelights respectively.
+    private final LimelightWrapper ll4 = new LimelightWrapper("limelight-two", true);
+    private final LimelightWrapper ll3 = new LimelightWrapper("limelight-five", false);
 
-  private final CommandXboxController controller = new CommandXboxController(0);
+    private final CommandXboxController controller = new CommandXboxController(0);
+    private final CommandXboxController operaterController = new CommandXboxController(1);
 
+    private final Telemetry telemetry = new Telemetry(TunerConstants.kSpeedAt12Volts.in(MetersPerSecond));
 
-  private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
-  private final RollersSubsystem rollersSubsystem = RollersSubsystem.getInstance();
-  private final Feeder feederSubsystem = new Feeder();
+    private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
+    private final Feeder feederSubsystem = new Feeder();
+    private final ShooterHood shooterHood = new ShooterHood(drivetrain);
+    private final ShooterWheels shooterWheels = new ShooterWheels(drivetrain);
+    private final Spindexer spinDexer = new Spindexer();
 
-  private final ShooterHood shooterHood = new ShooterHood(drivetrain);
-  private final ShooterWheels shooterWheels = new ShooterWheels(drivetrain);
+    // Simulation
+    private RebuiltSimManager simManager;
 
-  private final LedsSubsystem ledsSubsystem = LedsSubsystem.getInstance(getSubsystems());
-
-  //private final LedsSubsystem leds = new LedsSubsystem(shooterWheels);
-
-  // Local testing subsystem (contains @RobotAction tests used by RootTestingUtility)
-  // private final TestingSubsystem testingSubsystem = new TestingSubsystem();
-
-  private final Spindexer spinDexer = new Spindexer();
  
-  // Simulation
-  private RebuiltSimManager simManager;
 
-  private final RootTestingUtility rootTester = new RootTestingUtility();
-
-    
+    private final RTUManager rtumanager = new RTUManager();
 
 
-  public RobotContainer() {
+  private final SendableChooser<Command> autoChooser;
+
+    public static RobotContainer getInstance() {
+        return instance;
+    }
+
+    public CommandXboxController getDriverController() {
+        return controller;
+    }
+
+    public CommandXboxController getOperatorController() {
+        return operaterController;
+    }
+
+    public IntakeSubsystem getIntakeSubsystem() {
+        return intakeSubsystem;
+    }
+
+    public ShooterHood getShooterHood() {
+        return shooterHood;
+    }
+
+    public ShooterWheels getShooterWheels() {
+        return shooterWheels;
+    }
+
+    public Feeder getFeederSubsystem() {
+        return feederSubsystem;
+    }
+
+    public Spindexer getSpindexer() {
+        return spinDexer;
+    }
+
+    public CommandSwerveDrivetrain getDrivetrain() {
+        return drivetrain;
+    }
+
+    public RobotContainer() {
+    instance = this;
     ll4.getSettings().withImuMode(ImuMode.ExternalImu).save();
-    hubDrive = new HubDrive(drivetrain, null);
-    configureBindings();
-    
-    
+    setupDriveBindings(controller);
+    setupOperatorBindings(operaterController);
     configureRootTests();
-    
-    ledsSubsystem.setState(null);
-  }
 
-  public void updateLocalization() {
-    if (ll4.getNTTable().containsKey("tv")) {
-      ll4.updateLocalizationLimelight(drivetrain);
-    } else {
-      ll3.updateLocalizationLimelight(drivetrain);
+    // TODO: migrate to LoggedDashboardChooser from AdvantageKit
+    registerNamedCommands();
+    autoChooser = AutoBuilder.buildAutoChooser();
+    SmartDashboard.putData("Auto Chooser", autoChooser);
+    drivetrain.registerTelemetry(telemetry::telemeterize);
+  }
+  
+    // --- APIs used by the diagnostic server / UI to command shooter/hood ---
+    private final AutoSweeper autoSweeper = new AutoSweeper(
+            rps -> {
+                try {
+                    shooterWheels.setStateCommand(ShooterWheels.shooter_state.TEST).execute();
+                    shooterWheels.setVelocity(RotationsPerSecond.of(rps));
+                } catch (Exception e) {
+                }
+            },
+            pos -> {
+                try {
+                    shooterHood.setStateCommand(ShooterHood.shooterhood_state.TEST).execute();
+                    shooterHood.setAngle(Rotations.of(pos)); // pos is already in rotations (0-30)
+                } catch (Exception e) {
+                }
+            });
+
+    public synchronized void setShooterVelocityRps(double rps) {
+        try {
+            shooterWheels.setVelocity(RotationsPerSecond.of(rps));
+        } catch (Exception e) {
+            // best-effort
+        }
     }
-  }
 
-  private void configureBindings() {
+    public synchronized void setHoodPosition(double position) {
+        try {
+            // position is in rotations (0 to 30 rotations)
+            shooterHood.setAngle(Rotations.of(position));
+        } catch (Exception e) {
+            // best-effort
+        }
+    }
 
-    controller.start()
-       .onTrue(new InstantCommand(drivetrain::seedFieldCentric));
-    
+    /** Backwards-compatible API: set hood angle in degrees (360deg = 1 rotation). */
+    public synchronized void setHoodAngleDeg(double deg) {
+        try {
+            shooterHood.setAngle(Rotations.of(deg / 360.0));
+        } catch (Exception e) {
+            // best-effort
+        }
+    }
 
-    controller.leftTrigger()
-        .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED).andThen(rollersSubsystem.RollersCommand(RollerState.ON)))
-        .onFalse(rollersSubsystem.RollersCommand(RollerState.OFF));
+    /**
+     * Start an automatic sweep of shooter velocities from min..max (inclusive)
+     * using step, commanding hoodDeg for each step and holding for holdMs
+     * milliseconds. This runs in a background thread and can be stopped with
+     * stopAutoSweep().
+     */
+    public synchronized void startAutoSweep(double min, double max, double step, double hoodDeg, int holdMs) {
+        autoSweeper.start(min, max, step, hoodDeg, holdMs);
+    }
 
-    controller.leftBumper()
-        .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED));
+    public synchronized void stopAutoSweep() {
+        autoSweeper.stop();
+    }
 
-    // Default drive command: field-centric swerve with left stick + right stick rotation
-    drivetrain.setDefaultCommand(
-        new TeleopSwerve(drivetrain, controller));
+    public synchronized boolean isAutoRunning() {
+        return autoSweeper.isRunning();
+    }
 
-    // M key (Right bumper): intake rollers
-    controller.rightBumper()
-        .whileTrue(rollersSubsystem.RollersCommand(RollerState.ON))
-        .onFalse(rollersSubsystem.RollersCommand(RollerState.OFF));
+    public synchronized double getAutoCurrent() {
+        return autoSweeper.getCurrent();
+    }
 
-    controller.y()
-      .onTrue(Commands.sequence(
-        shooterHood.setStateCommand(shooterhood_state.SHOOTING),
-        shooterWheels.setStateCommand(shooter_state.SHOOTING)))
-      .onFalse(Commands.sequence(
-        shooterHood.setStateCommand(shooterhood_state.IN),
-        shooterWheels.setStateCommand(shooter_state.IDLE)));
+    /**
+     * Start a dynamic auto-sweep driven by the diagnostic dashboard's telemetry
+     * values. Puts shooter wheels and hood into TEST state while the sweep runs
+     * and restores them when it finishes.
+     * @param holdMs milliseconds to hold each supplier sample
+     */
+    public synchronized void startAutoSweepFromDiagnostic(int holdMs) {
+    // enter test mode immediately
+    shooterWheels.setState(frc.robot.subsystems.shooter.ShooterWheels.shooter_state.TEST);
+    shooterHood.setState(frc.robot.subsystems.shooter.ShooterHood.shooterhood_state.TEST);
 
-    // Hood aiming: A = aim down, B = aim up (ShooterSim adjusts angle at fixed rate)
-    controller.a()
-        .onTrue(shooterHood.setStateCommand(shooterhood_state.AIMING_DOWN))
-        .onFalse(shooterHood.setStateCommand(shooterhood_state.IN));
-
-    controller.b()
-        .onTrue(shooterHood.setStateCommand(shooterhood_state.AIMING_UP))
-        .onFalse(shooterHood.setStateCommand(shooterhood_state.IN));
-
-    controller.x()
-      .onTrue(Commands.sequence(
-        feederSubsystem.setStateCommand(feeder_state.RUN),
-        spinDexer.setStateCommand(spindexer_state.RUN)))
-      .onFalse(Commands.sequence(
-        feederSubsystem.setStateCommand(feeder_state.STOP),
-        spinDexer.setStateCommand(spindexer_state.STOP)));
-
-    controller.povRight().whileTrue(
-      Commands.sequence(
-
-        shooterHood.setStateCommand(shooterhood_state.SHOOTING) ,
-        shooterWheels.setStateCommand(shooter_state.SHOOTING)
-      ).alongWith(new HubDrive(drivetrain, controller)))
-    .onFalse(
-      Commands.sequence(
-        shooterHood.setStateCommand(shooterhood_state.OUT), 
-        shooterWheels.setStateCommand(shooter_state.IDLE)
-      ));
-
-    controller.rightTrigger().and(HubDrive::pidAtSetpoint).and(shooterWheels::atSetpoint).whileTrue(
-      Commands.sequence(
-      feederSubsystem.setStateCommand(feeder_state.RUN),
-      spinDexer.setStateCommand(spindexer_state.RUN)
-      )
-    ).onFalse(
-      Commands.sequence(
-      feederSubsystem.setStateCommand(feeder_state.STOP),
-      spinDexer.setStateCommand(spindexer_state.STOP)
-      )
-    );
-
-  }
-
- 
+        autoSweeper.startDynamic(
+            // shooter velocity supplier (RPS) comes from TelemetryPublisher
+            () -> frc.robot.utils.RTU.TelemetryPublisher.getShooterVelocityRps(),
+            // hood angle supplier (degrees) comes from TelemetryPublisher
+            () -> frc.robot.utils.RTU.TelemetryPublisher.getHoodAngleDeg(),
+            // enter test mode (redundant but safe)
+            () -> {
+                shooterWheels.setState(frc.robot.subsystems.shooter.ShooterWheels.shooter_state.TEST);
+                shooterHood.setState(frc.robot.subsystems.shooter.ShooterHood.shooterhood_state.TEST);
+            },
+            // exit test mode: restore reasonable idle states
+            () -> {
+                shooterWheels.setState(frc.robot.subsystems.shooter.ShooterWheels.shooter_state.IDLE);
+                shooterHood.setState(frc.robot.subsystems.shooter.ShooterHood.shooterhood_state.IN);
+            },
+            holdMs
+        );
+    }
   
 
-
-  /** Called from Robot.simulationInit(). */
-  public void initSimulation() {
-    simManager = new RebuiltSimManager(drivetrain, rollersSubsystem,
-        intakeSubsystem, feederSubsystem, shooterWheels, shooterHood, spinDexer);
-    Logger.recordOutput("Sim/State", "Ready");
-    drivetrain.resetPose(RebuiltSimManager.STARTING_POSE);
-  }
-
-  /** Called from Robot.simulationPeriodic(). */
-  public void updateSimulation() {
-    if (simManager != null) {
-      simManager.periodic();
+    public void updateLocalization() {
+        if (ll4.getNTTable().containsKey("tv")) {
+            ll4.updateLocalizationLimelight(drivetrain);
+        } else {
+            ll3.updateLocalizationLimelight(drivetrain);
+        }
     }
-  }
+
+    public void publishTelemetry() {
+        try {
+            var vel = shooterWheels.getVelocity();
+            var hood = shooterHood.getPosition();
+            var dist = drivetrain.getDistanceToVirtualHub();
+            frc.robot.utils.RTU.TelemetryPublisher.publish(vel, hood, dist);
+        } catch (Exception e) {
+            // swallow — telemetry is best-effort
+        }
+    }
+
+    public void initSimulation() {
+        simManager = new RebuiltSimManager(drivetrain,
+                intakeSubsystem, feederSubsystem, shooterWheels, shooterHood, spinDexer);
+        Logger.recordOutput("Sim/State", "Ready");
+        drivetrain.resetPose(RebuiltSimManager.STARTING_POSE);
+    }
+
+    public void updateSimulation() {
+        if (simManager != null) {
+            simManager.periodic();
+        }
+    }
 
   public Command getAutonomousCommand() {
-    return Commands.print("No autonomous command configured");
+    return autoChooser.getSelected();
   }
 
-  // ── Root Testing Utility ──────────────────────────────────
+    private void configureRootTests() {
+        // Keep this method for compatibility but delegate to RTUManager
+        rtumanager.registerSubsystem();
 
-  /**
-   * Register every subsystem that contains @RobotAction methods.
-   * Called once from the constructor.
-   */
-  private void configureRootTests() {
-    rootTester.registerSubsystem(
-        intakeSubsystem
-    // testingSubsystem
-        // Add more subsystems here as they're wired in:
-        // feeder, climber, spindexer, etc.
-    );
+        rtumanager.setSafetyCheck(() -> {
+            if (!controller.getHID().isConnected()) {
+                return "Joystick is not connected";
+            }
 
-    rootTester.setSafetyCheck(() -> {
-      if (!controller.getHID().isConnected()) {
-        return "Joystick is not connected";
-      }
-    
-      if (ledsSubsystem.isConnected()) {
-        return "LED subsystem is not connected";
-      }
-      
-      ledsSubsystem.setState(LedsSubsystem.LEDState.STARTUP_TEST);
-      // Primary start command: both triggers held past threshold
-      boolean triggersOk = controller.getLeftTriggerAxis() >= 0.5 && controller.getRightTriggerAxis() >= 0.5;
+            boolean triggersOk = controller.getLeftTriggerAxis() >= 0.5 && controller.getRightTriggerAxis() >= 0.5;
 
-      // Alternate start command: X + Y buttons presssed simultaneously (convenience for some controllers)
-      boolean xyOk = controller.getHID().getXButton() && controller.getHID().getYButton();
+            boolean xyOk = controller.getHID().getXButton() && controller.getHID().getYButton();
 
-      if (!triggersOk && !xyOk) {
-        return "Did not receive start command from gamepads, please press both triggers to continue the tests";
-      }
+            if (!triggersOk && !xyOk) {
+                return "Did not receive start command from gamepads, please press both triggers to continue the tests";
+            }
 
-      return null; // Safe to run
-    });
-  }
+            return null; // Safe to run
+        });
+    }
 
-  /** Called from Robot.testInit(). Discovers and runs all @RobotAction tests. */
-  public void runRootTests() {
-    rootTester.runAll();
-  }
+    public void runRootTests() {
+        rtumanager.runAll();
+    }
 
-  /** Called from Robot.testPeriodic(). Keeps dashboard data fresh. */
-  public void updateRootTests() {
-    rootTester.periodic();
-  }
+    public void updateRootTests() {
 
 
-  private Subsystem[] getSubsystems() {
-    return new Subsystem[] {
-      shooterWheels,
-      ledsSubsystem,
-      //shooterHood,
-    };
-  }
+        rtumanager.periodic();
+    }
+
+
+public void registerNamedCommands() {
+  NamedCommands.registerCommand("Extend Hopper", intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED));
+  NamedCommands.registerCommand("Extend Intake", intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED));
+  NamedCommands.registerCommand("Retract Intake", intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT));
+  NamedCommands.registerCommand("Run Rollers", intakeSubsystem.setRollerStateCommand(RollerState.ON));
+  NamedCommands.registerCommand("Stop Rollers", intakeSubsystem.setRollerStateCommand(RollerState.OFF));
+  NamedCommands.registerCommand("Start Shooter Spin", shooterWheels.setStateCommand(shooter_state.SHOOTING).alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
+  NamedCommands.registerCommand("Stop Shooter Spin", shooterWheels.setStateCommand(shooter_state.IDLE).alongWith(shooterHood.setStateCommand(shooterhood_state.IN)).alongWith(spinDexer.setStateCommand(spindexer_state.STOP)).alongWith(feederSubsystem.setStateCommand(feeder_state.STOP)));
+  NamedCommands.registerCommand("End Shooter Spin", shooterWheels.setStateCommand(shooter_state.IDLE).alongWith(shooterHood.setStateCommand(shooterhood_state.IN)).alongWith(spinDexer.setStateCommand(spindexer_state.STOP)).alongWith(feederSubsystem.setStateCommand(feeder_state.STOP)));
+  NamedCommands.registerCommand("Run Shooter", shooterWheels.setStateCommand(shooter_state.SHOOTING).alongWith(feederSubsystem.setStateCommand(feeder_state.RUN)).alongWith(spinDexer.setStateCommand(spindexer_state.RUN)).alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
+  NamedCommands.registerCommand("Shooting", shooterWheels.setStateCommand(shooter_state.SHOOTING).alongWith(feederSubsystem.setStateCommand(feeder_state.RUN)).alongWith(spinDexer.setStateCommand(spindexer_state.RUN)).alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

@@ -2,12 +2,12 @@ import 'dart:developer';
 
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
-import 'package:scouting_app/components/CheckBox.dart';
-import 'package:scouting_app/components/CounterShelf.dart';
-import 'package:scouting_app/components/QrGenerator.dart';
-import 'package:scouting_app/components/gameSpecifics/MultiPointSelector.dart';
-import 'package:scouting_app/components/gameSpecifics/climb.dart';
-import 'package:scouting_app/main.dart';
+import 'package:scout_ops_android/components/CheckBox.dart';
+import 'package:scout_ops_android/components/CounterShelf.dart';
+import 'package:scout_ops_android/components/QrGenerator.dart';
+import 'package:scout_ops_android/components/gameSpecifics/MultiPointSelector.dart';
+import 'package:scout_ops_android/components/gameSpecifics/climb.dart';
+import 'package:scout_ops_android/main.dart';
 
 import '../../components/TeamInfo.dart';
 import '../../components/gameSpecifics/starRate.dart';
@@ -28,7 +28,7 @@ class EndGameState extends State<EndGame> {
   // late bool defense;
   late bool park;
   late bool feedToHP;
-  late bool passing;
+  late int passing;
   int? selectedLevel; // Now maps to ClimbStatus: 0=None, 1-9=IDs
 
   late EndPoints endPoints;
@@ -39,15 +39,15 @@ class EndGameState extends State<EndGame> {
   late String allianceColor;
   late int matchNumber;
   late int neutralTrips;
+  late bool robotBroken;
+
   //timer
   double endgameTime = 0.0;
-  int endgameActions = 0;
+  int endgameshootingCycles = 0;
   List<int> drawingData = [];
   Alliance mapcolor = Alliance.blue;
   bool isPageScrollable = true;
   int shootingAccuracy = 3;
-
-  TextEditingController commentController = TextEditingController();
 
   @override
   void initState() {
@@ -71,12 +71,12 @@ class EndGameState extends State<EndGame> {
     feedToHP = widget.matchRecord.endPoints.FeedToHP;
     passing = widget.matchRecord.endPoints.Passing;
 
-    commentController.text = widget.matchRecord.endPoints.Comments;
     neutralTrips = widget.matchRecord.endPoints.EndNeutralTrips;
     shootingAccuracy = widget.matchRecord.endPoints.ShootingAccuracy;
     endgameTime = widget.matchRecord.endPoints.endgameTime;
-    endgameActions = widget.matchRecord.endPoints.endgameActions;
+    endgameshootingCycles = widget.matchRecord.endPoints.endgameshootingCycles;
     drawingData = widget.matchRecord.endPoints.drawingData;
+    robotBroken = widget.matchRecord.endPoints.robotBroken;
   }
 
   void UpdateData() {
@@ -90,13 +90,11 @@ class EndGameState extends State<EndGame> {
     widget.matchRecord.endPoints.FeedToHP = feedToHP;
     widget.matchRecord.endPoints.Passing = passing;
 
-    widget.matchRecord.endPoints.Comments = commentController.text;
-
     // Timer and endgame actions
     widget.matchRecord.endPoints.endgameTime = endgameTime;
-    widget.matchRecord.endPoints.endgameActions = endgameActions;
+    widget.matchRecord.endPoints.endgameshootingCycles = endgameshootingCycles;
     widget.matchRecord.endPoints.drawingData = drawingData;
-
+    widget.matchRecord.endPoints.robotBroken = robotBroken;
     endPoints = widget.matchRecord.endPoints;
     saveState();
   }
@@ -138,13 +136,13 @@ class EndGameState extends State<EndGame> {
             },
             doChange: () {
               setState(() {
-                endgameActions++;
+                endgameshootingCycles++;
               });
               UpdateData(); // Saves the updated endgame values
             },
             doChangeResetter: () {
               setState(() {
-                endgameActions = 0;
+                endgameshootingCycles = 0;
                 endgameTime = 0.0;
               });
               UpdateData(); // Resets the values in your matchRecord
@@ -158,10 +156,10 @@ class EndGameState extends State<EndGame> {
             child: Row(
               children: [
                 Expanded(
-                  child: buildCounter("Shooting Cycle", endgameActions,
+                  child: buildCounter("Shooting Cycle", endgameshootingCycles,
                       (int value) {
                     setState(() {
-                      endgameActions = value;
+                      endgameshootingCycles = value;
                     });
                     UpdateData();
                   }, color: Colors.yellow),
@@ -192,12 +190,12 @@ class EndGameState extends State<EndGame> {
                   }),
                 ),
                 Expanded(
-                  child: buildCheckBoxHalf("Passing", passing, (bool value) {
+                  child: buildCounter("Passing", passing, (int value) {
                     setState(() {
                       passing = value;
                     });
                     UpdateData();
-                  }),
+                  }, color: Colors.yellow),
                 ),
               ],
             ),
@@ -218,6 +216,7 @@ class EndGameState extends State<EndGame> {
                 selectedLevel = newLevel;
               });
               park = newLevel == null;
+              UpdateData();
             },
           ),
           const SizedBox(height: 12),
@@ -264,40 +263,48 @@ class EndGameState extends State<EndGame> {
                         ),
                       ],
                     ),
-
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      height: 135,
-                      decoration: BoxDecoration(
-                        color: Colors.grey,
-                        borderRadius:BorderRadius.circular(12),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(1.5),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Color.fromARGB(255, 34, 34, 34),
-                            borderRadius:BorderRadius.circular(12),
-                          ),
-                          child:StarRating(
-                            initialRating: shootingAccuracy,
-                            onRatingChanged: (rating) {
-                              setState(() {
-                                shootingAccuracy = rating;
-                                print(shootingAccuracy);
-                              });
-                            },
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Container(
+                        height: 135,
+                        decoration: BoxDecoration(
+                          color: Colors.grey,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(1.5),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Color.fromARGB(255, 34, 34, 34),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: StarRating(
+                              initialRating: shootingAccuracy,
+                              onRatingChanged: (rating) {
+                                setState(() {
+                                  shootingAccuracy = rating;
+                                });
+                                UpdateData();
+                              },
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
                   ],
                 ),
               ),
             ),
           ),
+          const SizedBox(height: 12),
+
+          buildCheckBox("Did the robot break down?", robotBroken, (bool value) {
+            setState(() {
+              robotBroken = value;
+            });
+            UpdateData();
+          }),
+
           const SizedBox(height: 12),
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -331,53 +338,6 @@ class EndGameState extends State<EndGame> {
                         ),
                       ),
                     ],
-                  ),
-                ),
-                Padding(
-                  padding:
-                      const EdgeInsets.only(left: 16, right: 16, bottom: 16),
-                  child: TextField(
-                    controller: commentController,
-                    maxLines: 4,
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: islightmode()
-                          ? const Color.fromARGB(
-                              255, 0, 0, 0) // Black for light mode
-                          : const Color.fromARGB(
-                              255, 255, 255, 255), // White for dark mode
-                    ),
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: islightmode()
-                          ? const Color.fromARGB(255, 255, 255, 255)
-                          : const Color.fromARGB(255, 34, 34, 34),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide:
-                            BorderSide(color: Colors.grey.shade300, width: 1),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide:
-                            BorderSide(color: Colors.grey.shade300, width: 1),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide:
-                            BorderSide(color: Colors.blueAccent, width: 2),
-                      ),
-                      hintText:
-                          'Add any relevant notes about the team\'s performance...',
-                      hintStyle: TextStyle(
-                        color: !islightmode()
-                            ? const Color.fromARGB(255, 255, 255, 255)
-                            : const Color.fromARGB(255, 34, 34, 34),
-                        fontSize: 15,
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                          vertical: 16, horizontal: 16),
-                    ),
                   ),
                 ),
               ],

@@ -7,6 +7,9 @@ scouting/server/devices.db
 scouting/server/match.db
 # Scouting assets
 scouting/Assets/
+# Scouting Data
+scouting/**/*.csv
+scouting/android/test_output/
 # Fedsbot
 fedsbot/sessions.json
 
@@ -17,6 +20,11 @@ fedsbot/sessions.json
 # TEMP
 .sync-cache/
 sync-source-repos.sh
+**/scouting_config.json
+**/server.spec
+**/generated_config.cmake
+**/ephemeral/
+**/winx64/
 
 
 # =============================================================================
@@ -60,6 +68,9 @@ hs_err_pid*
 *.aab
 # Keep Gradle wrapper jar (overrides *.jar above)
 !**/gradle-wrapper.jar
+# Allow tiny OBJ resource files that are needed for the simulator+tests (e.g. field collision meshes for simulation)
+!**/src/main/resources/**/*.obj
+!**/src/test/resources/**/*.obj
 
 
 
@@ -299,3 +310,5 @@ ctre_sim/
 *.sln
 expo-env.d.ts
 
+*.pak
+*.plugin_symlinks

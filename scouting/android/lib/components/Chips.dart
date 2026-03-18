@@ -4,7 +4,9 @@ void DefaultonChipUpdate(String label) {
   print('Chip clicked: $label');
 }
 
-Widget buildChips(List<String> chipLabels, List<List<Color>> chipColors, List<bool> isChipClicked, {List<Function(String)>? onTapList}) {
+Widget buildChips(List<String> chipLabels, List<List<Color>> chipColors,
+    List<bool> isChipClicked,
+    {List<Function(String)>? onTapList}) {
   assert(chipLabels.length == chipColors.length);
   assert(onTapList == null || chipLabels.length == onTapList.length);
 
@@ -22,7 +24,8 @@ Widget buildChips(List<String> chipLabels, List<List<Color>> chipColors, List<bo
               DefaultonChipUpdate(chipLabels[index]);
             }
           },
-          child: buildChip(chipLabels[index], chipColors[index], isChipClicked[index]),
+          child: buildChip(
+              chipLabels[index], chipColors[index], isChipClicked[index]),
         );
       },
     );
@@ -38,7 +41,8 @@ Widget buildChips(List<String> chipLabels, List<List<Color>> chipColors, List<bo
 Widget buildChip(String label, List<Color> color, bool isChipClicked) {
   return Chip(
     label: Text(label),
-    backgroundColor: isChipClicked ? color[0].withOpacity(0.2) : color[1].withOpacity(0.2),
+    backgroundColor:
+        isChipClicked ? color[0].withOpacity(0.2) : color[1].withOpacity(0.2),
     labelStyle: TextStyle(color: isChipClicked ? Colors.black : Colors.black),
   );
 }

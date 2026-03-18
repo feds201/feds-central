@@ -1,9 +1,10 @@
 # Script to compile Scout-Ops-Server and move executable to Assets folder
 
 # Set paths
-$sourcePath = "P:\FEDS201\Scouting_Suite\Scout-Ops-Server"
-$assetsDest = "P:\FEDS201\Scouting_Suite\Assets"
-$iconPath = "P:\FEDS201\Scouting_Suite\logo.ico"
+$BASE_DIR = "$PSScriptRoot\.."
+$sourcePath = "$BASE_DIR\server"
+$assetsDest = "$BASE_DIR\Assets"
+$iconPath = "$BASE_DIR\logo.ico"
 
 # Create Assets directory if it doesn't exist
 if (-not (Test-Path -Path $assetsDest)) {
@@ -49,12 +50,13 @@ if (-not $pyInstallerInstalled) {
 
 # Run PyInstaller to compile the application
 Write-Host "Compiling Scout-Ops-Server..."
+Set-Location "$sourcePath"
 try {
     & python -m PyInstaller --noconfirm --onefile --console --icon "$iconPath" `
-        --add-data "$sourcePath\App;App/" `
-        --add-data "$sourcePath\templates;templates/" `
-        --add-data "$sourcePath\main.py;." `
-        "$sourcePath\server.py"
+        --add-data "templates;templates/" `
+        --add-data "static;static/" `
+        --add-data "main.py;." `
+        "server.py"
 
     # Check if compilation was successful
     if ($LASTEXITCODE -eq 0) {

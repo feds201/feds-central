@@ -1,0 +1,1873 @@
+[2026-03-07 09:31:40] [Scout Ops Server] Device database initialized
+[2026-03-07 09:31:40] [Scout Ops Server] Match database initialized
+[2026-03-07 09:31:40] [Scout Ops Server] 
+[2026-03-07 09:31:40] [Scout Ops Server] ----------------------------------------------------
+[2026-03-07 09:31:40] [Scout Ops Server] Server Ip Address: http://10.50.80.33:201
+[2026-03-07 09:31:40] [Scout Ops Server] Server Battery: 68%
+[2026-03-07 09:31:40] [Scout Ops Server] Server CPU Usage: 67.2%
+[2026-03-07 09:31:40] [Scout Ops Server] Server Memory Usage: 78.1%
+[2026-03-07 09:31:40] [Scout Ops Server] Server Storage Usage: 24.1%
+[2026-03-07 09:31:40] [Scout Ops Server] Server Status: Running
+[2026-03-07 09:31:40] [Scout Ops Server] ----------------------------------------------------
+[2026-03-07 09:31:40] [Scout Ops Server] 
+[2026-03-07 09:33:09] [Scout Ops Server] Incoming HTTP GET request for / from 127.0.0.1
+[2026-03-07 09:33:09] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:09] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:09] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:09] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:09] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:09] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:09] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:09] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:09] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:09] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:10] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:10] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:10] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:10] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:10] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:10] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:10] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:10] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:10] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:10] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:10] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:10] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:10] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:10] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:10] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:10] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:10] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:10] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:10] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:10] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:10] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:10] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:10] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:10] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:10] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:11] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:11] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:11] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:11] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:11] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:11] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:11] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:11] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:11] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:11] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:12] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:12] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:12] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:12] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:12] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:13] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:13] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:13] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:13] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:13] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:13] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:13] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:13] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:13] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:13] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:13] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:13] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:13] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:13] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:13] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:13] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:13] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:13] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:13] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:13] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:13] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:13] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:13] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:13] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:13] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:14] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:14] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:14] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:14] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:14] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:14] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:14] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:14] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:14] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:14] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:14] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:14] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:14] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:14] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:14] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:14] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:14] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:14] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:14] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:14] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:14] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:14] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:14] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:14] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:14] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:15] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:15] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:15] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:15] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:15] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:15] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:15] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:15] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:15] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:15] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:15] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:15] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:15] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:15] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:15] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:15] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:15] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:15] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:15] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:15] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:15] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:15] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:15] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:15] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:15] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:16] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:16] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:16] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:16] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:16] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:16] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:16] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:16] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:16] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:16] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:16] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:16] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:16] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:16] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:16] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:16] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:16] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:16] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:16] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:16] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:16] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:16] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:16] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:16] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:16] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:17] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:17] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:17] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:17] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:17] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:17] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:17] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:17] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:17] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:17] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:17] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:17] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:17] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:17] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:17] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:17] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:17] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:17] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:17] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:17] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:17] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:17] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:17] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:17] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:17] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:18] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:18] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:18] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:18] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:18] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:18] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:18] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:18] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:18] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:18] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:18] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:18] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:18] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:18] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:18] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:18] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:18] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:18] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:18] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:18] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:18] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:18] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:18] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:18] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:18] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:19] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:19] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:19] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:19] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:19] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:19] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:19] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:19] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:19] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:19] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:19] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:19] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:19] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:19] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:19] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:19] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:19] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:19] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:19] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:19] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:19] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:19] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:19] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:19] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:19] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:20] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:20] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:20] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:20] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:20] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:20] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:20] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:20] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:20] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:20] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:20] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:20] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:20] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:20] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:20] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:20] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:20] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:20] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:20] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:20] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:20] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:20] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:20] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:20] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:20] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:21] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:21] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:21] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:21] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:21] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:21] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:21] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:21] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:21] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:21] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:21] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:21] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:21] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:21] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:21] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:21] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:21] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:21] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:21] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:21] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:21] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:21] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:21] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:21] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:21] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:22] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:22] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:22] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:22] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:22] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:22] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:22] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:22] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:22] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:22] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:22] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:22] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:22] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:22] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:22] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:22] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:22] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:22] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:22] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:22] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:23] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:23] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:23] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:23] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:23] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:23] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:23] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:23] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:23] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:23] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:23] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:23] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:23] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:23] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:23] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:23] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:23] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:23] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:23] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:23] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:23] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:23] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:23] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:23] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:23] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:23] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:23] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:23] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:23] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:24] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:24] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:24] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:24] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:24] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:24] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:24] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:24] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:24] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:24] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:24] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:24] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:24] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:24] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:24] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:24] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:24] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:24] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:24] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:24] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:24] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:25] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:25] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:25] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:25] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:25] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:25] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:25] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:25] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:25] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:25] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:25] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:25] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:25] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:25] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:25] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:25] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:25] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:25] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:25] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:25] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:25] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:25] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:25] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:25] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:25] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:26] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:26] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:26] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:26] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:26] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:26] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:26] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:26] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:26] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:26] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:26] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:26] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:26] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:26] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:26] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:26] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:26] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:26] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:26] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:26] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:26] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:26] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:26] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:26] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:26] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:27] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:27] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:27] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:27] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:27] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:27] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:27] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:27] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:27] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:27] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:27] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:27] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:27] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:27] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:27] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:27] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:27] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:27] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:27] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:27] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:27] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:27] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:27] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:27] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:27] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:28] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:28] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:28] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:28] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:28] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:28] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:28] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:28] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:28] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:28] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:28] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:28] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:28] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:28] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:28] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:28] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:28] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:28] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:28] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:28] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:28] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:28] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:28] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:28] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:28] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:29] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:29] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:29] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:29] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:29] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:29] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:29] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:29] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:29] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:29] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:29] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:29] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:29] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:29] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:29] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:29] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:29] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:29] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:29] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:29] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:29] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:29] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:29] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:29] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:29] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:30] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:30] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:30] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:30] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:30] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:30] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:30] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:30] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:30] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:30] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:30] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:30] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:30] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:30] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:30] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:30] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:30] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:30] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:30] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:30] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:30] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:30] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:30] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:30] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:30] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:31] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:31] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:31] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:31] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:31] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:31] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:31] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:31] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:31] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:31] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:31] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:31] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:31] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:31] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:31] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:31] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:31] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:31] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:31] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:31] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:31] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:31] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:31] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:31] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:31] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:32] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:32] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:32] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:32] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:32] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:32] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:32] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:32] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:32] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:32] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:32] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:32] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:32] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:32] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:32] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:32] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:32] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:32] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:32] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:32] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:32] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:32] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:32] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:32] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:32] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:33] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:33] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:33] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:33] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:33] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:33] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:33] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:33] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:33] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:33] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:33] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:33] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:33] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:33] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:33] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:33] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:33] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:33] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:33] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:33] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:33] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:33] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:33] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:33] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:33] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:34] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:34] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:34] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:34] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:34] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:34] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:34] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:34] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:34] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:34] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:34] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:34] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:34] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:34] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:34] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:34] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:34] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:34] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:34] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:34] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:34] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:34] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:34] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:34] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:34] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:35] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:35] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:35] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:35] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:35] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:35] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:35] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:35] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:35] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:35] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:35] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:35] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:35] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:35] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:35] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:35] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:35] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:35] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:35] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:35] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:35] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:35] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:35] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:35] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:35] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:36] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:36] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:36] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:36] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:36] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:36] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:36] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:36] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:36] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:36] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:36] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:36] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:36] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:36] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:36] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:36] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:36] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:36] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:36] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:36] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:36] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:36] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:36] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:36] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:36] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:37] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:37] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:37] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:37] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:37] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:37] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:37] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:37] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:37] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:37] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:37] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:37] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:37] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:37] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:37] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:37] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:37] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:37] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:37] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:37] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:37] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:37] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:37] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:37] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:37] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:38] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:38] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:38] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:38] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:38] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:38] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:38] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:38] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:38] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:38] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:38] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:38] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:38] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:38] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:38] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:38] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:38] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:38] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:38] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:38] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:38] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:38] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:38] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:38] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:38] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:39] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:39] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:39] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:39] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:39] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:39] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:39] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:39] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:39] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:39] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:39] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:39] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:39] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:39] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:39] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:39] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:39] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:39] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:39] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:39] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:39] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:39] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:39] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:39] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:39] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:40] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:40] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:40] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:40] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:40] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:40] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:40] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:40] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:40] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:40] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:40] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:40] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:40] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:40] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:40] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:40] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:40] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:40] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:40] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:40] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:40] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:40] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:40] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:40] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:40] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:41] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:41] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:41] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:41] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:41] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:41] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:41] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:41] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:41] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:41] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:41] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:41] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:41] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:41] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:41] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:41] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:41] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:41] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:41] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:41] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:41] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:41] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:41] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:41] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:41] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:42] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:42] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:42] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:42] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:42] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:42] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:42] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:42] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:42] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:42] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:42] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:42] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:42] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:42] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:42] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:42] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:42] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:42] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:42] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:42] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:42] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:42] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:42] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:42] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:42] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:43] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:43] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:43] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:43] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:43] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:43] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:43] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:43] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:43] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:43] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:43] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:43] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:43] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:43] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:43] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:43] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:43] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:43] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:43] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:43] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:43] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:43] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:43] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:43] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:43] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:44] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:44] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:44] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:44] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:44] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:44] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:44] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:44] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:44] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:44] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:44] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:44] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:44] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:44] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:44] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:44] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:44] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:44] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:44] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:44] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:44] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:44] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:44] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:44] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:44] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:45] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:45] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:45] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:45] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:45] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:45] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:45] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:45] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:45] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:45] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:45] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:45] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:45] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:45] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:45] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:45] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:45] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:45] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:45] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:45] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:45] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:45] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:45] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:45] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:45] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:46] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:46] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:46] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:46] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:46] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:46] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:46] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:46] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:46] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:46] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:46] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:46] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:46] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:46] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:46] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:46] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:46] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:46] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:46] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:46] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:46] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:46] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:46] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:46] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:46] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:47] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:47] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:47] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:47] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:47] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:47] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:47] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:47] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:47] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:47] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:47] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:47] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:47] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:47] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:47] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:48] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:48] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:48] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:49] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:49] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:49] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:49] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:50] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:50] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:50] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:50] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:51] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:51] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:51] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:51] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:51] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:51] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:51] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:51] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:52] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:53] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:53] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:53] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:53] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:53] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:54] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:54] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:54] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:54] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:54] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:54] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:54] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:55] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:55] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:55] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:56] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:56] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:56] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:56] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:56] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:57] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:57] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:57] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:57] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:57] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:57] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:57] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:57] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:57] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:57] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:59] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:59] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:59] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:59] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:33:59] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:33:59] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:33:59] [Scout Ops Server] Data fetched
+[2026-03-07 09:33:59] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:33:59] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:34:00] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:34:00] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:34:00] [Scout Ops Server] Data fetched
+[2026-03-07 09:34:00] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:34:00] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:34:00] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:34:01] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:34:01] [Scout Ops Server] Data fetched
+[2026-03-07 09:34:01] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:34:02] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:34:02] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:34:02] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:34:02] [Scout Ops Server] Data fetched
+[2026-03-07 09:34:02] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:34:02] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:34:03] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:34:03] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:34:03] [Scout Ops Server] Data fetched
+[2026-03-07 09:34:03] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:34:03] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:34:04] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:34:04] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:34:04] [Scout Ops Server] Data fetched
+[2026-03-07 09:34:04] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:34:04] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:34:04] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:34:05] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:34:05] [Scout Ops Server] Data fetched
+[2026-03-07 09:34:05] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:34:06] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:34:06] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:34:07] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:34:07] [Scout Ops Server] Data fetched
+[2026-03-07 09:34:07] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:34:07] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:34:07] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:34:07] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:34:08] [Scout Ops Server] Data fetched
+[2026-03-07 09:34:08] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:34:08] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:34:08] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:34:08] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:34:09] [Scout Ops Server] Data fetched
+[2026-03-07 09:34:09] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:34:09] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:34:09] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:34:09] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:34:09] [Scout Ops Server] Data fetched
+[2026-03-07 09:34:10] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:34:10] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:34:10] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:34:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:34:11] [Scout Ops Server] Data fetched
+[2026-03-07 09:34:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:34:11] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:34:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:34:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:34:12] [Scout Ops Server] Data fetched
+[2026-03-07 09:34:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:34:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:34:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:34:13] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:34:13] [Scout Ops Server] Data fetched
+[2026-03-07 09:34:13] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:34:13] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:34:13] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:34:13] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:34:13] [Scout Ops Server] Data fetched
+[2026-03-07 09:34:13] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:34:13] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:34:13] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:34:14] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:34:14] [Scout Ops Server] Data fetched
+[2026-03-07 09:34:15] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:34:15] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:34:15] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:34:15] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:34:16] [Scout Ops Server] Data fetched
+[2026-03-07 09:34:16] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:34:16] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:34:16] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:34:17] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:34:17] [Scout Ops Server] Data fetched
+[2026-03-07 09:34:17] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:34:17] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:34:17] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:34:17] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:34:17] [Scout Ops Server] Data fetched
+[2026-03-07 09:34:18] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:34:18] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:34:18] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:34:18] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:34:18] [Scout Ops Server] Data fetched
+[2026-03-07 09:34:18] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:34:18] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:34:19] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:34:19] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:34:19] [Scout Ops Server] Data fetched
+[2026-03-07 09:34:19] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:34:20] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:34:20] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:34:20] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:34:20] [Scout Ops Server] Data fetched
+[2026-03-07 09:34:20] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:34:20] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:34:20] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:34:21] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:34:21] [Scout Ops Server] Data fetched
+[2026-03-07 09:34:21] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:34:21] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:34:22] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:34:22] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:34:23] [Scout Ops Server] Data fetched
+[2026-03-07 09:34:23] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:34:23] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:34:23] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:34:23] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:34:23] [Scout Ops Server] Data fetched
+[2026-03-07 09:34:24] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:34:24] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:34:24] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:34:24] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:34:24] [Scout Ops Server] Data fetched
+[2026-03-07 09:34:24] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:34:24] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:34:25] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:34:25] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:34:25] [Scout Ops Server] Data fetched
+[2026-03-07 09:34:26] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:34:26] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:34:26] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:34:27] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:34:27] [Scout Ops Server] Data fetched
+[2026-03-07 09:34:27] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:34:27] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:34:27] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:34:28] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:34:28] [Scout Ops Server] Data fetched
+[2026-03-07 09:34:28] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:34:28] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:34:28] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:34:28] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:34:28] [Scout Ops Server] Data fetched
+[2026-03-07 09:34:28] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:34:28] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:34:28] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:34:30] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:34:30] [Scout Ops Server] Data fetched
+[2026-03-07 09:34:30] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:34:30] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:34:30] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:34:30] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:34:30] [Scout Ops Server] Data fetched
+[2026-03-07 09:34:31] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:34:31] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:34:31] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:34:31] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:34:31] [Scout Ops Server] Data fetched
+[2026-03-07 09:34:31] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:34:31] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:34:31] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:34:32] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:34:33] [Scout Ops Server] Data fetched
+[2026-03-07 09:34:33] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:34:33] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:34:33] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:34:33] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:34:33] [Scout Ops Server] Data fetched
+[2026-03-07 09:34:33] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:34:33] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:34:33] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:34:34] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:34:34] [Scout Ops Server] Data fetched
+[2026-03-07 09:34:34] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:34:34] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:34:35] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:34:35] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:34:35] [Scout Ops Server] Data fetched
+[2026-03-07 09:34:35] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:34:35] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:34:35] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:34:36] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:34:36] [Scout Ops Server] Data fetched
+[2026-03-07 09:34:36] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:34:36] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:34:36] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:34:37] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:34:37] [Scout Ops Server] Data fetched
+[2026-03-07 09:34:37] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:34:37] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:34:37] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:34:38] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:34:38] [Scout Ops Server] Data fetched
+[2026-03-07 09:34:39] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:34:39] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:34:39] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:34:39] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:34:39] [Scout Ops Server] Data fetched
+[2026-03-07 09:34:40] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:34:40] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:34:40] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:34:40] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:34:40] [Scout Ops Server] Data fetched
+[2026-03-07 09:34:41] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:34:41] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:34:41] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:34:42] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:34:42] [Scout Ops Server] Data fetched
+[2026-03-07 09:34:42] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:34:42] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:34:42] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:34:42] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:34:42] [Scout Ops Server] Data fetched
+[2026-03-07 09:34:42] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:34:42] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:34:43] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:34:43] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:34:43] [Scout Ops Server] Data fetched
+[2026-03-07 09:34:43] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:34:43] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:34:43] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:34:44] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:34:44] [Scout Ops Server] Data fetched
+[2026-03-07 09:34:44] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:34:44] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:34:45] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:34:45] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:34:45] [Scout Ops Server] Data fetched
+[2026-03-07 09:34:46] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:34:46] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:34:46] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:34:46] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:34:46] [Scout Ops Server] Data fetched
+[2026-03-07 09:34:46] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:34:47] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:34:47] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:35:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:35:11] [Scout Ops Server] Data fetched
+[2026-03-07 09:35:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:35:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:35:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:36:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:36:11] [Scout Ops Server] Data fetched
+[2026-03-07 09:36:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:36:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:36:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:37:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:37:11] [Scout Ops Server] Data fetched
+[2026-03-07 09:37:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:37:11] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:37:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:38:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:38:11] [Scout Ops Server] Data fetched
+[2026-03-07 09:38:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:38:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:38:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:39:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:39:12] [Scout Ops Server] Data fetched
+[2026-03-07 09:39:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:39:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:39:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:40:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:40:11] [Scout Ops Server] Data fetched
+[2026-03-07 09:40:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:40:11] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:40:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:41:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:41:11] [Scout Ops Server] Data fetched
+[2026-03-07 09:41:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:41:11] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:41:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:42:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:42:12] [Scout Ops Server] Data fetched
+[2026-03-07 09:42:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:42:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:42:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:43:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:43:12] [Scout Ops Server] Data fetched
+[2026-03-07 09:43:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:43:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:43:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:44:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:44:12] [Scout Ops Server] Data fetched
+[2026-03-07 09:44:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:44:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:44:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:45:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:45:12] [Scout Ops Server] Data fetched
+[2026-03-07 09:45:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:45:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:45:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:46:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:46:12] [Scout Ops Server] Data fetched
+[2026-03-07 09:46:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:46:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:46:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:47:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:47:12] [Scout Ops Server] Data fetched
+[2026-03-07 09:47:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:47:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:47:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:48:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:48:12] [Scout Ops Server] Data fetched
+[2026-03-07 09:48:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:48:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:48:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:49:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:49:12] [Scout Ops Server] Data fetched
+[2026-03-07 09:49:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:49:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:49:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:50:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:50:11] [Scout Ops Server] Data fetched
+[2026-03-07 09:50:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:50:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:50:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:51:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:51:12] [Scout Ops Server] Data fetched
+[2026-03-07 09:51:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:51:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:51:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:52:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:52:12] [Scout Ops Server] Data fetched
+[2026-03-07 09:52:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:52:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:52:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:53:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:53:11] [Scout Ops Server] Data fetched
+[2026-03-07 09:53:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:53:11] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:53:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:54:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:54:11] [Scout Ops Server] Data fetched
+[2026-03-07 09:54:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:54:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:54:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:55:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:55:12] [Scout Ops Server] Data fetched
+[2026-03-07 09:55:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:55:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:55:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:56:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:56:12] [Scout Ops Server] Data fetched
+[2026-03-07 09:56:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:56:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:56:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:57:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:57:11] [Scout Ops Server] Data fetched
+[2026-03-07 09:57:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:57:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:57:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:58:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:58:12] [Scout Ops Server] Data fetched
+[2026-03-07 09:58:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:58:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:58:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 09:59:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 09:59:12] [Scout Ops Server] Data fetched
+[2026-03-07 09:59:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 09:59:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 09:59:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:00:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:00:12] [Scout Ops Server] Data fetched
+[2026-03-07 10:00:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:00:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:00:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:01:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:01:11] [Scout Ops Server] Data fetched
+[2026-03-07 10:01:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:01:11] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:01:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:02:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:02:11] [Scout Ops Server] Data fetched
+[2026-03-07 10:02:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:02:11] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:02:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:03:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:03:12] [Scout Ops Server] Data fetched
+[2026-03-07 10:03:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:03:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:03:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:04:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:04:12] [Scout Ops Server] Data fetched
+[2026-03-07 10:04:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:04:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:04:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:05:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:05:12] [Scout Ops Server] Data fetched
+[2026-03-07 10:05:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:05:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:05:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:06:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:06:12] [Scout Ops Server] Data fetched
+[2026-03-07 10:06:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:06:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:06:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:07:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:07:12] [Scout Ops Server] Data fetched
+[2026-03-07 10:07:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:07:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:07:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:08:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:08:12] [Scout Ops Server] Data fetched
+[2026-03-07 10:08:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:08:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:08:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:09:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:09:11] [Scout Ops Server] Data fetched
+[2026-03-07 10:09:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:09:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:09:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:10:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:10:12] [Scout Ops Server] Data fetched
+[2026-03-07 10:10:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:10:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:10:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:11:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:11:11] [Scout Ops Server] Data fetched
+[2026-03-07 10:11:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:11:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:11:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:12:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:12:12] [Scout Ops Server] Data fetched
+[2026-03-07 10:12:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:12:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:12:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:13:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:13:11] [Scout Ops Server] Data fetched
+[2026-03-07 10:13:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:13:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:13:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:14:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:14:12] [Scout Ops Server] Data fetched
+[2026-03-07 10:14:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:14:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:14:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:15:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:15:12] [Scout Ops Server] Data fetched
+[2026-03-07 10:15:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:15:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:15:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:16:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:16:12] [Scout Ops Server] Data fetched
+[2026-03-07 10:16:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:16:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:16:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:17:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:17:12] [Scout Ops Server] Data fetched
+[2026-03-07 10:17:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:17:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:17:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:18:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:18:12] [Scout Ops Server] Data fetched
+[2026-03-07 10:18:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:18:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:18:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:19:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:19:11] [Scout Ops Server] Data fetched
+[2026-03-07 10:19:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:19:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:19:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:20:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:20:12] [Scout Ops Server] Data fetched
+[2026-03-07 10:20:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:20:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:20:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:21:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:21:11] [Scout Ops Server] Data fetched
+[2026-03-07 10:21:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:21:11] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:21:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:22:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:22:12] [Scout Ops Server] Data fetched
+[2026-03-07 10:22:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:22:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:22:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:23:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:23:11] [Scout Ops Server] Data fetched
+[2026-03-07 10:23:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:23:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:23:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:24:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:24:11] [Scout Ops Server] Data fetched
+[2026-03-07 10:24:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:24:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:24:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:25:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:25:12] [Scout Ops Server] Data fetched
+[2026-03-07 10:25:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:25:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:25:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:26:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:26:11] [Scout Ops Server] Data fetched
+[2026-03-07 10:26:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:26:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:26:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:27:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:27:11] [Scout Ops Server] Data fetched
+[2026-03-07 10:27:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:27:11] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:27:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:28:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:28:12] [Scout Ops Server] Data fetched
+[2026-03-07 10:28:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:28:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:28:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:29:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:29:12] [Scout Ops Server] Data fetched
+[2026-03-07 10:29:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:29:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:29:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:30:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:30:11] [Scout Ops Server] Data fetched
+[2026-03-07 10:30:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:30:11] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:30:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:31:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:31:12] [Scout Ops Server] Data fetched
+[2026-03-07 10:31:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:31:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:31:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:32:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:32:12] [Scout Ops Server] Data fetched
+[2026-03-07 10:32:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:32:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:32:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:33:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:33:11] [Scout Ops Server] Data fetched
+[2026-03-07 10:33:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:33:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:33:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:34:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:34:12] [Scout Ops Server] Data fetched
+[2026-03-07 10:34:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:34:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:34:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:35:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:35:12] [Scout Ops Server] Data fetched
+[2026-03-07 10:35:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:35:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:35:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:36:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:36:12] [Scout Ops Server] Data fetched
+[2026-03-07 10:36:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:36:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:36:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:37:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:37:11] [Scout Ops Server] Data fetched
+[2026-03-07 10:37:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:37:11] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:37:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:38:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:38:11] [Scout Ops Server] Data fetched
+[2026-03-07 10:38:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:38:11] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:38:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:39:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:39:12] [Scout Ops Server] Data fetched
+[2026-03-07 10:39:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:39:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:39:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:40:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:40:11] [Scout Ops Server] Data fetched
+[2026-03-07 10:40:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:40:11] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:40:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:41:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:41:11] [Scout Ops Server] Data fetched
+[2026-03-07 10:41:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:41:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:41:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:42:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:42:12] [Scout Ops Server] Data fetched
+[2026-03-07 10:42:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:42:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:42:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:43:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:43:12] [Scout Ops Server] Data fetched
+[2026-03-07 10:43:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:43:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:43:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:44:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:44:12] [Scout Ops Server] Data fetched
+[2026-03-07 10:44:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:44:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:44:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:45:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:45:11] [Scout Ops Server] Data fetched
+[2026-03-07 10:45:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:45:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:45:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:46:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:46:12] [Scout Ops Server] Data fetched
+[2026-03-07 10:46:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:46:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:46:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:47:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:47:12] [Scout Ops Server] Data fetched
+[2026-03-07 10:47:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:47:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:47:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:48:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:48:11] [Scout Ops Server] Data fetched
+[2026-03-07 10:48:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:48:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:48:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:49:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:49:12] [Scout Ops Server] Data fetched
+[2026-03-07 10:49:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:49:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:49:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:50:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:50:12] [Scout Ops Server] Data fetched
+[2026-03-07 10:50:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:50:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:50:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:51:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:51:12] [Scout Ops Server] Data fetched
+[2026-03-07 10:51:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:51:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:51:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:52:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:52:12] [Scout Ops Server] Data fetched
+[2026-03-07 10:52:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:52:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:52:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:53:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:53:12] [Scout Ops Server] Data fetched
+[2026-03-07 10:53:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:53:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:53:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:54:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:54:12] [Scout Ops Server] Data fetched
+[2026-03-07 10:54:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:54:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:54:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:55:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:55:11] [Scout Ops Server] Data fetched
+[2026-03-07 10:55:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:55:11] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:55:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:56:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:56:11] [Scout Ops Server] Data fetched
+[2026-03-07 10:56:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:56:11] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:56:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:57:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:57:11] [Scout Ops Server] Data fetched
+[2026-03-07 10:57:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:57:11] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:57:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:58:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:58:11] [Scout Ops Server] Data fetched
+[2026-03-07 10:58:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:58:11] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:58:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 10:59:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 10:59:11] [Scout Ops Server] Data fetched
+[2026-03-07 10:59:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 10:59:11] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 10:59:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 11:00:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 11:00:11] [Scout Ops Server] Data fetched
+[2026-03-07 11:00:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 11:00:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 11:00:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 11:01:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 11:01:11] [Scout Ops Server] Data fetched
+[2026-03-07 11:01:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 11:01:11] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 11:01:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 11:02:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 11:02:11] [Scout Ops Server] Data fetched
+[2026-03-07 11:02:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 11:02:11] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 11:02:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 11:03:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 11:03:12] [Scout Ops Server] Data fetched
+[2026-03-07 11:03:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 11:03:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 11:03:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 11:04:17] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 11:04:17] [Scout Ops Server] Data fetched
+[2026-03-07 11:04:17] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 11:04:17] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 11:04:17] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 11:05:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 11:05:11] [Scout Ops Server] Data fetched
+[2026-03-07 11:05:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 11:05:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 11:05:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 11:06:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 11:06:11] [Scout Ops Server] Data fetched
+[2026-03-07 11:06:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 11:06:11] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 11:06:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 11:07:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 11:07:11] [Scout Ops Server] Data fetched
+[2026-03-07 11:07:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 11:07:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 11:07:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 11:08:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 11:08:11] [Scout Ops Server] Data fetched
+[2026-03-07 11:08:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 11:08:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 11:08:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 11:09:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 11:09:11] [Scout Ops Server] Data fetched
+[2026-03-07 11:09:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 11:09:11] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 11:09:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 11:10:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 11:10:12] [Scout Ops Server] Data fetched
+[2026-03-07 11:10:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 11:10:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 11:10:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 11:11:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 11:11:11] [Scout Ops Server] Data fetched
+[2026-03-07 11:11:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 11:11:11] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 11:11:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 11:12:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 11:12:11] [Scout Ops Server] Data fetched
+[2026-03-07 11:12:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 11:12:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 11:12:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 11:13:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 11:13:11] [Scout Ops Server] Data fetched
+[2026-03-07 11:13:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 11:13:11] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 11:13:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 11:14:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 11:14:12] [Scout Ops Server] Data fetched
+[2026-03-07 11:14:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 11:14:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 11:14:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 11:15:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 11:15:11] [Scout Ops Server] Data fetched
+[2026-03-07 11:15:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 11:15:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 11:15:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 11:16:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 11:16:11] [Scout Ops Server] Data fetched
+[2026-03-07 11:16:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 11:16:11] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 11:16:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 11:17:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 11:17:11] [Scout Ops Server] Data fetched
+[2026-03-07 11:17:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 11:17:11] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 11:17:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 11:18:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 11:18:11] [Scout Ops Server] Data fetched
+[2026-03-07 11:18:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 11:18:11] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 11:18:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 11:19:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 11:19:11] [Scout Ops Server] Data fetched
+[2026-03-07 11:19:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 11:19:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 11:19:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 11:20:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 11:20:11] [Scout Ops Server] Data fetched
+[2026-03-07 11:20:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 11:20:11] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 11:20:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 11:21:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 11:21:11] [Scout Ops Server] Data fetched
+[2026-03-07 11:21:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 11:21:11] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 11:21:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 11:22:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 11:22:11] [Scout Ops Server] Data fetched
+[2026-03-07 11:22:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 11:22:11] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 11:22:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 11:23:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 11:23:11] [Scout Ops Server] Data fetched
+[2026-03-07 11:23:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 11:23:11] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 11:23:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 11:24:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 11:24:12] [Scout Ops Server] Data fetched
+[2026-03-07 11:24:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 11:24:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 11:24:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 11:25:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 11:25:11] [Scout Ops Server] Data fetched
+[2026-03-07 11:25:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 11:25:11] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 11:25:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 11:26:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 11:26:11] [Scout Ops Server] Data fetched
+[2026-03-07 11:26:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 11:26:11] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 11:26:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 11:27:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 11:27:11] [Scout Ops Server] Data fetched
+[2026-03-07 11:27:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 11:27:11] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 11:27:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 11:28:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 11:28:11] [Scout Ops Server] Data fetched
+[2026-03-07 11:28:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 11:28:11] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 11:28:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 11:29:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 11:29:11] [Scout Ops Server] Data fetched
+[2026-03-07 11:29:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 11:29:11] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 11:29:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 11:30:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 11:30:11] [Scout Ops Server] Data fetched
+[2026-03-07 11:30:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 11:30:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 11:30:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 11:31:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 11:31:12] [Scout Ops Server] Data fetched
+[2026-03-07 11:31:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 11:31:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 11:31:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 11:32:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 11:32:11] [Scout Ops Server] Data fetched
+[2026-03-07 11:32:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 11:32:11] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 11:32:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 11:33:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 11:33:11] [Scout Ops Server] Data fetched
+[2026-03-07 11:33:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 11:33:11] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 11:33:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 11:34:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 11:34:11] [Scout Ops Server] Data fetched
+[2026-03-07 11:34:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 11:34:11] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 11:34:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 11:35:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 11:35:12] [Scout Ops Server] Data fetched
+[2026-03-07 11:35:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 11:35:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 11:35:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 11:36:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 11:36:11] [Scout Ops Server] Data fetched
+[2026-03-07 11:36:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 11:36:11] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 11:36:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 11:37:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 11:37:11] [Scout Ops Server] Data fetched
+[2026-03-07 11:37:11] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 11:37:11] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 11:37:11] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1
+[2026-03-07 11:38:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_data from 127.0.0.1
+[2026-03-07 11:38:12] [Scout Ops Server] Data fetched
+[2026-03-07 11:38:12] [Scout Ops Server] Incoming HTTP GET request for /api/devices from 127.0.0.1
+[2026-03-07 11:38:12] [Scout Ops Server] Devices fetched: [{'id': 1, 'device_name': 'Ritesh', 'ip_address': '10.232.195.222'}]
+[2026-03-07 11:38:12] [Scout Ops Server] Incoming HTTP GET request for /api/get_health from 127.0.0.1

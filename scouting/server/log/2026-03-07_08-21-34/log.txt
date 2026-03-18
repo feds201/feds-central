@@ -1,0 +1,548 @@
+[2026-03-07 08:19:00] [Scout Ops Server] Device database initialized
+[2026-03-07 08:19:00] [Scout Ops Server] Match database initialized
+[2026-03-07 08:19:00] [Scout Ops Server] 
+[2026-03-07 08:19:00] [Scout Ops Server] ----------------------------------------------------
+[2026-03-07 08:19:00] [Scout Ops Server] Server Ip Address: http://10.232.195.48:201
+[2026-03-07 08:19:00] [Scout Ops Server] Server Battery: 44%
+[2026-03-07 08:19:00] [Scout Ops Server] Server CPU Usage: 36.6%
+[2026-03-07 08:19:00] [Scout Ops Server] Server Memory Usage: 81.6%
+[2026-03-07 08:19:00] [Scout Ops Server] Server Storage Usage: 24.1%
+[2026-03-07 08:19:00] [Scout Ops Server] Server Status: Running
+[2026-03-07 08:19:00] [Scout Ops Server] ----------------------------------------------------
+[2026-03-07 08:19:01] [Scout Ops Server] 
+[2026-03-07 08:19:01] [Scout Ops Server] Devices fetched: []
+[2026-03-07 08:19:01] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:01] [Scout Ops Server] Devices fetched: []
+[2026-03-07 08:19:01] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:01] [Scout Ops Server] Devices fetched: []
+[2026-03-07 08:19:01] [Scout Ops Server] Devices fetched: []
+[2026-03-07 08:19:01] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:01] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:01] [Scout Ops Server] Devices fetched: []
+[2026-03-07 08:19:01] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:01] [Scout Ops Server] Devices fetched: []
+[2026-03-07 08:19:01] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:01] [Scout Ops Server] Devices fetched: []
+[2026-03-07 08:19:01] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:01] [Scout Ops Server] Devices fetched: []
+[2026-03-07 08:19:01] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:01] [Scout Ops Server] Devices fetched: []
+[2026-03-07 08:19:01] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:01] [Scout Ops Server] Devices fetched: []
+[2026-03-07 08:19:01] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:01] [Scout Ops Server] Devices fetched: []
+[2026-03-07 08:19:01] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:01] [Scout Ops Server] Devices fetched: []
+[2026-03-07 08:19:01] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:01] [Scout Ops Server] Devices fetched: []
+[2026-03-07 08:19:01] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:01] [Scout Ops Server] Devices fetched: []
+[2026-03-07 08:19:01] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:01] [Scout Ops Server] Devices fetched: []
+[2026-03-07 08:19:01] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:01] [Scout Ops Server] Devices fetched: []
+[2026-03-07 08:19:01] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:01] [Scout Ops Server] Devices fetched: []
+[2026-03-07 08:19:01] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:01] [Scout Ops Server] Devices fetched: []
+[2026-03-07 08:19:01] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:01] [Scout Ops Server] Devices fetched: []
+[2026-03-07 08:19:01] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:01] [Scout Ops Server] Devices fetched: []
+[2026-03-07 08:19:01] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:01] [Scout Ops Server] Devices fetched: []
+[2026-03-07 08:19:01] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:01] [Scout Ops Server] Devices fetched: []
+[2026-03-07 08:19:01] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:01] [Scout Ops Server] Devices fetched: []
+[2026-03-07 08:19:01] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:01] [Scout Ops Server] Devices fetched: []
+[2026-03-07 08:19:01] [Scout Ops Server] Devices fetched: []
+[2026-03-07 08:19:01] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:02] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:02] [Scout Ops Server] Devices fetched: []
+[2026-03-07 08:19:03] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:03] [Scout Ops Server] Devices fetched: []
+[2026-03-07 08:19:04] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:04] [Scout Ops Server] Devices fetched: []
+[2026-03-07 08:19:05] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:05] [Scout Ops Server] Devices fetched: []
+[2026-03-07 08:19:06] [Scout Ops Server] Server Communication Tested
+[2026-03-07 08:19:06] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:06] [Scout Ops Server] Devices fetched: []
+[2026-03-07 08:19:07] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:07] [Scout Ops Server] Devices fetched: []
+[2026-03-07 08:19:07] [Scout Ops Server] Registered device: Ritesh Raj with IP: 10.232.195.222
+[2026-03-07 08:19:08] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:08] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:09] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:09] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:10] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:10] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:11] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:11] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:12] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:12] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:13] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:13] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:14] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:14] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:15] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:15] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:16] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:16] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:16] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:16] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:16] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:16] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:16] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:16] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:16] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:16] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:17] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:17] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:17] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:17] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:17] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:17] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:17] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:17] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:17] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:17] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:18] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:18] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:18] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:18] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:18] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:18] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:18] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:18] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:18] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:18] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:19] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:19] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:19] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:19] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:19] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:19] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:19] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:19] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:19] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:19] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:20] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:20] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:20] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:20] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:20] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:20] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:20] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:20] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:21] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:21] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:21] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:21] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:21] [Scout Ops Server] 31 matches posted
+[2026-03-07 08:19:21] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:21] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:21] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:21] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:21] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:21] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:21] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:21] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:22] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:22] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:22] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:22] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:22] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:22] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:22] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:22] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:23] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:23] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:23] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:23] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:23] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:23] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:23] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:23] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:23] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:23] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:24] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:24] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:24] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:24] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:24] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:24] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:24] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:24] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:24] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:24] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:25] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:25] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:25] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:25] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:25] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:25] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:25] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:25] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:25] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:25] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:26] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:26] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:26] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:26] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:26] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:26] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:26] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:26] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:26] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:26] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:27] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:27] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:27] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:27] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:27] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:27] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:27] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:27] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:27] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:27] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:28] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:28] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:28] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:28] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:28] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:28] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:28] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:28] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:28] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:28] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:29] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:29] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:29] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:29] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:29] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:29] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:29] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:29] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:29] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:29] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:30] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:30] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:30] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:30] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:30] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:30] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:30] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:30] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:30] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:30] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:31] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:31] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:31] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:31] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:31] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:31] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:31] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:31] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:31] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:31] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:32] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:32] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:32] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:32] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:32] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:32] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:32] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:32] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:32] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:32] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:33] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:33] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:33] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:33] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:33] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:33] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:33] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:33] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:33] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:33] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:34] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:34] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:34] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:34] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:34] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:34] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:34] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:34] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:34] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:34] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:35] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:35] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:35] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:35] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:35] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:35] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:35] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:35] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:35] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:35] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:36] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:36] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:36] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:36] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:36] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:36] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:36] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:36] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:36] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:36] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:37] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:37] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:37] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:37] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:37] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:37] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:37] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:37] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:37] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:37] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:38] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:38] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:38] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:38] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:38] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:38] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:38] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:38] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:38] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:38] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:39] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:39] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:39] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:39] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:39] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:39] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:39] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:39] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:39] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:39] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:40] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:40] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:40] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:40] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:40] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:40] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:40] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:40] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:40] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:40] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:41] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:41] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:41] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:41] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:41] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:41] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:41] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:41] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:41] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:41] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:42] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:42] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:42] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:42] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:42] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:42] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:42] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:42] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:42] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:42] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:43] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:43] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:43] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:43] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:43] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:43] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:43] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:43] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:43] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:43] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:44] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:44] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:44] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:44] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:44] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:44] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:44] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:44] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:44] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:44] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:45] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:45] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:45] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:45] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:45] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:45] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:45] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:45] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:46] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:46] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:47] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:47] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:48] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:48] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:49] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:49] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:50] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:50] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:51] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:51] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:52] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:52] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:53] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:53] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:54] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:54] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:55] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:55] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:56] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:56] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:56] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:56] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:56] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:56] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:56] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:56] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:56] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:56] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:57] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:57] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:57] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:57] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:58] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:58] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:19:59] [Scout Ops Server] Data fetched
+[2026-03-07 08:19:59] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:00] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:00] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:01] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:01] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:02] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:02] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:03] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:03] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:04] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:04] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:05] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:05] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:06] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:06] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:07] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:07] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:08] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:08] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:09] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:09] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:10] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:10] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:11] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:11] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:12] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:12] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:13] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:13] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:14] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:14] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:15] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:15] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:16] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:16] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:17] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:17] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:18] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:18] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:19] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:19] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:20] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:20] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:21] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:21] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:22] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:22] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:23] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:23] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:24] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:24] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:25] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:25] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:26] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:26] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:27] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:27] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:28] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:28] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:29] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:29] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:30] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:30] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:31] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:31] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:32] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:32] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:33] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:33] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:34] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:34] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:35] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:35] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:36] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:36] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:37] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:37] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:38] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:38] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:39] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:39] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:40] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:40] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:41] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:41] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:42] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:42] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:43] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:43] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:44] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:44] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:45] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:45] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:46] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:46] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:47] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:47] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:48] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:48] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:49] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:49] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:50] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:50] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:51] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:51] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:52] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:52] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:53] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:53] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:54] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:54] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:55] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:55] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:56] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:56] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:57] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:57] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:20:58] [Scout Ops Server] Data fetched
+[2026-03-07 08:20:58] [Scout Ops Server] Devices fetched: [(1, 'Ritesh Raj', '10.232.195.222')]
+[2026-03-07 08:21:34] [Scout Ops Server] 
+[2026-03-07 08:21:34] [Scout Ops Server] Gracefully stopping the server...
+[2026-03-07 08:21:34] [Scout Ops Server] 
+Server stopped.

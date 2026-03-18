@@ -76,6 +76,7 @@ class GamePieceTest {
     @Test
     void pieceSleepsWhenStationary() {
         GamePiece piece = new GamePiece(world, fuelConfig, 5, 5, 0.1);
+        piece.initializePhysics();
 
         // Step until auto-disable kicks in
         for (int i = 0; i < 200; i++) {

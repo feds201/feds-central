@@ -31,7 +31,7 @@
         android:label="Scout Ops"
         android:icon="@mipmap/launcher">
         <activity
-            android:name=".MainActivity"
+            android:name="com.pyintel.scout_ops_android.MainActivity"
             android:exported="true"
             android:launchMode="singleTask"
             android:theme="@style/LaunchTheme"

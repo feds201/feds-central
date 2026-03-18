@@ -1,5 +1,5 @@
-name: scouting_app
-description: A new Flutter project.
+name: scout_ops_android
+description: Scout Ops Android  
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: none # Remove this line if you wish to publish to pub.dev
@@ -7,7 +7,7 @@ publish_to: none # Remove this line if you wish to publish to pub.dev
 msix_config:
   display_name: Scout Ops Android
   publisher_display_name: FEDS201
-  identity_name: feds.suite.scoutingapp
+  identity_name: feds.suite.scoutopsandroid
   msix_version: 3.0.0.0
   logo_path: P:/FEDS201/Scouting_Suite/logo.ico
   capabilities: internetClient,location,microphone,webcam
@@ -65,6 +65,9 @@ dependencies:
   open_file: ^3.5.10
   camera: 0.11.0+1
   battery_plus: ^6.2.2
+  http: ^1.1.0
+  postgres: ^3.5.9
+
 
 
 dev_dependencies:
@@ -101,8 +104,6 @@ flutter:
     - assets/thumb.png
     - assets/ref/Cheat-Sheet.jpg
     - assets/ref/Cheat-Sheet-2.jpg
-    - assets/day_zero.json
-    - assets/response.json
   # To add assets to your application, add an assets section, like this:
   # assets:
   #     - images/a_dot_burr.jpeg

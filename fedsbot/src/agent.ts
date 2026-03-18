@@ -18,14 +18,27 @@ process.chdir(repoRoot);
 console.log(`[agent] Working directory set to: ${process.cwd()}`);
 
 const claudeMd = fs.readFileSync(path.join(repoRoot, 'CLAUDE.md'), 'utf8');
+const generalFedsbotPrompt = fs.readFileSync(path.join(__dirname, '..', 'system-prompt-general.md'), 'utf8');
 const discordPrompt = fs.readFileSync(path.join(__dirname, '..', 'system-prompt-discord.md'), 'utf8');
 const chatPrompt = fs.readFileSync(path.join(__dirname, '..', 'system-prompt-chat.md'), 'utf8');
 
 export type UIType = 'discord' | 'chat';
 
 function getInitMessagePrefix(ui: UIType): string {
-  const uiPrompt = ui === 'chat' ? chatPrompt : discordPrompt;
-  return 'Here is the CLAUDE.md for reference:\n' + claudeMd + '\n\n --- And here is some additional context:\n' + uiPrompt + '\n\n --- And here is the user message:\n';
+  return `## CLAUDE.md:
+${claudeMd}
+
+---
+
+## SYSTEM PROMPT:
+${generalFedsbotPrompt}
+
+${ui === 'chat' ? chatPrompt : discordPrompt}
+
+---
+
+## USER MESSAGE:
+`;
 }
 
 function getSessionOptions() {
@@ -39,7 +52,7 @@ function getSessionOptions() {
     // bypassPermissions is broken in V2: https://github.com/anthropics/claude-code/issues/14279
     permissionMode: 'acceptEdits' as const,
     // Do not use `settingSources: ['project']` as it results in systemPrompt being ignored!
-    maxTurns: 5,
+    maxTurns: 15,
     canUseTool: async (toolName: string, input: Record<string, unknown>) => {
       if (toolName === 'Task' && input.subagent_type !== 'Explore') {
         return { behavior: 'deny' as const, message: 'Only Explore subagents are allowed' };
@@ -57,7 +70,7 @@ interface AgentResult {
 export async function createAgentSession(message: string, ui: UIType = 'discord'): Promise<AgentResult> {
   const session = unstable_v2_createSession(getSessionOptions());
   try {
-  await session.send(getInitMessagePrefix(ui) + message);
+    await session.send(getInitMessagePrefix(ui) + message);
 
     let responseText = '';
     let sessionId = '';
@@ -104,12 +117,15 @@ export async function resumeAgentSession(
 // --- Streaming variants (for web chat SSE) ---
 
 export interface StreamEvent {
-  type: 'session' | 'delta' | 'tool' | 'result' | 'done' | 'error';
+  type: 'session' | 'delta' | 'tool' | 'tool_progress' | 'tool_done' | 'result' | 'done' | 'error';
   sessionId?: string;
   text?: string;
   toolName?: string;
+  toolUseId?: string;
   toolInput?: Record<string, unknown>;
   message?: string;
+  elapsedSeconds?: number;
+  isError?: boolean;
 }
 
 function* yieldAssistantContent(content: any[]): Generator<StreamEvent> {
@@ -117,7 +133,48 @@ function* yieldAssistantContent(content: any[]): Generator<StreamEvent> {
     if (block.type === 'text' && block.text) {
       yield { type: 'delta', text: block.text };
     } else if (block.type === 'tool_use') {
-      yield { type: 'tool', toolName: block.name, toolInput: block.input };
+      yield { type: 'tool', toolUseId: block.id, toolName: block.name, toolInput: block.input };
+    }
+  }
+}
+
+function* yieldToolResults(content: any[]): Generator<StreamEvent> {
+  for (const block of content) {
+    if (block.type === 'tool_result') {
+      const errorText = block.is_error
+        ? (typeof block.content === 'string' ? block.content : 'Tool error')
+        : undefined;
+      yield {
+        type: 'tool_done',
+        toolUseId: block.tool_use_id,
+        isError: !!block.is_error,
+        text: errorText,
+      };
+    }
+  }
+}
+
+function* handleStreamMessage(msg: any): Generator<StreamEvent> {
+  if (msg.type === 'assistant') {
+    const content = msg.message?.content;
+    if (Array.isArray(content)) {
+      yield* yieldAssistantContent(content);
+    }
+  }
+
+  if (msg.type === 'tool_progress') {
+    yield {
+      type: 'tool_progress',
+      toolUseId: msg.tool_use_id,
+      toolName: msg.tool_name,
+      elapsedSeconds: msg.elapsed_time_seconds,
+    };
+  }
+
+  if (msg.type === 'user' && msg.isSynthetic) {
+    const content = msg.message?.content;
+    if (Array.isArray(content)) {
+      yield* yieldToolResults(content);
     }
   }
 }
@@ -137,24 +194,19 @@ export async function* streamAgentSession(
     let sessionId = '';
     let sessionEmitted = false;
     for await (const msg of session.stream()) {
-      sessionId = msg.session_id ?? sessionId;
+      sessionId = (msg as any).session_id ?? sessionId;
 
       if (sessionId && !sessionEmitted) {
         yield { type: 'session', sessionId };
         sessionEmitted = true;
       }
 
-      if (msg.type === 'assistant') {
-        const content = (msg as any).message?.content;
-        if (Array.isArray(content)) {
-          yield* yieldAssistantContent(content);
-        }
-      }
+      yield* handleStreamMessage(msg);
 
-      if (msg.type === 'result') {
+      if ((msg as any).type === 'result') {
         const r = msg as any;
         if (r.is_error) {
-          yield { type: 'error', message: 'Agent encountered an error.' };
+          yield { type: 'error', message: r.errors?.join('; ') ?? 'Agent encountered an error.' };
         } else if (r.result) {
           yield { type: 'result', text: r.result };
         }
@@ -181,19 +233,14 @@ export async function* streamResumeAgentSession(
     await session.send(message);
     let currentSessionId = sessionId;
     for await (const msg of session.stream()) {
-      currentSessionId = msg.session_id ?? currentSessionId;
+      currentSessionId = (msg as any).session_id ?? currentSessionId;
 
-      if (msg.type === 'assistant') {
-        const content = (msg as any).message?.content;
-        if (Array.isArray(content)) {
-          yield* yieldAssistantContent(content);
-        }
-      }
+      yield* handleStreamMessage(msg);
 
-      if (msg.type === 'result') {
+      if ((msg as any).type === 'result') {
         const r = msg as any;
         if (r.is_error) {
-          yield { type: 'error', message: 'Agent encountered an error.' };
+          yield { type: 'error', message: r.errors?.join('; ') ?? 'Agent encountered an error.' };
         } else if (r.result) {
           yield { type: 'result', text: r.result };
         }

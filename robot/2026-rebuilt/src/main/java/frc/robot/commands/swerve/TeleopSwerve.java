@@ -31,8 +31,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.subsystems.led.LedsSubsystem;
-import frc.robot.subsystems.led.LedsSubsystem.LEDState;
+import frc.robot.RobotMap.ShooterConstants;
 // import frc.robot.RobotMap.SafetyMap.SwerveConstants;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import frc.robot.utils.ShootOnTheMove;
@@ -47,7 +46,8 @@ public class TeleopSwerve extends Command {
 
   public static final double MAX_SPEED = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
   public static final double MAX_ANGULAR_RATE = RotationsPerSecond.of(2).in(RadiansPerSecond);
-private final PIDController hubRotPID = new PIDController(25, 0, 0);
+  private final PIDController hubRotPID = new PIDController(25, 0, 0);
+  private double speedMultiplier = 1.0;
   private CommandSwerveDrivetrain dt;
   private CommandXboxController controller;
   
@@ -81,13 +81,39 @@ private final PIDController hubRotPID = new PIDController(25, 0, 0);
 
     currentRotation = dt.getState().Pose.getRotation();
 
-    driveNormal = new SwerveRequest.FieldCentric()
-    .withDeadband(MAX_SPEED*.07)
-    .withRotationalDeadband(MAX_ANGULAR_RATE*.07);
+  driveNormal = new SwerveRequest.FieldCentric()
+  .withDeadband(MAX_SPEED*.07)
+  .withRotationalDeadband(MAX_ANGULAR_RATE*.07);
     hubRotPID.enableContinuousInput(-180, 180);
-    falconDrive = new SwerveRequest.FieldCentric()
-    .withDeadband(MAX_SPEED*0.07)
-    .withRotationalDeadband(0);
+  falconDrive = new SwerveRequest.FieldCentric()
+  .withDeadband(MAX_SPEED*0.07)
+  .withRotationalDeadband(0);
+
+    swerveCommandEntry= tab.add("Swerve Command Status", swerveCommandType).getEntry();
+    tab.addDouble("Controller Pointing Angle", ()-> -(Math.atan2(controller.getRightX(), -controller.getRightY())/ (2*Math.PI) * 360));
+    tab.addDouble("Snapped Controller Pointing angle", ()-> currentJoystickAngle.in(Degrees));
+    addRequirements(this.dt);
+    controller.povLeft()
+            .toggleOnTrue(new InstantCommand(()-> mode = driveMode.FALCONDRIVE)
+                          .andThen(new RunCommand(()->{}))
+                          .finallyDo(()-> mode = driveMode.NORMALDRIVE));
+  }
+
+  /** Command used to control swerve in teleop. */
+  public TeleopSwerve(CommandSwerveDrivetrain dt, CommandXboxController controller, double speedMultiplier) {
+    this.dt = dt;
+    this.controller = controller;
+    this.speedMultiplier = speedMultiplier;
+
+    currentRotation = dt.getState().Pose.getRotation();
+
+  driveNormal = new SwerveRequest.FieldCentric()
+  .withDeadband(MAX_SPEED*.07)
+  .withRotationalDeadband(MAX_ANGULAR_RATE*.07);
+    hubRotPID.enableContinuousInput(-180, 180);
+  falconDrive = new SwerveRequest.FieldCentric()
+  .withDeadband(MAX_SPEED*0.07)
+  .withRotationalDeadband(0);
 
     swerveCommandEntry= tab.add("Swerve Command Status", swerveCommandType).getEntry();
     tab.addDouble("Controller Pointing Angle", ()-> -(Math.atan2(controller.getRightX(), -controller.getRightY())/ (2*Math.PI) * 360));
@@ -100,17 +126,6 @@ private final PIDController hubRotPID = new PIDController(25, 0, 0);
   }
 
 
-  public void periodic() {
-    if (mode == driveMode.FALCONDRIVE) {
-        ledsSubsystem.setState(LEDState.FALCON_DRIVE);
-    }
-    else if (mode == driveMode.HUBDRIVE) {
-        ledsSubsystem.setState(LEDState.HUB_DRIVE);
-    } else {
-        ledsSubsystem.setState(LEDState.IDLE);
-    }
-}
-
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
@@ -120,6 +135,7 @@ private final PIDController hubRotPID = new PIDController(25, 0, 0);
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    SmartDashboard.putNumber("Dist to hub", dt.getState().Pose.getTranslation().getDistance(ShooterConstants.hubCenter));
     Logger.recordOutput("CTRERobotPose", dt.getState().Pose);
     switch (mode) {
       case FALCONDRIVE:
@@ -167,10 +183,10 @@ private final PIDController hubRotPID = new PIDController(25, 0, 0);
         Angle errorRad = lastTargetDirection.minus(currentRotation).getMeasure();
         AngularVelocity rotationalRateRadPerSec = errorRad.div(Seconds.of(0.1666));
 
-        dt.setControl(falconDrive
-        .withVelocityX(-controller.getLeftY() * MAX_SPEED)
-        .withVelocityY(-controller.getLeftX() * MAX_SPEED)
-        .withRotationalRate(rotationalRateRadPerSec));
+  dt.setControl(falconDrive
+  .withVelocityX(-controller.getLeftY() * MAX_SPEED * speedMultiplier)
+  .withVelocityY(-controller.getLeftX() * MAX_SPEED * speedMultiplier)
+  .withRotationalRate(rotationalRateRadPerSec));
 
         swerveCommandType = "FALCON";
         swerveCommandEntry.setString(swerveCommandType);
@@ -206,10 +222,10 @@ private final PIDController hubRotPID = new PIDController(25, 0, 0);
           // 5. Apply to Drivetrain
           // We use FieldCentric so your Left Stick (driving) remains intuitive 
           // regardless of where the robot is facing.
-          dt.setControl(driveNormal
-              .withVelocityX(-controller.getLeftY() *2)
-              .withVelocityY(-controller.getLeftX() *2)
-              .withRotationalRate(DegreesPerSecond.of(rotationOutput)));
+      dt.setControl(driveNormal
+        .withVelocityX(-controller.getLeftY() *2 * speedMultiplier)
+        .withVelocityY(-controller.getLeftX() *2 * speedMultiplier)
+        .withRotationalRate(DegreesPerSecond.of(rotationOutput)));
           
           swerveCommandType = "HUB_AIM";
           swerveCommandEntry.setString(swerveCommandType);

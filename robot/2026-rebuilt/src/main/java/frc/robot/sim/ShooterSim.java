@@ -28,33 +28,28 @@ public class ShooterSim {
     private final DoubleSupplier robotVxSupplier;  // world frame m/s
     private final DoubleSupplier robotVySupplier;  // world frame m/s
 
-    /** Height above ground where the ball exits the shooter (placeholder, meters).
-     *  Should match the physical shooter exit point on the robot CAD. */
-    private static final double LAUNCH_HEIGHT = 0.6;
-
-    /** Forward distance from robot center to muzzle along launch heading (meters).
-     *  Must clear chassis half-length (0.4m) + ball radius (0.075m) with margin. */
-    private static final double MUZZLE_FORWARD_OFFSET = 0.6;
-
-    /** Lateral distance from centerline for each barrel (meters). */
-    private static final double BARREL_LATERAL_OFFSET = 0.08;
-
-    /** Number of shot events per second (each event fires both barrels). */
-    private static final double SHOTS_PER_SECOND = 8;
+    private final double launchHeight;
+    private final double muzzleForwardOffset;
+    private final double barrelLateralOffset;
+    private final double shotsPerSecond;
 
     private double cooldownTimer = 0;
 
     /**
      * Create the shooter simulation bridge.
      *
-     * @param gamePieceManager     manages piece lifecycle (intake counter and spawning)
-     * @param fuelConfig           game piece config for launched balls
-     * @param robotPoseSupplier    supplies the current robot 2D pose (for launch direction)
-     * @param hoodAngleSupplier    supplies the current hood angle in radians (0 = horizontal)
+     * @param gamePieceManager       manages piece lifecycle (intake counter and spawning)
+     * @param fuelConfig             game piece config for launched balls
+     * @param robotPoseSupplier      supplies the current robot 2D pose (for launch direction)
+     * @param hoodAngleSupplier      supplies the current hood angle in radians (0 = horizontal)
      * @param launchVelocitySupplier supplies the launch speed in m/s
-     * @param shootingSupplier     returns true when the shooter is actively firing
-     * @param robotVxSupplier      supplies the robot's world-frame X velocity (m/s)
-     * @param robotVySupplier      supplies the robot's world-frame Y velocity (m/s)
+     * @param shootingSupplier       returns true when the shooter is actively firing
+     * @param robotVxSupplier        supplies the robot's world-frame X velocity (m/s)
+     * @param robotVySupplier        supplies the robot's world-frame Y velocity (m/s)
+     * @param launchHeight           height above ground at which balls spawn (m)
+     * @param muzzleForwardOffset    forward offset from robot center to muzzle (m)
+     * @param barrelLateralOffset    lateral offset from centerline per barrel (m)
+     * @param shotsPerSecond         number of shot events per second (each fires both barrels)
      */
     public ShooterSim(GamePieceManager gamePieceManager, GamePieceConfig fuelConfig,
                       Supplier<Pose2d> robotPoseSupplier,
@@ -62,7 +57,11 @@ public class ShooterSim {
                       DoubleSupplier launchVelocitySupplier,
                       BooleanSupplier shootingSupplier,
                       DoubleSupplier robotVxSupplier,
-                      DoubleSupplier robotVySupplier) {
+                      DoubleSupplier robotVySupplier,
+                      double launchHeight,
+                      double muzzleForwardOffset,
+                      double barrelLateralOffset,
+                      double shotsPerSecond) {
         this.gamePieceManager = gamePieceManager;
         this.fuelConfig = fuelConfig;
         this.robotPoseSupplier = robotPoseSupplier;
@@ -71,6 +70,10 @@ public class ShooterSim {
         this.shootingSupplier = shootingSupplier;
         this.robotVxSupplier = robotVxSupplier;
         this.robotVySupplier = robotVySupplier;
+        this.launchHeight = launchHeight;
+        this.muzzleForwardOffset = muzzleForwardOffset;
+        this.barrelLateralOffset = barrelLateralOffset;
+        this.shotsPerSecond = shotsPerSecond;
     }
 
     /**
@@ -87,10 +90,10 @@ public class ShooterSim {
             LaunchParameters params = new LaunchParameters(
                     launchVelocitySupplier.getAsDouble(),
                     hoodAngleSupplier.getAsDouble(),
-                    LAUNCH_HEIGHT,
+                    launchHeight,
                     0,  // no turret offset (turretless robot)
-                    MUZZLE_FORWARD_OFFSET,
-                    BARREL_LATERAL_OFFSET
+                    muzzleForwardOffset,
+                    barrelLateralOffset
             );
 
             Translation3d velocity = params.getLaunchVelocity(robotPose,
@@ -104,7 +107,7 @@ public class ShooterSim {
                 }
             }
 
-            cooldownTimer = 1.0 / SHOTS_PER_SECOND;
+            cooldownTimer = 1.0 / shotsPerSecond;
         }
     }
 }

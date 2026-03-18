@@ -1,0 +1,63 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 0.45668674698795175,
+        "y": 5.5
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.237903614457831,
+        "y": 5.729481927710844
+      },
+      "isLocked": false,
+      "linkedName": "IntakeDepotEnd"
+    },
+    {
+      "anchor": {
+        "x": 2.3739620403321475,
+        "y": 4.029620403321471
+      },
+      "prevControl": {
+        "x": 2.4257320026700304,
+        "y": 4.274201414439534
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "CenterShootPosition"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.23275590551181313,
+      "rotationDegrees": 90.0
+    },
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 0.0
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 1.5,
+    "maxAcceleration": 4.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 360.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "reversed": false,
+  "folder": "CenterOverBump",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 90.0
+  },
+  "useDefaultConstraints": false
+}

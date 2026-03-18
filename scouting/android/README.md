@@ -139,8 +139,8 @@ buildButton(
 ```dart
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:scouting_app/main.dart';
-import 'package:scouting_app/services/Colors.dart';
+import 'package:scout_ops_android/main.dart';
+import 'package:scout_ops_android/services/Colors.dart';
 
 Widget buildTextBoxs(
     String title, List<dynamic> widgetChildren, Icon titleIcon) {
@@ -239,7 +239,7 @@ buildTextBoxs(
 ```dart
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
-import 'package:scouting_app/main.dart';
+import 'package:scout_ops_android/main.dart';
 
 class CounterSettings {
   final IconData icon;
@@ -459,7 +459,7 @@ Column(
 ```dart
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
-import 'package:scouting_app/main.dart';
+import 'package:scout_ops_android/main.dart';
 
 Widget buildCheckBox(String title, bool value, Function(bool) onChanged,
     {bool IconOveride = false}) {
@@ -1562,13 +1562,13 @@ Widget buildMatchSelector({
 ```dart
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:scouting_app/components/Button.dart';
-import 'package:scouting_app/components/TextBox.dart';
-import 'package:scouting_app/components/CounterShelf.dart';
-import 'package:scouting_app/components/CheckBox.dart';
-import 'package:scouting_app/components/ratings.dart';
-import 'package:scouting_app/components/CommentBox.dart';
-import 'package:scouting_app/components/slider.dart';
+import 'package:scout_ops_android/components/Button.dart';
+import 'package:scout_ops_android/components/TextBox.dart';
+import 'package:scout_ops_android/components/CounterShelf.dart';
+import 'package:scout_ops_android/components/CheckBox.dart';
+import 'package:scout_ops_android/components/ratings.dart';
+import 'package:scout_ops_android/components/CommentBox.dart';
+import 'package:scout_ops_android/components/slider.dart';
 
 class MatchScoutingPage extends StatefulWidget {
   @override
@@ -1838,9 +1838,9 @@ buildButton(
 ### Integration Example:
 ```dart
 // Import all necessary components
-import 'package:scouting_app/components/Button.dart';
-import 'package:scouting_app/components/TextBox.dart';
-import 'package:scouting_app/components/CounterShelf.dart';
+import 'package:scout_ops_android/components/Button.dart';
+import 'package:scout_ops_android/components/TextBox.dart';
+import 'package:scout_ops_android/components/CounterShelf.dart';
 // ... other imports
 
 // Use components together
