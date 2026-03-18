@@ -324,12 +324,13 @@ public class IntakeSubsystem extends SubsystemBase {
     limit_switch_r = new DigitalInput(RobotMap.IntakeSubsystemConstants.kLimit_switch_rID);
     limit_switch_l = new DigitalInput(RobotMap.IntakeSubsystemConstants.kLimit_switch_lID);
     var config = new TalonFXConfiguration();
-    config.Slot0.kP = 3;
-    config.Slot0.kI = .0;
+    config.Slot0.kP = 1;
+    config.Slot0.kS = 0.0;
+    config.Slot0.kI = 0.0;
     config.Slot0.kD = 0.0;
     // config.CurrentLimits.SupplyCurrentLimit = 40.0;
     config.CurrentLimits.StatorCurrentLimit = 40.0;
-    config.CurrentLimits.SupplyCurrentLimitEnable = false;
+    config.CurrentLimits.StatorCurrentLimitEnable = true;
 
 
     // Configure MotionMagic cruise velocity and acceleration so moves complete
