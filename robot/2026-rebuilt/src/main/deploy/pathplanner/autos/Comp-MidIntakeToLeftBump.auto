@@ -13,7 +13,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 1.5
+            "waitTime": 1.0
           }
         },
         {
@@ -61,7 +61,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 3.5
+            "waitTime": 2.0
           }
         },
         {
@@ -97,7 +97,31 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 3.0
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Extend Intake"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Retract Intake"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
           }
         },
         {
