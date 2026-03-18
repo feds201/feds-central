@@ -487,15 +487,17 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     public boolean withinTrench()
     {
+        Double pullOutTime = 1.0; //seconds TUNE
+        ChassisSpeeds currentSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(getState().Speeds, getState().Pose.getRotation());
         Translation2d pose = getState().Pose.getTranslation();
-        return(ShooterConstants.BlueLeftTrench.contains(pose) 
-            || ShooterConstants.BlueRightTrench.contains(pose) 
-            || ShooterConstants.RedLeftTrench.contains(pose) 
-            || ShooterConstants.RedRightTrench.contains(pose));
-        
-        
+        Double predictedX = pose.getX() + currentSpeeds.vxMetersPerSecond * pullOutTime;
+        Double predictedY = pose.getY() + currentSpeeds.vyMetersPerSecond * pullOutTime;
+        Translation2d predictedPose = new Translation2d(predictedX, predictedY);
 
-
+        return(ShooterConstants.BlueLeftTrench.contains(predictedPose) 
+            || ShooterConstants.BlueRightTrench.contains(predictedPose) 
+            || ShooterConstants.RedLeftTrench.contains(predictedPose) 
+            || ShooterConstants.RedRightTrench.contains(predictedPose));
 
     }
 }
