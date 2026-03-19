@@ -165,13 +165,15 @@ public class ControllerBindings {
         driver.rightTrigger().and(HubDrive::pidAtSetpoint).and(shooterWheels::atSetpoint).whileTrue(
                 Commands.sequence(
                         feederSubsystem.setStateCommand(feeder_state.RUN),
-                        spinDexer.setStateCommand(spindexer_state.RUN)
+                        spinDexer.setStateCommand(spindexer_state.PFORWARD),
+                        intakeSubsystem.setRollerStateCommand(RollerState.ON)
                         // intakeSubsystem.setIntakeStateCommand(IntakeState.AGITATE)
                 )
         ).onFalse(
                 Commands.sequence(
                         feederSubsystem.setStateCommand(feeder_state.STOP),
-                        spinDexer.setStateCommand(spindexer_state.STOP)
+                        spinDexer.setStateCommand(spindexer_state.STOP),
+                        intakeSubsystem.setRollerStateCommand(RollerState.OFF)
                 )
         );
 
