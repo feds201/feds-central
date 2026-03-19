@@ -3,6 +3,7 @@ import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.fasterxml.jackson.databind.ser.std.StdKeySerializers.Default;
 
 import frc.robot.commands.intake.AgitateWhileHeldTimeCommand;
 import frc.robot.commands.intake.AgitateWhileHeldRotationsCommand;
@@ -20,6 +21,7 @@ import com.ctre.phoenix6.controls.MotionMagicVelocityDutyCycle;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 
 import frc.robot.RobotMap;
+import frc.robot.RobotMap.IntakeSubsystemConstants;
 import frc.robot.subsystems.led.LedsSubsystem;
 import frc.robot.subsystems.shooter.ShooterWheels.shooter_state;
 import frc.robot.utils.LimelightHelpers;
@@ -40,6 +42,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 public class IntakeSubsystem extends SubsystemBase {
 
@@ -81,23 +84,23 @@ public class IntakeSubsystem extends SubsystemBase {
     DEFAULT,
     EXTENDED,
     INTAKING,
-    AGITATE
+    AGITATE,
+    AGITATE_IN,
+    AGITATE_OUT
+
   }
 
   public enum RollerState {
     ON,
     OFF,
-    REVERSE
+    REVERSE,
   }
 
-  private enum AgitateState{
-    IN,
-    OUT
-  }
+  
 
   private IntakeState currentState = IntakeState.DEFAULT;
   private RollerState currentRollerState = RollerState.OFF;
-  private AgitateState currentAgitateState = AgitateState.IN;
+ 
   
 
   public void setState(IntakeState targetState) {
@@ -115,18 +118,23 @@ public class IntakeSubsystem extends SubsystemBase {
         moveIntakeWithPosition(extendedRotations);
         setRollerState(RollerState.ON);
       }
-    
+      case AGITATE_IN -> {
+        moveIntakeWithPosition(retractedRotations);
+      }
+      case AGITATE_OUT -> {
+        moveIntakeWithPosition(extendedRotations);
+      }
     }
 
     }
   
 
   public Command extendIntake(){
-    return runOnce(() -> setState(IntakeState.EXTENDED));
+    return Commands.runOnce(() -> setState(IntakeState.EXTENDED));
   }
 
   public Command retractIntake() {
-    return runOnce(() -> setState(IntakeState.DEFAULT));
+    return Commands.runOnce(() -> setState(IntakeState.DEFAULT));
   }
 
   public IntakeState getState() {
@@ -134,275 +142,284 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public Command setIntakeStateCommand(IntakeState targState){
-    return runOnce(() -> setState(targState));
-  }
-
-  public void moveIntakeWithPosition(double rotations) {
-    // Use MotionMagic with an Angle position to get proper units and controller behavior
-    motor.setControl(positionOut.withPosition(Rotations.of(rotations)));
-  }
-
-  @SuppressWarnings("unused")
-  private void setMotorVoltage(double voltage) {
-    motor.setControl(new VoltageOut(voltage));
-  }
-
-  public void setRollerState(RollerState desiredState) {
-    // Safety rule: rollers must never run when intake is stowed (DEFAULT).
-    // Allow rollers when the intake is EXTENDED, INTAKING, or AGITATE.
-    // if (desiredState != RollerState.OFF && this.currentState == IntakeState.DEFAULT) {
-      // Ignore requests to run rollers while stowed; keep them OFF.
-    //   this.currentRollerState = RollerState.OFF;
-    //   return;
-    // }
-    this.currentRollerState = desiredState;
-  }
-  public void agitateTimed() {
-
-
-    for(int i = 0; i < 20; i++){
-      extendIntake().withTimeout(2);
-      retractIntake().withTimeout(2);
-    } 
-          setState(IntakeState.DEFAULT);
-
-  }
-
-  /**
-   * Build a non-blocking Command that pulses the intake between EXTENDED and DEFAULT.
-   * @param pulses number of extend/retract cycles
-   * @param extendSeconds how long to hold EXTENDED each pulse
-   * @param retractSeconds how long to hold DEFAULT between pulses
-   */
-  public Command agitateCommand(int pulses, double extendSeconds, double retractSeconds) {
-    List<Command> steps = new ArrayList<>();
-    for (int i = 0; i < pulses; ++i) {
-      // extend, wait, retract, wait
-      steps.add(extendIntake());
-      steps.add(new WaitCommand(extendSeconds));
-      steps.add(retractIntake());
-      // don't add final retract wait on last pulse (optional)
-      if (i < pulses - 1) {
-        steps.add(new WaitCommand(retractSeconds));
-      }
+      return Commands.runOnce(() -> setState(targState));
     }
-    // ensure we finish in DEFAULT state
-    steps.add(runOnce(() -> setState(IntakeState.DEFAULT)));
-    return Commands.sequence(steps.toArray(new Command[steps.size()]));
-  }
-
-  /**
-   * Pulse the intake (extend -> run roller -> retract -> pause) repeatedly until the Command
-   * is canceled. Use this with button.whileTrue(...).
-   * This variant uses time durations for each phase.
-   * @param extendSeconds seconds to hold EXTENDED while rollers run
-   * @param retractSeconds seconds to hold DEFAULT between pulses
-   */
-  public Command agitateWhileHeldTime(double extendSeconds, double retractSeconds) {
-    return new AgitateWhileHeldTimeCommand(this, extendSeconds, retractSeconds);
-  }
-
-  /**
-   * Pulse the intake repeatedly until the Command is canceled. Each extend phase runs the
-   * roller for a target number of rotations before retracting.
-   * @param rotationsPerPulse roller rotations to run during each extend phase
-   */
-  /*public Command agitateWhileHeldRotations(double rotationsPerPulse) {
-    return new AgitateWhileHeldRotationsCommand(this, rotationsPerPulse);
-  }
-
-  /**
-   * Run the roller motor until it has turned the requested number of rotations.
-   * This Command requires the intake subsystem while running.
-   */
-  public Command runRollerForRotations(double rotations) {
-    // Use an array to capture start position in lambdas
-    double[] start = new double[1];
+  
+    public void moveIntakeWithPosition(double rotations) {
+      // Use MotionMagic with an Angle position to get proper units and controller behavior
+      motor.setControl(positionOut.withPosition(Rotations.of(rotations)));
+    }
+  
+    @SuppressWarnings("unused")
+    private void setMotorVoltage(double voltage) {
+      motor.setControl(new VoltageOut(voltage));
+    }
+  
+    public void setRollerState(RollerState desiredState) {
+      // Safety rule: rollers must never run when intake is stowed (DEFAULT).
+      // Allow rollers when the intake is EXTENDED, INTAKING, or AGITATE.
+      // if (desiredState != RollerState.OFF && this.currentState == IntakeState.DEFAULT) {
+        // Ignore requests to run rollers while stowed; keep them OFF.
+      //   this.currentRollerState = RollerState.OFF;
+      //   return;
+      // }
+      this.currentRollerState = desiredState;
+    }
+    public void agitateTimed() {
+  
+  
+      for(int i = 0; i < 20; i++){
+        extendIntake().withTimeout(2);
+        retractIntake().withTimeout(2);
+      } 
+            setState(IntakeState.DEFAULT);
+  
+    }
+  
+    /**
+     * Build a non-blocking Command that pulses the intake between EXTENDED and DEFAULT.
+     * @param pulses number of extend/retract cycles
+     * @param extendSeconds how long to hold EXTENDED each pulse
+     * @param retractSeconds how long to hold DEFAULT between pulses
+     */
+    public Command agitateCommand(int pulses, double extendSeconds, double retractSeconds) {
+      List<Command> steps = new ArrayList<>();
+      for (int i = 0; i < pulses; ++i) {
+        // extend, wait, retract, wait
+        steps.add(extendIntake());
+        steps.add(new WaitCommand(extendSeconds));
+        steps.add(retractIntake());
+        // don't add final retract wait on last pulse (optional)
+        if (i < pulses - 1) {
+          steps.add(new WaitCommand(retractSeconds));
+        }
+      }
+  // ensure we finish in DEFAULT state
+  steps.add(Commands.runOnce(() -> setState(IntakeState.DEFAULT)));
+      return Commands.sequence(steps.toArray(new Command[steps.size()]));
+    }
+  
+    /**
+     * Pulse the intake (extend -> run roller -> retract -> pause) repeatedly until the Command
+     * is canceled. Use this with button.whileTrue(...).
+     * This variant uses time durations for each phase.
+     * @param extendSeconds seconds to hold EXTENDED while rollers run
+     * @param retractSeconds seconds to hold DEFAULT between pulses
+     */
+    public Command agitateWhileHeldTime(double extendSeconds, double retractSeconds) {
+      return new AgitateWhileHeldTimeCommand(this, extendSeconds, retractSeconds);
+    }
+  
+    /**
+     * Pulse the intake repeatedly until the Command is canceled. Each extend phase runs the
+     * roller for a target number of rotations before retracting.
+     * @param rotationsPerPulse roller rotations to run during each extend phase
+     */
+    /*public Command agitateWhileHeldRotations(double rotationsPerPulse) {
+      return new AgitateWhileHeldRotationsCommand(this, rotationsPerPulse);
+    }
+  
+    /**
+     * Run the roller motor until it has turned the requested number of rotations.
+     * This Command requires the intake subsystem while running.
+     */
+    public Command runRollerForRotations(double rotations) {
+      // Use an array to capture start position in lambdas
+      double[] start = new double[1];
     return Commands.sequence(
-        // Record start position
-        runOnce(() -> start[0] = rollerMotor.getPosition().getValue().in(Units.Rotations)),
-        // start roller
-        runOnce(() -> rollerMotor.set(ROLLER_OUTPUT)),
-        // wait until requested rotations completed
-        new WaitUntilCommand(() -> Math.abs(rollerMotor.getPosition().getValue().in(Units.Rotations) - start[0]) >= Math.abs(rotations)),
-        // stop roller
-        runOnce(() -> rollerMotor.stopMotor())
+      // Record start position
+      Commands.runOnce(() -> start[0] = rollerMotor.getPosition().getValue().in(Units.Rotations)),
+      // start roller
+      Commands.runOnce(() -> rollerMotor.set(ROLLER_OUTPUT)),
+      // wait until requested rotations completed
+      new WaitUntilCommand(() -> Math.abs(rollerMotor.getPosition().getValue().in(Units.Rotations) - start[0]) >= Math.abs(rotations)),
+      // stop roller
+      Commands.runOnce(() -> rollerMotor.stopMotor())
     );
-  }
-
-  /**
-   * Run the roller motor until it reaches an absolute encoder target, choosing direction
-   * automatically from the current position.
-   * This is useful for oscillating between fixed bounds like 0 and 5 rotations.
-   */
-  public Command moveRollerToPosition(double targetRotations) {
-    return Commands.defer(() -> {
-      double currentPosition = getRollerPosition();
-      double delta = targetRotations - currentPosition;
-
-      if (Math.abs(delta) < 0.05) {
-        return runOnce(this::stopRoller);
+    }
+  
+    /**
+     * Run the roller motor until it reaches an absolute encoder target, choosing direction
+     * automatically from the current position.
+     * This is useful for oscillating between fixed bounds like 0 and 5 rotations.
+     */
+    public Command moveRollerToPosition(double targetRotations) {
+      return Commands.defer(() -> {
+        double currentPosition = getRollerPosition();
+        double delta = targetRotations - currentPosition;
+  
+        if (Math.abs(delta) < 0.05) {
+          return Commands.runOnce(this::stopRoller);
+        }
+  
+        double direction = Math.signum(delta);
+    return Commands.sequence(
+      Commands.runOnce(() -> rollerMotor.set(direction * ROLLER_OUTPUT)),
+      new WaitUntilCommand(() -> {
+              double position = getRollerPosition();
+              return direction > 0
+                  ? position >= targetRotations
+                  : position <= targetRotations;
+            }),
+      Commands.runOnce(this::stopRoller));
+      }, Set.of(this));
+    }
+  
+    /**
+     * Build an agitate sequence that uses roller rotations rather than timing.
+     * @param pulses number of extend/retract cycles
+     * @param rotationsPerPulse roller rotations to run during each extend
+     */
+    public Command agitateByRotations(int pulses, double rotationsPerPulse) {
+      List<Command> steps = new ArrayList<>();
+      for (int i = 0; i < pulses; ++i) {
+        steps.add(extendIntake());
+        steps.add(runRollerForRotations(rotationsPerPulse));
+        steps.add(retractIntake());
       }
-
-      double direction = Math.signum(delta);
-      return Commands.sequence(
-          runOnce(() -> rollerMotor.set(direction * ROLLER_OUTPUT)),
-          new WaitUntilCommand(() -> {
-            double position = getRollerPosition();
-            return direction > 0
-                ? position >= targetRotations
-                : position <= targetRotations;
-          }),
-          runOnce(this::stopRoller));
-    }, Set.of(this));
-  }
-
-  /**
-   * Build an agitate sequence that uses roller rotations rather than timing.
-   * @param pulses number of extend/retract cycles
-   * @param rotationsPerPulse roller rotations to run during each extend
-   */
-  public Command agitateByRotations(int pulses, double rotationsPerPulse) {
-    List<Command> steps = new ArrayList<>();
-    for (int i = 0; i < pulses; ++i) {
-      steps.add(extendIntake());
-      steps.add(runRollerForRotations(rotationsPerPulse));
-      steps.add(retractIntake());
+  // ensure we finish in DEFAULT state
+  steps.add(Commands.runOnce(() -> setState(IntakeState.DEFAULT)));
+      return Commands.sequence(steps.toArray(new Command[steps.size()]));
     }
-    // ensure we finish in DEFAULT state
-    steps.add(runOnce(() -> setState(IntakeState.DEFAULT)));
-    return Commands.sequence(steps.toArray(new Command[steps.size()]));
-  }
-
-  // --- Roller helpers for external Commands (encapsulate direct motor access) ---
-  /** Start the roller at the configured ROLLER_OUTPUT. */
-  public void startRoller() {
-    rollerMotor.set(ROLLER_OUTPUT);
-  }
-
-  /** Stop the roller motor immediately. */
-  public void stopRoller() {
-    rollerMotor.stopMotor();
-  }
-
-  /**
-   * Get the roller encoder position in rotations.
-   * @return current roller position (rotations)
-   */
-  public double getRollerPosition() {
-    return rollerMotor.getPosition().getValue().in(Units.Rotations);
-  }
-
-
-  public Command emergencyStop() {
-    return runOnce(() -> {
-      setState(IntakeState.DEFAULT);
-      setRollerState(RollerState.OFF);
-    });
-  }
-
-  public RollerState getRollerState() {
-    return this.currentRollerState;
-  }
-
-  public Command setRollerStateCommand(RollerState desiredState) {
-    return runOnce(() -> setRollerState(desiredState));
-  }
-
-  public Command resetIntakeEncoder() {
-    return runOnce(() -> motor.setPosition(0));
-  }
-
-
-
-
-  public IntakeSubsystem() {
-    motor = new TalonFX(RobotMap.IntakeSubsystemConstants.kMotorID);
-    rollerMotor = new TalonFX(RobotMap.IntakeSubsystemConstants.kRollerMotorID);
-    limit_switch_r = new DigitalInput(RobotMap.IntakeSubsystemConstants.kLimit_switch_rID);
-    limit_switch_l = new DigitalInput(RobotMap.IntakeSubsystemConstants.kLimit_switch_lID);
-    var config = new TalonFXConfiguration();
-    config.Slot0.kP = 3;
-    config.Slot0.kI = .0;
-    config.Slot0.kD = 0.0;
-    // config.CurrentLimits.SupplyCurrentLimit = 40.0;
-    config.CurrentLimits.StatorCurrentLimit = 40.0;
-    config.CurrentLimits.SupplyCurrentLimitEnable = false;
-
-
-    // Configure MotionMagic cruise velocity and acceleration so moves complete
-    // near our desired MOVE_TARGET_SECONDS. Units: motor rotations / sec and
-    // rotations / sec^2 respectively.
-    double delta = Math.abs(extendedRotations - retractedRotations);
-    double cruise = delta / MOVE_TARGET_SECONDS; // rotations per second
-  double accel = cruise * 4.0; // base accel to reach cruise quickly
-  // Apply user-requested multiplier to increase acceleration aggressively
-  accel = accel * MOTION_MAGIC_ACCEL_MULTIPLIER;
-  config.MotionMagic.MotionMagicCruiseVelocity = cruise;
-  config.MotionMagic.MotionMagicAcceleration = accel;
-
-    // Apply config; repeat to ensure application (some hardware requires it)
-    for (int i = 0; i < 2; ++i) {
-      var status = motor.getConfigurator().apply(config);
-      if (status.isOK()) break;
+  
+    // --- Roller helpers for external Commands (encapsulate direct motor access) ---
+    /** Start the roller at the configured ROLLER_OUTPUT. */
+    public void startRoller() {
+      rollerMotor.set(ROLLER_OUTPUT);
     }
-
-    sysID = new SysIdRoutine(
-      new SysIdRoutine.Config(), new SysIdRoutine.Mechanism((voltage)-> motor.setControl(new VoltageOut(0).withOutput(voltage)), (log)-> {
-        log.motor("motor1")
-        .voltage(motor.getMotorVoltage().asSupplier().get())
-        .angularVelocity(motor.getVelocity().asSupplier().get())
-        .angularPosition(motor.getPosition().asSupplier().get());
-      }, this));
-
-
-
-    if (RobotBase.isSimulation()) {
-      initSimulation();
+  
+    /** Stop the roller motor immediately. */
+    public void stopRoller() {
+      rollerMotor.stopMotor();
     }
-  }
-
-  private void initSimulation() {
-    var intakePlant = LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60(1), 0.004, 100.0);
-    motorSim = new DCMotorSim(intakePlant, DCMotor.getKrakenX60(1));
-    var rollerPlant = LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60(1), 0.001, 1.0);
-    rollerMotorSim = new DCMotorSim(rollerPlant, DCMotor.getKrakenX60(1));
-    limitSwitchRSim = new DIOSim(limit_switch_r);
-    limitSwitchLSim = new DIOSim(limit_switch_l);
-
-    // Default limit switch state (True = Not Pressed for most switches)
-    limitSwitchRSim.setValue(true);
-    limitSwitchLSim.setValue(true);
-
-  intakeMech2d = new Mechanism2d(3, 3);
-  intakeMechRoot = intakeMech2d.getRoot("IntakeRoot", 1.5, 1.5);
-  intakeLigament = intakeMechRoot.append(
-    new MechanismLigament2d("Intake", 1, 90, 6, new Color8Bit(Color.kOrange)));
-
-  rollerMech2d = new Mechanism2d(3, 3);
-  rollerMechRoot = rollerMech2d.getRoot("RollerRoot", 1.5, 1.5);
-  rollerLigament = rollerMechRoot.append(
-    new MechanismLigament2d("Roller", 1, 0, 6, new Color8Bit(Color.kBlue)));
-  }
-  private void aggitateStart(){
-    if (currentAgitateState == AgitateState.IN) {
-      moveIntakeWithPosition(10);
-      currentAgitateState = AgitateState.OUT;
+  
+    /**
+     * Get the roller encoder position in rotations.
+     * @return current roller position (rotations)
+     */
+    public double getRollerPosition() {
+      return rollerMotor.getPosition().getValue().in(Units.Rotations);
     }
-    else{
-      moveIntakeWithPosition(0);
-      currentAgitateState = AgitateState.IN;
+  
+  
+    public Command emergencyStop() {
+      return Commands.runOnce(() -> {
+        setState(IntakeState.DEFAULT);
+        setRollerState(RollerState.OFF);
+      });
     }
-  }
+  
+    public RollerState getRollerState() {
+      return this.currentRollerState;
+    }
+  
+    public Command setRollerStateCommand(RollerState desiredState) {
+        return Commands.runOnce(() -> setRollerState(desiredState));
+      }
+  
+    public Command resetIntakeEncoder() {
+        return Commands.runOnce(() -> motor.setPosition(0));
+      }
+  
+  
+  
+  
+    public IntakeSubsystem() {
+      motor = new TalonFX(RobotMap.IntakeSubsystemConstants.kMotorID);
+      rollerMotor = new TalonFX(RobotMap.IntakeSubsystemConstants.kRollerMotorID);
+      limit_switch_r = new DigitalInput(RobotMap.IntakeSubsystemConstants.kLimit_switch_rID);
+      limit_switch_l = new DigitalInput(RobotMap.IntakeSubsystemConstants.kLimit_switch_lID);
+      var config = new TalonFXConfiguration();
+      config.Slot0.kP = 3;
+      config.Slot0.kI = .0;
+      config.Slot0.kD = 0.0;
+      // config.CurrentLimits.SupplyCurrentLimit = 40.0;
+      config.CurrentLimits.StatorCurrentLimit = 40.0;
+      config.CurrentLimits.SupplyCurrentLimitEnable = false;
+  
+  
+      // Configure MotionMagic cruise velocity and acceleration so moves complete
+      // near our desired MOVE_TARGET_SECONDS. Units: motor rotations / sec and
+      // rotations / sec^2 respectively.
+      double delta = Math.abs(extendedRotations - retractedRotations);
+      double cruise = delta / MOVE_TARGET_SECONDS; // rotations per second
+    double accel = cruise * 4.0; // base accel to reach cruise quickly
+    // Apply user-requested multiplier to increase acceleration aggressively
+    accel = accel * MOTION_MAGIC_ACCEL_MULTIPLIER;
+    config.MotionMagic.MotionMagicCruiseVelocity = cruise;
+    config.MotionMagic.MotionMagicAcceleration = accel;
+  
+      // Apply config; repeat to ensure application (some hardware requires it)
+      for (int i = 0; i < 2; ++i) {
+        var status = motor.getConfigurator().apply(config);
+        if (status.isOK()) break;
+      }
+  
+      sysID = new SysIdRoutine(
+        new SysIdRoutine.Config(), new SysIdRoutine.Mechanism((voltage)-> motor.setControl(new VoltageOut(0).withOutput(voltage)), (log)-> {
+          log.motor("motor1")
+          .voltage(motor.getMotorVoltage().asSupplier().get())
+          .angularVelocity(motor.getVelocity().asSupplier().get())
+          .angularPosition(motor.getPosition().asSupplier().get());
+        }, this));
+  
+  
+  
+      if (RobotBase.isSimulation()) {
+        initSimulation();
+      }
+    }
+  
+    private void initSimulation() {
+      var intakePlant = LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60(1), 0.004, 100.0);
+      motorSim = new DCMotorSim(intakePlant, DCMotor.getKrakenX60(1));
+      var rollerPlant = LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60(1), 0.001, 1.0);
+      rollerMotorSim = new DCMotorSim(rollerPlant, DCMotor.getKrakenX60(1));
+      limitSwitchRSim = new DIOSim(limit_switch_r);
+      limitSwitchLSim = new DIOSim(limit_switch_l);
+  
+      // Default limit switch state (True = Not Pressed for most switches)
+      limitSwitchRSim.setValue(true);
+      limitSwitchLSim.setValue(true);
+  
+    intakeMech2d = new Mechanism2d(3, 3);
+    intakeMechRoot = intakeMech2d.getRoot("IntakeRoot", 1.5, 1.5);
+    intakeLigament = intakeMechRoot.append(
+      new MechanismLigament2d("Intake", 1, 90, 6, new Color8Bit(Color.kOrange)));
+  
+    rollerMech2d = new Mechanism2d(3, 3);
+    rollerMechRoot = rollerMech2d.getRoot("RollerRoot", 1.5, 1.5);
+    rollerLigament = rollerMechRoot.append(
+      new MechanismLigament2d("Roller", 1, 0, 6, new Color8Bit(Color.kBlue)));
+    }
+    
+  
 
   @Override
   public void periodic() {
-    switch (currentState) {
-      case AGITATE:
-        aggitateStart();
-        break;
+
     
-      default:
+    switch (currentState) {
+      case AGITATE_IN:
+       if(! timer.isRunning()){
+          timer.start();  
+       }
+       if(timer.hasElapsed(IntakeSubsystemConstants.agitateCycleConstant)){
+        setState(IntakeState.AGITATE_OUT);
+        timer.stop();
+        timer.reset();
+       }
+        break;
+
+        case AGITATE_OUT:
+           if(! timer.isRunning()){
+          timer.start();  
+       }
+        if(timer.hasElapsed(IntakeSubsystemConstants.agitateCycleConstant)){
+        setState(IntakeState.AGITATE_IN);
+        timer.stop();
+        timer.reset();
+      
         break;
     }
     switch (currentRollerState) {
@@ -429,6 +446,7 @@ public class IntakeSubsystem extends SubsystemBase {
     Logger.recordOutput("Robot/Limelights/limelight-one/TY", LimelightHelpers.getTY("limelight-one"));
     Logger.recordOutput("Robot/Limelights/limelight-one/TA", LimelightHelpers.getTA("limelight-one"));
     super.periodic();
+  }
   }
 
   @Override

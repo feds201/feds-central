@@ -133,6 +133,10 @@ public class ControllerBindings {
                         intakeSubsystem.setRollerStateCommand(RollerState.OFF)
                 ));
 
+                driver.a()
+                .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.AGITATE_IN))
+                .onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT));
+
         
 
         // If out of neutral zone, face hub and ready shoot
@@ -219,6 +223,10 @@ public class ControllerBindings {
                 .onTrue(new InstantCommand(() -> shooterHood.updateHoodAngleMultiplier(.01)));
         operator.b()
                 .onTrue(new InstantCommand(() -> shooterHood.updateHoodAngleMultiplier(-.01)));
+
+         operator.y()
+                .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.AGITATE_IN))
+                .onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT));
     }
 
 }
