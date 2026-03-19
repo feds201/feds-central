@@ -487,7 +487,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     public boolean withinTrench()
     {
-        Double pullOutTime = 1.0; //seconds TUNE
+        Double pullOutTime = 0.61; //seconds TUNE
         ChassisSpeeds currentSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(getState().Speeds, getState().Pose.getRotation());
         Translation2d pose = getState().Pose.getTranslation();
         Double predictedX = pose.getX() + currentSpeeds.vxMetersPerSecond * pullOutTime;
