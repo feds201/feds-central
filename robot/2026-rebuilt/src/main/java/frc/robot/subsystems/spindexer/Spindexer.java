@@ -38,6 +38,7 @@ public class Spindexer extends SubsystemBase {
     RUN(Volts.of(5)),
     REVERSE(Volts.of(-5)),
     PREVERSE(Volts.of(-5)),
+    PFORWARD(Volts.of(8)),
     STOP(Volts.of(0));
 
     private final Voltage targetPosition;

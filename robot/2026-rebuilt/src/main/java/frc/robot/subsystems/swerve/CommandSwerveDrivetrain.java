@@ -29,6 +29,7 @@ import com.pathplanner.lib.util.FlippingUtil;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rectangle2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -44,6 +45,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.RobotMap;
+import frc.robot.RobotMap.ShooterConstants;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.subsystems.swerve.generated.TunerConstants.TunerSwerveDrivetrain;
 import frc.robot.utils.ShootOnTheMove;
@@ -481,5 +483,19 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         Translation2d virtualGoal = ShootOnTheMove.calculateVirtualGoal(getState().Pose, getState().Speeds);
 
         return Meters.of(pose.getDistance(virtualGoal));
+    }
+
+    public boolean withinTrench()
+    {
+        Translation2d pose = getState().Pose.getTranslation();
+        return(ShooterConstants.BlueLeftTrench.contains(pose) 
+            || ShooterConstants.BlueRightTrench.contains(pose) 
+            || ShooterConstants.RedLeftTrench.contains(pose) 
+            || ShooterConstants.RedRightTrench.contains(pose));
+        
+        
+
+
+
     }
 }

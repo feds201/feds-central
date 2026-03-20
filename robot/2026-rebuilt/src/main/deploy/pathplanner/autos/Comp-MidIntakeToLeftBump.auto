@@ -13,7 +13,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 1.5
+            "waitTime": 1.0
           }
         },
         {
@@ -32,12 +32,6 @@
           "type": "path",
           "data": {
             "pathName": "MidIntakeL"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Stop Rollers"
           }
         },
         {
@@ -61,19 +55,97 @@
         {
           "type": "named",
           "data": {
-            "name": "Retract Intake"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "Run Shooter"
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 5.0
+            "waitTime": 0.45
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Retract Intake"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.45
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Extend Intake"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.45
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Retract Intake"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.45
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Extend Intake"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.45
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Retract Intake"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.45
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Extend Intake"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.45
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Retract Intake"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.45
           }
         },
         {

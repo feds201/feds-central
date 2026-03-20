@@ -98,6 +98,8 @@ public class ControllerBindings {
         drivetrain.setDefaultCommand(new TeleopSwerve(drivetrain, driver, 1));
         driver.b().onTrue(feederSubsystem.setStateCommand(feeder_state.PREVERSE).andThen(spinDexer.setStateCommand(spindexer_state.PREVERSE)))
         .onFalse(feederSubsystem.setStateCommand(feeder_state.STOP).andThen(spinDexer.setStateCommand(spindexer_state.STOP)));
+        driver.b().onTrue(feederSubsystem.setStateCommand(feeder_state.PREVERSE).andThen(spinDexer.setStateCommand(spindexer_state.PREVERSE)))
+        .onFalse(feederSubsystem.setStateCommand(feeder_state.STOP).andThen(spinDexer.setStateCommand(spindexer_state.STOP)));
         // M key (Right bumper): reverse intake rollers
         driver.rightBumper()
                 .whileTrue(intakeSubsystem.setRollerStateCommand(RollerState.REVERSE))
@@ -167,13 +169,15 @@ public class ControllerBindings {
         driver.rightTrigger().and(HubDrive::pidAtSetpoint).and(shooterWheels::atSetpoint).whileTrue(
                 Commands.sequence(
                         feederSubsystem.setStateCommand(feeder_state.RUN),
-                        spinDexer.setStateCommand(spindexer_state.RUN)
+                        spinDexer.setStateCommand(spindexer_state.PFORWARD),
+                        intakeSubsystem.setRollerStateCommand(RollerState.ON)
                         // intakeSubsystem.setIntakeStateCommand(IntakeState.AGITATE)
                 )
         ).onFalse(
                 Commands.sequence(
                         feederSubsystem.setStateCommand(feeder_state.STOP),
-                        spinDexer.setStateCommand(spindexer_state.STOP)
+                        spinDexer.setStateCommand(spindexer_state.STOP),
+                        intakeSubsystem.setRollerStateCommand(RollerState.OFF)
                 )
         );
 
@@ -203,7 +207,6 @@ public class ControllerBindings {
         var intakeSubsystem = container.getIntakeSubsystem();
         var shooterHood = container.getShooterHood();
         var spindexerSubsystem = container.getSpindexer();
-
         // Manual way to change the angle of the shooter hood
         operator.leftTrigger()
                 .onTrue(shooterHood.setMotorPower(0.1))
@@ -216,7 +219,7 @@ public class ControllerBindings {
         operator.rightBumper().onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT));
 
         operator.x().onTrue(feederSubsystem.setStateCommand(feeder_state.PREVERSE).alongWith(spindexerSubsystem.setStateCommand(spindexer_state.PREVERSE))).
-        onFalse(feederSubsystem.setStateCommand(feeder_state.STOP).alongWith(spindexerSubsystem.setStateCommand(spindexer_state.PREVERSE)));
+        onFalse(feederSubsystem.setStateCommand(feeder_state.STOP).alongWith(spindexerSubsystem.setStateCommand(spindexer_state.STOP)));
         
         //Add multiplier to hood angle
         operator.a()
