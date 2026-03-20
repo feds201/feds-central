@@ -83,11 +83,13 @@ public class IntakeSubsystem extends SubsystemBase {
   public enum IntakeState {
     DEFAULT,
     EXTENDED,
+    CLOSE_RETRACTED, // 2
     INTAKING,
     AGITATE,
     AGITATE_IN,
-    AGITATE_OUT
-
+    AGITATE_OUT,
+    CLOSE_AGITATION, //35
+   
   }
 
   public enum RollerState {
@@ -114,6 +116,10 @@ public class IntakeSubsystem extends SubsystemBase {
         moveIntakeWithPosition(extendedRotations);
         setRollerState(RollerState.OFF);
       }
+      case CLOSE_RETRACTED -> {
+        moveIntakeWithPosition(2.0);
+        
+      }
       case INTAKING -> {
         moveIntakeWithPosition(extendedRotations);
         setRollerState(RollerState.ON);
@@ -123,6 +129,9 @@ public class IntakeSubsystem extends SubsystemBase {
       }
       case AGITATE_OUT -> {
         moveIntakeWithPosition(extendedRotations);
+      }
+      case CLOSE_AGITATION -> {
+        moveIntakeWithPosition(IntakeSubsystemConstants.burstAgitation);
       }
     }
 
@@ -421,7 +430,30 @@ public class IntakeSubsystem extends SubsystemBase {
         timer.reset();
       
         break;
+      }
+
+        case CLOSE_AGITATION: 
+          if(!timer.isRunning()){
+            timer.start();
+          }
+          if(timer.hasElapsed(0.25)){
+            setState(IntakeState.CLOSE_RETRACTED); // really close to default
+            timer.stop();
+            timer.reset();
+          }
+
+          case CLOSE_RETRACTED  : 
+          if(!timer.isRunning()){
+            timer.start();
+          }
+
+          if(timer.hasElapsed(0.25)){
+            setState(IntakeState.CLOSE_AGITATION); // about halfway from bumper to extended
+            timer.stop();
+            timer.reset();
+          
     }
+
     switch (currentRollerState) {
       case ON:
         rollerMotor.set(ROLLER_OUTPUT);
@@ -445,9 +477,9 @@ public class IntakeSubsystem extends SubsystemBase {
     Logger.recordOutput("Robot/Limelights/limelight-one/TX", LimelightHelpers.getTX("limelight-one"));
     Logger.recordOutput("Robot/Limelights/limelight-one/TY", LimelightHelpers.getTY("limelight-one"));
     Logger.recordOutput("Robot/Limelights/limelight-one/TA", LimelightHelpers.getTA("limelight-one"));
-    super.periodic();
+    super.periodic();}
   }
-  }
+  
 
   @Override
   public void simulationPeriodic() {

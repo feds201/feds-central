@@ -133,9 +133,9 @@ public class ControllerBindings {
                         intakeSubsystem.setRollerStateCommand(RollerState.OFF)
                 ));
 
-                driver.a()
-                .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.AGITATE_IN))
-                .onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT));
+                // driver.a()
+                // .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.AGITATE_IN))
+                // .onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT));
 
         
 
@@ -226,6 +226,10 @@ public class ControllerBindings {
 
          operator.y()
                 .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.AGITATE_IN))
+                .onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT));
+
+        operator.start()
+                .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.CLOSE_AGITATION))
                 .onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT));
     }
 
