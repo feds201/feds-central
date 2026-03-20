@@ -89,7 +89,7 @@ public class IntakeSubsystem extends SubsystemBase {
     AGITATE,
     AGITATE_IN,
     AGITATE_OUT,
-    CLOSE_AGITATION, //35
+    CLOSE_AGITATION,
    
   }
 
@@ -138,14 +138,6 @@ public class IntakeSubsystem extends SubsystemBase {
     }
   
 
-  public Command extendIntake(){
-    return Commands.runOnce(() -> setState(IntakeState.EXTENDED));
-  }
-
-  public Command retractIntake() {
-    return Commands.runOnce(() -> setState(IntakeState.DEFAULT));
-  }
-
   public IntakeState getState() {
     return this.currentState;
   }
@@ -165,7 +157,6 @@ public class IntakeSubsystem extends SubsystemBase {
     }
   
     public void setRollerState(RollerState desiredState) {
-      // Safety rule: rollers must never run when intake is stowed (DEFAULT).
       // Allow rollers when the intake is EXTENDED, INTAKING, or AGITATE.
       // if (desiredState != RollerState.OFF && this.currentState == IntakeState.DEFAULT) {
         // Ignore requests to run rollers while stowed; keep them OFF.
@@ -174,123 +165,7 @@ public class IntakeSubsystem extends SubsystemBase {
       // }
       this.currentRollerState = desiredState;
     }
-    public void agitateTimed() {
-  
-  
-      for(int i = 0; i < 20; i++){
-        extendIntake().withTimeout(2);
-        retractIntake().withTimeout(2);
-      } 
-            setState(IntakeState.DEFAULT);
-  
-    }
-  
-    /**
-     * Build a non-blocking Command that pulses the intake between EXTENDED and DEFAULT.
-     * @param pulses number of extend/retract cycles
-     * @param extendSeconds how long to hold EXTENDED each pulse
-     * @param retractSeconds how long to hold DEFAULT between pulses
-     */
-    public Command agitateCommand(int pulses, double extendSeconds, double retractSeconds) {
-      List<Command> steps = new ArrayList<>();
-      for (int i = 0; i < pulses; ++i) {
-        // extend, wait, retract, wait
-        steps.add(extendIntake());
-        steps.add(new WaitCommand(extendSeconds));
-        steps.add(retractIntake());
-        // don't add final retract wait on last pulse (optional)
-        if (i < pulses - 1) {
-          steps.add(new WaitCommand(retractSeconds));
-        }
-      }
-  // ensure we finish in DEFAULT state
-  steps.add(Commands.runOnce(() -> setState(IntakeState.DEFAULT)));
-      return Commands.sequence(steps.toArray(new Command[steps.size()]));
-    }
-  
-    /**
-     * Pulse the intake (extend -> run roller -> retract -> pause) repeatedly until the Command
-     * is canceled. Use this with button.whileTrue(...).
-     * This variant uses time durations for each phase.
-     * @param extendSeconds seconds to hold EXTENDED while rollers run
-     * @param retractSeconds seconds to hold DEFAULT between pulses
-     */
-    public Command agitateWhileHeldTime(double extendSeconds, double retractSeconds) {
-      return new AgitateWhileHeldTimeCommand(this, extendSeconds, retractSeconds);
-    }
-  
-    /**
-     * Pulse the intake repeatedly until the Command is canceled. Each extend phase runs the
-     * roller for a target number of rotations before retracting.
-     * @param rotationsPerPulse roller rotations to run during each extend phase
-     */
-    /*public Command agitateWhileHeldRotations(double rotationsPerPulse) {
-      return new AgitateWhileHeldRotationsCommand(this, rotationsPerPulse);
-    }
-  
-    /**
-     * Run the roller motor until it has turned the requested number of rotations.
-     * This Command requires the intake subsystem while running.
-     */
-    public Command runRollerForRotations(double rotations) {
-      // Use an array to capture start position in lambdas
-      double[] start = new double[1];
-    return Commands.sequence(
-      // Record start position
-      Commands.runOnce(() -> start[0] = rollerMotor.getPosition().getValue().in(Units.Rotations)),
-      // start roller
-      Commands.runOnce(() -> rollerMotor.set(ROLLER_OUTPUT)),
-      // wait until requested rotations completed
-      new WaitUntilCommand(() -> Math.abs(rollerMotor.getPosition().getValue().in(Units.Rotations) - start[0]) >= Math.abs(rotations)),
-      // stop roller
-      Commands.runOnce(() -> rollerMotor.stopMotor())
-    );
-    }
-  
-    /**
-     * Run the roller motor until it reaches an absolute encoder target, choosing direction
-     * automatically from the current position.
-     * This is useful for oscillating between fixed bounds like 0 and 5 rotations.
-     */
-    public Command moveRollerToPosition(double targetRotations) {
-      return Commands.defer(() -> {
-        double currentPosition = getRollerPosition();
-        double delta = targetRotations - currentPosition;
-  
-        if (Math.abs(delta) < 0.05) {
-          return Commands.runOnce(this::stopRoller);
-        }
-  
-        double direction = Math.signum(delta);
-    return Commands.sequence(
-      Commands.runOnce(() -> rollerMotor.set(direction * ROLLER_OUTPUT)),
-      new WaitUntilCommand(() -> {
-              double position = getRollerPosition();
-              return direction > 0
-                  ? position >= targetRotations
-                  : position <= targetRotations;
-            }),
-      Commands.runOnce(this::stopRoller));
-      }, Set.of(this));
-    }
-  
-    /**
-     * Build an agitate sequence that uses roller rotations rather than timing.
-     * @param pulses number of extend/retract cycles
-     * @param rotationsPerPulse roller rotations to run during each extend
-     */
-    public Command agitateByRotations(int pulses, double rotationsPerPulse) {
-      List<Command> steps = new ArrayList<>();
-      for (int i = 0; i < pulses; ++i) {
-        steps.add(extendIntake());
-        steps.add(runRollerForRotations(rotationsPerPulse));
-        steps.add(retractIntake());
-      }
-  // ensure we finish in DEFAULT state
-  steps.add(Commands.runOnce(() -> setState(IntakeState.DEFAULT)));
-      return Commands.sequence(steps.toArray(new Command[steps.size()]));
-    }
-  
+
     // --- Roller helpers for external Commands (encapsulate direct motor access) ---
     /** Start the roller at the configured ROLLER_OUTPUT. */
     public void startRoller() {
@@ -310,14 +185,6 @@ public class IntakeSubsystem extends SubsystemBase {
       return rollerMotor.getPosition().getValue().in(Units.Rotations);
     }
   
-  
-    public Command emergencyStop() {
-      return Commands.runOnce(() -> {
-        setState(IntakeState.DEFAULT);
-        setRollerState(RollerState.OFF);
-      });
-    }
-  
     public RollerState getRollerState() {
       return this.currentRollerState;
     }
@@ -329,9 +196,6 @@ public class IntakeSubsystem extends SubsystemBase {
     public Command resetIntakeEncoder() {
         return Commands.runOnce(() -> motor.setPosition(0));
       }
-  
-  
-  
   
     public IntakeSubsystem() {
       motor = new TalonFX(RobotMap.IntakeSubsystemConstants.kMotorID);
