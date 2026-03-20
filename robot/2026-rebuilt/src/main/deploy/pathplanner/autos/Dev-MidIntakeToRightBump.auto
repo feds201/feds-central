@@ -13,19 +13,19 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 1.0
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "RightBumpToMid"
+            "waitTime": 0.7
           }
         },
         {
           "type": "named",
           "data": {
             "name": "Run Rollers"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "RightBumpToMid"
           }
         },
         {
@@ -80,7 +80,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 1.0
+            "waitTime": 0.45
           }
         },
         {
@@ -92,7 +92,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 1.0
+            "waitTime": 0.45
           }
         },
         {
@@ -104,7 +104,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 1.0
+            "waitTime": 0.45
           }
         },
         {
@@ -194,7 +194,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 1.0
+                  "waitTime": 0.45
                 }
               },
               {
@@ -206,7 +206,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 1.0
+                  "waitTime": 0.45
                 }
               },
               {
@@ -218,7 +218,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 1.0
+                  "waitTime": 0.45
                 }
               },
               {

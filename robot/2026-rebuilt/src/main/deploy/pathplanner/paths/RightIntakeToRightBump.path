@@ -8,20 +8,52 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.161803084215502,
-        "y": 2.6201660735441057
+        "x": 6.684489280120517,
+        "y": 2.9927981660043064
       },
       "isLocked": false,
       "linkedName": "RightIntakeEnd"
     },
     {
       "anchor": {
-        "x": 2.804329774606961,
-        "y": 3.0397746144693722
+        "x": 5.656390870185448,
+        "y": 2.5
       },
       "prevControl": {
-        "x": 3.331530249110321,
-        "y": 2.168279952550415
+        "x": 5.906106698506441,
+        "y": 2.511916588688049
+      },
+      "nextControl": {
+        "x": 5.388422582288859,
+        "y": 2.4872123930238033
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.7544079885877313,
+        "y": 2.5
+      },
+      "prevControl": {
+        "x": 4.194961994833493,
+        "y": 2.44484208557813
+      },
+      "nextControl": {
+        "x": 3.5063446687659567,
+        "y": 2.5310578389299714
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.9651497860199716,
+        "y": 2.8769900142653353
+      },
+      "prevControl": {
+        "x": 3.299118239360102,
+        "y": 2.7116365878722704
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,21 +62,21 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.3270777479892758,
+      "waypointRelativePos": 0.65,
       "rotationDegrees": 27.6220983474387
     },
     {
-      "waypointRelativePos": 0.8163538873994616,
+      "waypointRelativePos": 2.1363454618152735,
       "rotationDegrees": 27.62
     }
   ],
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 0.31872509960159373,
-      "maxWaypointRelativePos": 0.6852589641434264,
+      "minWaypointRelativePos": 0.8276353276353255,
+      "maxWaypointRelativePos": 1.9216524216524185,
       "constraints": {
-        "maxVelocity": 3.5,
+        "maxVelocity": 2.5,
         "maxAcceleration": 4.0,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 360.0,
@@ -65,7 +97,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 31.818853928340257
+    "rotation": 34.48995663073139
   },
   "reversed": false,
   "folder": "MidIntakeToRightBump",

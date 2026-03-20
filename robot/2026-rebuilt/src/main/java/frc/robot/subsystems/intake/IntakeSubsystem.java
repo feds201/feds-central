@@ -10,6 +10,7 @@ import static edu.wpi.first.units.Units.Rotations;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
 
+import java.io.ObjectInputFilter.Config;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.List;
@@ -56,7 +57,7 @@ public class IntakeSubsystem extends SubsystemBase {
   private static final double MOVE_TARGET_SECONDS = .45;
   // Aggressive acceleration multiplier requested (20x faster than default)
   private static final double MOTION_MAGIC_ACCEL_MULTIPLIER = 40.0;
-  private static final double ROLLER_OUTPUT = 0.60; //60% for rollers, 70% originally;
+  private static final double ROLLER_OUTPUT = 0.90; //90% for rollers, 70% originally;
   private final Timer timer = new Timer();
 
 
@@ -320,6 +321,16 @@ public class IntakeSubsystem extends SubsystemBase {
     rollerMotor = new TalonFX(RobotMap.IntakeSubsystemConstants.kRollerMotorID);
     limit_switch_r = new DigitalInput(RobotMap.IntakeSubsystemConstants.kLimit_switch_rID);
     limit_switch_l = new DigitalInput(RobotMap.IntakeSubsystemConstants.kLimit_switch_lID);
+
+    var rollerConfig = new TalonFXConfiguration();
+    rollerConfig.CurrentLimits.StatorCurrentLimit = 40.0;
+    rollerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+
+    for (int i = 0; i < 2; ++i) {
+      var status = motor.getConfigurator().apply(rollerConfig);
+      if (status.isOK()) break;
+    }
+
     var config = new TalonFXConfiguration();
     config.Slot0.kP = 3.0;
     config.Slot0.kS = 0.3;

@@ -13,19 +13,19 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 1.0
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "LeftTrenchToMid"
+            "waitTime": 0.7
           }
         },
         {
           "type": "named",
           "data": {
             "name": "Run Rollers"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "LeftTrenchToMid"
           }
         },
         {
