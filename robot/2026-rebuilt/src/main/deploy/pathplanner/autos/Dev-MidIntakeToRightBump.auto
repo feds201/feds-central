@@ -41,12 +41,6 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Stop Rollers"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
                   "name": "Start Shooter Spin"
                 }
               }
@@ -62,13 +56,37 @@
         {
           "type": "named",
           "data": {
+            "name": "Stop Rollers"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "Run Shooter"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Retract Intake"
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 1.0
+            "waitTime": 0.45
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Extend Intake"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.45
           }
         },
         {
@@ -114,28 +132,28 @@
           }
         },
         {
-          "type": "path",
-          "data": {
-            "pathName": "SecondRightBumpToMid"
-          }
-        },
-        {
           "type": "sequential",
           "data": {
             "commands": [
               {
                 "type": "named",
                 "data": {
-                  "name": "Run Rollers"
+                  "name": "Extend Intake"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Extend Hopper"
+                  "name": "Run Rollers"
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "SecondRightBumpToMid"
           }
         },
         {
@@ -180,9 +198,21 @@
                 }
               },
               {
+                "type": "named",
+                "data": {
+                  "name": "Run Rollers"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Retract Intake"
+                }
+              },
+              {
                 "type": "wait",
                 "data": {
-                  "waitTime": 1.0
+                  "waitTime": 0.45
                 }
               },
               {

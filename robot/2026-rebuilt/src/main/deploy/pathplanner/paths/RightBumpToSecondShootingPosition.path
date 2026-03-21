@@ -48,12 +48,12 @@
     },
     {
       "anchor": {
-        "x": 2.9651497860199716,
-        "y": 2.8769900142653353
+        "x": 3.107475035663337,
+        "y": 2.8122967189728967
       },
       "prevControl": {
-        "x": 3.3403708987161194,
-        "y": 2.5794008559201154
+        "x": 3.482696148359485,
+        "y": 2.5147075606276768
       },
       "nextControl": null,
       "isLocked": false,
@@ -63,14 +63,18 @@
   "rotationTargets": [
     {
       "waypointRelativePos": 1.3,
-      "rotationDegrees": 17.189772808890336
+      "rotationDegrees": 117.18999999999998
+    },
+    {
+      "waypointRelativePos": 2.285085965613732,
+      "rotationDegrees": 117.18999999999998
     }
   ],
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 1.2207977207977248,
-      "maxWaypointRelativePos": 1.8874643874643886,
+      "minWaypointRelativePos": 1.3119658119658077,
+      "maxWaypointRelativePos": 2.075498575498568,
       "constraints": {
         "maxVelocity": 2.5,
         "maxAcceleration": 4.0,
@@ -93,7 +97,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 34.48995663073139
+    "rotation": 39.01940047523653
   },
   "reversed": false,
   "folder": "MidIntakeToRightBump",
