@@ -166,7 +166,7 @@ public class ControllerBindings {
         // Button to fire, if swerve is aimed and shooter is at speed.
         driver.rightTrigger().and(HubDrive::pidAtSetpoint).and(shooterWheels::atSetpoint).whileTrue(
                 Commands.sequence(
-                        feederSubsystem.setStateCommand(feeder_state.RUN),
+                        feederSubsystem.setStateCommand(feeder_state.PRUN),
                         spinDexer.setStateCommand(spindexer_state.PFORWARD),
                         intakeSubsystem.setRollerStateCommand(RollerState.ON)
                         // intakeSubsystem.setIntakeStateCommand(IntakeState.AGITATE)
