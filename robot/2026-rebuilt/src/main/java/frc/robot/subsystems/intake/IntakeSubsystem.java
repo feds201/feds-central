@@ -117,7 +117,7 @@ public class IntakeSubsystem extends SubsystemBase {
         setRollerState(RollerState.OFF);
       }
       case CLOSE_RETRACTED -> {
-        moveIntakeWithPosition(2.0);
+        moveIntakeWithPosition(0.0);
         
       }
       case INTAKING -> {
@@ -311,7 +311,7 @@ public class IntakeSubsystem extends SubsystemBase {
           if(!timer.isRunning()){
             timer.start();
           }
-          if(timer.hasElapsed(0.25)){
+          if(timer.hasElapsed(0.3)){
             setState(IntakeState.CLOSE_RETRACTED); // really close to default
             timer.stop();
             timer.reset();
@@ -322,7 +322,7 @@ public class IntakeSubsystem extends SubsystemBase {
             timer.start();
           }
 
-          if(timer.hasElapsed(0.25)){
+          if(timer.hasElapsed(0.3)){
             setState(IntakeState.CLOSE_AGITATION); // about halfway from bumper to extended
             timer.stop();
             timer.reset();
