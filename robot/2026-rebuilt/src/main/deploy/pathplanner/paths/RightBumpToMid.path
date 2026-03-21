@@ -8,20 +8,36 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.876348074179743,
-        "y": 0.7032952924393738
+        "x": 6.128168674698795,
+        "y": 0.516277108433735
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.820870185449357,
-        "y": 1.6607560627674753
+        "x": 6.084457831325301,
+        "y": 1.7838915662650607
       },
       "prevControl": {
-        "x": 6.160998573466475,
-        "y": 0.7162339514978598
+        "x": 5.918426321875245,
+        "y": 0.4556394906646286
+      },
+      "nextControl": {
+        "x": 6.115466514972603,
+        "y": 2.0319610354434774
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.696409638554217,
+        "y": 2.210072289156626
+      },
+      "prevControl": {
+        "x": 6.346722891566265,
+        "y": 2.18821686746988
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,7 +46,7 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.42091152815013316,
+      "waypointRelativePos": 0.85,
       "rotationDegrees": 180.0
     }
   ],
@@ -47,7 +63,7 @@
   },
   "goalEndState": {
     "velocity": 2.0,
-    "rotation": -132.70938995736154
+    "rotation": 180.0
   },
   "reversed": false,
   "folder": "MidIntakeToRightBump",
