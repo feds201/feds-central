@@ -5,7 +5,6 @@ import 'package:hive/hive.dart';
 import 'package:scout_ops_android/components/CheckBox.dart';
 import 'package:scout_ops_android/components/CounterShelf.dart';
 import 'package:scout_ops_android/components/ScoutersList.dart';
-import 'package:scout_ops_android/components/gameSpecifics/winAfterAuton.dart';
 
 import '../../components/TeamInfo.dart';
 import '../../components/gameSpecifics/heatmap.dart';
@@ -21,13 +20,7 @@ class Auton extends StatefulWidget {
 }
 
 class AutonState extends State<Auton> {
-  late bool left_startingLocation;
-  late bool depot;
-  late bool outPost;
-  late bool zone;
   late bool autoClimb;
-  late BotLocation startingBotLocations;
-  late String winAfterAuton;
   late double shootingTime;
   late AutonPoints autonPoints;
   late int amount;
@@ -44,9 +37,6 @@ class AutonState extends State<Auton> {
   void initState() {
     super.initState();
     //   log(widget.matchRecord.toString());
-    depot = false;
-    outPost = false;
-    zone = false;
     autoClimb = false;
     assignedTeam = widget.matchRecord.teamNumber;
     assignedStation = widget.matchRecord.station;
@@ -58,61 +48,32 @@ class AutonState extends State<Auton> {
       mapcolor = Alliance.red;
     }
     matchNumber = widget.matchRecord.matchNumber;
-    startingBotLocations =
-        widget.matchRecord.autonPoints.starting_location; // Load saved location
-
     // Fallback if needed (BotLocation handles defaults in fromJson however)
     // If saving/loading logic is robust, this is fine.
-
-    left_startingLocation =
-        widget.matchRecord.autonPoints.left_starting_position;
-    depot = widget.matchRecord.autonPoints.fuel_pickup_from_Depot;
-    outPost = widget.matchRecord.autonPoints.fuel_pickup_from_Outpost;
-    zone = widget.matchRecord.autonPoints.fuel_pickup_from_Neutral_Zone;
-    autoClimb = widget.matchRecord.autonPoints.climb;
-    winAfterAuton = widget.matchRecord.autonPoints.winAfterAuton;
     shootingTime = widget.matchRecord.autonPoints.total_shooting_time;
     amount = widget.matchRecord.autonPoints.amountOfShooting;
     passing = widget.matchRecord.autonPoints.passing;
     autonPoints = AutonPoints(
-        depot,
-        outPost,
-        zone,
         shootingTime,
         amount,
         autoClimb,
-        winAfterAuton,
-        startingBotLocations,
-        left_startingLocation,
+
         passing);
   }
 
   void UpdateData() {
     autonPoints = AutonPoints(
-      depot,
-      outPost,
-      zone,
       shootingTime,
       amount,
       autoClimb,
-      winAfterAuton,
-      startingBotLocations,
-      left_startingLocation,
       passing,
     );
 
     widget.matchRecord.autonPoints = autonPoints;
-    widget.matchRecord.autonPoints.left_starting_position =
-        left_startingLocation;
-    widget.matchRecord.autonPoints.fuel_pickup_from_Depot = depot;
-    widget.matchRecord.autonPoints.fuel_pickup_from_Outpost = outPost;
-    widget.matchRecord.autonPoints.fuel_pickup_from_Neutral_Zone = zone;
     widget.matchRecord.autonPoints.total_shooting_time = shootingTime;
     widget.matchRecord.autonPoints.amountOfShooting = amount;
-    widget.matchRecord.autonPoints.winAfterAuton = winAfterAuton;
     widget.matchRecord.autonPoints.climb = autoClimb;
     widget.matchRecord.autonPoints.passing = passing;
-    widget.matchRecord.autonPoints.starting_location = startingBotLocations;
     widget.matchRecord.scouterName =
         Hive.box('settings').get('deviceName', defaultValue: '');
 
@@ -157,61 +118,6 @@ class AutonState extends State<Auton> {
           SizedBox(
             height: 8,
           ),
-          SinglePointSelector(
-            key: _tapSelectorKey,
-            blueAllianceImagePath: 'assets/2026/BlueAlliance_StartPosition.png',
-            redAllianceImagePath: 'assets/2026/RedAlliance_StartPosition.png',
-            alliance: mapcolor,
-            initialPoint: startingBotLocations.size.width > 0
-                ? startingBotLocations.position
-                : null,
-            onPointSelected: (imageSize, point) {
-              log('Tap at x=${point.dx}, y=${point.dy} on image width=${imageSize.width}, height=${imageSize.height}');
-              setState(() {
-                startingBotLocations = BotLocation(point, imageSize, 0);
-              });
-              UpdateData();
-            },
-          ),
-          SizedBox(
-            height: 8,
-          ),
-          buildCheckBoxFull("Leave", left_startingLocation, (bool value) {
-            setState(() {
-              left_startingLocation = value;
-            });
-            UpdateData();
-          }),
-          SizedBox(
-            height: 8,
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: buildCheckBoxHalf("Depot", depot, (bool value) {
-                    setState(() {
-                      depot = value;
-                    });
-                    UpdateData();
-                  }),
-                ),
-                Expanded(
-                  child: buildCheckBoxHalf("Outpost", outPost, (bool value) {
-                    setState(() {
-                      outPost = value;
-                    });
-                    UpdateData();
-                  }),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(
-            height: 8,
-          ),
-
           TklKeyboard(
             currentTime: shootingTime,
             onChange: (double time) {
@@ -254,16 +160,6 @@ class AutonState extends State<Auton> {
           SizedBox(
             height: 8,
           ),
-          buildCheckBoxFull("Grabbed Balls From Neutral Zone", zone,
-              (bool value) {
-            setState(() {
-              zone = value;
-            });
-            UpdateData();
-          }),
-          SizedBox(
-            height: 8,
-          ),
           buildCounterFull("Passing", passing, (int value) {
             setState(() {
               passing = value;
@@ -279,15 +175,6 @@ class AutonState extends State<Auton> {
             });
             UpdateData();
           }),
-          SizedBox(
-            height: 8,
-          ),
-          buildWinner(context, (String winner) {
-            setState(() {
-              winAfterAuton = winner;
-            });
-            UpdateData();
-          }, winAfterAuton),
           SizedBox(
             height: 20,
           )

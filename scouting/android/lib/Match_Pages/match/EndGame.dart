@@ -27,7 +27,7 @@ class EndGameState extends State<EndGame> {
   // late bool feed;
   // late bool defense;
   late bool park;
-  late bool feedToHP;
+  late int pushBallsEnd;
   late int passing;
   int? selectedLevel; // Now maps to ClimbStatus: 0=None, 1-9=IDs
 
@@ -40,11 +40,11 @@ class EndGameState extends State<EndGame> {
   late int matchNumber;
   late int neutralTrips;
   late bool robotBroken;
+  TextEditingController commentController = TextEditingController();
 
   //timer
   double endgameTime = 0.0;
   int endgameshootingCycles = 0;
-  List<int> drawingData = [];
   Alliance mapcolor = Alliance.blue;
   bool isPageScrollable = true;
   int shootingAccuracy = 3;
@@ -68,14 +68,13 @@ class EndGameState extends State<EndGame> {
     int status = widget.matchRecord.endPoints.ClimbStatus;
     selectedLevel = status == 0 ? null : status;
     park = widget.matchRecord.endPoints.Park;
-    feedToHP = widget.matchRecord.endPoints.FeedToHP;
+    pushBallsEnd = widget.matchRecord.endPoints.PushBallsEnd;
     passing = widget.matchRecord.endPoints.Passing;
 
     neutralTrips = widget.matchRecord.endPoints.EndNeutralTrips;
     shootingAccuracy = widget.matchRecord.endPoints.ShootingAccuracy;
     endgameTime = widget.matchRecord.endPoints.endgameTime;
     endgameshootingCycles = widget.matchRecord.endPoints.endgameshootingCycles;
-    drawingData = widget.matchRecord.endPoints.drawingData;
     robotBroken = widget.matchRecord.endPoints.robotBroken;
   }
 
@@ -87,13 +86,12 @@ class EndGameState extends State<EndGame> {
     widget.matchRecord.endPoints.EndNeutralTrips = neutralTrips;
     widget.matchRecord.endPoints.ShootingAccuracy = shootingAccuracy;
     widget.matchRecord.endPoints.Park = park;
-    widget.matchRecord.endPoints.FeedToHP = feedToHP;
+    widget.matchRecord.endPoints.PushBallsEnd = pushBallsEnd;
     widget.matchRecord.endPoints.Passing = passing;
 
     // Timer and endgame actions
     widget.matchRecord.endPoints.endgameTime = endgameTime;
     widget.matchRecord.endPoints.endgameshootingCycles = endgameshootingCycles;
-    widget.matchRecord.endPoints.drawingData = drawingData;
     widget.matchRecord.endPoints.robotBroken = robotBroken;
     endPoints = widget.matchRecord.endPoints;
     saveState();
@@ -181,13 +179,12 @@ class EndGameState extends State<EndGame> {
             child: Row(
               children: [
                 Expanded(
-                  child:
-                      buildCheckBoxHalf("Feed to HP", feedToHP, (bool value) {
+                  child: buildCounter("Push Balls", pushBallsEnd, (int value) {
                     setState(() {
-                      feedToHP = value;
+                      pushBallsEnd = value;
                     });
                     UpdateData();
-                  }),
+                  }, color: Colors.yellow),
                 ),
                 Expanded(
                   child: buildCounter("Passing", passing, (int value) {
@@ -316,28 +313,75 @@ class EndGameState extends State<EndGame> {
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+
               children: [
+                  Row(
+                  children: [
+                    const SizedBox(width: 12, height: 50,),
+                    Icon(
+                      Icons.comment_outlined,
+                      color: Colors.blueAccent,
+                      size: 24,
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      "Comments",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                        color: !islightmode()
+                            ? const Color.fromARGB(255, 255, 255, 255)
+                            : const Color.fromARGB(255, 34, 34, 34),
+                      ),
+                    ),
+                  ],
+                ),
                 Padding(
-                  padding: const EdgeInsets.only(left: 16, top: 16, bottom: 8),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.comment_outlined,
-                        color: Colors.blueAccent,
-                        size: 24,
+                  padding:
+                  const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+                  child:
+                  TextField(
+                    controller: commentController,
+                    maxLines: 4,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: islightmode()
+                          ? const Color.fromARGB(
+                          255, 0, 0, 0) // Black for light mode
+                          : const Color.fromARGB(
+                          255, 255, 255, 255), // White for dark mode
+                    ),
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: islightmode()
+                          ? const Color.fromARGB(255, 255, 255, 255)
+                          : const Color.fromARGB(255, 34, 34, 34),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide:
+                        BorderSide(color: Colors.grey.shade300, width: 1),
                       ),
-                      const SizedBox(width: 12),
-                      Text(
-                        "Comments",
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w600,
-                          color: !islightmode()
-                              ? const Color.fromARGB(255, 255, 255, 255)
-                              : const Color.fromARGB(255, 34, 34, 34),
-                        ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide:
+                        BorderSide(color: Colors.grey.shade300, width: 1),
                       ),
-                    ],
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide:
+                        BorderSide(color: Colors.blueAccent, width: 2),
+                      ),
+                      hintText:
+                      'Add any relevant notes about the team\'s performance...',
+                      hintStyle: TextStyle(
+                        color: !islightmode()
+                            ? const Color.fromARGB(255, 255, 255, 255)
+                            : const Color.fromARGB(255, 34, 34, 34),
+                        fontSize: 15,
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                          vertical: 16, horizontal: 16),
+                    ),
                   ),
                 ),
               ],
@@ -345,23 +389,7 @@ class EndGameState extends State<EndGame> {
           ),
           const SizedBox(height: 6),
           // Whiteboard (MultiPointSelector)
-          MultiPointSelector(
-            blueAllianceImagePath: 'assets/2026/BlueAlliance_StartPosition.png',
-            redAllianceImagePath: 'assets/2026/RedAlliance_StartPosition.png',
-            alliance: mapcolor,
-            initialData: drawingData,
-            onDataChanged: (data) {
-              setState(() {
-                drawingData = data;
-              });
-              UpdateData();
-            },
-            onLockStateChanged: (locked) {
-              setState(() {
-                isPageScrollable = locked;
-              });
-            },
-          ),
+
           const SizedBox(height: 6),
           Padding(
             padding: const EdgeInsets.all(8.0),
