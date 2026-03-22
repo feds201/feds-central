@@ -1,6 +1,6 @@
 {
-    "name": "myapp",
-    "short_name": "myapp",
+    "name": "Scout Ops Scan",
+    "short_name": "Scout Ops Scan",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
