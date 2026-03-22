@@ -805,45 +805,22 @@ class _BotPathDrawerState extends State<BotPathDrawer>
 
           // Action buttons
           Expanded(
-            child: _buildControlButton(
-              label: 'Play',
-              icon: Icons.play_arrow,
-              onPressed: _pathData != null ? _startPlayback : null,
-              textColor: buttonTextColor,
-              verticalPadding: vPad,
-            ),
+            child: Builder(builder: (context) {
+              final isPlayingOrComplete =
+                  _playbackController.isAnimating || _playbackComplete;
+              return _buildControlButton(
+                label: isPlayingOrComplete ? 'Stop' : 'Play',
+                icon: isPlayingOrComplete ? Icons.stop : Icons.play_arrow,
+                onPressed: _pathData != null
+                    ? (isPlayingOrComplete
+                        ? () => setState(_stopPlayback)
+                        : _startPlayback)
+                    : null,
+                textColor: buttonTextColor,
+                verticalPadding: vPad,
+              );
+            }),
           ),
-          Expanded(
-            child: _buildControlButton(
-              label: 'Stop',
-              icon: Icons.stop,
-              onPressed: _playbackController.isAnimating || _playbackComplete
-                  ? () => setState(_stopPlayback)
-                  : null,
-              textColor: buttonTextColor,
-              verticalPadding: vPad,
-            ),
-          ),
-          Expanded(
-            child: _buildControlButton(
-              label: 'Clear',
-              icon: Icons.delete_outline,
-              onPressed: _rawPath.isNotEmpty ? _clear : null,
-              textColor: buttonTextColor,
-              verticalPadding: vPad,
-            ),
-          ),
-          Expanded(
-            child: _buildControlButton(
-              label: 'Save',
-              icon: Icons.save,
-              onPressed: _save,
-              textColor: buttonTextColor,
-              verticalPadding: vPad,
-            ),
-          ),
-
-          const SizedBox(width: 4),
 
           // Speed -/+ controls
           IconButton(
@@ -868,6 +845,27 @@ class _BotPathDrawerState extends State<BotPathDrawer>
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
             visualDensity: VisualDensity.compact,
+          ),
+
+          const SizedBox(width: 4),
+
+          Expanded(
+            child: _buildControlButton(
+              label: 'Clear',
+              icon: Icons.delete_outline,
+              onPressed: _rawPath.isNotEmpty ? _clear : null,
+              textColor: buttonTextColor,
+              verticalPadding: vPad,
+            ),
+          ),
+          Expanded(
+            child: _buildControlButton(
+              label: 'Save',
+              icon: Icons.check,
+              onPressed: _save,
+              textColor: buttonTextColor,
+              verticalPadding: vPad,
+            ),
           ),
         ],
       ),

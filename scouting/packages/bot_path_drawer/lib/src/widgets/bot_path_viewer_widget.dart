@@ -235,10 +235,11 @@ class _BotPathViewerState extends State<BotPathViewer>
     });
   }
 
-  /// Updates the playback speed, adjusting the animation duration if playing.
-  void _setPlaybackSpeed(double speed) {
+  /// Updates playback speed. If currently playing, adjusts duration and
+  /// continues from the current progress.
+  void _updatePlaybackSpeed(double newSpeed) {
     setState(() {
-      _playbackSpeed = speed;
+      _playbackSpeed = newSpeed;
     });
 
     if (_playbackController.isAnimating) {
@@ -247,6 +248,39 @@ class _BotPathViewerState extends State<BotPathViewer>
       _playbackController.duration = Duration(milliseconds: durationMs);
       _playbackController.forward(from: currentValue);
     }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Discrete speed steps
+  // ---------------------------------------------------------------------------
+
+  static const _speedSteps = [0.5, 1.0, 2.0, 4.0, 5.0, 10.0];
+
+  bool get _canDecrementSpeed =>
+      _speedSteps.any((s) => s < _playbackSpeed);
+
+  bool get _canIncrementSpeed =>
+      _speedSteps.any(
+          (s) => s > _playbackSpeed && s <= widget.config.maxPlaybackSpeed);
+
+  void _incrementSpeed() {
+    final nextIdx = _speedSteps.indexWhere((s) => s > _playbackSpeed);
+    if (nextIdx != -1 &&
+        _speedSteps[nextIdx] <= widget.config.maxPlaybackSpeed) {
+      _updatePlaybackSpeed(_speedSteps[nextIdx]);
+    }
+  }
+
+  void _decrementSpeed() {
+    final prevIdx = _speedSteps.lastIndexWhere((s) => s < _playbackSpeed);
+    if (prevIdx != -1) {
+      _updatePlaybackSpeed(_speedSteps[prevIdx]);
+    }
+  }
+
+  String get _speedLabel {
+    if (_playbackSpeed % 1 == 0) return '${_playbackSpeed.toInt()}x';
+    return '${_playbackSpeed.toStringAsFixed(1)}x';
   }
 
   /// Returns cached scaled curves, recomputing only when the canvas size
@@ -305,15 +339,15 @@ class _BotPathViewerState extends State<BotPathViewer>
     final cropFraction = widget.config.cropFraction;
     final displayedAspectRatio = (largerDim * cropFraction) / smallerDim;
 
-    // Determine brightness for button/slider styling
+    // Determine brightness for button styling
     final brightness = widget.config.brightness ??
         MediaQuery.platformBrightnessOf(context);
     final isDark = brightness == Brightness.dark;
     final buttonTextColor = isDark ? Colors.white : Colors.black;
-    final sliderActiveColor = isDark ? Colors.white : Colors.black;
-    final sliderInactiveColor = isDark ? Colors.white38 : Colors.black38;
     final buttonBgColor =
         isDark ? Colors.white12 : Colors.black.withAlpha(15);
+
+    final isPlaying = _playbackController.isAnimating;
 
     return Column(
       children: [
@@ -374,6 +408,39 @@ class _BotPathViewerState extends State<BotPathViewer>
                               ),
                             ),
                           ),
+                        // Play/Stop toggle + speed controls
+                        Positioned(
+                          top: 8,
+                          left: 8,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _ControlButton(
+                                icon: isPlaying
+                                    ? Icons.stop
+                                    : Icons.play_arrow,
+                                label: isPlaying ? 'Stop' : 'Play',
+                                onPressed: _pathData != null
+                                    ? (isPlaying
+                                        ? _stopPlayback
+                                        : _startPlayback)
+                                    : null,
+                                textColor: buttonTextColor,
+                                bgColor: buttonBgColor,
+                              ),
+                              const SizedBox(height: 4),
+                              _SpeedControl(
+                                speedLabel: _speedLabel,
+                                canDecrement: _canDecrementSpeed,
+                                canIncrement: _canIncrementSpeed,
+                                onDecrement: _decrementSpeed,
+                                onIncrement: _incrementSpeed,
+                                textColor: buttonTextColor,
+                                bgColor: buttonBgColor,
+                              ),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -381,69 +448,6 @@ class _BotPathViewerState extends State<BotPathViewer>
               },
             ),
           ),
-        // Playback controls
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  children: [
-                    // Play / Stop buttons
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _ControlButton(
-                            icon: Icons.play_arrow,
-                            label: 'Play',
-                            onPressed:
-                                _pathData != null ? _startPlayback : null,
-                            textColor: buttonTextColor,
-                            bgColor: buttonBgColor,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: _ControlButton(
-                            icon: Icons.stop,
-                            label: 'Stop',
-                            onPressed:
-                                _pathData != null ? _stopPlayback : null,
-                            textColor: buttonTextColor,
-                            bgColor: buttonBgColor,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    // Speed slider
-                    Row(
-                      children: [
-                        Text(
-                          'Speed: ${_playbackSpeed.toStringAsFixed(1)}x',
-                          style: TextStyle(
-                            color: buttonTextColor,
-                            fontSize: 12,
-                          ),
-                        ),
-                        Expanded(
-                          child: Slider(
-                            value: _playbackSpeed,
-                            min: 0.5,
-                            max: widget.config.maxPlaybackSpeed,
-                            onChanged: _setPlaybackSpeed,
-                            activeColor: sliderActiveColor,
-                            inactiveColor: sliderInactiveColor,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
       ],
     );
   }
@@ -490,9 +494,74 @@ class _ControlButton extends StatelessWidget {
       ),
       style: TextButton.styleFrom(
         backgroundColor: bgColor,
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-        minimumSize: Size.zero,
-        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+      ),
+    );
+  }
+}
+
+/// Speed control row: [−] speed [+], styled to match [_ControlButton].
+class _SpeedControl extends StatelessWidget {
+  final String speedLabel;
+  final bool canDecrement;
+  final bool canIncrement;
+  final VoidCallback onDecrement;
+  final VoidCallback onIncrement;
+  final Color textColor;
+  final Color bgColor;
+
+  const _SpeedControl({
+    required this.speedLabel,
+    required this.canDecrement,
+    required this.canIncrement,
+    required this.onDecrement,
+    required this.onIncrement,
+    required this.textColor,
+    required this.bgColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final disabledColor = textColor.withAlpha(77);
+    return TextButton(
+      onPressed: () {},
+      style: TextButton.styleFrom(
+        backgroundColor: bgColor,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          GestureDetector(
+            onTap: canDecrement ? onDecrement : null,
+            child: Icon(
+              Icons.remove,
+              size: 18,
+              color: canDecrement ? textColor : disabledColor,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Text(
+              speedLabel,
+              style: TextStyle(color: textColor, fontSize: 13),
+            ),
+          ),
+          GestureDetector(
+            onTap: canIncrement ? onIncrement : null,
+            child: Icon(
+              Icons.add,
+              size: 18,
+              color: canIncrement ? textColor : disabledColor,
+            ),
+          ),
+        ],
       ),
     );
   }
