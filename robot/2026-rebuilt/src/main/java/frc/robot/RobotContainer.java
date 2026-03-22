@@ -10,6 +10,9 @@ import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -303,6 +306,13 @@ public void registerNamedCommands() {
   NamedCommands.registerCommand("Shooting", shooterWheels.setStateCommand(shooter_state.SHOOTING).alongWith(feederSubsystem.setStateCommand(feeder_state.RUN)).alongWith(spinDexer.setStateCommand(spindexer_state.RUN)).alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
 
 
+}
+ShuffleboardTab tab = Shuffleboard.getTab("Pit Testing");
+private GenericEntry ll3conect = tab.add("ll3 isConnected", false).getEntry();
+private GenericEntry ll4conect = tab.add("ll4 isConnected", false).getEntry();       
+public void limelightConnection(){
+    ll3conect.setBoolean(ll3.isConnected());
+    ll4conect.setBoolean(ll4.isConnected());
 }
 
 

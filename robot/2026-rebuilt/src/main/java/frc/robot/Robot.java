@@ -115,6 +115,7 @@ public class Robot extends LoggedRobot {
     CommandScheduler.getInstance().run();
     // Publish a small set of live telemetry for the RTU dashboard
     m_robotContainer.publishTelemetry();
+    m_robotContainer.limelightConnection();
     //Log Hub shift times
     Logger.recordOutput("Robot/HubShift/RemainingTime", HubShiftUtil.getOfficialShiftInfo().remainingTime());
     Logger.recordOutput("Robot/HubShift/ElapsedTime", HubShiftUtil.getOfficialShiftInfo().elapsedTime());
@@ -122,6 +123,7 @@ public class Robot extends LoggedRobot {
     Logger.recordOutput("Robot/HubShift/CurrentShift", HubShiftUtil.getOfficialShiftInfo().currentShift().toString());
     // DeviceTempReporter.pollAll();
     // SubsystemStatusManager.pollAll();
+    
   }
 
   @Override
@@ -167,12 +169,12 @@ public class Robot extends LoggedRobot {
   @Override
   public void testInit() {
     CommandScheduler.getInstance().cancelAll();
-    m_robotContainer.runRootTests();
+    //m_robotContainer.runRootTests();
   }
 
   @Override
   public void testPeriodic() {
-    m_robotContainer.updateRootTests();
+    //m_robotContainer.updateRootTests();
   }
 
   @Override
