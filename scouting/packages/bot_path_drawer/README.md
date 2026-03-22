@@ -29,7 +29,7 @@ final config = BotPathConfig(
 );
 ```
 
-See [`_config` in the example](example/lib/main.dart) (line 55) for a version with custom colors.
+See [`_config` in the example](example/lib/main.dart) (line 99) for a version with custom colors.
 
 ### 3. Let the user draw a path
 
@@ -45,7 +45,7 @@ BotPathDrawer(
 )
 ```
 
-The example opens it in a dialog — see [`_openDrawer()`](example/lib/main.dart) (line 85). That function also shows how to lock orientation to landscape while drawing.
+The example opens it in a dialog — see [`_openDrawer()`](example/lib/main.dart) (line 129). That function also shows how to lock orientation to landscape while drawing.
 
 ### 4. Play back a saved path
 
@@ -58,7 +58,7 @@ BotPathViewer(
 )
 ```
 
-See [the example's viewer usage](example/lib/main.dart) (line 210).
+See [the example's viewer usage](example/lib/main.dart) (line 315).
 
 ### Run the example
 
@@ -99,7 +99,7 @@ Shared configuration for both widgets. Only `backgroundImage` is required.
 The drawing widget. Props: `config` and `onSave`.
 
 **Controls (all platforms):**
-- Single row: [info] [Play] [Stop] [Clear] [Save] [-] speed [+]
+- Single row: [info] [Play/Stop] [-] speed [+] [Clear] [Save]
 - Speed steps through 0.5x, 1x, 2x, 4x, 5x, 10x
 - Info button shows a help toast on the canvas (auto-dismisses after 6s)
 
@@ -123,7 +123,7 @@ The drawing widget. Props: `config` and `onSave`.
 
 The playback widget. Props: `config` and `pathData` (the serialized string from `BotPathDrawer`).
 
-- Play/Stop buttons and speed slider
+- Play/Stop toggle and discrete speed steps, overlaid on the canvas
 - Shows the robot at the end of the path when not playing
 - Re-parses automatically if `pathData` changes. No re-parse needed on resize.
 
