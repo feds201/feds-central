@@ -174,6 +174,15 @@ class PitRecord {
   final int batteries;
   final String framePerimeter;
   final double shootingRate;
+  final bool hopperSealed;
+  final String trenchUnder;
+  final bool bumpOver;
+  final int driverYear;
+  final String interviewerName;
+  final String interviewerRole;
+  final bool attitude;
+  final String scoutingAccuracy;
+  final String notCooperativeReason;
 
   PitRecord(
       {required this.teamNumber,
@@ -199,7 +208,16 @@ class PitRecord {
       this.climbSuccessProb = 0.0,
       this.batteries = 0,
       this.framePerimeter = '',
-      this.shootingRate = 0.0});
+      this.shootingRate = 0.0,
+      this.hopperSealed = false,
+      this.trenchUnder = '',
+      this.bumpOver = false,
+      this.driverYear = 0,
+      this.interviewerName = '',
+      this.interviewerRole = '',
+      this.attitude = true,
+      this.scoutingAccuracy = '',
+      this.notCooperativeReason = ''});
 
   Map<String, dynamic> toJson() {
     return {
@@ -226,7 +244,16 @@ class PitRecord {
       "climbSuccessProb": climbSuccessProb,
       "batteries": batteries,
       "framePerimeter": framePerimeter,
-      "shootingRate": shootingRate
+      "shootingRate": shootingRate,
+      "hopperSealed": hopperSealed,
+      "trechUnder": trenchUnder,
+      "bumpOver": bumpOver,
+      "driverYear": driverYear,
+      "interviewerName": interviewerName,
+      "interviewerRole": interviewerRole,
+      "attitude": attitude,
+      "scoutingAccuracy": scoutingAccuracy,
+      "notCooperativeReason": notCooperativeReason,
     };
   }
 

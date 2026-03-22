@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:scout_ops_android/components/CameraComposit.dart';
+import 'package:scout_ops_android/components/ScoutersList.dart';
 import 'package:scout_ops_android/main.dart';
 import 'package:scout_ops_android/services/Colors.dart';
 import 'package:scout_ops_android/services/DataBase.dart';
@@ -52,6 +53,15 @@ class _RecordState extends State<Record> {
   late int BatteriesController;
   late TextEditingController FramePerimeterController;
   late double ShootingRateController;
+  late String HopperStatusController;
+  late String TrenchController;
+  late String BumpController;
+  late int DriverYearController;
+  late TextEditingController InterviewerNameController;
+  late TextEditingController InterviewerRoleController;
+  late String AttitudeController;
+  late String ScoutingAccuracyController;
+  late TextEditingController NotCooperativeReasonController;
 
   // Unit selectors
   String weightUnit = 'lbs';
@@ -92,6 +102,15 @@ class _RecordState extends State<Record> {
     BatteriesController = 0;
     FramePerimeterController = TextEditingController();
     ShootingRateController = 0.0;
+    HopperStatusController = "No";
+    TrenchController = "Never";
+    BumpController = "No";
+    DriverYearController = 0;
+    InterviewerNameController = TextEditingController();
+    InterviewerRoleController = TextEditingController();
+    AttitudeController = "Yes";
+    ScoutingAccuracyController = "Accurate";
+    NotCooperativeReasonController = TextEditingController();
 
     // Load database and try to get existing data for this team
     PitDataBase.LoadAll();
@@ -123,6 +142,15 @@ class _RecordState extends State<Record> {
           BatteriesController = existingRecord.batteries;
           FramePerimeterController.text = existingRecord.framePerimeter;
           ShootingRateController = existingRecord.shootingRate;
+          HopperStatusController = existingRecord.hopperSealed ? "Yes" : "No";
+          TrenchController = existingRecord.trenchUnder;
+          BumpController = existingRecord.bumpOver ? "Yes" : "No";
+          DriverYearController = existingRecord.driverYear;
+          InterviewerNameController.text = existingRecord.interviewerName;
+          InterviewerRoleController.text = existingRecord.interviewerRole;
+          AttitudeController = existingRecord.attitude ? "Yes" : "No";
+          ScoutingAccuracyController = existingRecord.scoutingAccuracy;
+          NotCooperativeReasonController.text = existingRecord.notCooperativeReason;
 
           // Combine the existing images into ImageBlob
           // Filter out empty images and join with comma
@@ -172,6 +200,49 @@ class _RecordState extends State<Record> {
         scrollDirection: Axis.vertical,
         child: Column(children: [
           buildTextBoxs(
+            "Introductions and Names",
+            [
+              ScouterList(),
+              SizedBox(
+                height: 8,
+              ),
+              Container(
+              padding: EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Color(0xFF101010),
+            borderRadius: BorderRadius.circular(10),
+          ),
+            child:
+            Column(
+              children: [
+                Text("Script", textAlign: TextAlign.center,
+                      style: GoogleFonts.museoModerno(fontSize: 30, fontWeight: FontWeight.bold,color: Colors.blue)),
+                SizedBox(
+                  height: 15,
+                ),
+                Text("Hi! My name is [Your Name], and we are from team 201 the FEDS. I just wanted to come by, introduce myself, and ask you a few questions about your robot. Could you first tell us your name and role in the team?"
+                  ,textAlign: TextAlign.center,
+                  style: GoogleFonts.museoModerno(fontSize: 20),
+                ),
+              ]
+
+            ),
+
+              ),
+              buildTextBox(
+                  "Interviewer Name",
+                  "ex. John",
+                  Icon(Icons.badge, size: 30, color: Colors.grey),
+                  InterviewerNameController),
+              buildTextBox(
+                  "Interviewer Role",
+                  "ex. Pit Lead",
+                  Icon(Icons.handyman, size: 30, color: Colors.grey),
+                  InterviewerRoleController),
+            ],
+            Icon(Icons.badge)
+          ),
+          buildTextBoxs(
             "Autonomous & Game Data",
             [
               buildMultiChoiceBox(
@@ -191,15 +262,7 @@ class _RecordState extends State<Record> {
                   AutoFuelController = int.tryParse(value) ?? 0;
                 });
               }),
-              buildChoiceBox(
-                  "Game Data Processing?",
-                  Icon(Icons.data_object, size: 30, color: Colors.orange),
-                  ["Yes", "No"],
-                  GameDataController, (value) {
-                setState(() {
-                  GameDataController = value;
-                });
-              }),
+
             ],
             Icon(Icons.auto_mode),
           ),
@@ -234,23 +297,34 @@ class _RecordState extends State<Record> {
                   speedUnit = unit;
                 });
               }),
-              buildTextBox(
-                  "Drive Motors",
-                  "e.g. 4x Kraken",
-                  Icon(Icons.motorcycle, size: 30, color: Colors.black),
-                  DriveMotorTypeController),
-              buildNumberWithUnitBox(
-                  "Ground Clearance",
-                  GroundClearanceController,
-                  Icon(Icons.height, size: 30, color: Colors.brown),
-                  ['in', 'cm', 'mm'],
-                  clearanceUnit, (value) {
+              buildChoiceBox(
+                  "Sealed Hopper?",
+                  Icon(Icons.devices_fold,
+                      size: 30, color: Colors.purple),
+                  ["Yes", "No"],
+                  HopperStatusController, (value) {
                 setState(() {
-                  GroundClearanceController = double.tryParse(value) ?? 0.0;
+                  HopperStatusController = value;
                 });
-              }, (unit) {
+              }),
+              buildChoiceBox(
+                  "Can go Under Trench?",
+                  Icon(Icons.subdirectory_arrow_right,
+                      size: 30, color: Colors.blue),
+                  ["Always", "Sometimes", "Never"],
+                  TrenchController, (value) {
                 setState(() {
-                  clearanceUnit = unit;
+                  TrenchController = value;
+                });
+              }),
+              buildChoiceBox(
+                  "Can go over Bump?",
+                  Icon(Icons.upgrade,
+                      size: 30, color: Colors.red ),
+                  ["Yes", "No"],
+                  BumpController, (value) {
+                setState(() {
+                  BumpController = value;
                 });
               }),
               buildChoiceBox(
@@ -278,7 +352,7 @@ class _RecordState extends State<Record> {
                   MaxFuelCapacityController = int.tryParse(value) ?? 0;
                 });
               }),
-              buildNumberBox("Avg Cycle Time (sec)", AvgCycleTimeController,
+              buildNumberBox("Avg Fuel Per Period", AvgCycleTimeController,
                   Icon(Icons.timer, size: 30, color: Colors.blue), (value) {
                 setState(() {
                   AvgCycleTimeController = double.tryParse(value) ?? 0.0;
@@ -313,17 +387,20 @@ class _RecordState extends State<Record> {
           buildTextBoxs(
             "Strategic Checklist",
             [
-              buildNumberBox("Climb Success %", ClimbSuccessProbController,
-                  Icon(Icons.elevator, size: 30, color: Colors.amber), (value) {
+              buildNumberBox(
+                  "Driver # Of Years Driving?",
+                  DriverYearController.toDouble(),
+                  Icon(Icons.directions_car,
+                      size: 30, color: Colors.yellow), (value) {
                 setState(() {
-                  ClimbSuccessProbController = double.tryParse(value) ?? 0.0;
+                  DriverYearController = int.tryParse(value) ?? 0;
                 });
               }),
               buildMultiChoiceBox(
                   "Climb Type",
                   Icon(Icons.elevator,
                       size: 30, color: const Color.fromARGB(255, 200, 186, 34)),
-                  ["L1", "L2", "L3", "Park"],
+                  ["L1", "L2", "L3"],
                   ClimbTypeController, (value) {
                 setState(() {
                   ClimbTypeController = value;
@@ -339,13 +416,15 @@ class _RecordState extends State<Record> {
                 });
               }),
               buildTextBox(
-                  "Frame Perimeter",
-                  "Dimensions",
+                  "Frame Perimeter With Bumpers",
+                  "ex. 30 x 30",
                   Icon(Icons.square_foot, size: 30, color: Colors.grey),
                   FramePerimeterController),
+
             ],
             Icon(Icons.check_box),
           ),
+
           buildTextBoxs(
             "Photos",
             [
@@ -389,12 +468,73 @@ class _RecordState extends State<Record> {
                   print('Photos captured: ${photos.length}');
                 },
               ),
-              const SizedBox(height: 20),
-              _buildFunButton(),
+
             ],
             Icon(Icons.camera_alt),
           ),
-        ]));
+          buildTextBoxs(
+            "Final Feedbacks",
+            [
+              Container(
+                padding: EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Color(0xFF101010),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child:
+                Column(
+                  children: [
+                    Text("Script", textAlign: TextAlign.center,
+                        style: GoogleFonts.museoModerno(fontSize: 30, fontWeight: FontWeight.bold,color: Colors.blue)),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    Text("Thank you for taking the time to talk with us— We really appreciate it. Our pit is over there(Point to it), so feel free to stop by if you have any questions."
+
+                      ,textAlign: TextAlign.center,
+                      style: GoogleFonts.museoModerno(fontSize: 20),
+                    ),
+
+                  ],
+
+                ),
+
+
+              ),
+              buildChoiceBox(
+                  "Were the Interviewers Cooperative?",
+                  Icon(Icons.volunteer_activism,
+                      size: 30, color: Colors.pink[300] ),
+                  ["Yes", "No"],
+                  AttitudeController, (value) {
+                setState(() {
+                  AttitudeController = value;
+                });
+              }),
+              buildTextBox(
+                  "If Team was not Cooperative, Why?",
+                  "explain why the team was not cooperative",
+                  Icon(Icons.sentiment_dissatisfied, size: 30, color: Colors.red),
+                  NotCooperativeReasonController),
+              buildChoiceBox(
+                  "Is Your data Accurate or is it Wishy Washy/Not sure?",
+                  Icon(Icons.question_mark,
+                      size: 30, color: Colors.purpleAccent[300] ),
+                  ["Accurate", "Wishy Washy"],
+                  ScoutingAccuracyController, (value) {
+                setState(() {
+                  ScoutingAccuracyController = value;
+                });
+              }),
+              SizedBox(height: 20),
+              _buildFunButton(),
+        ],
+            Icon(Icons.list_alt),
+          ),
+        ],
+        ),
+
+    );
   }
 
   Widget _buildFunButton() {
@@ -520,7 +660,16 @@ class _RecordState extends State<Record> {
         climbSuccessProb: ClimbSuccessProbController,
         batteries: BatteriesController,
         framePerimeter: FramePerimeterController.text,
-        shootingRate: storedShootingRate);
+        shootingRate: storedShootingRate,
+        hopperSealed: HopperStatusController == "No",
+        trenchUnder: TrenchController,
+        bumpOver: BumpController == "No",
+        driverYear: DriverYearController,
+        interviewerName: InterviewerNameController.text,
+        interviewerRole: InterviewerRoleController.text,
+        attitude: AttitudeController == "Yes",
+        scoutingAccuracy: ScoutingAccuracyController,
+        notCooperativeReason: NotCooperativeReasonController.text);
 
     print('Recording data: $record');
     print("Hiv ${record.toJson()}");
