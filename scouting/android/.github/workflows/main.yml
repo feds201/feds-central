@@ -42,6 +42,10 @@ jobs:
       - name: Decode Keystore
         run: |
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/keystore.jks
+
+      - name: Decode Google Services JSON
+        run: |
+          echo "${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}" | base64 --decode > android/app/google-services.json
           
       - name: Create key.properties
         run: |
@@ -109,3 +113,12 @@ jobs:
           artifacts: "build/app/outputs/flutter-apk/app-release.apk,build/app/outputs/bundle/release/app-release.aab,build/ios_build.tar.gz"
           tag: v${{ env.VERSION }}
           token: ${{ secrets.TOKEN }}
+
+        # 14 Upload to Firebase App Distribution
+      - name: Upload to Firebase App Distribution
+        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/dev'
+        run: |
+          cd android
+          ./gradlew appDistributionUploadRelease
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}

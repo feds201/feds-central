@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 
-import '../main.dart';
-
 class MatchSelection extends StatefulWidget {
   final Function(String?) onAllianceSelected;
   final Function(String?) onPositionSelected;
@@ -24,6 +22,7 @@ class MatchSelection extends StatefulWidget {
 class _MatchSelectionState extends State<MatchSelection> {
   @override
   Widget build(BuildContext context) {
+    bool isLight = Theme.of(context).brightness == Brightness.light;
     return Container(
       padding: const EdgeInsets.all(10),
       margin: const EdgeInsets.only(left: 10, right: 10),
@@ -40,22 +39,22 @@ class _MatchSelectionState extends State<MatchSelection> {
                       value,
                       style: GoogleFonts.museoModerno(
                           fontSize: 25,
-                          color: islightmode()
+                          color: isLight
                               ? const Color.fromARGB(188, 0, 0, 0)
                               : const Color.fromARGB(225, 255, 255, 255)),
                     ),
                   ),
-                  backgroundColor: islightmode()
+                  backgroundColor: isLight
                       ? const Color.fromARGB(225, 255, 255, 255)
                       : const Color.fromARGB(188, 0, 0, 0),
-                  checkmarkColor: islightmode()
+                  checkmarkColor: isLight
                       ? const Color.fromARGB(188, 0, 0, 0)
                       : const Color.fromARGB(225, 255, 255, 255),
                   selectedColor: value == "Red"
-                      ? (islightmode()
+                      ? (isLight
                           ? const Color.fromARGB(255, 230, 75, 75)
                           : Color.fromARGB(255, 150, 27, 29))
-                      : (islightmode()
+                      : (isLight
                           ? const Color.fromARGB(147, 0, 122, 248)
                           : Color.fromARGB(244, 22, 67, 134)),
                   selected: widget.initAlliance == value ? true : false,
@@ -81,22 +80,22 @@ class _MatchSelectionState extends State<MatchSelection> {
                           value,
                       style: GoogleFonts.museoModerno(
                           fontSize: 25,
-                          color: islightmode()
+                          color: isLight
                               ? const Color.fromARGB(188, 0, 0, 0)
                               : const Color.fromARGB(225, 255, 255, 255)),
                     ),
                   ),
-                  backgroundColor: islightmode()
+                  backgroundColor: isLight
                       ? const Color.fromARGB(225, 255, 255, 255)
                       : const Color.fromARGB(188, 0, 0, 0),
-                  checkmarkColor: islightmode()
+                  checkmarkColor: isLight
                       ? const Color.fromARGB(188, 0, 0, 0)
                       : const Color.fromARGB(225, 255, 255, 255),
                   selectedColor: Hive.box('userData').get('alliance') == "Red"
-                      ? (islightmode()
+                      ? (isLight
                           ? const Color.fromARGB(255, 230, 75, 75)
                           : Color.fromARGB(255, 150, 27, 29))
-                      : (islightmode()
+                      : (isLight
                           ? const Color.fromARGB(147, 0, 122, 248)
                           : Color.fromARGB(244, 22, 67, 134)),
                   selected: widget.initPosition == value,

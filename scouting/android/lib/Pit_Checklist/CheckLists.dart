@@ -8,11 +8,11 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:scouting_app/components/CameraComposit.dart';
-import 'package:scouting_app/components/TextBox.dart';
-import 'package:scouting_app/main.dart';
-import 'package:scouting_app/services/Colors.dart';
-import 'package:scouting_app/services/DataBase.dart';
+import 'package:scout_ops_android/components/CameraComposit.dart';
+import 'package:scout_ops_android/components/TextBox.dart';
+import 'package:scout_ops_android/main.dart';
+import 'package:scout_ops_android/services/Colors.dart';
+import 'package:scout_ops_android/services/DataBase.dart';
 
 class Checklist_record extends StatefulWidget {
   final PitChecklistItem list_item;
@@ -237,7 +237,6 @@ class _Checklist_recordState extends State<Checklist_record> {
     outgoing_battery_voltage = 0;
     outgoing_battery_cca = 0;
     outgoing_number = 0;
-    returning_battery_replacd = false;
     outgoing_battery_replaced = false;
 
     image1 = "";
@@ -263,7 +262,7 @@ class _Checklist_recordState extends State<Checklist_record> {
           outgoing_battery_voltage = existingRecord.outgoing_battery_voltage;
           outgoing_battery_cca = existingRecord.outgoing_battery_cca;
           outgoing_number = existingRecord.outgoing_number;
-          returning_battery_replacd = existingRecord.outgoing_battery_replaced;
+          outgoing_battery_replaced = existingRecord.outgoing_battery_replaced;
 
           alliance_color = existingRecord.alliance_color;
           bumper_color = existingRecord
@@ -469,6 +468,7 @@ class _Checklist_recordState extends State<Checklist_record> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: islightmode() ? lightColors.white : Colors.black,
       appBar: AppBar(
         leading: Builder(builder: (context) {
           return IconButton(
@@ -479,7 +479,7 @@ class _Checklist_recordState extends State<Checklist_record> {
                 Navigator.pop(context);
               });
         }),
-        backgroundColor: islightmode() ? Colors.white : darkColors.goodblack,
+        backgroundColor: islightmode() ? Colors.white : Colors.black,
         centerTitle: true,
         title: ShaderMask(
             shaderCallback: (bounds) => const LinearGradient(
@@ -530,16 +530,22 @@ class _Checklist_recordState extends State<Checklist_record> {
                   size: 24,
                 ),
                 const SizedBox(width: 12),
-                Text(
-                  allItemsChecked
-                      ? 'All checklist items completed'
-                      : 'Checklist incomplete - please review all sections',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: allItemsChecked
-                        ? Colors.green[700]
-                        : Colors.orange[700],
+                Expanded(
+                  child: Text(
+                    allItemsChecked
+                        ? 'All checklist items completed'
+                        : 'Checklist incomplete - please review all sections',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: allItemsChecked
+                          ? (islightmode()
+                              ? Colors.green[700]
+                              : Colors.green[400])
+                          : (islightmode()
+                              ? Colors.orange[700]
+                              : Colors.orange[400]),
+                    ),
                   ),
                 ),
               ],
@@ -565,7 +571,9 @@ class _Checklist_recordState extends State<Checklist_record> {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: Colors.blue[700],
+                          color: islightmode()
+                              ? Colors.blue[700]
+                              : Colors.blue[300],
                         ),
                       ),
                     if (last_battery_tag.isNotEmpty &&
@@ -577,7 +585,9 @@ class _Checklist_recordState extends State<Checklist_record> {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: Colors.blue[700],
+                          color: islightmode()
+                              ? Colors.blue[700]
+                              : Colors.blue[300],
                         ),
                       ),
                   ],
@@ -607,11 +617,11 @@ class _Checklist_recordState extends State<Checklist_record> {
                 }
 
                 setState(() {
-                  image1 = base64Images[0];
-                  image2 = base64Images[1];
-                  image3 = base64Images[2];
-                  image4 = base64Images[3];
-                  image5 = base64Images[4];
+                  image1 = base64Images.isNotEmpty ? base64Images[0] : '';
+                  image2 = base64Images.length > 1 ? base64Images[1] : '';
+                  image3 = base64Images.length > 2 ? base64Images[2] : '';
+                  image4 = base64Images.length > 3 ? base64Images[3] : '';
+                  image5 = base64Images.length > 4 ? base64Images[4] : '';
                 });
               }),
           buildTextBox("Notes 1", "", Icon(Icons.note), notes),
@@ -745,12 +755,12 @@ class _Checklist_recordState extends State<Checklist_record> {
                     "Battery Status",
                     Icon(Icons.battery_full),
                     ["Good", "Replace"],
-                    returning_battery_replacd == true ? "Good" : "Replace",
+                    outgoing_battery_replaced == true ? "Good" : "Replace",
                     (value) {
                   setState(() {
                     print(value);
                     if (value.isNotEmpty) {
-                      returning_battery_replacd = !returning_battery_replacd;
+                      outgoing_battery_replaced = !outgoing_battery_replaced;
                     }
                   });
                 }),

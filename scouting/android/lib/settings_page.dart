@@ -7,8 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:scouting_app/main.dart';
-
+import 'package:scout_ops_android/main.dart';
 import 'services/DataBase.dart';
 import 'services/LockdownService.dart';
 import 'components/MatchSelection.dart';
@@ -25,7 +24,7 @@ class SettingsPage extends StatefulWidget {
 }
 
 class SettingsPageState extends State<SettingsPage> {
-  String version = '3.1.1.1';
+  String version = '5.0.0.0';
   bool isLocationGranted = false;
   bool isBluetoothGranted = false;
   bool isNearbyDevicesGranted = false;
@@ -33,6 +32,8 @@ class SettingsPageState extends State<SettingsPage> {
   bool isLoading = false;
   bool isjson = true;
   TextEditingController eventKeyController = TextEditingController();
+  TextEditingController neonRestController = TextEditingController();
+  TextEditingController apiKeyController = TextEditingController();
   String ApiKey = Hive.box('settings').get('ApiKey', defaultValue: '');
 
   String? serverIp;
@@ -57,7 +58,19 @@ class SettingsPageState extends State<SettingsPage> {
   @override
   void initState() {
     super.initState();
+    apiKeyController.text =
+        Hive.box('settings').get('ApiKey', defaultValue: '');
+    neonRestController.text =
+        Hive.box('settings').get('neonRestUrl', defaultValue: '');
     fetchServerIp();
+  }
+
+  @override
+  void dispose() {
+    eventKeyController.dispose();
+    neonRestController.dispose();
+    apiKeyController.dispose();
+    super.dispose();
   }
 
   Future<void> _checkInitialPermissions() async {
@@ -191,7 +204,6 @@ class SettingsPageState extends State<SettingsPage> {
               toggle();
               Hive.box('settings').put('isDarkMode', isDarkMode);
               setState(() {});
-              Navigator.of(context).pop();
             },
           ),
         ],
@@ -230,9 +242,7 @@ class SettingsPageState extends State<SettingsPage> {
                   child: Column(
                     children: [
                       TextField(
-                        controller: TextEditingController()
-                          ..text = Hive.box('settings')
-                              .get('ApiKey', defaultValue: ''),
+                        controller: apiKeyController,
                         decoration: InputDecoration(
                           labelText: 'BlueAlliance API Key',
                           labelStyle: GoogleFonts.museoModerno(
@@ -285,6 +295,47 @@ class SettingsPageState extends State<SettingsPage> {
                         onSubmitted: (String value) {
                           Hive.box('settings').put('ApiKey', value);
                           Settings.setApiKey(value);
+                        },
+                      ),
+                      const SizedBox(height: 10),
+                      // Neon Database Connection String
+                      TextField(
+                        controller: neonRestController,
+                        decoration: InputDecoration(
+                          labelText: 'Direct Postgres Connection String',
+                          hintText:
+                              'postgres://user:pass@ep-...neon.tech/neondb?sslmode=require',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          suffixIcon: IconButton(
+                            icon: const Icon(Icons.qr_code_scanner),
+                            color: islightmode() ? Colors.black : Colors.white,
+                            onPressed: () async {
+                              final qrCode = await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const QRCodeScannerPage(),
+                                    fullscreenDialog: true),
+                              );
+                              if (qrCode != null) {
+                                setState(() {
+                                  Hive.box('settings')
+                                      .put('neonRestUrl', qrCode);
+                                  neonRestController.text = qrCode;
+                                  Settings.setNeonRestUrl(qrCode);
+                                });
+                              }
+                            },
+                          ),
+                        ),
+                        style: GoogleFonts.museoModerno(
+                            fontSize: 18,
+                            color: islightmode() ? Colors.black : Colors.white),
+                        onSubmitted: (String value) {
+                          Hive.box('settings').put('neonRestUrl', value);
+                          Settings.setNeonRestUrl(value);
                         },
                       ),
                       SizedBox(height: 10),
@@ -593,19 +644,36 @@ class SettingsPageState extends State<SettingsPage> {
                           showCheckmark: false,
                           side: const BorderSide(color: Colors.black),
                           onSelected: (bool selected) {
-                            setState(() {
-                              // Clear all data from Hive boxes
-                              Hive.box('userData').clear();
-                              Hive.box('matchData').clear();
-                              Hive.box('settings').clear();
-                              Hive.box('pitData').clear();
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: const Text('Clear All Data?'),
+                                content: const Text(
+                                    'This will delete all settings, API keys, match data, and scouter config. This cannot be undone.'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: const Text('CANCEL'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                      setState(() {
+                                        Hive.box('userData').clear();
+                                        Hive.box('matchData').clear();
+                                        Hive.box('settings').clear();
+                                        Hive.box('pitData').clear();
 
-                              // Log the action
-                              developer.log('All data cleared by user',
-                                  name: 'Data Cleared');
-
-                              print('All data cleared successfully.');
-                            });
+                                        developer.log('All data cleared by user',
+                                            name: 'Data Cleared');
+                                      });
+                                    },
+                                    child: const Text('CLEAR',
+                                        style: TextStyle(color: Colors.red)),
+                                  ),
+                                ],
+                              ),
+                            );
                           },
                         ),
                       ),
@@ -681,50 +749,6 @@ class SettingsPageState extends State<SettingsPage> {
                         ),
                       ),
                     ],
-                  ),
-                  ElevatedButton(
-                    onPressed: serverIp == null
-                        ? null
-                        : () async {
-                            try {
-                              final response = await http.get(
-                                Uri.parse(
-                                    'http://$serverIp:201/api/download_event_file'),
-                              );
-
-                              if (response.statusCode == 200) {
-                                final directory =
-                                    await getApplicationDocumentsDirectory();
-                                final filePath = '${directory.path}/event.json';
-                                final file = File(filePath);
-                                await file.writeAsBytes(response.bodyBytes);
-
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                        'Event file downloaded successfully!'),
-                                    backgroundColor: Colors.green,
-                                  ),
-                                );
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content:
-                                        Text('Failed to download event file.'),
-                                    backgroundColor: Colors.red,
-                                  ),
-                                );
-                              }
-                            } catch (e) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text('Error: $e'),
-                                  backgroundColor: Colors.red,
-                                ),
-                              );
-                            }
-                          },
-                    child: Text('Download Event File'),
                   ),
                 ],
               ),

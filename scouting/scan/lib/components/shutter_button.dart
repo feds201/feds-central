@@ -12,6 +12,7 @@ class ShutterButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return GestureDetector(
       onTap: onPressed,
       child: Container(
@@ -19,17 +20,17 @@ class ShutterButton extends StatelessWidget {
         height: size,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: Colors.white,
+          color: theme.colorScheme.primary,
           border: Border.all(
-            color: const Color(0xFF2C2C2C),
+            color: theme.colorScheme.onSurface,
             width: 4,
           ),
         ),
         child: Container(
           margin: const EdgeInsets.all(8),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: Color(0xFFE0E0E0),
+            color: theme.colorScheme.onPrimary,
           ),
         ),
       ),

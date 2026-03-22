@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:scouting_app/services/DataBase.dart';
+import 'package:scout_ops_android/services/DataBase.dart';
 import 'dart:math';
 import 'dart:io';
 
@@ -177,7 +177,8 @@ class RealisticMatchDataGenerator {
         Size(_randomDouble(15, 35), _randomDouble(25, 40)),
         _randomDouble(0, 360),
       ),
-      _random.nextDouble() > 0.5,
+      _random.nextBool(),
+      _random.nextInt(3),
     );
 
     final teleOpShots1 = (teleOpShots * _randomDouble(0.6, 0.8)).toInt();
@@ -211,19 +212,19 @@ class RealisticMatchDataGenerator {
       performanceLevel > 0.6 && _random.nextDouble() > 0.5,
       performanceLevel > 0.7 && _random.nextDouble() > 0.5,
       performanceLevel > 0.7 && _random.nextDouble() > 0.5,
-      performanceLevel > 0.65 && _random.nextDouble() > 0.4,
-      performanceLevel > 0.70 && _random.nextDouble() > 0.5,
-      performanceLevel > 0.75 && _random.nextDouble() > 0.6,
-      performanceLevel > 0.75 && _random.nextDouble() > 0.6,
-      performanceLevel > 0.80 && _random.nextDouble() > 0.7,
+      _random.nextInt(4),
+      _random.nextInt(3),
+      _random.nextInt(3),
+      _random.nextInt(2),
+      _random.nextInt(2),
     );
 
     final endPoints = EndPoints(
       climbStatus,
       endgamePark,
       teleOpFeedHP && _random.nextDouble() > 0.4,
-      performanceLevel > 0.7 && _random.nextDouble() > 0.6,
-      '',
+      _random.nextInt(3),
+      true,
       (teleOpNeutralTrips / 2).toInt(),
       shootingAccuracy,
       endgameTime,
@@ -253,14 +254,14 @@ class RealisticMatchDataGenerator {
     const String headers =
         'Battery%,Team,Scout,MatchKey,Alliance,Event,Station,MatchNumber,'
         'LeftStartingPos,FuelDepot,FuelOutpost,FuelNeutralZone,AutonShootingTime,AutonShots,AutonClimb,AutonWinAfterAuton,'
-        'BotPosX,BotPosY,BotSizeW,BotSizeH,BotAngle,'
+        'BotPosX,BotPosY,BotSizeW,BotSizeH,BotAngle,AutonPassing,'
         'TeleOpShootingTime1,TeleOpShootingTimeA1,TeleOpShootingTimeA2,ShootingI1,ShootingI2,'
         'TeleOpTotal1,TeleOpTotalA1,TeleOpTotalA2,TeleOpTotalI1,TeleOpTotalI2,TripAmount1,'
         'Defense,DefenseA1,DefenseA2,DefenseI1,DefenseI2,'
         'NeutralTrips,NeutralTripsA1,NeutralTripsA2,NeutralTripsI1,NeutralTripsI2,'
         'FeedToHPStation,FeedToHPA1,FeedToHPA2,FeedToHPI1,FeedToHPI2,'
         'Passing,PassingA1,PassingA2,PassingI1,PassingI2,'
-        'ClimbStatus,Park,FeedToHP,PassingEnd,EndNeutralTrips,ShootingAccuracy,EndgameTime,Comments,DrawingData';
+        'ClimbStatus,Park,FeedToHP,PassingEnd,EndNeutralTrips,ShootingAccuracy,EndgameTime,EndgameshootingCycles,RobotBroken,DrawingData';
 
     csv.writeln(headers);
 

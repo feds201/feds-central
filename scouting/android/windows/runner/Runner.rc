@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.pyintel" "\0"
-            VALUE "FileDescription", "scouting_app" "\0"
+            VALUE "FileDescription", "scout_ops_android" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "scouting_app" "\0"
+            VALUE "InternalName", "scout_ops_android" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2025 com.pyintel. All rights reserved." "\0"
-            VALUE "OriginalFilename", "scouting_app.exe" "\0"
-            VALUE "ProductName", "scouting_app" "\0"
+            VALUE "OriginalFilename", "scout_ops_android.exe" "\0"
+            VALUE "ProductName", "scout_ops_android" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

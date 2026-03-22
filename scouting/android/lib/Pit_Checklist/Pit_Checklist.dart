@@ -1,16 +1,15 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
-import 'package:scouting_app/Pit_Checklist/CheckLists.dart';
-import 'package:scouting_app/components/Inspiration.dart';
-import 'package:scouting_app/components/ScoutersList.dart';
-import 'package:scouting_app/components/Facts.dart';
-import 'package:scouting_app/home_page.dart';
-import 'package:scouting_app/main.dart';
-import 'package:scouting_app/services/Colors.dart';
+import 'package:scout_ops_android/Pit_Checklist/CheckLists.dart';
+import 'package:scout_ops_android/components/Inspiration.dart';
+import 'package:scout_ops_android/components/ScoutersList.dart';
+import 'package:scout_ops_android/components/Facts.dart';
+import 'package:scout_ops_android/home_page.dart';
+import 'package:scout_ops_android/main.dart';
+import 'package:scout_ops_android/services/Colors.dart';
 import '../services/DataBase.dart';
 
 class PitCheckListPage extends StatefulWidget {
@@ -110,6 +109,7 @@ class PitCheckListPageState extends State<PitCheckListPage>
       );
     }
     return Scaffold(
+      backgroundColor: islightmode() ? lightColors.white : Colors.black,
       appBar: _buildAppBar(),
       body: FutureBuilder<Widget>(
         future: matchSelection(context, selectedMatchType, (int index) {
@@ -190,7 +190,8 @@ class PitCheckListPageState extends State<PitCheckListPage>
             style: GoogleFonts.museoModerno(
               fontSize: 22,
               fontWeight: FontWeight.w500,
-              color: Colors.grey.shade700,
+              color:
+                  islightmode() ? Colors.grey.shade700 : Colors.grey.shade400,
             ),
           ),
           const SizedBox(height: 12),
@@ -201,7 +202,8 @@ class PitCheckListPageState extends State<PitCheckListPage>
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 16,
-                color: Colors.grey.shade600,
+                color:
+                    islightmode() ? Colors.grey.shade600 : Colors.grey.shade400,
               ),
             ),
           ),
@@ -248,7 +250,7 @@ class PitCheckListPageState extends State<PitCheckListPage>
         // Enhanced Navigation Rail
         Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: islightmode() ? Colors.white : Colors.black,
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.05),
@@ -258,8 +260,7 @@ class PitCheckListPageState extends State<PitCheckListPage>
             ],
           ),
           child: NavigationRail(
-            backgroundColor:
-                islightmode() ? lightColors.white : darkColors.goodblack,
+            backgroundColor: islightmode() ? lightColors.white : Colors.black,
             selectedIndex: currentSelectedMatchType,
             onDestinationSelected: (int index) {
               onMatchTypeSelected(index);
@@ -270,7 +271,8 @@ class PitCheckListPageState extends State<PitCheckListPage>
               fontWeight: FontWeight.w600,
             ),
             unselectedLabelTextStyle: GoogleFonts.museoModerno(
-              color: Colors.grey.shade600,
+              color:
+                  islightmode() ? Colors.grey.shade600 : Colors.grey.shade400,
             ),
             destinations: [
               _buildNavDestination(
@@ -394,21 +396,22 @@ class PitCheckListPageState extends State<PitCheckListPage>
             .where((match) =>
                 match['comp_level'] == 'p' || match['comp_level'] == 'pr')
             .toList();
-            
+
         // Add manual practice matches
         List<dynamic> manualPMatches = _loadManualMatches()
             .where((m) => m['comp_level'] == 'p' || m['comp_level'] == 'pr')
             .toList();
-        
+
         // Apply team filter to manual matches too
         if (_filteredTeam.isNotEmpty || _isFilterActive) {
           manualPMatches = _getFilteredMatches(manualPMatches);
         } else {
-          manualPMatches = manualPMatches.where((match) => _hasOurTeam(match)).toList();
+          manualPMatches =
+              manualPMatches.where((match) => _hasOurTeam(match)).toList();
         }
-        
+
         filteredMatches.addAll(manualPMatches);
-        
+
         filteredMatches.sort((a, b) => int.parse(a['match_number'].toString())
             .compareTo(int.parse(b['match_number'].toString())));
 
@@ -422,17 +425,19 @@ class PitCheckListPageState extends State<PitCheckListPage>
 
       case 1:
         // Add manual qual matches
-        List<dynamic> manualQMatches = _loadManualMatches().where((m) => m['comp_level'] == 'qm').toList();
-        
+        List<dynamic> manualQMatches =
+            _loadManualMatches().where((m) => m['comp_level'] == 'qm').toList();
+
         // Filter those by our team too
         if (_filteredTeam.isNotEmpty || _isFilterActive) {
           manualQMatches = _getFilteredMatches(manualQMatches);
         } else {
-          manualQMatches = manualQMatches.where((match) => _hasOurTeam(match)).toList();
+          manualQMatches =
+              manualQMatches.where((match) => _hasOurTeam(match)).toList();
         }
-        
+
         matches.addAll(manualQMatches);
-        
+
         var filteredMatches = matches
             .where((match) => match['comp_level'] == 'qm')
             .toList()
@@ -451,7 +456,9 @@ class PitCheckListPageState extends State<PitCheckListPage>
         // Modified - Playoff matches including manual entries (sf, qf, f)
         var filteredMatches = matches
             .where((match) =>
-                match['comp_level'] == 'sf' || match['comp_level'] == 'qf' || match['comp_level'] == 'f')
+                match['comp_level'] == 'sf' ||
+                match['comp_level'] == 'qf' ||
+                match['comp_level'] == 'f')
             .toList();
 
         // Add manual playoff matches
@@ -461,12 +468,15 @@ class PitCheckListPageState extends State<PitCheckListPage>
         if (_filteredTeam.isNotEmpty || _isFilterActive) {
           manualMatches = _getFilteredMatches(manualMatches);
         } else {
-          manualMatches = manualMatches.where((match) => _hasOurTeam(match)).toList();
+          manualMatches =
+              manualMatches.where((match) => _hasOurTeam(match)).toList();
         }
 
         var manualPlayoffMatches = manualMatches
             .where((match) =>
-                match['comp_level'] == 'sf' || match['comp_level'] == 'qf' || match['comp_level'] == 'f')
+                match['comp_level'] == 'sf' ||
+                match['comp_level'] == 'qf' ||
+                match['comp_level'] == 'f')
             .toList();
 
         // Combine TBA and manual matches
@@ -481,12 +491,18 @@ class PitCheckListPageState extends State<PitCheckListPage>
             if (comp.startsWith('f')) return 2;
             return 3;
           }
-          int compLevelComparison = getCompLevelValue(a['comp_level']).compareTo(getCompLevelValue(b['comp_level']));
+
+          int compLevelComparison = getCompLevelValue(a['comp_level'])
+              .compareTo(getCompLevelValue(b['comp_level']));
           if (compLevelComparison != 0) return compLevelComparison;
 
           // Then by set number (fallback to match number if no set number)
-          int aSet = (a['set_number'] != null) ? int.parse(a['set_number'].toString()) : int.parse(a['match_number'].toString());
-          int bSet = (b['set_number'] != null) ? int.parse(b['set_number'].toString()) : int.parse(b['match_number'].toString());
+          int aSet = (a['set_number'] != null)
+              ? int.parse(a['set_number'].toString())
+              : int.parse(a['match_number'].toString());
+          int bSet = (b['set_number'] != null)
+              ? int.parse(b['set_number'].toString())
+              : int.parse(b['match_number'].toString());
           int setComparison = aSet.compareTo(bSet);
           if (setComparison != 0) return setComparison;
 
@@ -501,7 +517,8 @@ class PitCheckListPageState extends State<PitCheckListPage>
           'Playoff',
           Icons.sports_basketball,
           Colors.orange,
-          (match) => match['comp_level'].startsWith('sf') || match['comp_level'].startsWith('qf')
+          (match) => match['comp_level'].startsWith('sf') ||
+                  match['comp_level'].startsWith('qf')
               ? int.parse(match['set_number'].toString())
               : int.parse(match['match_number'].toString()),
         );
@@ -516,8 +533,6 @@ class PitCheckListPageState extends State<PitCheckListPage>
         return const Center(child: Text('Unknown Match Type'));
     }
   }
-
-
 
   Widget _buildEnhancedMatchCard(
     BuildContext context,
@@ -585,7 +600,8 @@ class PitCheckListPageState extends State<PitCheckListPage>
     final bool isManual = match['manual_entry'] == true;
 
     // Fetch the recent battery info
-    Map<String, double> recentBattery = PitCheckListDatabase.getMostRecentBatteryInfo();
+    Map<String, double> recentBattery =
+        PitCheckListDatabase.getMostRecentBatteryInfo();
 
     // Create alliance teams lists
     final redAlliance = match['alliances']['red']['team_keys']
@@ -751,7 +767,7 @@ class PitCheckListPageState extends State<PitCheckListPage>
                 ),
               ),
             ),
-            color: islightmode() ? lightColors.white : darkColors.goodblack,
+            color: islightmode() ? lightColors.white : Colors.black,
           ),
           if (badgeWidget != null) badgeWidget,
         ],
@@ -759,10 +775,11 @@ class PitCheckListPageState extends State<PitCheckListPage>
     );
   }
 
-  Widget _buildBatteryDetails(PitChecklistItem? saved, Map<String, double> recentBattery) {
+  Widget _buildBatteryDetails(
+      PitChecklistItem? saved, Map<String, double> recentBattery) {
     double inTag = saved?.returning_number ?? 0.0;
     double inVoltage = saved?.returning_battery_voltage ?? 0.0;
-    
+
     // If not filled out yet, predict incoming from recent outgoing
     if (inTag == 0.0) {
       inTag = recentBattery['number'] ?? 0.0;
@@ -774,26 +791,30 @@ class PitCheckListPageState extends State<PitCheckListPage>
 
     return Row(
       children: [
-        Expanded(child: _buildBatteryInfoCard('Incoming', inTag, inVoltage, Colors.blue)),
+        Expanded(
+            child: _buildBatteryInfoCard(
+                'Incoming', inTag, inVoltage, Colors.blue)),
         const SizedBox(width: 12),
-        Expanded(child: _buildBatteryInfoCard('Outgoing', outTag, outVoltage, Colors.green)),
+        Expanded(
+            child: _buildBatteryInfoCard(
+                'Outgoing', outTag, outVoltage, Colors.green)),
       ],
     );
   }
 
-  Widget _buildBatteryInfoCard(String title, double tag, double voltage, MaterialColor color) {
+  Widget _buildBatteryInfoCard(
+      String title, double tag, double voltage, MaterialColor color) {
     bool hasData = tag > 0;
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: hasData 
-            ? color.withOpacity(0.1) 
+        color: hasData
+            ? color.withOpacity(0.1)
             : (islightmode() ? Colors.grey.shade100 : Colors.grey.shade900),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: hasData 
-              ? color.withOpacity(0.3) 
-              : Colors.grey.withOpacity(0.2),
+          color:
+              hasData ? color.withOpacity(0.3) : Colors.grey.withOpacity(0.2),
         ),
       ),
       child: Column(
@@ -801,16 +822,21 @@ class PitCheckListPageState extends State<PitCheckListPage>
         children: [
           Row(
             children: [
-              Icon(hasData ? Icons.battery_charging_full : Icons.battery_unknown, size: 16, color: hasData ? color.shade600 : Colors.grey),
+              Icon(
+                  hasData ? Icons.battery_charging_full : Icons.battery_unknown,
+                  size: 16,
+                  color: hasData ? color.shade600 : Colors.grey),
               const SizedBox(width: 6),
               Text(
                 title,
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
-                  color: hasData 
-                      ? color.shade700 
-                      : (islightmode() ? Colors.grey.shade700 : Colors.grey.shade400),
+                  color: hasData
+                      ? color.shade700
+                      : (islightmode()
+                          ? Colors.grey.shade700
+                          : Colors.grey.shade400),
                 ),
               ),
             ],
@@ -820,12 +846,25 @@ class PitCheckListPageState extends State<PitCheckListPage>
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Tag: ${tag.toInt()}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: islightmode() ? darkColors.goodblack : lightColors.white)),
-                Text('${voltage.toStringAsFixed(1)}V', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: islightmode() ? darkColors.goodblack : lightColors.white)),
+                Text('Tag: ${tag.toInt()}',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                        color: islightmode()
+                            ? darkColors.goodblack
+                            : lightColors.white)),
+                Text('${voltage.toStringAsFixed(1)}V',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                        color: islightmode()
+                            ? darkColors.goodblack
+                            : lightColors.white)),
               ],
             )
           else
-            Text('No Data', style: TextStyle(fontSize: 13, color: Colors.grey.shade500)),
+            Text('No Data',
+                style: TextStyle(fontSize: 13, color: Colors.grey.shade500)),
         ],
       ),
     );
@@ -836,13 +875,13 @@ class PitCheckListPageState extends State<PitCheckListPage>
       duration: const Duration(milliseconds: 300),
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: done 
-            ? Colors.green.withOpacity(0.15) 
+        color: done
+            ? Colors.green.withOpacity(0.15)
             : (islightmode() ? Colors.grey.shade100 : Colors.grey.shade900),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: done 
-              ? Colors.green.withOpacity(0.5) 
+          color: done
+              ? Colors.green.withOpacity(0.5)
               : Colors.grey.withOpacity(0.3),
         ),
       ),
@@ -860,9 +899,11 @@ class PitCheckListPageState extends State<PitCheckListPage>
             style: TextStyle(
               fontSize: 12,
               fontWeight: done ? FontWeight.bold : FontWeight.normal,
-              color: done 
-                  ? Colors.green.shade700 
-                  : (islightmode() ? Colors.grey.shade700 : Colors.grey.shade400),
+              color: done
+                  ? Colors.green.shade700
+                  : (islightmode()
+                      ? Colors.grey.shade700
+                      : Colors.grey.shade400),
             ),
           ),
         ],
@@ -889,19 +930,20 @@ class PitCheckListPageState extends State<PitCheckListPage>
     // Extract event information
     int totalMatches = allMatches.length;
     int teamMatchCount = teamMatches.length;
-    int qualMatches =
-        teamMatches.where((m) => m['comp_level'] == 'qm').length;
+    int qualMatches = teamMatches.where((m) => m['comp_level'] == 'qm').length;
     int playoffMatches =
         teamMatches.where((m) => m['comp_level'] == 'sf').length;
-    int finalMatches =
-        teamMatches.where((m) => m['comp_level'] == 'f').length;
+    int finalMatches = teamMatches.where((m) => m['comp_level'] == 'f').length;
 
     String eventKey =
         allMatches.isNotEmpty ? allMatches[0]['event_key'] : 'Unknown';
     String eventName = _formatEventName(eventKey);
     String eventYear = eventKey.length >= 4 ? eventKey.substring(0, 4) : '2026';
 
-    String teamNum = Hive.box('settings').get('filteredTeam', defaultValue: '201').toString().trim();
+    String teamNum = Hive.box('settings')
+        .get('filteredTeam', defaultValue: '201')
+        .toString()
+        .trim();
     if (teamNum.isEmpty) teamNum = '201';
 
     return SingleChildScrollView(
@@ -973,10 +1015,13 @@ class PitCheckListPageState extends State<PitCheckListPage>
 
           // App Configuration Card
           Card(
-            color: Colors.white,
+            color: islightmode() ? Colors.white : Colors.black,
             margin: const EdgeInsets.fromLTRB(16, 8, 16, 16),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(18),
+              side: islightmode()
+                  ? BorderSide.none
+                  : BorderSide(color: Colors.grey.withOpacity(0.2)),
             ),
             elevation: 6,
             child: Padding(
@@ -1001,22 +1046,37 @@ class PitCheckListPageState extends State<PitCheckListPage>
                     ],
                   ),
                   const SizedBox(height: 16),
-                  TextFormField(
-                    initialValue: teamNum,
+                  DropdownButtonFormField<String>(
+                    value: teamNum,
+                    dropdownColor:
+                        islightmode() ? Colors.white : Colors.grey.shade900,
+                    style: TextStyle(
+                      color: islightmode() ? Colors.black : Colors.white,
+                      fontSize: 16,
+                    ),
                     decoration: InputDecoration(
                       labelText: 'Primary Team Number',
-                      hintText: 'e.g. 201',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
                       prefixIcon: const Icon(Icons.numbers),
                     ),
-                    keyboardType: TextInputType.number,
+                    items:
+                        _extractTeamsFromMatches(allMatches).map((String team) {
+                      return DropdownMenuItem<String>(
+                        value: team,
+                        child: Text("Team $team"),
+                      );
+                    }).toList(),
                     onChanged: (value) {
-                      String trimmed = value.trim();
-                      if (trimmed.isNotEmpty) {
-                        Hive.box('settings').put('filteredTeam', trimmed);
-                        setState(() {});
+                      if (value != null) {
+                        Hive.box('settings').put('filteredTeam', value);
+                        setState(() {
+                          _filteredTeam = value;
+                          _isFilterActive = true;
+                          _selectedTeams.clear();
+                          _selectedTeams.add(value);
+                        });
                       }
                     },
                   ),
@@ -1027,10 +1087,13 @@ class PitCheckListPageState extends State<PitCheckListPage>
 
           // Team Match Statistics Card
           Card(
-            color: Colors.white,
+            color: islightmode() ? Colors.white : Colors.black,
             margin: const EdgeInsets.fromLTRB(16, 8, 16, 16),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(18),
+              side: islightmode()
+                  ? BorderSide.none
+                  : BorderSide(color: Colors.grey.withOpacity(0.2)),
             ),
             elevation: 6,
             child: Padding(
@@ -1097,9 +1160,12 @@ class PitCheckListPageState extends State<PitCheckListPage>
           // Scouter Profile
           Card(
             margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-            color: const Color.fromARGB(255, 255, 255, 255),
+            color: islightmode() ? Colors.white : Colors.black,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(18),
+              side: islightmode()
+                  ? BorderSide.none
+                  : BorderSide(color: Colors.grey.withOpacity(0.2)),
             ),
             elevation: 6,
             child: Padding(
@@ -1150,9 +1216,11 @@ class PitCheckListPageState extends State<PitCheckListPage>
                             Text(
                               Hive.box('settings').get('deviceName') ??
                                   'Unknown Scout',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.bold,
+                                color:
+                                    islightmode() ? Colors.black : Colors.white,
                               ),
                             ),
                             const SizedBox(height: 4),
@@ -1184,9 +1252,12 @@ class PitCheckListPageState extends State<PitCheckListPage>
           // Replace the duplicated Pit Memory card and data management sections with this single card
           Card(
             margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-            color: Colors.white,
+            color: islightmode() ? Colors.white : Colors.black,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(18),
+              side: islightmode()
+                  ? BorderSide.none
+                  : BorderSide(color: Colors.grey.withOpacity(0.2)),
             ),
             elevation: 4,
             child: Padding(
@@ -1555,7 +1626,7 @@ class PitCheckListPageState extends State<PitCheckListPage>
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w500,
-            color: Colors.black87,
+            color: islightmode() ? Colors.black87 : Colors.white70,
           ),
         ),
         const Spacer(),
@@ -1640,7 +1711,9 @@ class PitCheckListPageState extends State<PitCheckListPage>
                             : 'No $matchTypeName Matches for Team 201 yet',
                         style: GoogleFonts.museoModerno(
                           fontSize: 20,
-                          color: Colors.grey.shade600,
+                          color: islightmode()
+                              ? Colors.grey.shade600
+                              : Colors.grey.shade400,
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -1648,7 +1721,9 @@ class PitCheckListPageState extends State<PitCheckListPage>
                         'Use the button above to create a manual entry',
                         style: TextStyle(
                           fontSize: 16,
-                          color: Colors.grey.shade500,
+                          color: islightmode()
+                              ? Colors.grey.shade500
+                              : Colors.grey.shade400,
                         ),
                       ),
                     ],
@@ -1670,7 +1745,8 @@ class PitCheckListPageState extends State<PitCheckListPage>
                     final bool isManual = match['manual_entry'] == true;
 
                     String dynamicMatchTypeName = matchTypeName;
-                    if (matchTypeName == 'Playoff' && match['comp_level'] != null) {
+                    if (matchTypeName == 'Playoff' &&
+                        match['comp_level'] != null) {
                       String comp = match['comp_level'].toString();
                       if (comp.startsWith('f')) {
                         dynamicMatchTypeName = 'Final';
@@ -1706,31 +1782,42 @@ class PitCheckListPageState extends State<PitCheckListPage>
                           child: const Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(Icons.delete_outline, color: Colors.white, size: 24),
+                              Icon(Icons.delete_outline,
+                                  color: Colors.white, size: 24),
                               SizedBox(width: 8),
-                              Text('Delete', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                              Text('Delete',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold)),
                             ],
                           ),
                         ),
                         confirmDismiss: (direction) async {
                           return await showDialog<bool>(
-                            context: context,
-                            builder: (ctx) => AlertDialog(
-                              title: const Text('Delete Match?'),
-                              content: Text('Remove match ${match['match_number']}?'),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.of(ctx).pop(false),
-                                  child: const Text('Cancel'),
+                                context: context,
+                                builder: (ctx) => AlertDialog(
+                                  title: const Text('Delete Match?'),
+                                  content: Text(
+                                      'Remove match ${match['match_number']}?'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.of(ctx).pop(false),
+                                      child: const Text('Cancel'),
+                                    ),
+                                    ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.red),
+                                      onPressed: () =>
+                                          Navigator.of(ctx).pop(true),
+                                      child: const Text('Delete',
+                                          style:
+                                              TextStyle(color: Colors.white)),
+                                    ),
+                                  ],
                                 ),
-                                ElevatedButton(
-                                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                                  onPressed: () => Navigator.of(ctx).pop(true),
-                                  child: const Text('Delete', style: TextStyle(color: Colors.white)),
-                                ),
-                              ],
-                            ),
-                          ) ?? false;
+                              ) ??
+                              false;
                         },
                         onDismissed: (direction) {
                           _deleteManualMatch(match['key']?.toString() ?? '');
@@ -1778,7 +1865,8 @@ class PitCheckListPageState extends State<PitCheckListPage>
                         borderRadius: BorderRadius.circular(12)),
                   ),
                   value: selectedMatchType,
-                  items: ['Practice', 'Qualification', 'Playoff', 'Final'].map((type) {
+                  items: ['Practice', 'Qualification', 'Playoff', 'Final']
+                      .map((type) {
                     return DropdownMenuItem(
                       value: type,
                       child: Text(type),
@@ -1841,19 +1929,25 @@ class PitCheckListPageState extends State<PitCheckListPage>
               onPressed: () {
                 // Generate match ID based on match type
                 String matchTypeCode = 'p';
-                if (selectedMatchType == 'Qualification') matchTypeCode = 'qm';
-                else if (selectedMatchType == 'Playoff') matchTypeCode = 'sf';
+                if (selectedMatchType == 'Qualification')
+                  matchTypeCode = 'qm';
+                else if (selectedMatchType == 'Playoff')
+                  matchTypeCode = 'sf';
                 else if (selectedMatchType == 'Final') matchTypeCode = 'f';
 
                 int setNumber = 1; // Default to 1
 
-                String suffix = (selectedMatchType == 'Playoff' || selectedMatchType == 'Final')
+                String suffix = (selectedMatchType == 'Playoff' ||
+                        selectedMatchType == 'Final')
                     ? '${setNumber}m$matchNumber'
                     : 'm$matchNumber';
                 String matchKey = '2026mimid_$matchTypeCode$suffix';
 
                 // Real team number using settings, falling back to '201'
-                String teamNum = Hive.box('settings').get('filteredTeam', defaultValue: '201').toString().trim();
+                String teamNum = Hive.box('settings')
+                    .get('filteredTeam', defaultValue: '201')
+                    .toString()
+                    .trim();
                 if (teamNum.isEmpty) teamNum = '201';
 
                 // Create synthetic match object

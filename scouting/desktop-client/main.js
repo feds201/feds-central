@@ -7,6 +7,7 @@ async function createWindow () {
     const win = new BrowserWindow({
         width: 800,
         height: 600,
+        icon: path.join(__dirname, 'assets/logo.ico'),
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'), // Use preload.js for context isolation
             nodeIntegration: false,

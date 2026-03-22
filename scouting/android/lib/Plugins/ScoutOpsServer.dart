@@ -1,10 +1,9 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
-import 'package:scouting_app/components/qr_code_scanner_page.dart';
+import 'package:scout_ops_android/components/qr_code_scanner_page.dart';
 
 class ScoutOpsServerWidget extends StatefulWidget {
   const ScoutOpsServerWidget({super.key});

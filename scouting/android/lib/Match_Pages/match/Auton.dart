@@ -2,10 +2,10 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:scouting_app/components/CheckBox.dart';
-import 'package:scouting_app/components/CounterShelf.dart';
-import 'package:scouting_app/components/ScoutersList.dart';
-import 'package:scouting_app/components/gameSpecifics/winAfterAuton.dart';
+import 'package:scout_ops_android/components/CheckBox.dart';
+import 'package:scout_ops_android/components/CounterShelf.dart';
+import 'package:scout_ops_android/components/ScoutersList.dart';
+import 'package:scout_ops_android/components/gameSpecifics/winAfterAuton.dart';
 
 import '../../components/TeamInfo.dart';
 import '../../components/gameSpecifics/heatmap.dart';
@@ -36,6 +36,7 @@ class AutonState extends State<Auton> {
   late String matchKey;
   late String allianceColor;
   late int matchNumber;
+  late int passing;
   late Alliance mapcolor;
   final GlobalKey<SinglePointSelectorState> _tapSelectorKey = GlobalKey();
 
@@ -72,8 +73,18 @@ class AutonState extends State<Auton> {
     winAfterAuton = widget.matchRecord.autonPoints.winAfterAuton;
     shootingTime = widget.matchRecord.autonPoints.total_shooting_time;
     amount = widget.matchRecord.autonPoints.amountOfShooting;
-    autonPoints = AutonPoints(depot, outPost, zone, shootingTime, amount,
-        autoClimb, winAfterAuton, startingBotLocations, left_startingLocation);
+    passing = widget.matchRecord.autonPoints.passing;
+    autonPoints = AutonPoints(
+        depot,
+        outPost,
+        zone,
+        shootingTime,
+        amount,
+        autoClimb,
+        winAfterAuton,
+        startingBotLocations,
+        left_startingLocation,
+        passing);
   }
 
   void UpdateData() {
@@ -87,6 +98,7 @@ class AutonState extends State<Auton> {
       winAfterAuton,
       startingBotLocations,
       left_startingLocation,
+      passing,
     );
 
     widget.matchRecord.autonPoints = autonPoints;
@@ -99,6 +111,7 @@ class AutonState extends State<Auton> {
     widget.matchRecord.autonPoints.amountOfShooting = amount;
     widget.matchRecord.autonPoints.winAfterAuton = winAfterAuton;
     widget.matchRecord.autonPoints.climb = autoClimb;
+    widget.matchRecord.autonPoints.passing = passing;
     widget.matchRecord.autonPoints.starting_location = startingBotLocations;
     widget.matchRecord.scouterName =
         Hive.box('settings').get('deviceName', defaultValue: '');
@@ -248,6 +261,15 @@ class AutonState extends State<Auton> {
             });
             UpdateData();
           }),
+          SizedBox(
+            height: 8,
+          ),
+          buildCounterFull("Passing", passing, (int value) {
+            setState(() {
+              passing = value;
+            });
+            UpdateData();
+          }, color: Colors.amber),
           SizedBox(
             height: 8,
           ),
