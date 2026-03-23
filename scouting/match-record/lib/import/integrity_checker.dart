@@ -4,7 +4,6 @@ import 'package:logger/logger.dart';
 
 import '../data/data_store.dart';
 import '../data/models.dart';
-import '../util/constants.dart';
 
 /// Reconciles the recordings directory on disk with the DataStore at startup.
 ///
