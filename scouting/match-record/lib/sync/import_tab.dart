@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import '../data/data_store.dart';
@@ -88,8 +90,39 @@ class _ImportTabState extends State<ImportTab> {
     }
   }
 
+  /// Check if the drive is still connected. Returns true if connected.
+  Future<bool> _checkDriveConnected() async {
+    if (_sessionState == null) return false;
+    return _driveAccess.hasPermission(_sessionState!.driveUri);
+  }
+
+  /// Show a dialog when the drive is disconnected during review.
+  /// Returns true if the user re-plugged and we confirmed connection,
+  /// false if the user cancelled.
+  Future<bool> _showDriveDisconnectedDialog() async {
+    if (!mounted) return false;
+
+    final result = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => _DriveDisconnectedDialog(
+        driveAccess: _driveAccess,
+        driveUri: _sessionState!.driveUri,
+      ),
+    );
+
+    return result ?? false;
+  }
+
   Future<void> _executeImport() async {
     if (_sessionState == null) return;
+
+    // Check drive connection before starting import
+    final connected = await _checkDriveConnected();
+    if (!connected) {
+      final reconnected = await _showDriveDisconnectedDialog();
+      if (!reconnected || !mounted) return;
+    }
 
     setState(() {
       _isImporting = true;
@@ -107,6 +140,21 @@ class _ImportTabState extends State<ImportTab> {
             _importFilename = filename;
           });
         }
+      },
+      onCopyError: (destPath) async {
+        // Check if the error is due to drive disconnection
+        final stillConnected = await _checkDriveConnected();
+        if (!stillConnected) {
+          // Clean up partial file
+          try {
+            final file = File(destPath);
+            if (await file.exists()) {
+              await file.delete();
+            }
+          } catch (_) {}
+          return false; // Signal to abort remaining imports
+        }
+        return true; // Not a disconnect issue, continue with next file
       },
     );
 
@@ -496,6 +544,70 @@ class _AllianceButton extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Dialog shown when the drive is disconnected during import review or copy.
+class _DriveDisconnectedDialog extends StatefulWidget {
+  final DriveAccess driveAccess;
+  final String driveUri;
+
+  const _DriveDisconnectedDialog({
+    required this.driveAccess,
+    required this.driveUri,
+  });
+
+  @override
+  State<_DriveDisconnectedDialog> createState() =>
+      _DriveDisconnectedDialogState();
+}
+
+class _DriveDisconnectedDialogState extends State<_DriveDisconnectedDialog> {
+  bool _isChecking = false;
+
+  Future<void> _retryConnection() async {
+    setState(() => _isChecking = true);
+    final connected = await widget.driveAccess.hasPermission(widget.driveUri);
+    if (!mounted) return;
+    setState(() => _isChecking = false);
+
+    if (connected) {
+      Navigator.of(context).pop(true);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Drive still not connected'),
+          duration: Duration(seconds: 1),
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Drive Disconnected'),
+      content: const Text(
+        'The USB drive has been disconnected. '
+        'Plug it back in and tap Retry, or cancel.',
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(false),
+          child: const Text('Cancel'),
+        ),
+        FilledButton(
+          onPressed: _isChecking ? null : _retryConnection,
+          child: _isChecking
+              ? const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : const Text('Retry'),
+        ),
+      ],
     );
   }
 }

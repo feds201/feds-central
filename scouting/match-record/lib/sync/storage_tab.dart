@@ -58,6 +58,37 @@ class _StorageTabState extends State<StorageTab> {
     });
   }
 
+  void _selectAllFromPastEvents() {
+    final now = DateTime.now();
+    final events = widget.dataStore.events;
+
+    // Find event keys for events whose end date is before today
+    final pastEventKeys = <String>{};
+    for (final event in events) {
+      if (event.endDate.isBefore(now)) {
+        pastEventKeys.add(event.eventKey);
+      }
+    }
+
+    if (pastEventKeys.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No past events found'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
+
+    setState(() {
+      for (final r in _recordings) {
+        if (pastEventKeys.contains(r.eventKey)) {
+          _selectedIds.add(r.id);
+        }
+      }
+    });
+  }
+
   void _deselectAll() {
     setState(() => _selectedIds.clear());
   }
@@ -181,6 +212,10 @@ class _StorageTabState extends State<StorageTab> {
                   TextButton(
                     onPressed: _selectAllButOurTeam,
                     child: const Text('All But Ours'),
+                  ),
+                  TextButton(
+                    onPressed: _selectAllFromPastEvents,
+                    child: const Text('Past Events'),
                   ),
                   if (_selectedIds.isNotEmpty)
                     TextButton(

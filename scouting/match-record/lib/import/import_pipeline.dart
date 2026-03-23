@@ -203,10 +203,16 @@ class ImportPipeline {
 
   /// Stages 6+7: Execute import for selected rows.
   /// Copies files, creates Recording entries, and saves ImportSession.
+  ///
+  /// [onCopyError] is called when a file copy fails. It receives the
+  /// destination path that was being written. Return false to abort
+  /// all remaining imports (e.g., drive disconnected), or true to
+  /// skip this file and continue with the next.
   Future<Result<int>> executeImport(
     ImportSessionState state,
-    void Function(int current, int total, String filename)? onProgress,
-  ) async {
+    void Function(int current, int total, String filename)? onProgress, {
+    Future<bool> Function(String destPath)? onCopyError,
+  }) async {
     final selectedRows = <ImportPreviewRow>[];
     for (final row in state.rows) {
       if (row.isSelected && row.matchKey != null) {
@@ -281,15 +287,40 @@ class ImportPipeline {
           }
         } catch (_) {}
 
+        // Ask the caller whether to continue or abort
+        final shouldContinue = onCopyError != null
+            ? await onCopyError(destPath)
+            : true;
+
         entries.add(ImportSessionEntry(
           originalFilename: row.metadata.originalFilename,
           wasSelected: true,
           wasAutoSkipped: false,
-          skipReason: 'copy_failed',
+          skipReason: shouldContinue ? 'copy_failed' : 'drive_disconnected',
           recordingStartTime: row.metadata.recordingStartTime,
           durationMs: row.metadata.durationMs,
           fileSizeBytes: row.metadata.fileSize,
         ));
+
+        if (!shouldContinue) {
+          // Abort remaining imports, but keep already-completed ones.
+          // Record remaining selected rows as skipped.
+          for (int j = i + 1; j < state.rows.length; j++) {
+            final remaining = state.rows[j];
+            entries.add(ImportSessionEntry(
+              originalFilename: remaining.metadata.originalFilename,
+              wasSelected: remaining.isSelected && remaining.matchKey != null,
+              wasAutoSkipped: remaining.isAutoSkipped,
+              skipReason: remaining.isSelected && remaining.matchKey != null
+                  ? 'drive_disconnected'
+                  : remaining.autoSkipReason,
+              recordingStartTime: remaining.metadata.recordingStartTime,
+              durationMs: remaining.metadata.durationMs,
+              fileSizeBytes: remaining.metadata.fileSize,
+            ));
+          }
+          break;
+        }
         continue;
       }
 
