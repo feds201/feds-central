@@ -53,7 +53,7 @@ class VideoMetadata {
 
 /// Service for extracting video metadata.
 /// On real Android: uses platform channel with MediaMetadataRetriever.
-/// On desktop/test: generates synthetic metadata based on filenames.
+/// Currently: generates synthetic metadata based on filenames (see TODO for platform channel).
 class VideoMetadataService {
   /// Extract metadata from a single video file. Never throws.
   Future<VideoMetadata> getMetadata(DriveFile file) async {
@@ -65,7 +65,7 @@ class VideoMetadataService {
     return files.map(_generateSyntheticMetadata).toList();
   }
 
-  /// Generate synthetic but realistic metadata for desktop/test use.
+  /// Generate synthetic but realistic metadata until platform channel is implemented.
   /// For iOS files (.MOV): set ftypBrand to "qt  ", date = recording start time.
   /// For Android files (.mp4): set ftypBrand to "isom", date = end time.
   VideoMetadata _generateSyntheticMetadata(DriveFile file) {

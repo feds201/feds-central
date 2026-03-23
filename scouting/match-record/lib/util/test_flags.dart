@@ -1,7 +1,9 @@
-/// Test flags for development. Set these to true to use embedded sample data.
+/// Test flags for development. Set these to true to use sample data.
 class TestFlags {
-  /// When true, use embedded sample videos instead of USB drive access
-  static const bool useEmbeddedSampleVideos = true;
+  /// When true, use sample videos from the device filesystem instead of USB
+  /// drive access. Videos must be pushed to the device first — see
+  /// TestDriveAccess doc comment for adb push instructions.
+  static const bool useSampleVideos = true;
 
   /// When true, force the event to 2026mimid
   static const bool forceEventId = true;

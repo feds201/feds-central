@@ -1,7 +1,5 @@
 import 'dart:io';
 
-import 'package:flutter/services.dart';
-
 import '../util/result.dart';
 import 'drive_access.dart';
 
@@ -22,60 +20,60 @@ class _TestVideoFile {
 class _TestDrive {
   final String uri;
   final String label;
-  final String assetDir;
+  final String subDir;
   final List<_TestVideoFile> videos;
   final String configJson;
 
   _TestDrive({
     required this.uri,
     required this.label,
-    required this.assetDir,
+    required this.subDir,
     required this.videos,
     required this.configJson,
   });
 }
 
-/// Test implementation of DriveAccess using embedded sample data from assets.
-/// Used when TestFlags.useEmbeddedSampleVideos is true.
+/// Test implementation of DriveAccess that reads sample videos from the device
+/// filesystem. Used when TestFlags.useSampleVideos is true.
+///
+/// Videos must be pushed to the device before use:
+///   adb push ~/Downloads/flash_drive_ios /sdcard/match_record_samples/flash_drive_ios
+///   adb push ~/Downloads/flash_drive_android /sdcard/match_record_samples/flash_drive_android
 class TestDriveAccess implements DriveAccess {
+  /// Base path where sample videos live on the device filesystem.
+  /// Push videos with:
+  ///   adb push ~/Downloads/flash_drive_ios /sdcard/match_record_samples/flash_drive_ios
+  ///   adb push ~/Downloads/flash_drive_android /sdcard/match_record_samples/flash_drive_android
+  static const String _basePath = '/sdcard/match_record_samples';
+
   static final List<_TestDrive> _drives = [
     _TestDrive(
       uri: 'test://flash_drive_ios',
       label: 'iOS Flash Drive',
-      assetDir: 'sample_data/flash_drive_ios',
+      subDir: 'flash_drive_ios',
       videos: [
         _TestVideoFile(
-          filename: 'IMG_9848.MOV',
-          sizeBytes: 16777216, // ~16MB
-          // iOS recording start time for match 1 (~1 min before Android)
-          lastModified: DateTime.utc(2026, 3, 22, 20, 3, 30),
-        ),
-        _TestVideoFile(
-          filename: 'IMG_9849.MOV',
-          sizeBytes: 26214400, // ~25MB
-          // iOS recording start time for match 2 (~1 min before Android)
-          lastModified: DateTime.utc(2026, 3, 22, 20, 3, 50),
+          filename: 'IMG_9857.MOV',
+          sizeBytes: 428521454, // ~409MB
+          // iOS creation_time = recording start
+          lastModified: DateTime.utc(2026, 3, 23, 16, 29, 30),
         ),
       ],
-      configJson: '{"alliance": "blue"}',
+      configJson: '{"alliance": "red"}',
     ),
     _TestDrive(
       uri: 'test://flash_drive_android',
       label: 'Android Flash Drive',
-      assetDir: 'sample_data/flash_drive_android',
+      subDir: 'flash_drive_android',
       videos: [
         _TestVideoFile(
-          filename: 'PXL_20260322_200436398.mp4',
-          sizeBytes: 17825792, // ~17MB
-          lastModified: DateTime.utc(2026, 3, 22, 20, 4, 36),
-        ),
-        _TestVideoFile(
-          filename: 'PXL_20260322_200456612.mp4',
-          sizeBytes: 22020096, // ~21MB
-          lastModified: DateTime.utc(2026, 3, 22, 20, 4, 56),
+          filename: 'PXL_20260323_162929108.mp4',
+          sizeBytes: 546752370, // ~521MB
+          // Android creation_time = recording end (16:31:57), started ~16:29:29
+          lastModified: DateTime.utc(2026, 3, 23, 16, 31, 57),
         ),
       ],
-      configJson: '{"alliance": "red"}',
+      configJson: '{"alliance": "blue"}',
     ),
   ];
 
@@ -142,19 +140,25 @@ class TestDriveAccess implements DriveAccess {
     String destPath,
     void Function(int bytesCopied)? onProgress,
   ) async {
-    // Find the drive and file from the source URI
     for (final drive in _drives) {
       for (final video in drive.videos) {
         final fileUri = '${drive.uri}/${video.filename}';
         if (fileUri == sourceUri) {
           try {
-            final assetPath = '${drive.assetDir}/${video.filename}';
-            final data = await rootBundle.load(assetPath);
-            final bytes = data.buffer.asUint8List();
-            final file = File(destPath);
-            await file.parent.create(recursive: true);
-            await file.writeAsBytes(bytes);
-            onProgress?.call(bytes.length);
+            final sourcePath = '$_basePath/${drive.subDir}/${video.filename}';
+            final sourceFile = File(sourcePath);
+            if (!await sourceFile.exists()) {
+              return Err(
+                'Sample video not found at $sourcePath. '
+                'On Android, push with: adb push ~/Downloads/${drive.subDir} '
+                '/sdcard/match_record_samples/${drive.subDir}',
+              );
+            }
+            final destFile = File(destPath);
+            await destFile.parent.create(recursive: true);
+            await sourceFile.copy(destPath);
+            final size = await sourceFile.length();
+            onProgress?.call(size);
             return const Ok(null);
           } catch (e) {
             return Err('Failed to copy file: $e');
@@ -168,7 +172,7 @@ class TestDriveAccess implements DriveAccess {
 
   @override
   Future<Result<void>> deleteFile(String fileUri) async {
-    // No-op for test drives -- we don't delete embedded assets
+    // No-op for test drives
     return const Ok(null);
   }
 }

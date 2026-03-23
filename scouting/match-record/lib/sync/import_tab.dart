@@ -42,7 +42,7 @@ class _ImportTabState extends State<ImportTab> {
   @override
   void initState() {
     super.initState();
-    _driveAccess = TestFlags.useEmbeddedSampleVideos
+    _driveAccess = TestFlags.useSampleVideos
         ? TestDriveAccess()
         : TestDriveAccess(); // TODO: Replace with SafDriveAccess for production
     _metadataService = VideoMetadataService();
@@ -54,7 +54,7 @@ class _ImportTabState extends State<ImportTab> {
     );
 
     // Auto-connect first test drive when test flags active
-    if (TestFlags.useEmbeddedSampleVideos) {
+    if (TestFlags.useSampleVideos) {
       _connectDrive(TestDriveAccess.availableDriveUris.first);
     }
   }
@@ -320,7 +320,7 @@ class _ImportTabState extends State<ImportTab> {
               icon: const Icon(Icons.usb),
               label: const Text('Connect Drive'),
             ),
-            if (TestFlags.useEmbeddedSampleVideos) ...[
+            if (TestFlags.useSampleVideos) ...[
               const SizedBox(height: 12),
               const Text(
                 'Test drives available:',
