@@ -146,7 +146,7 @@ class _MainScreenState extends State<MainScreen> {
     }
 
     // Matches
-    final matches = _dataStore.getMatchesWithVideos(eventKeys);
+    final matches = _dataStore.getMatchesWithVideosFiltered(eventKeys);
     for (final mwv in matches) {
       if (mwv.match.displayName.toLowerCase().contains(lowerQuery)) {
         results.add(AutocompleteResult.match(mwv));
@@ -272,6 +272,27 @@ class _MainScreenState extends State<MainScreen> {
               ),
             ),
             actions: [
+              IconButton(
+                icon: Icon(
+                  _dataStore.settings.recordedMatchesOnly
+                      ? Icons.videocam
+                      : Icons.videocam_off,
+                  color: _dataStore.settings.recordedMatchesOnly
+                      ? Theme.of(context).colorScheme.primary
+                      : null,
+                ),
+                tooltip: _dataStore.settings.recordedMatchesOnly
+                    ? 'Show all matches'
+                    : 'Show recorded matches only',
+                onPressed: () {
+                  _dataStore.updateSettings(
+                    _dataStore.settings.copyWith(
+                      recordedMatchesOnly:
+                          !_dataStore.settings.recordedMatchesOnly,
+                    ),
+                  );
+                },
+              ),
               SyncButton(dataStore: _dataStore),
               IconButton(
                 icon: const Icon(Icons.settings),

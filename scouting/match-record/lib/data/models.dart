@@ -817,6 +817,7 @@ class AppSettings {
   final int sequentialGapMaxMinutes;
   final double scrubExponent;
   final int scrubMaxRangeMs;
+  final bool recordedMatchesOnly;
 
   const AppSettings({
     this.teamNumber,
@@ -826,6 +827,7 @@ class AppSettings {
     this.sequentialGapMaxMinutes = AppConstants.defaultSequentialGapMaxMinutes,
     this.scrubExponent = AppConstants.defaultScrubExponent,
     this.scrubMaxRangeMs = AppConstants.defaultScrubMaxRangeMs,
+    this.recordedMatchesOnly = false,
   });
 
   Map<String, dynamic> toJson() => {
@@ -836,6 +838,7 @@ class AppSettings {
         'sequentialGapMaxMinutes': sequentialGapMaxMinutes,
         'scrubExponent': scrubExponent,
         'scrubMaxRangeMs': scrubMaxRangeMs,
+        'recordedMatchesOnly': recordedMatchesOnly,
       };
 
   factory AppSettings.fromJson(Map<String, dynamic> json) => AppSettings(
@@ -854,6 +857,7 @@ class AppSettings {
             AppConstants.defaultScrubExponent,
         scrubMaxRangeMs: json['scrubMaxRangeMs'] as int? ??
             AppConstants.defaultScrubMaxRangeMs,
+        recordedMatchesOnly: json['recordedMatchesOnly'] as bool? ?? false,
       );
 
   AppSettings copyWith({
@@ -864,6 +868,7 @@ class AppSettings {
     int? sequentialGapMaxMinutes,
     double? scrubExponent,
     int? scrubMaxRangeMs,
+    bool? recordedMatchesOnly,
   }) =>
       AppSettings(
         teamNumber: teamNumber != null ? teamNumber() : this.teamNumber,
@@ -876,6 +881,8 @@ class AppSettings {
             sequentialGapMaxMinutes ?? this.sequentialGapMaxMinutes,
         scrubExponent: scrubExponent ?? this.scrubExponent,
         scrubMaxRangeMs: scrubMaxRangeMs ?? this.scrubMaxRangeMs,
+        recordedMatchesOnly:
+            recordedMatchesOnly ?? this.recordedMatchesOnly,
       );
 
   @override
@@ -889,7 +896,8 @@ class AppSettings {
           sequentialGapMinMinutes == other.sequentialGapMinMinutes &&
           sequentialGapMaxMinutes == other.sequentialGapMaxMinutes &&
           scrubExponent == other.scrubExponent &&
-          scrubMaxRangeMs == other.scrubMaxRangeMs;
+          scrubMaxRangeMs == other.scrubMaxRangeMs &&
+          recordedMatchesOnly == other.recordedMatchesOnly;
 
   @override
   int get hashCode => Object.hash(
@@ -900,6 +908,7 @@ class AppSettings {
         sequentialGapMaxMinutes,
         scrubExponent,
         scrubMaxRangeMs,
+        recordedMatchesOnly,
       );
 }
 

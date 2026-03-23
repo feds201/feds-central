@@ -553,6 +553,7 @@ void main() {
           AppConstants.defaultSequentialGapMaxMinutes);
       expect(settings.scrubExponent, AppConstants.defaultScrubExponent);
       expect(settings.scrubMaxRangeMs, AppConstants.defaultScrubMaxRangeMs);
+      expect(settings.recordedMatchesOnly, isFalse);
     });
 
     test('toJson/fromJson round-trip', () {
@@ -567,12 +568,24 @@ void main() {
       expect(restored, equals(settings));
     });
 
+    test('toJson/fromJson round-trip with recordedMatchesOnly true', () {
+      const settings = AppSettings(
+        teamNumber: 201,
+        recordedMatchesOnly: true,
+      );
+      final json = settings.toJson();
+      final restored = AppSettings.fromJson(json);
+      expect(restored, equals(settings));
+      expect(restored.recordedMatchesOnly, isTrue);
+    });
+
     test('fromJson with missing fields uses defaults', () {
       final settings = AppSettings.fromJson({});
       expect(settings.teamNumber, isNull);
       expect(settings.selectedEventKeys, isEmpty);
       expect(settings.shortVideoThresholdMs,
           AppConstants.defaultShortVideoThresholdMs);
+      expect(settings.recordedMatchesOnly, isFalse);
     });
 
     test('copyWith with nullable teamNumber', () {
@@ -593,6 +606,18 @@ void main() {
       expect(modified.selectedEventKeys, ['2026mimid', '2026miwat']);
     });
 
+    test('copyWith recordedMatchesOnly', () {
+      const settings = AppSettings(recordedMatchesOnly: false);
+      final modified = settings.copyWith(recordedMatchesOnly: true);
+      expect(modified.recordedMatchesOnly, isTrue);
+    });
+
+    test('copyWith preserves recordedMatchesOnly when not specified', () {
+      const settings = AppSettings(recordedMatchesOnly: true);
+      final modified = settings.copyWith(teamNumber: () => 201);
+      expect(modified.recordedMatchesOnly, isTrue);
+    });
+
     test('equality works', () {
       expect(const AppSettings(), equals(const AppSettings()));
     });
@@ -600,6 +625,12 @@ void main() {
     test('inequality when selectedEventKeys differ', () {
       const s1 = AppSettings(selectedEventKeys: ['a']);
       const s2 = AppSettings(selectedEventKeys: ['b']);
+      expect(s1, isNot(equals(s2)));
+    });
+
+    test('inequality when recordedMatchesOnly differs', () {
+      const s1 = AppSettings(recordedMatchesOnly: false);
+      const s2 = AppSettings(recordedMatchesOnly: true);
       expect(s1, isNot(equals(s2)));
     });
   });

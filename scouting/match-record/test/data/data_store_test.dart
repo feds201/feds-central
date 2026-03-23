@@ -617,6 +617,85 @@ void main() {
     });
   });
 
+  group('getMatchesWithVideosFiltered', () {
+    test('returns all matches when recordedMatchesOnly is false', () async {
+      await store.setEvents([makeEvent()]);
+      await store.setMatchesForEvent('2026mimid', [
+        makeMatch(key: '2026mimid_qm1'),
+        makeMatch(key: '2026mimid_qm2', matchNumber: 2),
+      ]);
+      await store.addRecording(makeRecording(
+        id: 'rec-1',
+        matchKey: '2026mimid_qm1',
+        allianceSide: 'red',
+      ));
+
+      // recordedMatchesOnly defaults to false
+      final result = store.getMatchesWithVideosFiltered(['2026mimid']);
+      expect(result.length, 2);
+    });
+
+    test('returns only recorded matches when recordedMatchesOnly is true',
+        () async {
+      await store.setEvents([makeEvent()]);
+      await store.setMatchesForEvent('2026mimid', [
+        makeMatch(key: '2026mimid_qm1'),
+        makeMatch(key: '2026mimid_qm2', matchNumber: 2),
+        makeMatch(key: '2026mimid_qm3', matchNumber: 3),
+      ]);
+      await store.addRecording(makeRecording(
+        id: 'rec-1',
+        matchKey: '2026mimid_qm1',
+        allianceSide: 'red',
+      ));
+
+      await store.updateSettings(
+        store.settings.copyWith(recordedMatchesOnly: true),
+      );
+
+      final result = store.getMatchesWithVideosFiltered(['2026mimid']);
+      expect(result.length, 1);
+      expect(result[0].match.matchKey, '2026mimid_qm1');
+    });
+
+    test('includes matches with only blue recording when filtered', () async {
+      await store.setEvents([makeEvent()]);
+      await store.setMatchesForEvent('2026mimid', [
+        makeMatch(key: '2026mimid_qm1'),
+        makeMatch(key: '2026mimid_qm2', matchNumber: 2),
+      ]);
+      await store.addRecording(makeRecording(
+        id: 'rec-blue',
+        matchKey: '2026mimid_qm2',
+        allianceSide: 'blue',
+      ));
+
+      await store.updateSettings(
+        store.settings.copyWith(recordedMatchesOnly: true),
+      );
+
+      final result = store.getMatchesWithVideosFiltered(['2026mimid']);
+      expect(result.length, 1);
+      expect(result[0].match.matchKey, '2026mimid_qm2');
+    });
+
+    test('returns empty list when no matches have recordings and filter is on',
+        () async {
+      await store.setEvents([makeEvent()]);
+      await store.setMatchesForEvent('2026mimid', [
+        makeMatch(key: '2026mimid_qm1'),
+        makeMatch(key: '2026mimid_qm2', matchNumber: 2),
+      ]);
+
+      await store.updateSettings(
+        store.settings.copyWith(recordedMatchesOnly: true),
+      );
+
+      final result = store.getMatchesWithVideosFiltered(['2026mimid']);
+      expect(result, isEmpty);
+    });
+  });
+
   group('Local ripped videos', () {
     test('getLocalRippedVideo returns null when none exists', () {
       expect(store.getLocalRippedVideo('2026mimid_qm1'), isNull);

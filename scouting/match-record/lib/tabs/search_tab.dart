@@ -61,7 +61,7 @@ class SearchTab extends StatelessWidget {
 
     final teamNumbers = _expandChipsToTeamNumbers();
     final eventKeys = dataStore.settings.selectedEventKeys;
-    final allMatches = dataStore.getMatchesWithVideos(eventKeys);
+    final allMatches = dataStore.getMatchesWithVideosFiltered(eventKeys);
     final showMultiEvent = eventKeys.length > 1;
 
     final filtered = allMatches.where((mwv) {

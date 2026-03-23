@@ -17,7 +17,7 @@ class MatchesTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final eventKeys = dataStore.settings.selectedEventKeys;
-    final matches = dataStore.getMatchesWithVideos(eventKeys);
+    final matches = dataStore.getMatchesWithVideosFiltered(eventKeys);
     final showMultiEvent = eventKeys.length > 1;
 
     return MatchList(

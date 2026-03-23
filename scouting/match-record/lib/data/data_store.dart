@@ -271,6 +271,14 @@ class DataStore extends ChangeNotifier {
     }).toList();
   }
 
+  List<MatchWithVideos> getMatchesWithVideosFiltered(List<String> eventKeys) {
+    final all = getMatchesWithVideos(eventKeys);
+    if (!_data.settings.recordedMatchesOnly) return all;
+    return all
+        .where((mwv) => mwv.hasRecordings || mwv.hasLocalRippedVideo)
+        .toList();
+  }
+
   MatchWithVideos? getMatchWithVideos(String matchKey) {
     final m = getMatchByKey(matchKey);
     if (m == null) return null;
