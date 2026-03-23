@@ -135,6 +135,10 @@ public class ControllerBindings {
                         intakeSubsystem.setRollerStateCommand(RollerState.OFF)
                 ));
 
+                // driver.a()
+                // .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.AGITATE_IN))
+                // .onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT));
+
         
 
         // If out of neutral zone, face hub and ready shoot
@@ -164,14 +168,16 @@ public class ControllerBindings {
         // Button to fire, if swerve is aimed and shooter is at speed.
         driver.rightTrigger().and(HubDrive::pidAtSetpoint).and(shooterWheels::atSetpoint).whileTrue(
                 Commands.sequence(
-                        feederSubsystem.setStateCommand(feeder_state.RUN),
-                        spinDexer.setStateCommand(spindexer_state.RUN)
+                        feederSubsystem.setStateCommand(feeder_state.PRUN),
+                        spinDexer.setStateCommand(spindexer_state.PFORWARD),
+                        intakeSubsystem.setRollerStateCommand(RollerState.ON)
                         // intakeSubsystem.setIntakeStateCommand(IntakeState.AGITATE)
                 )
         ).onFalse(
                 Commands.sequence(
                         feederSubsystem.setStateCommand(feeder_state.STOP),
-                        spinDexer.setStateCommand(spindexer_state.STOP)
+                        spinDexer.setStateCommand(spindexer_state.STOP),
+                        intakeSubsystem.setRollerStateCommand(RollerState.OFF)
                 )
         );
 
@@ -220,6 +226,14 @@ public class ControllerBindings {
                 .onTrue(new InstantCommand(() -> shooterHood.updateHoodAngleMultiplier(.01)));
         operator.b()
                 .onTrue(new InstantCommand(() -> shooterHood.updateHoodAngleMultiplier(-.01)));
+
+         operator.y()
+                .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.AGITATE_IN))
+                .onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT));
+
+        operator.start()
+                .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.CLOSE_AGITATION))
+                .onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT));
     }
 
 }

@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.203537803138373,
-        "y": 0.01754636233951601
+        "x": 6.9,
+        "y": 3.5
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.203537803138373,
-        "y": 0.01754636233951601
+        "x": 6.946619217081851,
+        "y": 3.1150889679715306
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "SecondRightIntakePosition"
     },
     {
       "anchor": {
-        "x": 4.000242510699001,
-        "y": 1.259657631954351
+        "x": 6.634602609727166,
+        "y": 2.6094068801897983
       },
       "prevControl": {
-        "x": 3.0002425106990014,
-        "y": 1.2596576319543513
+        "x": 6.964013506061143,
+        "y": 2.710117898005893
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "SecondRightIntakeEnd"
     }
   ],
   "rotationTargets": [],
@@ -41,14 +41,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 0.0
+    "velocity": 2.0,
+    "rotation": 59.99999999999999
   },
   "reversed": false,
-  "folder": "Trenches",
+  "folder": "MidIntakeToRightBump",
   "idealStartingState": {
-    "velocity": 0,
-    "rotation": 0.0
+    "velocity": 2.0,
+    "rotation": 90.0
   },
   "useDefaultConstraints": true
 }

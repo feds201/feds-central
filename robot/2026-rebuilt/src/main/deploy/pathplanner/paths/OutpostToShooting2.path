@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.203537803138373,
-        "y": 0.01754636233951601
+        "x": 0.75,
+        "y": 0.6619928825628518
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.203537803138373,
-        "y": 0.01754636233951601
+        "x": 1.75,
+        "y": 0.6619928825628518
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "AtOutpost"
     },
     {
       "anchor": {
-        "x": 4.000242510699001,
-        "y": 1.259657631954351
+        "x": 2.6752194543297754,
+        "y": 2.738517200474496
       },
       "prevControl": {
-        "x": 3.0002425106990014,
-        "y": 1.2596576319543513
+        "x": 2.051186239620404,
+        "y": 2.587888493475682
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "RightShootingPos2"
     }
   ],
   "rotationTargets": [],
@@ -42,10 +42,10 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 38.82982490497043
   },
   "reversed": false,
-  "folder": "Trenches",
+  "folder": "MidRightToOutpost",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0

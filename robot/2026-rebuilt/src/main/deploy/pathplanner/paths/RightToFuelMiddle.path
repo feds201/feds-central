@@ -3,48 +3,43 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.9004564907275316,
-        "y": 4.3908131241084165
+        "x": 7.828873072360619,
+        "y": 1.0600830367734273
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.9004564907275316,
-        "y": 5.590813124108417
+        "x": 7.80735468565188,
+        "y": 2.1467615658362984
       },
       "isLocked": false,
-      "linkedName": "LeftReadyToShoot"
+      "linkedName": "RightFuel"
     },
     {
       "anchor": {
-        "x": 0.7785164051355205,
-        "y": 5.982268188302426
+        "x": 7.828873072360619,
+        "y": 2.99673784104389
       },
       "prevControl": {
-        "x": 1.6102187521932898,
-        "y": 5.982268188302426
+        "x": 7.828873072365997,
+        "y": 2.146761565836299
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "PickedUpFromDepot"
+      "linkedName": "IntakedFuel"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.8000000000000075,
-      "rotationDegrees": 0.0
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 0.743179680150507,
-      "maxWaypointRelativePos": 1.0,
+      "minWaypointRelativePos": 0.014134275618374716,
+      "maxWaypointRelativePos": 0.8480565371024709,
       "constraints": {
-        "maxVelocity": 1.0,
+        "maxVelocity": 1.5,
         "maxAcceleration": 4.0,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 360.0,
-        "nominalVoltage": 12.0,
+        "nominalVoltage": 11.8,
         "unlimited": false
       }
     }
@@ -52,22 +47,22 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 4.0,
+    "maxVelocity": 5.0,
     "maxAcceleration": 4.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 360.0,
-    "nominalVoltage": 12.0,
+    "nominalVoltage": 11.8,
     "unlimited": false
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -92.20259816121586
   },
   "reversed": false,
-  "folder": "MidIntakeToLeftBump",
+  "folder": "MidRightToOutpost",
   "idealStartingState": {
-    "velocity": 0,
-    "rotation": -10.59476571233713
+    "velocity": 1.5,
+    "rotation": -90.0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

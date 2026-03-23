@@ -6,8 +6,9 @@
     "CenterOverBump",
     "DoublePassTest",
     "MidIntakeToLeftBump",
-    "Trenches",
-    "TestAutos"
+    "MidIntakeToRightBump",
+    "TestAutos",
+    "Trenches"
   ],
   "autoFolders": [],
   "defaultMaxVel": 5.0,
