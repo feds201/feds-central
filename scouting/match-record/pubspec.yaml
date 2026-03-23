@@ -1,0 +1,35 @@
+name: match_record
+description: "Match recording app for FRC scouting."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.9.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  media_kit: ^1.1.11
+  media_kit_video: ^1.2.5
+  media_kit_libs_video: ^1.0.5
+  media_kit_native_event_loop: ^1.0.9
+  uuid: any
+  dio: any
+  path_provider: any
+  url_launcher: any
+  logger: any
+  wakelock_plus: ^1.2.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  mocktail: any
+  flutter_lints: any
+
+flutter:
+  uses-material-design: true
+  assets:
+    - sample_data/flash_drive_ios/
+    - sample_data/flash_drive_android/
+    - sample_data/flash_drive_empty/
