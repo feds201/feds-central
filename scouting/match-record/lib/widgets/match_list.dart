@@ -9,6 +9,7 @@ class MatchList extends StatelessWidget {
   final Set<int>? highlightTeamNumbers;
   final bool showYourMatchesSection;
   final bool showEventLabel;
+  final List<Alliance> alliances;
   final void Function(MatchWithVideos) onMatchTap;
 
   const MatchList({
@@ -18,6 +19,7 @@ class MatchList extends StatelessWidget {
     this.highlightTeamNumbers,
     this.showYourMatchesSection = false,
     this.showEventLabel = false,
+    this.alliances = const [],
     required this.onMatchTap,
   });
 
@@ -46,6 +48,46 @@ class MatchList extends StatelessWidget {
         mwv.match.blueTeamKeys.contains(teamKey);
   }
 
+  /// Builds the list items for the "Your Matches" / "Quals" / "Playoffs" sections.
+  /// Used when showYourMatchesSection is true (the Matches tab).
+  List<_ListItem> _buildSectionedItems(List<MatchWithVideos> sorted) {
+    final yourMatches = _sortByTime(sorted.where(_isYourMatch).toList());
+    final quals = sorted.where((m) => m.match.compLevel == 'qm').toList();
+    final playoffs = sorted.where((m) => m.match.compLevel != 'qm').toList();
+
+    final items = <_ListItem>[];
+
+    // "Our Matches" section
+    if (yourMatches.isNotEmpty) {
+      items.add(const _ListItem.header('Our Matches'));
+      for (final m in yourMatches) {
+        items.add(_ListItem.match(m, isYourMatch: true));
+      }
+      items.add(const _ListItem.divider());
+    }
+
+    // "Quals" section
+    if (quals.isNotEmpty) {
+      items.add(const _ListItem.header('Quals'));
+      for (final m in quals) {
+        items.add(_ListItem.match(m, isYourMatch: _isYourMatch(m)));
+      }
+    }
+
+    // "Playoffs" section
+    if (playoffs.isNotEmpty) {
+      if (quals.isNotEmpty) {
+        items.add(const _ListItem.divider());
+      }
+      items.add(const _ListItem.header('Playoffs'));
+      for (final m in playoffs) {
+        items.add(_ListItem.match(m, isYourMatch: _isYourMatch(m)));
+      }
+    }
+
+    return items;
+  }
+
   @override
   Widget build(BuildContext context) {
     if (matches.isEmpty) {
@@ -61,23 +103,7 @@ class MatchList extends StatelessWidget {
       );
     }
 
-    final yourMatches = _sortByTime(sorted.where(_isYourMatch).toList());
-    final allMatches = sorted;
-
-    final items = <_ListItem>[];
-
-    if (yourMatches.isNotEmpty) {
-      items.add(const _ListItem.header('Your Matches'));
-      for (final m in yourMatches) {
-        items.add(_ListItem.match(m));
-      }
-      items.add(const _ListItem.divider());
-    }
-
-    items.add(const _ListItem.header('All Matches'));
-    for (final m in allMatches) {
-      items.add(_ListItem.match(m));
-    }
+    final items = _buildSectionedItems(sorted);
 
     return ListView.builder(
       itemCount: items.length,
@@ -89,7 +115,10 @@ class MatchList extends StatelessWidget {
           case _ItemType.divider:
             return const Divider(height: 1);
           case _ItemType.match:
-            return _buildRow(item.matchWithVideos!);
+            return _buildRow(
+              item.matchWithVideos!,
+              isYourMatch: item.isYourMatch,
+            );
         }
       },
     );
@@ -108,12 +137,14 @@ class MatchList extends StatelessWidget {
     );
   }
 
-  Widget _buildRow(MatchWithVideos mwv) {
+  Widget _buildRow(MatchWithVideos mwv, {bool isYourMatch = false}) {
     return MatchRow(
       matchWithVideos: mwv,
       yourTeamNumber: yourTeamNumber,
       highlightTeamNumbers: highlightTeamNumbers,
       showEventLabel: showEventLabel,
+      isYourMatch: isYourMatch,
+      alliances: alliances,
       onTap: () => onMatchTap(mwv),
     );
   }
@@ -125,17 +156,20 @@ class _ListItem {
   final _ItemType type;
   final String? label;
   final MatchWithVideos? matchWithVideos;
+  final bool isYourMatch;
 
   const _ListItem.header(this.label)
       : type = _ItemType.header,
-        matchWithVideos = null;
+        matchWithVideos = null,
+        isYourMatch = false;
 
   const _ListItem.divider()
       : type = _ItemType.divider,
         label = null,
-        matchWithVideos = null;
+        matchWithVideos = null,
+        isYourMatch = false;
 
-  const _ListItem.match(this.matchWithVideos)
+  const _ListItem.match(this.matchWithVideos, {this.isYourMatch = false})
       : type = _ItemType.match,
         label = null;
 }

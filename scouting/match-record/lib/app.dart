@@ -19,7 +19,7 @@ class MatchRecordApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Match Record',
+      title: 'Match Recorder',
       themeMode: ThemeMode.dark,
       darkTheme: ThemeData(
         useMaterial3: true,

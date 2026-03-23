@@ -62,10 +62,11 @@ class _StorageTabState extends State<StorageTab> {
     final now = DateTime.now();
     final events = widget.dataStore.events;
 
-    // Find event keys for events whose end date is before today
+    // Find event keys for events whose end date + 1 day buffer is before today
     final pastEventKeys = <String>{};
     for (final event in events) {
-      if (event.endDate.isBefore(now)) {
+      final endWithBuffer = event.endDate.add(const Duration(days: 1));
+      if (endWithBuffer.isBefore(now)) {
         pastEventKeys.add(event.eventKey);
       }
     }
@@ -204,24 +205,34 @@ class _StorageTabState extends State<StorageTab> {
                     '${recordings.length} recordings',
                     style: Theme.of(context).textTheme.titleSmall,
                   ),
-                  const Spacer(),
-                  TextButton(
-                    onPressed: _selectAll,
-                    child: const Text('Select All'),
-                  ),
-                  TextButton(
-                    onPressed: _selectAllButOurTeam,
-                    child: const Text('All But Ours'),
-                  ),
-                  TextButton(
-                    onPressed: _selectAllFromPastEvents,
-                    child: const Text('Past Events'),
-                  ),
-                  if (_selectedIds.isNotEmpty)
-                    TextButton(
-                      onPressed: _deselectAll,
-                      child: const Text('Deselect'),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton(
+                            onPressed: _selectAll,
+                            child: const Text('Select All'),
+                          ),
+                          TextButton(
+                            onPressed: _selectAllButOurTeam,
+                            child: const Text('All But Ours'),
+                          ),
+                          TextButton(
+                            onPressed: _selectAllFromPastEvents,
+                            child: const Text('Past Events'),
+                          ),
+                          if (_selectedIds.isNotEmpty)
+                            TextButton(
+                              onPressed: _deselectAll,
+                              child: const Text('Deselect'),
+                            ),
+                        ],
+                      ),
                     ),
+                  ),
                 ],
               ),
             ),

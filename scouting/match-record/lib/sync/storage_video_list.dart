@@ -34,6 +34,15 @@ class StorageVideoList extends StatelessWidget {
     );
   }
 
+  String _getEventShortName(String eventKey) {
+    for (final event in dataStore.events) {
+      if (event.eventKey == eventKey) {
+        return event.shortName;
+      }
+    }
+    return eventKey;
+  }
+
   Widget _buildRecordingRow(BuildContext context, Recording recording) {
     final theme = Theme.of(context);
     final isSelected = selectedIds.contains(recording.id);
@@ -41,36 +50,57 @@ class StorageVideoList extends StatelessWidget {
     final matchDisplay = match?.displayName ?? recording.matchKey;
     final allianceColor =
         recording.allianceSide == 'red' ? Colors.red : Colors.blue;
+    final eventShortName = _getEventShortName(recording.eventKey);
 
-    return Container(
-      decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(color: theme.dividerColor.withValues(alpha: 0.3)),
-          left: BorderSide(color: allianceColor, width: 4),
-        ),
-      ),
-      child: ListTile(
-        leading: Checkbox(
-          value: isSelected,
-          onChanged: (_) => onToggleSelection(recording.id),
-        ),
-        title: Text(matchDisplay),
-        subtitle: Text(
-          '${recording.allianceSide.toUpperCase()} -- '
-          '${recording.team1}, ${recording.team2}, ${recording.team3} -- '
-          '${_formatFileSize(recording.fileSizeBytes)}',
-          style: TextStyle(
-            color: theme.colorScheme.onSurfaceVariant,
-            fontSize: 12,
+    return InkWell(
+      onTap: () => onToggleSelection(recording.id),
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(color: theme.dividerColor.withValues(alpha: 0.3)),
+            left: BorderSide(color: allianceColor, width: 4),
           ),
         ),
-        trailing: Text(
-          recording.originalFilename,
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        child: Row(
+          children: [
+            Checkbox(
+              value: isSelected,
+              onChanged: (_) => onToggleSelection(recording.id),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Line 1: Match label (bold)
+                  Text(
+                    matchDisplay,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  // Line 2: Team numbers · event short name
+                  Text(
+                    '${recording.team1}, ${recording.team2}, ${recording.team3}  \u00b7  $eventShortName',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  // Line 3: File size · original filename
+                  Text(
+                    '${_formatFileSize(recording.fileSizeBytes)}  \u00b7  ${recording.originalFilename}',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
-        onTap: () => onToggleSelection(recording.id),
       ),
     );
   }

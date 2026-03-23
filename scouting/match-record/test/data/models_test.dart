@@ -664,6 +664,56 @@ void main() {
       const s2 = AppSettings(sidesSwapped: true);
       expect(s1, isNot(equals(s2)));
     });
+
+    test('lastTbaFetchTime defaults to null', () {
+      const settings = AppSettings();
+      expect(settings.lastTbaFetchTime, isNull);
+    });
+
+    test('toJson/fromJson round-trip with lastTbaFetchTime', () {
+      final fetchTime = DateTime(2026, 3, 15, 14, 30);
+      final settings = AppSettings(
+        teamNumber: 201,
+        lastTbaFetchTime: fetchTime,
+      );
+      final json = settings.toJson();
+      final restored = AppSettings.fromJson(json);
+      expect(restored.lastTbaFetchTime, equals(fetchTime));
+      expect(restored, equals(settings));
+    });
+
+    test('fromJson with missing lastTbaFetchTime defaults to null', () {
+      final settings = AppSettings.fromJson({});
+      expect(settings.lastTbaFetchTime, isNull);
+    });
+
+    test('copyWith lastTbaFetchTime sets value', () {
+      const settings = AppSettings();
+      final fetchTime = DateTime(2026, 3, 15, 14, 30);
+      final modified = settings.copyWith(lastTbaFetchTime: () => fetchTime);
+      expect(modified.lastTbaFetchTime, equals(fetchTime));
+    });
+
+    test('copyWith lastTbaFetchTime can clear to null', () {
+      final settings = AppSettings(
+        lastTbaFetchTime: DateTime(2026, 3, 15, 14, 30),
+      );
+      final modified = settings.copyWith(lastTbaFetchTime: () => null);
+      expect(modified.lastTbaFetchTime, isNull);
+    });
+
+    test('copyWith preserves lastTbaFetchTime when not specified', () {
+      final fetchTime = DateTime(2026, 3, 15, 14, 30);
+      final settings = AppSettings(lastTbaFetchTime: fetchTime);
+      final modified = settings.copyWith(teamNumber: () => 201);
+      expect(modified.lastTbaFetchTime, equals(fetchTime));
+    });
+
+    test('inequality when lastTbaFetchTime differs', () {
+      final s1 = AppSettings(lastTbaFetchTime: DateTime(2026, 3, 15));
+      final s2 = AppSettings(lastTbaFetchTime: DateTime(2026, 3, 16));
+      expect(s1, isNot(equals(s2)));
+    });
   });
 
   group('AppData', () {

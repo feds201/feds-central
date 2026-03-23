@@ -404,27 +404,30 @@ class _ImportTabState extends State<ImportTab> {
         ),
 
         // Confirm button
-        Padding(
-          padding: const EdgeInsets.all(16),
-          child: SizedBox(
-            width: double.infinity,
-            child: FilledButton.icon(
-              onPressed: _isImporting || selectedCount == 0
-                  ? null
-                  : _executeImport,
-              icon: _isImporting
-                  ? const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.white,
-                      ),
-                    )
-                  : const Icon(Icons.download),
-              label: Text(_isImporting
-                  ? 'Importing...'
-                  : 'Import $selectedCount Video(s)'),
+        SafeArea(
+          top: false,
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: SizedBox(
+              width: double.infinity,
+              child: FilledButton.icon(
+                onPressed: _isImporting || selectedCount == 0
+                    ? null
+                    : _executeImport,
+                icon: _isImporting
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                    : const Icon(Icons.download),
+                label: Text(_isImporting
+                    ? 'Importing...'
+                    : 'Import $selectedCount Video(s)'),
+              ),
             ),
           ),
         ),

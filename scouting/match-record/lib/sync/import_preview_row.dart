@@ -91,12 +91,30 @@ class ImportPreviewRowWidget extends StatelessWidget {
                     ],
                   ),
                   if (row.isAutoSkipped && row.autoSkipReason != null)
-                    Text(
-                      row.autoSkipReason!,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.error,
-                        fontStyle: FontStyle.italic,
-                      ),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          row.autoSkipReason == 'Already imported'
+                              ? Icons.check_circle
+                              : Icons.skip_next,
+                          size: 14,
+                          color: row.autoSkipReason == 'Already imported'
+                              ? Colors.green
+                              : theme.colorScheme.error,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          row.autoSkipReason!,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: row.autoSkipReason == 'Already imported'
+                                ? Colors.green
+                                : theme.colorScheme.error,
+                            fontStyle: FontStyle.italic,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
                     ),
                   if (isDisabled)
                     Text(

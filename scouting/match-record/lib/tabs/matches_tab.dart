@@ -20,11 +20,14 @@ class MatchesTab extends StatelessWidget {
     final matches = dataStore.getMatchesWithVideosFiltered(eventKeys);
     final showMultiEvent = eventKeys.length > 1;
 
+    final alliances = dataStore.getAlliancesForEvents(eventKeys);
+
     return MatchList(
       matches: matches,
       yourTeamNumber: dataStore.settings.teamNumber,
       showYourMatchesSection: true,
       showEventLabel: showMultiEvent,
+      alliances: alliances,
       onMatchTap: onMatchTap,
     );
   }

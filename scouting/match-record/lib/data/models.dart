@@ -819,6 +819,7 @@ class AppSettings {
   final int scrubMaxRangeMs;
   final bool recordedMatchesOnly;
   final bool sidesSwapped;
+  final DateTime? lastTbaFetchTime;
 
   const AppSettings({
     this.teamNumber,
@@ -830,6 +831,7 @@ class AppSettings {
     this.scrubMaxRangeMs = AppConstants.defaultScrubMaxRangeMs,
     this.recordedMatchesOnly = false,
     this.sidesSwapped = false,
+    this.lastTbaFetchTime,
   });
 
   Map<String, dynamic> toJson() => {
@@ -842,6 +844,7 @@ class AppSettings {
         'scrubMaxRangeMs': scrubMaxRangeMs,
         'recordedMatchesOnly': recordedMatchesOnly,
         'sidesSwapped': sidesSwapped,
+        'lastTbaFetchTime': lastTbaFetchTime?.toIso8601String(),
       };
 
   factory AppSettings.fromJson(Map<String, dynamic> json) => AppSettings(
@@ -862,6 +865,9 @@ class AppSettings {
             AppConstants.defaultScrubMaxRangeMs,
         recordedMatchesOnly: json['recordedMatchesOnly'] as bool? ?? false,
         sidesSwapped: json['sidesSwapped'] as bool? ?? false,
+        lastTbaFetchTime: json['lastTbaFetchTime'] != null
+            ? DateTime.parse(json['lastTbaFetchTime'] as String)
+            : null,
       );
 
   AppSettings copyWith({
@@ -874,6 +880,7 @@ class AppSettings {
     int? scrubMaxRangeMs,
     bool? recordedMatchesOnly,
     bool? sidesSwapped,
+    DateTime? Function()? lastTbaFetchTime,
   }) =>
       AppSettings(
         teamNumber: teamNumber != null ? teamNumber() : this.teamNumber,
@@ -889,6 +896,9 @@ class AppSettings {
         recordedMatchesOnly:
             recordedMatchesOnly ?? this.recordedMatchesOnly,
         sidesSwapped: sidesSwapped ?? this.sidesSwapped,
+        lastTbaFetchTime: lastTbaFetchTime != null
+            ? lastTbaFetchTime()
+            : this.lastTbaFetchTime,
       );
 
   @override
@@ -904,7 +914,8 @@ class AppSettings {
           scrubExponent == other.scrubExponent &&
           scrubMaxRangeMs == other.scrubMaxRangeMs &&
           recordedMatchesOnly == other.recordedMatchesOnly &&
-          sidesSwapped == other.sidesSwapped;
+          sidesSwapped == other.sidesSwapped &&
+          lastTbaFetchTime == other.lastTbaFetchTime;
 
   @override
   int get hashCode => Object.hash(
@@ -917,6 +928,7 @@ class AppSettings {
         scrubMaxRangeMs,
         recordedMatchesOnly,
         sidesSwapped,
+        lastTbaFetchTime,
       );
 }
 
