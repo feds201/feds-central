@@ -1,11 +1,14 @@
 package frc.robot.subsystems.swerve;
 
-import static edu.wpi.first.units.Units.*;
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.KilogramSquareMeters;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.Volts;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Supplier;
-import java.util.logging.Logger;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
@@ -20,7 +23,6 @@ import com.ctre.phoenix6.sim.TalonFXSimState;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
@@ -34,17 +36,21 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.RobotMap;
-import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.subsystems.swerve.generated.TunerConstants.TunerSwerveDrivetrain;
 import frc.robot.utils.ShootOnTheMove;
 
@@ -63,6 +69,19 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private static final Rotation2d kRedAlliancePerspectiveRotation = Rotation2d.k180deg;
     /* Keep track if we've ever applied the operator perspective before or not */
     private boolean m_hasAppliedOperatorPerspective = false;
+
+    private final ShuffleboardTab pitTab = Shuffleboard.getTab("Pit Testing");
+    private final ShuffleboardLayout drivetrainLayout = pitTab.getLayout("Drivetrain Health 1", BuiltInLayouts.kList).withSize(2, 6).withPosition(0, 0);
+    private final ShuffleboardLayout drivetrainLayout2 = pitTab.getLayout("Drivetrain Health 2", BuiltInLayouts.kList).withSize(2, 6).withPosition(2, 0);
+    private final GenericEntry[] driveConnectedEntries = new GenericEntry[4];
+    private final GenericEntry[] drivePoweredEntries  = new GenericEntry[4];
+    private final GenericEntry[] steerConnectedEntries = new GenericEntry[4];
+    private final GenericEntry[] steerPoweredEntries  = new GenericEntry[4];
+    private final GenericEntry[] encConnectedEntries  = new GenericEntry[4];
+    private final GenericEntry[] encPoweredEntries    = new GenericEntry[4];
+
+    private GenericEntry pigeonConnectedEntry;
+    private GenericEntry pigeonPoweredEntry;
 
     /** Swerve request to apply during robot-centric path following */
     private final SwerveRequest.ApplyRobotSpeeds m_pathApplyRobotSpeeds = new SwerveRequest.ApplyRobotSpeeds();
@@ -152,6 +171,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
+        initShuffleboardEntries();
         configureAutoBuilder();
     }
 
@@ -178,6 +198,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
+        initShuffleboardEntries();
         configureAutoBuilder();
     }
 
@@ -219,7 +240,27 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         if (Utils.isSimulation()) {
             startSimThread();
         }
+        initShuffleboardEntries();
         configureAutoBuilder();
+    }
+
+    private void initShuffleboardEntries() {
+        
+        for (int i = 0; i < 4; ++i) {
+            driveConnectedEntries[i] = drivetrainLayout.add("Drive " + (i + 1) + " Connected", false).getEntry();
+            drivePoweredEntries[i]  = drivetrainLayout.add("Drive " + (i + 1) + " Powered", false).getEntry();
+        }
+        for (int i = 0; i < 4; ++i) {
+            steerConnectedEntries[i] = drivetrainLayout.add("Steer " + (i + 1) + " Connected", false).getEntry();
+            steerPoweredEntries[i]  = drivetrainLayout.add("Steer " + (i + 1) + " Powered", false).getEntry();
+        }
+        for (int i = 0; i < 4; ++i) {
+            encConnectedEntries[i]  = drivetrainLayout2.add("Encoder " + (i + 1) + " Connected", false).getEntry();
+            encPoweredEntries[i]    = drivetrainLayout2.add("Encoder " + (i + 1) + " Powered", false).getEntry();
+        }
+
+        pigeonConnectedEntry = drivetrainLayout2.add("Pigeon Connected", false).getEntry();
+        pigeonPoweredEntry   = drivetrainLayout2.add("Pigeon Powered", false).getEntry();
     }
 
     private void configureAutoBuilder() {
@@ -306,6 +347,43 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 m_hasAppliedOperatorPerspective = true;
             });
         }
+
+    final double poweredThreshold = frc.robot.subsystems.swerve.generated.TunerConstants.kPoweredThresholdVolts;
+
+        for (int i = 0; i < 4; ++i) {
+            TalonFX drive = getDriveMotor(i);
+            TalonFX steer = getSteerMotor(i);
+            CANcoder enc  = getModuleEncoder(i);
+
+            boolean driveConn = drive != null && drive.isConnected();
+            double driveV = driveConn ? drive.getSupplyVoltage().getValueAsDouble() : 0.0;
+            boolean drivePowered = driveV > poweredThreshold;
+
+            boolean steerConn = steer != null && steer.isConnected();
+            double steerV = steerConn ? steer.getSupplyVoltage().getValueAsDouble() : 0.0;
+            boolean steerPowered = steerV > poweredThreshold;
+
+            boolean encConn = enc != null && enc.isConnected();
+            double encV = encConn ? enc.getSupplyVoltage().getValueAsDouble() : 0.0;
+            boolean encPowered = encV > poweredThreshold;
+
+            driveConnectedEntries[i].setBoolean(driveConn);
+            drivePoweredEntries[i].setBoolean(drivePowered);
+
+            steerConnectedEntries[i].setBoolean(steerConn);
+            steerPoweredEntries[i].setBoolean(steerPowered);
+
+            encConnectedEntries[i].setBoolean(encConn);
+            encPoweredEntries[i].setBoolean(encPowered);
+        }
+
+        var pigeon = getPigeon2();
+        boolean pigeonConn = pigeon != null && pigeon.isConnected();
+        double pigeonV = pigeonConn ? pigeon.getSupplyVoltage().getValueAsDouble() : 0.0;
+        boolean pigeonPowered = pigeonV > poweredThreshold;
+
+        pigeonConnectedEntry.setBoolean(pigeonConn);
+        pigeonPoweredEntry.setBoolean(pigeonPowered);
     }
 
     /**

@@ -123,7 +123,6 @@ public class Robot extends LoggedRobot {
     Logger.recordOutput("Robot/HubShift/CurrentShift", HubShiftUtil.getOfficialShiftInfo().currentShift().toString());
     // DeviceTempReporter.pollAll();
     // SubsystemStatusManager.pollAll();
-    
   }
 
   @Override

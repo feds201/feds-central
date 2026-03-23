@@ -11,7 +11,9 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -307,9 +309,12 @@ public void registerNamedCommands() {
 
 
 }
-ShuffleboardTab tab = Shuffleboard.getTab("Pit Testing");
-private GenericEntry ll3conect = tab.add("ll3 isConnected", false).getEntry();
-private GenericEntry ll4conect = tab.add("ll4 isConnected", false).getEntry();       
+
+private final ShuffleboardLayout llLayout = Shuffleboard.getTab("Pit Testing").getLayout("Limelight Health", BuiltInLayouts.kList).withSize(2,2).withPosition(4, 5);
+private GenericEntry ll3conect = llLayout.add("ll3 isConnected", false).getEntry();
+private GenericEntry ll4conect = llLayout.add("ll4 isConnected", false).getEntry();       
+
+
 public void limelightConnection(){
     ll3conect.setBoolean(ll3.isConnected());
     ll4conect.setBoolean(ll4.isConnected());
