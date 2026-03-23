@@ -14,7 +14,9 @@ import '../viewer/drawing_controller.dart';
 import '../viewer/scrub_controller.dart';
 import '../viewer/sync_engine.dart';
 import '../widgets/control_sidebar.dart';
+import '../widgets/drawing_overlay.dart';
 import '../widgets/scrubber_bar.dart';
+import '../widgets/stroke_painter.dart';
 import '../widgets/video_pane.dart';
 
 /// Full-screen landscape video viewer for match recordings.
@@ -51,11 +53,17 @@ class _VideoViewerState extends State<VideoViewer> {
   // State
   MuteState _muteState = MuteState.muted;
   ViewMode _viewMode = ViewMode.both;
-  bool _sidesSwapped = false;
+  late bool _sidesSwapped;
   bool _isPlaying = false;
   bool _isDrawingMode = false;
   bool _isScrubBarDragging = false;
   bool _isFingerScrubbing = false;
+  bool _wasPlayingBeforeScrub = false;
+  Duration _scrubBasePosition = Duration.zero;
+
+  // Per-pane rotation (quarter turns, 0-3)
+  int _redQuarterTurns = 0;
+  int _blueQuarterTurns = 0;
 
   // Position tracking
   Duration _position = Duration.zero;
@@ -73,8 +81,14 @@ class _VideoViewerState extends State<VideoViewer> {
   @override
   void initState() {
     super.initState();
+    _sidesSwapped = widget.dataStore.settings.sidesSwapped;
     _lockLandscape();
+    _drawingController.addListener(_onDrawingChanged);
     _initPlayers();
+  }
+
+  void _onDrawingChanged() {
+    if (mounted) setState(() {});
   }
 
   Future<void> _lockLandscape() async {
@@ -127,6 +141,7 @@ class _VideoViewerState extends State<VideoViewer> {
     }
 
     // Subscribe to position/duration streams from the primary player
+    // (must subscribe before autoplay so we catch the playing state)
     final primaryPlayer = _syncEngine?.earlierPlayer ?? _redPlayer ?? _bluePlayer;
     if (primaryPlayer != null) {
       _subscriptions.add(
@@ -157,6 +172,14 @@ class _VideoViewerState extends State<VideoViewer> {
       );
     }
 
+    // Autoplay: start playback after initialization
+    if (_syncEngine != null) {
+      await _syncEngine!.startSyncedPlayback();
+    } else {
+      final player = _redPlayer ?? _bluePlayer;
+      await player?.play();
+    }
+
     if (mounted) setState(() {});
   }
 
@@ -173,6 +196,7 @@ class _VideoViewerState extends State<VideoViewer> {
     _syncEngine?.dispose();
     _redPlayer?.dispose();
     _bluePlayer?.dispose();
+    _drawingController.removeListener(_onDrawingChanged);
     _drawingController.dispose();
 
     // Restore orientation and UI
@@ -302,6 +326,8 @@ class _VideoViewerState extends State<VideoViewer> {
 
   void _onScrubStart() {
     _isFingerScrubbing = true;
+    _wasPlayingBeforeScrub = _isPlaying;
+    _scrubBasePosition = _syncEngine?.intendedEarlierPosition ?? _position;
     if (_isPlaying) {
       if (_syncEngine != null) {
         _syncEngine!.pauseBoth();
@@ -319,8 +345,7 @@ class _VideoViewerState extends State<VideoViewer> {
       maxRangeMs: widget.dataStore.settings.scrubMaxRangeMs,
     );
 
-    final baseMs = _syncEngine?.intendedEarlierPosition.inMilliseconds ??
-        _position.inMilliseconds;
+    final baseMs = _scrubBasePosition.inMilliseconds;
     final targetMs = (baseMs + offsetMs).clamp(0, _duration.inMilliseconds);
     final target = Duration(milliseconds: targetMs);
 
@@ -344,6 +369,10 @@ class _VideoViewerState extends State<VideoViewer> {
   void _onScrubEnd() {
     _isFingerScrubbing = false;
     _scrubController.reset();
+    if (_wasPlayingBeforeScrub) {
+      _wasPlayingBeforeScrub = false;
+      _togglePlayPause();
+    }
   }
 
   // --- Drawing ---
@@ -352,10 +381,25 @@ class _VideoViewerState extends State<VideoViewer> {
     setState(() => _isDrawingMode = !_isDrawingMode);
   }
 
+  // --- Rotation ---
+
+  void _rotatePane(bool isRed) {
+    setState(() {
+      if (isRed) {
+        _redQuarterTurns = (_redQuarterTurns + 1) % 4;
+      } else {
+        _blueQuarterTurns = (_blueQuarterTurns + 1) % 4;
+      }
+    });
+  }
+
   // --- Swap ---
 
   void _swapSides() {
     setState(() => _sidesSwapped = !_sidesSwapped);
+    widget.dataStore.updateSettings(
+      widget.dataStore.settings.copyWith(sidesSwapped: _sidesSwapped),
+    );
   }
 
   // --- Edit Metadata ---
@@ -397,21 +441,17 @@ class _VideoViewerState extends State<VideoViewer> {
       body: SafeArea(
         child: Row(
           children: [
-            Expanded(
-              child: Column(
-                children: [
-                  Expanded(child: _buildVideoPanes()),
-                  ScrubberBar(
-                    position: _position,
-                    duration: _duration,
-                    isDragging: _isScrubBarDragging,
-                    onSeek: _seekTo,
-                    onDragStateChanged: (dragging) {
-                      setState(() => _isScrubBarDragging = dragging);
-                    },
-                  ),
-                ],
-              ),
+            // Video panes take remaining space
+            Expanded(child: _buildVideoPanesWithDrawing()),
+            // Vertical scrub bar between video and controls
+            ScrubberBar(
+              position: _position,
+              duration: _duration,
+              isDragging: _isScrubBarDragging,
+              onSeek: _seekTo,
+              onDragStateChanged: (dragging) {
+                setState(() => _isScrubBarDragging = dragging);
+              },
             ),
             ControlSidebar(
               isPlaying: _isPlaying,
@@ -441,6 +481,33 @@ class _VideoViewerState extends State<VideoViewer> {
     );
   }
 
+  Widget _buildVideoPanesWithDrawing() {
+    return Stack(
+      children: [
+        Positioned.fill(child: _buildVideoPanes()),
+        // Drawing overlay — covers all video panes but not the control sidebar
+        if (_isDrawingMode)
+          Positioned.fill(
+            child: DrawingOverlay(controller: _drawingController),
+          ),
+        // Passive stroke display when not in drawing mode
+        if (!_isDrawingMode && _drawingController.strokes.isNotEmpty)
+          Positioned.fill(
+            child: IgnorePointer(
+              child: CustomPaint(
+                painter: StrokePainter(
+                  strokes: _drawingController.strokes,
+                  currentStroke: _drawingController.currentStroke,
+                  opacity: _drawingController.opacity,
+                ),
+                size: Size.infinite,
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
   Widget _buildVideoPanes() {
     final redRec = widget.matchWithVideos.redRecording;
     final blueRec = widget.matchWithVideos.blueRecording;
@@ -452,6 +519,7 @@ class _VideoViewerState extends State<VideoViewer> {
       Color color;
       Recording? recording;
       bool isWaiting = false;
+      bool isRed = true;
 
       if (_viewMode == ViewMode.redOnly || (redRec != null && blueRec == null)) {
         player = _redPlayer;
@@ -459,12 +527,14 @@ class _VideoViewerState extends State<VideoViewer> {
         color = Colors.red;
         recording = redRec;
         isWaiting = _isRedWaiting();
+        isRed = true;
       } else {
         player = _bluePlayer;
         controller = _blueController;
         color = Colors.blue;
         recording = blueRec;
         isWaiting = _isBlueWaiting();
+        isRed = false;
       }
 
       if (player == null || controller == null) {
@@ -482,7 +552,8 @@ class _VideoViewerState extends State<VideoViewer> {
         allianceColor: color,
         containsUserTeam: _containsUserTeam(recording),
         isDrawingMode: _isDrawingMode,
-        drawingController: _drawingController,
+        quarterTurns: isRed ? _redQuarterTurns : _blueQuarterTurns,
+        onRotate: () => _rotatePane(isRed),
         isWaiting: isWaiting,
         countdownRemaining: _countdownRemaining,
         onScrubStart: _onScrubStart,
@@ -503,6 +574,8 @@ class _VideoViewerState extends State<VideoViewer> {
     final rightRec = _sidesSwapped ? redRec : blueRec;
     final leftWaiting = _sidesSwapped ? _isBlueWaiting() : _isRedWaiting();
     final rightWaiting = _sidesSwapped ? _isRedWaiting() : _isBlueWaiting();
+    final leftIsRed = !_sidesSwapped;
+    final rightIsRed = _sidesSwapped;
 
     return Row(
       children: [
@@ -513,7 +586,8 @@ class _VideoViewerState extends State<VideoViewer> {
             allianceColor: leftColor,
             containsUserTeam: _containsUserTeam(leftRec),
             isDrawingMode: _isDrawingMode,
-            drawingController: _drawingController,
+            quarterTurns: leftIsRed ? _redQuarterTurns : _blueQuarterTurns,
+            onRotate: () => _rotatePane(leftIsRed),
             isWaiting: leftWaiting,
             countdownRemaining: _countdownRemaining,
             onScrubStart: _onScrubStart,
@@ -529,7 +603,8 @@ class _VideoViewerState extends State<VideoViewer> {
             allianceColor: rightColor,
             containsUserTeam: _containsUserTeam(rightRec),
             isDrawingMode: _isDrawingMode,
-            drawingController: _drawingController,
+            quarterTurns: rightIsRed ? _redQuarterTurns : _blueQuarterTurns,
+            onRotate: () => _rotatePane(rightIsRed),
             isWaiting: rightWaiting,
             countdownRemaining: _countdownRemaining,
             onScrubStart: _onScrubStart,

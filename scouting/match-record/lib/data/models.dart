@@ -818,6 +818,7 @@ class AppSettings {
   final double scrubExponent;
   final int scrubMaxRangeMs;
   final bool recordedMatchesOnly;
+  final bool sidesSwapped;
 
   const AppSettings({
     this.teamNumber,
@@ -828,6 +829,7 @@ class AppSettings {
     this.scrubExponent = AppConstants.defaultScrubExponent,
     this.scrubMaxRangeMs = AppConstants.defaultScrubMaxRangeMs,
     this.recordedMatchesOnly = false,
+    this.sidesSwapped = false,
   });
 
   Map<String, dynamic> toJson() => {
@@ -839,6 +841,7 @@ class AppSettings {
         'scrubExponent': scrubExponent,
         'scrubMaxRangeMs': scrubMaxRangeMs,
         'recordedMatchesOnly': recordedMatchesOnly,
+        'sidesSwapped': sidesSwapped,
       };
 
   factory AppSettings.fromJson(Map<String, dynamic> json) => AppSettings(
@@ -858,6 +861,7 @@ class AppSettings {
         scrubMaxRangeMs: json['scrubMaxRangeMs'] as int? ??
             AppConstants.defaultScrubMaxRangeMs,
         recordedMatchesOnly: json['recordedMatchesOnly'] as bool? ?? false,
+        sidesSwapped: json['sidesSwapped'] as bool? ?? false,
       );
 
   AppSettings copyWith({
@@ -869,6 +873,7 @@ class AppSettings {
     double? scrubExponent,
     int? scrubMaxRangeMs,
     bool? recordedMatchesOnly,
+    bool? sidesSwapped,
   }) =>
       AppSettings(
         teamNumber: teamNumber != null ? teamNumber() : this.teamNumber,
@@ -883,6 +888,7 @@ class AppSettings {
         scrubMaxRangeMs: scrubMaxRangeMs ?? this.scrubMaxRangeMs,
         recordedMatchesOnly:
             recordedMatchesOnly ?? this.recordedMatchesOnly,
+        sidesSwapped: sidesSwapped ?? this.sidesSwapped,
       );
 
   @override
@@ -897,7 +903,8 @@ class AppSettings {
           sequentialGapMaxMinutes == other.sequentialGapMaxMinutes &&
           scrubExponent == other.scrubExponent &&
           scrubMaxRangeMs == other.scrubMaxRangeMs &&
-          recordedMatchesOnly == other.recordedMatchesOnly;
+          recordedMatchesOnly == other.recordedMatchesOnly &&
+          sidesSwapped == other.sidesSwapped;
 
   @override
   int get hashCode => Object.hash(
@@ -909,6 +916,7 @@ class AppSettings {
         scrubExponent,
         scrubMaxRangeMs,
         recordedMatchesOnly,
+        sidesSwapped,
       );
 }
 

@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 
-import '../viewer/drawing_controller.dart';
-import 'drawing_overlay.dart';
-
 /// One side of the dual-video viewer.
 ///
 /// Displays a video with alliance color bar at top, star icon if the user's
@@ -16,7 +13,12 @@ class VideoPane extends StatelessWidget {
   final Color allianceColor;
   final bool containsUserTeam;
   final bool isDrawingMode;
-  final DrawingController? drawingController;
+
+  /// Number of 90-degree clockwise rotations to apply to the video (0-3).
+  final int quarterTurns;
+
+  /// Callback to rotate this video pane 90 degrees.
+  final VoidCallback? onRotate;
 
   /// Whether this pane is waiting for the other side to catch up (countdown).
   final bool isWaiting;
@@ -46,7 +48,8 @@ class VideoPane extends StatelessWidget {
     required this.allianceColor,
     this.containsUserTeam = false,
     this.isDrawingMode = false,
-    this.drawingController,
+    this.quarterTurns = 0,
+    this.onRotate,
     this.isWaiting = false,
     this.countdownRemaining = Duration.zero,
     this.hasEnded = false,
@@ -62,11 +65,14 @@ class VideoPane extends StatelessWidget {
       builder: (context, constraints) {
         return Stack(
           children: [
-            // Video display
+            // Video display (rotated if quarterTurns != 0)
             Positioned.fill(
-              child: Video(
-                controller: videoController,
-                controls: NoVideoControls,
+              child: RotatedBox(
+                quarterTurns: quarterTurns,
+                child: Video(
+                  controller: videoController,
+                  controls: NoVideoControls,
+                ),
               ),
             ),
             // Alliance color bar at top
@@ -90,27 +96,50 @@ class VideoPane extends StatelessWidget {
                   size: 20,
                 ),
               ),
-            // Edit (pencil) icon in corner
-            if (onEdit != null)
-              Positioned(
-                top: 6,
-                right: 6,
-                child: GestureDetector(
-                  onTap: onEdit,
-                  child: Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      color: Colors.black54,
-                      borderRadius: BorderRadius.circular(4),
+            // Rotate and edit buttons in top-right corner
+            Positioned(
+              top: 6,
+              right: 6,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (onRotate != null)
+                    GestureDetector(
+                      onTap: onRotate,
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: Colors.black54,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: const Icon(
+                          Icons.rotate_90_degrees_cw,
+                          color: Colors.white70,
+                          size: 16,
+                        ),
+                      ),
                     ),
-                    child: const Icon(
-                      Icons.edit,
-                      color: Colors.white70,
-                      size: 16,
+                  if (onRotate != null && onEdit != null)
+                    const SizedBox(width: 4),
+                  if (onEdit != null)
+                    GestureDetector(
+                      onTap: onEdit,
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: Colors.black54,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: const Icon(
+                          Icons.edit,
+                          color: Colors.white70,
+                          size: 16,
+                        ),
+                      ),
                     ),
-                  ),
-                ),
+                ],
               ),
+            ),
             // Countdown overlay when waiting for sync
             if (isWaiting)
               Positioned.fill(
@@ -144,33 +173,8 @@ class VideoPane extends StatelessWidget {
                   ),
                 ),
               ),
-            // Drawing overlay (when drawing mode is active)
-            if (isDrawingMode && drawingController != null)
-              Positioned.fill(
-                child: DrawingOverlay(controller: drawingController!),
-              ),
-            // Drawing display (when not in drawing mode but strokes exist)
-            if (!isDrawingMode && drawingController != null)
-              Positioned.fill(
-                child: IgnorePointer(
-                  child: ListenableBuilder(
-                    listenable: drawingController!,
-                    builder: (context, _) {
-                      if (drawingController!.strokes.isEmpty) {
-                        return const SizedBox.shrink();
-                      }
-                      return CustomPaint(
-                        painter: _PassiveStrokePainter(
-                          strokes: drawingController!.strokes,
-                          opacity: drawingController!.opacity,
-                        ),
-                        size: Size.infinite,
-                      );
-                    },
-                  ),
-                ),
-              ),
-            // Touch scrub gesture detector (below drawing overlay)
+            // Touch scrub gesture detector (not shown during drawing mode
+            // since drawing is handled by a screen-wide overlay in VideoViewer)
             if (!isDrawingMode)
               Positioned.fill(
                 child: _ScrubGestureDetector(
@@ -232,46 +236,4 @@ class _ScrubGestureDetectorState extends State<_ScrubGestureDetector> {
       child: const SizedBox.expand(),
     );
   }
-}
-
-/// Simplified stroke painter for passive (non-drawing-mode) display.
-class _PassiveStrokePainter extends CustomPainter {
-  final List<List<Offset>> strokes;
-  final double opacity;
-
-  _PassiveStrokePainter({
-    required this.strokes,
-    required this.opacity,
-  });
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.red.withValues(alpha: opacity)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 3.5
-      ..strokeCap = StrokeCap.round
-      ..strokeJoin = StrokeJoin.round;
-
-    for (final stroke in strokes) {
-      if (stroke.isEmpty) continue;
-      if (stroke.length == 1) {
-        canvas.drawCircle(stroke[0], 1.75, paint..style = PaintingStyle.fill);
-        paint.style = PaintingStyle.stroke;
-        continue;
-      }
-      final path = Path();
-      path.moveTo(stroke[0].dx, stroke[0].dy);
-      for (int i = 1; i < stroke.length - 1; i++) {
-        final midX = (stroke[i].dx + stroke[i + 1].dx) / 2;
-        final midY = (stroke[i].dy + stroke[i + 1].dy) / 2;
-        path.quadraticBezierTo(stroke[i].dx, stroke[i].dy, midX, midY);
-      }
-      path.lineTo(stroke.last.dx, stroke.last.dy);
-      canvas.drawPath(path, paint);
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant _PassiveStrokePainter oldDelegate) => true;
 }

@@ -8,7 +8,8 @@ enum ViewMode { both, redOnly, blueOnly }
 
 /// Sidebar control panel for the video viewer.
 ///
-/// ~72px wide, dark background, contains all playback and drawing controls.
+/// In dual-video (both) mode: ~180px wide with text labels next to icons.
+/// In single-video mode: ~72px wide with icons only.
 /// Scrollable if controls overflow the available height.
 class ControlSidebar extends StatelessWidget {
   final bool isPlaying;
@@ -57,10 +58,13 @@ class ControlSidebar extends StatelessWidget {
     required this.onClearDrawing,
   });
 
+  /// Show expanded labels when both panes are visible (more horizontal space available).
+  bool get _expanded => viewMode == ViewMode.both;
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 72,
+      width: _expanded ? 160 : 72,
       color: const Color(0xFF1E1E1E),
       child: SafeArea(
         left: false,
@@ -69,64 +73,64 @@ class ControlSidebar extends StatelessWidget {
           child: Column(
             children: [
               const SizedBox(height: 8),
-              _buildButton(
+              _buildItem(
                 icon: Icons.arrow_back,
-                tooltip: 'Back',
+                label: 'Back',
                 onPressed: onBack,
               ),
               if (hasDualVideo) ...[
                 const Divider(indent: 8, endIndent: 8),
-                _buildButton(
+                _buildItem(
                   icon: Icons.swap_horiz,
-                  tooltip: 'Swap sides',
+                  label: 'Swap',
                   onPressed: onSwapSides,
                 ),
-                _buildMuteButton(),
-                _buildViewModeButton(),
+                _buildMuteItem(),
+                _buildViewModeItem(),
               ],
               const Divider(indent: 8, endIndent: 8),
-              _buildButton(
+              _buildItem(
                 icon: isPlaying ? Icons.pause : Icons.play_arrow,
-                tooltip: isPlaying ? 'Pause' : 'Play',
+                label: isPlaying ? 'Pause' : 'Play',
                 onPressed: onPlayPause,
               ),
-              _buildButton(
+              _buildItem(
                 icon: Icons.replay_10,
-                tooltip: 'Rewind 10s',
+                label: '-10s',
                 onPressed: onRewind10,
               ),
-              _buildButton(
+              _buildItem(
                 icon: Icons.forward_10,
-                tooltip: 'Forward 10s',
+                label: '+10s',
                 onPressed: onForward10,
               ),
-              _buildButton(
+              _buildItem(
                 icon: Icons.restart_alt,
-                tooltip: 'Restart',
+                label: 'Restart',
                 onPressed: onRestart,
               ),
               if (isPaused) ...[
                 const Divider(indent: 8, endIndent: 8),
-                _buildButton(
+                _buildItem(
                   icon: Icons.edit,
-                  tooltip: isDrawingMode ? 'Exit drawing' : 'Draw',
+                  label: isDrawingMode ? 'Exit draw' : 'Draw',
                   onPressed: onToggleDrawing,
                   isActive: isDrawingMode,
                 ),
                 if (isDrawingMode) ...[
-                  _buildButton(
+                  _buildItem(
                     icon: Icons.undo,
-                    tooltip: 'Undo',
+                    label: 'Undo',
                     onPressed: canUndo ? onUndo : null,
                   ),
-                  _buildButton(
+                  _buildItem(
                     icon: Icons.redo,
-                    tooltip: 'Redo',
+                    label: 'Redo',
                     onPressed: canRedo ? onRedo : null,
                   ),
-                  _buildButton(
-                    icon: Icons.delete_outline,
-                    tooltip: 'Clear drawings',
+                  _buildItem(
+                    icon: Icons.ink_eraser,
+                    label: 'Clear',
                     onPressed: onClearDrawing,
                   ),
                 ],
@@ -139,93 +143,148 @@ class ControlSidebar extends StatelessWidget {
     );
   }
 
-  Widget _buildButton({
+  /// Build a button row: icon-only in compact mode, icon+label in expanded mode.
+  Widget _buildItem({
     required IconData icon,
-    required String tooltip,
+    required String label,
     VoidCallback? onPressed,
     bool isActive = false,
   }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2),
-      child: IconButton(
-        icon: Icon(icon),
-        tooltip: tooltip,
-        onPressed: onPressed,
-        color: isActive ? Colors.blue : Colors.white,
-        disabledColor: Colors.white38,
-        iconSize: 24,
-      ),
-    );
-  }
-
-  Widget _buildMuteButton() {
-    IconData icon;
-    Color? circleColor;
-
-    switch (muteState) {
-      case MuteState.muted:
-        icon = Icons.volume_off;
-        circleColor = null;
-      case MuteState.redAudio:
-        icon = Icons.volume_up;
-        circleColor = Colors.red;
-      case MuteState.blueAudio:
-        icon = Icons.volume_up;
-        circleColor = Colors.blue;
+    if (!_expanded) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 2),
+        child: IconButton(
+          icon: Icon(icon),
+          tooltip: label,
+          onPressed: onPressed,
+          color: isActive ? Colors.blue : Colors.white,
+          disabledColor: Colors.white38,
+          iconSize: 24,
+        ),
+      );
     }
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2),
-      child: Tooltip(
-        message: _muteTooltip,
-        child: Container(
-          decoration: circleColor != null
-              ? BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: circleColor, width: 2),
-                )
-              : null,
-          child: IconButton(
-            icon: Icon(icon),
-            onPressed: onToggleMute,
-            color: Colors.white,
-            iconSize: 24,
-          ),
+    final color = onPressed == null
+        ? Colors.white38
+        : isActive
+            ? Colors.blue
+            : Colors.white;
+
+    return InkWell(
+      onTap: onPressed,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
+        child: Row(
+          children: [
+            Icon(icon, color: color, size: 22),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                label,
+                style: TextStyle(color: color, fontSize: 13),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  String get _muteTooltip {
+  Widget _buildMuteItem() {
+    IconData icon;
+    Color? circleColor;
+    String label;
+
     switch (muteState) {
       case MuteState.muted:
-        return 'Muted';
+        icon = Icons.volume_off;
+        circleColor = null;
+        label = 'Muted';
       case MuteState.redAudio:
-        return 'Red audio';
+        icon = Icons.volume_up;
+        circleColor = Colors.red;
+        label = 'Red audio';
       case MuteState.blueAudio:
-        return 'Blue audio';
+        icon = Icons.volume_up;
+        circleColor = Colors.blue;
+        label = 'Blue audio';
     }
+
+    if (!_expanded) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 2),
+        child: Tooltip(
+          message: label,
+          child: Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: circleColor ?? Colors.transparent,
+                width: 2,
+              ),
+            ),
+            child: IconButton(
+              icon: Icon(icon),
+              onPressed: onToggleMute,
+              color: Colors.white,
+              iconSize: 24,
+            ),
+          ),
+        ),
+      );
+    }
+
+    return InkWell(
+      onTap: onToggleMute,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
+        child: Row(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: circleColor ?? Colors.transparent,
+                  width: 2,
+                ),
+              ),
+              padding: const EdgeInsets.all(2),
+              child: Icon(icon, color: Colors.white, size: 18),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                label,
+                style: const TextStyle(color: Colors.white, fontSize: 13),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
-  Widget _buildViewModeButton() {
+  Widget _buildViewModeItem() {
     IconData icon;
-    String tooltip;
+    String label;
 
     switch (viewMode) {
       case ViewMode.both:
-        icon = Icons.view_column;
-        tooltip = 'Viewing both';
+        icon = Icons.splitscreen;
+        label = 'Both sides';
       case ViewMode.redOnly:
         icon = Icons.crop_square;
-        tooltip = 'Red only';
+        label = 'Red only';
       case ViewMode.blueOnly:
         icon = Icons.crop_square;
-        tooltip = 'Blue only';
+        label = 'Blue only';
     }
 
-    return _buildButton(
+    return _buildItem(
       icon: icon,
-      tooltip: tooltip,
+      label: label,
       onPressed: hasDualVideo ? onToggleViewMode : null,
     );
   }

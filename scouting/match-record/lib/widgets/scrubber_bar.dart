@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
-/// Bottom scrubber bar for the video viewer.
+/// Vertical scrubber bar for the video viewer.
 ///
-/// Shows current position / total duration with a draggable slider.
+/// Positioned between the video panes and the control sidebar.
+/// 0:00 is at the bottom, duration at the top. Shows current position
+/// and total duration labels above/below the slider.
 /// During user drag, position stream updates are suppressed via [isDragging].
 class ScrubberBar extends StatefulWidget {
   final Duration position;
@@ -40,56 +42,56 @@ class _ScrubberBarState extends State<ScrubberBar> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: 40,
       color: const Color(0xFF1E1E1E),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-      child: Row(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Column(
         children: [
-          SizedBox(
-            width: 48,
-            child: Text(
-              _formatDuration(
-                Duration(milliseconds: _currentMs.round()),
-              ),
-              style: const TextStyle(color: Colors.white70, fontSize: 12),
-            ),
+          // Duration label at top
+          Text(
+            _formatDuration(widget.duration),
+            style: const TextStyle(color: Colors.white70, fontSize: 10),
           ),
+          // Vertical slider (rotated from horizontal)
           Expanded(
-            child: SliderTheme(
-              data: SliderTheme.of(context).copyWith(
-                trackHeight: 4,
-                thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6),
-                overlayShape: const RoundSliderOverlayShape(overlayRadius: 14),
-                activeTrackColor: Colors.white,
-                inactiveTrackColor: Colors.white24,
-                thumbColor: Colors.white,
-                overlayColor: Colors.white24,
-              ),
-              child: Slider(
-                value: _currentMs,
-                min: 0,
-                max: _maxMs,
-                onChangeStart: (_) {
-                  widget.onDragStateChanged(true);
-                },
-                onChanged: (value) {
-                  setState(() => _dragValue = value);
-                },
-                onChangeEnd: (value) {
-                  final seekPos = Duration(milliseconds: value.round());
-                  _dragValue = null;
-                  widget.onDragStateChanged(false);
-                  widget.onSeek(seekPos);
-                },
+            child: RotatedBox(
+              quarterTurns: 3, // Rotate so bottom = 0, top = max
+              child: SliderTheme(
+                data: SliderTheme.of(context).copyWith(
+                  trackHeight: 4,
+                  thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6),
+                  overlayShape: const RoundSliderOverlayShape(overlayRadius: 14),
+                  activeTrackColor: Colors.white,
+                  inactiveTrackColor: Colors.white24,
+                  thumbColor: Colors.white,
+                  overlayColor: Colors.white24,
+                ),
+                child: Slider(
+                  value: _currentMs,
+                  min: 0,
+                  max: _maxMs,
+                  onChangeStart: (_) {
+                    widget.onDragStateChanged(true);
+                  },
+                  onChanged: (value) {
+                    setState(() => _dragValue = value);
+                  },
+                  onChangeEnd: (value) {
+                    final seekPos = Duration(milliseconds: value.round());
+                    _dragValue = null;
+                    widget.onDragStateChanged(false);
+                    widget.onSeek(seekPos);
+                  },
+                ),
               ),
             ),
           ),
-          SizedBox(
-            width: 48,
-            child: Text(
-              _formatDuration(widget.duration),
-              style: const TextStyle(color: Colors.white70, fontSize: 12),
-              textAlign: TextAlign.end,
+          // Current position label at bottom
+          Text(
+            _formatDuration(
+              Duration(milliseconds: _currentMs.round()),
             ),
+            style: const TextStyle(color: Colors.white70, fontSize: 10),
           ),
         ],
       ),

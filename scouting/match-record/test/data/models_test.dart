@@ -633,6 +633,37 @@ void main() {
       const s2 = AppSettings(recordedMatchesOnly: true);
       expect(s1, isNot(equals(s2)));
     });
+
+    test('sidesSwapped defaults to false', () {
+      const settings = AppSettings();
+      expect(settings.sidesSwapped, isFalse);
+    });
+
+    test('toJson/fromJson round-trip with sidesSwapped true', () {
+      const settings = AppSettings(sidesSwapped: true);
+      final json = settings.toJson();
+      final restored = AppSettings.fromJson(json);
+      expect(restored.sidesSwapped, isTrue);
+      expect(restored, equals(settings));
+    });
+
+    test('copyWith sidesSwapped', () {
+      const settings = AppSettings(sidesSwapped: false);
+      final modified = settings.copyWith(sidesSwapped: true);
+      expect(modified.sidesSwapped, isTrue);
+    });
+
+    test('copyWith preserves sidesSwapped when not specified', () {
+      const settings = AppSettings(sidesSwapped: true);
+      final modified = settings.copyWith(teamNumber: () => 201);
+      expect(modified.sidesSwapped, isTrue);
+    });
+
+    test('inequality when sidesSwapped differs', () {
+      const s1 = AppSettings(sidesSwapped: false);
+      const s2 = AppSettings(sidesSwapped: true);
+      expect(s1, isNot(equals(s2)));
+    });
   });
 
   group('AppData', () {
