@@ -5,7 +5,7 @@
 - Start by reading this CLAUDE.md
 - Then read PROGRESS.md to know what's done and what's remaining
 - Before touching any module, read its README.md first (they have How to Use / Known Issues / Technical Details sections)
-- Use SPECS.md and SYSTEM_DESIGN.md for product requirements and architecture
+- Use SPECS.md for product requirements, SYSTEM_DESIGN_SUMMARY.md for architecture overview, SYSTEM_DESIGN.md for full detailed specs
 - Use BUILDERS_DIARY.md for development history and trade-offs (it's long — use a subagent to read it)
 - The user will likely just say "do X" — use these docs to get context rather than asking questions the docs already answer
 
@@ -22,7 +22,8 @@ Offline-first Android tablet app for FRC Team 201 (The FEDS) to ingest, organize
 | File | Purpose |
 |------|---------|
 | `SPECS.md` | Product requirements (P0/P1/P2 features) |
-| `SYSTEM_DESIGN.md` | Full technical design — architecture, data model, API specs, algorithms |
+| `SYSTEM_DESIGN_SUMMARY.md` | High-level architecture overview (~300 lines, context-friendly) |
+| `SYSTEM_DESIGN.md` | Full technical design — data model details, API specs, algorithms, decision log |
 | `PROGRESS.md` | What's been built and what still needs to be done |
 | `BUILDERS_DIARY.md` | Development journal — trade-offs, bugs found, adjustments made |
 | `ISSUES.md` | User-reported bugs and improvements, organized by screen area |
