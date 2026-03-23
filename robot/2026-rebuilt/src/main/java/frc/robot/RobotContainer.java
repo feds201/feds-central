@@ -311,7 +311,7 @@ public void registerNamedCommands() {
 
 }
 
-private final ShuffleboardLayout llLayout = Shuffleboard.getTab("Pit Testing").getLayout("Limelight Health", BuiltInLayouts.kList).withSize(2,2).withPosition(4, 5);
+private final ShuffleboardLayout llLayout = Shuffleboard.getTab("Pit Testing").getLayout("Limelight Health", BuiltInLayouts.kList).withSize(2,1).withPosition(4, 5);
 private GenericEntry ll3conect = llLayout.add("ll3 isConnected", false).getEntry();
 private GenericEntry ll4conect = llLayout.add("ll4 isConnected", false).getEntry();       
 
