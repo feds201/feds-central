@@ -43,6 +43,7 @@ public class Spindexer extends SubsystemBase {
     RUN(Volts.of(5)),
     REVERSE(Volts.of(-5)),
     PREVERSE(Volts.of(-5)),
+    PFORWARD(Volts.of(8)),
     STOP(Volts.of(0));
 
     private final Voltage targetPosition;
@@ -129,17 +130,17 @@ public class Spindexer extends SubsystemBase {
         if(!washingMachineTimer.isRunning()){
           washingMachineTimer.start();
         }
-        if(washingMachineTimer.hasElapsed(indexingConstants.forwardTime)){
+        if(washingMachineTimer.hasElapsed(indexingConstants.forwardTime)){ // 2 sec(Needs to be tuned)
           setState(spindexer_state.REVERSE);
           washingMachineTimer.stop();
           washingMachineTimer.reset();
         }
         break;
       case REVERSE:
-        if(!washingMachineTimer.isRunning()){
+        if(!washingMachineTimer.isRunning()){  
           washingMachineTimer.start();
         }
-        if(washingMachineTimer.hasElapsed(indexingConstants.reverseTime)){
+        if(washingMachineTimer.hasElapsed(indexingConstants.reverseTime)){  // 0.5 sec(Needs to be tuned)
           setState(spindexer_state.RUN);
           washingMachineTimer.stop();
           washingMachineTimer.reset();

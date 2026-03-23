@@ -1,0 +1,109 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 6.634602609727166,
+        "y": 2.6094068801897983
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.247271648873073,
+        "y": 2.491055753262159
+      },
+      "isLocked": false,
+      "linkedName": "SecondRightIntakeEnd"
+    },
+    {
+      "anchor": {
+        "x": 5.878680543746217,
+        "y": 2.5
+      },
+      "prevControl": {
+        "x": 6.128623849329753,
+        "y": 2.4946760922270363
+      },
+      "nextControl": {
+        "x": 5.628737238162681,
+        "y": 2.5053239077729637
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.793223965763195,
+        "y": 2.5
+      },
+      "prevControl": {
+        "x": 4.043189324586511,
+        "y": 2.5041616569213065
+      },
+      "nextControl": {
+        "x": 3.5432586069398786,
+        "y": 2.4958383430786935
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.107475035663337,
+        "y": 2.8122967189728967
+      },
+      "prevControl": {
+        "x": 3.482696148359485,
+        "y": 2.5147075606276768
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "RightFirstShootPosition"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.3,
+      "rotationDegrees": 117.18999999999998
+    },
+    {
+      "waypointRelativePos": 2.285085965613732,
+      "rotationDegrees": 117.18999999999998
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 1.3119658119658077,
+      "maxWaypointRelativePos": 2.075498575498568,
+      "constraints": {
+        "maxVelocity": 2.5,
+        "maxAcceleration": 4.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 360.0,
+        "nominalVoltage": 11.8,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 4.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 360.0,
+    "nominalVoltage": 11.8,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 39.01940047523653
+  },
+  "reversed": false,
+  "folder": "MidIntakeToRightBump",
+  "idealStartingState": {
+    "velocity": 2.0,
+    "rotation": 59.99999999999999
+  },
+  "useDefaultConstraints": true
+}

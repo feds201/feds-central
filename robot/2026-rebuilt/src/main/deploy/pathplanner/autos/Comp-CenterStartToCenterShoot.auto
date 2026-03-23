@@ -25,7 +25,43 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 3.0
+            "waitTime": 0.45
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Retract Intake"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.45
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Extend Intake"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.45
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Retract Intake"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.45
           }
         },
         {
@@ -91,6 +127,102 @@
                 "type": "named",
                 "data": {
                   "name": "Run Shooter"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.45
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Extend Intake"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.45
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Retract Intake"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.45
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Extend Intake"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.45
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Retract Intake"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.45
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Extend Intake"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.45
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Retract Intake"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.45
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Extend Intake"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.45
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Retract Intake"
                 }
               }
             ]
