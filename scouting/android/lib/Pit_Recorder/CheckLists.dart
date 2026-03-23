@@ -12,6 +12,7 @@ import 'package:scout_ops_android/components/TextBox.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:confetti/confetti.dart';
+import 'package:bot_path_drawer/bot_path_drawer.dart';
 
 class Record extends StatefulWidget {
   final Team team;
@@ -24,6 +25,10 @@ class Record extends StatefulWidget {
 class _RecordState extends State<Record> {
   int _pressCount = 0;
   final int _requiredPresses = 1;
+  final config = BotPathConfig(
+    backgroundImage: AssetImage('assets/2026/Aerna2026.png'),
+  );
+
 
   late ConfettiController _confettiController;
 
@@ -62,6 +67,7 @@ class _RecordState extends State<Record> {
   late String AttitudeController;
   late String ScoutingAccuracyController;
   late TextEditingController NotCooperativeReasonController;
+  late String PathDataController;
 
   // Unit selectors
   String weightUnit = 'lbs';
@@ -111,7 +117,7 @@ class _RecordState extends State<Record> {
     AttitudeController = "Yes";
     ScoutingAccuracyController = "Accurate";
     NotCooperativeReasonController = TextEditingController();
-
+    PathDataController = " ";
     // Load database and try to get existing data for this team
     PitDataBase.LoadAll();
     try {
@@ -151,6 +157,7 @@ class _RecordState extends State<Record> {
           AttitudeController = existingRecord.attitude ? "Yes" : "No";
           ScoutingAccuracyController = existingRecord.scoutingAccuracy;
           NotCooperativeReasonController.text = existingRecord.notCooperativeReason;
+          PathDataController = existingRecord.pathDraw;
 
           // Combine the existing images into ImageBlob
           // Filter out empty images and join with comma
@@ -245,6 +252,28 @@ class _RecordState extends State<Record> {
           buildTextBoxs(
             "Autonomous & Game Data",
             [
+              Container(
+                width: double.infinity,
+                height: 500,
+                child:
+                Column(
+                  children: [
+                    Text("Auton Path", textAlign: TextAlign.center,
+                        style: GoogleFonts.museoModerno(fontSize: 30, fontWeight: FontWeight.bold,color: Colors.blue)),
+                    SizedBox(
+                      height: 450,
+                      child: BotPathDrawer(
+                        config: config,
+                        onSave: (String? pathData) {
+                          String tempData = pathData ?? "";
+                          PathDataController = PathDataController + " New Path: " + tempData;
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
               buildMultiChoiceBox(
                   "Auto Starting Positions",
                   Icon(Icons.start, size: 30, color: Colors.green),
@@ -669,7 +698,8 @@ class _RecordState extends State<Record> {
         interviewerRole: InterviewerRoleController.text,
         attitude: AttitudeController == "Yes",
         scoutingAccuracy: ScoutingAccuracyController,
-        notCooperativeReason: NotCooperativeReasonController.text);
+        notCooperativeReason: NotCooperativeReasonController.text,
+        pathDraw: PathDataController);
 
     print('Recording data: $record');
     print("Hiv ${record.toJson()}");

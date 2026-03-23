@@ -183,6 +183,7 @@ class PitRecord {
   final bool attitude;
   final String scoutingAccuracy;
   final String notCooperativeReason;
+  final String pathDraw;
 
   PitRecord(
       {required this.teamNumber,
@@ -217,7 +218,8 @@ class PitRecord {
       this.interviewerRole = '',
       this.attitude = true,
       this.scoutingAccuracy = '',
-      this.notCooperativeReason = ''});
+      this.notCooperativeReason = '',
+      this.pathDraw = ''});
 
   Map<String, dynamic> toJson() {
     return {
@@ -254,6 +256,7 @@ class PitRecord {
       "attitude": attitude,
       "scoutingAccuracy": scoutingAccuracy,
       "notCooperativeReason": notCooperativeReason,
+      "pathDraw": pathDraw
     };
   }
 
@@ -324,6 +327,16 @@ class PitRecord {
       batteries: json['batteries'] ?? 0,
       framePerimeter: json['framePerimeter'] ?? '',
       shootingRate: (json['shootingRate'] ?? 0.0).toDouble(),
+      hopperSealed: json['hopperSealed'] ?? false,
+      trenchUnder: json['trenchUnder'] ?? '',
+      bumpOver: json['bumpOver'] ?? false,
+      driverYear: json['driverYear'] ?? 0,
+      interviewerName: json['interviewerName'] ?? '',
+      interviewerRole: json['interviewerRole'] ?? '',
+      attitude: json['attitude'] ?? true,
+      scoutingAccuracy: json['scoutingAccuracy'] ?? '',
+      notCooperativeReason: json['notCooperativeReason'] ?? '',
+      pathDraw: json['pathDraw'] ?? '',
     );
   }
 }
@@ -1183,7 +1196,7 @@ class LocalDataBase {
         scoreType: List<String>.from(data['scoreType'] ?? []),
         botImage1: data['botImage1'] ?? "",
         botImage2: data['botImage2'] ?? "",
-        botImage3: data['botImage3'] ?? "");
+        botImage3: data['botImage3'] ?? "",);
   }
 }
 
