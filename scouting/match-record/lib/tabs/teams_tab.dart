@@ -52,7 +52,8 @@ class TeamsTab extends StatelessWidget {
     }
 
     for (final t in sorted) {
-      items.add(_ListItem.team(t, isYours: t.teamNumber == yourTeamNumber));
+      if (yourTeam != null && t.teamNumber == yourTeamNumber) continue;
+      items.add(_ListItem.team(t));
     }
 
     return ListView.builder(

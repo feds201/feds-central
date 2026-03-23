@@ -47,14 +47,14 @@ class TestDriveAccess implements DriveAccess {
         _TestVideoFile(
           filename: 'IMG_9848.MOV',
           sizeBytes: 16777216, // ~16MB
-          // iOS recording start time for match 1
-          lastModified: DateTime.utc(2026, 3, 22, 14, 30, 0),
+          // iOS recording start time for match 1 (~1 min before Android)
+          lastModified: DateTime.utc(2026, 3, 22, 20, 3, 30),
         ),
         _TestVideoFile(
           filename: 'IMG_9849.MOV',
           sizeBytes: 26214400, // ~25MB
-          // iOS recording start time for match 2
-          lastModified: DateTime.utc(2026, 3, 22, 14, 45, 0),
+          // iOS recording start time for match 2 (~1 min before Android)
+          lastModified: DateTime.utc(2026, 3, 22, 20, 3, 50),
         ),
       ],
       configJson: '{"alliance": "blue"}',
