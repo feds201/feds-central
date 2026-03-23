@@ -1,6 +1,6 @@
 # System Design: Match Record (Overview)
 
-> This is a high-level architectural overview. For full details on any section — data model field definitions, API response formats, algorithm pseudocode, platform channel specs — see `SYSTEM_DESIGN.md`.
+> This is a high-level architectural overview. For full details on any section — data model field definitions, API response formats, algorithm pseudocode, platform channel specs — see `SYSTEM_DESIGN_SUMMARY.md`.
 
 ## 1. What This Is
 
@@ -95,7 +95,7 @@ All data is plain Dart objects, serialized to one JSON file via `AppData` contai
 - Version field with cascading migrations for schema evolution.
 - `DataStore` extends `ChangeNotifier`. Every mutation saves to disk then notifies listeners.
 
-> Full field definitions, AppData container, and DataStore API: `SYSTEM_DESIGN.md` sections 4.1-4.4.
+> Full field definitions, AppData container, and DataStore API: `SYSTEM_DESIGN_FULL.md` sections 4.1-4.4.
 
 ## 5. TBA Integration
 
@@ -107,7 +107,7 @@ All data is plain Dart objects, serialized to one JSON file via `AppData` contai
 
 **Match time:** `bestTime = actualTime ?? predictedTime ?? time`. FRC events drift 15-60 min from schedule; actual/predicted times are far more accurate.
 
-> Full TBA data model, API response fields, verified findings, and display format rules: `SYSTEM_DESIGN.md` sections 5.1-5.4.
+> Full TBA data model, API response fields, verified findings, and display format rules: `SYSTEM_DESIGN_FULL.md` sections 5.1-5.4.
 
 ## 6. USB Import Pipeline
 
@@ -141,7 +141,7 @@ Monitored during review and copy stages. Mid-copy abort keeps completed imports,
 
 All recordings in `{externalStorageDir}/recordings/`. Filename: `{uuid}{ext}`. Path derived, not stored. Free space checked via `StatFs` platform channel. `android:hasFragileUserData="true"` preserves data on uninstall.
 
-> Full pipeline details, state classes, video identity spec, reimport logic: `SYSTEM_DESIGN.md` sections 6.1-6.8.
+> Full pipeline details, state classes, video identity spec, reimport logic: `SYSTEM_DESIGN_FULL.md` sections 6.1-6.8.
 
 ## 7. Video Viewer
 
@@ -168,7 +168,7 @@ Two `media_kit` Player instances: "earlier" and "later" (by `recordingStartTime`
 - **Edit metadata:** Per-pane pencil icon opens bottom sheet to edit match assignment, alliance side, teams.
 - **Lifecycle:** Lock landscape + immersive + wakelock on entry; restore all on exit.
 
-> Full sync math, scrub formula, layout diagram, lifecycle details: `SYSTEM_DESIGN.md` sections 7.1-7.7.
+> Full sync math, scrub formula, layout diagram, lifecycle details: `SYSTEM_DESIGN_FULL.md` sections 7.1-7.7.
 
 ## 8. Drawing Overlay (P1)
 
@@ -179,7 +179,7 @@ Two `media_kit` Player instances: "earlier" and "later" (by `recordingStartTime`
 - Opacity via `Paint` color alpha (not `Opacity` widget — avoids offscreen buffer overhead).
 - Multi-touch intentionally interleaves into one stroke.
 
-> Full drawing spec: `SYSTEM_DESIGN.md` section 8.
+> Full drawing spec: `SYSTEM_DESIGN_FULL.md` section 8.
 
 ## 9. iOS Detection
 
@@ -187,7 +187,7 @@ Video `creation_time` means different things per platform: iOS = recording start
 
 **Detection:** ftyp major brand in first 32 bytes (`qt  ` = iOS, `isom`/`mp42` = Android). File extension as fallback (`.MOV` = iOS). Both checked in the platform channel's `getVideoMetadata` call.
 
-> Full ftyp spec and byte offsets: `SYSTEM_DESIGN.md` section 9.
+> Full ftyp spec and byte offsets: `SYSTEM_DESIGN_FULL.md` section 9.
 
 ## 10. Navigation & Screens
 
@@ -201,7 +201,7 @@ Four routes via plain `Navigator.push`/`pop`: MainScreen, VideoViewer, SyncPage,
 
 **Storage Management:** Two modes (tablet / flash drive) using shared list component. Bulk selection patterns: select all, all but our team, all from past events. Deletion adds identity to skip history.
 
-> Full widget hierarchy, tab state details, viewer lifecycle: `SYSTEM_DESIGN.md` sections 10-12.
+> Full widget hierarchy, tab state details, viewer lifecycle: `SYSTEM_DESIGN_FULL.md` sections 10-12.
 
 ## 11. Startup Integrity Check (P1)
 
@@ -210,7 +210,7 @@ Four routes via plain `Navigator.push`/`pop`: MainScreen, VideoViewer, SyncPage,
 - DataStore entries without files: remove + add to skip history.
 - Log all cleanup. Toast if anything was cleaned.
 
-> Full spec: `SYSTEM_DESIGN.md` section 14.
+> Full spec: `SYSTEM_DESIGN_FULL.md` section 14.
 
 ## 12. Error Handling
 
@@ -230,17 +230,17 @@ Four routes via plain `Navigator.push`/`pop`: MainScreen, VideoViewer, SyncPage,
 
 **Custom native:** One Kotlin platform channel (~50-60 lines) for video metadata extraction from SAF URIs + ftyp brand detection.
 
-> Full dependency table with version rationale and removed dependency history: `SYSTEM_DESIGN.md` section 2.
+> Full dependency table with version rationale and removed dependency history: `SYSTEM_DESIGN_FULL.md` section 2.
 
 ## 14. Testing
 
 Unit tests cover: DataStore, match/alliance suggestion, integrity check, video identity, iOS detection, TBA client, import pipeline, scrub math, video sync. NOT unit tested: widget rendering, platform channel, SAF operations (all tested manually on device).
 
-> Full testing matrix: `SYSTEM_DESIGN.md` section 15.
+> Full testing matrix: `SYSTEM_DESIGN_FULL.md` section 15.
 
 ## 15. Key Decisions
 
-The full document has a 42-entry decision log (`SYSTEM_DESIGN.md` section 17). Most significant:
+The full document has a 42-entry decision log (`SYSTEM_DESIGN_FULL.md` section 17). Most significant:
 
 - JSON + in-memory over SQLite/drift (tiny data volume, no benefit from SQL at this scale)
 - Custom platform channel over `flutter_video_info` (reads from SAF URIs directly, adds ftyp detection)

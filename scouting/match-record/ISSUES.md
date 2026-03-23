@@ -1,52 +1,15 @@
 bugs and things to improve as found by me (the user):
+## Main screens
+- i like how we we highlight our matches, we should highlight ourselves under teams and alliances tabs the same way. i do also like filling in the team/alliance circle, but we don't need the star and i like the indicator on the left and the shading/bg color
 
-## General
-- g1: rename app to Match Recorder — **DONE** (manifest, pubspec, app.dart)
-- g2: use a real icon (see ~/Downloads/match-recorder-logo.jpg, ofc you should scale it down and stuff, we want this to be a small file just for the logo! use ffmpeg for this. do not look at the logo, it'll just pollute your context) — **DONE** (ffmpeg resized to all 5 mipmap densities)
+## Player
+- video orientation is WRONG! see Q1. red video is correct orientation, blue is wrong. the videos SHOULD ALWAYS BE SET UP SO THE WIDER DIRECTION IS VERTICAL!!! YOU MUST IGNORE ORIENTATION THE VIDEO CLAIMS TO BE!!!
+- video edit / rotate buttons are tiny, make htem just a BIT bigger, and add more padding for bigger touch targets. but also even when i try to be super precise and click them, i can't, i think the buttons are totally busted
+- scrubbing experience really really sucks. on Q1 the red video basically updates what it shows me like once ever 1-2s? that SUCKS for scrubbing. blue video seems better but still sucks. it seems like you completely ignored the prototype learnings for video. send a subagent to explore ~/Downloads/MATCH_RECORD_PROTOTYPES/video to see how it worked? scrubbing MUST BE SMOOTH ON BOTH VIDEOS!!! SMOOTH! IT CAN'T STUTTER OR LAG! WHY: if we want to see a small manuever we want to be able to just scrub back and forth to see it over and over as slow as we want. you show like 1/50 frames which is terrible!
+- video mode functionality is totally busted:
+	- the icon for red vs blue are IDENTICAL? should be a red, blue, transparent boarder (see audio/muting button)
+	- you don't rotate the video when in single video mode. when in single video to line up with the screen so it's as big as possible (max(video-width, video-height) IS IN THE SAME AXIS as max(screen-width, screen-height))
+	- in single video mode, we should disable swap button, doesn't make sense
+- resetart button should auto play if video was playing before. ie if playing and i press it, scrub to 0:00. if paused and pressed, scrub to beginning and don't play. i assume if you just use scrub func, you don't need to do anything else? idk
+- drawing undo/redo/clear should be shown if drawing mode enabled OR there is stuff drawn on screen (ie if i draw then resume, we dim the lines which is good, but controls to clear undo redo are gone)
 
-## MAIN SCREEN
-- m1: under matches tab, i don't see highlighting for my team's matches like we do for team and alliance. try to match the styling of the other tabs — **DONE** (your-match rows get left primary border + background tint)
-- m2: there should have a divider between our team's stuff and all stuff in each of the main tabs — **DONE** (dividers between Our Matches / Quals / Playoffs sections)
-- m3: the bottom tab buttons (search/teams etc) should have a small colored line under them that correponds to the same color we show when doing auto complete. make sure you use a constant for these 4 values, don't dup them — **DONE** (AppColors constants in constants.dart, shared with autocomplete overlay)
-- m4: search bar is visible on all tabs, should only appear under search tab. AND we should focus on the search bar if we tap the search button when search tab is already selected (ie tap once = go to search bar, tap again = focus on search bar) — **DONE**
-- m5: in match list for play off matches, should say "A1", "A2" etc for alliances after the team name, eg: 5229 . 6033 . 5424 . (A1). leave as is if not a playoff match — **DONE** (alliance labels shown for non-qm matches)
-- m6: in settings the thresholds have no info. have an info button next to each input and if i tap it you snackbar or toast with info about what that is. — **DONE** (info icon buttons with snackbar descriptions)
-	- ofc use proper string definition technique so we can support translations later on — **SKIPPED** (user decided l10n is overkill, strings left inline)
-- m7: this may not be a bug, more of a question. how do we show matches that have not happened yet in the ui? do we show the match time and teams but not scores / play link? we shouldn't hide these ofc, we should show them in a sane way — **DONE** (unplayed matches show "-" for scores, grayed out video icons; already implemented before this round, verified with m12 icon changes)
-- m8: this may not be a bug, more of a question. there are 3 times afaik from tba: scheduled time, actual time, estimate time.  which do we show in the match rows? we should show actual time ?? estimate time ?? schedule time -- mut maybe if a match hasn't happened yet AND est time differs by more than say 1 minute from scheduled time, then show scheduled time crossed and show the est time. — **DONE** (strikethrough scheduled + predicted time when they differ >60s for unplayed matches)
-  b9: i'd like to show the last TBA fetch time. easy: add last fetch time in settings in small font below 'Load' button. ALSO add a refetch from tba button and this time to the main screen top area. be smart about your icon choice here: gear for settings is good. double arrows for flash drive sync might be a bit confusing now. the camera crossed out is okish i guess. idk what you'd use for tba sync? use real short hand for date that you show for sync, like 3/4 2:13pm in small font.  to give you more room you can change the title from Match Record to Matches. it's not a huge deal since we'll be using this on a tablet and rn it's just running on my phone. — **DONE** (cloud_sync icon in app bar with timestamp below, title changed to "Matches", lastTbaFetchTime in AppSettings, shown in settings below Load button)
-- m10: if we get data or wifi connection, auto try to update data from tba. while we have data or wifi connection do an update every 5 min. don't toast if failing or anything, it's background. also on app open if we have data or wifi connection sync. use a function for this that basically is like attemptSync that you reuse? — **DONE** (attemptTbaSync function, runs on open + every 5min, silent on failure, checks connectivity via dart:io)
-- m11: if i focus on search bar, then dismiss keyboard, then open the video player, then come back, i see the keyboard for a split sec because the search bar is focused (you won't be able to repro this, just take my word for it and ask me to verify fix!) — **DONE** (unfocus search bar before Navigator.push to viewer/settings)
-- m12: for matches row, tweak layout a bit: if there is no score, put - for scores. if there is no YT show a grayed out icon, if we have no local recording show a grayed out camera icon crossed out. WHY: so all the views have the same layout and i can visually vertically scan really fast; currently I can't becuase icons are missing — **DONE** (always show YT + camera icon slots, grayed when unavailable)
-- m13: draw a few more dividers under matches: we want our matches | quals | playoffs (our matches contains copies, whereas quals/playoffs is just a splitting of the current all matches list) — **DONE** (3 sections: Our Matches, Quals, Playoffs with dividers)
-- m14: you technically bold the team number under search results but it's hard to tell. can you make non-selected teams a bit less bold and selected team a bit more bold and underlined? — **DONE** (non-highlighted w400, highlighted w700 + underline)
-## VIDEO PLAYER
-- v1: syncing i believe might be messed up? if i open Q1, i see blue side video and red side says starting in 66s. exact same for Q2. BUT Q1 the videos are like <1s apart, and for Q2 it's like 6-7s iirc. but Q3 works as expected? idk — **SKIPPED** (investigated: sync algorithm is correct. The 66s countdown comes from synthetic test metadata giving wrong recordingStartTime values. Will be correct with real recorded videos using the platform channel metadata extraction)
-- v2: the button to toggle view mode (show red, show blue, show both) has some issues:
-	- icon for show both should be TWO panels, not three — **DONE** (changed to splitscreen icon)
-	- when we show just one, we should fit it to the screen better. ie the largest video dimension should be facing the largest screen dimension. rn i see just 1 vertical video when device is in landscape mode. we should be rotating that video — **DONE** (handled via v11 rotation)
-- v3: the audio control should have a transparent border. rn it doesn't so the icon size changes when we go between mute and unmute (red or blue) — **DONE** (transparent border when muted for consistent sizing)
-- v4: the swap sides button result should be persisted — **DONE** (sidesSwapped bool in AppSettings, persisted globally)
-- v5: when i draw on a video for some reason it's drawn on BOTH sides?! there should be ONE draw canvas across the entire screen. it's just overlaid on the entire screen. swapping video side, changing video view mode from 2 to 1, etc -- none of that should effect drawing. i believe this might simplify our code a lot so you may want to refactor this to be simple — **DONE** (single DrawingOverlay in VideoViewer covering all video panes, removed per-pane drawing)
-- v6: draw redo is never enabled — **DONE** (added DrawingController listener so sidebar rebuilds on state changes)
-- v7: draw trash can icon is confusing, makes me scared i'll delete the video? — **DONE** (changed to cleaning_services icon with "Clear" label)
-  v8: kind weird but move the video scrubbed bar to be VERTICAL between video players and button bar. it should start from the bottom (ie 0:00 is bottom). WHY: we want to maximally use the vertical space. — **DONE** (ScrubberBar rewritten as 40px vertical widget, 0:00 at bottom)
-- v9: we have a lot of room horizontally, expand the button bar to be like 2.5x wider and write what the buttons do, not just icons. NOTE: when we switch to show only 1 video, make bar smaller like this again where we show just icons!  -- note: do this AFTER fixing v2 and v8 — **DONE** (160px sidebar with text labels in dual mode, 72px icons-only in single mode)
-- v10: you launch yt like...in the app? idk what that's about. i want you to just open up the yt app all on it's own. if possible in full screen and automatically playing the video — **DONE** (uses vnd.youtube:// deep link with https:// fallback for external app launch)
-- v11: one of the videos in the player is not vertical. you should force videos to  be vertical. maybe also add a rotate button on each of the 2 videos. it rotates 90deg. put next to pencil buttons — **DONE** (per-pane rotate button with 90deg increments, next to edit pencil)
-- v12: the scrubbing is WAY WAY too sensitive. like 100px is basically scrubbing the ENTIRE video?  it should be that if i scrub the entire WIDTH of the scrubbing area, we scrub 2min. note this OBVIOUSLY DOES NOT MEAN THAT IF I SCRUB HALF THE WIDTH WE SCRUB 1MIN BECAUSE THIS IS NOT LINEAR!!!!!! — **DONE** (fixed root cause: scrub offset was cumulative because it used live position as base instead of capturing scrub start position)
-- v13: should autoplay videos when i open the video player view — **DONE** (calls startSyncedPlayback/play after initialization)
-- v14: when i put my finger down to scrub, and release, playback should resume — **DONE** (saves _wasPlayingBeforeScrub on scrub start, restores on scrub end)
-
-## SYNC / IMPORT
-- s1: there doesn't seem to be anything that says if a video was already imported? i just import all and it says "0 videos imported" and that's how i know there is nothing new? — **DONE** (green check_circle icon + "Already imported" text on auto-skipped rows)
-- s2: under storage tab, i'd like to see: match label as title, then on 2 lines below that: team numbers / comp name, then size / filename (note dots should be middle dots), eg:
-	  Q1
-	  201, 217, 469 .  Midland
-	  16mb .  IMG_9848.MOV — **DONE** (3-line custom layout with middle dots, event short name lookup)
-- s3: question on storage tab select buttons: past events, how is that determined? does TBA tell you when an event was? maybe you can look at the date now and if the event end date was more than a day ago, then select?  lmk how it currently works, maybe your way is better — **DONE** (uses event.endDate + 1 day buffer before considering it "past")
-- s4: on storage tab when i select some stuff, deselect apepars and i get an overflow warning. should be scrollable? — **DONE** (button row wrapped in horizontal SingleChildScrollView)
-- s5: the import button is too low / cut off. you using safe area? — **DONE** (wrapped bottom button in SafeArea)
-
-## SETTINGS
-- remove the sync and storage sections / buttons, they're redundant — **DONE** (removed both sections from settings_page.dart)
