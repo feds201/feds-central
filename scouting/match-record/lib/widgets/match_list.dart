@@ -96,7 +96,7 @@ class MatchList extends StatelessWidget {
 
     final sorted = _sortByTime(matches);
 
-    if (!showYourMatchesSection || yourTeamNumber == null) {
+    if (!showYourMatchesSection) {
       return ListView.builder(
         itemCount: sorted.length,
         itemBuilder: (context, index) => _buildRow(sorted[index]),

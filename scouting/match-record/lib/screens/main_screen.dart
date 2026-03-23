@@ -498,7 +498,7 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  // m9: TBA refetch button with last sync time tooltip
+  // m9: TBA refetch button with last sync time tooltip and visible timestamp
   Widget _buildTbaRefetchButton() {
     final lastFetch = _dataStore.settings.lastTbaFetchTime;
     final hasEvents = _dataStore.settings.selectedEventKeys.isNotEmpty;
@@ -506,14 +506,51 @@ class _MainScreenState extends State<MainScreen> {
         ? 'Sync TBA data (last: ${_formatFetchTime(lastFetch)})'
         : 'Sync TBA data';
 
+    final icon = _isTbaSyncing
+        ? const SizedBox(
+            width: 20,
+            height: 20,
+            child: CircularProgressIndicator(strokeWidth: 2),
+          )
+        : const Icon(Icons.cloud_sync);
+
+    // Show timestamp as small text below the icon when available
+    if (lastFetch != null) {
+      return Tooltip(
+        message: tooltip,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(8),
+          onTap: hasEvents && !_isTbaSyncing
+              ? () async {
+                  setState(() => _isTbaSyncing = true);
+                  await _attemptTbaSync();
+                  if (mounted) {
+                    setState(() => _isTbaSyncing = false);
+                  }
+                }
+              : null,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                icon,
+                Text(
+                  _formatFetchTime(lastFetch),
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    fontSize: 9,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
     return IconButton(
-      icon: _isTbaSyncing
-          ? const SizedBox(
-              width: 20,
-              height: 20,
-              child: CircularProgressIndicator(strokeWidth: 2),
-            )
-          : const Icon(Icons.cloud_sync),
+      icon: icon,
       tooltip: tooltip,
       onPressed: hasEvents && !_isTbaSyncing
           ? () async {
