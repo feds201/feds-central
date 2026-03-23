@@ -4,7 +4,6 @@ import '../data/data_store.dart';
 import '../data/models.dart';
 import '../tba/tba_client.dart';
 import '../util/result.dart';
-import 'sync_page.dart';
 
 class SettingsPage extends StatefulWidget {
   final DataStore dataStore;
@@ -217,6 +216,13 @@ class _SettingsPageState extends State<SettingsPage> {
       }
     }
 
+    // Update last fetch time
+    await widget.dataStore.updateSettings(
+      widget.dataStore.settings.copyWith(
+        lastTbaFetchTime: () => DateTime.now(),
+      ),
+    );
+
     setState(() => _isLoadingTbaData = false);
 
     if (mounted) {
@@ -230,6 +236,13 @@ class _SettingsPageState extends State<SettingsPage> {
         );
       }
     }
+  }
+
+  String _formatFetchTime(DateTime time) {
+    final h = time.hour > 12 ? time.hour - 12 : (time.hour == 0 ? 12 : time.hour);
+    final m = time.minute.toString().padLeft(2, '0');
+    final amPm = time.hour >= 12 ? 'pm' : 'am';
+    return '${time.month}/${time.day} $h:$m$amPm';
   }
 
   @override
@@ -299,32 +312,16 @@ class _SettingsPageState extends State<SettingsPage> {
             label: Text(
                 _isLoadingTbaData ? 'Loading...' : 'Load from TBA'),
           ),
-          const SizedBox(height: 24),
-
-          // Sync
-          Text('Sync', style: theme.textTheme.titleMedium),
-          const SizedBox(height: 8),
-          OutlinedButton.icon(
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => SyncPage(dataStore: widget.dataStore),
+          if (settings.lastTbaFetchTime != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: Text(
+                'Last fetched: ${_formatFetchTime(settings.lastTbaFetchTime!)}',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
                 ),
-              );
-            },
-            icon: const Icon(Icons.sync),
-            label: const Text('Open Sync'),
-          ),
-          const SizedBox(height: 24),
-
-          // Storage
-          Text('Storage', style: theme.textTheme.titleMedium),
-          const SizedBox(height: 8),
-          OutlinedButton.icon(
-            onPressed: () {},
-            icon: const Icon(Icons.storage),
-            label: const Text('Manage Storage'),
-          ),
+              ),
+            ),
           const SizedBox(height: 24),
 
           // Thresholds
@@ -333,27 +330,32 @@ class _SettingsPageState extends State<SettingsPage> {
           _buildThresholdField(
             label: 'Short video threshold (seconds)',
             controller: _shortVideoController,
+            infoText: 'Videos shorter than this are auto-unchecked during import (probably accidental recordings)',
           ),
           const SizedBox(height: 8),
           _buildThresholdField(
             label: 'Sequential gap min (minutes)',
             controller: _gapMinController,
+            infoText: 'If gap between consecutive videos is less than this, assume they\'re sequential matches',
           ),
           const SizedBox(height: 8),
           _buildThresholdField(
             label: 'Sequential gap max (minutes)',
             controller: _gapMaxController,
+            infoText: 'If gap between consecutive videos is more than this, use match schedule timestamp instead of sequence',
           ),
           const SizedBox(height: 8),
           _buildThresholdField(
             label: 'Scrub exponent',
             controller: _scrubExponentController,
             isDecimal: true,
+            infoText: 'Controls non-linearity of touch scrubbing. Higher = finer control near touch point, coarser at edges',
           ),
           const SizedBox(height: 8),
           _buildThresholdField(
             label: 'Scrub max range (seconds)',
             controller: _scrubMaxRangeController,
+            infoText: 'Maximum time range (seconds) that a full-width scrub gesture covers',
           ),
           const SizedBox(height: 12),
           FilledButton.tonal(
@@ -370,6 +372,7 @@ class _SettingsPageState extends State<SettingsPage> {
     required String label,
     required TextEditingController controller,
     bool isDecimal = false,
+    String? infoText,
   }) {
     return TextField(
       controller: controller,
@@ -378,6 +381,16 @@ class _SettingsPageState extends State<SettingsPage> {
       decoration: InputDecoration(
         labelText: label,
         border: const OutlineInputBorder(),
+        suffixIcon: infoText != null
+            ? IconButton(
+                icon: const Icon(Icons.info_outline),
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(infoText)),
+                  );
+                },
+              )
+            : null,
       ),
     );
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../data/models.dart';
+import '../util/constants.dart';
 
 enum AutocompleteResultType { team, match, alliance }
 
@@ -75,9 +76,9 @@ class AutocompleteOverlay extends StatelessWidget {
   });
 
   static const _typeColors = {
-    AutocompleteResultType.team: Colors.teal,
-    AutocompleteResultType.match: Colors.orange,
-    AutocompleteResultType.alliance: Colors.purple,
+    AutocompleteResultType.team: AppColors.teamCategory,
+    AutocompleteResultType.match: AppColors.matchCategory,
+    AutocompleteResultType.alliance: AppColors.allianceCategory,
   };
 
   @override

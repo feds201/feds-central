@@ -1,5 +1,5 @@
 name: match_record
-description: "Match recording app for FRC scouting."
+description: "Match Recorder — offline match footage viewer for FRC scouting."
 publish_to: 'none'
 
 version: 1.0.0+1

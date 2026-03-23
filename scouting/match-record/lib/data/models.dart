@@ -818,6 +818,7 @@ class AppSettings {
   final double scrubExponent;
   final int scrubMaxRangeMs;
   final bool recordedMatchesOnly;
+  final DateTime? lastTbaFetchTime;
 
   const AppSettings({
     this.teamNumber,
@@ -828,6 +829,7 @@ class AppSettings {
     this.scrubExponent = AppConstants.defaultScrubExponent,
     this.scrubMaxRangeMs = AppConstants.defaultScrubMaxRangeMs,
     this.recordedMatchesOnly = false,
+    this.lastTbaFetchTime,
   });
 
   Map<String, dynamic> toJson() => {
@@ -839,6 +841,7 @@ class AppSettings {
         'scrubExponent': scrubExponent,
         'scrubMaxRangeMs': scrubMaxRangeMs,
         'recordedMatchesOnly': recordedMatchesOnly,
+        'lastTbaFetchTime': lastTbaFetchTime?.toIso8601String(),
       };
 
   factory AppSettings.fromJson(Map<String, dynamic> json) => AppSettings(
@@ -858,6 +861,9 @@ class AppSettings {
         scrubMaxRangeMs: json['scrubMaxRangeMs'] as int? ??
             AppConstants.defaultScrubMaxRangeMs,
         recordedMatchesOnly: json['recordedMatchesOnly'] as bool? ?? false,
+        lastTbaFetchTime: json['lastTbaFetchTime'] != null
+            ? DateTime.parse(json['lastTbaFetchTime'] as String)
+            : null,
       );
 
   AppSettings copyWith({
@@ -869,6 +875,7 @@ class AppSettings {
     double? scrubExponent,
     int? scrubMaxRangeMs,
     bool? recordedMatchesOnly,
+    DateTime? Function()? lastTbaFetchTime,
   }) =>
       AppSettings(
         teamNumber: teamNumber != null ? teamNumber() : this.teamNumber,
@@ -883,6 +890,9 @@ class AppSettings {
         scrubMaxRangeMs: scrubMaxRangeMs ?? this.scrubMaxRangeMs,
         recordedMatchesOnly:
             recordedMatchesOnly ?? this.recordedMatchesOnly,
+        lastTbaFetchTime: lastTbaFetchTime != null
+            ? lastTbaFetchTime()
+            : this.lastTbaFetchTime,
       );
 
   @override
@@ -897,7 +907,8 @@ class AppSettings {
           sequentialGapMaxMinutes == other.sequentialGapMaxMinutes &&
           scrubExponent == other.scrubExponent &&
           scrubMaxRangeMs == other.scrubMaxRangeMs &&
-          recordedMatchesOnly == other.recordedMatchesOnly;
+          recordedMatchesOnly == other.recordedMatchesOnly &&
+          lastTbaFetchTime == other.lastTbaFetchTime;
 
   @override
   int get hashCode => Object.hash(
@@ -909,6 +920,7 @@ class AppSettings {
         scrubExponent,
         scrubMaxRangeMs,
         recordedMatchesOnly,
+        lastTbaFetchTime,
       );
 }
 

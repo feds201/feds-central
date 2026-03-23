@@ -1,3 +1,12 @@
+import 'package:flutter/material.dart';
+
+class AppColors {
+  static const Color searchCategory = Colors.blue;
+  static const Color teamCategory = Colors.teal;
+  static const Color matchCategory = Colors.orange;
+  static const Color allianceCategory = Colors.purple;
+}
+
 class AppConstants {
   // Import thresholds
   static const int defaultShortVideoThresholdMs = 30000;

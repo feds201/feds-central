@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 
@@ -42,6 +43,10 @@ class _MainScreenState extends State<MainScreen> {
   bool _showAutocomplete = false;
   bool _isAutoLoading = false;
 
+  // m10: Auto TBA sync
+  Timer? _autoSyncTimer;
+  bool _isTbaSyncing = false;
+
   final _searchBarKey = GlobalKey();
 
   DataStore get _dataStore => widget.dataStore;
@@ -52,11 +57,13 @@ class _MainScreenState extends State<MainScreen> {
     super.initState();
     _searchFocusNode.addListener(_onFocusChange);
     _maybeAutoLoad();
+    _startAutoSync();
   }
 
   @override
   void dispose() {
     _debounceTimer?.cancel();
+    _autoSyncTimer?.cancel();
     _searchController.dispose();
     _searchFocusNode.removeListener(_onFocusChange);
     _searchFocusNode.dispose();
@@ -66,6 +73,81 @@ class _MainScreenState extends State<MainScreen> {
   void _onFocusChange() {
     if (!_searchFocusNode.hasFocus) {
       setState(() => _showAutocomplete = false);
+    }
+  }
+
+  // m10: Auto TBA sync on connectivity
+  void _startAutoSync() {
+    // Attempt sync on app open
+    _attemptTbaSync();
+    // Sync every 5 minutes
+    _autoSyncTimer = Timer.periodic(
+      const Duration(minutes: 5),
+      (_) => _attemptTbaSync(),
+    );
+  }
+
+  /// Silently attempts a TBA data sync if connected and events are configured.
+  /// Used for auto-sync on app open and periodic background sync.
+  Future<void> attemptTbaSync() => _attemptTbaSync();
+
+  Future<void> _attemptTbaSync() async {
+    final eventKeys = _dataStore.settings.selectedEventKeys;
+    if (eventKeys.isEmpty) return;
+    if (_isTbaSyncing) return;
+
+    // Check connectivity by attempting a DNS lookup
+    try {
+      final result = await InternetAddress.lookup('thebluealliance.com');
+      if (result.isEmpty || result.first.rawAddress.isEmpty) return;
+    } on SocketException {
+      return;
+    }
+
+    _isTbaSyncing = true;
+    try {
+      for (final eventKey in eventKeys) {
+        final eventResult = await _tbaClient.getEvent(eventKey);
+        if (eventResult is Ok<Event>) {
+          final existingKeys =
+              _dataStore.events.map((e) => e.eventKey).toSet();
+          if (!existingKeys.contains(eventKey)) {
+            await _dataStore.setEvents([..._dataStore.events, eventResult.value]);
+          } else {
+            final updated = _dataStore.events
+                .map((e) => e.eventKey == eventKey ? eventResult.value : e)
+                .toList();
+            await _dataStore.setEvents(updated);
+          }
+        }
+
+        final teamsResult = await _tbaClient.getTeams(eventKey);
+        if (teamsResult is Ok<List<Team>>) {
+          await _dataStore.setTeamsForEvent(eventKey, teamsResult.value);
+        }
+
+        final matchesResult = await _tbaClient.getMatches(eventKey);
+        if (matchesResult is Ok<List<Match>>) {
+          await _dataStore.setMatchesForEvent(eventKey, matchesResult.value);
+        }
+
+        final alliancesResult = await _tbaClient.getAlliances(eventKey);
+        if (alliancesResult is Ok<List<Alliance>?>) {
+          final alliances = alliancesResult.value;
+          if (alliances != null) {
+            await _dataStore.setAlliancesForEvent(eventKey, alliances);
+          }
+        }
+      }
+
+      // Update last fetch time on success
+      await _dataStore.updateSettings(
+        _dataStore.settings.copyWith(
+          lastTbaFetchTime: () => DateTime.now(),
+        ),
+      );
+    } finally {
+      _isTbaSyncing = false;
     }
   }
 
@@ -213,6 +295,7 @@ class _MainScreenState extends State<MainScreen> {
     _addChip(SearchChip.alliance(alliance.name, alliance.picks));
   }
 
+  // m11: unfocus search bar before navigating away
   void _onMatchTap(MatchWithVideos mwv) {
     if (!mwv.hasRecordings) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -223,6 +306,7 @@ class _MainScreenState extends State<MainScreen> {
       );
       return;
     }
+    _searchFocusNode.unfocus();
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => VideoViewer(
@@ -239,6 +323,22 @@ class _MainScreenState extends State<MainScreen> {
 
   int get _defaultMatchesIndex => _showAlliances ? 2 : 1;
 
+  // m3: Tab indicator colors
+  static const _tabColors = [
+    AppColors.searchCategory,
+    AppColors.teamCategory,
+    AppColors.matchCategory,
+    AppColors.allianceCategory,
+  ];
+
+  // m9: Format last TBA fetch time in short format
+  String _formatFetchTime(DateTime time) {
+    final h = time.hour > 12 ? time.hour - 12 : (time.hour == 0 ? 12 : time.hour);
+    final m = time.minute.toString().padLeft(2, '0');
+    final amPm = time.hour >= 12 ? 'pm' : 'am';
+    return '${time.month}/${time.day} $h:$m$amPm';
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
@@ -248,30 +348,38 @@ class _MainScreenState extends State<MainScreen> {
           _selectedTab = _defaultMatchesIndex;
         }
 
+        // m4: only show search bar on the Search tab (index 0)
+        final bool isSearchTab = _selectedTab == 0;
+
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Match Record'),
-            bottom: PreferredSize(
-              preferredSize: const Size.fromHeight(48),
-              child: SizedBox(
-                height: 48,
-                child: ClipRect(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                    child: AppSearchBar(
-                      key: _searchBarKey,
-                      controller: _searchController,
-                      chips: _chips,
-                      focusNode: _searchFocusNode,
-                      onTextChanged: _onSearchTextChanged,
-                      onChipRemoved: _removeChip,
-                      onSubmitted: _onSubmitted,
+            // m9: change title from "Match Record" to "Matches"
+            title: const Text('Matches'),
+            bottom: isSearchTab
+                ? PreferredSize(
+                    preferredSize: const Size.fromHeight(48),
+                    child: SizedBox(
+                      height: 48,
+                      child: ClipRect(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                          child: AppSearchBar(
+                            key: _searchBarKey,
+                            controller: _searchController,
+                            chips: _chips,
+                            focusNode: _searchFocusNode,
+                            onTextChanged: _onSearchTextChanged,
+                            onChipRemoved: _removeChip,
+                            onSubmitted: _onSubmitted,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              ),
-            ),
+                  )
+                : null,
             actions: [
+              // m9: TBA refetch button with last sync time
+              _buildTbaRefetchButton(),
               IconButton(
                 icon: Icon(
                   _dataStore.settings.recordedMatchesOnly
@@ -298,6 +406,8 @@ class _MainScreenState extends State<MainScreen> {
                 icon: const Icon(Icons.settings),
                 tooltip: 'Settings',
                 onPressed: () {
+                  // m11: unfocus search bar before navigating
+                  _searchFocusNode.unfocus();
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (_) => SettingsPage(
@@ -353,33 +463,67 @@ class _MainScreenState extends State<MainScreen> {
           bottomNavigationBar: NavigationBar(
             selectedIndex: _selectedTab,
             onDestinationSelected: (index) {
+              // m4: if tapping Search tab while already on it, focus the search bar
+              if (index == 0 && _selectedTab == 0) {
+                _searchFocusNode.requestFocus();
+              }
               setState(() {
                 _selectedTab = index;
                 _showAutocomplete = false;
               });
             },
             destinations: [
-              const NavigationDestination(
-                icon: Icon(Icons.search),
+              // m3: colored indicator lines on tab icons
+              NavigationDestination(
+                icon: Icon(Icons.search, color: _tabColors[0]),
                 label: 'Search',
               ),
-              const NavigationDestination(
-                icon: Icon(Icons.group),
+              NavigationDestination(
+                icon: Icon(Icons.group, color: _tabColors[1]),
                 label: 'Teams',
               ),
-              const NavigationDestination(
-                icon: Icon(Icons.sports_esports),
+              NavigationDestination(
+                icon: Icon(Icons.sports_esports, color: _tabColors[2]),
                 label: 'Matches',
               ),
               if (_showAlliances)
-                const NavigationDestination(
-                  icon: Icon(Icons.handshake),
+                NavigationDestination(
+                  icon: Icon(Icons.handshake, color: _tabColors[3]),
                   label: 'Alliances',
                 ),
             ],
           ),
         );
       },
+    );
+  }
+
+  // m9: TBA refetch button with last sync time tooltip
+  Widget _buildTbaRefetchButton() {
+    final lastFetch = _dataStore.settings.lastTbaFetchTime;
+    final hasEvents = _dataStore.settings.selectedEventKeys.isNotEmpty;
+    final tooltip = lastFetch != null
+        ? 'Sync TBA data (last: ${_formatFetchTime(lastFetch)})'
+        : 'Sync TBA data';
+
+    return IconButton(
+      icon: _isTbaSyncing
+          ? const SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            )
+          : const Icon(Icons.cloud_sync),
+      tooltip: tooltip,
+      onPressed: hasEvents && !_isTbaSyncing
+          ? () async {
+              setState(() => _isTbaSyncing = true);
+              await _attemptTbaSync();
+              if (mounted) {
+                setState(() => _isTbaSyncing = false);
+              }
+            }
+          : null,
     );
   }
 }
