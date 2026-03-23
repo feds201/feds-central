@@ -129,7 +129,7 @@ class ControlSidebar extends StatelessWidget {
                     onPressed: canRedo ? onRedo : null,
                   ),
                   _buildItem(
-                    icon: Icons.ink_eraser,
+                    icon: Icons.cleaning_services,
                     label: 'Clear',
                     onPressed: onClearDrawing,
                   ),
