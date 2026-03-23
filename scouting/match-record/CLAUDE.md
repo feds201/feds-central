@@ -1,5 +1,14 @@
 # Match Record — Claude Code Guide
 
+## For New AI Sessions
+
+- Start by reading this CLAUDE.md
+- Then read PROGRESS.md to know what's done and what's remaining
+- Before touching any module, read its README.md first (they have How to Use / Known Issues / Technical Details sections)
+- Use SPECS.md and SYSTEM_DESIGN.md for product requirements and architecture
+- Use BUILDERS_DIARY.md for development history and trade-offs (it's long — use a subagent to read it)
+- The user will likely just say "do X" — use these docs to get context rather than asking questions the docs already answer
+
 ## What This Project Is
 
 Offline-first Android tablet app for FRC Team 201 (The FEDS) to ingest, organize, and review match footage during competitions. Students record each match on personal phones (one per alliance side), transfer via USB-C flash drives, and the tablet provides a synchronized dual-video viewer for match strategy analysis between matches.
@@ -16,8 +25,8 @@ Offline-first Android tablet app for FRC Team 201 (The FEDS) to ingest, organize
 | `SYSTEM_DESIGN.md` | Full technical design — architecture, data model, API specs, algorithms |
 | `PROGRESS.md` | What's been built and what still needs to be done |
 | `BUILDERS_DIARY.md` | Development journal — trade-offs, bugs found, adjustments made |
-| `VIDEO_PROTOTYPE_LEARNINGS.md` | Proven patterns from the video playback prototype |
-| `DRAWING_PROTOTYPE_LEARNINGS.md` | Proven patterns from the drawing prototype |
+
+Prototype learning docs (VIDEO_PROTOTYPE_LEARNINGS.md, DRAWING_PROTOTYPE_LEARNINGS.md) were archived after all patterns were applied to the codebase.
 
 ## Module READMEs
 

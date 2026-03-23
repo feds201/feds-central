@@ -39,7 +39,7 @@
 - `StorageTab` / `StorageVideoList`: tablet storage mode showing all imported recordings with file size, match assignment, alliance side. Supports checkbox selection with "select all" and "select all but our team". Delete removes from device and marks as skipped to prevent reimport.
 
 ### Video Viewer
-- `VideoViewer`: forced-landscape full-screen viewer. Dual-video layout (left pane + right pane + control sidebar). Red on left, blue on right by default. Thin red/blue indicator lines at top of each pane. Star icon on the pane containing the user's team. Wakelock enabled during playback.
+- `VideoViewer`: forced-landscape full-screen viewer. Dual-video layout (left pane + right pane + control sidebar). Red on left, blue on right by default. Thin red/blue indicator lines at top of each pane. Star icon on the pane containing the user's team. Wakelock enabled during playback. Per-recording edit from viewer: pencil icon on each video pane opens a bottom sheet for editing that recording's match, alliance, and team assignment.
 - `SyncEngine`: dual-player synchronization using recording start timestamps. Manages sync offset, intended positions (to handle async seek updates), countdown for later-starting video ("Other side starting in X..."), coordinated play/pause/seek across both players.
 - `ScrubController`: non-linear touch scrub math (configurable exponent curve, dead zone, max range). Cancel-and-replace seek throttling to prevent seek queue buildup during fast scrubbing.
 - `VideoPane` widget: single video pane with touch scrub gesture handling (finger down = pause, horizontal drag = non-linear scrub, finger up = stay paused). Drawing overlay integration.
@@ -73,3 +73,5 @@ All remaining work is related to real USB flash drive support. Currently the app
 4. **`content://` URI playback validation** -- Verify that `media_kit` can play videos directly from SAF `content://` URIs without first copying them to local storage. This is documented as untested in `VIDEO_PROTOTYPE_LEARNINGS.md`. If it does not work, a workaround (e.g., temporary local copy or file descriptor passing) will be needed for import preview video playback (P2) and potentially for flash drive storage mode.
 
 5. **Drive switch UI in import tab** -- Currently no way to disconnect or switch drives mid-session in the import tab. Needs a "Disconnect" or "Switch Drive" button so users can swap flash drives without leaving and re-entering the Sync UI.
+
+6. **Flash drive storage mode** -- The Storage tab should show videos still on the connected flash drive (not just imported ones) with sync status indicators (imported vs not-yet-imported). Requires real USB drive access to implement — currently blocked on SAF DriveAccess implementation (#1 above).

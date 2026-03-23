@@ -62,6 +62,19 @@
 - Storage management: "select past events" for bulk cleanup
 - Import pipeline: drive permission check before import
 
+### "Recorded Only" Toggle Feature
+- User requested a toggle in the app bar to filter matches/search to only those with recordings
+- Added toggle icon to MainScreen app bar (visibility/visibility_off icon)
+- Filters MatchesTab, TeamsTab, and SearchTab results
+- Persisted in AppSettings so it survives app restarts
+
+### Documentation Phase
+- Created CLAUDE.md with onboarding guidance, context management rules, key documents table, test flags, device testing instructions
+- Created PROGRESS.md with full inventory of what's been built and what remains
+- Created 5 module READMEs (data, import, viewer, tba, screens) each with How to Use, Known Issues, and Technical Details sections
+- Verified all READMEs against actual code for accuracy
+- Archived prototype learning docs (VIDEO_PROTOTYPE_LEARNINGS.md, DRAWING_PROTOTYPE_LEARNINGS.md) after confirming all patterns were applied to the real codebase
+
 ## Bugs Found & Fixed
 
 ### BUG-1: Search bar stealing taps from match list
@@ -78,6 +91,16 @@
 **Symptom:** After clipping fix, TextField tappable area was only ~127px wide
 **Root cause:** IntrinsicWidth constrained TextField to content width only.
 **Fix:** Added ConstrainedBox with minWidth: 150 around the IntrinsicWidth wrapper.
+
+### BUG-4: Duplicate team 201 in Teams tab
+**Symptom:** Team 201 appeared twice in the Teams tab list.
+**Root cause:** The "your team" pinning logic added team 201 at the top without removing it from the main sorted list.
+**Fix:** Filtered user's team from the remaining list before concatenation.
+
+### BUG-5: Test drive timestamp misalignment causing 20076s sync offset
+**Symptom:** Sync engine calculated a ~20,076 second offset between the two test videos, making dual-video sync unusable.
+**Root cause:** Synthetic metadata timestamps for the two test drives were not aligned to realistic recording start times for the same match. The test drives used unrelated timestamps.
+**Fix:** Aligned the synthetic timestamps in TestDriveAccess so both drives' videos have recording start times within seconds of each other, as they would be at a real competition.
 
 ## Trade-offs & Decisions
 
