@@ -40,10 +40,44 @@
 - Full Sync Page UI: Import tab with preview list, History tab, Storage tab
 - Import preview rows with match dropdown, team editing, alliance toggle, auto-skip
 
-### Phase 4: Video Viewer — IN PROGRESS
-- Building sync engine, scrub controller, drawing controller
-- Video panes, control sidebar, scrubber bar
-- Forced landscape, immersive mode, wakelock
+### Phase 4: Video Viewer — COMPLETE
+- 250 total tests (52 new: scrub 14, drawing 20, sync 18)
+- SyncEngine: dual-player sync by recording start timestamps, countdown from position stream
+- ScrubController: non-linear scrub math (power curve), cancel-and-replace seek throttling
+- DrawingController: ChangeNotifier strokes, undo/redo, opacity (1.0 paused, 0.5 playing)
+- StrokePainter: quadratic bezier smoothing, red color, 3.5px
+- VideoPane: alliance color bar, star icon, countdown overlay, touch scrub
+- ControlSidebar: 72px, all controls, drawing controls when paused
+- ScrubberBar: slider with position/duration, drag guard
+- VideoViewer: landscape lock, immersive, wakelock, full lifecycle management
+
+### Phase 5: Drawing Overlay — COMPLETE
+- Built as part of Phase 4 (drawing_overlay.dart, stroke_painter.dart, drawing_controller.dart)
+- Listener for raw pointer events (not GestureDetector)
+- No pointer ID tracking (intentional multi-touch interleave)
+
+### Phase 6: Remaining P1s — COMPLETE
+- Startup integrity checker: reconciles files on disk vs DataStore
+- Drive disconnection handling during import
+- Storage management: "select past events" for bulk cleanup
+- Import pipeline: drive permission check before import
+
+## Bugs Found & Fixed
+
+### BUG-1: Search bar stealing taps from match list
+**Symptom:** Tapping a match row in the list focused the search bar instead
+**Root cause:** PreferredSize only declares height but doesn't constrain child. TextField's Material tap target (48x48 minimum) expanded beyond the 48px boundary into the match list area.
+**Fix:** Wrapped in SizedBox(height: 48) + ClipRect in main_screen.dart; added clipBehavior: Clip.hardEdge to search bar container.
+
+### BUG-2: Sidebar buttons in viewer nearly untappable (~9px wide)
+**Symptom:** Sidebar buttons on Pixel 9 Pro were 9px wide instead of 108px
+**Root cause:** SafeArea's right padding (for display cutout/rounded corners) consumed most of the 72px sidebar width.
+**Fix:** Added `right: false` to sidebar's SafeArea; wrapped entire viewer Row in outer SafeArea.
+
+### BUG-3: Search bar hit target too narrow after BUG-1 fix
+**Symptom:** After clipping fix, TextField tappable area was only ~127px wide
+**Root cause:** IntrinsicWidth constrained TextField to content width only.
+**Fix:** Added ConstrainedBox with minWidth: 150 around the IntrinsicWidth wrapper.
 
 ## Trade-offs & Decisions
 
@@ -55,3 +89,19 @@ Since platform channels don't work on desktop, VideoMetadataService generates sy
 
 ### TD-3: Asset-based test drives
 Sample videos are bundled as Flutter assets. TestDriveAccess auto-selects the first drive and the import flow works end-to-end on desktop without real USB hardware.
+
+## Device Verification Results
+
+### Verified on Pixel 9 Pro (API 36)
+- App launches, loads TBA data, persists across restarts ✓
+- All 4 tabs work (Matches, Teams, Alliances, Search) ✓
+- "Your Matches" section correctly shows team 201 matches ✓
+- Settings page: team number, event selection, thresholds ✓
+- Import from iOS test drive: preview → import → history recorded ✓
+- Camera icon appears on matches with recordings ✓
+- Match tap → video viewer opens with recording ✓
+- Video plays, scrubber updates (0:00/0:08) ✓
+- Play/Pause button works ✓
+- Sidebar buttons are tappable (108px wide after fix) ✓
+- Back button returns to matches ✓
+- YouTube links open YouTube app ✓
