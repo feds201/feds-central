@@ -17,6 +17,7 @@ class AppConstants {
   static const double defaultScrubExponent = 2.5;
   static const int defaultScrubMaxRangeMs = 120000;
   static const double scrubDeadZonePx = 3.0;
+  static const int defaultScrubCoalescingIntervalMs = 100;
 
   // Drawing
   static const double strokeWidth = 3.5;

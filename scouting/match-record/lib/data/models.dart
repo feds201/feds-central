@@ -817,6 +817,7 @@ class AppSettings {
   final int sequentialGapMaxMinutes;
   final double scrubExponent;
   final int scrubMaxRangeMs;
+  final int scrubCoalescingIntervalMs;
   final bool recordedMatchesOnly;
   final bool sidesSwapped;
   final DateTime? lastTbaFetchTime;
@@ -829,6 +830,8 @@ class AppSettings {
     this.sequentialGapMaxMinutes = AppConstants.defaultSequentialGapMaxMinutes,
     this.scrubExponent = AppConstants.defaultScrubExponent,
     this.scrubMaxRangeMs = AppConstants.defaultScrubMaxRangeMs,
+    this.scrubCoalescingIntervalMs =
+        AppConstants.defaultScrubCoalescingIntervalMs,
     this.recordedMatchesOnly = false,
     this.sidesSwapped = false,
     this.lastTbaFetchTime,
@@ -842,6 +845,7 @@ class AppSettings {
         'sequentialGapMaxMinutes': sequentialGapMaxMinutes,
         'scrubExponent': scrubExponent,
         'scrubMaxRangeMs': scrubMaxRangeMs,
+        'scrubCoalescingIntervalMs': scrubCoalescingIntervalMs,
         'recordedMatchesOnly': recordedMatchesOnly,
         'sidesSwapped': sidesSwapped,
         'lastTbaFetchTime': lastTbaFetchTime?.toIso8601String(),
@@ -863,6 +867,9 @@ class AppSettings {
             AppConstants.defaultScrubExponent,
         scrubMaxRangeMs: json['scrubMaxRangeMs'] as int? ??
             AppConstants.defaultScrubMaxRangeMs,
+        scrubCoalescingIntervalMs:
+            json['scrubCoalescingIntervalMs'] as int? ??
+                AppConstants.defaultScrubCoalescingIntervalMs,
         recordedMatchesOnly: json['recordedMatchesOnly'] as bool? ?? false,
         sidesSwapped: json['sidesSwapped'] as bool? ?? false,
         lastTbaFetchTime: json['lastTbaFetchTime'] != null
@@ -878,6 +885,7 @@ class AppSettings {
     int? sequentialGapMaxMinutes,
     double? scrubExponent,
     int? scrubMaxRangeMs,
+    int? scrubCoalescingIntervalMs,
     bool? recordedMatchesOnly,
     bool? sidesSwapped,
     DateTime? Function()? lastTbaFetchTime,
@@ -893,6 +901,8 @@ class AppSettings {
             sequentialGapMaxMinutes ?? this.sequentialGapMaxMinutes,
         scrubExponent: scrubExponent ?? this.scrubExponent,
         scrubMaxRangeMs: scrubMaxRangeMs ?? this.scrubMaxRangeMs,
+        scrubCoalescingIntervalMs:
+            scrubCoalescingIntervalMs ?? this.scrubCoalescingIntervalMs,
         recordedMatchesOnly:
             recordedMatchesOnly ?? this.recordedMatchesOnly,
         sidesSwapped: sidesSwapped ?? this.sidesSwapped,
@@ -913,6 +923,7 @@ class AppSettings {
           sequentialGapMaxMinutes == other.sequentialGapMaxMinutes &&
           scrubExponent == other.scrubExponent &&
           scrubMaxRangeMs == other.scrubMaxRangeMs &&
+          scrubCoalescingIntervalMs == other.scrubCoalescingIntervalMs &&
           recordedMatchesOnly == other.recordedMatchesOnly &&
           sidesSwapped == other.sidesSwapped &&
           lastTbaFetchTime == other.lastTbaFetchTime;
@@ -926,6 +937,7 @@ class AppSettings {
         sequentialGapMaxMinutes,
         scrubExponent,
         scrubMaxRangeMs,
+        scrubCoalescingIntervalMs,
         recordedMatchesOnly,
         sidesSwapped,
         lastTbaFetchTime,

@@ -23,30 +23,40 @@ class AllianceTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return ListTile(
-      leading: CircleAvatar(
-        backgroundColor: isYourAlliance
-            ? theme.colorScheme.primary
-            : theme.colorScheme.surfaceContainerHighest,
-        child: Text(
-          '${alliance.allianceNumber}',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: isYourAlliance
-                ? theme.colorScheme.onPrimary
-                : theme.colorScheme.onSurface,
+    return Container(
+      decoration: isYourAlliance
+          ? BoxDecoration(
+              border: Border(
+                left: BorderSide(
+                  color: theme.colorScheme.primary,
+                  width: 3,
+                ),
+              ),
+              color: theme.colorScheme.primary.withValues(alpha: 0.05),
+            )
+          : null,
+      child: ListTile(
+        leading: CircleAvatar(
+          backgroundColor: isYourAlliance
+              ? theme.colorScheme.primary
+              : theme.colorScheme.surfaceContainerHighest,
+          child: Text(
+            '${alliance.allianceNumber}',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: isYourAlliance
+                  ? theme.colorScheme.onPrimary
+                  : theme.colorScheme.onSurface,
+            ),
           ),
         ),
+        title: Text(
+          alliance.name,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        subtitle: Text(_formatTeamNumbers()),
+        onTap: onTap,
       ),
-      title: Text(
-        alliance.name,
-        style: const TextStyle(fontWeight: FontWeight.bold),
-      ),
-      subtitle: Text(_formatTeamNumbers()),
-      trailing: isYourAlliance
-          ? Icon(Icons.star, color: theme.colorScheme.primary, size: 20)
-          : null,
-      onTap: onTap,
     );
   }
 }

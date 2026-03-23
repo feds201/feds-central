@@ -17,31 +17,41 @@ class TeamTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return ListTile(
-      leading: CircleAvatar(
-        backgroundColor: isYourTeam
-            ? theme.colorScheme.primary
-            : theme.colorScheme.surfaceContainerHighest,
-        child: Text(
-          '${team.teamNumber}',
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.bold,
-            color: isYourTeam
-                ? theme.colorScheme.onPrimary
-                : theme.colorScheme.onSurface,
+    return Container(
+      decoration: isYourTeam
+          ? BoxDecoration(
+              border: Border(
+                left: BorderSide(
+                  color: theme.colorScheme.primary,
+                  width: 3,
+                ),
+              ),
+              color: theme.colorScheme.primary.withValues(alpha: 0.05),
+            )
+          : null,
+      child: ListTile(
+        leading: CircleAvatar(
+          backgroundColor: isYourTeam
+              ? theme.colorScheme.primary
+              : theme.colorScheme.surfaceContainerHighest,
+          child: Text(
+            '${team.teamNumber}',
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: isYourTeam
+                  ? theme.colorScheme.onPrimary
+                  : theme.colorScheme.onSurface,
+            ),
           ),
         ),
+        title: Text(
+          '${team.teamNumber}',
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        subtitle: team.nickname.isNotEmpty ? Text(team.nickname) : null,
+        onTap: onTap,
       ),
-      title: Text(
-        '${team.teamNumber}',
-        style: const TextStyle(fontWeight: FontWeight.bold),
-      ),
-      subtitle: team.nickname.isNotEmpty ? Text(team.nickname) : null,
-      trailing: isYourTeam
-          ? Icon(Icons.star, color: theme.colorScheme.primary, size: 20)
-          : null,
-      onTap: onTap,
     );
   }
 }

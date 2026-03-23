@@ -98,44 +98,22 @@ class VideoPane extends StatelessWidget {
               ),
             // Rotate and edit buttons in top-right corner
             Positioned(
-              top: 6,
-              right: 6,
+              top: 2,
+              right: 2,
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   if (onRotate != null)
-                    GestureDetector(
-                      onTap: onRotate,
-                      child: Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          color: Colors.black54,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: const Icon(
-                          Icons.rotate_90_degrees_cw,
-                          color: Colors.white70,
-                          size: 16,
-                        ),
-                      ),
+                    _PaneButton(
+                      icon: Icons.rotate_90_degrees_cw,
+                      onTap: onRotate!,
                     ),
                   if (onRotate != null && onEdit != null)
-                    const SizedBox(width: 4),
+                    const SizedBox(width: 2),
                   if (onEdit != null)
-                    GestureDetector(
-                      onTap: onEdit,
-                      child: Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          color: Colors.black54,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: const Icon(
-                          Icons.edit,
-                          color: Colors.white70,
-                          size: 16,
-                        ),
-                      ),
+                    _PaneButton(
+                      icon: Icons.edit,
+                      onTap: onEdit!,
                     ),
                 ],
               ),
@@ -187,6 +165,35 @@ class VideoPane extends StatelessWidget {
           ],
         );
       },
+    );
+  }
+}
+
+/// A small button overlaid on the video pane with adequate touch target (40x40).
+class _PaneButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const _PaneButton({required this.icon, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          color: Colors.black54,
+          borderRadius: BorderRadius.circular(6),
+        ),
+        child: Icon(
+          icon,
+          color: Colors.white70,
+          size: 20,
+        ),
+      ),
     );
   }
 }

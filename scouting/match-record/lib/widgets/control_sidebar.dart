@@ -18,6 +18,7 @@ class ControlSidebar extends StatelessWidget {
   final bool isDrawingMode;
   final bool canUndo;
   final bool canRedo;
+  final bool hasDrawings;
   final bool hasDualVideo;
   final bool isPaused;
 
@@ -42,6 +43,7 @@ class ControlSidebar extends StatelessWidget {
     required this.isDrawingMode,
     required this.canUndo,
     required this.canRedo,
+    required this.hasDrawings,
     required this.hasDualVideo,
     required this.isPaused,
     required this.onBack,
@@ -71,6 +73,8 @@ class ControlSidebar extends StatelessWidget {
         right: false,
         child: SingleChildScrollView(
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SizedBox(height: 8),
               _buildItem(
@@ -83,7 +87,7 @@ class ControlSidebar extends StatelessWidget {
                 _buildItem(
                   icon: Icons.swap_horiz,
                   label: 'Swap',
-                  onPressed: onSwapSides,
+                  onPressed: viewMode == ViewMode.both ? onSwapSides : null,
                 ),
                 _buildMuteItem(),
                 _buildViewModeItem(),
@@ -117,23 +121,24 @@ class ControlSidebar extends StatelessWidget {
                   onPressed: onToggleDrawing,
                   isActive: isDrawingMode,
                 ),
-                if (isDrawingMode) ...[
-                  _buildItem(
-                    icon: Icons.undo,
-                    label: 'Undo',
-                    onPressed: canUndo ? onUndo : null,
-                  ),
-                  _buildItem(
-                    icon: Icons.redo,
-                    label: 'Redo',
-                    onPressed: canRedo ? onRedo : null,
-                  ),
-                  _buildItem(
-                    icon: Icons.cleaning_services,
-                    label: 'Clear',
-                    onPressed: onClearDrawing,
-                  ),
-                ],
+              ],
+              // Show undo/redo/clear when in drawing mode OR when drawings exist
+              if (isDrawingMode || hasDrawings) ...[
+                _buildItem(
+                  icon: Icons.undo,
+                  label: 'Undo',
+                  onPressed: canUndo ? onUndo : null,
+                ),
+                _buildItem(
+                  icon: Icons.redo,
+                  label: 'Redo',
+                  onPressed: canRedo ? onRedo : null,
+                ),
+                _buildItem(
+                  icon: Icons.cleaning_services,
+                  label: 'Clear',
+                  onPressed: hasDrawings ? onClearDrawing : null,
+                ),
               ],
               const SizedBox(height: 8),
             ],
@@ -269,17 +274,79 @@ class ControlSidebar extends StatelessWidget {
   Widget _buildViewModeItem() {
     IconData icon;
     String label;
+    Color? circleColor;
 
     switch (viewMode) {
       case ViewMode.both:
         icon = Icons.splitscreen;
         label = 'Both sides';
+        circleColor = null;
       case ViewMode.redOnly:
         icon = Icons.crop_square;
         label = 'Red only';
+        circleColor = Colors.red;
       case ViewMode.blueOnly:
         icon = Icons.crop_square;
         label = 'Blue only';
+        circleColor = Colors.blue;
+    }
+
+    // Use colored circle indicator (like mute button) when showing single alliance
+    if (circleColor != null) {
+      if (!_expanded) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 2),
+          child: Tooltip(
+            message: label,
+            child: Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: circleColor,
+                  width: 2,
+                ),
+              ),
+              child: IconButton(
+                icon: Icon(icon),
+                onPressed: hasDualVideo ? onToggleViewMode : null,
+                color: Colors.white,
+                disabledColor: Colors.white38,
+                iconSize: 24,
+              ),
+            ),
+          ),
+        );
+      }
+
+      return InkWell(
+        onTap: hasDualVideo ? onToggleViewMode : null,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
+          child: Row(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: circleColor,
+                    width: 2,
+                  ),
+                ),
+                padding: const EdgeInsets.all(2),
+                child: Icon(icon, color: Colors.white, size: 18),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  label,
+                  style: const TextStyle(color: Colors.white, fontSize: 13),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
     }
 
     return _buildItem(

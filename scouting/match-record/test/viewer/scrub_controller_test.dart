@@ -1,3 +1,4 @@
+import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:match_record/viewer/scrub_controller.dart';
 
@@ -123,7 +124,8 @@ void main() {
       expect(negativeOffset, -positiveOffset);
     });
 
-    test('custom exponent changes the curve - lower exponent is more linear', () {
+    test('custom exponent changes the curve - lower exponent is more linear',
+        () {
       final highExp = ScrubController.computeScrubOffsetMs(
         100.0,
         paneWidth,
@@ -169,6 +171,227 @@ void main() {
 
     test('negative pane width returns zero', () {
       expect(ScrubController.computeScrubOffsetMs(50.0, -100.0), 0);
+    });
+  });
+
+  group('ScrubController coalescing timer', () {
+    late ScrubController controller;
+
+    setUp(() {
+      controller = ScrubController();
+    });
+
+    tearDown(() {
+      controller.reset();
+    });
+
+    test('startCoalescing sets isCoalescing to true', () {
+      fakeAsync((async) {
+        expect(controller.isCoalescing, isFalse);
+        controller.startCoalescing(
+          intervalMs: 100,
+          onTick: (_) {},
+        );
+        expect(controller.isCoalescing, isTrue);
+        controller.stopCoalescing();
+      });
+    });
+
+    test('stopCoalescing sets isCoalescing to false', () {
+      fakeAsync((async) {
+        controller.startCoalescing(
+          intervalMs: 100,
+          onTick: (_) {},
+        );
+        controller.stopCoalescing();
+        expect(controller.isCoalescing, isFalse);
+      });
+    });
+
+    test('timer fires onTick with desired position at interval', () {
+      fakeAsync((async) {
+        final ticks = <Duration>[];
+        controller.startCoalescing(
+          intervalMs: 100,
+          onTick: (pos) => ticks.add(pos),
+        );
+
+        controller.updateDesiredPosition(const Duration(seconds: 5));
+        async.elapse(const Duration(milliseconds: 100));
+        expect(ticks, hasLength(1));
+        expect(ticks[0], const Duration(seconds: 5));
+
+        controller.stopCoalescing();
+      });
+    });
+
+    test('timer does not fire if desired position has not changed', () {
+      fakeAsync((async) {
+        final ticks = <Duration>[];
+        controller.startCoalescing(
+          intervalMs: 100,
+          onTick: (pos) => ticks.add(pos),
+        );
+
+        controller.updateDesiredPosition(const Duration(seconds: 5));
+        async.elapse(const Duration(milliseconds: 100));
+        expect(ticks, hasLength(1));
+
+        // No update — next tick should not fire
+        async.elapse(const Duration(milliseconds: 100));
+        expect(ticks, hasLength(1),
+            reason: 'no new tick when position unchanged');
+
+        controller.stopCoalescing();
+      });
+    });
+
+    test('timer fires again when desired position changes', () {
+      fakeAsync((async) {
+        final ticks = <Duration>[];
+        controller.startCoalescing(
+          intervalMs: 100,
+          onTick: (pos) => ticks.add(pos),
+        );
+
+        controller.updateDesiredPosition(const Duration(seconds: 5));
+        async.elapse(const Duration(milliseconds: 100));
+        expect(ticks, hasLength(1));
+
+        controller.updateDesiredPosition(const Duration(seconds: 10));
+        async.elapse(const Duration(milliseconds: 100));
+        expect(ticks, hasLength(2));
+        expect(ticks[1], const Duration(seconds: 10));
+
+        controller.stopCoalescing();
+      });
+    });
+
+    test('multiple rapid updates coalesce to latest position', () {
+      fakeAsync((async) {
+        final ticks = <Duration>[];
+        controller.startCoalescing(
+          intervalMs: 100,
+          onTick: (pos) => ticks.add(pos),
+        );
+
+        // Simulate rapid scrub updates (multiple within one timer interval)
+        controller.updateDesiredPosition(const Duration(seconds: 1));
+        controller.updateDesiredPosition(const Duration(seconds: 3));
+        controller.updateDesiredPosition(const Duration(seconds: 7));
+
+        async.elapse(const Duration(milliseconds: 100));
+        expect(ticks, hasLength(1));
+        expect(ticks[0], const Duration(seconds: 7),
+            reason: 'only the latest position should be dispatched');
+
+        controller.stopCoalescing();
+      });
+    });
+
+    test('timer does not fire if no desired position set', () {
+      fakeAsync((async) {
+        final ticks = <Duration>[];
+        controller.startCoalescing(
+          intervalMs: 100,
+          onTick: (pos) => ticks.add(pos),
+        );
+
+        // No updateDesiredPosition called
+        async.elapse(const Duration(milliseconds: 300));
+        expect(ticks, isEmpty);
+
+        controller.stopCoalescing();
+      });
+    });
+
+    test('stopCoalescing returns final position when different from last seeked',
+        () {
+      fakeAsync((async) {
+        controller.startCoalescing(
+          intervalMs: 100,
+          onTick: (_) {},
+        );
+
+        controller.updateDesiredPosition(const Duration(seconds: 5));
+        async.elapse(const Duration(milliseconds: 100));
+
+        // Update position but don't let timer tick
+        controller.updateDesiredPosition(const Duration(seconds: 8));
+        final finalPos = controller.stopCoalescing();
+        expect(finalPos, const Duration(seconds: 8));
+      });
+    });
+
+    test('stopCoalescing returns null when position matches last seeked', () {
+      fakeAsync((async) {
+        controller.startCoalescing(
+          intervalMs: 100,
+          onTick: (_) {},
+        );
+
+        controller.updateDesiredPosition(const Duration(seconds: 5));
+        async.elapse(const Duration(milliseconds: 100));
+
+        // No new update — already seeked to latest
+        final finalPos = controller.stopCoalescing();
+        expect(finalPos, isNull);
+      });
+    });
+
+    test('stopCoalescing returns null when no desired position was set', () {
+      fakeAsync((async) {
+        controller.startCoalescing(
+          intervalMs: 100,
+          onTick: (_) {},
+        );
+
+        final finalPos = controller.stopCoalescing();
+        expect(finalPos, isNull);
+      });
+    });
+
+    test('reset clears coalescing state', () {
+      fakeAsync((async) {
+        controller.startCoalescing(
+          intervalMs: 100,
+          onTick: (_) {},
+        );
+        controller.updateDesiredPosition(const Duration(seconds: 5));
+        controller.reset();
+
+        expect(controller.isCoalescing, isFalse);
+        expect(controller.desiredPosition, isNull);
+        expect(controller.lastSeekedPosition, isNull);
+      });
+    });
+
+    test('startCoalescing cancels previous timer', () {
+      fakeAsync((async) {
+        final ticks1 = <Duration>[];
+        final ticks2 = <Duration>[];
+
+        controller.startCoalescing(
+          intervalMs: 100,
+          onTick: (pos) => ticks1.add(pos),
+        );
+        controller.updateDesiredPosition(const Duration(seconds: 5));
+
+        // Start a new timer before the first fires
+        controller.startCoalescing(
+          intervalMs: 100,
+          onTick: (pos) => ticks2.add(pos),
+        );
+        controller.updateDesiredPosition(const Duration(seconds: 10));
+
+        async.elapse(const Duration(milliseconds: 100));
+        expect(ticks1, isEmpty,
+            reason: 'old timer should be cancelled');
+        expect(ticks2, hasLength(1));
+        expect(ticks2[0], const Duration(seconds: 10));
+
+        controller.stopCoalescing();
+      });
     });
   });
 }

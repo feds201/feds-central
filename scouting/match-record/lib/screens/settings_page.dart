@@ -26,6 +26,7 @@ class _SettingsPageState extends State<SettingsPage> {
   late TextEditingController _gapMaxController;
   late TextEditingController _scrubExponentController;
   late TextEditingController _scrubMaxRangeController;
+  late TextEditingController _scrubCoalescingController;
 
   bool _isLoadingEvents = false;
   bool _isLoadingTbaData = false;
@@ -53,6 +54,9 @@ class _SettingsPageState extends State<SettingsPage> {
     _scrubMaxRangeController = TextEditingController(
       text: (settings.scrubMaxRangeMs / 1000).toStringAsFixed(0),
     );
+    _scrubCoalescingController = TextEditingController(
+      text: settings.scrubCoalescingIntervalMs.toString(),
+    );
   }
 
   @override
@@ -63,6 +67,7 @@ class _SettingsPageState extends State<SettingsPage> {
     _gapMaxController.dispose();
     _scrubExponentController.dispose();
     _scrubMaxRangeController.dispose();
+    _scrubCoalescingController.dispose();
     super.dispose();
   }
 
@@ -83,6 +88,8 @@ class _SettingsPageState extends State<SettingsPage> {
         double.tryParse(_scrubExponentController.text.trim()) ?? 2.5;
     final scrubMax =
         (int.tryParse(_scrubMaxRangeController.text.trim()) ?? 120) * 1000;
+    final scrubCoalescing =
+        int.tryParse(_scrubCoalescingController.text.trim()) ?? 100;
 
     await widget.dataStore.updateSettings(
       widget.dataStore.settings.copyWith(
@@ -91,6 +98,7 @@ class _SettingsPageState extends State<SettingsPage> {
         sequentialGapMaxMinutes: gapMax,
         scrubExponent: scrubExp,
         scrubMaxRangeMs: scrubMax,
+        scrubCoalescingIntervalMs: scrubCoalescing,
       ),
     );
   }
@@ -356,6 +364,12 @@ class _SettingsPageState extends State<SettingsPage> {
             label: 'Scrub max range (seconds)',
             controller: _scrubMaxRangeController,
             infoText: 'Maximum time range (seconds) that a full-width scrub gesture covers',
+          ),
+          const SizedBox(height: 8),
+          _buildThresholdField(
+            label: 'Scrub coalescing interval (ms)',
+            controller: _scrubCoalescingController,
+            infoText: 'How often seek commands are sent during finger scrubbing (lower = smoother but heavier on decoder)',
           ),
           const SizedBox(height: 12),
           FilledButton.tonal(

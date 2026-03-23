@@ -553,6 +553,8 @@ void main() {
           AppConstants.defaultSequentialGapMaxMinutes);
       expect(settings.scrubExponent, AppConstants.defaultScrubExponent);
       expect(settings.scrubMaxRangeMs, AppConstants.defaultScrubMaxRangeMs);
+      expect(settings.scrubCoalescingIntervalMs,
+          AppConstants.defaultScrubCoalescingIntervalMs);
       expect(settings.recordedMatchesOnly, isFalse);
     });
 

@@ -64,6 +64,8 @@ class _VideoViewerState extends State<VideoViewer> {
   // Per-pane rotation (quarter turns, 0-3)
   int _redQuarterTurns = 0;
   int _blueQuarterTurns = 0;
+  bool _redManuallyRotated = false;
+  bool _blueManuallyRotated = false;
 
   // Position tracking
   Duration _position = Duration.zero;
@@ -139,6 +141,12 @@ class _VideoViewerState extends State<VideoViewer> {
       _laterWaiting = _syncEngine!.laterWaiting;
       _countdownRemaining = _syncEngine!.countdownRemaining;
     }
+
+    // Auto-rotate videos so the wider dimension is vertical.
+    // In landscape mode, we want phone videos (typically taller than wide)
+    // to display naturally, and landscape videos rotated so wider=vertical.
+    _autoRotatePlayer(_redPlayer, isRed: true);
+    _autoRotatePlayer(_bluePlayer, isRed: false);
 
     // Subscribe to position/duration streams from the primary player
     // (must subscribe before autoplay so we catch the playing state)
@@ -256,6 +264,7 @@ class _VideoViewerState extends State<VideoViewer> {
           _viewMode = ViewMode.both;
       }
     });
+    _updateAutoRotation();
   }
 
   // --- Playback ---
@@ -289,6 +298,7 @@ class _VideoViewerState extends State<VideoViewer> {
   }
 
   Future<void> _restart() async {
+    final wasPlaying = _isPlaying;
     if (_syncEngine != null) {
       await _syncEngine!.restartBoth();
       setState(() {
@@ -296,11 +306,17 @@ class _VideoViewerState extends State<VideoViewer> {
         _laterWaiting = _syncEngine!.laterWaiting;
         _countdownRemaining = _syncEngine!.countdownRemaining;
       });
+      if (wasPlaying) {
+        await _syncEngine!.startSyncedPlayback();
+      }
     } else {
       final player = _redPlayer ?? _bluePlayer;
       await player?.pause();
       await player?.seek(Duration.zero);
       setState(() => _position = Duration.zero);
+      if (wasPlaying) {
+        await player?.play();
+      }
     }
   }
 
@@ -335,6 +351,12 @@ class _VideoViewerState extends State<VideoViewer> {
         (_redPlayer ?? _bluePlayer)?.pause();
       }
     }
+
+    // Start coalescing timer for smooth finger scrubbing
+    _scrubController.startCoalescing(
+      intervalMs: widget.dataStore.settings.scrubCoalescingIntervalMs,
+      onTick: _onScrubCoalescingTick,
+    );
   }
 
   void _onScrubUpdate(double deltaX, double paneWidth) {
@@ -349,25 +371,38 @@ class _VideoViewerState extends State<VideoViewer> {
     final targetMs = (baseMs + offsetMs).clamp(0, _duration.inMilliseconds);
     final target = Duration(milliseconds: targetMs);
 
+    // Update UI immediately for responsiveness
     setState(() => _position = target);
 
-    _scrubController.enqueueSeek(target, (pos) async {
-      if (_syncEngine != null) {
-        await _syncEngine!.seekToEarlierPosition(pos);
-        if (mounted) {
-          setState(() {
-            _laterWaiting = _syncEngine!.laterWaiting;
-            _countdownRemaining = _syncEngine!.countdownRemaining;
-          });
-        }
-      } else {
-        await (_redPlayer ?? _bluePlayer)?.seek(pos);
+    // Store desired position — coalescing timer will dispatch the seek
+    _scrubController.updateDesiredPosition(target);
+  }
+
+  /// Called by the coalescing timer at fixed intervals.
+  /// Fire-and-forget seek — do not await.
+  void _onScrubCoalescingTick(Duration position) {
+    if (_syncEngine != null) {
+      _syncEngine!.seekToEarlierPosition(position);
+      if (mounted) {
+        setState(() {
+          _laterWaiting = _syncEngine!.laterWaiting;
+          _countdownRemaining = _syncEngine!.countdownRemaining;
+        });
       }
-    });
+    } else {
+      (_redPlayer ?? _bluePlayer)?.seek(position);
+    }
   }
 
   void _onScrubEnd() {
     _isFingerScrubbing = false;
+
+    // Stop coalescing timer and do a final seek if needed
+    final finalPosition = _scrubController.stopCoalescing();
+    if (finalPosition != null) {
+      _onScrubCoalescingTick(finalPosition);
+    }
+
     _scrubController.reset();
     if (_wasPlayingBeforeScrub) {
       _wasPlayingBeforeScrub = false;
@@ -387,8 +422,10 @@ class _VideoViewerState extends State<VideoViewer> {
     setState(() {
       if (isRed) {
         _redQuarterTurns = (_redQuarterTurns + 1) % 4;
+        _redManuallyRotated = true;
       } else {
         _blueQuarterTurns = (_blueQuarterTurns + 1) % 4;
+        _blueManuallyRotated = true;
       }
     });
   }
@@ -412,6 +449,67 @@ class _VideoViewerState extends State<VideoViewer> {
         dataStore: widget.dataStore,
       ),
     );
+  }
+
+  // --- Auto-rotation ---
+
+  // Cached video dimensions for recomputing rotation on view mode change
+  int? _redVideoWidth, _redVideoHeight;
+  int? _blueVideoWidth, _blueVideoHeight;
+
+  /// Auto-rotate a video pane based on its native dimensions.
+  /// Listens to the player's width stream (fires when video opens).
+  void _autoRotatePlayer(Player? player, {required bool isRed}) {
+    if (player == null) return;
+    _subscriptions.add(
+      player.stream.width.listen((width) {
+        final height = player.state.height;
+        if (width != null && height != null && width > 0 && height > 0) {
+          if (isRed) {
+            _redVideoWidth = width;
+            _redVideoHeight = height;
+          } else {
+            _blueVideoWidth = width;
+            _blueVideoHeight = height;
+          }
+          _updateAutoRotation();
+        }
+      }),
+    );
+  }
+
+  /// Recomputes auto-rotation for all panes based on current view mode.
+  /// In dual mode: wider dimension should be vertical (panes are tall/narrow).
+  /// In single mode: wider dimension should be horizontal (fill landscape screen).
+  /// Skips panes that the user has manually rotated.
+  void _updateAutoRotation() {
+    setState(() {
+      final isSingleMode = !_hasDualVideo || _viewMode != ViewMode.both;
+
+      if (!_redManuallyRotated &&
+          _redVideoWidth != null &&
+          _redVideoHeight != null) {
+        final isLandscapeVideo = _redVideoWidth! > _redVideoHeight!;
+        if (isSingleMode) {
+          // Single: wider should be horizontal — landscape videos need no rotation
+          _redQuarterTurns = isLandscapeVideo ? 0 : 1;
+        } else {
+          // Dual: wider should be vertical — landscape videos need rotation
+          _redQuarterTurns = isLandscapeVideo ? 1 : 0;
+        }
+      }
+
+      if (!_blueManuallyRotated &&
+          _blueVideoWidth != null &&
+          _blueVideoHeight != null) {
+        final isLandscapeVideo = _blueVideoWidth! > _blueVideoHeight!;
+        if (isSingleMode) {
+          _blueQuarterTurns = isLandscapeVideo ? 0 : 1;
+        } else {
+          _blueQuarterTurns = isLandscapeVideo ? 1 : 0;
+        }
+      }
+    });
   }
 
   // --- Helpers ---
@@ -460,6 +558,7 @@ class _VideoViewerState extends State<VideoViewer> {
               isDrawingMode: _isDrawingMode,
               canUndo: _drawingController.canUndo,
               canRedo: _drawingController.canRedo,
+              hasDrawings: _drawingController.strokes.isNotEmpty,
               hasDualVideo: _hasDualVideo,
               isPaused: !_isPlaying,
               onBack: () => Navigator.of(context).pop(),
