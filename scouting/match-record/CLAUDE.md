@@ -25,6 +25,7 @@ Offline-first Android tablet app for FRC Team 201 (The FEDS) to ingest, organize
 | `SYSTEM_DESIGN.md` | Full technical design — architecture, data model, API specs, algorithms |
 | `PROGRESS.md` | What's been built and what still needs to be done |
 | `BUILDERS_DIARY.md` | Development journal — trade-offs, bugs found, adjustments made |
+| `ISSUES.md` | User-reported bugs and improvements, organized by screen area |
 
 Prototype learning docs (VIDEO_PROTOTYPE_LEARNINGS.md, DRAWING_PROTOTYPE_LEARNINGS.md) were archived after all patterns were applied to the codebase.
 
@@ -50,6 +51,20 @@ Context pollution is the #1 threat to performance on this codebase. The app has 
 - **Shrink screenshots before reading** — `convert input.png -resize 50% -quality 75 output.jpg`. Raw device screenshots are 2-4MB.
 - **When thinking hard about a specific feature or problem**, dispatch a subagent with the relevant context rather than pulling it all into your main context.
 
+### Fixing Issues from ISSUES.md
+
+`ISSUES.md` contains user-reported bugs and improvements. When fixing issues, follow this process:
+
+1. **Reproduce** — Use MCP tools on the REAL connected device to confirm the bug. Take a screenshot, get the view hierarchy, interact with the app. Do this via a subagent to avoid context pollution.
+2. **Explore** — Read the relevant SPEC/SYSTEM_DESIGN sections, the module README, and the specific source files involved. Understand the intended behavior vs actual behavior.
+3. **Plan** — Decide on the fix. For non-trivial changes, outline what files change and why.
+4. **Update tests** — Write or update unit tests to cover the fix. Tests should fail before the fix.
+5. **Implement** — Make the code changes.
+6. **Verify tests pass** — Run `flutter test` and confirm all tests pass.
+7. **Verify on device** — Build, install, and reproduce the original issue on the real device via MCP tools (in a subagent). Confirm it's fixed. Take before/after screenshots if helpful.
+
+Issues are labeled by screen area (m = main screen, v = video player, s = sync/import). Some are questions — answer them before implementing.
+
 ### Builder's Diary
 
 `BUILDERS_DIARY.md` documents the development journey — trade-offs made, bugs found, adjustments to the plan. Update it when making significant changes. It's long, so use a subagent to read through it if needed.
@@ -57,11 +72,11 @@ Context pollution is the #1 threat to performance on this codebase. The app has 
 ### Test Flags
 
 `lib/util/test_flags.dart` contains flags for development:
-- `useEmbeddedSampleVideos` — uses bundled sample videos instead of USB drives
+- `useSampleVideos` — uses sample videos from device filesystem instead of USB drives (see `TestDriveAccess` for adb push instructions)
 - `forceEventId` — auto-loads 2026mimid TBA data on first launch
-- `forceSampleMatchAssignment` — assigns sample videos to Q1 and Q2
+- `forceSampleMatchAssignment` — assigns sample videos to Q1
 
-These make the app usable on desktop and devices without USB drives.
+These make the app testable on devices without USB drives.
 
 ### Testing
 
