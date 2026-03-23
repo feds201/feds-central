@@ -99,9 +99,9 @@ It is tolerant of malformed JSON, missing keys, wrong types, and extra whitespac
 
 ## Known Issues / Shortcomings
 
-- **No real SAF implementation.** `DriveAccess` is an abstract interface. The only concrete implementation is `TestDriveAccess`, which serves bundled sample data from Flutter assets. There is no Android SAF (Storage Access Framework) implementation yet, so real USB drives cannot be accessed.
+- **No real SAF implementation.** `DriveAccess` is an abstract interface. The only concrete implementation is `TestDriveAccess`, which reads sample videos from the device filesystem. There is no Android SAF (Storage Access Framework) implementation yet, so real USB drives cannot be accessed.
 
-- **TestDriveAccess is hardcoded.** It defines exactly two test drives (an iOS drive and an Android drive) with two videos each. `pickDrive` always returns the first drive. `deleteFile` is a no-op. You cannot add drives at runtime.
+- **TestDriveAccess is hardcoded.** It defines exactly two test drives (an iOS drive and an Android drive) with one video each. Videos must be pushed to the device via adb (see `TestDriveAccess` doc comment). `pickDrive` always returns the first drive. `deleteFile` is a no-op. You cannot add drives at runtime.
 
 - **VideoMetadataService uses synthetic data everywhere.** The `getMetadata` method always calls `_generateSyntheticMetadata` -- there is no platform channel path for real Android `MediaMetadataRetriever` extraction. On real devices, metadata (duration, date, ftyp brand) will be estimated from filenames and file sizes instead of read from the actual video container.
 

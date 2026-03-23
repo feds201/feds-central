@@ -99,7 +99,7 @@ Search state is owned entirely by `_MainScreenState`: the `TextEditingController
 - **"Recorded Only" filters matches only:** The toggle filters the match list but does not affect the Teams or Alliances tabs. A team or alliance might show up even if none of their matches have recordings.
 - **No drive switch button in ImportTab:** There is currently no way to disconnect from a scanned drive and connect a different one without leaving and re-entering the SyncPage. The `_pickDrive` method exists but is only surfaced in the initial "Connect Drive" state and the error state.
 - **Viewer requires recordings to open:** Tapping a match that has only a YouTube link (no local recordings) shows a snackbar "No recordings for [match]" and does not navigate. YouTube-only matches cannot be viewed in the in-app player.
-- **Import pipeline hardcoded to TestDriveAccess:** `ImportTab._driveAccess` is always `TestDriveAccess()` even when `TestFlags.useEmbeddedSampleVideos` is false. There is a TODO comment to replace it with `SafDriveAccess` for production.
+- **Import pipeline hardcoded to TestDriveAccess:** `ImportTab._driveAccess` is always `TestDriveAccess()` even when `TestFlags.useSampleVideos` is false. There is a TODO comment to replace it with `SafDriveAccess` for production.
 - **SettingsPage "Manage Storage" button is a no-op:** The storage button's `onPressed` is an empty closure `() {}`.
 - **Edit metadata defaults to red recording:** The `_EditMetadataSheet` in VideoViewer always defaults to editing the red recording (or blue if red is absent). There is no UI to switch which recording you are editing.
 - **Autocomplete capped at 20 results:** If the query is broad enough to match more than 20 items, results are silently truncated.

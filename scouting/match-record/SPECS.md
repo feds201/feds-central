@@ -209,11 +209,8 @@ Foreground Service for Import
 - Shows a persistent notification with import progress
 - Without this, Android may kill the app if the user accidentally switches apps or taps a notification during a multi-file import (wakelock only prevents screen sleep, not process death)
 
-iPad / iOS Support
-- Currently Android-only. iOS support requires addressing the following:
-- USB drive detection: iOS has NO programmatic USB detection. The user must manually use the system Files picker each time to select files from a USB drive. No auto-detect, no volume label reading. The entire Sync UI import flow would need a fallback path where the user manually picks files.
-- Drive color identification: Volume label is not reliably readable on iOS. User must manually confirm which drive is red/blue every time.
-- Orientation locking: Works on iPad ONLY if multitasking is disabled (UIRequiresFullScreen = YES in Info.plist), which removes Split View and Slide Over.
-- Flash drive clearing: Deleting files from a USB drive via iOS app APIs is extremely limited. May need to direct users to the Files app for this.
-- Flash drive file systems: iOS supports FAT, FAT32, exFAT, APFS. NTFS read-only since iOS 16. Drives must use a compatible format.
-- All other features (video playback, database, search, drawing, URL launching) work on iOS without changes.
+Desktop / Web / iOS Support (P2)
+- The app is Android-only. Supporting other platforms would require:
+- **iOS/iPad:** USB drive detection (iOS has NO programmatic USB detection — requires Files picker fallback), drive color identification (volume label not reliably readable), orientation locking (iPad requires UIRequiresFullScreen = YES, removing Split View), flash drive clearing (iOS APIs very limited), compatible file systems only (FAT, FAT32, exFAT, APFS; NTFS read-only since iOS 16).
+- **Desktop:** No USB drive detection APIs in Flutter. Would need platform-specific implementations or a file picker approach.
+- **Web:** No local file system access for USB drives. Would require a completely different import flow (drag-and-drop or file upload).

@@ -4,7 +4,7 @@
 
 Offline-first Android tablet app for FRC Team 201 (The FEDS). Students record each match on personal phones (one per alliance side, vertical video), transfer via USB-C flash drives, and the tablet provides a synchronized dual-video viewer for match strategy analysis between matches.
 
-**Scope:** P0 (core) + P1 (drawing) from SPECS.md. P2 items (iOS support, API 36 migration, local ripped YouTube pipeline, multi-field support) are deferred.
+**Scope:** P0 (core) + P1 (drawing) from SPECS.md. P2 items (desktop/web/iOS support, API 36 migration, local ripped YouTube pipeline, multi-field support) are deferred.
 
 **Reference documents:**
 - Requirements: `SPECS.md`
@@ -52,7 +52,7 @@ Offline-first Android tablet app for FRC Team 201 (The FEDS). Students record ea
 
 ### Custom Native Code
 
-One Kotlin platform channel (~50-60 lines total) for video metadata extraction and iOS device detection. See §6.2 for full specification.
+One Kotlin platform channel (~50-60 lines total) for video metadata extraction and iOS-recorded-video detection. See §6.2 for full specification.
 
 > **Implementation note:** The ftyp brand detection code (§9) MUST be thoroughly documented with inline comments explaining what ftyp is, why `qt  ` indicates iOS, and why this matters for timestamp interpretation. This is non-obvious domain knowledge that will confuse future maintainers without explanation.
 

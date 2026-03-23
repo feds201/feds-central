@@ -23,8 +23,8 @@
 
 ### Import Pipeline
 - `DriveAccess` interface: abstract contract for USB drive operations (pickDrive, hasPermission, listVideoFiles, readTextFile, getDriveLabel, copyToLocal, deleteFile).
-- `TestDriveAccess`: full implementation using embedded sample assets (two simulated drives -- iOS and Android -- with config.json alliance hints and realistic filenames/timestamps).
-- `VideoMetadataService`: Dart wrapper that will call the platform channel on Android. Currently generates synthetic metadata on desktop (iOS detection via ftyp brand, platform-aware recording start time calculation, Android Pixel filename timestamp parsing).
+- `TestDriveAccess`: full implementation reading sample videos from device filesystem (two simulated drives -- iOS-recorded and Android-recorded -- with config.json alliance hints and realistic filenames/timestamps). Videos must be pushed via adb before use.
+- `VideoMetadataService`: Dart wrapper that will call the platform channel on Android. Currently generates synthetic metadata (iOS-recorded-video detection via ftyp brand, platform-aware recording start time calculation, Android Pixel filename timestamp parsing).
 - `VideoMetadata` model: sourceUri, duration, date, mimetype, dimensions, orientation, framerate, ftypBrand, fileSize. Includes `isIOSRecording` (ftyp brand + .mov fallback) and `recordingStartTime` (platform-aware: iOS creation_time = start, Android = end minus duration).
 - `MatchSuggester`: pure function that auto-suggests match assignments for a list of videos. Uses timestamp proximity to schedule as primary signal, sequential gap logic with tunable thresholds (< 10 min = sequential, > 20 min = schedule lookup, 10-20 min = requires manual), and cascade logic when user manually edits a row.
 - `AllianceSuggester`: pure function that parses config.json from drive root to suggest red/blue alliance side.
@@ -66,7 +66,7 @@ All remaining work is related to real USB flash drive support. Currently the app
 
 1. **SAF DriveAccess implementation** (`lib/import/saf_drive_access.dart`) -- Real implementation of the `DriveAccess` interface using the `saf_util` and `saf_stream` packages for USB drive access via Android's Storage Access Framework. The interface is fully defined in `drive_access.dart`. Needs to implement: SAF folder picker with persisted permissions, video file enumeration by extension, config.json reading, drive label retrieval, streaming file copy with progress callback, and file deletion.
 
-2. **Video metadata platform channel** (`android/app/src/main/kotlin/.../VideoMetadataChannel.kt`) -- Kotlin platform channel (~50-60 lines) that reads video metadata from SAF `content://` URIs using `MediaMetadataRetriever` plus ftyp brand detection for iOS device identification. The Dart side already exists in `video_metadata_service.dart` (currently returning synthetic metadata on desktop); it needs to call the real platform channel when running on Android.
+2. **Video metadata platform channel** (`android/app/src/main/kotlin/.../VideoMetadataChannel.kt`) -- Kotlin platform channel (~50-60 lines) that reads video metadata from SAF `content://` URIs using `MediaMetadataRetriever` plus ftyp brand detection for iOS device identification. The Dart side already exists in `video_metadata_service.dart` (currently returning synthetic metadata); it needs to call the real platform channel on Android.
 
 3. **Free space check platform channel** -- Small Kotlin method using `StatFs` to check available device storage before starting an import. Currently not implemented. Constants for low storage warning (1GB) and import blocking (100MB) are already defined in `constants.dart`.
 
