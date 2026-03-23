@@ -64,6 +64,7 @@ class ControlSidebar extends StatelessWidget {
       color: const Color(0xFF1E1E1E),
       child: SafeArea(
         left: false,
+        right: false,
         child: SingleChildScrollView(
           child: Column(
             children: [

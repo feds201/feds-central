@@ -253,16 +253,21 @@ class _MainScreenState extends State<MainScreen> {
             title: const Text('Match Record'),
             bottom: PreferredSize(
               preferredSize: const Size.fromHeight(48),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                child: AppSearchBar(
-                  key: _searchBarKey,
-                  controller: _searchController,
-                  chips: _chips,
-                  focusNode: _searchFocusNode,
-                  onTextChanged: _onSearchTextChanged,
-                  onChipRemoved: _removeChip,
-                  onSubmitted: _onSubmitted,
+              child: SizedBox(
+                height: 48,
+                child: ClipRect(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                    child: AppSearchBar(
+                      key: _searchBarKey,
+                      controller: _searchController,
+                      chips: _chips,
+                      focusNode: _searchFocusNode,
+                      onTextChanged: _onSearchTextChanged,
+                      onChipRemoved: _removeChip,
+                      onSubmitted: _onSubmitted,
+                    ),
+                  ),
                 ),
               ),
             ),

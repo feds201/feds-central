@@ -394,47 +394,49 @@ class _VideoViewerState extends State<VideoViewer> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: Row(
-        children: [
-          Expanded(
-            child: Column(
-              children: [
-                Expanded(child: _buildVideoPanes()),
-                ScrubberBar(
-                  position: _position,
-                  duration: _duration,
-                  isDragging: _isScrubBarDragging,
-                  onSeek: _seekTo,
-                  onDragStateChanged: (dragging) {
-                    setState(() => _isScrubBarDragging = dragging);
-                  },
-                ),
-              ],
+      body: SafeArea(
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                children: [
+                  Expanded(child: _buildVideoPanes()),
+                  ScrubberBar(
+                    position: _position,
+                    duration: _duration,
+                    isDragging: _isScrubBarDragging,
+                    onSeek: _seekTo,
+                    onDragStateChanged: (dragging) {
+                      setState(() => _isScrubBarDragging = dragging);
+                    },
+                  ),
+                ],
+              ),
             ),
-          ),
-          ControlSidebar(
-            isPlaying: _isPlaying,
-            muteState: _muteState,
-            viewMode: _viewMode,
-            isDrawingMode: _isDrawingMode,
-            canUndo: _drawingController.canUndo,
-            canRedo: _drawingController.canRedo,
-            hasDualVideo: _hasDualVideo,
-            isPaused: !_isPlaying,
-            onBack: () => Navigator.of(context).pop(),
-            onSwapSides: _swapSides,
-            onToggleMute: _toggleMute,
-            onToggleViewMode: _toggleViewMode,
-            onPlayPause: _togglePlayPause,
-            onRewind10: _rewind10,
-            onForward10: _forward10,
-            onRestart: _restart,
-            onToggleDrawing: _toggleDrawing,
-            onUndo: _drawingController.undo,
-            onRedo: _drawingController.redo,
-            onClearDrawing: _drawingController.clear,
-          ),
-        ],
+            ControlSidebar(
+              isPlaying: _isPlaying,
+              muteState: _muteState,
+              viewMode: _viewMode,
+              isDrawingMode: _isDrawingMode,
+              canUndo: _drawingController.canUndo,
+              canRedo: _drawingController.canRedo,
+              hasDualVideo: _hasDualVideo,
+              isPaused: !_isPlaying,
+              onBack: () => Navigator.of(context).pop(),
+              onSwapSides: _swapSides,
+              onToggleMute: _toggleMute,
+              onToggleViewMode: _toggleViewMode,
+              onPlayPause: _togglePlayPause,
+              onRewind10: _rewind10,
+              onForward10: _forward10,
+              onRestart: _restart,
+              onToggleDrawing: _toggleDrawing,
+              onUndo: _drawingController.undo,
+              onRedo: _drawingController.redo,
+              onClearDrawing: _drawingController.clear,
+            ),
+          ],
+        ),
       ),
     );
   }

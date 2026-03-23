@@ -55,6 +55,7 @@ class AppSearchBar extends StatelessWidget {
         color: theme.colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(28),
       ),
+      clipBehavior: Clip.hardEdge,
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Row(
         children: [
@@ -83,19 +84,22 @@ class AppSearchBar extends StatelessWidget {
                       size: 16,
                     ),
                   ),
-                IntrinsicWidth(
-                  child: TextField(
-                    controller: controller,
-                    focusNode: focusNode,
-                    decoration: const InputDecoration(
-                      hintText: 'Search...',
-                      border: InputBorder.none,
-                      isDense: true,
-                      contentPadding: EdgeInsets.symmetric(vertical: 8),
+                ConstrainedBox(
+                  constraints: const BoxConstraints(minWidth: 150),
+                  child: IntrinsicWidth(
+                    child: TextField(
+                      controller: controller,
+                      focusNode: focusNode,
+                      decoration: const InputDecoration(
+                        hintText: 'Search...',
+                        border: InputBorder.none,
+                        isDense: true,
+                        contentPadding: EdgeInsets.symmetric(vertical: 8),
+                      ),
+                      style: theme.textTheme.bodyMedium,
+                      onChanged: onTextChanged,
+                      onSubmitted: (_) => onSubmitted?.call(),
                     ),
-                    style: theme.textTheme.bodyMedium,
-                    onChanged: onTextChanged,
-                    onSubmitted: (_) => onSubmitted?.call(),
                   ),
                 ),
               ],
