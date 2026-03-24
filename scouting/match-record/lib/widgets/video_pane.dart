@@ -4,14 +4,12 @@ import 'package:media_kit_video/media_kit_video.dart';
 
 /// One side of the dual-video viewer.
 ///
-/// Displays a video with alliance color bar at top, star icon if the user's
-/// team is present, countdown overlay when waiting for sync, and touch scrub
-/// support.
+/// Displays a video with countdown overlay when waiting for sync, and touch
+/// scrub support. Alliance color bar and star icon are rendered outside the
+/// RotatedBox in _buildZoomablePane so they don't rotate with the video.
 class VideoPane extends StatelessWidget {
   final Player player;
   final VideoController videoController;
-  final Color allianceColor;
-  final bool containsUserTeam;
   final bool isDrawingMode;
 
   /// Whether this pane is waiting for the other side to catch up (countdown).
@@ -36,8 +34,6 @@ class VideoPane extends StatelessWidget {
     super.key,
     required this.player,
     required this.videoController,
-    required this.allianceColor,
-    this.containsUserTeam = false,
     this.isDrawingMode = false,
     this.isWaiting = false,
     this.countdownRemaining = Duration.zero,
@@ -61,16 +57,6 @@ class VideoPane extends StatelessWidget {
                 controls: NoVideoControls,
               ),
             ),
-            // Alliance color bar at top
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              child: Container(
-                height: 3,
-                color: allianceColor,
-              ),
-            ),
             // Touch scrub gesture detector (not shown during drawing mode
             // since drawing is handled by a screen-wide overlay in VideoViewer).
             // Placed before buttons/overlays so they receive taps on top of it.
@@ -81,17 +67,6 @@ class VideoPane extends StatelessWidget {
                   onScrubStart: onScrubStart,
                   onScrubUpdate: onScrubUpdate,
                   onScrubEnd: onScrubEnd,
-                ),
-              ),
-            // Star icon for user's team
-            if (containsUserTeam)
-              Positioned(
-                top: 6,
-                left: 6,
-                child: Icon(
-                  Icons.star,
-                  color: Colors.yellow.shade600,
-                  size: 20,
                 ),
               ),
             // Countdown overlay when waiting for sync

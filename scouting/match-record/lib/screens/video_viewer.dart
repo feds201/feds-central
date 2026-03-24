@@ -907,7 +907,10 @@ class _VideoViewerState extends State<VideoViewer> {
     required GlobalKey paneKey,
     required TransformationController zoomController,
     required DrawingController drawingController,
+    required Player player,
     required int quarterTurns,
+    required Color allianceColor,
+    required bool containsUserTeam,
     required Widget videoPane,
     VoidCallback? onRotate,
     VoidCallback? onEdit,
@@ -927,26 +930,85 @@ class _VideoViewerState extends State<VideoViewer> {
             child: Stack(
               children: [
                 videoPane,
-                // Passive drawing layer — rendered inside zoom transform
-                // so strokes zoom with the video
-                IgnorePointer(
-                  ignoring: true,
-                  child: ListenableBuilder(
-                    listenable: drawingController,
-                    builder: (context, _) => CustomPaint(
-                      painter: StrokePainter(
-                        strokes: drawingController.strokes,
-                        currentStrokePoints: drawingController.currentStrokePoints,
-                        currentColor: drawingController.currentColor,
-                        opacity: drawingController.opacity,
-                      ),
-                      size: Size.infinite,
+                // Drawing canvas — sized to match the video's rendered rect
+                // so strokes align with video content at all rotation states
+                Positioned.fill(
+                  child: IgnorePointer(
+                    ignoring: true,
+                    child: StreamBuilder<int?>(
+                      stream: player.stream.width,
+                      initialData: player.state.width,
+                      builder: (context, widthSnap) {
+                        return StreamBuilder<int?>(
+                          stream: player.stream.height,
+                          initialData: player.state.height,
+                          builder: (context, heightSnap) {
+                            final videoWidth = widthSnap.data ?? 0;
+                            final videoHeight = heightSnap.data ?? 0;
+                            return LayoutBuilder(
+                              builder: (context, constraints) {
+                                return ListenableBuilder(
+                                  listenable: drawingController,
+                                  builder: (context, _) {
+                                    // Compute the video's rendered rect within
+                                    // the available space (aspect-ratio fitted)
+                                    final videoRect = _computeVideoRect(
+                                      paneSize: Size(
+                                        constraints.maxWidth,
+                                        constraints.maxHeight,
+                                      ),
+                                      videoWidth: videoWidth,
+                                      videoHeight: videoHeight,
+                                    );
+                                    return CustomPaint(
+                                      painter: _VideoAlignedStrokePainter(
+                                        strokes: drawingController.strokes,
+                                        currentStrokePoints:
+                                            drawingController.currentStrokePoints,
+                                        currentColor:
+                                            drawingController.currentColor,
+                                        opacity: drawingController.opacity,
+                                        videoRect: videoRect,
+                                      ),
+                                      size: Size(
+                                        constraints.maxWidth,
+                                        constraints.maxHeight,
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
+                            );
+                          },
+                        );
+                      },
                     ),
                   ),
                 ),
               ],
             ),
           ),
+          // Alliance color bar — outside rotation so it stays at the top
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              height: 3,
+              color: allianceColor,
+            ),
+          ),
+          // Star icon for user's team — outside rotation so it stays upright
+          if (containsUserTeam)
+            Positioned(
+              top: 6,
+              left: 6,
+              child: Icon(
+                Icons.star,
+                color: Colors.yellow.shade600,
+                size: 20,
+              ),
+            ),
           // Rotate and edit buttons — outside rotation so they stay upright
           Positioned(
             top: 2,
@@ -974,6 +1036,36 @@ class _VideoViewerState extends State<VideoViewer> {
     );
   }
 
+  /// Computes the rect where the video is actually rendered within the pane,
+  /// accounting for aspect-ratio fitting (letterboxing/pillarboxing).
+  static Rect _computeVideoRect({
+    required Size paneSize,
+    required int videoWidth,
+    required int videoHeight,
+  }) {
+    if (videoWidth <= 0 || videoHeight <= 0) {
+      // No video dimensions yet — assume full pane
+      return Offset.zero & paneSize;
+    }
+    final videoAspect = videoWidth / videoHeight;
+    final paneAspect = paneSize.width / paneSize.height;
+
+    double renderWidth, renderHeight;
+    if (videoAspect > paneAspect) {
+      // Video is wider than pane — pillarboxed (bars top/bottom)
+      renderWidth = paneSize.width;
+      renderHeight = paneSize.width / videoAspect;
+    } else {
+      // Video is taller than pane — letterboxed (bars left/right)
+      renderHeight = paneSize.height;
+      renderWidth = paneSize.height * videoAspect;
+    }
+
+    final dx = (paneSize.width - renderWidth) / 2;
+    final dy = (paneSize.height - renderHeight) / 2;
+    return Rect.fromLTWH(dx, dy, renderWidth, renderHeight);
+  }
+
   Widget _buildVideoPanes() {
     final redRec = widget.matchWithVideos.redRecording;
     final blueRec = widget.matchWithVideos.blueRecording;
@@ -993,14 +1085,15 @@ class _VideoViewerState extends State<VideoViewer> {
         paneKey: _singlePaneKey,
         zoomController: _fullZoomController,
         drawingController: _fullDrawingController,
+        player: _fullPlayer!,
         quarterTurns: _fullQuarterTurns,
+        allianceColor: Colors.purple,
+        containsUserTeam: _containsUserTeam(fullRec),
         onRotate: () => _rotatePane(isFull: true),
         onEdit: _openEditMetadata,
         videoPane: VideoPane(
           player: _fullPlayer!,
           videoController: _fullController!,
-          allianceColor: Colors.purple,
-          containsUserTeam: _containsUserTeam(fullRec),
           isDrawingMode: _drawingColor != null,
           isWaiting: false,
           countdownRemaining: Duration.zero,
@@ -1049,14 +1142,15 @@ class _VideoViewerState extends State<VideoViewer> {
         paneKey: _singlePaneKey,
         zoomController: isRed ? _redZoomController : _blueZoomController,
         drawingController: isRed ? _redDrawingController : _blueDrawingController,
+        player: player,
         quarterTurns: isRed ? _redQuarterTurns : _blueQuarterTurns,
+        allianceColor: color,
+        containsUserTeam: _containsUserTeam(recording),
         onRotate: () => _rotatePane(isRed: isRed),
         onEdit: _openEditMetadata,
         videoPane: VideoPane(
           player: player,
           videoController: controller,
-          allianceColor: color,
-          containsUserTeam: _containsUserTeam(recording),
           isDrawingMode: _drawingColor != null,
           isWaiting: isWaiting,
           countdownRemaining: _countdownRemaining,
@@ -1088,14 +1182,15 @@ class _VideoViewerState extends State<VideoViewer> {
             paneKey: _leftPaneKey,
             zoomController: leftIsRed ? _redZoomController : _blueZoomController,
             drawingController: leftIsRed ? _redDrawingController : _blueDrawingController,
+            player: leftPlayer,
             quarterTurns: leftIsRed ? _redQuarterTurns : _blueQuarterTurns,
+            allianceColor: leftColor,
+            containsUserTeam: _containsUserTeam(leftRec),
             onRotate: () => _rotatePane(isRed: leftIsRed),
             onEdit: _openEditMetadata,
             videoPane: VideoPane(
               player: leftPlayer,
               videoController: leftController,
-              allianceColor: leftColor,
-              containsUserTeam: _containsUserTeam(leftRec),
               isDrawingMode: _drawingColor != null,
               isWaiting: leftWaiting,
               countdownRemaining: _countdownRemaining,
@@ -1110,14 +1205,15 @@ class _VideoViewerState extends State<VideoViewer> {
             paneKey: _rightPaneKey,
             zoomController: rightIsRed ? _redZoomController : _blueZoomController,
             drawingController: rightIsRed ? _redDrawingController : _blueDrawingController,
+            player: rightPlayer,
             quarterTurns: rightIsRed ? _redQuarterTurns : _blueQuarterTurns,
+            allianceColor: rightColor,
+            containsUserTeam: _containsUserTeam(rightRec),
             onRotate: () => _rotatePane(isRed: rightIsRed),
             onEdit: _openEditMetadata,
             videoPane: VideoPane(
               player: rightPlayer,
               videoController: rightController,
-              allianceColor: rightColor,
-              containsUserTeam: _containsUserTeam(rightRec),
               isDrawingMode: _drawingColor != null,
               isWaiting: rightWaiting,
               countdownRemaining: _countdownRemaining,
@@ -1160,6 +1256,44 @@ class _PaneOverlayButton extends StatelessWidget {
       ),
     );
   }
+}
+
+/// A stroke painter that clips and translates strokes to the video's rendered
+/// rect, so drawings align with the video even when letterboxed/pillarboxed.
+class _VideoAlignedStrokePainter extends CustomPainter {
+  final List<ColoredStroke> strokes;
+  final List<Offset> currentStrokePoints;
+  final DrawingColor currentColor;
+  final double opacity;
+  final Rect videoRect;
+
+  _VideoAlignedStrokePainter({
+    required this.strokes,
+    required this.currentStrokePoints,
+    required this.currentColor,
+    required this.opacity,
+    required this.videoRect,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    // Clip to the video rect so strokes don't bleed into letterbox/pillarbox
+    canvas.save();
+    canvas.clipRect(videoRect);
+
+    // Delegate to StrokePainter for actual stroke rendering
+    final delegate = StrokePainter(
+      strokes: strokes,
+      currentStrokePoints: currentStrokePoints,
+      currentColor: currentColor,
+      opacity: opacity,
+    );
+    delegate.paint(canvas, size);
+    canvas.restore();
+  }
+
+  @override
+  bool shouldRepaint(covariant _VideoAlignedStrokePainter oldDelegate) => true;
 }
 
 /// Result of hit-testing a screen point against a video pane.
