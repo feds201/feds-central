@@ -234,15 +234,16 @@ void main() {
       expect(results, isEmpty);
     });
 
-    test('Android video recordingStartTime correctly subtracts duration', () {
+    test('Android video recordingStartTime subtracts duration and finalization offset', () {
       final androidVideo = makeVideo(
         recordingStartTime: baseTime,
         durationMs: 60000,
         isIOS: false,
       );
       // Android: date = end time = baseTime + 60s
-      // recordingStartTime = date - duration = baseTime
-      expect(androidVideo.recordingStartTime, baseTime);
+      // recordingStartTime = date - duration - 0.7s finalization offset
+      expect(androidVideo.recordingStartTime,
+          baseTime.subtract(kAndroidFinalizationOffset));
     });
 
     test('iOS video recordingStartTime equals date directly', () {
