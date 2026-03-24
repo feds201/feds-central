@@ -41,6 +41,7 @@ import org.littletonrobotics.junction.Logger;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.utils.LimelightWrapper;
+import frc.robot.utils.PitTesting;
 import frc.robot.utils.RTU.RootTestingUtility;
 import frc.robot.rtu.RTUManager;
 import frc.robot.utils.AutoSweeper;
@@ -124,6 +125,7 @@ public class RobotContainer extends ControllerBindings {
     setupDriveBindings(controller);
     setupOperatorBindings(operaterController);
     configureRootTests();
+    PitTesting.addCommands();
     new Trigger(drivetrain::withinTrench).and(DriverStation::isTeleop).onTrue(shooterHood.setStateCommand(shooterhood_state.IN).andThen(intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED)));
 
     // TODO: migrate to LoggedDashboardChooser from AdvantageKit
@@ -320,23 +322,5 @@ public void limelightConnection(){
     ll3conect.setBoolean(ll3.isConnected());
     ll4conect.setBoolean(ll4.isConnected());
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 }
