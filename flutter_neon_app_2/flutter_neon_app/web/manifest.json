@@ -1,0 +1,9 @@
+{
+  "name": "Neon Database Dashboard",
+  "short_name": "NeonDB",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#0A0A0F",
+  "theme_color": "#00E599",
+  "description": "View and visualize your Neon PostgreSQL data"
+}
