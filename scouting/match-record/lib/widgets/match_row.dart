@@ -9,6 +9,7 @@ class MatchRow extends StatelessWidget {
   final Set<int>? highlightTeamNumbers;
   final bool showEventLabel;
   final bool isYourMatch;
+  final bool highlightOwnTeam;
   final List<Alliance> alliances;
   final VoidCallback? onTap;
 
@@ -19,6 +20,7 @@ class MatchRow extends StatelessWidget {
     this.highlightTeamNumbers,
     this.showEventLabel = false,
     this.isYourMatch = false,
+    this.highlightOwnTeam = true,
     this.alliances = const [],
     this.onTap,
   });
@@ -52,7 +54,9 @@ class MatchRow extends StatelessWidget {
   bool _shouldBold(String teamKey) {
     final num = int.tryParse(_stripFrc(teamKey));
     if (num == null) return false;
-    if (yourTeamNumber != null && num == yourTeamNumber) return true;
+    if (highlightOwnTeam && yourTeamNumber != null && num == yourTeamNumber) {
+      return true;
+    }
     if (highlightTeamNumbers != null && highlightTeamNumbers!.contains(num)) {
       return true;
     }

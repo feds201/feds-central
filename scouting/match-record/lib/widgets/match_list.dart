@@ -9,6 +9,7 @@ class MatchList extends StatelessWidget {
   final Set<int>? highlightTeamNumbers;
   final bool showYourMatchesSection;
   final bool showEventLabel;
+  final bool highlightOwnTeam;
   final List<Alliance> alliances;
   final void Function(MatchWithVideos) onMatchTap;
 
@@ -19,6 +20,7 @@ class MatchList extends StatelessWidget {
     this.highlightTeamNumbers,
     this.showYourMatchesSection = false,
     this.showEventLabel = false,
+    this.highlightOwnTeam = true,
     this.alliances = const [],
     required this.onMatchTap,
   });
@@ -144,6 +146,7 @@ class MatchList extends StatelessWidget {
       highlightTeamNumbers: highlightTeamNumbers,
       showEventLabel: showEventLabel,
       isYourMatch: isYourMatch,
+      highlightOwnTeam: highlightOwnTeam,
       alliances: alliances,
       onTap: () => onMatchTap(mwv),
     );

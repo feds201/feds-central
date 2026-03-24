@@ -8,12 +8,14 @@ import '../widgets/match_list.dart';
 class SearchTab extends StatelessWidget {
   final DataStore dataStore;
   final List<SearchChip> chips;
+  final SearchFilterMode filterMode;
   final void Function(MatchWithVideos) onMatchTap;
 
   const SearchTab({
     super.key,
     required this.dataStore,
     required this.chips,
+    this.filterMode = SearchFilterMode.union,
     required this.onMatchTap,
   });
 
@@ -33,6 +35,30 @@ class SearchTab extends StatelessWidget {
       }
     }
     return teamNumbers;
+  }
+
+  /// Union: match contains ANY of the searched team numbers.
+  static bool matchesUnion(MatchWithVideos mwv, Set<int> teamNumbers) {
+    for (final num in teamNumbers) {
+      final teamKey = 'frc$num';
+      if (mwv.match.redTeamKeys.contains(teamKey) ||
+          mwv.match.blueTeamKeys.contains(teamKey)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /// Intersect: match contains ALL of the searched team numbers.
+  static bool matchesIntersect(MatchWithVideos mwv, Set<int> teamNumbers) {
+    for (final num in teamNumbers) {
+      final teamKey = 'frc$num';
+      if (!mwv.match.redTeamKeys.contains(teamKey) &&
+          !mwv.match.blueTeamKeys.contains(teamKey)) {
+        return false;
+      }
+    }
+    return true;
   }
 
   @override
@@ -65,20 +91,16 @@ class SearchTab extends StatelessWidget {
     final showMultiEvent = eventKeys.length > 1;
 
     final filtered = allMatches.where((mwv) {
-      for (final num in teamNumbers) {
-        final teamKey = 'frc$num';
-        if (mwv.match.redTeamKeys.contains(teamKey) ||
-            mwv.match.blueTeamKeys.contains(teamKey)) {
-          return true;
-        }
-      }
-      return false;
+      return filterMode == SearchFilterMode.union
+          ? matchesUnion(mwv, teamNumbers)
+          : matchesIntersect(mwv, teamNumbers);
     }).toList();
 
     return MatchList(
       matches: filtered,
       yourTeamNumber: dataStore.settings.teamNumber,
       highlightTeamNumbers: teamNumbers,
+      highlightOwnTeam: false,
       showYourMatchesSection: false,
       showEventLabel: showMultiEvent,
       onMatchTap: onMatchTap,

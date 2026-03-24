@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 enum SearchChipType { team, alliance }
 
+enum SearchFilterMode { union, intersect }
+
 class SearchChip {
   final SearchChipType type;
   final String label;

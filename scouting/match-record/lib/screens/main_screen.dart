@@ -38,6 +38,7 @@ class _MainScreenState extends State<MainScreen> {
   final _searchController = TextEditingController();
   final _searchFocusNode = FocusNode();
   final List<SearchChip> _chips = [];
+  SearchFilterMode _searchFilterMode = SearchFilterMode.union;
   List<AutocompleteResult> _autocompleteResults = [];
   Timer? _debounceTimer;
   bool _showAutocomplete = false;
@@ -95,6 +96,7 @@ class _MainScreenState extends State<MainScreen> {
     final eventKeys = _dataStore.settings.selectedEventKeys;
     if (eventKeys.isEmpty) return;
     if (_isTbaSyncing) return;
+    if (!_tbaClient.hasApiKey) return;
 
     // Check connectivity by attempting a DNS lookup
     try {
@@ -154,6 +156,7 @@ class _MainScreenState extends State<MainScreen> {
   Future<void> _maybeAutoLoad() async {
     if (!TestFlags.forceEventId) return;
     if (_dataStore.events.isNotEmpty) return;
+    if (!_tbaClient.hasApiKey) return;
 
     setState(() => _isAutoLoading = true);
 
@@ -363,14 +366,46 @@ class _MainScreenState extends State<MainScreen> {
                       child: ClipRect(
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                          child: AppSearchBar(
-                            key: _searchBarKey,
-                            controller: _searchController,
-                            chips: _chips,
-                            focusNode: _searchFocusNode,
-                            onTextChanged: _onSearchTextChanged,
-                            onChipRemoved: _removeChip,
-                            onSubmitted: _onSubmitted,
+                          child: Row(
+                            children: [
+                              IconButton(
+                                icon: Icon(
+                                  _searchFilterMode == SearchFilterMode.union
+                                      ? Icons.join_full
+                                      : Icons.join_inner,
+                                  size: 20,
+                                ),
+                                tooltip: _searchFilterMode == SearchFilterMode.union
+                                    ? 'Union: matches with ANY team'
+                                    : 'Intersect: matches with ALL teams',
+                                onPressed: () {
+                                  setState(() {
+                                    _searchFilterMode =
+                                        _searchFilterMode == SearchFilterMode.union
+                                            ? SearchFilterMode.intersect
+                                            : SearchFilterMode.union;
+                                  });
+                                },
+                                visualDensity: VisualDensity.compact,
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints(
+                                  minWidth: 36,
+                                  minHeight: 36,
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              Expanded(
+                                child: AppSearchBar(
+                                  key: _searchBarKey,
+                                  controller: _searchController,
+                                  chips: _chips,
+                                  focusNode: _searchFocusNode,
+                                  onTextChanged: _onSearchTextChanged,
+                                  onChipRemoved: _removeChip,
+                                  onSubmitted: _onSubmitted,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
@@ -431,6 +466,7 @@ class _MainScreenState extends State<MainScreen> {
                     SearchTab(
                       dataStore: _dataStore,
                       chips: _chips,
+                      filterMode: _searchFilterMode,
                       onMatchTap: _onMatchTap,
                     ),
                     TeamsTab(
