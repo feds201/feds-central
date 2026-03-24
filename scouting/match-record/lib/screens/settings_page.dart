@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../data/data_store.dart';
 import '../data/models.dart';
 import '../tba/tba_client.dart';
+import '../tba/tba_config.dart';
 import '../util/result.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -27,6 +28,7 @@ class _SettingsPageState extends State<SettingsPage> {
   late TextEditingController _scrubExponentController;
   late TextEditingController _scrubMaxRangeController;
   late TextEditingController _scrubCoalescingController;
+  late TextEditingController _tbaApiKeyController;
 
   bool _isLoadingEvents = false;
   bool _isLoadingTbaData = false;
@@ -57,6 +59,9 @@ class _SettingsPageState extends State<SettingsPage> {
     _scrubCoalescingController = TextEditingController(
       text: settings.scrubCoalescingIntervalMs.toString(),
     );
+    _tbaApiKeyController = TextEditingController(
+      text: settings.tbaApiKey ?? '',
+    );
   }
 
   @override
@@ -68,6 +73,7 @@ class _SettingsPageState extends State<SettingsPage> {
     _scrubExponentController.dispose();
     _scrubMaxRangeController.dispose();
     _scrubCoalescingController.dispose();
+    _tbaApiKeyController.dispose();
     super.dispose();
   }
 
@@ -77,6 +83,26 @@ class _SettingsPageState extends State<SettingsPage> {
     await widget.dataStore.updateSettings(
       widget.dataStore.settings.copyWith(teamNumber: () => teamNumber),
     );
+  }
+
+  Future<void> _saveTbaApiKey() async {
+    final text = _tbaApiKeyController.text.trim();
+    final apiKey = text.isEmpty ? null : text;
+    await widget.dataStore.updateSettings(
+      widget.dataStore.settings.copyWith(tbaApiKey: () => apiKey),
+    );
+  }
+
+  Future<void> _resetTbaApiKey() async {
+    _tbaApiKeyController.text = '';
+    await widget.dataStore.updateSettings(
+      widget.dataStore.settings.copyWith(tbaApiKey: () => null),
+    );
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('API key reset to default (.env)')),
+      );
+    }
   }
 
   Future<void> _saveThresholds() async {
@@ -104,6 +130,14 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> _fetchEventList() async {
+    if (!widget.tbaClient.hasApiKey) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No TBA API key configured. Set one in Settings.')),
+        );
+      }
+      return;
+    }
     setState(() => _isLoadingEvents = true);
     final year = DateTime.now().year;
     final result = await widget.tbaClient.getEvents(year);
@@ -173,6 +207,14 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> _loadTbaData() async {
+    if (!widget.tbaClient.hasApiKey) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No TBA API key configured. Set one in Settings.')),
+        );
+      }
+      return;
+    }
     setState(() => _isLoadingTbaData = true);
 
     final eventKeys = widget.dataStore.settings.selectedEventKeys;
@@ -325,6 +367,47 @@ class _SettingsPageState extends State<SettingsPage> {
               padding: const EdgeInsets.only(top: 4),
               child: Text(
                 'Last fetched: ${_formatFetchTime(settings.lastTbaFetchTime!)}',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ),
+          const SizedBox(height: 24),
+
+          // TBA API Key
+          Text('TBA API Key', style: theme.textTheme.titleMedium),
+          const SizedBox(height: 8),
+          if (!widget.tbaClient.hasApiKey)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Text(
+                'No API key configured. Set one below or add TBA_API_KEY to .env file.',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.error,
+                ),
+              ),
+            ),
+          TextField(
+            controller: _tbaApiKeyController,
+            decoration: InputDecoration(
+              hintText: TbaConfig.dotenvApiKey != null
+                  ? 'Using default from .env'
+                  : 'Enter your TBA API key',
+              border: const OutlineInputBorder(),
+              suffixIcon: IconButton(
+                icon: const Icon(Icons.restore),
+                tooltip: 'Reset to default (.env)',
+                onPressed: _resetTbaApiKey,
+              ),
+            ),
+            onChanged: (_) => _saveTbaApiKey(),
+          ),
+          if (TbaConfig.dotenvApiKey != null &&
+              settings.tbaApiKey == null)
+            Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: Text(
+                'Using default key from .env file',
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                 ),

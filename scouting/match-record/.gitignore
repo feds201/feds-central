@@ -50,3 +50,6 @@ sample_data/**/*.MOV
 sample_data/**/*.mov
 sample_data/**/*.avi
 sample_data/**/*.mkv
+
+# Environment variables (contains API keys)
+.env

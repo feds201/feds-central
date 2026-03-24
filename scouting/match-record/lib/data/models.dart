@@ -821,6 +821,7 @@ class AppSettings {
   final bool recordedMatchesOnly;
   final bool sidesSwapped;
   final DateTime? lastTbaFetchTime;
+  final String? tbaApiKey;
 
   const AppSettings({
     this.teamNumber,
@@ -835,6 +836,7 @@ class AppSettings {
     this.recordedMatchesOnly = false,
     this.sidesSwapped = false,
     this.lastTbaFetchTime,
+    this.tbaApiKey,
   });
 
   Map<String, dynamic> toJson() => {
@@ -849,6 +851,7 @@ class AppSettings {
         'recordedMatchesOnly': recordedMatchesOnly,
         'sidesSwapped': sidesSwapped,
         'lastTbaFetchTime': lastTbaFetchTime?.toIso8601String(),
+        'tbaApiKey': tbaApiKey,
       };
 
   factory AppSettings.fromJson(Map<String, dynamic> json) => AppSettings(
@@ -875,6 +878,7 @@ class AppSettings {
         lastTbaFetchTime: json['lastTbaFetchTime'] != null
             ? DateTime.parse(json['lastTbaFetchTime'] as String)
             : null,
+        tbaApiKey: json['tbaApiKey'] as String?,
       );
 
   AppSettings copyWith({
@@ -889,6 +893,7 @@ class AppSettings {
     bool? recordedMatchesOnly,
     bool? sidesSwapped,
     DateTime? Function()? lastTbaFetchTime,
+    String? Function()? tbaApiKey,
   }) =>
       AppSettings(
         teamNumber: teamNumber != null ? teamNumber() : this.teamNumber,
@@ -909,6 +914,7 @@ class AppSettings {
         lastTbaFetchTime: lastTbaFetchTime != null
             ? lastTbaFetchTime()
             : this.lastTbaFetchTime,
+        tbaApiKey: tbaApiKey != null ? tbaApiKey() : this.tbaApiKey,
       );
 
   @override
@@ -926,7 +932,8 @@ class AppSettings {
           scrubCoalescingIntervalMs == other.scrubCoalescingIntervalMs &&
           recordedMatchesOnly == other.recordedMatchesOnly &&
           sidesSwapped == other.sidesSwapped &&
-          lastTbaFetchTime == other.lastTbaFetchTime;
+          lastTbaFetchTime == other.lastTbaFetchTime &&
+          tbaApiKey == other.tbaApiKey;
 
   @override
   int get hashCode => Object.hash(
@@ -941,6 +948,7 @@ class AppSettings {
         recordedMatchesOnly,
         sidesSwapped,
         lastTbaFetchTime,
+        tbaApiKey,
       );
 }
 

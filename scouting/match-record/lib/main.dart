@@ -8,11 +8,14 @@ import 'app.dart';
 import 'data/data_store.dart';
 import 'data/json_persistence.dart';
 import 'import/integrity_checker.dart';
+import 'tba/tba_config.dart';
 import 'util/constants.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   MediaKit.ensureInitialized();
+
+  await TbaConfig.loadDotenv();
 
   final persistence = JsonPersistence();
   final dataStore = DataStore(persistence);

@@ -6,17 +6,24 @@ import '../util/result.dart';
 class TbaClient {
   final Dio _dio;
   static const _baseUrl = 'https://www.thebluealliance.com/api/v3';
-  static const _apiKey =
-      'nfgL68cGRgoKXYWT0D4JcGxv6lPYuWkWVz4TcYPN9VlFQ6vHoLrQjJRwjFKRcJu8';
 
-  TbaClient({Dio? dio})
-      : _dio = dio ??
+  /// The API key this client was created with, or null if none was provided.
+  final String? apiKey;
+
+  TbaClient({String? apiKey, Dio? dio})
+      : apiKey = apiKey,
+        _dio = dio ??
             Dio(BaseOptions(
               baseUrl: _baseUrl,
-              headers: {'X-TBA-Auth-Key': _apiKey},
+              headers: {
+                if (apiKey != null) 'X-TBA-Auth-Key': apiKey,
+              },
               connectTimeout: const Duration(seconds: 10),
               receiveTimeout: const Duration(seconds: 10),
             ));
+
+  /// Whether this client has an API key configured.
+  bool get hasApiKey => apiKey != null && apiKey!.isNotEmpty;
 
   Future<Result<List<Event>>> getEvents(int year) async {
     try {

@@ -21,6 +21,7 @@ dependencies:
   logger: any
   wakelock_plus: ^1.2.8
   permission_handler: any
+  flutter_dotenv: ^6.0.0
 
 dev_dependencies:
   flutter_test:
@@ -30,3 +31,5 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - .env

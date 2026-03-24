@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'data/data_store.dart';
 import 'screens/main_screen.dart';
 import 'tba/tba_client.dart';
+import 'tba/tba_config.dart';
 
 class MatchRecordApp extends StatelessWidget {
   final DataStore dataStore;
@@ -32,7 +33,7 @@ class MatchRecordApp extends StatelessWidget {
       ),
       home: _AppHome(
         dataStore: dataStore,
-        tbaClient: tbaClient ?? TbaClient(),
+        tbaClient: tbaClient,
         integrityCleanupCount: integrityCleanupCount,
       ),
     );
@@ -43,12 +44,12 @@ class MatchRecordApp extends StatelessWidget {
 /// delegates to MainScreen.
 class _AppHome extends StatefulWidget {
   final DataStore dataStore;
-  final TbaClient tbaClient;
+  final TbaClient? tbaClient;
   final int integrityCleanupCount;
 
   const _AppHome({
     required this.dataStore,
-    required this.tbaClient,
+    this.tbaClient,
     required this.integrityCleanupCount,
   });
 
@@ -58,6 +59,36 @@ class _AppHome extends StatefulWidget {
 
 class _AppHomeState extends State<_AppHome> {
   bool _toastShown = false;
+  late TbaClient _tbaClient;
+  String? _currentApiKey;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentApiKey = _resolveApiKey();
+    _tbaClient = widget.tbaClient ?? TbaClient(apiKey: _currentApiKey);
+    widget.dataStore.addListener(_onDataStoreChanged);
+  }
+
+  @override
+  void dispose() {
+    widget.dataStore.removeListener(_onDataStoreChanged);
+    super.dispose();
+  }
+
+  String? _resolveApiKey() {
+    return TbaConfig.resolveApiKey(widget.dataStore.settings.tbaApiKey);
+  }
+
+  void _onDataStoreChanged() {
+    final newKey = _resolveApiKey();
+    if (newKey != _currentApiKey) {
+      setState(() {
+        _currentApiKey = newKey;
+        _tbaClient = TbaClient(apiKey: _currentApiKey);
+      });
+    }
+  }
 
   @override
   void didChangeDependencies() {
@@ -83,7 +114,7 @@ class _AppHomeState extends State<_AppHome> {
   Widget build(BuildContext context) {
     return MainScreen(
       dataStore: widget.dataStore,
-      tbaClient: widget.tbaClient,
+      tbaClient: _tbaClient,
     );
   }
 }
