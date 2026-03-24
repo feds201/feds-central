@@ -1,21 +1,52 @@
 import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+
+/// Color for a drawing stroke.
+enum DrawingColor {
+  red,
+  blue;
+
+  Color get color {
+    switch (this) {
+      case DrawingColor.red:
+        return Colors.red;
+      case DrawingColor.blue:
+        return Colors.blue;
+    }
+  }
+}
+
+/// A completed or in-progress stroke with its color.
+class ColoredStroke {
+  final List<Offset> points;
+  final DrawingColor color;
+
+  ColoredStroke(this.points, this.color);
+
+  bool get isEmpty => points.isEmpty;
+  bool get isNotEmpty => points.isNotEmpty;
+}
 
 /// Manages drawing strokes with undo/redo support.
 ///
 /// Extends [ChangeNotifier] so widgets can rebuild when strokes change.
 class DrawingController extends ChangeNotifier {
-  final List<List<Offset>> _strokes = [];
-  List<Offset> _currentStroke = [];
-  final List<List<Offset>> _redoStack = [];
+  final List<ColoredStroke> _strokes = [];
+  List<Offset> _currentStrokePoints = [];
+  DrawingColor _currentColor = DrawingColor.red;
+  final List<ColoredStroke> _redoStack = [];
   double _opacity = 1.0;
 
   /// All completed strokes.
-  List<List<Offset>> get strokes => List.unmodifiable(_strokes);
+  List<ColoredStroke> get strokes => List.unmodifiable(_strokes);
 
   /// The stroke currently being drawn (empty if no active drawing).
-  List<Offset> get currentStroke => List.unmodifiable(_currentStroke);
+  List<Offset> get currentStrokePoints => List.unmodifiable(_currentStrokePoints);
+
+  /// Color of the stroke currently being drawn.
+  DrawingColor get currentColor => _currentColor;
 
   /// Current drawing opacity (1.0 when paused, 0.5 when playing).
   double get opacity => _opacity;
@@ -26,23 +57,28 @@ class DrawingController extends ChangeNotifier {
   /// Whether any stroke contains actual points (not just no-op empty strokes).
   bool get hasNonEmptyStrokes => _strokes.any((s) => s.isNotEmpty);
 
+  /// Set the color for new strokes.
+  void setColor(DrawingColor color) {
+    _currentColor = color;
+  }
+
   /// Called when a pointer makes contact with the surface.
   void onPointerDown(Offset position) {
-    _currentStroke = [position];
+    _currentStrokePoints = [position];
     notifyListeners();
   }
 
   /// Called when a pointer moves across the surface.
   void onPointerMove(Offset position) {
-    _currentStroke.add(position);
+    _currentStrokePoints.add(position);
     notifyListeners();
   }
 
   /// Called when a pointer lifts from the surface. Finalizes the current stroke.
   void onPointerUp() {
-    if (_currentStroke.isNotEmpty) {
-      _strokes.add(List.of(_currentStroke));
-      _currentStroke = [];
+    if (_currentStrokePoints.isNotEmpty) {
+      _strokes.add(ColoredStroke(List.of(_currentStrokePoints), _currentColor));
+      _currentStrokePoints = [];
       _redoStack.clear();
       notifyListeners();
     }
@@ -67,7 +103,7 @@ class DrawingController extends ChangeNotifier {
   /// Clear all strokes and the redo stack.
   void clear() {
     _strokes.clear();
-    _currentStroke = [];
+    _currentStrokePoints = [];
     _redoStack.clear();
     notifyListeners();
   }
@@ -77,7 +113,7 @@ class DrawingController extends ChangeNotifier {
   /// When drawing on one pane, the other pane's controller gets a pushNoOp()
   /// so that undo/redo operations stay aligned between the two controllers.
   void pushNoOp() {
-    _strokes.add([]);
+    _strokes.add(ColoredStroke([], _currentColor));
     _redoStack.clear();
     notifyListeners();
   }

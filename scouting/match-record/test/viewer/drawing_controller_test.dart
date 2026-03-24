@@ -18,7 +18,7 @@ void main() {
   group('DrawingController stroke creation', () {
     test('initial state has no strokes', () {
       expect(controller.strokes, isEmpty);
-      expect(controller.currentStroke, isEmpty);
+      expect(controller.currentStrokePoints, isEmpty);
       expect(controller.canUndo, isFalse);
       expect(controller.canRedo, isFalse);
       expect(controller.opacity, 1.0);
@@ -26,8 +26,8 @@ void main() {
 
     test('pointer down starts a current stroke', () {
       controller.onPointerDown(const Offset(10, 20));
-      expect(controller.currentStroke, hasLength(1));
-      expect(controller.currentStroke[0], const Offset(10, 20));
+      expect(controller.currentStrokePoints, hasLength(1));
+      expect(controller.currentStrokePoints[0], const Offset(10, 20));
       expect(controller.strokes, isEmpty);
     });
 
@@ -35,7 +35,7 @@ void main() {
       controller.onPointerDown(const Offset(10, 20));
       controller.onPointerMove(const Offset(30, 40));
       controller.onPointerMove(const Offset(50, 60));
-      expect(controller.currentStroke, hasLength(3));
+      expect(controller.currentStrokePoints, hasLength(3));
     });
 
     test('pointer up finalizes stroke and clears current', () {
@@ -44,8 +44,8 @@ void main() {
       controller.onPointerUp();
 
       expect(controller.strokes, hasLength(1));
-      expect(controller.strokes[0], hasLength(2));
-      expect(controller.currentStroke, isEmpty);
+      expect(controller.strokes[0].points, hasLength(2));
+      expect(controller.currentStrokePoints, isEmpty);
     });
 
     test('multiple strokes accumulate', () {
@@ -152,7 +152,7 @@ void main() {
 
       controller.clear();
       expect(controller.strokes, isEmpty);
-      expect(controller.currentStroke, isEmpty);
+      expect(controller.currentStrokePoints, isEmpty);
       expect(controller.canUndo, isFalse);
       expect(controller.canRedo, isFalse);
     });
@@ -229,7 +229,7 @@ void main() {
     test('pushNoOp adds empty stroke to strokes list', () {
       controller.pushNoOp();
       expect(controller.strokes, hasLength(1));
-      expect(controller.strokes[0], isEmpty);
+      expect(controller.strokes[0].isEmpty, isTrue);
     });
 
     test('pushNoOp clears redo stack', () {
@@ -272,8 +272,8 @@ void main() {
       expect(controller.strokes, hasLength(1));
       expect(controller2.strokes, hasLength(1));
       // controller1 has the real stroke, controller2 has the no-op
-      expect(controller.strokes[0], isNotEmpty);
-      expect(controller2.strokes[0], isEmpty);
+      expect(controller.strokes[0].isNotEmpty, isTrue);
+      expect(controller2.strokes[0].isEmpty, isTrue);
 
       controller2.dispose();
     });

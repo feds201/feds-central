@@ -2,13 +2,16 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 
+import '../viewer/drawing_controller.dart';
+
 /// CustomPainter that renders drawing strokes with quadratic bezier smoothing.
 ///
-/// All strokes are drawn in red with adjustable opacity via [opacity].
-/// Uses quadratic bezier curves through midpoints for smooth lines.
+/// Supports per-stroke colors via [ColoredStroke]. The current in-progress
+/// stroke uses [currentColor]. Opacity is adjustable via [opacity].
 class StrokePainter extends CustomPainter {
-  final List<List<Offset>> strokes;
-  final List<Offset> currentStroke;
+  final List<ColoredStroke> strokes;
+  final List<Offset> currentStrokePoints;
+  final DrawingColor currentColor;
   final double opacity;
 
   /// Stroke width in logical pixels.
@@ -16,26 +19,32 @@ class StrokePainter extends CustomPainter {
 
   StrokePainter({
     required this.strokes,
-    required this.currentStroke,
+    required this.currentStrokePoints,
+    required this.currentColor,
     required this.opacity,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.red.withValues(alpha: opacity)
+    for (final stroke in strokes) {
+      if (stroke.isEmpty) continue;
+      final paint = _makePaint(stroke.color);
+      _drawStroke(canvas, stroke.points, paint);
+    }
+
+    if (currentStrokePoints.isNotEmpty) {
+      final paint = _makePaint(currentColor);
+      _drawStroke(canvas, currentStrokePoints, paint);
+    }
+  }
+
+  Paint _makePaint(DrawingColor color) {
+    return Paint()
+      ..color = color.color.withValues(alpha: opacity)
       ..style = PaintingStyle.stroke
       ..strokeWidth = strokeWidth
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round;
-
-    for (final stroke in strokes) {
-      _drawStroke(canvas, stroke, paint);
-    }
-
-    if (currentStroke.isNotEmpty) {
-      _drawStroke(canvas, currentStroke, paint);
-    }
   }
 
   void _drawStroke(Canvas canvas, List<Offset> points, Paint paint) {

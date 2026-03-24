@@ -14,9 +14,6 @@ class VideoPane extends StatelessWidget {
   final bool containsUserTeam;
   final bool isDrawingMode;
 
-  /// Callback to rotate this video pane 90 degrees.
-  final VoidCallback? onRotate;
-
   /// Whether this pane is waiting for the other side to catch up (countdown).
   final bool isWaiting;
 
@@ -35,9 +32,6 @@ class VideoPane extends StatelessWidget {
   /// Callback when touch scrub gesture ends.
   final VoidCallback? onScrubEnd;
 
-  /// Callback to open metadata editing for this pane's recording.
-  final VoidCallback? onEdit;
-
   const VideoPane({
     super.key,
     required this.player,
@@ -45,14 +39,12 @@ class VideoPane extends StatelessWidget {
     required this.allianceColor,
     this.containsUserTeam = false,
     this.isDrawingMode = false,
-    this.onRotate,
     this.isWaiting = false,
     this.countdownRemaining = Duration.zero,
     this.hasEnded = false,
     this.onScrubStart,
     this.onScrubUpdate,
     this.onScrubEnd,
-    this.onEdit,
   });
 
   @override
@@ -102,28 +94,6 @@ class VideoPane extends StatelessWidget {
                   size: 20,
                 ),
               ),
-            // Rotate and edit buttons in top-right corner
-            Positioned(
-              top: 2,
-              right: 2,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (onRotate != null)
-                    _PaneButton(
-                      icon: Icons.rotate_90_degrees_cw,
-                      onTap: onRotate!,
-                    ),
-                  if (onRotate != null && onEdit != null)
-                    const SizedBox(width: 2),
-                  if (onEdit != null)
-                    _PaneButton(
-                      icon: Icons.edit,
-                      onTap: onEdit!,
-                    ),
-                ],
-              ),
-            ),
             // Countdown overlay when waiting for sync
             if (isWaiting)
               Positioned.fill(
@@ -160,35 +130,6 @@ class VideoPane extends StatelessWidget {
           ],
         );
       },
-    );
-  }
-}
-
-/// A small button overlaid on the video pane with adequate touch target (40x40).
-class _PaneButton extends StatelessWidget {
-  final IconData icon;
-  final VoidCallback onTap;
-
-  const _PaneButton({required this.icon, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      behavior: HitTestBehavior.opaque,
-      child: Container(
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(
-          color: Colors.black54,
-          borderRadius: BorderRadius.circular(6),
-        ),
-        child: Icon(
-          icon,
-          color: Colors.white70,
-          size: 20,
-        ),
-      ),
     );
   }
 }

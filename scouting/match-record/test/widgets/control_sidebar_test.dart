@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:match_record/viewer/drawing_controller.dart';
 import 'package:match_record/widgets/control_sidebar.dart';
 
 void main() {
@@ -10,7 +11,7 @@ void main() {
     bool isPlaying = false,
     MuteState muteState = MuteState.muted,
     ViewMode viewMode = ViewMode.both,
-    bool isDrawingMode = false,
+    DrawingColor? drawingColor,
     bool canUndo = false,
     bool canRedo = false,
     bool hasDrawings = false,
@@ -25,7 +26,7 @@ void main() {
       isPlaying: isPlaying,
       muteState: muteState,
       viewMode: viewMode,
-      isDrawingMode: isDrawingMode,
+      drawingColor: drawingColor,
       canUndo: canUndo,
       canRedo: canRedo,
       hasDrawings: hasDrawings,
@@ -64,11 +65,12 @@ void main() {
       await tester.pumpWidget(wrapInApp(buildSidebar(
         isPlaying: true,
         isPaused: false,
-        isDrawingMode: false,
+        drawingColor: null,
       )));
 
       // The draw button should exist (visible) but be disabled.
-      final drawIcon = find.byIcon(Icons.edit);
+      // When drawing is off, the icon is edit_off.
+      final drawIcon = find.byIcon(Icons.edit_off);
       expect(drawIcon, findsOneWidget);
     });
 
@@ -77,14 +79,11 @@ void main() {
       await tester.pumpWidget(wrapInApp(buildSidebar(
         isPlaying: true,
         isPaused: false,
-        isDrawingMode: false,
+        drawingColor: null,
         onToggleDrawing: () => drawPressed = true,
       )));
 
-      // In compact mode (viewMode != both would be compact, but both = expanded).
-      // The draw button uses InkWell in expanded mode — find it by tooltip or icon.
-      // Try tapping the draw area — it should not fire the callback.
-      await tester.tap(find.byIcon(Icons.edit));
+      await tester.tap(find.byIcon(Icons.edit_off));
       await tester.pump();
       expect(drawPressed, isFalse, reason: 'Draw button should be disabled when not paused');
     });
@@ -93,11 +92,11 @@ void main() {
       var drawPressed = false;
       await tester.pumpWidget(wrapInApp(buildSidebar(
         isPaused: true,
-        isDrawingMode: false,
+        drawingColor: null,
         onToggleDrawing: () => drawPressed = true,
       )));
 
-      await tester.tap(find.byIcon(Icons.edit));
+      await tester.tap(find.byIcon(Icons.edit_off));
       await tester.pump();
       expect(drawPressed, isTrue, reason: 'Draw button should be enabled when paused');
     });
@@ -106,7 +105,7 @@ void main() {
       await tester.pumpWidget(wrapInApp(buildSidebar(
         isPaused: false,
         isPlaying: true,
-        isDrawingMode: false,
+        drawingColor: null,
         hasDrawings: false,
       )));
 
@@ -122,7 +121,7 @@ void main() {
 
       await tester.pumpWidget(wrapInApp(buildSidebar(
         isPaused: true,
-        isDrawingMode: false,
+        drawingColor: null,
         canUndo: true,
         canRedo: true,
         hasDrawings: true,
@@ -160,7 +159,7 @@ void main() {
 
       await tester.pumpWidget(wrapInApp(buildSidebar(
         isPaused: true,
-        isDrawingMode: true,
+        drawingColor: DrawingColor.red,
         canUndo: true,
         canRedo: true,
         hasDrawings: true,
@@ -195,7 +194,7 @@ void main() {
       var undoPressed = false;
       await tester.pumpWidget(wrapInApp(buildSidebar(
         isPaused: true,
-        isDrawingMode: true,
+        drawingColor: DrawingColor.red,
         canUndo: false,
         onUndo: () => undoPressed = true,
       )));
@@ -212,7 +211,7 @@ void main() {
       var redoPressed = false;
       await tester.pumpWidget(wrapInApp(buildSidebar(
         isPaused: true,
-        isDrawingMode: true,
+        drawingColor: DrawingColor.red,
         canRedo: false,
         onRedo: () => redoPressed = true,
       )));
@@ -229,7 +228,7 @@ void main() {
       var clearPressed = false;
       await tester.pumpWidget(wrapInApp(buildSidebar(
         isPaused: true,
-        isDrawingMode: true,
+        drawingColor: DrawingColor.red,
         hasDrawings: false,
         onClearDrawing: () => clearPressed = true,
       )));
@@ -264,15 +263,18 @@ void main() {
       expect(sidebarBox.height, rowSize.height);
     });
 
-    testWidgets('buttons are top-aligned', (tester) async {
+    testWidgets('buttons fill available height using Expanded', (tester) async {
       await tester.pumpWidget(wrapInApp(buildSidebar()));
 
-      // The Column inside should have MainAxisAlignment.start.
-      final column = tester.widget<Column>(find.descendant(
-        of: find.byType(SingleChildScrollView),
-        matching: find.byType(Column),
-      ));
-      expect(column.mainAxisAlignment, MainAxisAlignment.start);
+      // Buttons should be wrapped in Expanded widgets within the Column.
+      final expandedWidgets = tester.widgetList<Expanded>(
+        find.descendant(
+          of: find.byType(ControlSidebar),
+          matching: find.byType(Expanded),
+        ),
+      );
+      // There should be at least one Expanded per button
+      expect(expandedWidgets.length, greaterThanOrEqualTo(8));
     });
 
     testWidgets('expanded mode buttons have min 48px touch targets', (tester) async {

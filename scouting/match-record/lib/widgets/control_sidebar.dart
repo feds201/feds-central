@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../viewer/drawing_controller.dart';
+
 /// Mute state for the video viewer audio.
 enum MuteState { muted, redAudio, blueAudio, fullAudio }
 
@@ -15,7 +17,8 @@ class ControlSidebar extends StatelessWidget {
   final bool isPlaying;
   final MuteState muteState;
   final ViewMode viewMode;
-  final bool isDrawingMode;
+  /// Current drawing color, or null if drawing mode is off.
+  final DrawingColor? drawingColor;
   final bool canUndo;
   final bool canRedo;
   final bool hasDrawings;
@@ -41,7 +44,7 @@ class ControlSidebar extends StatelessWidget {
     required this.isPlaying,
     required this.muteState,
     required this.viewMode,
-    required this.isDrawingMode,
+    required this.drawingColor,
     required this.canUndo,
     required this.canRedo,
     required this.hasDrawings,
@@ -66,6 +69,85 @@ class ControlSidebar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Collect button widgets — each gets wrapped in Expanded to fill height.
+    // Dividers stay fixed-height between groups.
+    final buttons = <Widget>[
+      _buildItem(
+        icon: Icons.arrow_back,
+        label: 'Back',
+        onPressed: onBack,
+      ),
+    ];
+
+    if (canToggleViewMode) {
+      buttons.addAll([
+        _buildItem(
+          icon: Icons.swap_horiz,
+          label: 'Swap',
+          onPressed: viewMode == ViewMode.both ? onSwapSides : null,
+        ),
+        _buildMuteItem(),
+        _buildViewModeItem(),
+      ]);
+    }
+
+    buttons.addAll([
+      _buildItem(
+        icon: isPlaying ? Icons.pause : Icons.play_arrow,
+        label: isPlaying ? 'Pause' : 'Play',
+        onPressed: onPlayPause,
+      ),
+      _buildItem(
+        icon: Icons.replay_10,
+        label: '-10s',
+        onPressed: onRewind10,
+      ),
+      _buildItem(
+        icon: Icons.forward_10,
+        label: '+10s',
+        onPressed: onForward10,
+      ),
+      _buildItem(
+        icon: Icons.restart_alt,
+        label: 'Restart',
+        onPressed: onRestart,
+      ),
+    ]);
+
+    buttons.addAll([
+      _buildDrawItem(),
+      _buildItem(
+        icon: Icons.undo,
+        label: 'Undo',
+        onPressed: drawingColor != null && canUndo ? onUndo : null,
+      ),
+      _buildItem(
+        icon: Icons.redo,
+        label: 'Redo',
+        onPressed: drawingColor != null && canRedo ? onRedo : null,
+      ),
+      _buildItem(
+        icon: Icons.cleaning_services,
+        label: 'Clear',
+        onPressed: drawingColor != null && hasDrawings ? onClearDrawing : null,
+      ),
+    ]);
+
+    // Build column children: wrap each button in Expanded, insert dividers
+    // between groups at fixed height.
+    final children = <Widget>[];
+    final navCount = canToggleViewMode ? 4 : 1; // back + (swap, mute, view)
+    final playbackStart = navCount;
+    final playbackEnd = playbackStart + 4; // play, -10s, +10s, restart
+
+    for (int i = 0; i < buttons.length; i++) {
+      // Insert dividers between groups
+      if (i == navCount || i == playbackEnd) {
+        children.add(const Divider(indent: 8, endIndent: 8, height: 8));
+      }
+      children.add(Expanded(child: buttons[i]));
+    }
+
     return SizedBox(
       width: _expanded ? 160 : 72,
       height: double.infinity,
@@ -74,73 +156,9 @@ class ControlSidebar extends StatelessWidget {
         child: SafeArea(
           left: false,
           right: false,
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const SizedBox(height: 8),
-                _buildItem(
-                  icon: Icons.arrow_back,
-                  label: 'Back',
-                  onPressed: onBack,
-                ),
-                if (canToggleViewMode) ...[
-                  const Divider(indent: 8, endIndent: 8),
-                  _buildItem(
-                    icon: Icons.swap_horiz,
-                    label: 'Swap',
-                    onPressed: viewMode == ViewMode.both ? onSwapSides : null,
-                  ),
-                  _buildMuteItem(),
-                  _buildViewModeItem(),
-                ],
-                const Divider(indent: 8, endIndent: 8),
-                _buildItem(
-                  icon: isPlaying ? Icons.pause : Icons.play_arrow,
-                  label: isPlaying ? 'Pause' : 'Play',
-                  onPressed: onPlayPause,
-                ),
-                _buildItem(
-                  icon: Icons.replay_10,
-                  label: '-10s',
-                  onPressed: onRewind10,
-                ),
-                _buildItem(
-                  icon: Icons.forward_10,
-                  label: '+10s',
-                  onPressed: onForward10,
-                ),
-                _buildItem(
-                  icon: Icons.restart_alt,
-                  label: 'Restart',
-                  onPressed: onRestart,
-                ),
-                const Divider(indent: 8, endIndent: 8),
-                _buildItem(
-                  icon: Icons.edit,
-                  label: isDrawingMode ? 'Exit draw' : 'Draw',
-                  onPressed: isPaused ? onToggleDrawing : null,
-                  isActive: isDrawingMode,
-                ),
-                _buildItem(
-                  icon: Icons.undo,
-                  label: 'Undo',
-                  onPressed: isDrawingMode && canUndo ? onUndo : null,
-                ),
-                _buildItem(
-                  icon: Icons.redo,
-                  label: 'Redo',
-                  onPressed: isDrawingMode && canRedo ? onRedo : null,
-                ),
-                _buildItem(
-                  icon: Icons.cleaning_services,
-                  label: 'Clear',
-                  onPressed: isDrawingMode && hasDrawings ? onClearDrawing : null,
-                ),
-                const SizedBox(height: 8),
-              ],
-            ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: children,
           ),
         ),
       ),
@@ -363,6 +381,71 @@ class ControlSidebar extends StatelessWidget {
       icon: icon,
       label: label,
       onPressed: canToggleViewMode ? onToggleViewMode : null,
+    );
+  }
+
+  Widget _buildDrawItem() {
+    IconData icon;
+    String label;
+    Color? activeColor;
+
+    switch (drawingColor) {
+      case null:
+        icon = Icons.edit_off;
+        label = 'Draw';
+        activeColor = null;
+      case DrawingColor.red:
+        icon = Icons.edit;
+        label = 'Red draw';
+        activeColor = Colors.red;
+      case DrawingColor.blue:
+        icon = Icons.edit;
+        label = 'Blue draw';
+        activeColor = Colors.blue;
+    }
+
+    final isEnabled = isPaused;
+    final isActive = drawingColor != null;
+
+    if (!_expanded) {
+      return IconButton(
+        icon: Icon(icon),
+        tooltip: label,
+        onPressed: isEnabled ? onToggleDrawing : null,
+        color: activeColor ?? Colors.white,
+        disabledColor: Colors.white38,
+        iconSize: 28,
+        constraints: const BoxConstraints(minWidth: 56, minHeight: 56),
+      );
+    }
+
+    final color = !isEnabled
+        ? Colors.white38
+        : isActive
+            ? (activeColor ?? Colors.white)
+            : Colors.white;
+
+    return InkWell(
+      onTap: isEnabled ? onToggleDrawing : null,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: 48),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
+          child: Row(
+            children: [
+              Icon(icon, color: color, size: 24),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  label,
+                  style: TextStyle(color: color, fontSize: 14),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

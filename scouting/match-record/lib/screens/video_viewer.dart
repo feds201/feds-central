@@ -80,7 +80,7 @@ class _VideoViewerState extends State<VideoViewer> {
   late ViewMode _viewMode;
   late bool _sidesSwapped;
   bool _isPlaying = false;
-  bool _isDrawingMode = false;
+  DrawingColor? _drawingColor; // null = off, red/blue = active drawing mode
   bool _isScrubBarDragging = false;
   bool _isFingerScrubbing = false;
   bool _wasPlayingBeforeScrub = false;
@@ -237,7 +237,7 @@ class _VideoViewerState extends State<VideoViewer> {
               _redDrawingController.setOpacity(opacity);
               _blueDrawingController.setOpacity(opacity);
               _fullDrawingController.setOpacity(opacity);
-              if (playing) _isDrawingMode = false;
+              if (playing) _drawingColor = null;
             });
           }
         }),
@@ -484,7 +484,23 @@ class _VideoViewerState extends State<VideoViewer> {
   // --- Drawing ---
 
   void _toggleDrawing() {
-    setState(() => _isDrawingMode = !_isDrawingMode);
+    setState(() {
+      // Cycle: off → red → blue → off
+      switch (_drawingColor) {
+        case null:
+          _drawingColor = DrawingColor.red;
+        case DrawingColor.red:
+          _drawingColor = DrawingColor.blue;
+        case DrawingColor.blue:
+          _drawingColor = null;
+      }
+      // Update all drawing controllers with the new color
+      if (_drawingColor != null) {
+        for (final c in _activeDrawingControllers) {
+          c.setColor(_drawingColor!);
+        }
+      }
+    });
   }
 
   /// Get the active drawing controllers for the current view mode.
@@ -615,7 +631,7 @@ class _VideoViewerState extends State<VideoViewer> {
   }
 
   void _onDrawPointerDown(PointerDownEvent event) {
-    if (!_isDrawingMode) return;
+    if (_drawingColor == null) return;
     // Only handle single-finger drawing
     if (event.down && _activeDrawingPointer != null) return;
 
@@ -840,7 +856,7 @@ class _VideoViewerState extends State<VideoViewer> {
               isPlaying: _isPlaying,
               muteState: _muteState,
               viewMode: _viewMode,
-              isDrawingMode: _isDrawingMode,
+              drawingColor: _drawingColor,
               canUndo: _combinedCanUndo,
               canRedo: _combinedCanRedo,
               hasDrawings: _combinedHasDrawings,
@@ -870,7 +886,7 @@ class _VideoViewerState extends State<VideoViewer> {
       children: [
         Positioned.fill(child: _buildVideoPanes()),
         // Drawing input layer — top-level Listener spanning all panes
-        if (_isDrawingMode)
+        if (_drawingColor != null)
           Positioned.fill(
             child: Listener(
               onPointerDown: _onDrawPointerDown,
@@ -884,14 +900,17 @@ class _VideoViewerState extends State<VideoViewer> {
     );
   }
 
-  /// Wraps a video pane in InteractiveViewer (zoom) → RotatedBox → Stack
-  /// with a passive drawing overlay rendered inside the zoom transform.
+  /// Wraps a video pane in InteractiveViewer → Stack with:
+  /// - RotatedBox containing video + drawing overlay (rotates)
+  /// - Positioned buttons on top (don't rotate, but zoom with the video)
   Widget _buildZoomablePane({
     required GlobalKey paneKey,
     required TransformationController zoomController,
     required DrawingController drawingController,
     required int quarterTurns,
     required Widget videoPane,
+    VoidCallback? onRotate,
+    VoidCallback? onEdit,
   }) {
     return InteractiveViewer(
       key: paneKey,
@@ -900,29 +919,57 @@ class _VideoViewerState extends State<VideoViewer> {
       scaleEnabled: true,
       minScale: 1.0,
       maxScale: 5.0,
-      child: RotatedBox(
-        quarterTurns: quarterTurns,
-        child: Stack(
-          children: [
-            videoPane,
-            // Passive drawing layer — rendered inside zoom transform
-            // so strokes zoom with the video
-            IgnorePointer(
-              ignoring: true,
-              child: ListenableBuilder(
-                listenable: drawingController,
-                builder: (context, _) => CustomPaint(
-                  painter: StrokePainter(
-                    strokes: drawingController.strokes,
-                    currentStroke: drawingController.currentStroke,
-                    opacity: drawingController.opacity,
+      child: Stack(
+        children: [
+          // Video + drawing layer — rotates together
+          RotatedBox(
+            quarterTurns: quarterTurns,
+            child: Stack(
+              children: [
+                videoPane,
+                // Passive drawing layer — rendered inside zoom transform
+                // so strokes zoom with the video
+                IgnorePointer(
+                  ignoring: true,
+                  child: ListenableBuilder(
+                    listenable: drawingController,
+                    builder: (context, _) => CustomPaint(
+                      painter: StrokePainter(
+                        strokes: drawingController.strokes,
+                        currentStrokePoints: drawingController.currentStrokePoints,
+                        currentColor: drawingController.currentColor,
+                        opacity: drawingController.opacity,
+                      ),
+                      size: Size.infinite,
+                    ),
                   ),
-                  size: Size.infinite,
                 ),
-              ),
+              ],
             ),
-          ],
-        ),
+          ),
+          // Rotate and edit buttons — outside rotation so they stay upright
+          Positioned(
+            top: 2,
+            right: 2,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (onRotate != null)
+                  _PaneOverlayButton(
+                    icon: Icons.rotate_90_degrees_cw,
+                    onTap: onRotate,
+                  ),
+                if (onRotate != null && onEdit != null)
+                  const SizedBox(width: 2),
+                if (onEdit != null)
+                  _PaneOverlayButton(
+                    icon: Icons.edit,
+                    onTap: onEdit,
+                  ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -947,19 +994,19 @@ class _VideoViewerState extends State<VideoViewer> {
         zoomController: _fullZoomController,
         drawingController: _fullDrawingController,
         quarterTurns: _fullQuarterTurns,
+        onRotate: () => _rotatePane(isFull: true),
+        onEdit: _openEditMetadata,
         videoPane: VideoPane(
           player: _fullPlayer!,
           videoController: _fullController!,
           allianceColor: Colors.purple,
           containsUserTeam: _containsUserTeam(fullRec),
-          isDrawingMode: _isDrawingMode,
-          onRotate: () => _rotatePane(isFull: true),
+          isDrawingMode: _drawingColor != null,
           isWaiting: false,
           countdownRemaining: Duration.zero,
           onScrubStart: _onScrubStart,
           onScrubUpdate: _onScrubUpdate,
           onScrubEnd: _onScrubEnd,
-          onEdit: _openEditMetadata,
         ),
       );
     }
@@ -1003,19 +1050,19 @@ class _VideoViewerState extends State<VideoViewer> {
         zoomController: isRed ? _redZoomController : _blueZoomController,
         drawingController: isRed ? _redDrawingController : _blueDrawingController,
         quarterTurns: isRed ? _redQuarterTurns : _blueQuarterTurns,
+        onRotate: () => _rotatePane(isRed: isRed),
+        onEdit: _openEditMetadata,
         videoPane: VideoPane(
           player: player,
           videoController: controller,
           allianceColor: color,
           containsUserTeam: _containsUserTeam(recording),
-          isDrawingMode: _isDrawingMode,
-          onRotate: () => _rotatePane(isRed: isRed),
+          isDrawingMode: _drawingColor != null,
           isWaiting: isWaiting,
           countdownRemaining: _countdownRemaining,
           onScrubStart: _onScrubStart,
           onScrubUpdate: _onScrubUpdate,
           onScrubEnd: _onScrubEnd,
-          onEdit: _openEditMetadata,
         ),
       );
     }
@@ -1042,19 +1089,19 @@ class _VideoViewerState extends State<VideoViewer> {
             zoomController: leftIsRed ? _redZoomController : _blueZoomController,
             drawingController: leftIsRed ? _redDrawingController : _blueDrawingController,
             quarterTurns: leftIsRed ? _redQuarterTurns : _blueQuarterTurns,
+            onRotate: () => _rotatePane(isRed: leftIsRed),
+            onEdit: _openEditMetadata,
             videoPane: VideoPane(
               player: leftPlayer,
               videoController: leftController,
               allianceColor: leftColor,
               containsUserTeam: _containsUserTeam(leftRec),
-              isDrawingMode: _isDrawingMode,
-              onRotate: () => _rotatePane(isRed: leftIsRed),
+              isDrawingMode: _drawingColor != null,
               isWaiting: leftWaiting,
               countdownRemaining: _countdownRemaining,
               onScrubStart: _onScrubStart,
               onScrubUpdate: _onScrubUpdate,
               onScrubEnd: _onScrubEnd,
-              onEdit: _openEditMetadata,
             ),
           ),
         ),
@@ -1064,23 +1111,53 @@ class _VideoViewerState extends State<VideoViewer> {
             zoomController: rightIsRed ? _redZoomController : _blueZoomController,
             drawingController: rightIsRed ? _redDrawingController : _blueDrawingController,
             quarterTurns: rightIsRed ? _redQuarterTurns : _blueQuarterTurns,
+            onRotate: () => _rotatePane(isRed: rightIsRed),
+            onEdit: _openEditMetadata,
             videoPane: VideoPane(
               player: rightPlayer,
               videoController: rightController,
               allianceColor: rightColor,
               containsUserTeam: _containsUserTeam(rightRec),
-              isDrawingMode: _isDrawingMode,
-              onRotate: () => _rotatePane(isRed: rightIsRed),
+              isDrawingMode: _drawingColor != null,
               isWaiting: rightWaiting,
               countdownRemaining: _countdownRemaining,
               onScrubStart: _onScrubStart,
               onScrubUpdate: _onScrubUpdate,
               onScrubEnd: _onScrubEnd,
-              onEdit: _openEditMetadata,
             ),
           ),
         ),
       ],
+    );
+  }
+}
+
+/// A small button overlaid on the video pane with adequate touch target (40x40).
+/// Placed outside the RotatedBox so it stays upright when video is rotated.
+class _PaneOverlayButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback? onTap;
+
+  const _PaneOverlayButton({required this.icon, this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          color: Colors.black54,
+          borderRadius: BorderRadius.circular(6),
+        ),
+        child: Icon(
+          icon,
+          color: Colors.white70,
+          size: 20,
+        ),
+      ),
     );
   }
 }
