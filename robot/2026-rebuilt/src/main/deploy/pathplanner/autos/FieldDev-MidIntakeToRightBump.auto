@@ -13,7 +13,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.7
+            "waitTime": 0.6
           }
         },
         {
@@ -50,7 +50,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "RightIntakeToRightBump"
+            "pathName": "AcrssCenterRightIntakeToRightBump"
           }
         },
         {
@@ -237,6 +237,18 @@
                 "type": "named",
                 "data": {
                   "name": "Extend Intake"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.45
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Retract Intake"
                 }
               },
               {

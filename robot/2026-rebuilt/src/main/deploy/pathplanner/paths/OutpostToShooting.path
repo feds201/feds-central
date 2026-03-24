@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.3,
-        "y": 2.6
+        "x": 0.75,
+        "y": 0.6619928825628518
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.175117134590959,
-        "y": 3.165930108419749
+        "x": 1.6251171345909592,
+        "y": 1.2279229909826008
       },
       "isLocked": false,
       "linkedName": "AtOutpost"
@@ -48,7 +48,7 @@
   "folder": "GriefAuto",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 31.594828188350032
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 7.790844370860928,
-        "y": 6.9825331125827805
+        "x": 8.108612099644128,
+        "y": 7.009916963226572
       },
       "prevControl": {
-        "x": 7.828873072360619,
-        "y": 7.655468564650059
+        "x": 8.14664080114382,
+        "y": 7.68285241529385
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 1.3,
-    "rotation": 90.0
+    "rotation": 85.0
   },
   "reversed": false,
   "folder": "MidIntakeToLeftBump",

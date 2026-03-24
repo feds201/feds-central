@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.603534994068804,
-        "y": 2.37270462633452
+        "x": 6.709916963226573,
+        "y": 2.1790391459074727
       },
       "prevControl": null,
       "nextControl": {
-        "x": 9.31383619888808,
-        "y": 2.4491986022381345
+        "x": 7.4202181680458486,
+        "y": 2.2555331218110872
       },
       "isLocked": false,
       "linkedName": "RightIntakeStart"
     },
     {
       "anchor": {
-        "x": 8.603534994068804,
-        "y": 3.5340645695364232
+        "x": 7.850391459074734,
+        "y": 3.534697508896797
       },
       "prevControl": {
-        "x": 8.603534994068804,
-        "y": 2.9178128289785765
+        "x": 7.850391459074734,
+        "y": 2.9184457683389504
       },
       "nextControl": null,
       "isLocked": false,
@@ -48,7 +48,7 @@
   "folder": "MidIntakeToRightBump",
   "idealStartingState": {
     "velocity": 1.0,
-    "rotation": -89.10892860108419
+    "rotation": 180.0
   },
   "useDefaultConstraints": false
 }
