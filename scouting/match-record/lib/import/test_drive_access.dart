@@ -39,11 +39,13 @@ class _TestDrive {
 /// Videos must be pushed to the device before use:
 ///   adb push ~/Downloads/flash_drive_ios /sdcard/match_record_samples/flash_drive_ios
 ///   adb push ~/Downloads/flash_drive_android /sdcard/match_record_samples/flash_drive_android
+///   adb push ~/Downloads/flash_drive_full /sdcard/match_record_samples/flash_drive_full
 class TestDriveAccess implements DriveAccess {
   /// Base path where sample videos live on the device filesystem.
   /// Push videos with:
   ///   adb push ~/Downloads/flash_drive_ios /sdcard/match_record_samples/flash_drive_ios
   ///   adb push ~/Downloads/flash_drive_android /sdcard/match_record_samples/flash_drive_android
+  ///   adb push ~/Downloads/flash_drive_full /sdcard/match_record_samples/flash_drive_full
   static const String _basePath = '/sdcard/match_record_samples';
 
   static final List<_TestDrive> _drives = [
@@ -59,7 +61,7 @@ class TestDriveAccess implements DriveAccess {
           lastModified: DateTime.utc(2026, 3, 23, 16, 29, 30),
         ),
       ],
-      configJson: '{"alliance": "red"}',
+      configJson: '{"type": "red"}',
     ),
     _TestDrive(
       uri: 'test://flash_drive_android',
@@ -73,7 +75,21 @@ class TestDriveAccess implements DriveAccess {
           lastModified: DateTime.utc(2026, 3, 23, 16, 31, 57),
         ),
       ],
-      configJson: '{"alliance": "blue"}',
+      configJson: '{"type": "blue"}',
+    ),
+    _TestDrive(
+      uri: 'test://flash_drive_full',
+      label: 'Full Field Flash Drive',
+      subDir: 'flash_drive_full',
+      videos: [
+        _TestVideoFile(
+          filename: 'PXL_20260323_163500000.mp4',
+          sizeBytes: 546752370, // ~521MB — reuse same size as android sample
+          // Android creation_time = recording end (~16:37:28), started ~16:35:00
+          lastModified: DateTime.utc(2026, 3, 23, 16, 37, 28),
+        ),
+      ],
+      configJson: '{"type": "full"}',
     ),
   ];
 

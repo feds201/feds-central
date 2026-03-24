@@ -40,7 +40,11 @@ class ImportPreviewRowWidget extends StatelessWidget {
         border: Border(
           bottom: BorderSide(color: theme.dividerColor.withValues(alpha: 0.3)),
           left: BorderSide(
-            color: row.allianceSide == 'red' ? Colors.red : Colors.blue,
+            color: row.allianceSide == 'red'
+                ? Colors.red
+                : row.allianceSide == 'blue'
+                    ? Colors.blue
+                    : Colors.purple,
             width: 4,
           ),
         ),
@@ -195,7 +199,11 @@ class ImportPreviewRowWidget extends StatelessWidget {
 
   Widget _buildTeamChips(BuildContext context) {
     final theme = Theme.of(context);
-    final allianceColor = row.allianceSide == 'red' ? Colors.red : Colors.blue;
+    final allianceColor = row.allianceSide == 'red'
+        ? Colors.red
+        : row.allianceSide == 'blue'
+            ? Colors.blue
+            : Colors.purple;
     final eventKeys = dataStore.settings.selectedEventKeys;
     final alliances = dataStore.getAlliancesForEvents(eventKeys);
 
@@ -245,27 +253,32 @@ class ImportPreviewRowWidget extends StatelessWidget {
   }
 
   Widget _buildAllianceToggle(BuildContext context) {
+    // Cycle: red → blue → full → red
+    final nextSide = row.allianceSide == 'red'
+        ? 'blue'
+        : row.allianceSide == 'blue'
+            ? 'full'
+            : 'red';
+    final color = row.allianceSide == 'red'
+        ? Colors.red
+        : row.allianceSide == 'blue'
+            ? Colors.blue
+            : Colors.purple;
+
     return InkWell(
-      onTap: () {
-        onAllianceSideChanged(
-          row.allianceSide == 'red' ? 'blue' : 'red',
-        );
-      },
+      onTap: () => onAllianceSideChanged(nextSide),
       borderRadius: BorderRadius.circular(4),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
-          color: (row.allianceSide == 'red' ? Colors.red : Colors.blue)
-              .withValues(alpha: 0.2),
+          color: color.withValues(alpha: 0.2),
           borderRadius: BorderRadius.circular(4),
-          border: Border.all(
-            color: row.allianceSide == 'red' ? Colors.red : Colors.blue,
-          ),
+          border: Border.all(color: color),
         ),
         child: Text(
           row.allianceSide.toUpperCase(),
           style: TextStyle(
-            color: row.allianceSide == 'red' ? Colors.red : Colors.blue,
+            color: color,
             fontWeight: FontWeight.bold,
             fontSize: 11,
           ),

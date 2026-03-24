@@ -258,6 +258,10 @@ class DataStore extends ChangeNotifier {
           .where((r) => r.allianceSide == 'blue')
           .cast<Recording?>()
           .firstOrNull;
+      final fullRec = recordings
+          .where((r) => r.allianceSide == 'full')
+          .cast<Recording?>()
+          .firstOrNull;
       final localRipped = getLocalRippedVideo(m.matchKey);
       final event = eventMap[m.eventKey];
 
@@ -265,6 +269,7 @@ class DataStore extends ChangeNotifier {
         match: m,
         redRecording: redRec,
         blueRecording: blueRec,
+        fullRecording: fullRec,
         localRippedVideo: localRipped,
         eventShortName: event?.shortName,
       );
@@ -292,6 +297,10 @@ class DataStore extends ChangeNotifier {
         .where((r) => r.allianceSide == 'blue')
         .cast<Recording?>()
         .firstOrNull;
+    final fullRec = recordings
+        .where((r) => r.allianceSide == 'full')
+        .cast<Recording?>()
+        .firstOrNull;
     final localRipped = getLocalRippedVideo(matchKey);
 
     String? eventShortName;
@@ -306,6 +315,7 @@ class DataStore extends ChangeNotifier {
       match: m,
       redRecording: redRec,
       blueRecording: blueRec,
+      fullRecording: fullRec,
       localRippedVideo: localRipped,
       eventShortName: eventShortName,
     );

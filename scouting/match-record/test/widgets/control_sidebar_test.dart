@@ -14,7 +14,7 @@ void main() {
     bool canUndo = false,
     bool canRedo = false,
     bool hasDrawings = false,
-    bool hasDualVideo = true,
+    bool canToggleViewMode = true,
     bool isPaused = true,
     VoidCallback? onToggleDrawing,
     VoidCallback? onUndo,
@@ -29,7 +29,7 @@ void main() {
       canUndo: canUndo,
       canRedo: canRedo,
       hasDrawings: hasDrawings,
-      hasDualVideo: hasDualVideo,
+      canToggleViewMode: canToggleViewMode,
       isPaused: isPaused,
       onBack: noop,
       onSwapSides: noop,
@@ -295,7 +295,7 @@ void main() {
     testWidgets('compact mode buttons have min 56px touch targets', (tester) async {
       await tester.pumpWidget(wrapInApp(buildSidebar(
         viewMode: ViewMode.redOnly,
-        hasDualVideo: false,
+        canToggleViewMode: false,
       )));
 
       // In compact mode, buttons use IconButton with constraints minHeight: 56.

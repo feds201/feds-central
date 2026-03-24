@@ -2,7 +2,7 @@ import 'dart:convert';
 
 /// Result of alliance suggestion from drive config.
 class AllianceSuggestion {
-  /// "red", "blue", or null if no suggestion possible.
+  /// "red", "blue", "full", or null if no suggestion possible.
   final String? side;
 
   const AllianceSuggestion({this.side});
@@ -11,8 +11,11 @@ class AllianceSuggestion {
 /// Pure function: suggest alliance side based on config.json content.
 class AllianceSuggester {
   /// Parse config.json content for alliance side.
+  ///
+  /// Expected format: {"type": "red"} | {"type": "blue"} | {"type": "full"}
+  ///
   /// Returns null side if config is null, empty, malformed,
-  /// or doesn't contain a valid alliance value.
+  /// or doesn't contain a valid type value.
   static AllianceSuggestion suggest({required String? configJsonContent}) {
     if (configJsonContent == null || configJsonContent.isEmpty) {
       return const AllianceSuggestion();
@@ -24,13 +27,13 @@ class AllianceSuggester {
         return const AllianceSuggestion();
       }
 
-      final alliance = json['alliance'];
-      if (alliance is! String) {
+      final type = json['type'];
+      if (type is! String) {
         return const AllianceSuggestion();
       }
 
-      final normalized = alliance.toLowerCase().trim();
-      if (normalized == 'red' || normalized == 'blue') {
+      final normalized = type.toLowerCase().trim();
+      if (normalized == 'red' || normalized == 'blue' || normalized == 'full') {
         return AllianceSuggestion(side: normalized);
       }
 

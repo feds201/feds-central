@@ -148,12 +148,18 @@ class _SessionReEditPageState extends State<_SessionReEditPage> {
 
       if (recording != null) {
         // Imported entry -- editable with current recording data
+        final teams = recording.allianceSide == 'full'
+            ? [
+                recording.team1, recording.team2, recording.team3,
+                recording.team4, recording.team5, recording.team6,
+              ]
+            : [recording.team1, recording.team2, recording.team3];
         rows.add(_ReEditRow(
           entry: entry,
           recording: recording,
           matchKey: recording.matchKey,
           allianceSide: recording.allianceSide,
-          teams: [recording.team1, recording.team2, recording.team3],
+          teams: teams,
           isImported: true,
         ));
       } else {
@@ -182,9 +188,14 @@ class _SessionReEditPageState extends State<_SessionReEditPage> {
       // Update teams for the new match
       final match = widget.dataStore.getMatchByKey(matchKey);
       if (match != null) {
-        final teamKeys = row.allianceSide == 'red'
-            ? match.redTeamKeys
-            : match.blueTeamKeys;
+        final List<String> teamKeys;
+        if (row.allianceSide == 'full') {
+          teamKeys = [...match.redTeamKeys, ...match.blueTeamKeys];
+        } else if (row.allianceSide == 'red') {
+          teamKeys = match.redTeamKeys;
+        } else {
+          teamKeys = match.blueTeamKeys;
+        }
         row.teams = teamKeys
             .map((key) => int.tryParse(key.replaceFirst('frc', '')) ?? 0)
             .toList();
@@ -202,8 +213,14 @@ class _SessionReEditPageState extends State<_SessionReEditPage> {
       if (row.matchKey != null) {
         final match = widget.dataStore.getMatchByKey(row.matchKey!);
         if (match != null) {
-          final teamKeys =
-              side == 'red' ? match.redTeamKeys : match.blueTeamKeys;
+          final List<String> teamKeys;
+          if (side == 'full') {
+            teamKeys = [...match.redTeamKeys, ...match.blueTeamKeys];
+          } else if (side == 'red') {
+            teamKeys = match.redTeamKeys;
+          } else {
+            teamKeys = match.blueTeamKeys;
+          }
           row.teams = teamKeys
               .map((key) => int.tryParse(key.replaceFirst('frc', '')) ?? 0)
               .toList();
@@ -232,6 +249,9 @@ class _SessionReEditPageState extends State<_SessionReEditPage> {
         team1: row.teams.isNotEmpty ? row.teams[0] : 0,
         team2: row.teams.length > 1 ? row.teams[1] : 0,
         team3: row.teams.length > 2 ? row.teams[2] : 0,
+        team4: row.teams.length > 3 ? row.teams[3] : 0,
+        team5: row.teams.length > 4 ? row.teams[4] : 0,
+        team6: row.teams.length > 5 ? row.teams[5] : 0,
       );
 
       await widget.dataStore.updateRecording(updated);

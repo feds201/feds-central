@@ -344,6 +344,9 @@ class ImportPipeline {
         team1: row.teams.isNotEmpty ? row.teams[0] : 0,
         team2: row.teams.length > 1 ? row.teams[1] : 0,
         team3: row.teams.length > 2 ? row.teams[2] : 0,
+        team4: row.teams.length > 3 ? row.teams[3] : 0,
+        team5: row.teams.length > 4 ? row.teams[4] : 0,
+        team6: row.teams.length > 5 ? row.teams[5] : 0,
       );
 
       await dataStore.addRecording(recording);
@@ -439,12 +442,20 @@ class ImportPipeline {
   }
 
   /// Get team numbers for a given alliance side from a match.
+  /// For 'full' (full-field), returns all 6 teams (red + blue).
   List<int> _getTeamsForSide(Match match, String side) {
-    final teamKeys = side == 'red' ? match.redTeamKeys : match.blueTeamKeys;
-    return teamKeys.map((key) {
-      // Strip "frc" prefix
-      return int.tryParse(key.replaceFirst('frc', '')) ?? 0;
-    }).toList();
+    final List<String> teamKeys;
+    if (side == 'full') {
+      teamKeys = [...match.redTeamKeys, ...match.blueTeamKeys];
+    } else if (side == 'red') {
+      teamKeys = match.redTeamKeys;
+    } else {
+      teamKeys = match.blueTeamKeys;
+    }
+    // Strip "frc" prefix
+    return teamKeys
+        .map((key) => int.tryParse(key.replaceFirst('frc', '')) ?? 0)
+        .toList();
   }
 
   /// Get file extension from filename.

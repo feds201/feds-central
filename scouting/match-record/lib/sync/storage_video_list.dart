@@ -48,8 +48,11 @@ class StorageVideoList extends StatelessWidget {
     final isSelected = selectedIds.contains(recording.id);
     final match = dataStore.getMatchByKey(recording.matchKey);
     final matchDisplay = match?.displayName ?? recording.matchKey;
-    final allianceColor =
-        recording.allianceSide == 'red' ? Colors.red : Colors.blue;
+    final allianceColor = recording.allianceSide == 'red'
+        ? Colors.red
+        : recording.allianceSide == 'blue'
+            ? Colors.blue
+            : Colors.purple;
     final eventShortName = _getEventShortName(recording.eventKey);
 
     return InkWell(
@@ -83,7 +86,7 @@ class StorageVideoList extends StatelessWidget {
                   const SizedBox(height: 2),
                   // Line 2: Team numbers · event short name
                   Text(
-                    '${recording.team1}, ${recording.team2}, ${recording.team3}  \u00b7  $eventShortName',
+                    '${_formatTeams(recording)}  \u00b7  $eventShortName',
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
@@ -103,6 +106,17 @@ class StorageVideoList extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _formatTeams(Recording recording) {
+    if (recording.allianceSide == 'full') {
+      final teams = [
+        recording.team1, recording.team2, recording.team3,
+        recording.team4, recording.team5, recording.team6,
+      ].where((t) => t > 0);
+      return teams.join(', ');
+    }
+    return '${recording.team1}, ${recording.team2}, ${recording.team3}';
   }
 
   String _formatFileSize(int bytes) {

@@ -51,7 +51,12 @@ class _StorageTabState extends State<StorageTab> {
     }
     setState(() {
       for (final r in _recordings) {
-        if (r.team1 != ourTeam && r.team2 != ourTeam && r.team3 != ourTeam) {
+        if (r.team1 != ourTeam &&
+            r.team2 != ourTeam &&
+            r.team3 != ourTeam &&
+            r.team4 != ourTeam &&
+            r.team5 != ourTeam &&
+            r.team6 != ourTeam) {
           _selectedIds.add(r.id);
         }
       }

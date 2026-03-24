@@ -3,28 +3,40 @@ import 'package:match_record/import/alliance_suggester.dart';
 
 void main() {
   group('AllianceSuggester', () {
-    test('red alliance config returns "red"', () {
+    test('red type config returns "red"', () {
       final result =
-          AllianceSuggester.suggest(configJsonContent: '{"alliance": "red"}');
+          AllianceSuggester.suggest(configJsonContent: '{"type": "red"}');
       expect(result.side, 'red');
     });
 
-    test('blue alliance config returns "blue"', () {
+    test('blue type config returns "blue"', () {
       final result =
-          AllianceSuggester.suggest(configJsonContent: '{"alliance": "blue"}');
+          AllianceSuggester.suggest(configJsonContent: '{"type": "blue"}');
       expect(result.side, 'blue');
+    });
+
+    test('full type config returns "full"', () {
+      final result =
+          AllianceSuggester.suggest(configJsonContent: '{"type": "full"}');
+      expect(result.side, 'full');
     });
 
     test('case insensitive - uppercase RED returns "red"', () {
       final result =
-          AllianceSuggester.suggest(configJsonContent: '{"alliance": "RED"}');
+          AllianceSuggester.suggest(configJsonContent: '{"type": "RED"}');
       expect(result.side, 'red');
     });
 
     test('case insensitive - mixed case Blue returns "blue"', () {
       final result =
-          AllianceSuggester.suggest(configJsonContent: '{"alliance": "Blue"}');
+          AllianceSuggester.suggest(configJsonContent: '{"type": "Blue"}');
       expect(result.side, 'blue');
+    });
+
+    test('case insensitive - FULL uppercase returns "full"', () {
+      final result =
+          AllianceSuggester.suggest(configJsonContent: '{"type": "FULL"}');
+      expect(result.side, 'full');
     });
 
     test('null config returns null side', () {
@@ -38,7 +50,7 @@ void main() {
       expect(result.side, isNull);
     });
 
-    test('missing alliance key returns null side', () {
+    test('missing type key returns null side', () {
       final result =
           AllianceSuggester.suggest(configJsonContent: '{"team": "201"}');
       expect(result.side, isNull);
@@ -49,21 +61,21 @@ void main() {
       expect(result.side, isNull);
     });
 
-    test('alliance value that is not red or blue returns null side', () {
+    test('type value that is not red, blue, or full returns null side', () {
       final result =
-          AllianceSuggester.suggest(configJsonContent: '{"alliance": "green"}');
+          AllianceSuggester.suggest(configJsonContent: '{"type": "green"}');
       expect(result.side, isNull);
     });
 
-    test('alliance value is a number returns null side', () {
+    test('type value is a number returns null side', () {
       final result =
-          AllianceSuggester.suggest(configJsonContent: '{"alliance": 42}');
+          AllianceSuggester.suggest(configJsonContent: '{"type": 42}');
       expect(result.side, isNull);
     });
 
-    test('alliance value with whitespace is handled', () {
+    test('type value with whitespace is handled', () {
       final result = AllianceSuggester.suggest(
-          configJsonContent: '{"alliance": " red "}');
+          configJsonContent: '{"type": " red "}');
       expect(result.side, 'red');
     });
 

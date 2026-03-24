@@ -146,7 +146,7 @@ void main() {
             lastModified: baseTime.add(const Duration(minutes: 5)),
           ),
         ],
-        configJson: '{"alliance": "blue"}',
+        configJson: '{"type": "blue"}',
         label: 'My Drive',
       );
 
@@ -276,7 +276,7 @@ void main() {
             lastModified: baseTime,
           ),
         ],
-        configJson: '{"alliance": "blue"}',
+        configJson: '{"type": "blue"}',
       );
 
       pipeline = ImportPipeline(
@@ -337,7 +337,7 @@ void main() {
             lastModified: baseTime,
           ),
         ],
-        configJson: '{"alliance": "red"}',
+        configJson: '{"type": "red"}',
       );
 
       pipeline = ImportPipeline(
@@ -376,7 +376,7 @@ void main() {
             lastModified: baseTime.add(const Duration(minutes: 5)),
           ),
         ],
-        configJson: '{"alliance": "red"}',
+        configJson: '{"type": "red"}',
       );
 
       pipeline = ImportPipeline(

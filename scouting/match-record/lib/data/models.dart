@@ -388,6 +388,11 @@ class Recording {
   final int team1;
   final int team2;
   final int team3;
+  // team4/5/6 are used for full-field recordings (allianceSide == 'full'),
+  // which cover both alliances (6 teams total). Zero for red/blue recordings.
+  final int team4;
+  final int team5;
+  final int team6;
 
   const Recording({
     required this.id,
@@ -403,6 +408,9 @@ class Recording {
     required this.team1,
     required this.team2,
     required this.team3,
+    this.team4 = 0,
+    this.team5 = 0,
+    this.team6 = 0,
   });
 
   Map<String, dynamic> toJson() => {
@@ -419,6 +427,9 @@ class Recording {
         'team1': team1,
         'team2': team2,
         'team3': team3,
+        'team4': team4,
+        'team5': team5,
+        'team6': team6,
       };
 
   factory Recording.fromJson(Map<String, dynamic> json) => Recording(
@@ -437,6 +448,9 @@ class Recording {
         team1: json['team1'] as int? ?? 0,
         team2: json['team2'] as int? ?? 0,
         team3: json['team3'] as int? ?? 0,
+        team4: json['team4'] as int? ?? 0,
+        team5: json['team5'] as int? ?? 0,
+        team6: json['team6'] as int? ?? 0,
       );
 
   Recording copyWith({
@@ -453,6 +467,9 @@ class Recording {
     int? team1,
     int? team2,
     int? team3,
+    int? team4,
+    int? team5,
+    int? team6,
   }) =>
       Recording(
         id: id ?? this.id,
@@ -468,6 +485,9 @@ class Recording {
         team1: team1 ?? this.team1,
         team2: team2 ?? this.team2,
         team3: team3 ?? this.team3,
+        team4: team4 ?? this.team4,
+        team5: team5 ?? this.team5,
+        team6: team6 ?? this.team6,
       );
 
   @override
@@ -487,7 +507,10 @@ class Recording {
           originalFilename == other.originalFilename &&
           team1 == other.team1 &&
           team2 == other.team2 &&
-          team3 == other.team3;
+          team3 == other.team3 &&
+          team4 == other.team4 &&
+          team5 == other.team5 &&
+          team6 == other.team6;
 
   @override
   int get hashCode => Object.hash(
@@ -504,6 +527,9 @@ class Recording {
         team1,
         team2,
         team3,
+        team4,
+        team5,
+        team6,
       );
 }
 
@@ -1107,6 +1133,8 @@ class MatchWithVideos {
   final Match match;
   final Recording? redRecording;
   final Recording? blueRecording;
+  // Full-field recording (allianceSide == 'full') covering both alliances.
+  final Recording? fullRecording;
   final LocalRippedVideo? localRippedVideo;
   final String? eventShortName;
 
@@ -1114,11 +1142,13 @@ class MatchWithVideos {
     required this.match,
     this.redRecording,
     this.blueRecording,
+    this.fullRecording,
     this.localRippedVideo,
     this.eventShortName,
   });
 
-  bool get hasRecordings => redRecording != null || blueRecording != null;
+  bool get hasRecordings =>
+      redRecording != null || blueRecording != null || fullRecording != null;
   bool get hasYouTube => match.youtubeKey != null;
   bool get hasLocalRippedVideo => localRippedVideo != null;
 }

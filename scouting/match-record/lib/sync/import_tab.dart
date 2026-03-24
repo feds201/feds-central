@@ -199,8 +199,14 @@ class _ImportTabState extends State<ImportTab> {
       if (row.matchKey != null) {
         final match = widget.dataStore.getMatchByKey(row.matchKey!);
         if (match != null) {
-          final teamKeys =
-              side == 'red' ? match.redTeamKeys : match.blueTeamKeys;
+          final List<String> teamKeys;
+          if (side == 'full') {
+            teamKeys = [...match.redTeamKeys, ...match.blueTeamKeys];
+          } else if (side == 'red') {
+            teamKeys = match.redTeamKeys;
+          } else {
+            teamKeys = match.blueTeamKeys;
+          }
           row.teams = teamKeys
               .map((key) => int.tryParse(key.replaceFirst('frc', '')) ?? 0)
               .toList();
@@ -249,8 +255,14 @@ class _ImportTabState extends State<ImportTab> {
         if (row.matchKey != null) {
           final match = widget.dataStore.getMatchByKey(row.matchKey!);
           if (match != null) {
-            final teamKeys =
-                side == 'red' ? match.redTeamKeys : match.blueTeamKeys;
+            final List<String> teamKeys;
+            if (side == 'full') {
+              teamKeys = [...match.redTeamKeys, ...match.blueTeamKeys];
+            } else if (side == 'red') {
+              teamKeys = match.redTeamKeys;
+            } else {
+              teamKeys = match.blueTeamKeys;
+            }
             row.teams = teamKeys
                 .map((key) => int.tryParse(key.replaceFirst('frc', '')) ?? 0)
                 .toList();
@@ -490,6 +502,12 @@ class _ImportTabState extends State<ImportTab> {
             label: 'BLUE',
             color: Colors.blue,
             onTap: () => _onSetAllAllianceSide('blue'),
+          ),
+          const SizedBox(width: 4),
+          _AllianceButton(
+            label: 'FULL',
+            color: Colors.purple,
+            onTap: () => _onSetAllAllianceSide('full'),
           ),
         ],
       ),

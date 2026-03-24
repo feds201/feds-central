@@ -41,18 +41,43 @@ class _VideoViewerState extends State<VideoViewer> {
   // Players
   Player? _redPlayer;
   Player? _bluePlayer;
+  Player? _fullPlayer;
   VideoController? _redController;
   VideoController? _blueController;
+  VideoController? _fullController;
 
   // Sync
   SyncEngine? _syncEngine;
-  bool get _hasDualVideo =>
+
+  // Convenience getters for what recordings exist
+  bool get _hasRedBlue =>
       widget.matchWithVideos.redRecording != null &&
       widget.matchWithVideos.blueRecording != null;
+  bool get _hasFull => widget.matchWithVideos.fullRecording != null;
+
+  /// Ordered list of view modes available for this match's recordings.
+  /// Priority: both > fullOnly > redOnly > blueOnly.
+  List<ViewMode> get _availableViewModes {
+    final modes = <ViewMode>[];
+    if (_hasRedBlue) modes.add(ViewMode.both);
+    if (_hasFull) modes.add(ViewMode.fullOnly);
+    if (widget.matchWithVideos.redRecording != null) modes.add(ViewMode.redOnly);
+    if (widget.matchWithVideos.blueRecording != null) modes.add(ViewMode.blueOnly);
+    return modes;
+  }
+
+  /// Ordered list of mute states available for this match's recordings.
+  List<MuteState> get _availableMuteStates {
+    final states = [MuteState.muted];
+    if (_hasFull) states.add(MuteState.fullAudio);
+    if (widget.matchWithVideos.redRecording != null) states.add(MuteState.redAudio);
+    if (widget.matchWithVideos.blueRecording != null) states.add(MuteState.blueAudio);
+    return states;
+  }
 
   // State
   MuteState _muteState = MuteState.muted;
-  ViewMode _viewMode = ViewMode.both;
+  late ViewMode _viewMode;
   late bool _sidesSwapped;
   bool _isPlaying = false;
   bool _isDrawingMode = false;
@@ -64,8 +89,10 @@ class _VideoViewerState extends State<VideoViewer> {
   // Per-pane rotation (quarter turns, 0-3)
   int _redQuarterTurns = 0;
   int _blueQuarterTurns = 0;
+  int _fullQuarterTurns = 0;
   bool _redManuallyRotated = false;
   bool _blueManuallyRotated = false;
+  bool _fullManuallyRotated = false;
 
   // Position tracking
   Duration _position = Duration.zero;
@@ -84,6 +111,8 @@ class _VideoViewerState extends State<VideoViewer> {
   void initState() {
     super.initState();
     _sidesSwapped = widget.dataStore.settings.sidesSwapped;
+    // Default to the highest-priority available view mode
+    _viewMode = _availableViewModes.first;
     _lockLandscape();
     _drawingController.addListener(_onDrawingChanged);
     _initPlayers();
@@ -105,6 +134,7 @@ class _VideoViewerState extends State<VideoViewer> {
   Future<void> _initPlayers() async {
     final redRec = widget.matchWithVideos.redRecording;
     final blueRec = widget.matchWithVideos.blueRecording;
+    final fullRec = widget.matchWithVideos.fullRecording;
 
     if (redRec != null) {
       _redPlayer = Player();
@@ -122,13 +152,23 @@ class _VideoViewerState extends State<VideoViewer> {
       _bluePlayer!.setVolume(0);
     }
 
-    // Set up sync engine for dual video
-    if (_hasDualVideo && _redPlayer != null && _bluePlayer != null) {
+    if (fullRec != null) {
+      _fullPlayer = Player();
+      _fullController = VideoController(_fullPlayer!);
+      final path = await _getVideoPath(fullRec);
+      await _fullPlayer!.open(Media(path), play: false);
+      _fullPlayer!.setVolume(0);
+    }
+
+    // Set up sync engine whenever red+blue exist; optionally include full player.
+    if (_hasRedBlue && _redPlayer != null && _bluePlayer != null) {
       _syncEngine = SyncEngine.fromRecordings(
         redRecording: redRec!,
         blueRecording: blueRec!,
         redPlayer: _redPlayer!,
         bluePlayer: _bluePlayer!,
+        fullRecording: fullRec,
+        fullPlayer: _fullPlayer,
       );
       _syncEngine!.startPositionMonitoring(() {
         if (mounted) {
@@ -145,12 +185,14 @@ class _VideoViewerState extends State<VideoViewer> {
     // Auto-rotate videos so the wider dimension is vertical.
     // In landscape mode, we want phone videos (typically taller than wide)
     // to display naturally, and landscape videos rotated so wider=vertical.
-    _autoRotatePlayer(_redPlayer, isRed: true);
-    _autoRotatePlayer(_bluePlayer, isRed: false);
+    _autoRotatePlayer(_redPlayer, isRed: true, isFull: false);
+    _autoRotatePlayer(_bluePlayer, isRed: false, isFull: false);
+    _autoRotatePlayer(_fullPlayer, isRed: false, isFull: true);
 
     // Subscribe to position/duration streams from the primary player
     // (must subscribe before autoplay so we catch the playing state)
-    final primaryPlayer = _syncEngine?.earlierPlayer ?? _redPlayer ?? _bluePlayer;
+    final primaryPlayer =
+        _syncEngine?.earlierPlayer ?? _redPlayer ?? _bluePlayer ?? _fullPlayer;
     if (primaryPlayer != null) {
       _subscriptions.add(
         primaryPlayer.stream.position.listen((pos) {
@@ -184,7 +226,7 @@ class _VideoViewerState extends State<VideoViewer> {
     if (_syncEngine != null) {
       await _syncEngine!.startSyncedPlayback();
     } else {
-      final player = _redPlayer ?? _bluePlayer;
+      final player = _redPlayer ?? _bluePlayer ?? _fullPlayer;
       await player?.play();
     }
 
@@ -204,6 +246,7 @@ class _VideoViewerState extends State<VideoViewer> {
     _syncEngine?.dispose();
     _redPlayer?.dispose();
     _bluePlayer?.dispose();
+    _fullPlayer?.dispose();
     _drawingController.removeListener(_onDrawingChanged);
     _drawingController.dispose();
 
@@ -218,16 +261,10 @@ class _VideoViewerState extends State<VideoViewer> {
   // --- Audio ---
 
   void _toggleMute() {
-    setState(() {
-      switch (_muteState) {
-        case MuteState.muted:
-          _muteState = MuteState.redAudio;
-        case MuteState.redAudio:
-          _muteState = MuteState.blueAudio;
-        case MuteState.blueAudio:
-          _muteState = MuteState.muted;
-      }
-    });
+    final available = _availableMuteStates;
+    final currentIndex = available.indexOf(_muteState);
+    final nextIndex = (currentIndex + 1) % available.length;
+    setState(() => _muteState = available[nextIndex]);
     _applyMuteState();
   }
 
@@ -241,29 +278,30 @@ class _VideoViewerState extends State<VideoViewer> {
       case MuteState.muted:
         redPlayer?.setVolume(0);
         bluePlayer?.setVolume(0);
+        _fullPlayer?.setVolume(0);
       case MuteState.redAudio:
         redPlayer?.setVolume(100);
         bluePlayer?.setVolume(0);
+        _fullPlayer?.setVolume(0);
       case MuteState.blueAudio:
         redPlayer?.setVolume(0);
         bluePlayer?.setVolume(100);
+        _fullPlayer?.setVolume(0);
+      case MuteState.fullAudio:
+        redPlayer?.setVolume(0);
+        bluePlayer?.setVolume(0);
+        _fullPlayer?.setVolume(100);
     }
   }
 
   // --- View Mode ---
 
   void _toggleViewMode() {
-    if (!_hasDualVideo) return;
-    setState(() {
-      switch (_viewMode) {
-        case ViewMode.both:
-          _viewMode = ViewMode.redOnly;
-        case ViewMode.redOnly:
-          _viewMode = ViewMode.blueOnly;
-        case ViewMode.blueOnly:
-          _viewMode = ViewMode.both;
-      }
-    });
+    final available = _availableViewModes;
+    if (available.length <= 1) return;
+    final currentIndex = available.indexOf(_viewMode);
+    final nextIndex = (currentIndex + 1) % available.length;
+    setState(() => _viewMode = available[nextIndex]);
     _updateAutoRotation();
   }
 
@@ -274,14 +312,14 @@ class _VideoViewerState extends State<VideoViewer> {
       if (_syncEngine != null) {
         await _syncEngine!.pauseBoth();
       } else {
-        final player = _redPlayer ?? _bluePlayer;
+        final player = _redPlayer ?? _bluePlayer ?? _fullPlayer;
         await player?.pause();
       }
     } else {
       if (_syncEngine != null) {
         await _syncEngine!.startSyncedPlayback();
       } else {
-        final player = _redPlayer ?? _bluePlayer;
+        final player = _redPlayer ?? _bluePlayer ?? _fullPlayer;
         await player?.play();
       }
     }
@@ -310,7 +348,7 @@ class _VideoViewerState extends State<VideoViewer> {
         await _syncEngine!.startSyncedPlayback();
       }
     } else {
-      final player = _redPlayer ?? _bluePlayer;
+      final player = _redPlayer ?? _bluePlayer ?? _fullPlayer;
       await player?.pause();
       await player?.seek(Duration.zero);
       setState(() => _position = Duration.zero);
@@ -332,7 +370,7 @@ class _VideoViewerState extends State<VideoViewer> {
         _countdownRemaining = _syncEngine!.countdownRemaining;
       });
     } else {
-      final player = _redPlayer ?? _bluePlayer;
+      final player = _redPlayer ?? _bluePlayer ?? _fullPlayer;
       await player?.seek(target);
       setState(() => _position = target);
     }
@@ -348,7 +386,7 @@ class _VideoViewerState extends State<VideoViewer> {
       if (_syncEngine != null) {
         _syncEngine!.pauseBoth();
       } else {
-        (_redPlayer ?? _bluePlayer)?.pause();
+        (_redPlayer ?? _bluePlayer ?? _fullPlayer)?.pause();
       }
     }
 
@@ -390,7 +428,7 @@ class _VideoViewerState extends State<VideoViewer> {
         });
       }
     } else {
-      (_redPlayer ?? _bluePlayer)?.seek(position);
+      (_redPlayer ?? _bluePlayer ?? _fullPlayer)?.seek(position);
     }
   }
 
@@ -418,9 +456,12 @@ class _VideoViewerState extends State<VideoViewer> {
 
   // --- Rotation ---
 
-  void _rotatePane(bool isRed) {
+  void _rotatePane({bool? isRed, bool isFull = false}) {
     setState(() {
-      if (isRed) {
+      if (isFull) {
+        _fullQuarterTurns = (_fullQuarterTurns + 1) % 4;
+        _fullManuallyRotated = true;
+      } else if (isRed == true) {
         _redQuarterTurns = (_redQuarterTurns + 1) % 4;
         _redManuallyRotated = true;
       } else {
@@ -447,6 +488,7 @@ class _VideoViewerState extends State<VideoViewer> {
       builder: (context) => _EditMetadataSheet(
         matchWithVideos: widget.matchWithVideos,
         dataStore: widget.dataStore,
+        activeViewMode: _viewMode,
       ),
     );
   }
@@ -456,16 +498,20 @@ class _VideoViewerState extends State<VideoViewer> {
   // Cached video dimensions for recomputing rotation on view mode change
   int? _redVideoWidth, _redVideoHeight;
   int? _blueVideoWidth, _blueVideoHeight;
+  int? _fullVideoWidth, _fullVideoHeight;
 
   /// Auto-rotate a video pane based on its native dimensions.
   /// Listens to the player's width stream (fires when video opens).
-  void _autoRotatePlayer(Player? player, {required bool isRed}) {
+  void _autoRotatePlayer(Player? player, {required bool isRed, bool isFull = false}) {
     if (player == null) return;
     _subscriptions.add(
       player.stream.width.listen((width) {
         final height = player.state.height;
         if (width != null && height != null && width > 0 && height > 0) {
-          if (isRed) {
+          if (isFull) {
+            _fullVideoWidth = width;
+            _fullVideoHeight = height;
+          } else if (isRed) {
             _redVideoWidth = width;
             _redVideoHeight = height;
           } else {
@@ -484,7 +530,7 @@ class _VideoViewerState extends State<VideoViewer> {
   /// Skips panes that the user has manually rotated.
   void _updateAutoRotation() {
     setState(() {
-      final isSingleMode = !_hasDualVideo || _viewMode != ViewMode.both;
+      final isSingleMode = _viewMode != ViewMode.both;
 
       if (!_redManuallyRotated &&
           _redVideoWidth != null &&
@@ -509,6 +555,14 @@ class _VideoViewerState extends State<VideoViewer> {
           _blueQuarterTurns = isLandscapeVideo ? 1 : 0;
         }
       }
+
+      // Full player is always displayed full-screen (single mode)
+      if (!_fullManuallyRotated &&
+          _fullVideoWidth != null &&
+          _fullVideoHeight != null) {
+        final isLandscapeVideo = _fullVideoWidth! > _fullVideoHeight!;
+        _fullQuarterTurns = isLandscapeVideo ? 0 : 1;
+      }
     });
   }
 
@@ -519,7 +573,10 @@ class _VideoViewerState extends State<VideoViewer> {
     if (teamNum == null || recording == null) return false;
     return recording.team1 == teamNum ||
         recording.team2 == teamNum ||
-        recording.team3 == teamNum;
+        recording.team3 == teamNum ||
+        recording.team4 == teamNum ||
+        recording.team5 == teamNum ||
+        recording.team6 == teamNum;
   }
 
   bool _isRedWaiting() {
@@ -559,7 +616,7 @@ class _VideoViewerState extends State<VideoViewer> {
               canUndo: _drawingController.canUndo,
               canRedo: _drawingController.canRedo,
               hasDrawings: _drawingController.strokes.isNotEmpty,
-              hasDualVideo: _hasDualVideo,
+              canToggleViewMode: _availableViewModes.length > 1,
               isPaused: !_isPlaying,
               onBack: () => Navigator.of(context).pop(),
               onSwapSides: _swapSides,
@@ -610,9 +667,37 @@ class _VideoViewerState extends State<VideoViewer> {
   Widget _buildVideoPanes() {
     final redRec = widget.matchWithVideos.redRecording;
     final blueRec = widget.matchWithVideos.blueRecording;
+    final fullRec = widget.matchWithVideos.fullRecording;
 
-    // Single video mode
-    if (!_hasDualVideo || _viewMode != ViewMode.both) {
+    // Full-only mode
+    if (_viewMode == ViewMode.fullOnly) {
+      if (_fullPlayer == null || _fullController == null) {
+        return const Center(
+          child: Text(
+            'No video available',
+            style: TextStyle(color: Colors.white54),
+          ),
+        );
+      }
+      return VideoPane(
+        player: _fullPlayer!,
+        videoController: _fullController!,
+        allianceColor: Colors.purple,
+        containsUserTeam: _containsUserTeam(fullRec),
+        isDrawingMode: _isDrawingMode,
+        quarterTurns: _fullQuarterTurns,
+        onRotate: () => _rotatePane(isFull: true),
+        isWaiting: false,
+        countdownRemaining: Duration.zero,
+        onScrubStart: _onScrubStart,
+        onScrubUpdate: _onScrubUpdate,
+        onScrubEnd: _onScrubEnd,
+        onEdit: _openEditMetadata,
+      );
+    }
+
+    // Single red/blue mode
+    if (_viewMode != ViewMode.both) {
       Player? player;
       VideoController? controller;
       Color color;
@@ -652,7 +737,7 @@ class _VideoViewerState extends State<VideoViewer> {
         containsUserTeam: _containsUserTeam(recording),
         isDrawingMode: _isDrawingMode,
         quarterTurns: isRed ? _redQuarterTurns : _blueQuarterTurns,
-        onRotate: () => _rotatePane(isRed),
+        onRotate: () => _rotatePane(isRed: isRed),
         isWaiting: isWaiting,
         countdownRemaining: _countdownRemaining,
         onScrubStart: _onScrubStart,
@@ -686,7 +771,7 @@ class _VideoViewerState extends State<VideoViewer> {
             containsUserTeam: _containsUserTeam(leftRec),
             isDrawingMode: _isDrawingMode,
             quarterTurns: leftIsRed ? _redQuarterTurns : _blueQuarterTurns,
-            onRotate: () => _rotatePane(leftIsRed),
+            onRotate: () => _rotatePane(isRed: leftIsRed),
             isWaiting: leftWaiting,
             countdownRemaining: _countdownRemaining,
             onScrubStart: _onScrubStart,
@@ -703,7 +788,7 @@ class _VideoViewerState extends State<VideoViewer> {
             containsUserTeam: _containsUserTeam(rightRec),
             isDrawingMode: _isDrawingMode,
             quarterTurns: rightIsRed ? _redQuarterTurns : _blueQuarterTurns,
-            onRotate: () => _rotatePane(rightIsRed),
+            onRotate: () => _rotatePane(isRed: rightIsRed),
             isWaiting: rightWaiting,
             countdownRemaining: _countdownRemaining,
             onScrubStart: _onScrubStart,
@@ -721,10 +806,14 @@ class _VideoViewerState extends State<VideoViewer> {
 class _EditMetadataSheet extends StatefulWidget {
   final MatchWithVideos matchWithVideos;
   final DataStore dataStore;
+  /// The view mode that was active when the sheet was opened; used to determine
+  /// which recording to edit by default.
+  final ViewMode activeViewMode;
 
   const _EditMetadataSheet({
     required this.matchWithVideos,
     required this.dataStore,
+    required this.activeViewMode,
   });
 
   @override
@@ -737,14 +826,28 @@ class _EditMetadataSheetState extends State<_EditMetadataSheet> {
   final _team1Controller = TextEditingController();
   final _team2Controller = TextEditingController();
   final _team3Controller = TextEditingController();
+  final _team4Controller = TextEditingController();
+  final _team5Controller = TextEditingController();
+  final _team6Controller = TextEditingController();
   Recording? _editingRecording;
 
   @override
   void initState() {
     super.initState();
-    // Default to editing the red recording, or blue if red doesn't exist
-    _editingRecording = widget.matchWithVideos.redRecording ??
-        widget.matchWithVideos.blueRecording;
+    // Default to the recording for the currently active view mode.
+    // Falls back to red, then blue, then full if the preferred one is absent.
+    _editingRecording = switch (widget.activeViewMode) {
+      ViewMode.fullOnly => widget.matchWithVideos.fullRecording ??
+          widget.matchWithVideos.redRecording ??
+          widget.matchWithVideos.blueRecording,
+      ViewMode.blueOnly => widget.matchWithVideos.blueRecording ??
+          widget.matchWithVideos.redRecording ??
+          widget.matchWithVideos.fullRecording,
+      _ => widget.matchWithVideos.redRecording ??
+          widget.matchWithVideos.blueRecording ??
+          widget.matchWithVideos.fullRecording,
+    };
+
     if (_editingRecording != null) {
       _selectedMatchKey = _editingRecording!.matchKey;
       _allianceSide = _editingRecording!.allianceSide;
@@ -754,6 +857,12 @@ class _EditMetadataSheetState extends State<_EditMetadataSheet> {
           _editingRecording!.team2 > 0 ? '${_editingRecording!.team2}' : '';
       _team3Controller.text =
           _editingRecording!.team3 > 0 ? '${_editingRecording!.team3}' : '';
+      _team4Controller.text =
+          _editingRecording!.team4 > 0 ? '${_editingRecording!.team4}' : '';
+      _team5Controller.text =
+          _editingRecording!.team5 > 0 ? '${_editingRecording!.team5}' : '';
+      _team6Controller.text =
+          _editingRecording!.team6 > 0 ? '${_editingRecording!.team6}' : '';
     } else {
       _selectedMatchKey = widget.matchWithVideos.match.matchKey;
       _allianceSide = 'red';
@@ -765,6 +874,9 @@ class _EditMetadataSheetState extends State<_EditMetadataSheet> {
     _team1Controller.dispose();
     _team2Controller.dispose();
     _team3Controller.dispose();
+    _team4Controller.dispose();
+    _team5Controller.dispose();
+    _team6Controller.dispose();
     super.dispose();
   }
 
@@ -777,6 +889,9 @@ class _EditMetadataSheetState extends State<_EditMetadataSheet> {
       team1: int.tryParse(_team1Controller.text) ?? 0,
       team2: int.tryParse(_team2Controller.text) ?? 0,
       team3: int.tryParse(_team3Controller.text) ?? 0,
+      team4: int.tryParse(_team4Controller.text) ?? 0,
+      team5: int.tryParse(_team5Controller.text) ?? 0,
+      team6: int.tryParse(_team6Controller.text) ?? 0,
     );
 
     await widget.dataStore.updateRecording(updated);
@@ -787,6 +902,7 @@ class _EditMetadataSheetState extends State<_EditMetadataSheet> {
   Widget build(BuildContext context) {
     final eventKeys = widget.dataStore.settings.selectedEventKeys;
     final matches = widget.dataStore.getMatchesForEvents(eventKeys);
+    final isFull = _allianceSide == 'full';
 
     return Padding(
       padding: EdgeInsets.only(
@@ -835,15 +951,25 @@ class _EditMetadataSheetState extends State<_EditMetadataSheet> {
                   selectedColor: Colors.blue.shade300,
                   onSelected: (_) => setState(() => _allianceSide = 'blue'),
                 ),
+                const SizedBox(width: 8),
+                ChoiceChip(
+                  label: const Text('Full'),
+                  selected: _allianceSide == 'full',
+                  selectedColor: Colors.purple.shade300,
+                  onSelected: (_) => setState(() => _allianceSide = 'full'),
+                ),
               ],
             ),
             const SizedBox(height: 12),
+            // Row 1: Teams 1-3 (red alliance teams, or first 3 for full)
             Row(
               children: [
                 Expanded(
                   child: TextField(
                     controller: _team1Controller,
-                    decoration: const InputDecoration(labelText: 'Team 1'),
+                    decoration: InputDecoration(
+                      labelText: isFull ? 'Red 1' : 'Team 1',
+                    ),
                     keyboardType: TextInputType.number,
                   ),
                 ),
@@ -851,7 +977,9 @@ class _EditMetadataSheetState extends State<_EditMetadataSheet> {
                 Expanded(
                   child: TextField(
                     controller: _team2Controller,
-                    decoration: const InputDecoration(labelText: 'Team 2'),
+                    decoration: InputDecoration(
+                      labelText: isFull ? 'Red 2' : 'Team 2',
+                    ),
                     keyboardType: TextInputType.number,
                   ),
                 ),
@@ -859,12 +987,45 @@ class _EditMetadataSheetState extends State<_EditMetadataSheet> {
                 Expanded(
                   child: TextField(
                     controller: _team3Controller,
-                    decoration: const InputDecoration(labelText: 'Team 3'),
+                    decoration: InputDecoration(
+                      labelText: isFull ? 'Red 3' : 'Team 3',
+                    ),
                     keyboardType: TextInputType.number,
                   ),
                 ),
               ],
             ),
+            // Row 2: Teams 4-6 only shown for full-field recordings
+            if (isFull) ...[
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _team4Controller,
+                      decoration: const InputDecoration(labelText: 'Blue 1'),
+                      keyboardType: TextInputType.number,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: TextField(
+                      controller: _team5Controller,
+                      decoration: const InputDecoration(labelText: 'Blue 2'),
+                      keyboardType: TextInputType.number,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: TextField(
+                      controller: _team6Controller,
+                      decoration: const InputDecoration(labelText: 'Blue 3'),
+                      keyboardType: TextInputType.number,
+                    ),
+                  ),
+                ],
+              ),
+            ],
             const SizedBox(height: 16),
             SizedBox(
               width: double.infinity,

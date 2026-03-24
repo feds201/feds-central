@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 /// Mute state for the video viewer audio.
-enum MuteState { muted, redAudio, blueAudio }
+enum MuteState { muted, redAudio, blueAudio, fullAudio }
 
 /// View mode for the video viewer layout.
-enum ViewMode { both, redOnly, blueOnly }
+enum ViewMode { both, redOnly, blueOnly, fullOnly }
 
 /// Sidebar control panel for the video viewer.
 ///
@@ -19,7 +19,8 @@ class ControlSidebar extends StatelessWidget {
   final bool canUndo;
   final bool canRedo;
   final bool hasDrawings;
-  final bool hasDualVideo;
+  /// Whether the view mode toggle button is active (more than one view mode available).
+  final bool canToggleViewMode;
   final bool isPaused;
 
   final VoidCallback onBack;
@@ -44,7 +45,7 @@ class ControlSidebar extends StatelessWidget {
     required this.canUndo,
     required this.canRedo,
     required this.hasDrawings,
-    required this.hasDualVideo,
+    required this.canToggleViewMode,
     required this.isPaused,
     required this.onBack,
     required this.onSwapSides,
@@ -84,7 +85,7 @@ class ControlSidebar extends StatelessWidget {
                   label: 'Back',
                   onPressed: onBack,
                 ),
-                if (hasDualVideo) ...[
+                if (canToggleViewMode) ...[
                   const Divider(indent: 8, endIndent: 8),
                   _buildItem(
                     icon: Icons.swap_horiz,
@@ -213,6 +214,10 @@ class ControlSidebar extends StatelessWidget {
         icon = Icons.volume_up;
         circleColor = Colors.blue;
         label = 'Blue audio';
+      case MuteState.fullAudio:
+        icon = Icons.volume_up;
+        circleColor = Colors.purple;
+        label = 'Full audio';
     }
 
     if (!_expanded) {
@@ -289,9 +294,13 @@ class ControlSidebar extends StatelessWidget {
         icon = Icons.crop_square;
         label = 'Blue only';
         circleColor = Colors.blue;
+      case ViewMode.fullOnly:
+        icon = Icons.crop_square;
+        label = 'Full field';
+        circleColor = Colors.purple;
     }
 
-    // Use colored circle indicator (like mute button) when showing single alliance
+    // Use colored circle indicator (like mute button) when showing a single source
     if (circleColor != null) {
       if (!_expanded) {
         return Tooltip(
@@ -306,7 +315,7 @@ class ControlSidebar extends StatelessWidget {
             ),
             child: IconButton(
               icon: Icon(icon),
-              onPressed: hasDualVideo ? onToggleViewMode : null,
+              onPressed: canToggleViewMode ? onToggleViewMode : null,
               color: Colors.white,
               disabledColor: Colors.white38,
               iconSize: 28,
@@ -317,7 +326,7 @@ class ControlSidebar extends StatelessWidget {
       }
 
       return InkWell(
-        onTap: hasDualVideo ? onToggleViewMode : null,
+        onTap: canToggleViewMode ? onToggleViewMode : null,
         child: ConstrainedBox(
           constraints: const BoxConstraints(minHeight: 48),
           child: Padding(
@@ -353,7 +362,7 @@ class ControlSidebar extends StatelessWidget {
     return _buildItem(
       icon: icon,
       label: label,
-      onPressed: hasDualVideo ? onToggleViewMode : null,
+      onPressed: canToggleViewMode ? onToggleViewMode : null,
     );
   }
 }

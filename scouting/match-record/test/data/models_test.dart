@@ -716,6 +716,62 @@ void main() {
       final s2 = AppSettings(lastTbaFetchTime: DateTime(2026, 3, 16));
       expect(s1, isNot(equals(s2)));
     });
+
+    test('tbaApiKey defaults to null', () {
+      const settings = AppSettings();
+      expect(settings.tbaApiKey, isNull);
+    });
+
+    test('tbaApiKey round-trip through toJson/fromJson', () {
+      const settings = AppSettings(tbaApiKey: 'my-test-key');
+      final json = settings.toJson();
+      expect(json['tbaApiKey'], 'my-test-key');
+      final restored = AppSettings.fromJson(json);
+      expect(restored.tbaApiKey, 'my-test-key');
+      expect(restored, equals(settings));
+    });
+
+    test('tbaApiKey null round-trip through toJson/fromJson', () {
+      const settings = AppSettings();
+      final json = settings.toJson();
+      final restored = AppSettings.fromJson(json);
+      expect(restored.tbaApiKey, isNull);
+    });
+
+    test('tbaApiKey missing from JSON defaults to null', () {
+      final settings = AppSettings.fromJson({});
+      expect(settings.tbaApiKey, isNull);
+    });
+
+    test('copyWith tbaApiKey sets value', () {
+      const settings = AppSettings();
+      final updated = settings.copyWith(tbaApiKey: () => 'new-key');
+      expect(updated.tbaApiKey, 'new-key');
+    });
+
+    test('copyWith tbaApiKey clears value with null', () {
+      const settings = AppSettings(tbaApiKey: 'existing-key');
+      final updated = settings.copyWith(tbaApiKey: () => null);
+      expect(updated.tbaApiKey, isNull);
+    });
+
+    test('copyWith preserves tbaApiKey when not provided', () {
+      const settings = AppSettings(tbaApiKey: 'keep-me');
+      final updated = settings.copyWith(teamNumber: () => 201);
+      expect(updated.tbaApiKey, 'keep-me');
+    });
+
+    test('inequality when tbaApiKey differs', () {
+      const s1 = AppSettings(tbaApiKey: 'key-a');
+      const s2 = AppSettings(tbaApiKey: 'key-b');
+      expect(s1, isNot(equals(s2)));
+    });
+
+    test('inequality when one has tbaApiKey and other does not', () {
+      const s1 = AppSettings(tbaApiKey: 'key-a');
+      const s2 = AppSettings();
+      expect(s1, isNot(equals(s2)));
+    });
   });
 
   group('AppData', () {
