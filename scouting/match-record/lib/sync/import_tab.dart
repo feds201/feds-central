@@ -403,11 +403,12 @@ class _ImportTabState extends State<ImportTab> {
           ),
         ),
 
-        // Confirm button
+        // Confirm button — bottom padding accounts for snackbar height
+        // so the button doesn't get obscured when a snackbar appears.
         SafeArea(
           top: false,
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 64),
             child: SizedBox(
               width: double.infinity,
               child: FilledButton.icon(

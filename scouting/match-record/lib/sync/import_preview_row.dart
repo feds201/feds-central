@@ -149,6 +149,10 @@ class ImportPreviewRowWidget extends StatelessWidget {
   }
 
   Widget _buildMatchDropdown(BuildContext context) {
+    final yourTeamNumber = dataStore.settings.teamNumber;
+    final yourTeamKey =
+        yourTeamNumber != null ? 'frc$yourTeamNumber' : null;
+
     return DropdownButton<String>(
       value: row.matchKey,
       isExpanded: true,
@@ -164,9 +168,24 @@ class ImportPreviewRowWidget extends StatelessWidget {
           child: Text('None', style: TextStyle(fontSize: 12)),
         ),
         ...allMatches.map((match) {
+          final isOurMatch = yourTeamKey != null &&
+              (match.redTeamKeys.contains(yourTeamKey) ||
+                  match.blueTeamKeys.contains(yourTeamKey));
+          final label = isOurMatch
+              ? '\u2605 ${match.displayName}'
+              : match.displayName;
           return DropdownMenuItem<String>(
             value: match.matchKey,
-            child: Text(match.displayName, style: const TextStyle(fontSize: 12)),
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: isOurMatch ? FontWeight.bold : null,
+                color: isOurMatch
+                    ? Theme.of(context).colorScheme.primary
+                    : null,
+              ),
+            ),
           );
         }),
       ],
