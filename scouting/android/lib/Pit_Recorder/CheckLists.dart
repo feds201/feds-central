@@ -27,6 +27,7 @@ class _RecordState extends State<Record> {
   final int _requiredPresses = 1;
   final config = BotPathConfig(
     backgroundImage: AssetImage('assets/2026/Aerna2026.png'),
+    brightness: Brightness.dark
   );
 
 
@@ -227,7 +228,7 @@ class _RecordState extends State<Record> {
                 SizedBox(
                   height: 15,
                 ),
-                Text("Hi! My name is [Your Name], and we are from team 201 the FEDS. I just wanted to come by, introduce myself, and ask you a few questions about your robot. Could you first tell us your name and role in the team?"
+                Text("Hi! Our names are [Your Name], [Partner Name], and we are from team 201 the FEDS. We just wanted to come by, introduce ourselves, and ask you a few questions about your robot. Could you first tell us your name and role in the team?"
                   ,textAlign: TextAlign.center,
                   style: GoogleFonts.museoModerno(fontSize: 20),
                 ),
@@ -261,6 +262,7 @@ class _RecordState extends State<Record> {
                     Text("Auton Path", textAlign: TextAlign.center,
                         style: GoogleFonts.museoModerno(fontSize: 30, fontWeight: FontWeight.bold,color: Colors.blue)),
                     SizedBox(
+                      width: 1600,
                       height: 450,
                       child: BotPathDrawer(
                         config: config,
