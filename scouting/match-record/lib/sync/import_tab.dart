@@ -1,11 +1,13 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../data/data_store.dart';
 import '../data/models.dart';
 import '../import/drive_access.dart';
 import '../import/import_pipeline.dart';
+import '../import/local_drive_access.dart';
 import '../import/test_drive_access.dart';
 import '../import/video_metadata_service.dart';
 import '../util/result.dart';
@@ -35,6 +37,13 @@ class _ImportTabState extends State<ImportTab> {
   int _importTotal = 0;
   String _importFilename = '';
 
+  /// Whether the current import session is from a local source (Camera/Quick Share).
+  bool _isLocalSource = false;
+  /// Rolling time window for local sources (hours).
+  int _localTimeWindowHours = 12;
+  /// The active LocalDriveAccess when importing from a local source.
+  LocalDriveAccess? _activeLocalDriveAccess;
+
   late final DriveAccess _driveAccess;
   late final VideoMetadataService _metadataService;
   late final ImportPipeline _pipeline;
@@ -59,13 +68,13 @@ class _ImportTabState extends State<ImportTab> {
     }
   }
 
-  Future<void> _connectDrive(String driveUri) async {
+  Future<void> _connectDrive(String driveUri, {DateTime? newerThan}) async {
     setState(() {
       _isScanning = true;
       _error = null;
     });
 
-    final result = await _pipeline.scanDrive(driveUri);
+    final result = await _pipeline.scanDrive(driveUri, newerThan: newerThan);
 
     if (!mounted) return;
 
@@ -81,6 +90,87 @@ class _ImportTabState extends State<ImportTab> {
           _isScanning = false;
         });
     }
+  }
+
+  Future<void> _connectLocalSource(LocalDriveAccess access) async {
+    final dir = Directory(access.dirPath);
+    if (!await dir.exists()) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${access.label} folder not found')),
+        );
+      }
+      return;
+    }
+
+    setState(() {
+      _isLocalSource = true;
+      _localTimeWindowHours = 12;
+      _activeLocalDriveAccess = access;
+    });
+
+    // Create a pipeline with the local drive access
+    _pipeline = ImportPipeline(
+      driveAccess: access,
+      metadataService: _metadataService,
+      dataStore: widget.dataStore,
+      storageDir: widget.storageDir,
+    );
+
+    final newerThan = DateTime.now().subtract(Duration(hours: _localTimeWindowHours));
+    await _connectDrive(access.dirPath, newerThan: newerThan);
+  }
+
+  Future<void> _expandTimeWindow() async {
+    if (_activeLocalDriveAccess == null) return;
+
+    // If user has manually edited rows, confirm before re-scanning
+    if (_sessionState != null && _sessionState!.manuallySetRows.isNotEmpty) {
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Re-scan?'),
+          content: const Text(
+            'You have manually edited match assignments. '
+            'Expanding the time window will re-scan and reset your changes.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: const Text('Re-scan'),
+            ),
+          ],
+        ),
+      );
+      if (confirmed != true || !mounted) return;
+    }
+
+    setState(() {
+      _localTimeWindowHours += 12;
+    });
+
+    final newerThan = DateTime.now().subtract(Duration(hours: _localTimeWindowHours));
+    await _connectDrive(_activeLocalDriveAccess!.dirPath, newerThan: newerThan);
+  }
+
+  void _resetToSourceSelection() {
+    setState(() {
+      _sessionState = null;
+      _isLocalSource = false;
+      _activeLocalDriveAccess = null;
+      _error = null;
+      // Restore the default pipeline
+      _pipeline = ImportPipeline(
+        driveAccess: _driveAccess,
+        metadataService: _metadataService,
+        dataStore: widget.dataStore,
+        storageDir: widget.storageDir,
+      );
+    });
   }
 
   Future<void> _pickDrive() async {
@@ -320,17 +410,33 @@ class _ImportTabState extends State<ImportTab> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.usb, size: 64, color: Colors.grey),
+            const Icon(Icons.video_library, size: 64, color: Colors.grey),
             const SizedBox(height: 16),
             const Text(
-              'Insert a USB drive and tap Connect',
+              'Select a video source',
               style: TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 24),
             FilledButton.icon(
               onPressed: _pickDrive,
               icon: const Icon(Icons.usb),
-              label: const Text('Connect Drive'),
+              label: const Text('USB Drive'),
+            ),
+            const SizedBox(height: 12),
+            FilledButton.icon(
+              onPressed: () => _connectLocalSource(
+                const LocalDriveAccess(dirPath: kCameraDir, label: 'Camera'),
+              ),
+              icon: const Icon(Icons.photo_camera),
+              label: const Text('Camera'),
+            ),
+            const SizedBox(height: 12),
+            FilledButton.icon(
+              onPressed: () => _connectLocalSource(
+                const LocalDriveAccess(dirPath: kQuickShareDir, label: 'Quick Share'),
+              ),
+              icon: const Icon(Icons.share),
+              label: const Text('Quick Share'),
             ),
             if (TestFlags.useSampleVideos) ...[
               const SizedBox(height: 12),
@@ -390,6 +496,9 @@ class _ImportTabState extends State<ImportTab> {
         // Header
         _buildHeader(state, allSelected, noneSelected),
 
+        // Time window strip for local sources
+        if (_isLocalSource) _buildTimeWindowStrip(),
+
         // Import progress
         if (_isImporting) _buildProgressBar(),
 
@@ -410,6 +519,7 @@ class _ImportTabState extends State<ImportTab> {
                 onSelectionChanged: (selected) =>
                     _onSelectionChanged(index, selected),
                 onTeamsChanged: (teams) => _onTeamsChanged(index, teams),
+                onPlayPreview: () => _playPreview(row),
               );
             },
           ),
@@ -465,6 +575,15 @@ class _ImportTabState extends State<ImportTab> {
       ),
       child: Row(
         children: [
+          // Back button to source selection
+          IconButton(
+            icon: const Icon(Icons.arrow_back, size: 20),
+            onPressed: _resetToSourceSelection,
+            tooltip: 'Back to source selection',
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+          ),
+
           // Select all checkbox
           Checkbox(
             value: allSelected ? true : (noneSelected ? false : null),
@@ -508,6 +627,45 @@ class _ImportTabState extends State<ImportTab> {
             label: 'FULL',
             color: Colors.purple,
             onTap: () => _onSetAllAllianceSide('full'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _playPreview(ImportPreviewRow row) async {
+    final uri = Uri.file(row.metadata.sourceUri);
+    final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!launched && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No video player found')),
+      );
+    }
+  }
+
+  Widget _buildTimeWindowStrip() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      color: Theme.of(context).colorScheme.secondaryContainer,
+      child: Row(
+        children: [
+          Icon(
+            Icons.access_time,
+            size: 16,
+            color: Theme.of(context).colorScheme.onSecondaryContainer,
+          ),
+          const SizedBox(width: 8),
+          Text(
+            'Showing last ${_localTimeWindowHours}h',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(context).colorScheme.onSecondaryContainer,
+                ),
+          ),
+          const SizedBox(width: 8),
+          ActionChip(
+            label: const Text('Expand +12h'),
+            onPressed: _expandTimeWindow,
+            visualDensity: VisualDensity.compact,
           ),
         ],
       ),

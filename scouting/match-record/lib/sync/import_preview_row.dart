@@ -13,6 +13,7 @@ class ImportPreviewRowWidget extends StatelessWidget {
   final void Function(String side) onAllianceSideChanged;
   final void Function(bool selected) onSelectionChanged;
   final void Function(List<int> teams) onTeamsChanged;
+  final VoidCallback? onPlayPreview;
 
   const ImportPreviewRowWidget({
     super.key,
@@ -24,6 +25,7 @@ class ImportPreviewRowWidget extends StatelessWidget {
     required this.onAllianceSideChanged,
     required this.onSelectionChanged,
     required this.onTeamsChanged,
+    this.onPlayPreview,
   });
 
   @override
@@ -131,6 +133,16 @@ class ImportPreviewRowWidget extends StatelessWidget {
                 ],
               ),
             ),
+
+            // Play preview button
+            if (onPlayPreview != null)
+              IconButton(
+                icon: const Icon(Icons.play_circle_outline, size: 20),
+                onPressed: onPlayPreview,
+                tooltip: 'Preview video',
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+              ),
 
             // Match dropdown
             Expanded(

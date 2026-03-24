@@ -265,6 +265,106 @@ void main() {
     });
   });
 
+  group('ImportPipeline.scanDrive with newerThan', () {
+    test('excludes videos with recordingStartTime before newerThan', () async {
+      // Two videos: one old (baseTime), one recent (baseTime + 2 hours)
+      final recentTime = baseTime.add(const Duration(hours: 2));
+      driveAccess = FakeDriveAccess(
+        files: [
+          DriveFile(
+            uri: 'test://drive/old.MOV',
+            name: 'old.MOV',
+            sizeBytes: 16000000,
+            lastModified: baseTime,
+          ),
+          DriveFile(
+            uri: 'test://drive/recent.MOV',
+            name: 'recent.MOV',
+            sizeBytes: 16000000,
+            lastModified: recentTime,
+          ),
+        ],
+      );
+
+      pipeline = ImportPipeline(
+        driveAccess: driveAccess,
+        metadataService: metadataService,
+        dataStore: dataStore,
+        storageDir: '/tmp/test_storage',
+      );
+
+      // Set newerThan to 1 hour after baseTime — should exclude the old video
+      final cutoff = baseTime.add(const Duration(hours: 1));
+      final result = await pipeline.scanDrive('test://drive', newerThan: cutoff);
+
+      expect(result, isA<Ok<ImportSessionState>>());
+      final state = (result as Ok<ImportSessionState>).value;
+
+      // Only the recent video should be included
+      expect(state.rows.length, 1);
+      expect(state.rows.first.metadata.originalFilename, 'recent.MOV');
+    });
+
+    test('includes videos at exactly the newerThan boundary', () async {
+      driveAccess = FakeDriveAccess(
+        files: [
+          DriveFile(
+            uri: 'test://drive/boundary.MOV',
+            name: 'boundary.MOV',
+            sizeBytes: 16000000,
+            lastModified: baseTime,
+          ),
+        ],
+      );
+
+      pipeline = ImportPipeline(
+        driveAccess: driveAccess,
+        metadataService: metadataService,
+        dataStore: dataStore,
+        storageDir: '/tmp/test_storage',
+      );
+
+      // For .MOV (iOS), recordingStartTime = lastModified (date)
+      // Set newerThan to exactly the recording start time
+      final result = await pipeline.scanDrive('test://drive', newerThan: baseTime);
+
+      expect(result, isA<Ok<ImportSessionState>>());
+      final state = (result as Ok<ImportSessionState>).value;
+      expect(state.rows.length, 1);
+    });
+
+    test('null newerThan includes all videos', () async {
+      driveAccess = FakeDriveAccess(
+        files: [
+          DriveFile(
+            uri: 'test://drive/v1.MOV',
+            name: 'v1.MOV',
+            sizeBytes: 16000000,
+            lastModified: baseTime,
+          ),
+          DriveFile(
+            uri: 'test://drive/v2.MOV',
+            name: 'v2.MOV',
+            sizeBytes: 16000000,
+            lastModified: baseTime.add(const Duration(hours: 5)),
+          ),
+        ],
+      );
+
+      pipeline = ImportPipeline(
+        driveAccess: driveAccess,
+        metadataService: metadataService,
+        dataStore: dataStore,
+        storageDir: '/tmp/test_storage',
+      );
+
+      final result = await pipeline.scanDrive('test://drive');
+
+      final state = (result as Ok<ImportSessionState>).value;
+      expect(state.rows.length, 2);
+    });
+  });
+
   group('ImportPipeline.executeImport', () {
     test('execute import creates recordings in DataStore', () async {
       driveAccess = FakeDriveAccess(

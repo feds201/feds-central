@@ -70,7 +70,11 @@ class ImportPipeline {
 
   /// Stages 1+2+3+4: Connect, scan drive, extract metadata, suggest matches.
   /// Returns an ImportSessionState ready for user review.
-  Future<Result<ImportSessionState>> scanDrive(String driveUri) async {
+  ///
+  /// If [newerThan] is set, videos with recordingStartTime before that cutoff
+  /// are excluded. Videos with null recordingStartTime are also excluded when
+  /// newerThan is set (since we can't verify they're recent enough).
+  Future<Result<ImportSessionState>> scanDrive(String driveUri, {DateTime? newerThan}) async {
     // Stage 2: Get drive label
     final labelResult = await driveAccess.getDriveLabel(driveUri);
     final driveLabel =
@@ -112,7 +116,16 @@ class ImportPipeline {
       if (cmp != 0) return cmp;
       return a.value.originalFilename.compareTo(b.value.originalFilename);
     });
-    final sortedMetadata = indexed.map((e) => e.value).toList();
+    var sortedMetadata = indexed.map((e) => e.value).toList();
+
+    // Filter by time window if newerThan is set
+    if (newerThan != null) {
+      sortedMetadata = sortedMetadata.where((meta) {
+        final startTime = meta.recordingStartTime;
+        if (startTime == null) return false;
+        return !startTime.isBefore(newerThan);
+      }).toList();
+    }
 
     // Stage 4: Suggest matches
     final eventKeys = dataStore.settings.selectedEventKeys;
