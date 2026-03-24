@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.581,
-        "y": 3.4809015421115066
+        "x": 8.603534994068804,
+        "y": 3.5340645695364232
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.684489280120517,
-        "y": 2.9927981660043064
+        "x": 8.625736754966887,
+        "y": 4.100339403973509
       },
       "isLocked": false,
       "linkedName": "RightIntakeEnd"
@@ -102,7 +102,7 @@
   "reversed": false,
   "folder": "MidIntakeToRightBump",
   "idealStartingState": {
-    "velocity": 0,
+    "velocity": 1.5,
     "rotation": -91.68468431705435
   },
   "useDefaultConstraints": true
