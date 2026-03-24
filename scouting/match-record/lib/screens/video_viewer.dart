@@ -10,11 +10,11 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 import '../data/data_store.dart';
 import '../data/models.dart';
 import '../util/constants.dart';
+import '../viewer/coordinate_transform.dart';
 import '../viewer/drawing_controller.dart';
 import '../viewer/scrub_controller.dart';
 import '../viewer/sync_engine.dart';
 import '../widgets/control_sidebar.dart';
-import '../widgets/drawing_overlay.dart';
 import '../widgets/scrubber_bar.dart';
 import '../widgets/stroke_painter.dart';
 import '../widgets/video_pane.dart';
@@ -100,8 +100,25 @@ class _VideoViewerState extends State<VideoViewer> {
   bool _laterWaiting = false;
   Duration _countdownRemaining = Duration.zero;
 
-  // Controllers
-  final _drawingController = DrawingController();
+  // Drawing controllers (one per video source)
+  final _redDrawingController = DrawingController();
+  final _blueDrawingController = DrawingController();
+  final _fullDrawingController = DrawingController();
+
+  // Zoom controllers (one per video source)
+  final _redZoomController = TransformationController();
+  final _blueZoomController = TransformationController();
+  final _fullZoomController = TransformationController();
+
+  // Track which pane is being drawn on (for cross-pane detection)
+  int? _activeDrawingPointer;
+  bool? _activeDrawingOnLeft;
+
+  // Global keys to get pane positions for coordinate transform
+  final _leftPaneKey = GlobalKey();
+  final _rightPaneKey = GlobalKey();
+  final _singlePaneKey = GlobalKey();
+
   final _scrubController = ScrubController();
 
   // Subscriptions
@@ -114,7 +131,9 @@ class _VideoViewerState extends State<VideoViewer> {
     // Default to the highest-priority available view mode
     _viewMode = _availableViewModes.first;
     _lockLandscape();
-    _drawingController.addListener(_onDrawingChanged);
+    _redDrawingController.addListener(_onDrawingChanged);
+    _blueDrawingController.addListener(_onDrawingChanged);
+    _fullDrawingController.addListener(_onDrawingChanged);
     _initPlayers();
   }
 
@@ -214,7 +233,10 @@ class _VideoViewerState extends State<VideoViewer> {
           if (mounted) {
             setState(() {
               _isPlaying = playing;
-              _drawingController.setOpacity(playing ? 0.3 : 1.0);
+              final opacity = playing ? 0.3 : 1.0;
+              _redDrawingController.setOpacity(opacity);
+              _blueDrawingController.setOpacity(opacity);
+              _fullDrawingController.setOpacity(opacity);
               if (playing) _isDrawingMode = false;
             });
           }
@@ -247,8 +269,15 @@ class _VideoViewerState extends State<VideoViewer> {
     _redPlayer?.dispose();
     _bluePlayer?.dispose();
     _fullPlayer?.dispose();
-    _drawingController.removeListener(_onDrawingChanged);
-    _drawingController.dispose();
+    _redDrawingController.removeListener(_onDrawingChanged);
+    _blueDrawingController.removeListener(_onDrawingChanged);
+    _fullDrawingController.removeListener(_onDrawingChanged);
+    _redDrawingController.dispose();
+    _blueDrawingController.dispose();
+    _fullDrawingController.dispose();
+    _redZoomController.dispose();
+    _blueZoomController.dispose();
+    _fullZoomController.dispose();
 
     // Restore orientation and UI
     SystemChrome.setPreferredOrientations(DeviceOrientation.values);
@@ -302,6 +331,10 @@ class _VideoViewerState extends State<VideoViewer> {
     final currentIndex = available.indexOf(_viewMode);
     final nextIndex = (currentIndex + 1) % available.length;
     setState(() => _viewMode = available[nextIndex]);
+    // Reset zoom when switching view modes
+    _redZoomController.value = Matrix4.identity();
+    _blueZoomController.value = Matrix4.identity();
+    _fullZoomController.value = Matrix4.identity();
     _updateAutoRotation();
   }
 
@@ -452,6 +485,201 @@ class _VideoViewerState extends State<VideoViewer> {
 
   void _toggleDrawing() {
     setState(() => _isDrawingMode = !_isDrawingMode);
+  }
+
+  /// Get the active drawing controllers for the current view mode.
+  List<DrawingController> get _activeDrawingControllers {
+    switch (_viewMode) {
+      case ViewMode.both:
+        return [_redDrawingController, _blueDrawingController];
+      case ViewMode.redOnly:
+        return [_redDrawingController];
+      case ViewMode.blueOnly:
+        return [_blueDrawingController];
+      case ViewMode.fullOnly:
+        return [_fullDrawingController];
+    }
+  }
+
+  bool get _combinedCanUndo =>
+      _activeDrawingControllers.any((c) => c.canUndo);
+
+  bool get _combinedCanRedo =>
+      _activeDrawingControllers.any((c) => c.canRedo);
+
+  bool get _combinedHasDrawings =>
+      _activeDrawingControllers.any((c) => c.hasNonEmptyStrokes);
+
+  void _combinedUndo() {
+    for (final c in _activeDrawingControllers) {
+      c.undo();
+    }
+  }
+
+  void _combinedRedo() {
+    for (final c in _activeDrawingControllers) {
+      c.redo();
+    }
+  }
+
+  void _combinedClear() {
+    for (final c in _activeDrawingControllers) {
+      c.clear();
+    }
+  }
+
+  /// Determine which pane a screen point falls in and return its info.
+  /// Returns null if the point is outside all panes.
+  _PaneHitInfo? _hitTestPane(Offset screenPoint) {
+    if (_viewMode == ViewMode.both) {
+      // Check left pane
+      final leftInfo = _hitTestGlobalKey(
+        _leftPaneKey,
+        screenPoint,
+        _sidesSwapped ? _blueZoomController : _redZoomController,
+        _sidesSwapped ? _blueQuarterTurns : _redQuarterTurns,
+        _sidesSwapped ? _blueDrawingController : _redDrawingController,
+        isLeft: true,
+      );
+      if (leftInfo != null) return leftInfo;
+
+      // Check right pane
+      final rightInfo = _hitTestGlobalKey(
+        _rightPaneKey,
+        screenPoint,
+        _sidesSwapped ? _redZoomController : _blueZoomController,
+        _sidesSwapped ? _redQuarterTurns : _blueQuarterTurns,
+        _sidesSwapped ? _redDrawingController : _blueDrawingController,
+        isLeft: false,
+      );
+      return rightInfo;
+    } else {
+      // Single pane mode
+      final controller = switch (_viewMode) {
+        ViewMode.redOnly => _redDrawingController,
+        ViewMode.blueOnly => _blueDrawingController,
+        ViewMode.fullOnly => _fullDrawingController,
+        ViewMode.both => _redDrawingController, // unreachable
+      };
+      final zoomController = switch (_viewMode) {
+        ViewMode.redOnly => _redZoomController,
+        ViewMode.blueOnly => _blueZoomController,
+        ViewMode.fullOnly => _fullZoomController,
+        ViewMode.both => _redZoomController, // unreachable
+      };
+      final quarterTurns = switch (_viewMode) {
+        ViewMode.redOnly => _redQuarterTurns,
+        ViewMode.blueOnly => _blueQuarterTurns,
+        ViewMode.fullOnly => _fullQuarterTurns,
+        ViewMode.both => 0, // unreachable
+      };
+      return _hitTestGlobalKey(
+        _singlePaneKey,
+        screenPoint,
+        zoomController,
+        quarterTurns,
+        controller,
+        isLeft: true,
+      );
+    }
+  }
+
+  _PaneHitInfo? _hitTestGlobalKey(
+    GlobalKey key,
+    Offset screenPoint,
+    TransformationController zoomController,
+    int quarterTurns,
+    DrawingController drawingController, {
+    required bool isLeft,
+  }) {
+    final renderBox = key.currentContext?.findRenderObject() as RenderBox?;
+    if (renderBox == null) return null;
+    final paneTopLeft = renderBox.localToGlobal(Offset.zero);
+    final paneSize = renderBox.size;
+    final paneRect = paneTopLeft & paneSize;
+    if (!paneRect.contains(screenPoint)) return null;
+
+    final paneLocal = screenPoint - paneTopLeft;
+    final videoSpace = CoordinateTransform.toVideoSpace(
+      paneLocal,
+      zoomController.value,
+      quarterTurns,
+      paneSize,
+    );
+
+    return _PaneHitInfo(
+      drawingController: drawingController,
+      videoSpacePoint: videoSpace,
+      isLeft: isLeft,
+    );
+  }
+
+  void _onDrawPointerDown(PointerDownEvent event) {
+    if (!_isDrawingMode) return;
+    // Only handle single-finger drawing
+    if (event.down && _activeDrawingPointer != null) return;
+
+    final hit = _hitTestPane(event.position);
+    if (hit == null) return;
+
+    _activeDrawingPointer = event.pointer;
+    _activeDrawingOnLeft = hit.isLeft;
+    hit.drawingController.onPointerDown(hit.videoSpacePoint);
+
+    // Push no-op to the other controller in dual mode to keep undo stacks synced
+    if (_viewMode == ViewMode.both) {
+      final otherController = hit.isLeft
+          ? (_sidesSwapped ? _redDrawingController : _blueDrawingController)
+          : (_sidesSwapped ? _blueDrawingController : _redDrawingController);
+      otherController.pushNoOp();
+    }
+  }
+
+  void _onDrawPointerMove(PointerMoveEvent event) {
+    if (event.pointer != _activeDrawingPointer) return;
+
+    final hit = _hitTestPane(event.position);
+    if (hit == null) return;
+
+    // If finger crossed pane boundary in dual mode, finalize on old pane
+    // and start new stroke on the new pane
+    if (_viewMode == ViewMode.both && hit.isLeft != _activeDrawingOnLeft) {
+      // Finalize stroke on the originating pane
+      final oldController = _activeDrawingOnLeft!
+          ? (_sidesSwapped ? _blueDrawingController : _redDrawingController)
+          : (_sidesSwapped ? _redDrawingController : _blueDrawingController);
+      oldController.onPointerUp();
+
+      // Start new stroke on destination pane
+      _activeDrawingOnLeft = hit.isLeft;
+      hit.drawingController.onPointerDown(hit.videoSpacePoint);
+
+      // Push no-op to the other controller
+      final otherController = hit.isLeft
+          ? (_sidesSwapped ? _redDrawingController : _blueDrawingController)
+          : (_sidesSwapped ? _blueDrawingController : _redDrawingController);
+      otherController.pushNoOp();
+      return;
+    }
+
+    hit.drawingController.onPointerMove(hit.videoSpacePoint);
+  }
+
+  void _onDrawPointerUp(PointerUpEvent event) {
+    if (event.pointer != _activeDrawingPointer) return;
+
+    // Finalize stroke on the active pane
+    if (_activeDrawingOnLeft != null) {
+      final controller = _viewMode == ViewMode.both
+          ? (_activeDrawingOnLeft!
+              ? (_sidesSwapped ? _blueDrawingController : _redDrawingController)
+              : (_sidesSwapped ? _redDrawingController : _blueDrawingController))
+          : _activeDrawingControllers.first;
+      controller.onPointerUp();
+    }
+
+    _activeDrawingPointer = null;
+    _activeDrawingOnLeft = null;
   }
 
   // --- Rotation ---
@@ -613,9 +841,9 @@ class _VideoViewerState extends State<VideoViewer> {
               muteState: _muteState,
               viewMode: _viewMode,
               isDrawingMode: _isDrawingMode,
-              canUndo: _drawingController.canUndo,
-              canRedo: _drawingController.canRedo,
-              hasDrawings: _drawingController.strokes.isNotEmpty,
+              canUndo: _combinedCanUndo,
+              canRedo: _combinedCanRedo,
+              hasDrawings: _combinedHasDrawings,
               canToggleViewMode: _availableViewModes.length > 1,
               isPaused: !_isPlaying,
               onBack: () => Navigator.of(context).pop(),
@@ -627,9 +855,9 @@ class _VideoViewerState extends State<VideoViewer> {
               onForward10: _forward10,
               onRestart: _restart,
               onToggleDrawing: _toggleDrawing,
-              onUndo: _drawingController.undo,
-              onRedo: _drawingController.redo,
-              onClearDrawing: _drawingController.clear,
+              onUndo: _combinedUndo,
+              onRedo: _combinedRedo,
+              onClearDrawing: _combinedClear,
             ),
           ],
         ),
@@ -641,26 +869,61 @@ class _VideoViewerState extends State<VideoViewer> {
     return Stack(
       children: [
         Positioned.fill(child: _buildVideoPanes()),
-        // Drawing overlay — covers all video panes but not the control sidebar
+        // Drawing input layer — top-level Listener spanning all panes
         if (_isDrawingMode)
           Positioned.fill(
-            child: DrawingOverlay(controller: _drawingController),
-          ),
-        // Passive stroke display when not in drawing mode
-        if (!_isDrawingMode && _drawingController.strokes.isNotEmpty)
-          Positioned.fill(
-            child: IgnorePointer(
-              child: CustomPaint(
-                painter: StrokePainter(
-                  strokes: _drawingController.strokes,
-                  currentStroke: _drawingController.currentStroke,
-                  opacity: _drawingController.opacity,
-                ),
-                size: Size.infinite,
-              ),
+            child: Listener(
+              onPointerDown: _onDrawPointerDown,
+              onPointerMove: _onDrawPointerMove,
+              onPointerUp: _onDrawPointerUp,
+              behavior: HitTestBehavior.translucent,
+              child: const SizedBox.expand(),
             ),
           ),
       ],
+    );
+  }
+
+  /// Wraps a video pane in InteractiveViewer (zoom) → RotatedBox → Stack
+  /// with a passive drawing overlay rendered inside the zoom transform.
+  Widget _buildZoomablePane({
+    required GlobalKey paneKey,
+    required TransformationController zoomController,
+    required DrawingController drawingController,
+    required int quarterTurns,
+    required Widget videoPane,
+  }) {
+    return InteractiveViewer(
+      key: paneKey,
+      transformationController: zoomController,
+      panEnabled: false,
+      scaleEnabled: true,
+      minScale: 1.0,
+      maxScale: 5.0,
+      child: RotatedBox(
+        quarterTurns: quarterTurns,
+        child: Stack(
+          children: [
+            videoPane,
+            // Passive drawing layer — rendered inside zoom transform
+            // so strokes zoom with the video
+            IgnorePointer(
+              ignoring: true,
+              child: ListenableBuilder(
+                listenable: drawingController,
+                builder: (context, _) => CustomPaint(
+                  painter: StrokePainter(
+                    strokes: drawingController.strokes,
+                    currentStroke: drawingController.currentStroke,
+                    opacity: drawingController.opacity,
+                  ),
+                  size: Size.infinite,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -679,20 +942,25 @@ class _VideoViewerState extends State<VideoViewer> {
           ),
         );
       }
-      return VideoPane(
-        player: _fullPlayer!,
-        videoController: _fullController!,
-        allianceColor: Colors.purple,
-        containsUserTeam: _containsUserTeam(fullRec),
-        isDrawingMode: _isDrawingMode,
+      return _buildZoomablePane(
+        paneKey: _singlePaneKey,
+        zoomController: _fullZoomController,
+        drawingController: _fullDrawingController,
         quarterTurns: _fullQuarterTurns,
-        onRotate: () => _rotatePane(isFull: true),
-        isWaiting: false,
-        countdownRemaining: Duration.zero,
-        onScrubStart: _onScrubStart,
-        onScrubUpdate: _onScrubUpdate,
-        onScrubEnd: _onScrubEnd,
-        onEdit: _openEditMetadata,
+        videoPane: VideoPane(
+          player: _fullPlayer!,
+          videoController: _fullController!,
+          allianceColor: Colors.purple,
+          containsUserTeam: _containsUserTeam(fullRec),
+          isDrawingMode: _isDrawingMode,
+          onRotate: () => _rotatePane(isFull: true),
+          isWaiting: false,
+          countdownRemaining: Duration.zero,
+          onScrubStart: _onScrubStart,
+          onScrubUpdate: _onScrubUpdate,
+          onScrubEnd: _onScrubEnd,
+          onEdit: _openEditMetadata,
+        ),
       );
     }
 
@@ -730,20 +998,25 @@ class _VideoViewerState extends State<VideoViewer> {
         );
       }
 
-      return VideoPane(
-        player: player,
-        videoController: controller,
-        allianceColor: color,
-        containsUserTeam: _containsUserTeam(recording),
-        isDrawingMode: _isDrawingMode,
+      return _buildZoomablePane(
+        paneKey: _singlePaneKey,
+        zoomController: isRed ? _redZoomController : _blueZoomController,
+        drawingController: isRed ? _redDrawingController : _blueDrawingController,
         quarterTurns: isRed ? _redQuarterTurns : _blueQuarterTurns,
-        onRotate: () => _rotatePane(isRed: isRed),
-        isWaiting: isWaiting,
-        countdownRemaining: _countdownRemaining,
-        onScrubStart: _onScrubStart,
-        onScrubUpdate: _onScrubUpdate,
-        onScrubEnd: _onScrubEnd,
-        onEdit: _openEditMetadata,
+        videoPane: VideoPane(
+          player: player,
+          videoController: controller,
+          allianceColor: color,
+          containsUserTeam: _containsUserTeam(recording),
+          isDrawingMode: _isDrawingMode,
+          onRotate: () => _rotatePane(isRed: isRed),
+          isWaiting: isWaiting,
+          countdownRemaining: _countdownRemaining,
+          onScrubStart: _onScrubStart,
+          onScrubUpdate: _onScrubUpdate,
+          onScrubEnd: _onScrubEnd,
+          onEdit: _openEditMetadata,
+        ),
       );
     }
 
@@ -764,42 +1037,65 @@ class _VideoViewerState extends State<VideoViewer> {
     return Row(
       children: [
         Expanded(
-          child: VideoPane(
-            player: leftPlayer,
-            videoController: leftController,
-            allianceColor: leftColor,
-            containsUserTeam: _containsUserTeam(leftRec),
-            isDrawingMode: _isDrawingMode,
+          child: _buildZoomablePane(
+            paneKey: _leftPaneKey,
+            zoomController: leftIsRed ? _redZoomController : _blueZoomController,
+            drawingController: leftIsRed ? _redDrawingController : _blueDrawingController,
             quarterTurns: leftIsRed ? _redQuarterTurns : _blueQuarterTurns,
-            onRotate: () => _rotatePane(isRed: leftIsRed),
-            isWaiting: leftWaiting,
-            countdownRemaining: _countdownRemaining,
-            onScrubStart: _onScrubStart,
-            onScrubUpdate: _onScrubUpdate,
-            onScrubEnd: _onScrubEnd,
-            onEdit: _openEditMetadata,
+            videoPane: VideoPane(
+              player: leftPlayer,
+              videoController: leftController,
+              allianceColor: leftColor,
+              containsUserTeam: _containsUserTeam(leftRec),
+              isDrawingMode: _isDrawingMode,
+              onRotate: () => _rotatePane(isRed: leftIsRed),
+              isWaiting: leftWaiting,
+              countdownRemaining: _countdownRemaining,
+              onScrubStart: _onScrubStart,
+              onScrubUpdate: _onScrubUpdate,
+              onScrubEnd: _onScrubEnd,
+              onEdit: _openEditMetadata,
+            ),
           ),
         ),
         Expanded(
-          child: VideoPane(
-            player: rightPlayer,
-            videoController: rightController,
-            allianceColor: rightColor,
-            containsUserTeam: _containsUserTeam(rightRec),
-            isDrawingMode: _isDrawingMode,
+          child: _buildZoomablePane(
+            paneKey: _rightPaneKey,
+            zoomController: rightIsRed ? _redZoomController : _blueZoomController,
+            drawingController: rightIsRed ? _redDrawingController : _blueDrawingController,
             quarterTurns: rightIsRed ? _redQuarterTurns : _blueQuarterTurns,
-            onRotate: () => _rotatePane(isRed: rightIsRed),
-            isWaiting: rightWaiting,
-            countdownRemaining: _countdownRemaining,
-            onScrubStart: _onScrubStart,
-            onScrubUpdate: _onScrubUpdate,
-            onScrubEnd: _onScrubEnd,
-            onEdit: _openEditMetadata,
+            videoPane: VideoPane(
+              player: rightPlayer,
+              videoController: rightController,
+              allianceColor: rightColor,
+              containsUserTeam: _containsUserTeam(rightRec),
+              isDrawingMode: _isDrawingMode,
+              onRotate: () => _rotatePane(isRed: rightIsRed),
+              isWaiting: rightWaiting,
+              countdownRemaining: _countdownRemaining,
+              onScrubStart: _onScrubStart,
+              onScrubUpdate: _onScrubUpdate,
+              onScrubEnd: _onScrubEnd,
+              onEdit: _openEditMetadata,
+            ),
           ),
         ),
       ],
     );
   }
+}
+
+/// Result of hit-testing a screen point against a video pane.
+class _PaneHitInfo {
+  final DrawingController drawingController;
+  final Offset videoSpacePoint;
+  final bool isLeft;
+
+  _PaneHitInfo({
+    required this.drawingController,
+    required this.videoSpacePoint,
+    required this.isLeft,
+  });
 }
 
 /// Bottom sheet for editing recording metadata (match, alliance, teams).

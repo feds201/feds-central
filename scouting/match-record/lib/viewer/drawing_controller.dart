@@ -23,6 +23,9 @@ class DrawingController extends ChangeNotifier {
   bool get canUndo => _strokes.isNotEmpty;
   bool get canRedo => _redoStack.isNotEmpty;
 
+  /// Whether any stroke contains actual points (not just no-op empty strokes).
+  bool get hasNonEmptyStrokes => _strokes.any((s) => s.isNotEmpty);
+
   /// Called when a pointer makes contact with the surface.
   void onPointerDown(Offset position) {
     _currentStroke = [position];
@@ -65,6 +68,16 @@ class DrawingController extends ChangeNotifier {
   void clear() {
     _strokes.clear();
     _currentStroke = [];
+    _redoStack.clear();
+    notifyListeners();
+  }
+
+  /// Push an empty stroke (no-op) to keep undo stacks synced across controllers.
+  ///
+  /// When drawing on one pane, the other pane's controller gets a pushNoOp()
+  /// so that undo/redo operations stay aligned between the two controllers.
+  void pushNoOp() {
+    _strokes.add([]);
     _redoStack.clear();
     notifyListeners();
   }

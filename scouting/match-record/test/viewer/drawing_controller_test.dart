@@ -224,4 +224,103 @@ void main() {
       expect(notifyCount, countBefore + 1);
     });
   });
+
+  group('DrawingController pushNoOp', () {
+    test('pushNoOp adds empty stroke to strokes list', () {
+      controller.pushNoOp();
+      expect(controller.strokes, hasLength(1));
+      expect(controller.strokes[0], isEmpty);
+    });
+
+    test('pushNoOp clears redo stack', () {
+      controller.onPointerDown(const Offset(0, 0));
+      controller.onPointerUp();
+      controller.undo();
+      expect(controller.canRedo, isTrue);
+
+      controller.pushNoOp();
+      expect(controller.canRedo, isFalse);
+    });
+
+    test('pushNoOp notifies listeners', () {
+      final countBefore = notifyCount;
+      controller.pushNoOp();
+      expect(notifyCount, countBefore + 1);
+    });
+
+    test('pushNoOp keeps undo stacks synced between two controllers', () {
+      final controller2 = DrawingController();
+
+      // Draw on controller1, no-op on controller2
+      controller.onPointerDown(const Offset(10, 10));
+      controller.onPointerMove(const Offset(20, 20));
+      controller.onPointerUp();
+      controller2.pushNoOp();
+
+      expect(controller.strokes, hasLength(1));
+      expect(controller2.strokes, hasLength(1));
+
+      // Undo both — both should have 0 strokes
+      controller.undo();
+      controller2.undo();
+      expect(controller.strokes, isEmpty);
+      expect(controller2.strokes, isEmpty);
+
+      // Redo both
+      controller.redo();
+      controller2.redo();
+      expect(controller.strokes, hasLength(1));
+      expect(controller2.strokes, hasLength(1));
+      // controller1 has the real stroke, controller2 has the no-op
+      expect(controller.strokes[0], isNotEmpty);
+      expect(controller2.strokes[0], isEmpty);
+
+      controller2.dispose();
+    });
+
+    test('canUndo is true after pushNoOp', () {
+      controller.pushNoOp();
+      expect(controller.canUndo, isTrue);
+    });
+
+    test('undo after pushNoOp removes the empty stroke', () {
+      controller.pushNoOp();
+      controller.undo();
+      expect(controller.strokes, isEmpty);
+      expect(controller.canUndo, isFalse);
+    });
+  });
+
+  group('DrawingController hasNonEmptyStrokes', () {
+    test('false when no strokes', () {
+      expect(controller.hasNonEmptyStrokes, isFalse);
+    });
+
+    test('true after real stroke', () {
+      controller.onPointerDown(const Offset(0, 0));
+      controller.onPointerUp();
+      expect(controller.hasNonEmptyStrokes, isTrue);
+    });
+
+    test('false after only no-op strokes', () {
+      controller.pushNoOp();
+      controller.pushNoOp();
+      expect(controller.hasNonEmptyStrokes, isFalse);
+    });
+
+    test('true when mix of real and no-op strokes', () {
+      controller.pushNoOp();
+      controller.onPointerDown(const Offset(0, 0));
+      controller.onPointerUp();
+      controller.pushNoOp();
+      expect(controller.hasNonEmptyStrokes, isTrue);
+    });
+
+    test('false after clearing', () {
+      controller.onPointerDown(const Offset(0, 0));
+      controller.onPointerUp();
+      controller.clear();
+      expect(controller.hasNonEmptyStrokes, isFalse);
+    });
+  });
 }

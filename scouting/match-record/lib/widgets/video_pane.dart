@@ -14,9 +14,6 @@ class VideoPane extends StatelessWidget {
   final bool containsUserTeam;
   final bool isDrawingMode;
 
-  /// Number of 90-degree clockwise rotations to apply to the video (0-3).
-  final int quarterTurns;
-
   /// Callback to rotate this video pane 90 degrees.
   final VoidCallback? onRotate;
 
@@ -48,7 +45,6 @@ class VideoPane extends StatelessWidget {
     required this.allianceColor,
     this.containsUserTeam = false,
     this.isDrawingMode = false,
-    this.quarterTurns = 0,
     this.onRotate,
     this.isWaiting = false,
     this.countdownRemaining = Duration.zero,
@@ -65,14 +61,12 @@ class VideoPane extends StatelessWidget {
       builder: (context, constraints) {
         return Stack(
           children: [
-            // Video display (rotated if quarterTurns != 0)
+            // Video display (rotation is handled by the parent RotatedBox
+            // in _buildZoomablePane, so no RotatedBox here)
             Positioned.fill(
-              child: RotatedBox(
-                quarterTurns: quarterTurns,
-                child: Video(
-                  controller: videoController,
-                  controls: NoVideoControls,
-                ),
+              child: Video(
+                controller: videoController,
+                controls: NoVideoControls,
               ),
             ),
             // Alliance color bar at top
