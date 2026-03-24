@@ -85,6 +85,18 @@ class VideoPane extends StatelessWidget {
                 color: allianceColor,
               ),
             ),
+            // Touch scrub gesture detector (not shown during drawing mode
+            // since drawing is handled by a screen-wide overlay in VideoViewer).
+            // Placed before buttons/overlays so they receive taps on top of it.
+            if (!isDrawingMode)
+              Positioned.fill(
+                child: _ScrubGestureDetector(
+                  paneWidth: constraints.maxWidth,
+                  onScrubStart: onScrubStart,
+                  onScrubUpdate: onScrubUpdate,
+                  onScrubEnd: onScrubEnd,
+                ),
+              ),
             // Star icon for user's team
             if (containsUserTeam)
               Positioned(
@@ -149,17 +161,6 @@ class VideoPane extends StatelessWidget {
                       ),
                     ),
                   ),
-                ),
-              ),
-            // Touch scrub gesture detector (not shown during drawing mode
-            // since drawing is handled by a screen-wide overlay in VideoViewer)
-            if (!isDrawingMode)
-              Positioned.fill(
-                child: _ScrubGestureDetector(
-                  paneWidth: constraints.maxWidth,
-                  onScrubStart: onScrubStart,
-                  onScrubUpdate: onScrubUpdate,
-                  onScrubEnd: onScrubEnd,
                 ),
               ),
           ],

@@ -65,83 +65,80 @@ class ControlSidebar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: _expanded ? 160 : 72,
-      color: const Color(0xFF1E1E1E),
-      child: SafeArea(
-        left: false,
-        right: false,
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const SizedBox(height: 8),
-              _buildItem(
-                icon: Icons.arrow_back,
-                label: 'Back',
-                onPressed: onBack,
-              ),
-              if (hasDualVideo) ...[
+      child: ColoredBox(
+        color: const Color(0xFF1E1E1E),
+        child: SafeArea(
+          left: false,
+          right: false,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SizedBox(height: 8),
+                _buildItem(
+                  icon: Icons.arrow_back,
+                  label: 'Back',
+                  onPressed: onBack,
+                ),
+                if (hasDualVideo) ...[
+                  const Divider(indent: 8, endIndent: 8),
+                  _buildItem(
+                    icon: Icons.swap_horiz,
+                    label: 'Swap',
+                    onPressed: viewMode == ViewMode.both ? onSwapSides : null,
+                  ),
+                  _buildMuteItem(),
+                  _buildViewModeItem(),
+                ],
                 const Divider(indent: 8, endIndent: 8),
                 _buildItem(
-                  icon: Icons.swap_horiz,
-                  label: 'Swap',
-                  onPressed: viewMode == ViewMode.both ? onSwapSides : null,
+                  icon: isPlaying ? Icons.pause : Icons.play_arrow,
+                  label: isPlaying ? 'Pause' : 'Play',
+                  onPressed: onPlayPause,
                 ),
-                _buildMuteItem(),
-                _buildViewModeItem(),
-              ],
-              const Divider(indent: 8, endIndent: 8),
-              _buildItem(
-                icon: isPlaying ? Icons.pause : Icons.play_arrow,
-                label: isPlaying ? 'Pause' : 'Play',
-                onPressed: onPlayPause,
-              ),
-              _buildItem(
-                icon: Icons.replay_10,
-                label: '-10s',
-                onPressed: onRewind10,
-              ),
-              _buildItem(
-                icon: Icons.forward_10,
-                label: '+10s',
-                onPressed: onForward10,
-              ),
-              _buildItem(
-                icon: Icons.restart_alt,
-                label: 'Restart',
-                onPressed: onRestart,
-              ),
-              if (isPaused) ...[
+                _buildItem(
+                  icon: Icons.replay_10,
+                  label: '-10s',
+                  onPressed: onRewind10,
+                ),
+                _buildItem(
+                  icon: Icons.forward_10,
+                  label: '+10s',
+                  onPressed: onForward10,
+                ),
+                _buildItem(
+                  icon: Icons.restart_alt,
+                  label: 'Restart',
+                  onPressed: onRestart,
+                ),
                 const Divider(indent: 8, endIndent: 8),
                 _buildItem(
                   icon: Icons.edit,
                   label: isDrawingMode ? 'Exit draw' : 'Draw',
-                  onPressed: onToggleDrawing,
+                  onPressed: isPaused ? onToggleDrawing : null,
                   isActive: isDrawingMode,
                 ),
-              ],
-              // Show undo/redo/clear when in drawing mode OR when drawings exist
-              if (isDrawingMode || hasDrawings) ...[
                 _buildItem(
                   icon: Icons.undo,
                   label: 'Undo',
-                  onPressed: canUndo ? onUndo : null,
+                  onPressed: isDrawingMode && canUndo ? onUndo : null,
                 ),
                 _buildItem(
                   icon: Icons.redo,
                   label: 'Redo',
-                  onPressed: canRedo ? onRedo : null,
+                  onPressed: isDrawingMode && canRedo ? onRedo : null,
                 ),
                 _buildItem(
                   icon: Icons.cleaning_services,
                   label: 'Clear',
-                  onPressed: hasDrawings ? onClearDrawing : null,
+                  onPressed: isDrawingMode && hasDrawings ? onClearDrawing : null,
                 ),
+                const SizedBox(height: 8),
               ],
-              const SizedBox(height: 8),
-            ],
+            ),
           ),
         ),
       ),

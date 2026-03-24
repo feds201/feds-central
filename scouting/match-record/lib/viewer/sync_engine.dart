@@ -163,14 +163,16 @@ class SyncEngine {
     }
 
     _intendedEarlierPosition = earlierPos;
-    await earlierPlayer.seek(earlierPos);
 
     final laterTarget = laterPositionFor(earlierPos, syncOffset);
     if (laterTarget == null) {
       laterWaiting = true;
       countdownRemaining = syncOffset - earlierPos;
-      await laterPlayer.pause();
-      await laterPlayer.seek(Duration.zero);
+      // Seek earlier player while pausing+resetting later player in parallel
+      await Future.wait([
+        earlierPlayer.seek(earlierPos),
+        laterPlayer.pause().then((_) => laterPlayer.seek(Duration.zero)),
+      ]);
     } else {
       var clampedLater = laterTarget;
       final laterDur = laterPlayer.state.duration;
@@ -179,7 +181,11 @@ class SyncEngine {
       }
       laterWaiting = false;
       countdownRemaining = Duration.zero;
-      await laterPlayer.seek(clampedLater);
+      // Seek both players in parallel for responsive scrubbing
+      await Future.wait([
+        earlierPlayer.seek(earlierPos),
+        laterPlayer.seek(clampedLater),
+      ]);
     }
   }
 
