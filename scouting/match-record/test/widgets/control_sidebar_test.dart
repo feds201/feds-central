@@ -131,15 +131,24 @@ void main() {
         onClearDrawing: () => clearPressed = true,
       )));
 
-      await tester.tap(find.byIcon(Icons.undo));
+      final undoFinder = find.byIcon(Icons.undo);
+      await tester.ensureVisible(undoFinder);
+      await tester.pumpAndSettle();
+      await tester.tap(undoFinder);
       await tester.pump();
       expect(undoPressed, isFalse, reason: 'Undo should be disabled outside drawing mode');
 
-      await tester.tap(find.byIcon(Icons.redo));
+      final redoFinder = find.byIcon(Icons.redo);
+      await tester.ensureVisible(redoFinder);
+      await tester.pumpAndSettle();
+      await tester.tap(redoFinder);
       await tester.pump();
       expect(redoPressed, isFalse, reason: 'Redo should be disabled outside drawing mode');
 
-      await tester.tap(find.byIcon(Icons.cleaning_services));
+      final clearFinder = find.byIcon(Icons.cleaning_services);
+      await tester.ensureVisible(clearFinder);
+      await tester.pumpAndSettle();
+      await tester.tap(clearFinder);
       await tester.pump();
       expect(clearPressed, isFalse, reason: 'Clear should be disabled outside drawing mode');
     });
@@ -160,15 +169,24 @@ void main() {
         onClearDrawing: () => clearPressed = true,
       )));
 
-      await tester.tap(find.byIcon(Icons.undo));
+      final undoFinder = find.byIcon(Icons.undo);
+      await tester.ensureVisible(undoFinder);
+      await tester.pumpAndSettle();
+      await tester.tap(undoFinder);
       await tester.pump();
       expect(undoPressed, isTrue);
 
-      await tester.tap(find.byIcon(Icons.redo));
+      final redoFinder = find.byIcon(Icons.redo);
+      await tester.ensureVisible(redoFinder);
+      await tester.pumpAndSettle();
+      await tester.tap(redoFinder);
       await tester.pump();
       expect(redoPressed, isTrue);
 
-      await tester.tap(find.byIcon(Icons.cleaning_services));
+      final clearFinder = find.byIcon(Icons.cleaning_services);
+      await tester.ensureVisible(clearFinder);
+      await tester.pumpAndSettle();
+      await tester.tap(clearFinder);
       await tester.pump();
       expect(clearPressed, isTrue);
     });
@@ -182,7 +200,10 @@ void main() {
         onUndo: () => undoPressed = true,
       )));
 
-      await tester.tap(find.byIcon(Icons.undo));
+      final undoFinder = find.byIcon(Icons.undo);
+      await tester.ensureVisible(undoFinder);
+      await tester.pumpAndSettle();
+      await tester.tap(undoFinder);
       await tester.pump();
       expect(undoPressed, isFalse);
     });
@@ -196,7 +217,10 @@ void main() {
         onRedo: () => redoPressed = true,
       )));
 
-      await tester.tap(find.byIcon(Icons.redo));
+      final redoFinder = find.byIcon(Icons.redo);
+      await tester.ensureVisible(redoFinder);
+      await tester.pumpAndSettle();
+      await tester.tap(redoFinder);
       await tester.pump();
       expect(redoPressed, isFalse);
     });
@@ -210,7 +234,10 @@ void main() {
         onClearDrawing: () => clearPressed = true,
       )));
 
-      await tester.tap(find.byIcon(Icons.cleaning_services));
+      final clearFinder = find.byIcon(Icons.cleaning_services);
+      await tester.ensureVisible(clearFinder);
+      await tester.pumpAndSettle();
+      await tester.tap(clearFinder);
       await tester.pump();
       expect(clearPressed, isFalse);
     });
@@ -220,8 +247,8 @@ void main() {
     testWidgets('sidebar fills available height', (tester) async {
       await tester.pumpWidget(wrapInApp(buildSidebar()));
 
-      // The SizedBox wrapping the sidebar should expand to fill the Row's
-      // cross-axis (full height of the Scaffold body).
+      // The SizedBox wrapping the sidebar should have height: double.infinity
+      // so it fills the full available height.
       final sizedBox = tester.widget<SizedBox>(
         find.ancestor(
           of: find.byType(ColoredBox),
@@ -229,6 +256,7 @@ void main() {
         ).first,
       );
       expect(sizedBox.width, 160); // expanded mode (viewMode.both)
+      expect(sizedBox.height, double.infinity);
 
       // Verify the sidebar's rendered height matches the Row parent's height.
       final sidebarBox = tester.getSize(find.byType(ColoredBox).first);
@@ -245,6 +273,42 @@ void main() {
         matching: find.byType(Column),
       ));
       expect(column.mainAxisAlignment, MainAxisAlignment.start);
+    });
+
+    testWidgets('expanded mode buttons have min 48px touch targets', (tester) async {
+      await tester.pumpWidget(wrapInApp(buildSidebar(viewMode: ViewMode.both)));
+
+      // In expanded mode, buttons use InkWell + ConstrainedBox with minHeight: 48.
+      // Find ConstrainedBox widgets that are children of InkWell (sidebar buttons).
+      final constrainedBoxes = tester.widgetList<ConstrainedBox>(
+        find.descendant(
+          of: find.byType(InkWell),
+          matching: find.byType(ConstrainedBox),
+        ),
+      );
+      expect(constrainedBoxes, isNotEmpty);
+      for (final box in constrainedBoxes) {
+        expect(box.constraints.minHeight, greaterThanOrEqualTo(48));
+      }
+    });
+
+    testWidgets('compact mode buttons have min 56px touch targets', (tester) async {
+      await tester.pumpWidget(wrapInApp(buildSidebar(
+        viewMode: ViewMode.redOnly,
+        hasDualVideo: false,
+      )));
+
+      // In compact mode, buttons use IconButton with constraints minHeight: 56.
+      final iconButtons = tester.widgetList<IconButton>(
+        find.descendant(
+          of: find.byType(ControlSidebar),
+          matching: find.byType(IconButton),
+        ),
+      );
+      expect(iconButtons, isNotEmpty);
+      for (final btn in iconButtons) {
+        expect(btn.constraints?.minHeight, greaterThanOrEqualTo(56));
+      }
     });
 
     testWidgets('compact mode uses 72px width', (tester) async {

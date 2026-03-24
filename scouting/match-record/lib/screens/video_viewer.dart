@@ -172,7 +172,7 @@ class _VideoViewerState extends State<VideoViewer> {
           if (mounted) {
             setState(() {
               _isPlaying = playing;
-              _drawingController.setOpacity(playing ? 0.5 : 1.0);
+              _drawingController.setOpacity(playing ? 0.3 : 1.0);
               if (playing) _isDrawingMode = false;
             });
           }
