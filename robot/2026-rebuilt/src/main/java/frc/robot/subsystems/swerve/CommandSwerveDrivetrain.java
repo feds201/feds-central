@@ -76,6 +76,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private final ShuffleboardTab pitTab = Shuffleboard.getTab("Pit Testing");
     private final ShuffleboardLayout drivetrainLayout = pitTab.getLayout("Drivetrain Health 1", BuiltInLayouts.kList).withSize(2, 6).withPosition(0, 0);
     private final ShuffleboardLayout drivetrainLayout2 = pitTab.getLayout("Drivetrain Health 2", BuiltInLayouts.kList).withSize(2, 6).withPosition(2, 0);
+    private final ShuffleboardLayout drivetrainLayout3 = pitTab.getLayout("Drivetrain Health 3", BuiltInLayouts.kList).withSize(2, 6).withPosition(4, 0);
     private final GenericEntry[] driveConnectedEntries = new GenericEntry[4];
     private final GenericEntry[] drivePoweredEntries  = new GenericEntry[4];
     private final GenericEntry[] steerConnectedEntries = new GenericEntry[4];
@@ -251,11 +252,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         
         for (int i = 0; i < 4; ++i) {
             driveConnectedEntries[i] = drivetrainLayout.add("Drive " + (i + 1) + " Connected", false).getEntry();
-            drivePoweredEntries[i]  = drivetrainLayout.add("Drive " + (i + 1) + " Powered", false).getEntry();
+            drivePoweredEntries[i]  = drivetrainLayout3.add("Drive " + (i + 1) + " Powered", false).getEntry();
         }
         for (int i = 0; i < 4; ++i) {
             steerConnectedEntries[i] = drivetrainLayout.add("Steer " + (i + 1) + " Connected", false).getEntry();
-            steerPoweredEntries[i]  = drivetrainLayout.add("Steer " + (i + 1) + " Powered", false).getEntry();
+            steerPoweredEntries[i]  = drivetrainLayout3.add("Steer " + (i + 1) + " Powered", false).getEntry();
         }
         for (int i = 0; i < 4; ++i) {
             encConnectedEntries[i]  = drivetrainLayout2.add("Encoder " + (i + 1) + " Connected", false).getEntry();

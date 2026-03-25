@@ -48,10 +48,14 @@ public class PitTesting {
             Commands.waitSeconds(2),
             intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT)));
         
-        testLayout.add("Run Intake Rollers", Commands.sequence(
+        testLayout.add("Run Intake and Rollers", Commands.sequence(
+            intakeSubsystem.setIntakeStateCommand(IntakeState.INTAKING),
+            Commands.waitSeconds(2),
             intakeSubsystem.setRollerStateCommand(RollerState.ON),
             Commands.waitSeconds(2),
-            intakeSubsystem.setRollerStateCommand(RollerState.OFF)));
+            intakeSubsystem.setRollerStateCommand(RollerState.OFF),
+            Commands.waitSeconds(2),
+            intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT)));
 
         testLayout.add("Run Spindexer", Commands.sequence(
             spinDexer.setStateCommand(spindexer_state.RUN),
