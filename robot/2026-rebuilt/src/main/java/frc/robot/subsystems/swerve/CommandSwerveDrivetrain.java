@@ -29,6 +29,7 @@ import com.pathplanner.lib.util.FlippingUtil;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rectangle2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -44,6 +45,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.RobotMap;
+import frc.robot.RobotMap.ShooterConstants;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.subsystems.swerve.generated.TunerConstants.TunerSwerveDrivetrain;
 import frc.robot.utils.ShootOnTheMove;
@@ -482,4 +484,21 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
         return Meters.of(pose.getDistance(virtualGoal));
     }
+
+        public boolean withinTrench()
+    {
+        Double pullOutTime = 0.61; //seconds TUNE
+        ChassisSpeeds currentSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(getState().Speeds, getState().Pose.getRotation());
+        Translation2d pose = getState().Pose.getTranslation();
+        Double predictedX = pose.getX() + currentSpeeds.vxMetersPerSecond * pullOutTime;
+        Double predictedY = pose.getY() + currentSpeeds.vyMetersPerSecond * pullOutTime;
+        Translation2d predictedPose = new Translation2d(predictedX, predictedY);
+
+        return(ShooterConstants.BlueLeftTrench.contains(predictedPose) 
+            || ShooterConstants.BlueRightTrench.contains(predictedPose) 
+            || ShooterConstants.RedLeftTrench.contains(predictedPose) 
+            || ShooterConstants.RedRightTrench.contains(predictedPose));
+
+    }
+
 }
