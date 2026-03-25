@@ -124,6 +124,7 @@ public class LedsSubsystem extends SubsystemBase {
     // Connect to the device on USB port 2
     m_isConnected = m_leds.Connect(USBPort.kUSB1);
     System.out.println("ConnectorX connected: " + m_isConnected);
+    m_leds.LoadConfigurationFromDeploy().ifPresent(m_leds::ApplyConfiguration);
      // Initial State application will happen in periodic loop or manually here
     // But periodic handles state change, so setting lastState to OFF calls applyState(IDLE) in first loop.
   }

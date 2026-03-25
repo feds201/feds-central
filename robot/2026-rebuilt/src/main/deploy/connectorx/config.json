@@ -1,0 +1,94 @@
+{
+  "team": "201",
+  "network": {
+    "mode": "USB"
+  },
+  "channels": {
+    "2": {
+      "id": "port2_Intake",
+      "length": 300,
+      "brightness": 255,
+      "zones": [
+        {
+          "id": "ZONE_50_1",
+          "type": "strip",
+          "length": 50,
+          "brightness": 255,
+          "reversed": false
+        },
+        {
+          "id": "ZONE_50_2",
+          "type": "strip",
+          "length": 50,
+          "brightness": 255,
+          "reversed": false
+        },
+        {
+          "id": "ZONE_50_3",
+          "type": "strip",
+          "length": 50,
+          "brightness": 255,
+          "reversed": false
+        },
+        {
+          "id": "ZONE_50_4",
+          "type": "strip",
+          "length": 50,
+          "brightness": 255,
+          "reversed": false
+        },
+        {
+          "id": "ZONE_50_5",
+          "type": "strip",
+          "length": 50,
+          "brightness": 255,
+          "reversed": false
+        },
+        {
+          "id": "ZONE_50_6",
+          "type": "strip",
+          "length": 50,
+          "brightness": 255,
+          "reversed": false
+        }
+      ]
+    }
+  },
+  "sequences": [],
+  "bitmaps": [],
+  "sensors": [],
+  "groups": [
+    {
+      "id": "GR_300",
+      "zoneIds": [
+        "ZONE_50_1",
+        "ZONE_50_2",
+        "ZONE_50_3",
+        "ZONE_50_4",
+        "ZONE_50_5",
+        "ZONE_50_6"
+      ]
+    },
+    {
+      "id": "GR_100",
+      "zoneIds": [
+        "ZONE_50_1",
+        "ZONE_50_2"
+      ]
+    },
+    {
+      "id": "GR_100_2",
+      "zoneIds": [
+        "ZONE_50_3",
+        "ZONE_50_4"
+      ]
+    },
+    {
+      "id": "GR_100_3",
+      "zoneIds": [
+        "ZONE_50_5",
+        "ZONE_50_6"
+      ]
+    }
+  ]
+}
