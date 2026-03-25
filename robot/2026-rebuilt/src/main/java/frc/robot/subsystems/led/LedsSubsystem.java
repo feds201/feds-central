@@ -42,11 +42,11 @@ public class LedsSubsystem extends SubsystemBase {
     return instance;
   }
 
-  public static boolean isjammed() {
-    // Placeholder for actual jamming detection logic
-    // This could be based on motor current spikes, encoder feedback, etc.
-    return false; // Replace with real condition
-  }
+  // public static boolean isjammed() {
+  //   // Placeholder for actual jamming detection logic
+  //   // This could be based on motor current spikes, encoder feedback, etc.
+  //   return false; // Replace with real condition
+  // }
 
   public boolean isLimelightStable() {
     double currentHeartbeat = NetworkTableInstance.getDefault()
@@ -148,9 +148,9 @@ public class LedsSubsystem extends SubsystemBase {
         desiredState = LEDState.ERROR_LL;
     }
 
-    else if ( isjammed() = DriverStation.reportError) { 
-        desiredState = LEDState.ERROR_JAMMING;
-    }
+    // else if ( isjammed() ==  ) { 
+    //     desiredState = LEDState.ERROR_JAMMING;
+    // }
 
     //2 Highest Priority: Shooter
     if (m_shooter_state == shooter_state.SHOOTING || m_shooter_state == shooter_state.HALFCOURT 
