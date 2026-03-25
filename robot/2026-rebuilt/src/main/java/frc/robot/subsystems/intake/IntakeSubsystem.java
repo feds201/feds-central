@@ -48,7 +48,6 @@ public class IntakeSubsystem extends SubsystemBase {
   private final DigitalInput limit_switch_r;
   private final DigitalInput limit_switch_l;
   private final SysIdRoutine sysID;
-  private final LedsSubsystem leds = LedsSubsystem.getInstance();
   private final double extendedRotations = 78.0;
   private final double retractedRotations = 0.1;
   private final double agitateOut = 5.0;
@@ -408,7 +407,6 @@ public class IntakeSubsystem extends SubsystemBase {
     switch (currentRollerState) {
       case ON:
         rollerMotor.set(ROLLER_OUTPUT);
-        leds.intakeSignal();
         break;
       case REVERSE:
         rollerMotor.set(-ROLLER_OUTPUT);

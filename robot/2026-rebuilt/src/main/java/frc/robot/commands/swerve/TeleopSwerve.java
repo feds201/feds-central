@@ -71,7 +71,6 @@ public class TeleopSwerve extends Command {
 
    private driveMode mode = driveMode.NORMALDRIVE;
 
-   private final LedsSubsystem ledsSubsystem = LedsSubsystem.getInstance(new Subsystem[]{});
    
 
   /** Command used to control swerve in teleop. */
