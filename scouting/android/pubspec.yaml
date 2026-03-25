@@ -1,5 +1,5 @@
 name: scout_ops_android
-description: Scout Ops Android  
+description: Scout Ops Android - Midland District Edition
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: none # Remove this line if you wish to publish to pub.dev
@@ -9,7 +9,7 @@ msix_config:
   publisher_display_name: FEDS201
   identity_name: feds.suite.scoutopsandroid
   msix_version: 3.0.0.0
-  logo_path: P:/FEDS201/Scouting_Suite/logo.ico
+  logo_path: ../logo.ico
   capabilities: internetClient,location,microphone,webcam
   app_installer:
     publish_folder_path: P:\FEDS201\Scouting_Suite\Scout-Ops-Android\publish
@@ -32,7 +32,7 @@ msix_config:
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.1+2
+version: 5.5.5+1
 
 environment:
   sdk: '>=3.4.3 <5.0.0'
@@ -76,6 +76,22 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   msix: ^3.16.8
+  flutter_launcher_icons: ^0.13.1
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: false
+  image_path: "assets/logo.png"
+  min_sdk_android: 21 # android min sdk min:16, default 21
+  web:
+    generate: true
+    image_path: "assets/logo.png"
+    background_color: "#ffffff"
+    theme_color: "#ffffff"
+  windows:
+    generate: true
+    image_path: "assets/logo.png"
+    icon_size: 256 # min:48, max:256, default: 48
 
 flutter:
 
