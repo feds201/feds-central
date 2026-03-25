@@ -3,7 +3,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../data/data_store.dart';
-import '../import/local_drive_access.dart';
 import '../sync/history_tab.dart';
 import '../sync/import_tab.dart';
 import '../sync/storage_tab.dart';
@@ -132,14 +131,6 @@ class _SyncPageState extends State<SyncPage> {
             StorageTab(
               dataStore: widget.dataStore,
               storageDir: _storageDir!,
-              cameraAccess: const LocalDriveAccess(
-                dirPath: kCameraDir,
-                label: 'Camera',
-              ),
-              quickShareAccess: const LocalDriveAccess(
-                dirPath: kQuickShareDir,
-                label: 'Quick Share',
-              ),
             ),
           ],
         ),

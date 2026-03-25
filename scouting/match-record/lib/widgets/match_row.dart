@@ -143,44 +143,54 @@ class MatchRow extends StatelessWidget {
                         ?.copyWith(fontWeight: FontWeight.bold),
                   ),
                   _buildTimeDisplay(context, m),
-                  if (showEventLabel && matchWithVideos.eventShortName != null)
-                    Text(
-                      matchWithVideos.eventShortName!,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                        fontSize: 10,
-                      ),
-                    ),
                 ],
               ),
             ),
             const SizedBox(width: 8),
-            // Teams + scores
+            // Team numbers + event name (event label sits right after teams, space fills to the right)
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildAllianceRow(
-                    context,
-                    teamKeys: m.redTeamKeys,
-                    score: m.redScore,
-                    color: Colors.red.shade300,
-                    isWinner: m.winningAlliance == 'red',
-                    played: played,
-                    allianceLabel: _findAllianceLabel(m.redTeamKeys),
+                  Row(
+                    children: [
+                      _buildTeamNumbers(
+                        context,
+                        teamKeys: m.redTeamKeys,
+                        color: Colors.red.shade300,
+                        allianceLabel: _findAllianceLabel(m.redTeamKeys),
+                      ),
+                      if (showEventLabel && matchWithVideos.eventShortName != null) ...[
+                        const SizedBox(width: 12),
+                        Text(
+                          matchWithVideos.eventShortName!,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                            fontSize: 10,
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
                   const SizedBox(height: 2),
-                  _buildAllianceRow(
+                  _buildTeamNumbers(
                     context,
                     teamKeys: m.blueTeamKeys,
-                    score: m.blueScore,
                     color: Colors.blue.shade300,
-                    isWinner: m.winningAlliance == 'blue',
-                    played: played,
                     allianceLabel: _findAllianceLabel(m.blueTeamKeys),
                   ),
                 ],
               ),
+            ),
+            // Scores
+            const SizedBox(width: 12),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                _buildScore(context, score: m.redScore, color: Colors.red.shade300, isWinner: m.winningAlliance == 'red', played: played),
+                const SizedBox(height: 2),
+                _buildScore(context, score: m.blueScore, color: Colors.blue.shade300, isWinner: m.winningAlliance == 'blue', played: played),
+              ],
             ),
             // Video icons
             _buildVideoIcons(context),
@@ -190,13 +200,10 @@ class MatchRow extends StatelessWidget {
     );
   }
 
-  Widget _buildAllianceRow(
+  Widget _buildTeamNumbers(
     BuildContext context, {
     required List<String> teamKeys,
-    required int score,
     required Color color,
-    required bool isWinner,
-    required bool played,
     String? allianceLabel,
   }) {
     final theme = Theme.of(context);
@@ -233,30 +240,34 @@ class MatchRow extends StatelessWidget {
       ));
     }
 
+    return Text.rich(
+      TextSpan(children: teamSpans),
+      style: theme.textTheme.bodySmall,
+    );
+  }
+
+  Widget _buildScore(
+    BuildContext context, {
+    required int score,
+    required Color color,
+    required bool isWinner,
+    required bool played,
+  }) {
+    final theme = Theme.of(context);
     final scoreText = played ? '$score' : '\u2014';
     final scoreWeight =
         played && isWinner ? FontWeight.bold : FontWeight.normal;
 
-    return Row(
-      children: [
-        Expanded(
-          child: Text.rich(
-            TextSpan(children: teamSpans),
-            style: theme.textTheme.bodySmall,
-          ),
+    return SizedBox(
+      width: 36,
+      child: Text(
+        scoreText,
+        textAlign: TextAlign.right,
+        style: theme.textTheme.bodySmall?.copyWith(
+          fontWeight: scoreWeight,
+          color: played ? color : theme.colorScheme.onSurfaceVariant,
         ),
-        SizedBox(
-          width: 36,
-          child: Text(
-            scoreText,
-            textAlign: TextAlign.right,
-            style: theme.textTheme.bodySmall?.copyWith(
-              fontWeight: scoreWeight,
-              color: played ? color : theme.colorScheme.onSurfaceVariant,
-            ),
-          ),
-        ),
-      ],
+      ),
     );
   }
 

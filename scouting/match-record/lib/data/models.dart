@@ -1153,6 +1153,18 @@ class MatchWithVideos {
   bool get hasLocalRippedVideo => localRippedVideo != null;
 }
 
+/// A team deduplicated across events, with the list of event short names
+/// it appears in. Used when multiple events are selected.
+class TeamWithEvents {
+  final Team team;
+  final List<String> eventShortNames;
+
+  const TeamWithEvents({
+    required this.team,
+    required this.eventShortNames,
+  });
+}
+
 bool _listEquals<T>(List<T> a, List<T> b) {
   if (identical(a, b)) return true;
   if (a.length != b.length) return false;

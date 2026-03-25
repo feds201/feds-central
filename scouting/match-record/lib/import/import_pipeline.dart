@@ -33,6 +33,7 @@ class ImportSessionState {
 class ImportPreviewRow {
   final VideoMetadata metadata;
   final VideoIdentity? identity;
+  String? eventKey;
   String? matchKey;
   String allianceSide;
   List<int> teams;
@@ -44,6 +45,7 @@ class ImportPreviewRow {
   ImportPreviewRow({
     required this.metadata,
     this.identity,
+    this.eventKey,
     this.matchKey,
     this.allianceSide = 'red',
     this.teams = const [0, 0, 0],
@@ -183,18 +185,23 @@ class ImportPipeline {
         autoSkipReason = 'Already imported';
       }
 
-      // Determine teams from match assignment
+      // Determine event key and teams from match assignment
       List<int> teams = [0, 0, 0];
+      String? rowEventKey;
       if (suggestion.matchKey != null) {
         final match = dataStore.getMatchByKey(suggestion.matchKey!);
         if (match != null) {
           teams = _getTeamsForSide(match, defaultSide);
+          rowEventKey = match.eventKey;
         }
       }
+      // If no match was suggested, default to single event if only one selected
+      rowEventKey ??= eventKeys.length == 1 ? eventKeys.first : null;
 
       rows.add(ImportPreviewRow(
         metadata: meta,
         identity: identity,
+        eventKey: rowEventKey,
         matchKey: suggestion.matchKey,
         allianceSide: defaultSide,
         teams: teams,
@@ -337,9 +344,8 @@ class ImportPipeline {
         continue;
       }
 
-      // Determine event key from match
-      final match = dataStore.getMatchByKey(row.matchKey!);
-      final eventKey = match?.eventKey ?? '';
+      // Use the row's event key (set during suggestion or by user)
+      final eventKey = row.eventKey ?? dataStore.getMatchByKey(row.matchKey!)?.eventKey ?? '';
 
       // Create recording
       final recording = Recording(

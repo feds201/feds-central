@@ -13,6 +13,8 @@ class ImportPreviewRowWidget extends StatelessWidget {
   final void Function(String side) onAllianceSideChanged;
   final void Function(bool selected) onSelectionChanged;
   final void Function(List<int> teams) onTeamsChanged;
+  final void Function(String? eventKey)? onEventChanged;
+  final bool showEventSelector;
   final VoidCallback? onPlayPreview;
 
   const ImportPreviewRowWidget({
@@ -25,6 +27,8 @@ class ImportPreviewRowWidget extends StatelessWidget {
     required this.onAllianceSideChanged,
     required this.onSelectionChanged,
     required this.onTeamsChanged,
+    this.onEventChanged,
+    this.showEventSelector = false,
     this.onPlayPreview,
   });
 
@@ -144,7 +148,14 @@ class ImportPreviewRowWidget extends StatelessWidget {
                 constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
               ),
 
-            // Match dropdown
+            // Event dropdown (only when multiple events)
+            if (showEventSelector)
+              SizedBox(
+                width: 80,
+                child: _buildEventDropdown(context),
+              ),
+
+            // Match dropdown (filtered by selected event when multiple events)
             Expanded(
               flex: 1,
               child: _buildMatchDropdown(context),
@@ -164,13 +175,54 @@ class ImportPreviewRowWidget extends StatelessWidget {
     );
   }
 
+  Widget _buildEventDropdown(BuildContext context) {
+    final eventKeys = dataStore.settings.selectedEventKeys;
+    final eventNameMap = <String, String>{};
+    for (final e in dataStore.events) {
+      eventNameMap[e.eventKey] = e.shortName;
+    }
+
+    return DropdownButton<String>(
+      value: row.eventKey,
+      isExpanded: true,
+      isDense: true,
+      hint: const Text('Event', style: TextStyle(fontSize: 11)),
+      style: TextStyle(
+        fontSize: 11,
+        color: Theme.of(context).colorScheme.onSurface,
+      ),
+      items: eventKeys.map((eventKey) {
+        return DropdownMenuItem<String>(
+          value: eventKey,
+          child: Text(
+            eventNameMap[eventKey] ?? eventKey,
+            style: const TextStyle(fontSize: 11),
+            overflow: TextOverflow.ellipsis,
+          ),
+        );
+      }).toList(),
+      onChanged: onEventChanged,
+    );
+  }
+
   Widget _buildMatchDropdown(BuildContext context) {
     final yourTeamNumber = dataStore.settings.teamNumber;
     final yourTeamKey =
         yourTeamNumber != null ? 'frc$yourTeamNumber' : null;
 
+    // Filter matches by the row's event when multiple events are selected
+    final filteredMatches = row.eventKey != null && showEventSelector
+        ? allMatches.where((m) => m.eventKey == row.eventKey).toList()
+        : allMatches;
+
+    // If the current matchKey isn't in the filtered list, it means the event
+    // changed — the match dropdown value will be null (no selection).
+    final currentMatchKey = filteredMatches.any((m) => m.matchKey == row.matchKey)
+        ? row.matchKey
+        : null;
+
     return DropdownButton<String>(
-      value: row.matchKey,
+      value: currentMatchKey,
       isExpanded: true,
       isDense: true,
       hint: const Text('Match', style: TextStyle(fontSize: 12)),
@@ -183,7 +235,7 @@ class ImportPreviewRowWidget extends StatelessWidget {
           value: null,
           child: Text('None', style: TextStyle(fontSize: 12)),
         ),
-        ...allMatches.map((match) {
+        ...filteredMatches.map((match) {
           final isOurMatch = yourTeamKey != null &&
               (match.redTeamKeys.contains(yourTeamKey) ||
                   match.blueTeamKeys.contains(yourTeamKey));
@@ -219,21 +271,33 @@ class ImportPreviewRowWidget extends StatelessWidget {
     final eventKeys = dataStore.settings.selectedEventKeys;
     final alliances = dataStore.getAlliancesForEvents(eventKeys);
 
+    // Build team chip widgets, adding extra space between red and blue
+    // teams when in full-field mode (first 3 = red, last 3 = blue).
+    final teamWidgets = <Widget>[];
+    for (int i = 0; i < row.teams.length; i++) {
+      if (row.allianceSide == 'full' && i == 3) {
+        teamWidgets.add(const SizedBox(width: 8));
+      }
+      final team = row.teams[i];
+      final color = row.allianceSide == 'full'
+          ? (i < 3 ? Colors.red : Colors.blue)
+          : allianceColor;
+      teamWidgets.add(Text(
+        team > 0 ? '$team' : '---',
+        style: theme.textTheme.bodySmall?.copyWith(
+          color: team > 0 ? color : Colors.grey,
+          fontWeight: FontWeight.bold,
+        ),
+      ));
+    }
+
     return InkWell(
       onTap: alliances.isNotEmpty
           ? () => _showAlliancePicker(context, alliances)
           : null,
       child: Wrap(
         spacing: 4,
-        children: row.teams.map((team) {
-          return Text(
-            team > 0 ? '$team' : '---',
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: team > 0 ? allianceColor : Colors.grey,
-              fontWeight: FontWeight.bold,
-            ),
-          );
-        }).toList(),
+        children: teamWidgets,
       ),
     );
   }

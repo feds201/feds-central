@@ -12,22 +12,24 @@ class AutocompleteResult {
   final Team? team;
   final MatchWithVideos? matchWithVideos;
   final Alliance? alliance;
+  /// Event disambiguation line, shown when multiple events are selected.
+  final String? eventInfo;
 
-  const AutocompleteResult.team(this.team)
+  const AutocompleteResult.team(this.team, {this.eventInfo})
       : type = AutocompleteResultType.team,
         label = '',
         subtitle = null,
         matchWithVideos = null,
         alliance = null;
 
-  const AutocompleteResult.match(this.matchWithVideos)
+  const AutocompleteResult.match(this.matchWithVideos, {this.eventInfo})
       : type = AutocompleteResultType.match,
         label = '',
         subtitle = null,
         team = null,
         alliance = null;
 
-  const AutocompleteResult.alliance(this.alliance)
+  const AutocompleteResult.alliance(this.alliance, {this.eventInfo})
       : type = AutocompleteResultType.alliance,
         label = '',
         subtitle = null,
@@ -119,6 +121,14 @@ class AutocompleteOverlay extends StatelessWidget {
                         result.displaySubtitle!,
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    if (result.eventInfo != null)
+                      Text(
+                        result.eventInfo!,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                          fontSize: 10,
                         ),
                       ),
                   ],

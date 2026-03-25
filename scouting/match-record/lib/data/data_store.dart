@@ -83,6 +83,35 @@ class DataStore extends ChangeNotifier {
 
   bool get hasAllianceData => _data.alliances.isNotEmpty;
 
+  /// Returns teams deduplicated by team number, with the list of event short
+  /// names each team appears in. Useful when multiple events are selected.
+  List<TeamWithEvents> getDeduplicatedTeams(List<String> eventKeys) {
+    final teams = getTeamsForEvents(eventKeys);
+    final eventMap = <String, Event>{};
+    for (final e in _data.events) {
+      eventMap[e.eventKey] = e;
+    }
+
+    final grouped = <int, _TeamGroup>{};
+    for (final t in teams) {
+      final group = grouped.putIfAbsent(
+        t.teamNumber,
+        () => _TeamGroup(t, []),
+      );
+      final shortName = eventMap[t.eventKey]?.shortName ?? t.eventKey;
+      if (!group.eventShortNames.contains(shortName)) {
+        group.eventShortNames.add(shortName);
+      }
+    }
+
+    return grouped.values
+        .map((g) => TeamWithEvents(
+              team: g.team,
+              eventShortNames: g.eventShortNames,
+            ))
+        .toList();
+  }
+
   Future<void> setEvents(List<Event> events) async {
     _data = _data.copyWith(events: events);
     await _save();
@@ -327,4 +356,11 @@ class DataStore extends ChangeNotifier {
     await _persistence.save(_data);
     notifyListeners();
   }
+}
+
+class _TeamGroup {
+  final Team team;
+  final List<String> eventShortNames;
+
+  _TeamGroup(this.team, this.eventShortNames);
 }

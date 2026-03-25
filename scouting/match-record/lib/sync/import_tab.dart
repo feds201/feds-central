@@ -28,7 +28,11 @@ class ImportTab extends StatefulWidget {
   State<ImportTab> createState() => _ImportTabState();
 }
 
-class _ImportTabState extends State<ImportTab> {
+class _ImportTabState extends State<ImportTab>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
   ImportSessionState? _sessionState;
   bool _isScanning = false;
   bool _isImporting = false;
@@ -46,7 +50,8 @@ class _ImportTabState extends State<ImportTab> {
 
   late final DriveAccess _driveAccess;
   late final VideoMetadataService _metadataService;
-  late final ImportPipeline _pipeline;
+  late ImportPipeline _pipeline;
+
 
   @override
   void initState() {
@@ -62,10 +67,6 @@ class _ImportTabState extends State<ImportTab> {
       storageDir: widget.storageDir,
     );
 
-    // Auto-connect first test drive when test flags active
-    if (TestFlags.useSampleVideos) {
-      _connectDrive(TestDriveAccess.availableDriveUris.first);
-    }
   }
 
   Future<void> _connectDrive(String driveUri, {DateTime? newerThan}) async {
@@ -160,6 +161,8 @@ class _ImportTabState extends State<ImportTab> {
   void _resetToSourceSelection() {
     setState(() {
       _sessionState = null;
+      _isScanning = false;
+      _isImporting = false;
       _isLocalSource = false;
       _activeLocalDriveAccess = null;
       _error = null;
@@ -270,6 +273,25 @@ class _ImportTabState extends State<ImportTab> {
     }
   }
 
+  void _onEventChanged(int rowIndex, String? eventKey) {
+    if (_sessionState == null || eventKey == null) return;
+
+    setState(() {
+      final row = _sessionState!.rows[rowIndex];
+      row.eventKey = eventKey;
+      // Clear match selection since it may not belong to the new event
+      row.matchKey = null;
+      row.teams = [0, 0, 0];
+      row.isSelected = false;
+
+      // Cascade event to subsequent rows
+      for (int i = rowIndex + 1; i < _sessionState!.rows.length; i++) {
+        if (_sessionState!.manuallySetRows.contains(i)) break;
+        _sessionState!.rows[i].eventKey = eventKey;
+      }
+    });
+  }
+
   void _onMatchChanged(int rowIndex, String? matchKey) {
     if (_sessionState == null || matchKey == null) return;
 
@@ -370,7 +392,17 @@ class _ImportTabState extends State<ImportTab> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context); // Required by AutomaticKeepAliveClientMixin
+    return _buildContent(context);
+  }
+
+  Widget _buildContent(BuildContext context) {
     if (_isScanning) {
       return const Center(
         child: Column(
@@ -396,9 +428,9 @@ class _ImportTabState extends State<ImportTab> {
                 color: Theme.of(context).colorScheme.error)),
             const SizedBox(height: 16),
             FilledButton.icon(
-              onPressed: _pickDrive,
-              icon: const Icon(Icons.usb),
-              label: const Text('Try Again'),
+              onPressed: _resetToSourceSelection,
+              icon: const Icon(Icons.arrow_back),
+              label: const Text('Back'),
             ),
           ],
         ),
@@ -418,7 +450,15 @@ class _ImportTabState extends State<ImportTab> {
             ),
             const SizedBox(height: 24),
             FilledButton.icon(
-              onPressed: _pickDrive,
+              onPressed: () {
+                // TODO: Replace with _pickDrive when SAF implementation exists
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('No USB drive connected'),
+                    duration: Duration(seconds: 2),
+                  ),
+                );
+              },
               icon: const Icon(Icons.usb),
               label: const Text('USB Drive'),
             ),
@@ -508,6 +548,8 @@ class _ImportTabState extends State<ImportTab> {
             itemCount: state.rows.length,
             itemBuilder: (context, index) {
               final row = state.rows[index];
+              final showMultiEvent =
+                  widget.dataStore.settings.selectedEventKeys.length > 1;
               return ImportPreviewRowWidget(
                 row: row,
                 rowIndex: index,
@@ -519,6 +561,10 @@ class _ImportTabState extends State<ImportTab> {
                 onSelectionChanged: (selected) =>
                     _onSelectionChanged(index, selected),
                 onTeamsChanged: (teams) => _onTeamsChanged(index, teams),
+                onEventChanged: showMultiEvent
+                    ? (eventKey) => _onEventChanged(index, eventKey)
+                    : null,
+                showEventSelector: showMultiEvent,
                 onPlayPreview: () => _playPreview(row),
               );
             },
@@ -531,25 +577,26 @@ class _ImportTabState extends State<ImportTab> {
           top: false,
           child: Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 64),
-            child: SizedBox(
-              width: double.infinity,
-              child: FilledButton.icon(
-                onPressed: _isImporting || selectedCount == 0
-                    ? null
-                    : _executeImport,
-                icon: _isImporting
-                    ? const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.white,
-                        ),
-                      )
-                    : const Icon(Icons.download),
-                label: Text(_isImporting
-                    ? 'Importing...'
-                    : 'Import $selectedCount Video(s)'),
+            child: FilledButton.icon(
+              onPressed: _isImporting || selectedCount == 0
+                  ? null
+                  : _executeImport,
+              icon: _isImporting
+                  ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                  : const Icon(Icons.download),
+              label: Text(_isImporting
+                  ? 'Importing...'
+                  : 'Import $selectedCount Video(s)'),
+              style: FilledButton.styleFrom(
+                minimumSize: const Size(0, 60),
+                padding: const EdgeInsets.symmetric(horizontal: 48),
               ),
             ),
           ),
@@ -580,8 +627,6 @@ class _ImportTabState extends State<ImportTab> {
             icon: const Icon(Icons.arrow_back, size: 20),
             onPressed: _resetToSourceSelection,
             tooltip: 'Back to source selection',
-            padding: EdgeInsets.zero,
-            constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
           ),
 
           // Select all checkbox

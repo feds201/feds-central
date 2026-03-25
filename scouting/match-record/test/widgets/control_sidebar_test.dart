@@ -96,7 +96,8 @@ void main() {
         onToggleDrawing: () => drawPressed = true,
       )));
 
-      await tester.tap(find.byIcon(Icons.edit_off));
+      // When paused, drawing auto-enables — icon is edit (not edit_off)
+      await tester.tap(find.byIcon(Icons.edit));
       await tester.pump();
       expect(drawPressed, isTrue, reason: 'Draw button should be enabled when paused');
     });

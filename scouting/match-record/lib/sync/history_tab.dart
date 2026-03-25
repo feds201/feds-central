@@ -440,12 +440,16 @@ class _SessionReEditPageState extends State<_SessionReEditPage> {
         date: row.entry.recordingStartTime,
         fileSize: row.entry.fileSizeBytes,
       ),
+      eventKey: row.recording?.eventKey,
       matchKey: row.matchKey,
       allianceSide: row.allianceSide,
       teams: row.teams,
       isSelected: true,
       isAutoSkipped: false,
     );
+
+    final showMultiEvent =
+        widget.dataStore.settings.selectedEventKeys.length > 1;
 
     return ImportPreviewRowWidget(
       row: previewRow,
@@ -456,6 +460,7 @@ class _SessionReEditPageState extends State<_SessionReEditPage> {
       onAllianceSideChanged: (side) => _onAllianceSideChanged(index, side),
       onSelectionChanged: (_) {}, // No selection in re-edit mode
       onTeamsChanged: (teams) => _onTeamsChanged(index, teams),
+      showEventSelector: showMultiEvent,
     );
   }
 

@@ -7,26 +7,39 @@ import '../widgets/team_tile.dart';
 class TeamsTab extends StatelessWidget {
   final DataStore dataStore;
   final void Function(Team) onTeamTap;
+  final int selectedEventIndex;
 
   const TeamsTab({
     super.key,
     required this.dataStore,
     required this.onTeamTap,
+    required this.selectedEventIndex,
   });
 
   @override
   Widget build(BuildContext context) {
     final eventKeys = dataStore.settings.selectedEventKeys;
-    final teams = dataStore.getTeamsForEvents(eventKeys);
     final yourTeamNumber = dataStore.settings.teamNumber;
+    final showMultiEvent = eventKeys.length > 1;
 
-    final sorted = List<Team>.from(teams)
-      ..sort((a, b) => a.teamNumber.compareTo(b.teamNumber));
+    // When multi-event, filter teams to the selected event
+    final List<String> filterKeys;
+    if (showMultiEvent) {
+      final clampedIndex = selectedEventIndex.clamp(0, eventKeys.length - 1);
+      filterKeys = [eventKeys[clampedIndex]];
+    } else {
+      filterKeys = eventKeys;
+    }
 
-    Team? yourTeam;
+    final teamsWithEvents = dataStore.getDeduplicatedTeams(filterKeys);
+
+    final sorted = List<TeamWithEvents>.from(teamsWithEvents)
+      ..sort((a, b) => a.team.teamNumber.compareTo(b.team.teamNumber));
+
+    TeamWithEvents? yourTeam;
     if (yourTeamNumber != null) {
       for (final t in sorted) {
-        if (t.teamNumber == yourTeamNumber) {
+        if (t.team.teamNumber == yourTeamNumber) {
           yourTeam = t;
           break;
         }
@@ -52,7 +65,7 @@ class TeamsTab extends StatelessWidget {
     }
 
     for (final t in sorted) {
-      if (yourTeam != null && t.teamNumber == yourTeamNumber) continue;
+      if (yourTeam != null && t.team.teamNumber == yourTeamNumber) continue;
       items.add(_ListItem.team(t));
     }
 
@@ -62,9 +75,12 @@ class TeamsTab extends StatelessWidget {
         final item = items[index];
         if (item.isDivider) return const Divider(height: 1);
         return TeamTile(
-          team: item.team!,
+          team: item.teamWithEvents!.team,
           isYourTeam: item.isYours,
-          onTap: () => onTeamTap(item.team!),
+          eventSubtitle: showMultiEvent
+              ? item.teamWithEvents!.eventShortNames.join(' \u2014\u2014 ')
+              : null,
+          onTap: () => onTeamTap(item.teamWithEvents!.team),
         );
       },
     );
@@ -72,13 +88,14 @@ class TeamsTab extends StatelessWidget {
 }
 
 class _ListItem {
-  final Team? team;
+  final TeamWithEvents? teamWithEvents;
   final bool isDivider;
   final bool isYours;
 
-  const _ListItem.team(this.team, {this.isYours = false}) : isDivider = false;
+  const _ListItem.team(this.teamWithEvents, {this.isYours = false})
+      : isDivider = false;
   const _ListItem.divider()
-      : team = null,
+      : teamWithEvents = null,
         isDivider = true,
         isYours = false;
 }

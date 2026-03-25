@@ -44,6 +44,7 @@ class _MainScreenState extends State<MainScreen> {
   Timer? _debounceTimer;
   bool _showAutocomplete = false;
   bool _isAutoLoading = false;
+  int _selectedEventIndex = 0;
 
   // m10: Auto TBA sync
   Timer? _autoSyncTimer;
@@ -163,32 +164,46 @@ class _MainScreenState extends State<MainScreen> {
 
     setState(() => _isAutoLoading = true);
 
-    const eventKey = TestFlags.forcedEventId;
+    final eventKeys = List<String>.from(TestFlags.forcedEventIds)..sort();
+    final loadedEvents = <Event>[];
 
-    final eventResult = await _tbaClient.getEvent(eventKey);
-    if (eventResult is Ok<Event>) {
-      await _dataStore.setEvents([eventResult.value]);
-      await _dataStore.updateSettings(
-        _dataStore.settings.copyWith(selectedEventKeys: [eventKey]),
-      );
-    }
-
-    final teamsResult = await _tbaClient.getTeams(eventKey);
-    if (teamsResult is Ok<List<Team>>) {
-      await _dataStore.setTeamsForEvent(eventKey, teamsResult.value);
-    }
-
-    final matchesResult = await _tbaClient.getMatches(eventKey);
-    if (matchesResult is Ok<List<Match>>) {
-      await _dataStore.setMatchesForEvent(eventKey, matchesResult.value);
-    }
-
-    final alliancesResult = await _tbaClient.getAlliances(eventKey);
-    if (alliancesResult is Ok<List<Alliance>?>) {
-      final alliances = alliancesResult.value;
-      if (alliances != null) {
-        await _dataStore.setAlliancesForEvent(eventKey, alliances);
+    for (final eventKey in eventKeys) {
+      final eventResult = await _tbaClient.getEvent(eventKey);
+      if (eventResult is Ok<Event>) {
+        loadedEvents.add(eventResult.value);
       }
+
+      final teamsResult = await _tbaClient.getTeams(eventKey);
+      if (teamsResult is Ok<List<Team>>) {
+        await _dataStore.setTeamsForEvent(eventKey, teamsResult.value);
+      }
+
+      final matchesResult = await _tbaClient.getMatches(eventKey);
+      if (matchesResult is Ok<List<Match>>) {
+        await _dataStore.setMatchesForEvent(eventKey, matchesResult.value);
+      }
+
+      final alliancesResult = await _tbaClient.getAlliances(eventKey);
+      if (alliancesResult is Ok<List<Alliance>?>) {
+        final alliances = alliancesResult.value;
+        if (alliances != null) {
+          await _dataStore.setAlliancesForEvent(eventKey, alliances);
+        }
+      }
+    }
+
+    if (loadedEvents.isNotEmpty) {
+      loadedEvents.sort((a, b) {
+        final dateCompare = a.startDate.compareTo(b.startDate);
+        if (dateCompare != 0) return dateCompare;
+        return a.name.compareTo(b.name);
+      });
+      await _dataStore.setEvents(loadedEvents);
+      await _dataStore.updateSettings(
+        _dataStore.settings.copyWith(
+          selectedEventKeys: loadedEvents.map((e) => e.eventKey).toList(),
+        ),
+      );
     }
 
     if (mounted) {
@@ -223,32 +238,51 @@ class _MainScreenState extends State<MainScreen> {
     final lowerQuery = query.toLowerCase();
     final eventKeys = _dataStore.settings.selectedEventKeys;
     final numQuery = int.tryParse(query);
+    final showEventInfo = eventKeys.length > 1;
 
-    // Teams
-    final teams = _dataStore.getTeamsForEvents(eventKeys);
-    for (final team in teams) {
-      if (team.teamNumber.toString().contains(query) ||
-          team.nickname.toLowerCase().contains(lowerQuery)) {
-        results.add(AutocompleteResult.team(team));
+    // Teams — deduplicated, with event info when multiple events
+    final teamsWithEvents = _dataStore.getDeduplicatedTeams(eventKeys);
+    for (final twe in teamsWithEvents) {
+      if (twe.team.teamNumber.toString().contains(query) ||
+          twe.team.nickname.toLowerCase().contains(lowerQuery)) {
+        results.add(AutocompleteResult.team(
+          twe.team,
+          eventInfo: showEventInfo
+              ? twe.eventShortNames.join(' \u00b7 ')
+              : null,
+        ));
       }
     }
 
     // Matches
     final matches = _dataStore.getMatchesWithVideosFiltered(eventKeys);
     for (final mwv in matches) {
-      if (mwv.match.displayName.toLowerCase().contains(lowerQuery)) {
-        results.add(AutocompleteResult.match(mwv));
-      } else if (numQuery != null && mwv.match.matchNumber == numQuery) {
-        results.add(AutocompleteResult.match(mwv));
+      if (mwv.match.displayName.toLowerCase().contains(lowerQuery) ||
+          (numQuery != null && mwv.match.matchNumber == numQuery)) {
+        results.add(AutocompleteResult.match(
+          mwv,
+          eventInfo: showEventInfo ? mwv.eventShortName : null,
+        ));
       }
     }
 
     // Alliances
     final alliances = _dataStore.getAlliancesForEvents(eventKeys);
+    final eventNameMap = <String, String>{};
+    if (showEventInfo) {
+      for (final e in _dataStore.events) {
+        eventNameMap[e.eventKey] = e.shortName;
+      }
+    }
     for (final alliance in alliances) {
       if (alliance.name.toLowerCase().contains(lowerQuery) ||
           alliance.allianceNumber.toString() == query) {
-        results.add(AutocompleteResult.alliance(alliance));
+        results.add(AutocompleteResult.alliance(
+          alliance,
+          eventInfo: showEventInfo
+              ? eventNameMap[alliance.eventKey] ?? alliance.eventKey
+              : null,
+        ));
       }
     }
 
@@ -345,6 +379,66 @@ class _MainScreenState extends State<MainScreen> {
     return '${time.month}/${time.day} $h:$m$amPm';
   }
 
+  Widget _buildEventSubTabs() {
+    final eventKeys = _dataStore.settings.selectedEventKeys;
+    final yourTeamNumber = _dataStore.settings.teamNumber;
+
+    // Build event short name map
+    final eventNames = <String, String>{};
+    for (final e in _dataStore.events) {
+      eventNames[e.eventKey] = e.shortName;
+    }
+
+    // Clamp index
+    final clampedIndex = _selectedEventIndex.clamp(0, eventKeys.length - 1);
+
+    return Container(
+      decoration: BoxDecoration(
+        border: Border(
+          top: BorderSide(
+            color: Theme.of(context).dividerColor.withValues(alpha: 0.15),
+          ),
+        ),
+      ),
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: SizedBox(
+        height: 40,
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          itemCount: eventKeys.length,
+          itemBuilder: (context, index) {
+            final eventKey = eventKeys[index];
+            final isSelected = index == clampedIndex;
+            final label = eventNames[eventKey] ?? eventKey;
+
+            // Bold if our team has data in this event
+            final hasOurData = yourTeamNumber != null &&
+                _dataStore
+                    .getMatchesForTeam(yourTeamNumber, [eventKey]).isNotEmpty;
+
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: ChoiceChip(
+                label: Text(
+                  label,
+                  style: TextStyle(
+                    fontWeight: hasOurData ? FontWeight.bold : null,
+                  ),
+                ),
+                selected: isSelected,
+                showCheckmark: false,
+                onSelected: (_) =>
+                    setState(() => _selectedEventIndex = index),
+                visualDensity: VisualDensity.compact,
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
@@ -419,6 +513,7 @@ class _MainScreenState extends State<MainScreen> {
               // m9: TBA refetch button with last sync time
               _buildTbaRefetchButton(),
               IconButton(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 icon: Icon(
                   _dataStore.settings.recordedMatchesOnly
                       ? Icons.videocam
@@ -441,6 +536,7 @@ class _MainScreenState extends State<MainScreen> {
               ),
               SyncButton(dataStore: _dataStore),
               IconButton(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 icon: const Icon(Icons.settings),
                 tooltip: 'Settings',
                 onPressed: () {
@@ -458,53 +554,73 @@ class _MainScreenState extends State<MainScreen> {
               ),
             ],
           ),
-          body: Stack(
+          body: Column(
             children: [
-              if (_isAutoLoading)
-                const Center(child: CircularProgressIndicator())
-              else
-                IndexedStack(
-                  index: _selectedTab,
+              Expanded(
+                child: Stack(
                   children: [
-                    SearchTab(
-                      dataStore: _dataStore,
-                      chips: _chips,
-                      filterMode: _searchFilterMode,
-                      onMatchTap: _onMatchTap,
-                    ),
-                    TeamsTab(
-                      dataStore: _dataStore,
-                      onTeamTap: _onTeamTap,
-                    ),
-                    MatchesTab(
-                      dataStore: _dataStore,
-                      onMatchTap: _onMatchTap,
-                    ),
-                    if (_showAlliances)
-                      AlliancesTab(
-                        dataStore: _dataStore,
-                        onAllianceTap: _onAllianceTap,
+                    if (_isAutoLoading)
+                      const Center(child: CircularProgressIndicator())
+                    else
+                      IndexedStack(
+                        index: _selectedTab,
+                        children: [
+                          SearchTab(
+                            dataStore: _dataStore,
+                            chips: _chips,
+                            filterMode: _searchFilterMode,
+                            onMatchTap: _onMatchTap,
+                          ),
+                          TeamsTab(
+                            dataStore: _dataStore,
+                            onTeamTap: _onTeamTap,
+                            selectedEventIndex: _selectedEventIndex,
+                          ),
+                          MatchesTab(
+                            dataStore: _dataStore,
+                            onMatchTap: _onMatchTap,
+                            selectedEventIndex: _selectedEventIndex,
+                          ),
+                          if (_showAlliances)
+                            AlliancesTab(
+                              dataStore: _dataStore,
+                              onAllianceTap: _onAllianceTap,
+                              selectedEventIndex: _selectedEventIndex,
+                            ),
+                        ],
+                      ),
+                    if (_showAutocomplete && _autocompleteResults.isNotEmpty)
+                      Positioned(
+                        top: 0,
+                        left: 16,
+                        right: 16,
+                        child: AutocompleteOverlay(
+                          results: _autocompleteResults,
+                          onResultTap: _onAutocompleteResultTap,
+                        ),
                       ),
                   ],
                 ),
-              if (_showAutocomplete && _autocompleteResults.isNotEmpty)
-                Positioned(
-                  top: 0,
-                  left: 16,
-                  right: 16,
-                  child: AutocompleteOverlay(
-                    results: _autocompleteResults,
-                    onResultTap: _onAutocompleteResultTap,
-                  ),
-                ),
+              ),
+              // Event sub-tabs at the bottom (only for non-search tabs, multi-event)
+              if (_selectedTab != 0 && _dataStore.settings.selectedEventKeys.length > 1)
+                _buildEventSubTabs(),
             ],
           ),
           bottomNavigationBar: NavigationBar(
             selectedIndex: _selectedTab,
             onDestinationSelected: (index) {
               // m4: if tapping Search tab while already on it, focus the search bar
+              // Unfocus first if already focused (keyboard dismissed but focus retained)
               if (index == 0 && _selectedTab == 0) {
-                _searchFocusNode.requestFocus();
+                if (_searchFocusNode.hasFocus) {
+                  _searchFocusNode.unfocus();
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    _searchFocusNode.requestFocus();
+                  });
+                } else {
+                  _searchFocusNode.requestFocus();
+                }
               }
               setState(() {
                 _selectedTab = index;
@@ -569,7 +685,7 @@ class _MainScreenState extends State<MainScreen> {
                 }
               : null,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -589,6 +705,7 @@ class _MainScreenState extends State<MainScreen> {
     }
 
     return IconButton(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       icon: icon,
       tooltip: tooltip,
       onPressed: hasEvents && !_isTbaSyncing

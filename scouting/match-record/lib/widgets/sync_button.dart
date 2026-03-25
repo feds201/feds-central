@@ -11,6 +11,7 @@ class SyncButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconButton(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       icon: const Icon(Icons.sync),
       tooltip: 'Sync',
       onPressed: () {

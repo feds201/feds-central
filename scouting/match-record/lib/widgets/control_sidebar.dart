@@ -92,11 +92,7 @@ class ControlSidebar extends StatelessWidget {
     }
 
     buttons.addAll([
-      _buildItem(
-        icon: isPlaying ? Icons.pause : Icons.play_arrow,
-        label: isPlaying ? 'Pause' : 'Play',
-        onPressed: onPlayPause,
-      ),
+      _buildPlayPauseItem(),
       _buildItem(
         icon: Icons.replay_10,
         label: '-10s',
@@ -384,18 +380,68 @@ class ControlSidebar extends StatelessWidget {
     );
   }
 
+  Widget _buildPlayPauseItem() {
+    final icon = isPlaying ? Icons.pause : Icons.play_arrow;
+    final label = isPlaying ? 'Pause' : 'Play';
+
+    if (!_expanded) {
+      return Container(
+        decoration: BoxDecoration(
+          color: const Color(0xFF2A2A2A),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: IconButton(
+          icon: Icon(icon),
+          tooltip: label,
+          onPressed: onPlayPause,
+          color: Colors.white,
+          iconSize: 28,
+          constraints: const BoxConstraints(minWidth: 56, minHeight: 56),
+        ),
+      );
+    }
+
+    return InkWell(
+      onTap: onPlayPause,
+      child: Container(
+        decoration: BoxDecoration(
+          color: const Color(0xFF2A2A2A),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 48),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
+            child: Row(
+              children: [
+                Icon(icon, color: Colors.white, size: 24),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    label,
+                    style: const TextStyle(color: Colors.white, fontSize: 14),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildDrawItem() {
-    IconData icon;
-    String label;
-    Color? activeColor;
+    // Drawing is always active when paused (no "off" state).
+    // drawingColor is null only while playing (drawing disabled).
+    final IconData icon;
+    final String label;
+    final Color activeColor;
 
     switch (drawingColor) {
       case null:
-        icon = Icons.edit_off;
-        label = 'Draw';
-        activeColor = null;
       case DrawingColor.red:
-        icon = Icons.edit;
+        icon = isPaused ? Icons.edit : Icons.edit_off;
         label = 'Red draw';
         activeColor = Colors.red;
       case DrawingColor.blue:
@@ -405,14 +451,13 @@ class ControlSidebar extends StatelessWidget {
     }
 
     final isEnabled = isPaused;
-    final isActive = drawingColor != null;
 
     if (!_expanded) {
       return IconButton(
         icon: Icon(icon),
         tooltip: label,
         onPressed: isEnabled ? onToggleDrawing : null,
-        color: activeColor ?? Colors.white,
+        color: isPaused ? activeColor : Colors.white,
         disabledColor: Colors.white38,
         iconSize: 28,
         constraints: const BoxConstraints(minWidth: 56, minHeight: 56),
@@ -421,9 +466,7 @@ class ControlSidebar extends StatelessWidget {
 
     final color = !isEnabled
         ? Colors.white38
-        : isActive
-            ? (activeColor ?? Colors.white)
-            : Colors.white;
+        : activeColor;
 
     return InkWell(
       onTap: isEnabled ? onToggleDrawing : null,

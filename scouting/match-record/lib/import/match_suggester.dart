@@ -211,7 +211,7 @@ class MatchSuggester {
     List<Match> schedule,
   ) {
     final eventKey =
-        TestFlags.forceEventId ? TestFlags.forcedEventId : '';
+        TestFlags.forceEventId ? TestFlags.forcedEventIds.last : '';
 
     final match1Key = '${eventKey}_qm${TestFlags.sampleMatch1Number}';
     final match2Key = '${eventKey}_qm${TestFlags.sampleMatch2Number}';

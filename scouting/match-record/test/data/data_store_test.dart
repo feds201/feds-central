@@ -834,4 +834,83 @@ void main() {
       expect(persisted.settings.teamNumber, 201);
     });
   });
+
+  group('getDeduplicatedTeams', () {
+    test('returns one entry per team number across events', () async {
+      await store.setEvents([
+        makeEvent(key: '2026micmp1'),
+        Event(
+          eventKey: '2026micmp2',
+          name: 'Waterford',
+          shortName: 'Wat',
+          startDate: DateTime(2026, 4, 10),
+          endDate: DateTime(2026, 4, 12),
+          playoffType: 10,
+          timezone: 'America/Detroit',
+        ),
+      ]);
+      await store.setTeamsForEvent('2026micmp1', const [
+        Team(eventKey: '2026micmp1', teamNumber: 201, nickname: 'FEDS'),
+        Team(eventKey: '2026micmp1', teamNumber: 100, nickname: 'Bots'),
+      ]);
+      await store.setTeamsForEvent('2026micmp2', const [
+        Team(eventKey: '2026micmp2', teamNumber: 201, nickname: 'FEDS'),
+        Team(eventKey: '2026micmp2', teamNumber: 300, nickname: 'Gears'),
+      ]);
+
+      final result =
+          store.getDeduplicatedTeams(['2026micmp1', '2026micmp2']);
+
+      expect(result.length, 3, reason: 'Team 201 appears in both events but should be deduplicated');
+
+      final team201 = result.firstWhere((t) => t.team.teamNumber == 201);
+      expect(team201.eventShortNames, hasLength(2));
+      expect(team201.eventShortNames, contains('Mid'));
+      expect(team201.eventShortNames, contains('Wat'));
+
+      final team100 = result.firstWhere((t) => t.team.teamNumber == 100);
+      expect(team100.eventShortNames, hasLength(1));
+    });
+
+    test('returns empty list when no teams exist', () {
+      final result = store.getDeduplicatedTeams(['2026mimid']);
+      expect(result, isEmpty);
+    });
+
+    test('single event produces single-element eventShortNames', () async {
+      await store.setEvents([makeEvent()]);
+      await store.setTeamsForEvent('2026mimid', const [
+        Team(eventKey: '2026mimid', teamNumber: 201, nickname: 'FEDS'),
+      ]);
+
+      final result = store.getDeduplicatedTeams(['2026mimid']);
+      expect(result.length, 1);
+      expect(result.first.eventShortNames, ['Mid']);
+    });
+
+    test('uses event key as fallback when event not in store', () async {
+      await store.setTeamsForEvent('unknown_event', const [
+        Team(eventKey: 'unknown_event', teamNumber: 201, nickname: 'FEDS'),
+      ]);
+
+      final result = store.getDeduplicatedTeams(['unknown_event']);
+      expect(result.length, 1);
+      expect(result.first.eventShortNames, ['unknown_event']);
+    });
+
+    test('does not duplicate event short names for same team', () async {
+      await store.setEvents([makeEvent()]);
+      // Same team listed twice for same event (shouldn't happen normally,
+      // but dedup should handle it gracefully)
+      await store.setTeamsForEvent('2026mimid', const [
+        Team(eventKey: '2026mimid', teamNumber: 201, nickname: 'FEDS'),
+        Team(eventKey: '2026mimid', teamNumber: 201, nickname: 'FEDS'),
+      ]);
+
+      final result = store.getDeduplicatedTeams(['2026mimid']);
+      expect(result.length, 1);
+      expect(result.first.eventShortNames, hasLength(1),
+          reason: 'Same event short name should not be duplicated');
+    });
+  });
 }

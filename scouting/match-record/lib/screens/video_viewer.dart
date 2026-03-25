@@ -10,7 +10,7 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 import '../data/data_store.dart';
 import '../data/models.dart';
 import '../util/constants.dart';
-import '../viewer/coordinate_transform.dart';
+
 import '../viewer/drawing_controller.dart';
 import '../viewer/scrub_controller.dart';
 import '../viewer/sync_engine.dart';
@@ -80,7 +80,7 @@ class _VideoViewerState extends State<VideoViewer> {
   late ViewMode _viewMode;
   late bool _sidesSwapped;
   bool _isPlaying = false;
-  DrawingColor? _drawingColor; // null = off, red/blue = active drawing mode
+  DrawingColor? _drawingColor; // null while playing, red/blue while paused
   bool _isScrubBarDragging = false;
   bool _isFingerScrubbing = false;
   bool _wasPlayingBeforeScrub = false;
@@ -110,11 +110,16 @@ class _VideoViewerState extends State<VideoViewer> {
   final _blueZoomController = TransformationController();
   final _fullZoomController = TransformationController();
 
-  // Track which pane is being drawn on (for cross-pane detection)
-  int? _activeDrawingPointer;
-  bool? _activeDrawingOnLeft;
+  // Unified pointer tracking for the top-level Listener
+  int? _activePointer; // pointer ID for 1-finger scrub or draw
+  bool _activePointerIsScrub = false; // true = scrub, false = draw
+  bool? _activeDrawingOnLeft; // which pane is being drawn on (dual mode)
+  double? _scrubStartX; // initial X for scrub delta calculation
 
-  // Global keys to get pane positions for coordinate transform
+  // Gesture layer width (full video area) for scrub calculations
+  double _gestureLayerWidth = 1.0;
+
+  // Global keys for pane positions (used for chrome overlay + drawing hit-test)
   final _leftPaneKey = GlobalKey();
   final _rightPaneKey = GlobalKey();
   final _singlePaneKey = GlobalKey();
@@ -237,7 +242,13 @@ class _VideoViewerState extends State<VideoViewer> {
               _redDrawingController.setOpacity(opacity);
               _blueDrawingController.setOpacity(opacity);
               _fullDrawingController.setOpacity(opacity);
-              if (playing) _drawingColor = null;
+              // Auto-enable drawing on pause, disable on play
+              if (!playing) {
+                _drawingColor ??= DrawingColor.red;
+                for (final c in _activeDrawingControllers) {
+                  c.setColor(_drawingColor!);
+                }
+              }
             });
           }
         }),
@@ -330,7 +341,10 @@ class _VideoViewerState extends State<VideoViewer> {
     if (available.length <= 1) return;
     final currentIndex = available.indexOf(_viewMode);
     final nextIndex = (currentIndex + 1) % available.length;
+    final oldMode = _viewMode;
     setState(() => _viewMode = available[nextIndex]);
+    debugPrint('[VIDEO_DEBUG] View mode: $oldMode → $_viewMode '
+        '(redManual=$_redManuallyRotated, blueManual=$_blueManuallyRotated)');
     // Reset zoom when switching view modes
     _redZoomController.value = Matrix4.identity();
     _blueZoomController.value = Matrix4.identity();
@@ -409,44 +423,125 @@ class _VideoViewerState extends State<VideoViewer> {
     }
   }
 
-  // --- Scrubbing ---
+  // --- Unified Pointer Handling (Scrub + Draw) ---
 
-  void _onScrubStart() {
-    _isFingerScrubbing = true;
-    _wasPlayingBeforeScrub = _isPlaying;
-    _scrubBasePosition = _syncEngine?.intendedEarlierPosition ?? _position;
+  void _onPointerDown(PointerDownEvent event) {
+    // Ignore if we already have an active pointer (multi-touch handled by
+    // InteractiveViewer via gesture arena)
+    if (_activePointer != null) return;
+
+    _activePointer = event.pointer;
+
     if (_isPlaying) {
+      // 1-finger while playing = scrub
+      _activePointerIsScrub = true;
+      _scrubStartX = event.position.dx;
+      _wasPlayingBeforeScrub = true;
+      _isFingerScrubbing = true;
+      _scrubBasePosition = _syncEngine?.intendedEarlierPosition ?? _position;
+
+      // Pause players for scrub (playback suspended, not a user pause)
       if (_syncEngine != null) {
         _syncEngine!.pauseBoth();
       } else {
         (_redPlayer ?? _bluePlayer ?? _fullPlayer)?.pause();
       }
-    }
 
-    // Start coalescing timer for smooth finger scrubbing
-    _scrubController.startCoalescing(
-      intervalMs: widget.dataStore.settings.scrubCoalescingIntervalMs,
-      onTick: _onScrubCoalescingTick,
-    );
+      // Start coalescing timer for smooth finger scrubbing
+      _scrubController.startCoalescing(
+        intervalMs: widget.dataStore.settings.scrubCoalescingIntervalMs,
+        onTick: _onScrubCoalescingTick,
+      );
+    } else {
+      // 1-finger while paused = draw
+      _activePointerIsScrub = false;
+      if (_drawingColor == null) return;
+
+      final hit = _hitTestPane(event.position);
+      if (hit == null) return;
+
+      _activeDrawingOnLeft = hit.isLeft;
+      hit.drawingController.onPointerDown(event.position);
+
+      // Push no-op to the other controller in dual mode to keep undo stacks synced
+      if (_viewMode == ViewMode.both) {
+        final otherController = hit.isLeft
+            ? (_sidesSwapped ? _redDrawingController : _blueDrawingController)
+            : (_sidesSwapped ? _blueDrawingController : _redDrawingController);
+        otherController.pushNoOp();
+      }
+    }
   }
 
-  void _onScrubUpdate(double deltaX, double paneWidth) {
-    final offsetMs = ScrubController.computeScrubOffsetMs(
-      deltaX,
-      paneWidth,
-      exponent: widget.dataStore.settings.scrubExponent,
-      maxRangeMs: widget.dataStore.settings.scrubMaxRangeMs,
-    );
+  void _onPointerMove(PointerMoveEvent event) {
+    if (event.pointer != _activePointer) return;
 
-    final baseMs = _scrubBasePosition.inMilliseconds;
-    final targetMs = (baseMs + offsetMs).clamp(0, _duration.inMilliseconds);
-    final target = Duration(milliseconds: targetMs);
+    if (_activePointerIsScrub) {
+      // Scrub: compute offset using full gesture layer width
+      if (_scrubStartX == null) return;
+      final deltaX = event.position.dx - _scrubStartX!;
+      final offsetMs = ScrubController.computeScrubOffsetMs(
+        deltaX,
+        _gestureLayerWidth,
+        exponent: widget.dataStore.settings.scrubExponent,
+        maxRangeMs: widget.dataStore.settings.scrubMaxRangeMs,
+      );
 
-    // Update UI immediately for responsiveness
-    setState(() => _position = target);
+      final baseMs = _scrubBasePosition.inMilliseconds;
+      final targetMs = (baseMs + offsetMs).clamp(0, _duration.inMilliseconds);
+      final target = Duration(milliseconds: targetMs);
 
-    // Store desired position — coalescing timer will dispatch the seek
-    _scrubController.updateDesiredPosition(target);
+      // Update UI immediately for responsiveness
+      setState(() => _position = target);
+
+      // Store desired position — coalescing timer will dispatch the seek
+      _scrubController.updateDesiredPosition(target);
+    } else {
+      // Draw: continue stroke on whichever controller it started on
+      if (_drawingColor == null || _activeDrawingOnLeft == null) return;
+
+      final controller = _viewMode == ViewMode.both
+          ? (_activeDrawingOnLeft!
+              ? (_sidesSwapped ? _blueDrawingController : _redDrawingController)
+              : (_sidesSwapped ? _redDrawingController : _blueDrawingController))
+          : _activeDrawingControllers.first;
+      controller.onPointerMove(event.position);
+    }
+  }
+
+  void _onPointerUp(PointerUpEvent event) {
+    if (event.pointer != _activePointer) return;
+
+    if (_activePointerIsScrub) {
+      _isFingerScrubbing = false;
+
+      // Stop coalescing timer and do a final seek if needed
+      final finalPosition = _scrubController.stopCoalescing();
+      if (finalPosition != null) {
+        _onScrubCoalescingTick(finalPosition);
+      }
+
+      _scrubController.reset();
+      _scrubStartX = null;
+
+      if (_wasPlayingBeforeScrub) {
+        _wasPlayingBeforeScrub = false;
+        _togglePlayPause();
+      }
+    } else {
+      // Finalize drawing stroke
+      if (_activeDrawingOnLeft != null) {
+        final controller = _viewMode == ViewMode.both
+            ? (_activeDrawingOnLeft!
+                ? (_sidesSwapped ? _blueDrawingController : _redDrawingController)
+                : (_sidesSwapped ? _redDrawingController : _blueDrawingController))
+            : _activeDrawingControllers.first;
+        controller.onPointerUp();
+      }
+      _activeDrawingOnLeft = null;
+    }
+
+    _activePointer = null;
   }
 
   /// Called by the coalescing timer at fixed intervals.
@@ -465,40 +560,20 @@ class _VideoViewerState extends State<VideoViewer> {
     }
   }
 
-  void _onScrubEnd() {
-    _isFingerScrubbing = false;
-
-    // Stop coalescing timer and do a final seek if needed
-    final finalPosition = _scrubController.stopCoalescing();
-    if (finalPosition != null) {
-      _onScrubCoalescingTick(finalPosition);
-    }
-
-    _scrubController.reset();
-    if (_wasPlayingBeforeScrub) {
-      _wasPlayingBeforeScrub = false;
-      _togglePlayPause();
-    }
-  }
-
   // --- Drawing ---
 
-  void _toggleDrawing() {
+  void _cycleDrawingColor() {
     setState(() {
-      // Cycle: off → red → blue → off
+      // Cycle: red → blue → red → blue (no "off" state)
       switch (_drawingColor) {
         case null:
+        case DrawingColor.blue:
           _drawingColor = DrawingColor.red;
         case DrawingColor.red:
           _drawingColor = DrawingColor.blue;
-        case DrawingColor.blue:
-          _drawingColor = null;
       }
-      // Update all drawing controllers with the new color
-      if (_drawingColor != null) {
-        for (final c in _activeDrawingControllers) {
-          c.setColor(_drawingColor!);
-        }
+      for (final c in _activeDrawingControllers) {
+        c.setColor(_drawingColor!);
       }
     });
   }
@@ -544,158 +619,83 @@ class _VideoViewerState extends State<VideoViewer> {
     }
   }
 
-  /// Determine which pane a screen point falls in and return its info.
-  /// Returns null if the point is outside all panes.
+  /// Get the screen-space bounds of the chrome button area for a pane.
+  /// Returns null if the button bounds can't be calculated.
+  Rect? _getChromeButtonBounds(GlobalKey paneKey) {
+    final paneBox = paneKey.currentContext?.findRenderObject() as RenderBox?;
+    if (paneBox == null) return null;
+
+    final paneGlobal = paneBox.localToGlobal(Offset.zero);
+    final paneSize = paneBox.size;
+
+    // Button is positioned at the top-right of the pane
+    // Buttons are 40x40 each, positioned at top + 2, right edge - 2
+    final buttonWidth = 84.0; // 40 + 40 + 2 gap (max for both buttons)
+    final buttonHeight = 40.0;
+    final buttonLeft = paneGlobal.dx + paneSize.width - 2 - buttonWidth;
+    final buttonTop = paneGlobal.dy + 2;
+
+    return Rect.fromLTWH(buttonLeft, buttonTop, buttonWidth, buttonHeight);
+  }
+
+  /// Determine which pane a screen point falls in and return its drawing
+  /// controller. Screen-space drawing: the point is used as-is, no transforms.
+  /// Excludes chrome button areas from hit detection.
   _PaneHitInfo? _hitTestPane(Offset screenPoint) {
     if (_viewMode == ViewMode.both) {
       // Check left pane
-      final leftInfo = _hitTestGlobalKey(
-        _leftPaneKey,
-        screenPoint,
-        _sidesSwapped ? _blueZoomController : _redZoomController,
-        _sidesSwapped ? _blueQuarterTurns : _redQuarterTurns,
-        _sidesSwapped ? _blueDrawingController : _redDrawingController,
-        isLeft: true,
-      );
-      if (leftInfo != null) return leftInfo;
+      final leftBox = _leftPaneKey.currentContext?.findRenderObject() as RenderBox?;
+      if (leftBox != null) {
+        final topLeft = leftBox.localToGlobal(Offset.zero);
+        final paneRect = topLeft & leftBox.size;
 
+        // Exclude chrome button area
+        final buttonBounds = _getChromeButtonBounds(_leftPaneKey);
+        if (buttonBounds != null && buttonBounds.contains(screenPoint)) {
+          // Point is in button area, not a pane hit
+        } else if (paneRect.contains(screenPoint)) {
+          return _PaneHitInfo(
+            drawingController: _sidesSwapped ? _blueDrawingController : _redDrawingController,
+            isLeft: true,
+          );
+        }
+      }
       // Check right pane
-      final rightInfo = _hitTestGlobalKey(
-        _rightPaneKey,
-        screenPoint,
-        _sidesSwapped ? _redZoomController : _blueZoomController,
-        _sidesSwapped ? _redQuarterTurns : _blueQuarterTurns,
-        _sidesSwapped ? _redDrawingController : _blueDrawingController,
-        isLeft: false,
-      );
-      return rightInfo;
+      final rightBox = _rightPaneKey.currentContext?.findRenderObject() as RenderBox?;
+      if (rightBox != null) {
+        final topLeft = rightBox.localToGlobal(Offset.zero);
+        final paneRect = topLeft & rightBox.size;
+
+        // Exclude chrome button area
+        final buttonBounds = _getChromeButtonBounds(_rightPaneKey);
+        if (buttonBounds != null && buttonBounds.contains(screenPoint)) {
+          // Point is in button area, not a pane hit
+        } else if (paneRect.contains(screenPoint)) {
+          return _PaneHitInfo(
+            drawingController: _sidesSwapped ? _redDrawingController : _blueDrawingController,
+            isLeft: false,
+          );
+        }
+      }
+      return null;
     } else {
-      // Single pane mode
+      // Single pane mode — check and exclude button area
+      final buttonBounds = _getChromeButtonBounds(_singlePaneKey);
+      if (buttonBounds != null && buttonBounds.contains(screenPoint)) {
+        return null; // Point is in button area
+      }
+
       final controller = switch (_viewMode) {
         ViewMode.redOnly => _redDrawingController,
         ViewMode.blueOnly => _blueDrawingController,
         ViewMode.fullOnly => _fullDrawingController,
         ViewMode.both => _redDrawingController, // unreachable
       };
-      final zoomController = switch (_viewMode) {
-        ViewMode.redOnly => _redZoomController,
-        ViewMode.blueOnly => _blueZoomController,
-        ViewMode.fullOnly => _fullZoomController,
-        ViewMode.both => _redZoomController, // unreachable
-      };
-      final quarterTurns = switch (_viewMode) {
-        ViewMode.redOnly => _redQuarterTurns,
-        ViewMode.blueOnly => _blueQuarterTurns,
-        ViewMode.fullOnly => _fullQuarterTurns,
-        ViewMode.both => 0, // unreachable
-      };
-      return _hitTestGlobalKey(
-        _singlePaneKey,
-        screenPoint,
-        zoomController,
-        quarterTurns,
-        controller,
+      return _PaneHitInfo(
+        drawingController: controller,
         isLeft: true,
       );
     }
-  }
-
-  _PaneHitInfo? _hitTestGlobalKey(
-    GlobalKey key,
-    Offset screenPoint,
-    TransformationController zoomController,
-    int quarterTurns,
-    DrawingController drawingController, {
-    required bool isLeft,
-  }) {
-    final renderBox = key.currentContext?.findRenderObject() as RenderBox?;
-    if (renderBox == null) return null;
-    final paneTopLeft = renderBox.localToGlobal(Offset.zero);
-    final paneSize = renderBox.size;
-    final paneRect = paneTopLeft & paneSize;
-    if (!paneRect.contains(screenPoint)) return null;
-
-    final paneLocal = screenPoint - paneTopLeft;
-    final videoSpace = CoordinateTransform.toVideoSpace(
-      paneLocal,
-      zoomController.value,
-      quarterTurns,
-      paneSize,
-    );
-
-    return _PaneHitInfo(
-      drawingController: drawingController,
-      videoSpacePoint: videoSpace,
-      isLeft: isLeft,
-    );
-  }
-
-  void _onDrawPointerDown(PointerDownEvent event) {
-    if (_drawingColor == null) return;
-    // Only handle single-finger drawing
-    if (event.down && _activeDrawingPointer != null) return;
-
-    final hit = _hitTestPane(event.position);
-    if (hit == null) return;
-
-    _activeDrawingPointer = event.pointer;
-    _activeDrawingOnLeft = hit.isLeft;
-    hit.drawingController.onPointerDown(hit.videoSpacePoint);
-
-    // Push no-op to the other controller in dual mode to keep undo stacks synced
-    if (_viewMode == ViewMode.both) {
-      final otherController = hit.isLeft
-          ? (_sidesSwapped ? _redDrawingController : _blueDrawingController)
-          : (_sidesSwapped ? _blueDrawingController : _redDrawingController);
-      otherController.pushNoOp();
-    }
-  }
-
-  void _onDrawPointerMove(PointerMoveEvent event) {
-    if (event.pointer != _activeDrawingPointer) return;
-
-    final hit = _hitTestPane(event.position);
-    if (hit == null) return;
-
-    // If finger crossed pane boundary in dual mode, finalize on old pane
-    // and start new stroke on the new pane
-    if (_viewMode == ViewMode.both && hit.isLeft != _activeDrawingOnLeft) {
-      // Finalize stroke on the originating pane
-      final oldController = _activeDrawingOnLeft!
-          ? (_sidesSwapped ? _blueDrawingController : _redDrawingController)
-          : (_sidesSwapped ? _redDrawingController : _blueDrawingController);
-      oldController.onPointerUp();
-
-      // Start new stroke on destination pane
-      _activeDrawingOnLeft = hit.isLeft;
-      hit.drawingController.onPointerDown(hit.videoSpacePoint);
-
-      // Push no-op to the other controller
-      final otherController = hit.isLeft
-          ? (_sidesSwapped ? _redDrawingController : _blueDrawingController)
-          : (_sidesSwapped ? _blueDrawingController : _redDrawingController);
-      otherController.pushNoOp();
-      return;
-    }
-
-    hit.drawingController.onPointerMove(hit.videoSpacePoint);
-  }
-
-  void _onDrawPointerUp(PointerUpEvent event) {
-    if (event.pointer != _activeDrawingPointer) return;
-
-    // Finalize stroke on the active pane
-    if (_activeDrawingOnLeft != null) {
-      final controller = _viewMode == ViewMode.both
-          ? (_activeDrawingOnLeft!
-              ? (_sidesSwapped ? _blueDrawingController : _redDrawingController)
-              : (_sidesSwapped ? _redDrawingController : _blueDrawingController))
-          : _activeDrawingControllers.first;
-      controller.onPointerUp();
-    }
-
-    _activeDrawingPointer = null;
-    _activeDrawingOnLeft = null;
   }
 
   // --- Rotation ---
@@ -705,12 +705,15 @@ class _VideoViewerState extends State<VideoViewer> {
       if (isFull) {
         _fullQuarterTurns = (_fullQuarterTurns + 1) % 4;
         _fullManuallyRotated = true;
+        debugPrint('[VIDEO_DEBUG] FULL manual rotate → quarterTurns=$_fullQuarterTurns');
       } else if (isRed == true) {
         _redQuarterTurns = (_redQuarterTurns + 1) % 4;
         _redManuallyRotated = true;
+        debugPrint('[VIDEO_DEBUG] RED manual rotate → quarterTurns=$_redQuarterTurns');
       } else {
         _blueQuarterTurns = (_blueQuarterTurns + 1) % 4;
         _blueManuallyRotated = true;
+        debugPrint('[VIDEO_DEBUG] BLUE manual rotate → quarterTurns=$_blueQuarterTurns');
       }
     });
   }
@@ -748,10 +751,13 @@ class _VideoViewerState extends State<VideoViewer> {
   /// Listens to the player's width stream (fires when video opens).
   void _autoRotatePlayer(Player? player, {required bool isRed, bool isFull = false}) {
     if (player == null) return;
+    final tag = isFull ? 'FULL' : (isRed ? 'RED' : 'BLUE');
     _subscriptions.add(
       player.stream.width.listen((width) {
         final height = player.state.height;
         if (width != null && height != null && width > 0 && height > 0) {
+          debugPrint('[VIDEO_DEBUG] $tag media_kit reports: ${width}x$height '
+              '(${width > height ? "landscape" : "portrait"})');
           if (isFull) {
             _fullVideoWidth = width;
             _fullVideoHeight = height;
@@ -775,29 +781,38 @@ class _VideoViewerState extends State<VideoViewer> {
   void _updateAutoRotation() {
     setState(() {
       final isSingleMode = _viewMode != ViewMode.both;
+      debugPrint('[VIDEO_DEBUG] _updateAutoRotation: viewMode=$_viewMode, isSingleMode=$isSingleMode');
 
       if (!_redManuallyRotated &&
           _redVideoWidth != null &&
           _redVideoHeight != null) {
         final isLandscapeVideo = _redVideoWidth! > _redVideoHeight!;
+        final oldTurns = _redQuarterTurns;
         if (isSingleMode) {
-          // Single: wider should be horizontal — landscape videos need no rotation
           _redQuarterTurns = isLandscapeVideo ? 0 : 1;
         } else {
-          // Dual: wider should be vertical — landscape videos need rotation
           _redQuarterTurns = isLandscapeVideo ? 1 : 0;
         }
+        debugPrint('[VIDEO_DEBUG] RED auto-rotate: ${_redVideoWidth}x$_redVideoHeight '
+            'isLandscape=$isLandscapeVideo → quarterTurns=$_redQuarterTurns (was $oldTurns)');
+      } else if (_redManuallyRotated) {
+        debugPrint('[VIDEO_DEBUG] RED skipped (manually rotated), quarterTurns=$_redQuarterTurns');
       }
 
       if (!_blueManuallyRotated &&
           _blueVideoWidth != null &&
           _blueVideoHeight != null) {
         final isLandscapeVideo = _blueVideoWidth! > _blueVideoHeight!;
+        final oldTurns = _blueQuarterTurns;
         if (isSingleMode) {
           _blueQuarterTurns = isLandscapeVideo ? 0 : 1;
         } else {
           _blueQuarterTurns = isLandscapeVideo ? 1 : 0;
         }
+        debugPrint('[VIDEO_DEBUG] BLUE auto-rotate: ${_blueVideoWidth}x$_blueVideoHeight '
+            'isLandscape=$isLandscapeVideo → quarterTurns=$_blueQuarterTurns (was $oldTurns)');
+      } else if (_blueManuallyRotated) {
+        debugPrint('[VIDEO_DEBUG] BLUE skipped (manually rotated), quarterTurns=$_blueQuarterTurns');
       }
 
       // Full player is always displayed full-screen (single mode)
@@ -805,7 +820,10 @@ class _VideoViewerState extends State<VideoViewer> {
           _fullVideoWidth != null &&
           _fullVideoHeight != null) {
         final isLandscapeVideo = _fullVideoWidth! > _fullVideoHeight!;
+        final oldTurns = _fullQuarterTurns;
         _fullQuarterTurns = isLandscapeVideo ? 0 : 1;
+        debugPrint('[VIDEO_DEBUG] FULL auto-rotate: ${_fullVideoWidth}x$_fullVideoHeight '
+            'isLandscape=$isLandscapeVideo → quarterTurns=$_fullQuarterTurns (was $oldTurns)');
       }
     });
   }
@@ -840,8 +858,27 @@ class _VideoViewerState extends State<VideoViewer> {
       body: SafeArea(
         child: Row(
           children: [
-            // Video panes take remaining space
-            Expanded(child: _buildVideoPanesWithDrawing()),
+            // Video area with unified gesture handling
+            Expanded(
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  _gestureLayerWidth = constraints.maxWidth;
+                  return Listener(
+                    onPointerDown: _onPointerDown,
+                    onPointerMove: _onPointerMove,
+                    onPointerUp: _onPointerUp,
+                    behavior: HitTestBehavior.translucent,
+                    child: Stack(
+                      children: [
+                        Positioned.fill(child: _buildVideoLayout()),
+                        Positioned.fill(child: _buildDrawingLayer()),
+                        _buildChromeOverlay(),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
             // Vertical scrub bar between video and controls
             ScrubberBar(
               position: _position,
@@ -870,7 +907,7 @@ class _VideoViewerState extends State<VideoViewer> {
               onRewind10: _rewind10,
               onForward10: _forward10,
               onRestart: _restart,
-              onToggleDrawing: _toggleDrawing,
+              onToggleDrawing: _cycleDrawingColor,
               onUndo: _combinedUndo,
               onRedo: _combinedRedo,
               onClearDrawing: _combinedClear,
@@ -881,192 +918,9 @@ class _VideoViewerState extends State<VideoViewer> {
     );
   }
 
-  Widget _buildVideoPanesWithDrawing() {
-    return Stack(
-      children: [
-        Positioned.fill(child: _buildVideoPanes()),
-        // Drawing input layer — top-level Listener spanning all panes
-        if (_drawingColor != null)
-          Positioned.fill(
-            child: Listener(
-              onPointerDown: _onDrawPointerDown,
-              onPointerMove: _onDrawPointerMove,
-              onPointerUp: _onDrawPointerUp,
-              behavior: HitTestBehavior.translucent,
-              child: const SizedBox.expand(),
-            ),
-          ),
-      ],
-    );
-  }
+  // --- Video Layout (inside InteractiveViewer, subject to zoom/rotate) ---
 
-  /// Wraps a video pane in InteractiveViewer → Stack with:
-  /// - RotatedBox containing video + drawing overlay (rotates)
-  /// - Positioned buttons on top (don't rotate, but zoom with the video)
-  Widget _buildZoomablePane({
-    required GlobalKey paneKey,
-    required TransformationController zoomController,
-    required DrawingController drawingController,
-    required Player player,
-    required int quarterTurns,
-    required Color allianceColor,
-    required bool containsUserTeam,
-    required Widget videoPane,
-    VoidCallback? onRotate,
-    VoidCallback? onEdit,
-  }) {
-    return InteractiveViewer(
-      key: paneKey,
-      transformationController: zoomController,
-      panEnabled: false,
-      scaleEnabled: true,
-      minScale: 1.0,
-      maxScale: 5.0,
-      child: Stack(
-        children: [
-          // Video + drawing layer — rotates together
-          RotatedBox(
-            quarterTurns: quarterTurns,
-            child: Stack(
-              children: [
-                videoPane,
-                // Drawing canvas — sized to match the video's rendered rect
-                // so strokes align with video content at all rotation states
-                Positioned.fill(
-                  child: IgnorePointer(
-                    ignoring: true,
-                    child: StreamBuilder<int?>(
-                      stream: player.stream.width,
-                      initialData: player.state.width,
-                      builder: (context, widthSnap) {
-                        return StreamBuilder<int?>(
-                          stream: player.stream.height,
-                          initialData: player.state.height,
-                          builder: (context, heightSnap) {
-                            final videoWidth = widthSnap.data ?? 0;
-                            final videoHeight = heightSnap.data ?? 0;
-                            return LayoutBuilder(
-                              builder: (context, constraints) {
-                                return ListenableBuilder(
-                                  listenable: drawingController,
-                                  builder: (context, _) {
-                                    // Compute the video's rendered rect within
-                                    // the available space (aspect-ratio fitted)
-                                    final videoRect = _computeVideoRect(
-                                      paneSize: Size(
-                                        constraints.maxWidth,
-                                        constraints.maxHeight,
-                                      ),
-                                      videoWidth: videoWidth,
-                                      videoHeight: videoHeight,
-                                    );
-                                    return CustomPaint(
-                                      painter: _VideoAlignedStrokePainter(
-                                        strokes: drawingController.strokes,
-                                        currentStrokePoints:
-                                            drawingController.currentStrokePoints,
-                                        currentColor:
-                                            drawingController.currentColor,
-                                        opacity: drawingController.opacity,
-                                        videoRect: videoRect,
-                                      ),
-                                      size: Size(
-                                        constraints.maxWidth,
-                                        constraints.maxHeight,
-                                      ),
-                                    );
-                                  },
-                                );
-                              },
-                            );
-                          },
-                        );
-                      },
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          // Alliance color bar — outside rotation so it stays at the top
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              height: 3,
-              color: allianceColor,
-            ),
-          ),
-          // Star icon for user's team — outside rotation so it stays upright
-          if (containsUserTeam)
-            Positioned(
-              top: 6,
-              left: 6,
-              child: Icon(
-                Icons.star,
-                color: Colors.yellow.shade600,
-                size: 20,
-              ),
-            ),
-          // Rotate and edit buttons — outside rotation so they stay upright
-          Positioned(
-            top: 2,
-            right: 2,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (onRotate != null)
-                  _PaneOverlayButton(
-                    icon: Icons.rotate_90_degrees_cw,
-                    onTap: onRotate,
-                  ),
-                if (onRotate != null && onEdit != null)
-                  const SizedBox(width: 2),
-                if (onEdit != null)
-                  _PaneOverlayButton(
-                    icon: Icons.edit,
-                    onTap: onEdit,
-                  ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  /// Computes the rect where the video is actually rendered within the pane,
-  /// accounting for aspect-ratio fitting (letterboxing/pillarboxing).
-  static Rect _computeVideoRect({
-    required Size paneSize,
-    required int videoWidth,
-    required int videoHeight,
-  }) {
-    if (videoWidth <= 0 || videoHeight <= 0) {
-      // No video dimensions yet — assume full pane
-      return Offset.zero & paneSize;
-    }
-    final videoAspect = videoWidth / videoHeight;
-    final paneAspect = paneSize.width / paneSize.height;
-
-    double renderWidth, renderHeight;
-    if (videoAspect > paneAspect) {
-      // Video is wider than pane — pillarboxed (bars top/bottom)
-      renderWidth = paneSize.width;
-      renderHeight = paneSize.width / videoAspect;
-    } else {
-      // Video is taller than pane — letterboxed (bars left/right)
-      renderHeight = paneSize.height;
-      renderWidth = paneSize.height * videoAspect;
-    }
-
-    final dx = (paneSize.width - renderWidth) / 2;
-    final dy = (paneSize.height - renderHeight) / 2;
-    return Rect.fromLTWH(dx, dy, renderWidth, renderHeight);
-  }
-
-  Widget _buildVideoPanes() {
+  Widget _buildVideoLayout() {
     final redRec = widget.matchWithVideos.redRecording;
     final blueRec = widget.matchWithVideos.blueRecording;
     final fullRec = widget.matchWithVideos.fullRecording;
@@ -1084,23 +938,11 @@ class _VideoViewerState extends State<VideoViewer> {
       return _buildZoomablePane(
         paneKey: _singlePaneKey,
         zoomController: _fullZoomController,
-        drawingController: _fullDrawingController,
+
         player: _fullPlayer!,
+        videoController: _fullController!,
         quarterTurns: _fullQuarterTurns,
-        allianceColor: Colors.purple,
-        containsUserTeam: _containsUserTeam(fullRec),
-        onRotate: () => _rotatePane(isFull: true),
-        onEdit: _openEditMetadata,
-        videoPane: VideoPane(
-          player: _fullPlayer!,
-          videoController: _fullController!,
-          isDrawingMode: _drawingColor != null,
-          isWaiting: false,
-          countdownRemaining: Duration.zero,
-          onScrubStart: _onScrubStart,
-          onScrubUpdate: _onScrubUpdate,
-          onScrubEnd: _onScrubEnd,
-        ),
+        fit: BoxFit.contain,
       );
     }
 
@@ -1108,23 +950,17 @@ class _VideoViewerState extends State<VideoViewer> {
     if (_viewMode != ViewMode.both) {
       Player? player;
       VideoController? controller;
-      Color color;
-      Recording? recording;
-      bool isWaiting = false;
       bool isRed = true;
+      bool isWaiting = false;
 
       if (_viewMode == ViewMode.redOnly || (redRec != null && blueRec == null)) {
         player = _redPlayer;
         controller = _redController;
-        color = Colors.red;
-        recording = redRec;
         isWaiting = _isRedWaiting();
         isRed = true;
       } else {
         player = _bluePlayer;
         controller = _blueController;
-        color = Colors.blue;
-        recording = blueRec;
         isWaiting = _isBlueWaiting();
         isRed = false;
       }
@@ -1141,35 +977,20 @@ class _VideoViewerState extends State<VideoViewer> {
       return _buildZoomablePane(
         paneKey: _singlePaneKey,
         zoomController: isRed ? _redZoomController : _blueZoomController,
-        drawingController: isRed ? _redDrawingController : _blueDrawingController,
+
         player: player,
+        videoController: controller,
         quarterTurns: isRed ? _redQuarterTurns : _blueQuarterTurns,
-        allianceColor: color,
-        containsUserTeam: _containsUserTeam(recording),
-        onRotate: () => _rotatePane(isRed: isRed),
-        onEdit: _openEditMetadata,
-        videoPane: VideoPane(
-          player: player,
-          videoController: controller,
-          isDrawingMode: _drawingColor != null,
-          isWaiting: isWaiting,
-          countdownRemaining: _countdownRemaining,
-          onScrubStart: _onScrubStart,
-          onScrubUpdate: _onScrubUpdate,
-          onScrubEnd: _onScrubEnd,
-        ),
+        isWaiting: isWaiting,
+        fit: BoxFit.contain,
       );
     }
 
     // Dual video mode — red on left, blue on right (or swapped)
-    final leftColor = _sidesSwapped ? Colors.blue : Colors.red;
-    final rightColor = _sidesSwapped ? Colors.red : Colors.blue;
     final leftPlayer = _sidesSwapped ? _bluePlayer! : _redPlayer!;
     final rightPlayer = _sidesSwapped ? _redPlayer! : _bluePlayer!;
     final leftController = _sidesSwapped ? _blueController! : _redController!;
     final rightController = _sidesSwapped ? _redController! : _blueController!;
-    final leftRec = _sidesSwapped ? blueRec : redRec;
-    final rightRec = _sidesSwapped ? redRec : blueRec;
     final leftWaiting = _sidesSwapped ? _isBlueWaiting() : _isRedWaiting();
     final rightWaiting = _sidesSwapped ? _isRedWaiting() : _isBlueWaiting();
     final leftIsRed = !_sidesSwapped;
@@ -1181,50 +1002,231 @@ class _VideoViewerState extends State<VideoViewer> {
           child: _buildZoomablePane(
             paneKey: _leftPaneKey,
             zoomController: leftIsRed ? _redZoomController : _blueZoomController,
-            drawingController: leftIsRed ? _redDrawingController : _blueDrawingController,
+
             player: leftPlayer,
+            videoController: leftController,
             quarterTurns: leftIsRed ? _redQuarterTurns : _blueQuarterTurns,
-            allianceColor: leftColor,
-            containsUserTeam: _containsUserTeam(leftRec),
-            onRotate: () => _rotatePane(isRed: leftIsRed),
-            onEdit: _openEditMetadata,
-            videoPane: VideoPane(
-              player: leftPlayer,
-              videoController: leftController,
-              isDrawingMode: _drawingColor != null,
-              isWaiting: leftWaiting,
-              countdownRemaining: _countdownRemaining,
-              onScrubStart: _onScrubStart,
-              onScrubUpdate: _onScrubUpdate,
-              onScrubEnd: _onScrubEnd,
-            ),
+            isWaiting: leftWaiting,
+            fit: BoxFit.fitWidth,
           ),
         ),
         Expanded(
           child: _buildZoomablePane(
             paneKey: _rightPaneKey,
             zoomController: rightIsRed ? _redZoomController : _blueZoomController,
-            drawingController: rightIsRed ? _redDrawingController : _blueDrawingController,
+
             player: rightPlayer,
+            videoController: rightController,
             quarterTurns: rightIsRed ? _redQuarterTurns : _blueQuarterTurns,
-            allianceColor: rightColor,
-            containsUserTeam: _containsUserTeam(rightRec),
-            onRotate: () => _rotatePane(isRed: rightIsRed),
-            onEdit: _openEditMetadata,
-            videoPane: VideoPane(
-              player: rightPlayer,
-              videoController: rightController,
-              isDrawingMode: _drawingColor != null,
-              isWaiting: rightWaiting,
-              countdownRemaining: _countdownRemaining,
-              onScrubStart: _onScrubStart,
-              onScrubUpdate: _onScrubUpdate,
-              onScrubEnd: _onScrubEnd,
-            ),
+            isWaiting: rightWaiting,
+            fit: BoxFit.fitWidth,
           ),
         ),
       ],
     );
+  }
+
+  /// Wraps a video pane in InteractiveViewer → RotatedBox → VideoPane.
+  /// Drawing is handled by a separate screen-space layer (see _buildDrawingLayer).
+  /// Chrome is rendered separately in _buildChromeOverlay.
+  Widget _buildZoomablePane({
+    required GlobalKey paneKey,
+    required TransformationController zoomController,
+    required Player player,
+    required VideoController videoController,
+    required int quarterTurns,
+    required BoxFit fit,
+    bool isWaiting = false,
+  }) {
+    return InteractiveViewer(
+      key: paneKey,
+      transformationController: zoomController,
+      panEnabled: true,
+      scaleEnabled: true,
+      minScale: 1.0,
+      maxScale: 5.0,
+      child: RotatedBox(
+        quarterTurns: quarterTurns,
+        child: VideoPane(
+          player: player,
+          videoController: videoController,
+          isWaiting: isWaiting,
+          countdownRemaining: _countdownRemaining,
+          fit: fit,
+        ),
+      ),
+    );
+  }
+
+  // --- Chrome Overlay (outside InteractiveViewer, never zooms/rotates) ---
+
+  // --- Drawing Layer (screen-space, never zooms/rotates) ---
+
+  Widget _buildDrawingLayer() {
+    return IgnorePointer(
+      ignoring: true,
+      child: ListenableBuilder(
+        listenable: Listenable.merge(_activeDrawingControllers),
+        builder: (context, _) {
+          final controller = _activeDrawingControllers.first;
+          return CustomPaint(
+            painter: StrokePainter(
+              strokes: _activeDrawingControllers
+                  .expand((c) => c.strokes)
+                  .toList(),
+              currentStrokePoints: controller.currentStrokePoints,
+              currentColor: controller.currentColor,
+              opacity: controller.opacity,
+            ),
+            size: Size.infinite,
+          );
+        },
+      ),
+    );
+  }
+
+  // --- Chrome Overlay (outside InteractiveViewer, never zooms/rotates) ---
+
+  Widget _buildChromeOverlay() {
+    final children = <Widget>[];
+
+    if (_viewMode == ViewMode.both) {
+      final leftIsRed = !_sidesSwapped;
+      final rightIsRed = _sidesSwapped;
+      final leftColor = _sidesSwapped ? Colors.blue : Colors.red;
+      final rightColor = _sidesSwapped ? Colors.red : Colors.blue;
+      final leftRec = _sidesSwapped
+          ? widget.matchWithVideos.blueRecording
+          : widget.matchWithVideos.redRecording;
+      final rightRec = _sidesSwapped
+          ? widget.matchWithVideos.redRecording
+          : widget.matchWithVideos.blueRecording;
+
+      children.add(_buildPaneChrome(
+        paneKey: _leftPaneKey,
+        allianceColor: leftColor,
+        containsUserTeam: _containsUserTeam(leftRec),
+        onRotate: () => _rotatePane(isRed: leftIsRed),
+        onEdit: _openEditMetadata,
+      ));
+      children.add(_buildPaneChrome(
+        paneKey: _rightPaneKey,
+        allianceColor: rightColor,
+        containsUserTeam: _containsUserTeam(rightRec),
+        onRotate: () => _rotatePane(isRed: rightIsRed),
+        onEdit: _openEditMetadata,
+      ));
+    } else if (_viewMode == ViewMode.fullOnly) {
+      children.add(_buildPaneChrome(
+        paneKey: _singlePaneKey,
+        allianceColor: Colors.purple,
+        containsUserTeam: _containsUserTeam(widget.matchWithVideos.fullRecording),
+        onRotate: () => _rotatePane(isFull: true),
+        onEdit: _openEditMetadata,
+      ));
+    } else {
+      final isRed = _viewMode == ViewMode.redOnly;
+      final color = isRed ? Colors.red : Colors.blue;
+      final recording = isRed
+          ? widget.matchWithVideos.redRecording
+          : widget.matchWithVideos.blueRecording;
+      children.add(_buildPaneChrome(
+        paneKey: _singlePaneKey,
+        allianceColor: color,
+        containsUserTeam: _containsUserTeam(recording),
+        onRotate: () => _rotatePane(isRed: isRed),
+        onEdit: _openEditMetadata,
+      ));
+    }
+
+    return Stack(children: children);
+  }
+
+  /// Builds chrome elements (alliance bar, star, rotate/edit buttons) positioned
+  /// over a pane identified by its GlobalKey. These are outside InteractiveViewer
+  /// so they never zoom or rotate.
+  Widget _buildPaneChrome({
+    required GlobalKey paneKey,
+    required Color allianceColor,
+    required bool containsUserTeam,
+    VoidCallback? onRotate,
+    VoidCallback? onEdit,
+  }) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final renderBox = paneKey.currentContext?.findRenderObject() as RenderBox?;
+        if (renderBox == null) {
+          // First frame — pane hasn't been laid out yet. Will render next frame.
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) setState(() {});
+          });
+          return const SizedBox.shrink();
+        }
+
+        // Get pane position relative to this Stack (which is the chrome overlay's parent)
+        final stackRenderBox = context.findRenderObject() as RenderBox?;
+        if (stackRenderBox == null) return const SizedBox.shrink();
+
+        final paneGlobal = renderBox.localToGlobal(Offset.zero);
+        final stackGlobal = stackRenderBox.localToGlobal(Offset.zero);
+        final paneLocal = paneGlobal - stackGlobal;
+        final paneSize = renderBox.size;
+
+        return Stack(
+          children: [
+            // Alliance color bar
+            Positioned(
+              left: paneLocal.dx,
+              top: paneLocal.dy,
+              width: paneSize.width,
+              height: 3,
+              child: ColoredBox(color: allianceColor),
+            ),
+            // Star icon for user's team
+            if (containsUserTeam)
+              Positioned(
+                left: paneLocal.dx + 6,
+                top: paneLocal.dy + 6,
+                child: Icon(
+                  Icons.star,
+                  color: Colors.yellow.shade600,
+                  size: 20,
+                ),
+              ),
+            // Rotate and edit buttons
+            Positioned(
+              top: paneLocal.dy + 2,
+              left: paneLocal.dx + paneSize.width - 2 - _chromeButtonsWidth(onRotate, onEdit),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (onRotate != null)
+                    _PaneOverlayButton(
+                      icon: Icons.rotate_90_degrees_cw,
+                      onTap: onRotate,
+                    ),
+                  if (onRotate != null && onEdit != null)
+                    const SizedBox(width: 2),
+                  if (onEdit != null)
+                    _PaneOverlayButton(
+                      icon: Icons.edit,
+                      onTap: onEdit,
+                    ),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  double _chromeButtonsWidth(VoidCallback? onRotate, VoidCallback? onEdit) {
+    double width = 0;
+    if (onRotate != null) width += 40;
+    if (onEdit != null) width += 40;
+    if (onRotate != null && onEdit != null) width += 2; // gap
+    return width;
   }
 }
 
@@ -1260,51 +1262,13 @@ class _PaneOverlayButton extends StatelessWidget {
 
 /// A stroke painter that clips and translates strokes to the video's rendered
 /// rect, so drawings align with the video even when letterboxed/pillarboxed.
-class _VideoAlignedStrokePainter extends CustomPainter {
-  final List<ColoredStroke> strokes;
-  final List<Offset> currentStrokePoints;
-  final DrawingColor currentColor;
-  final double opacity;
-  final Rect videoRect;
-
-  _VideoAlignedStrokePainter({
-    required this.strokes,
-    required this.currentStrokePoints,
-    required this.currentColor,
-    required this.opacity,
-    required this.videoRect,
-  });
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    // Clip to the video rect so strokes don't bleed into letterbox/pillarbox
-    canvas.save();
-    canvas.clipRect(videoRect);
-
-    // Delegate to StrokePainter for actual stroke rendering
-    final delegate = StrokePainter(
-      strokes: strokes,
-      currentStrokePoints: currentStrokePoints,
-      currentColor: currentColor,
-      opacity: opacity,
-    );
-    delegate.paint(canvas, size);
-    canvas.restore();
-  }
-
-  @override
-  bool shouldRepaint(covariant _VideoAlignedStrokePainter oldDelegate) => true;
-}
-
 /// Result of hit-testing a screen point against a video pane.
 class _PaneHitInfo {
   final DrawingController drawingController;
-  final Offset videoSpacePoint;
   final bool isLeft;
 
   _PaneHitInfo({
     required this.drawingController,
-    required this.videoSpacePoint,
     required this.isLeft,
   });
 }
@@ -1328,6 +1292,7 @@ class _EditMetadataSheet extends StatefulWidget {
 }
 
 class _EditMetadataSheetState extends State<_EditMetadataSheet> {
+  late String? _selectedEventKey;
   late String? _selectedMatchKey;
   late String _allianceSide;
   final _team1Controller = TextEditingController();
@@ -1356,6 +1321,7 @@ class _EditMetadataSheetState extends State<_EditMetadataSheet> {
     };
 
     if (_editingRecording != null) {
+      _selectedEventKey = _editingRecording!.eventKey;
       _selectedMatchKey = _editingRecording!.matchKey;
       _allianceSide = _editingRecording!.allianceSide;
       _team1Controller.text =
@@ -1371,6 +1337,7 @@ class _EditMetadataSheetState extends State<_EditMetadataSheet> {
       _team6Controller.text =
           _editingRecording!.team6 > 0 ? '${_editingRecording!.team6}' : '';
     } else {
+      _selectedEventKey = widget.matchWithVideos.match.eventKey;
       _selectedMatchKey = widget.matchWithVideos.match.matchKey;
       _allianceSide = 'red';
     }
@@ -1391,6 +1358,7 @@ class _EditMetadataSheetState extends State<_EditMetadataSheet> {
     if (_editingRecording == null) return;
 
     final updated = _editingRecording!.copyWith(
+      eventKey: _selectedEventKey,
       matchKey: _selectedMatchKey,
       allianceSide: _allianceSide,
       team1: int.tryParse(_team1Controller.text) ?? 0,
@@ -1408,8 +1376,29 @@ class _EditMetadataSheetState extends State<_EditMetadataSheet> {
   @override
   Widget build(BuildContext context) {
     final eventKeys = widget.dataStore.settings.selectedEventKeys;
-    final matches = widget.dataStore.getMatchesForEvents(eventKeys);
+    final showMultiEvent = eventKeys.length > 1;
+    // Filter matches by selected event when multiple events
+    final matches = List<Match>.from(
+      showMultiEvent && _selectedEventKey != null
+          ? widget.dataStore.getMatchesForEvents([_selectedEventKey!])
+          : widget.dataStore.getMatchesForEvents(eventKeys),
+    )..sort((a, b) {
+        final aTime = a.bestTime;
+        final bTime = b.bestTime;
+        if (aTime == null && bTime == null) {
+          return a.matchKey.compareTo(b.matchKey);
+        }
+        if (aTime == null) return 1;
+        if (bTime == null) return -1;
+        return aTime.compareTo(bTime);
+      });
     final isFull = _allianceSide == 'full';
+
+    // Build event name map for event dropdown
+    final eventNameMap = <String, String>{};
+    for (final e in widget.dataStore.events) {
+      eventNameMap[e.eventKey] = e.shortName;
+    }
 
     return Padding(
       padding: EdgeInsets.only(
@@ -1428,7 +1417,28 @@ class _EditMetadataSheetState extends State<_EditMetadataSheet> {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
+            if (showMultiEvent) ...[
+              DropdownButtonFormField<String>(
+                key: ValueKey('event_$_selectedEventKey'),
+                initialValue: _selectedEventKey,
+                decoration: const InputDecoration(labelText: 'Event'),
+                items: eventKeys
+                    .map((ek) => DropdownMenuItem(
+                          value: ek,
+                          child: Text(eventNameMap[ek] ?? ek),
+                        ))
+                    .toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _selectedEventKey = value;
+                    _selectedMatchKey = null;
+                  });
+                },
+              ),
+              const SizedBox(height: 12),
+            ],
             DropdownButtonFormField<String>(
+              key: ValueKey('match_$_selectedMatchKey'),
               initialValue: _selectedMatchKey,
               decoration: const InputDecoration(labelText: 'Match'),
               items: matches

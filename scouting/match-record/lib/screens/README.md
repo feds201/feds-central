@@ -80,7 +80,7 @@ Search state is owned entirely by `_MainScreenState`: the `TextEditingController
 |---|---|---|
 | Import | `ImportTab` | Connect a USB drive, scan for videos, preview/assign matches, and execute the import. |
 | History | `HistoryTab` | Shows past import sessions in reverse chronological order. Tapping a session opens `_SessionReEditPage` for metadata-only re-editing. |
-| Storage | `StorageTab` | Lists all imported recordings. Supports multi-select with smart selection modes (Select All, All But Ours, Past Events) and batch deletion. |
+| Storage | `StorageTab` | Lists app-imported recordings only. Supports multi-select with smart selection modes (Select All, All But Ours, Past Events) and batch deletion. Camera and Quick Share source file management is not yet implemented as separate tabs. |
 
 ### Key Callbacks and Data Flow
 

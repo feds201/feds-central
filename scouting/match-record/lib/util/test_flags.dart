@@ -5,9 +5,16 @@ class TestFlags {
   /// TestDriveAccess doc comment for adb push instructions.
   static const bool useSampleVideos = true;
 
-  /// When true, force the event to 2026mimid
+  /// When true, force-load these events on first launch
   static const bool forceEventId = true;
-  static const String forcedEventId = '2026mimid';
+  static const List<String> forcedEventIds = [
+    '2025micmp',
+    '2025micmp1',
+    '2025micmp2',
+    '2025micmp3',
+    '2025micmp4',
+    '2026mimid',
+  ];
 
   /// When true, assign sample videos to specific quals matches
   static const bool forceSampleMatchAssignment = true;

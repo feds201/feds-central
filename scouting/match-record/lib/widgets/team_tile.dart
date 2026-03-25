@@ -5,14 +5,38 @@ import '../data/models.dart';
 class TeamTile extends StatelessWidget {
   final Team team;
   final bool isYourTeam;
+  final String? eventSubtitle;
   final VoidCallback? onTap;
 
   const TeamTile({
     super.key,
     required this.team,
     this.isYourTeam = false,
+    this.eventSubtitle,
     this.onTap,
   });
+
+  Widget? _buildSubtitle(ThemeData theme) {
+    final hasNickname = team.nickname.isNotEmpty;
+    final hasEvents = eventSubtitle != null;
+    if (!hasNickname && !hasEvents) return null;
+
+    if (!hasEvents) return Text(team.nickname);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (hasNickname) Text(team.nickname),
+        Text(
+          eventSubtitle!,
+          style: TextStyle(
+            fontSize: 11,
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
+      ],
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +73,7 @@ class TeamTile extends StatelessWidget {
           '${team.teamNumber}',
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
-        subtitle: team.nickname.isNotEmpty ? Text(team.nickname) : null,
+        subtitle: _buildSubtitle(theme),
         onTap: onTap,
       ),
     );

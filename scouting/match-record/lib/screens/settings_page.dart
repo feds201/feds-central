@@ -5,6 +5,7 @@ import '../data/models.dart';
 import '../tba/tba_client.dart';
 import '../tba/tba_config.dart';
 import '../util/result.dart';
+import '../util/test_flags.dart';
 
 class SettingsPage extends StatefulWidget {
   final DataStore dataStore;
@@ -139,17 +140,48 @@ class _SettingsPageState extends State<SettingsPage> {
       return;
     }
     setState(() => _isLoadingEvents = true);
+
+    // Fetch current year events from TBA
     final year = DateTime.now().year;
     final result = await widget.tbaClient.getEvents(year);
+
+    // Also fetch the specific hardcoded events individually
+    final hardcodedEvents = <Event>[];
+    for (final eventKey in TestFlags.forcedEventIds) {
+      final eventResult = await widget.tbaClient.getEvent(eventKey);
+      if (eventResult is Ok<Event>) {
+        hardcodedEvents.add(eventResult.value);
+      }
+    }
+
     setState(() => _isLoadingEvents = false);
 
     switch (result) {
       case Ok(:final value):
-        final sorted = List<Event>.from(value)
-          ..sort((a, b) => a.startDate.compareTo(b.startDate));
-        setState(() => _availableEvents = sorted);
+        // Merge: start with current year events, add hardcoded ones not already present
+        final allEvents = List<Event>.from(value);
+        final existingKeys = allEvents.map((e) => e.eventKey).toSet();
+        for (final e in hardcodedEvents) {
+          if (!existingKeys.contains(e.eventKey)) {
+            allEvents.add(e);
+          }
+        }
+        allEvents.sort((a, b) {
+          final dateCompare = a.startDate.compareTo(b.startDate);
+          if (dateCompare != 0) return dateCompare;
+          return a.name.compareTo(b.name);
+        });
+        setState(() => _availableEvents = allEvents);
       case Err(:final message):
-        if (mounted) {
+        // TBA year fetch failed, but we may still have hardcoded events
+        if (hardcodedEvents.isNotEmpty) {
+          hardcodedEvents.sort((a, b) {
+            final dateCompare = a.startDate.compareTo(b.startDate);
+            if (dateCompare != 0) return dateCompare;
+            return a.name.compareTo(b.name);
+          });
+          setState(() => _availableEvents = hardcodedEvents);
+        } else if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(message)),
           );
@@ -176,7 +208,7 @@ class _SettingsPageState extends State<SettingsPage> {
         children: unselected
             .map((e) => SimpleDialogOption(
                   onPressed: () => Navigator.pop(context, e),
-                  child: Text('${e.shortName} (${e.eventKey})'),
+                  child: Text('${_formatDate(e.startDate)} \u2014 ${e.name}'),
                 ))
             .toList(),
       ),
@@ -193,6 +225,30 @@ class _SettingsPageState extends State<SettingsPage> {
         widget.dataStore.settings.copyWith(selectedEventKeys: newKeys),
       );
       setState(() {});
+
+      // Fetch teams, matches, alliances for the newly added event
+      await _fetchEventData(picked.eventKey);
+    }
+  }
+
+  /// Fetch teams, matches, and alliances for a single event from TBA.
+  Future<void> _fetchEventData(String eventKey) async {
+    final teamsResult = await widget.tbaClient.getTeams(eventKey);
+    if (teamsResult is Ok<List<Team>>) {
+      await widget.dataStore.setTeamsForEvent(eventKey, teamsResult.value);
+    }
+
+    final matchesResult = await widget.tbaClient.getMatches(eventKey);
+    if (matchesResult is Ok<List<Match>>) {
+      await widget.dataStore.setMatchesForEvent(eventKey, matchesResult.value);
+    }
+
+    final alliancesResult = await widget.tbaClient.getAlliances(eventKey);
+    if (alliancesResult is Ok<List<Alliance>?>) {
+      final alliances = alliancesResult.value;
+      if (alliances != null) {
+        await widget.dataStore.setAlliancesForEvent(eventKey, alliances);
+      }
     }
   }
 
@@ -288,6 +344,33 @@ class _SettingsPageState extends State<SettingsPage> {
     }
   }
 
+  List<String> _sortedSelectedEventKeys(List<String> keys) {
+    final eventMap = <String, Event>{};
+    for (final e in widget.dataStore.events) {
+      eventMap[e.eventKey] = e;
+    }
+    final sorted = List<String>.from(keys)
+      ..sort((a, b) {
+        final ea = eventMap[a];
+        final eb = eventMap[b];
+        if (ea != null && eb != null) {
+          final dateCompare = ea.startDate.compareTo(eb.startDate);
+          if (dateCompare != 0) return dateCompare;
+          return ea.name.compareTo(eb.name);
+        }
+        return a.compareTo(b);
+      });
+    return sorted;
+  }
+
+  String _formatDate(DateTime date) {
+    const months = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+    ];
+    return '${months[date.month - 1]} ${date.day}, ${date.year}';
+  }
+
   String _formatFetchTime(DateTime time) {
     final h = time.hour > 12 ? time.hour - 12 : (time.hour == 0 ? 12 : time.hour);
     final m = time.minute.toString().padLeft(2, '0');
@@ -326,7 +409,7 @@ class _SettingsPageState extends State<SettingsPage> {
             spacing: 8,
             runSpacing: 4,
             children: [
-              for (final key in settings.selectedEventKeys)
+              for (final key in _sortedSelectedEventKeys(settings.selectedEventKeys))
                 InputChip(
                   label: Text(key),
                   onDeleted: () => _removeEvent(key),

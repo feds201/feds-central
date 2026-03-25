@@ -497,4 +497,147 @@ void main() {
       expect(state.rows[1].matchKey, '2026mimid_qm2');
     });
   });
+
+  group('ImportPipeline multi-event eventKey', () {
+    test('scanDrive sets eventKey from matched match', () async {
+      driveAccess = FakeDriveAccess(
+        files: [
+          DriveFile(
+            uri: 'test://drive/video1.MOV',
+            name: 'video1.MOV',
+            sizeBytes: 16000000,
+            lastModified: baseTime,
+          ),
+        ],
+        configJson: '{"type": "red"}',
+      );
+
+      pipeline = ImportPipeline(
+        driveAccess: driveAccess,
+        metadataService: metadataService,
+        dataStore: dataStore,
+        storageDir: '/tmp/test_storage',
+      );
+
+      final result = await pipeline.scanDrive('test://drive');
+      final state = (result as Ok<ImportSessionState>).value;
+
+      // The match was suggested from '2026mimid' event, so eventKey should match
+      expect(state.rows.first.eventKey, '2026mimid');
+    });
+
+    test('scanDrive defaults eventKey to single event when no match suggested', () async {
+      // Use a video timestamp far from any match so no suggestion is made
+      final farTime = baseTime.add(const Duration(days: 30));
+      driveAccess = FakeDriveAccess(
+        files: [
+          DriveFile(
+            uri: 'test://drive/video1.MOV',
+            name: 'video1.MOV',
+            sizeBytes: 16000000,
+            lastModified: farTime,
+          ),
+        ],
+      );
+
+      pipeline = ImportPipeline(
+        driveAccess: driveAccess,
+        metadataService: metadataService,
+        dataStore: dataStore,
+        storageDir: '/tmp/test_storage',
+      );
+
+      final result = await pipeline.scanDrive('test://drive');
+      final state = (result as Ok<ImportSessionState>).value;
+
+      // Single event selected, so eventKey should default to it
+      expect(state.rows.first.eventKey, '2026mimid');
+    });
+
+    test('scanDrive leaves eventKey null when multiple events and no matches exist', () async {
+      // Add second event, remove all matches so no suggestion is possible
+      await dataStore.setEvents([
+        Event(
+          eventKey: '2026mimid',
+          name: 'Midland',
+          shortName: 'Mid',
+          startDate: DateTime(2026, 3, 20),
+          endDate: DateTime(2026, 3, 22),
+          playoffType: 10,
+          timezone: 'America/Detroit',
+        ),
+        Event(
+          eventKey: '2026miwat',
+          name: 'Waterford',
+          shortName: 'Wat',
+          startDate: DateTime(2026, 4, 10),
+          endDate: DateTime(2026, 4, 12),
+          playoffType: 10,
+          timezone: 'America/Detroit',
+        ),
+      ]);
+      await dataStore.updateSettings(
+        dataStore.settings.copyWith(selectedEventKeys: ['2026mimid', '2026miwat']),
+      );
+      // Clear all matches so no suggestion is possible
+      await dataStore.setMatchesForEvent('2026mimid', []);
+
+      driveAccess = FakeDriveAccess(
+        files: [
+          DriveFile(
+            uri: 'test://drive/video1.MOV',
+            name: 'video1.MOV',
+            sizeBytes: 16000000,
+            lastModified: baseTime,
+          ),
+        ],
+      );
+
+      pipeline = ImportPipeline(
+        driveAccess: driveAccess,
+        metadataService: metadataService,
+        dataStore: dataStore,
+        storageDir: '/tmp/test_storage',
+      );
+
+      final result = await pipeline.scanDrive('test://drive');
+      final state = (result as Ok<ImportSessionState>).value;
+
+      // Multiple events, no matches at all — eventKey should be null
+      expect(state.rows.first.eventKey, isNull);
+    });
+
+    test('executeImport uses row eventKey for recording', () async {
+      driveAccess = FakeDriveAccess(
+        files: [
+          DriveFile(
+            uri: 'test://drive/video1.MOV',
+            name: 'video1.MOV',
+            sizeBytes: 16000000,
+            lastModified: baseTime,
+          ),
+        ],
+        configJson: '{"type": "blue"}',
+      );
+
+      pipeline = ImportPipeline(
+        driveAccess: driveAccess,
+        metadataService: metadataService,
+        dataStore: dataStore,
+        storageDir: '/tmp/test_storage',
+      );
+
+      final scanResult = await pipeline.scanDrive('test://drive');
+      final state = (scanResult as Ok<ImportSessionState>).value;
+
+      // Verify eventKey is set on the row
+      expect(state.rows.first.eventKey, '2026mimid');
+
+      await pipeline.executeImport(state, null);
+
+      // Verify the recording's eventKey matches the row's eventKey
+      final recording = dataStore.allRecordings.first;
+      expect(recording.eventKey, '2026mimid');
+    });
+  });
 }
