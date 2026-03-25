@@ -81,8 +81,18 @@ class NeonService {
           batteries INTEGER,
           framePerimeter TEXT,
           shootingRate DOUBLE PRECISION,
+          hopperSealed BOOLEAN,
+          trechUnder TEXT,
+          bumpOver BOOLEAN,
+          driverYear INTEGER,
+          interviewerName TEXT,
+          interviewerRole TEXT,
+          attitude BOOLEAN,
+          scoutingAccuracy TEXT,
+          notCooperativeReason TEXT,
+          pathDraw JSONB
           id TEXT,
-          created_at TIMESTAMPTZ
+          created_at TIMESTAMPTZ,
         );
       ''');
 
