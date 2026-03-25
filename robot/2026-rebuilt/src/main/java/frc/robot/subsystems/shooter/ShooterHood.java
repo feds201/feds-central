@@ -84,7 +84,7 @@ public class ShooterHood extends SubsystemBase {
     config.Slot0.kS = .189; // Constant applied for friction compensation (static gain)
     config.Slot0.kP = 1; // Proportional gain 
     config.Slot0.kD = 0.0; // Derivative gain
-    config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 28; 
+    config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 30; 
     config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0.5; 
     config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
     config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
