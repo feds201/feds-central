@@ -1,0 +1,93 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 8.45149834437086,
+        "y": 5.494246688741721
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 7.523474218927982,
+        "y": 5.550303757865709
+      },
+      "isLocked": false,
+      "linkedName": "intake3"
+    },
+    {
+      "anchor": {
+        "x": 4.640033112582781,
+        "y": 5.501506622516556
+      },
+      "prevControl": {
+        "x": 6.062980132450331,
+        "y": 5.407127483443707
+      },
+      "nextControl": {
+        "x": 3.6422254860291203,
+        "y": 5.567687740604299
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.483832781456954,
+        "y": 6.728435430463576
+      },
+      "prevControl": {
+        "x": 2.941208609271523,
+        "y": 6.2202400662251645
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "BumpShoot1"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.6561743341404251,
+      "rotationDegrees": 24.775
+    },
+    {
+      "waypointRelativePos": 1.191283292978211,
+      "rotationDegrees": 24.775
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.808480565371025,
+      "maxWaypointRelativePos": 1.3936395759717315,
+      "constraints": {
+        "maxVelocity": 3.0,
+        "maxAcceleration": 4.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 360.0,
+        "nominalVoltage": 11.8,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 4.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 360.0,
+    "nominalVoltage": 11.8,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -51.37767671243816
+  },
+  "reversed": false,
+  "folder": "LeftTrenchBumpShoot",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 90.0
+  },
+  "useDefaultConstraints": true
+}

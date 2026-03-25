@@ -5,14 +5,17 @@
   "pathFolders": [
     "CenterOverBump",
     "DoublePassTest",
+    "GriefAuto",
     "MidIntakeToLeftBump",
     "MidIntakeToRightBump",
+    "LeftTrenchBumpShoot",
     "RightBumpToOutpost",
     "TestAutos",
-    "GriefAuto",
     "Trenches"
   ],
-  "autoFolders": [],
+  "autoFolders": [
+    "New Folder"
+  ],
   "defaultMaxVel": 5.0,
   "defaultMaxAccel": 4.0,
   "defaultMaxAngVel": 540.0,

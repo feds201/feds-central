@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 7.819884105960265,
+        "y": 6.9607533112582765
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 7.810212736667495,
+        "y": 5.728661204673622
+      },
+      "isLocked": false,
+      "linkedName": "TrenchIntake"
+    },
+    {
+      "anchor": {
+        "x": 7.819884105960265,
+        "y": 5.436167218543046
+      },
+      "prevControl": {
+        "x": 7.829476364867414,
+        "y": 6.115256972763446
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "NuetralIntake1"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 4.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 360.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 90.0
+  },
+  "reversed": false,
+  "folder": "LeftTrenchBumpShoot",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 90.0
+  },
+  "useDefaultConstraints": false
+}
