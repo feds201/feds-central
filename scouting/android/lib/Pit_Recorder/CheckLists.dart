@@ -268,7 +268,7 @@ class _RecordState extends State<Record> {
                         config: config,
                         onSave: (String? pathData) {
                           PathDataController.add(pathData);
-                          },
+                        },
                       ),
                     ),
                   ],

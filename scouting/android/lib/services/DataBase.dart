@@ -197,7 +197,7 @@ class PitRecord {
       required this.botImage1,
       required this.botImage2,
       required this.botImage3,
-      this.autoRoutes = const [],
+      this.autoRoutes =  const [],
       this.autoFuel = 0,
       this.gameData = false,
       this.weight = 0.0,
@@ -339,6 +339,9 @@ class PitRecord {
       pathDraw: json['pathDraw'] != null
     ? List<String?>.from(json['pathDraw'])
         : [],
+      pathDraw: json['pathDraw'] != null
+          ? List<String?>.from(json['pathDraw'])
+          : [],
     );
   }
 }
