@@ -7,21 +7,22 @@ package frc.robot.subsystems.led;
 
 import com.lumynlabs.connection.usb.USBPort;
 import com.lumynlabs.devices.ConnectorXAnimate;
+import com.lumynlabs.domain.config.ConfigBuilder;
 import com.lumynlabs.domain.led.Animation;
+import com.lumynlabs.domain.led.DirectLED;
 
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.units.Units;
+import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.shooter.ShooterHood;
-import frc.robot.subsystems.shooter.ShooterHood.shooterhood_state;
 import frc.robot.subsystems.shooter.ShooterWheels;
-import frc.robot.subsystems.shooter.ShooterWheels.shooter_state;
 
 
 public class LedsSubsystem extends SubsystemBase {
@@ -29,6 +30,7 @@ public class LedsSubsystem extends SubsystemBase {
   private static LedsSubsystem instance;
   private ShooterWheels m_shooterWheels;
   private ShooterHood m_shooterHood;
+
 
 
    public static LedsSubsystem getInstance() { 
@@ -109,23 +111,16 @@ public class LedsSubsystem extends SubsystemBase {
   public LedsSubsystem() {
     m_shooterWheels = null;
     m_shooterHood = null;
-    // m_climb = null;
-
-
-
     // for (Subsystem subsystem : subsystems) {
     //   if (subsystem instanceof ShooterWheels) { m_shooterWheels = (ShooterWheels) subsystem; }
     //   if (subsystem instanceof ShooterHood) { m_shooterHood = (ShooterHood) subsystem;}
     //   // Climb is currently not used for LED state changes, but we can easily add it in the future if needed
-    //   // else if (subsystem instanceof Climb) { m_climb = (Climb) subsystem;  }
-    // }
-
-
+    //   // else if (subsystem instanceof Climb) { m_climb = (Climb) subsystem;  
     // Connect to the device on USB port 2
     m_isConnected = m_leds.Connect(USBPort.kUSB1);
     System.out.println("ConnectorX connected: " + m_isConnected);
-    m_leds.LoadConfigurationFromDeploy().ifPresent(m_leds::ApplyConfiguration);
-     // Initial State application will happen in periodic loop or manually here
+   
+    // Initial State application will happen in periodic loop or manually here
     // But periodic handles state change, so setting lastState to OFF calls applyState(IDLE) in first loop.
   }
 
@@ -222,12 +217,14 @@ public class LedsSubsystem extends SubsystemBase {
 
   public void setState(LEDState state) {
     m_currentState = state;
-        System.out.println("setState"+ state);
+        System.out.println(state);
+        Timer.delay(0.1); // Small delay (in seconds) to prevent rapid state changes from causing issues with the LED controller
   }
-
   private void applyState(LEDState state) {
-            System.out.println("ApplyState"+ state);
-    switch (state) {
+              System.out.println("ApplyState_"+ state);
+              Timer.delay(0.1); // Small delay (in seconds) to prevent rapid state changes from causing issues with the LED controller
+      switch (state) {
+        
       case OFF:
         m_leds.leds.SetColor(GR_300, new Color(0, 0, 0));
         break;
@@ -267,15 +264,6 @@ public class LedsSubsystem extends SubsystemBase {
             .WithDelay(Units.Milliseconds.of(20))
             .RunOnce(false);
         break;
-        
-      // case CLIMBING:
-      //   m_leds.leds.SetAnimation(Animation.RainbowRoll)
-      //       .ForGroup(GR_300)
-      //       .WithColor(COLOR_WHITE) // Color is ignored for Rainbow, but set it anyway
-      //       .WithDelay(Units.Milliseconds.of(10))
-      //       .Reverse(false)
-      //       .RunOnce(false);
-      //   break;
         
       case ERROR_LL:
           m_leds.leds.SetAnimation(Animation.Comet)
@@ -372,9 +360,6 @@ public class LedsSubsystem extends SubsystemBase {
   }
 }
 
-
-
-
   public Command setStateCommand(LEDState state) {
     return runOnce(() -> setState(state)).ignoringDisable(true);
   }
@@ -390,14 +375,11 @@ public class LedsSubsystem extends SubsystemBase {
     return runStateCommand(state).withTimeout(seconds);
   }
 
-  public Command shootingSignal() { return runStateCommand(LEDState.SHOOTING); }
-  // public Command climbingSignal() { return runStateCommand(LEDState.CLIMBING); }
-  public Command resetLEDS() { return setStateCommand(LEDState.IDLE); }
 
   @Deprecated
   public Command setLEDState(LEDState state) {
       return setStateCommand(state);
   }
 
-
+ 
 }
