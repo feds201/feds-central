@@ -3,32 +3,37 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.041637010676157,
-        "y": 7.612431791221827
+        "x": 2.8688849347620726,
+        "y": 2.99673784104389
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.494128113879004,
-        "y": 7.590913404507711
+        "x": 2.6435513245033118,
+        "y": 2.7499917218543044
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "RightShootingPos"
     },
     {
       "anchor": {
-        "x": 8.108612099644128,
-        "y": 7.009916963226572
+        "x": 0.75,
+        "y": 0.6619928825628518
       },
       "prevControl": {
-        "x": 8.14664080114382,
-        "y": 7.68285241529385
+        "x": 0.9279894190066793,
+        "y": 0.8375484769529615
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "LeftCenterPickup"
+      "linkedName": "AtOutpost"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.44915254237288105,
+      "rotationDegrees": 0.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -41,14 +46,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 1.3,
-    "rotation": 85.0
+    "velocity": 0,
+    "rotation": 0.0
   },
   "reversed": false,
-  "folder": "MidIntakeToLeftBump",
+  "folder": "RightBumpToOutpost",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 90.0
+    "rotation": 34.01934998960452
   },
   "useDefaultConstraints": true
 }

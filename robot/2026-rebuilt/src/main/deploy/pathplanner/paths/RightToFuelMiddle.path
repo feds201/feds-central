@@ -3,59 +3,48 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.7785164051355205,
-        "y": 5.982268188302426
+        "x": 7.828873072360619,
+        "y": 1.0600830367734273
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.2878884934756827,
-        "y": 5.977034400948992
+        "x": 7.80735468565188,
+        "y": 2.1467615658362984
       },
       "isLocked": false,
-      "linkedName": "PickedUpFromDepot"
+      "linkedName": "RightFuel"
     },
     {
       "anchor": {
-        "x": 3.0840688018979834,
-        "y": 5.008706998813759
+        "x": 7.828873072360619,
+        "y": 2.99673784104389
       },
       "prevControl": {
-        "x": 2.7182562277580082,
-        "y": 5.320723606168446
+        "x": 7.828873072365997,
+        "y": 2.146761565836299
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "IntakedFuel"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 0.8,
-      "maxWaypointRelativePos": 1.0,
+      "minWaypointRelativePos": 0.014134275618374716,
+      "maxWaypointRelativePos": 0.8480565371024709,
       "constraints": {
-        "maxVelocity": 1.0,
+        "maxVelocity": 1.5,
         "maxAcceleration": 4.0,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 360.0,
-        "nominalVoltage": 12.0,
+        "nominalVoltage": 11.8,
         "unlimited": false
       }
     }
   ],
-  "pointTowardsZones": [
-    {
-      "fieldPosition": {
-        "x": 4.6,
-        "y": 4.0
-      },
-      "rotationOffset": 0.0,
-      "minWaypointRelativePos": 0.25,
-      "maxWaypointRelativePos": 1.0,
-      "name": "Point Towards Zone"
-    }
-  ],
+  "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 5.0,
@@ -67,13 +56,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -31.54131539138493
+    "rotation": -92.20259816121586
   },
   "reversed": false,
-  "folder": "MidIntakeToLeftBump",
+  "folder": "RightBumpToOutpost",
   "idealStartingState": {
-    "velocity": 0,
-    "rotation": 0.0
+    "velocity": 1.5,
+    "rotation": -90.0
   },
   "useDefaultConstraints": true
 }

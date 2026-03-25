@@ -43,7 +43,7 @@ public class Robot extends LoggedRobot {
     // DO NOT COMMENT THIS OUT!
     // If build fails the 1st time because no BuildConstant:
     //  1. clean your workspace cache
-    //  2. run the buld command again
+    //  2. run the build command again
     // WHY: BuildConstants is automatically generated during your build but sometimes that makes the build upset 
     Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
     Logger.recordMetadata("GitBranch", BuildConstants.GIT_BRANCH);
