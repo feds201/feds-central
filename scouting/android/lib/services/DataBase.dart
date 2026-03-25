@@ -339,9 +339,6 @@ class PitRecord {
       pathDraw: json['pathDraw'] != null
     ? List<String?>.from(json['pathDraw'])
         : [],
-      pathDraw: json['pathDraw'] != null
-          ? List<String?>.from(json['pathDraw'])
-          : [],
     );
   }
 }
