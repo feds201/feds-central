@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../data/data_store.dart';
 import '../data/models.dart';
@@ -56,6 +57,8 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     super.initState();
+    // Failsafe: ensure orientation is unlocked whenever we return to main screen
+    SystemChrome.setPreferredOrientations(DeviceOrientation.values);
     _searchFocusNode.addListener(_onFocusChange);
     _maybeAutoLoad();
     _startAutoSync();
