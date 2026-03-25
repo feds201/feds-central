@@ -5,16 +5,16 @@ import 'package:flutter/material.dart';
 
 import '../models/bot_path_config.dart';
 import '../models/bot_path_data.dart';
+import '../models/bot_viewer_path.dart';
 import '../painters/path_painter.dart';
 import '../utils/bezier_math.dart';
 
-/// Widget for viewing and playing back a recorded robot path on a field image.
+/// Widget for viewing and playing back recorded robot paths on a field image.
 ///
-/// Takes a serialized path string (from [BotPathDrawer]) and displays it
-/// on a field image with playback controls. Users can play, stop, and
-/// adjust the speed of the path animation.
+/// Supports displaying multiple paths simultaneously, each with its own color.
+/// Users can play, stop, and adjust the speed of the path animation.
 ///
-/// ## Usage
+/// ## Single-path usage (legacy)
 /// ```dart
 /// BotPathViewer(
 ///   config: BotPathConfig(
@@ -23,23 +23,49 @@ import '../utils/bezier_math.dart';
 ///   pathData: 'M0.083,0.573C0.098,0.559 0.241,0.397 0.390,0.317|0.00:0,1.57:450',
 /// )
 /// ```
+///
+/// ## Multi-path usage
+/// ```dart
+/// BotPathViewer(
+///   config: BotPathConfig(
+///     backgroundImage: AssetImage('assets/field.png'),
+///   ),
+///   paths: [
+///     BotViewerPath(pathData: '...', color: Colors.red),
+///     BotViewerPath(pathData: '...', color: Colors.blue),
+///   ],
+/// )
+/// ```
 class BotPathViewer extends StatefulWidget {
   /// Configuration for appearance and behavior.
   final BotPathConfig config;
 
-  /// The serialized path string to display and play back.
+  /// The serialized path string to display and play back (legacy single-path API).
   ///
-  /// This should be a string produced by [BotPathDrawer] via the [onSave]
-  /// callback. If the string is invalid, the widget shows just the field
-  /// image with no path overlay.
-  final String pathData;
+  /// Uses [BotPathConfig.pathColor] and [BotPathConfig.robotColor] for colors.
+  /// If [paths] is also provided, [paths] takes precedence and this is ignored.
+  final String? pathData;
+
+  /// Multiple paths to display simultaneously, each with its own color.
+  ///
+  /// When provided, [pathData] is ignored. Each [BotViewerPath.color] is used
+  /// for that path's line, robot fill (at 30% opacity), intake edge, and
+  /// start/end dot outlines.
+  final List<BotViewerPath>? paths;
 
   /// Creates a [BotPathViewer] widget.
+  ///
+  /// Either [pathData] or [paths] must be provided. If both are given,
+  /// [paths] takes precedence.
   const BotPathViewer({
     super.key,
     required this.config,
-    required this.pathData,
-  });
+    this.pathData,
+    this.paths,
+  }) : assert(
+          pathData != null || paths != null,
+          'Either pathData or paths must be provided',
+        );
 
   @override
   State<BotPathViewer> createState() => _BotPathViewerState();
@@ -47,17 +73,20 @@ class BotPathViewer extends StatefulWidget {
 
 class _BotPathViewerState extends State<BotPathViewer>
     with SingleTickerProviderStateMixin {
-  /// Parsed path data in normalized coordinates, null if invalid.
-  BotPathData? _pathData;
+  /// Effective list of paths to render (resolved from props).
+  List<BotViewerPath> _effectivePaths = const [];
+
+  /// Parsed path data for each effective path (null if invalid).
+  List<BotPathData?> _parsedPaths = const [];
 
   /// Animation controller driving the playback animation.
   late final AnimationController _playbackController;
 
-  /// Current position of the playback robot during animation (pixel coords).
-  Offset? _playbackRobotPos;
+  /// Per-path playback robot position during animation (normalized coords).
+  List<Offset?> _playbackPositions = const [];
 
-  /// Current rotation of the playback robot during animation.
-  double _playbackRobotRot = 0;
+  /// Per-path playback robot rotation during animation.
+  List<double> _playbackRotations = const [];
 
   /// Current playback speed multiplier.
   late double _playbackSpeed;
@@ -77,8 +106,8 @@ class _BotPathViewerState extends State<BotPathViewer>
   /// The listener attached to [_imageStream].
   ImageStreamListener? _imageStreamListener;
 
-  /// Cached scaled curves for stable references in shouldRepaint comparisons.
-  List<CubicCurve> _cachedScaledCurves = const [];
+  /// Per-path cached scaled curves for stable shouldRepaint comparisons.
+  List<List<CubicCurve>> _cachedScaledCurves = const [];
 
   /// Canvas size used when [_cachedScaledCurves] was last computed.
   Size _lastScaledSize = Size.zero;
@@ -90,7 +119,7 @@ class _BotPathViewerState extends State<BotPathViewer>
     _playbackController = AnimationController(vsync: this);
     _playbackController.addListener(_onPlaybackTick);
     _playbackController.addStatusListener(_onPlaybackStatus);
-    _pathData = BotPathData.tryParse(widget.pathData);
+    _resolvePaths();
   }
 
   @override
@@ -102,10 +131,10 @@ class _BotPathViewerState extends State<BotPathViewer>
   @override
   void didUpdateWidget(BotPathViewer oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.pathData != widget.pathData) {
+    if (oldWidget.pathData != widget.pathData ||
+        oldWidget.paths != widget.paths) {
       _stopPlayback();
-      _pathData = BotPathData.tryParse(widget.pathData);
-      _cachedScaledCurves = const [];
+      _resolvePaths();
     }
     if (oldWidget.config.backgroundImage != widget.config.backgroundImage) {
       _resolveImage();
@@ -119,6 +148,29 @@ class _BotPathViewerState extends State<BotPathViewer>
     _playbackController.dispose();
     _removeImageListener();
     super.dispose();
+  }
+
+  /// Resolves [_effectivePaths] and [_parsedPaths] from widget props.
+  void _resolvePaths() {
+    if (widget.paths != null) {
+      _effectivePaths = widget.paths!;
+    } else if (widget.pathData != null) {
+      _effectivePaths = [
+        BotViewerPath(
+          pathData: widget.pathData!,
+          color: widget.config.pathColor,
+        ),
+      ];
+    } else {
+      _effectivePaths = const [];
+    }
+
+    _parsedPaths =
+        _effectivePaths.map((p) => BotPathData.tryParse(p.pathData)).toList();
+    _playbackPositions = List.filled(_effectivePaths.length, null);
+    _playbackRotations = List.filled(_effectivePaths.length, 0.0);
+    _cachedScaledCurves = List.filled(_effectivePaths.length, const []);
+    _lastScaledSize = Size.zero;
   }
 
   /// Resolves the background image to obtain its pixel dimensions.
@@ -158,51 +210,75 @@ class _BotPathViewerState extends State<BotPathViewer>
 
   /// Called on each animation frame during playback.
   void _onPlaybackTick() {
-    final data = _pathData;
-    if (data == null || data.curves.isEmpty) return;
-
     final t = _playbackController.value;
-    final totalDuration = data.timestamps.last;
-    final currentMs = t * totalDuration;
+    final baseDuration = _baseDurationMs;
 
-    // Find the curve segment that contains the current time
-    var curveIndex = 0;
-    for (var i = 0; i < data.curves.length; i++) {
-      if (currentMs <= data.timestamps[i + 1]) {
-        curveIndex = i;
-        break;
+    var changed = false;
+
+    for (var i = 0; i < _parsedPaths.length; i++) {
+      final data = _parsedPaths[i];
+      if (data == null || data.curves.isEmpty) continue;
+
+      final pathDuration = data.timestamps.last;
+      // Map the global animation t to this path's local progress
+      final pathT = baseDuration > 0
+          ? (t * baseDuration / pathDuration).clamp(0.0, 1.0)
+          : 1.0;
+
+      if (pathT >= 1.0) {
+        // This path has finished — park robot at end
+        if (_playbackPositions[i] != null) {
+          // Was still animating, now done — show end position
+          final lastCurve = data.curves.last;
+          _playbackPositions[i] =
+              Offset(lastCurve.point2.x, lastCurve.point2.y);
+          _playbackRotations[i] = data.rotations.last;
+          changed = true;
+        }
+        continue;
       }
-      curveIndex = i;
+
+      final currentMs = pathT * pathDuration;
+
+      // Find the curve segment that contains the current time
+      var curveIndex = 0;
+      for (var ci = 0; ci < data.curves.length; ci++) {
+        if (currentMs <= data.timestamps[ci + 1]) {
+          curveIndex = ci;
+          break;
+        }
+        curveIndex = ci;
+      }
+
+      final segStart = data.timestamps[curveIndex].toDouble();
+      final segEnd = data.timestamps[curveIndex + 1].toDouble();
+      final segDuration = segEnd - segStart;
+
+      final localT = segDuration > 0
+          ? ((currentMs - segStart) / segDuration).clamp(0.0, 1.0)
+          : 1.0;
+
+      final pos = evalBezier(data.curves[curveIndex], localT);
+      final rot = lerpAngle(
+        data.rotations[curveIndex],
+        data.rotations[curveIndex + 1],
+        localT,
+      );
+
+      _playbackPositions[i] = pos;
+      _playbackRotations[i] = rot;
+      changed = true;
     }
 
-    final segStart = data.timestamps[curveIndex].toDouble();
-    final segEnd = data.timestamps[curveIndex + 1].toDouble();
-    final segDuration = segEnd - segStart;
-
-    final localT = segDuration > 0
-        ? ((currentMs - segStart) / segDuration).clamp(0.0, 1.0)
-        : 1.0;
-
-    // Evaluate bezier on normalized curves, then scale to pixels
-    final pos = evalBezier(data.curves[curveIndex], localT);
-    final rot = lerpAngle(
-      data.rotations[curveIndex],
-      data.rotations[curveIndex + 1],
-      localT,
-    );
-
-    setState(() {
-      _playbackRobotPos = pos;
-      _playbackRobotRot = rot;
-    });
+    if (changed) setState(() {});
   }
 
   /// Called when the playback animation status changes.
   void _onPlaybackStatus(AnimationStatus status) {
     if (status == AnimationStatus.completed) {
       setState(() {
-        _playbackRobotPos = null;
-        _playbackRobotRot = 0;
+        _playbackPositions = List.filled(_effectivePaths.length, null);
+        _playbackRotations = List.filled(_effectivePaths.length, 0.0);
       });
     }
   }
@@ -210,14 +286,26 @@ class _BotPathViewerState extends State<BotPathViewer>
   /// Base playback duration at 1x speed, in milliseconds.
   ///
   /// Uses the configured [BotPathConfig.playbackDurationMs] if set,
-  /// otherwise falls back to the path's actual recorded duration.
-  int get _baseDurationMs =>
-      widget.config.playbackDurationMs ?? _pathData!.timestamps.last;
+  /// otherwise falls back to the longest path's actual recorded duration.
+  int get _baseDurationMs {
+    if (widget.config.playbackDurationMs != null) {
+      return widget.config.playbackDurationMs!;
+    }
+    var maxDuration = 0;
+    for (final data in _parsedPaths) {
+      if (data != null && data.timestamps.isNotEmpty) {
+        maxDuration = max(maxDuration, data.timestamps.last);
+      }
+    }
+    return maxDuration > 0 ? maxDuration : 1;
+  }
+
+  /// Whether any paths have valid data.
+  bool get _hasValidPaths => _parsedPaths.any((p) => p != null);
 
   /// Starts playback of the path animation.
   void _startPlayback() {
-    final data = _pathData;
-    if (data == null || data.curves.isEmpty) return;
+    if (!_hasValidPaths) return;
 
     final durationMs = (_baseDurationMs / _playbackSpeed).round();
     _playbackController.duration = Duration(milliseconds: durationMs);
@@ -230,8 +318,8 @@ class _BotPathViewerState extends State<BotPathViewer>
     _playbackController.stop();
     _playbackController.reset();
     setState(() {
-      _playbackRobotPos = null;
-      _playbackRobotRot = 0;
+      _playbackPositions = List.filled(_effectivePaths.length, null);
+      _playbackRotations = List.filled(_effectivePaths.length, 0.0);
     });
   }
 
@@ -283,40 +371,54 @@ class _BotPathViewerState extends State<BotPathViewer>
     return '${_playbackSpeed.toStringAsFixed(1)}x';
   }
 
-  /// Returns cached scaled curves, recomputing only when the canvas size
-  /// changes or the cache has been invalidated.
-  List<CubicCurve> _getScaledCurves(Size canvasSize) {
-    if (_pathData == null) return const [];
-    if (_lastScaledSize == canvasSize && _cachedScaledCurves.isNotEmpty) {
-      return _cachedScaledCurves;
+  /// Returns cached scaled curves for path at [index], recomputing only
+  /// when the canvas size changes.
+  List<CubicCurve> _getScaledCurves(int index, Size canvasSize) {
+    final data = _parsedPaths[index];
+    if (data == null) return const [];
+    if (_lastScaledSize == canvasSize &&
+        _cachedScaledCurves[index].isNotEmpty) {
+      return _cachedScaledCurves[index];
     }
-    _cachedScaledCurves = _pathData!.scaledCurves(canvasSize);
-    _lastScaledSize = canvasSize;
-    return _cachedScaledCurves;
+    // If canvas size changed, invalidate all caches
+    if (_lastScaledSize != canvasSize) {
+      _cachedScaledCurves = List.filled(_effectivePaths.length, const []);
+      _lastScaledSize = canvasSize;
+    }
+    _cachedScaledCurves[index] = data.scaledCurves(canvasSize);
+    return _cachedScaledCurves[index];
   }
 
-  /// Computes the end-of-path robot position from the parsed path data,
-  /// scaled to the given [canvasSize].
-  Offset? _endRobotPos(Size canvasSize) {
-    final data = _pathData;
+  /// Computes the end-of-path robot position for path at [index].
+  Offset? _endRobotPos(int index, Size canvasSize) {
+    final data = _parsedPaths[index];
     if (data == null || data.curves.isEmpty) return null;
     final endpoints = data.scaledEndpoints(canvasSize);
     return endpoints.last;
   }
 
-  /// Computes the end-of-path robot rotation from the parsed path data.
-  double get _endRobotRot {
-    final data = _pathData;
+  /// Computes the end-of-path robot rotation for path at [index].
+  double _endRobotRot(int index) {
+    final data = _parsedPaths[index];
     if (data == null || data.rotations.isEmpty) return 0;
     return data.rotations.last;
   }
 
-  /// Scales a normalized playback position to pixel coordinates.
-  Offset? _scaledPlaybackPos(Size canvasSize) {
-    final pos = _playbackRobotPos;
+  /// Scales a normalized playback position to pixel coordinates for path at [index].
+  Offset? _scaledPlaybackPos(int index, Size canvasSize) {
+    final pos = _playbackPositions[index];
     if (pos == null) return null;
     final scale = max(canvasSize.width, canvasSize.height);
     return Offset(pos.dx * scale, pos.dy * scale);
+  }
+
+  /// Builds the per-path config with color overrides.
+  BotPathConfig _configForPath(int index) {
+    final color = _effectivePaths[index].color;
+    return widget.config.copyWith(
+      pathColor: color,
+      robotColor: color.withAlpha(0x4D),
+    );
   }
 
   @override
@@ -386,28 +488,29 @@ class _BotPathViewerState extends State<BotPathViewer>
                             ),
                           ),
                         ),
-                        // Path overlay
-                        if (_pathData != null)
-                          Positioned.fill(
-                            child: CustomPaint(
-                              painter: PathPainter(
-                                config: widget.config,
-                                rawPath: const [],
-                                fittedCurves:
-                                    _getScaledCurves(canvasSize),
-                                robotPosition: null,
-                                robotRotation: 0,
-                                endRobotPos: _playbackRobotPos == null
-                                    ? _endRobotPos(canvasSize)
-                                    : null,
-                                endRobotRot: _endRobotRot,
-                                playbackRobotPos:
-                                    _scaledPlaybackPos(canvasSize),
-                                playbackRobotRot: _playbackRobotRot,
-                                showHighlight: false,
+                        // Path overlays — one painter per path
+                        for (var i = 0; i < _effectivePaths.length; i++)
+                          if (_parsedPaths[i] != null)
+                            Positioned.fill(
+                              child: CustomPaint(
+                                painter: PathPainter(
+                                  config: _configForPath(i),
+                                  rawPath: const [],
+                                  fittedCurves:
+                                      _getScaledCurves(i, canvasSize),
+                                  robotPosition: null,
+                                  robotRotation: 0,
+                                  endRobotPos: _playbackPositions[i] == null
+                                      ? _endRobotPos(i, canvasSize)
+                                      : null,
+                                  endRobotRot: _endRobotRot(i),
+                                  playbackRobotPos:
+                                      _scaledPlaybackPos(i, canvasSize),
+                                  playbackRobotRot: _playbackRotations[i],
+                                  showHighlight: false,
+                                ),
                               ),
                             ),
-                          ),
                         // Play/Stop toggle + speed controls
                         Positioned(
                           top: 8,
@@ -420,7 +523,7 @@ class _BotPathViewerState extends State<BotPathViewer>
                                     ? Icons.stop
                                     : Icons.play_arrow,
                                 label: isPlaying ? 'Stop' : 'Play',
-                                onPressed: _pathData != null
+                                onPressed: _hasValidPaths
                                     ? (isPlaying
                                         ? _stopPlayback
                                         : _startPlayback)
@@ -526,20 +629,18 @@ class _SpeedControl extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final disabledColor = textColor.withAlpha(77);
-    return TextButton(
-      onPressed: () {},
-      style: TextButton.styleFrom(
-        backgroundColor: bgColor,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          GestureDetector(
+          InkWell(
             onTap: canDecrement ? onDecrement : null,
+            borderRadius: BorderRadius.circular(12),
             child: Icon(
               Icons.remove,
               size: 18,
@@ -553,8 +654,9 @@ class _SpeedControl extends StatelessWidget {
               style: TextStyle(color: textColor, fontSize: 13),
             ),
           ),
-          GestureDetector(
+          InkWell(
             onTap: canIncrement ? onIncrement : null,
+            borderRadius: BorderRadius.circular(12),
             child: Icon(
               Icons.add,
               size: 18,

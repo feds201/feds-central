@@ -89,23 +89,14 @@ class DemoHome extends StatefulWidget {
 }
 
 class _DemoHomeState extends State<DemoHome> {
-  final List<String> _paths = [];
-  int _selectedIndex = 0;
-  bool _useCustomColors = false;
+  /// Mutable team data: team label -> {path name -> path data}.
+  late Map<String, Map<String, String>> _teams;
 
-  String? get _selectedPath =>
-      _paths.isNotEmpty ? _paths[_selectedIndex] : null;
+  /// Text controllers for the draw dialog.
+  final _pathNameController = TextEditingController(text: 'Sample');
+  final _teamNameController = TextEditingController(text: '201');
 
   BotPathConfig get _config {
-    if (_useCustomColors) {
-      return BotPathConfig(
-        backgroundImage: AssetImage('assets/bg.jpg'),
-        pathColor: Colors.cyan,
-        robotColor: Color(0x33FF5722),
-        startColor: Colors.blue,
-        endColor: Colors.purple,
-      );
-    }
     return BotPathConfig(
       backgroundImage: const AssetImage('assets/bg.jpg'),
     );
@@ -124,6 +115,26 @@ class _DemoHomeState extends State<DemoHome> {
 
   BotPathConfig get _configWithBrightness {
     return _config.copyWith(brightness: _brightnessOverride);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _teams = {};
+  }
+
+  @override
+  void dispose() {
+    _pathNameController.dispose();
+    _teamNameController.dispose();
+    super.dispose();
+  }
+
+  Map<String, TeamPaths> get _teamPaths {
+    return {
+      for (final entry in _teams.entries)
+        entry.key: TeamPaths(paths: entry.value),
+    };
   }
 
   void _openDrawer() async {
@@ -152,10 +163,21 @@ class _DemoHomeState extends State<DemoHome> {
               onSave: (pathData) {
                 Navigator.of(dialogContext).pop();
                 if (pathData != null) {
-                  setState(() {
-                    _paths.add(pathData);
-                    _selectedIndex = _paths.length - 1;
-                  });
+                  final teamName = _teamNameController.text.trim();
+                  final pathName = _pathNameController.text.trim();
+                  if (teamName.isNotEmpty && pathName.isNotEmpty) {
+                    setState(() {
+                      _teams.putIfAbsent(teamName, () => {});
+                      // Ensure unique name within team
+                      var name = pathName;
+                      var counter = 2;
+                      while (_teams[teamName]!.containsKey(name)) {
+                        name = '$pathName $counter';
+                        counter++;
+                      }
+                      _teams[teamName]![name] = pathData;
+                    });
+                  }
                 }
               },
             ),
@@ -214,153 +236,77 @@ class _DemoHomeState extends State<DemoHome> {
                         widget.onThemeModeChanged(ThemeMode.dark),
                     child: const Icon(Icons.dark_mode, size: 18),
                   ),
+                ],
+              ),
+              const SizedBox(height: 16),
+
+              // Draw controls row
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Path name field
+                  SizedBox(
+                    width: 120,
+                    child: TextField(
+                      controller: _pathNameController,
+                      decoration: const InputDecoration(
+                        labelText: 'Path name',
+                        isDense: true,
+                        border: OutlineInputBorder(),
+                      ),
+                      style: const TextStyle(fontSize: 13),
+                    ),
+                  ),
                   const SizedBox(width: 8),
-                  // Custom colors toggle
-                  _toggleButton(
-                    selected: _useCustomColors,
-                    onPressed: () =>
-                        setState(() => _useCustomColors = !_useCustomColors),
-                    child: const Text('Custom colors'),
+                  // Team name field
+                  SizedBox(
+                    width: 80,
+                    child: TextField(
+                      controller: _teamNameController,
+                      decoration: const InputDecoration(
+                        labelText: 'Team',
+                        isDense: true,
+                        border: OutlineInputBorder(),
+                      ),
+                      style: const TextStyle(fontSize: 13),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  FilledButton.tonalIcon(
+                    onPressed: _openDrawer,
+                    icon: const Icon(Icons.draw, size: 18),
+                    label: const Text('Draw'),
+                  ),
+                  const SizedBox(width: 8),
+                  FilledButton.tonal(
+                    onPressed: () {
+                      setState(() => _teams.clear());
+                    },
+                    child: const Text('Clear All'),
                   ),
                 ],
               ),
               const SizedBox(height: 16),
 
-              // Draw button
-              FilledButton.tonalIcon(
-                onPressed: _openDrawer,
-                icon: const Icon(Icons.draw, size: 18),
-                label: const Text('Draw New Path'),
-              ),
-              const SizedBox(height: 16),
-
-              // Path navigator or empty state
-              if (_paths.isEmpty)
+              // Strategy viewer
+              if (_teams.isEmpty)
                 Expanded(
                   child: Center(
                     child: Text(
-                      'No paths saved, create one!',
+                      'No paths saved, draw one!',
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                             color: Colors.grey,
                           ),
                     ),
                   ),
                 )
-              else ...[
-                // Compact navigator: << [Path 1 of 5] >> [delete]
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    FilledButton.tonal(
-                      onPressed: _selectedIndex > 0
-                          ? () => setState(() => _selectedIndex--)
-                          : null,
-                      child: const Icon(Icons.chevron_left, size: 18),
-                    ),
-                    const SizedBox(width: 4),
-                    PopupMenuButton<int>(
-                      onSelected: (i) =>
-                          setState(() => _selectedIndex = i),
-                      itemBuilder: (_) => [
-                        for (var i = 0; i < _paths.length; i++)
-                          PopupMenuItem(
-                            value: i,
-                            child: Text('Path ${i + 1}'),
-                          ),
-                      ],
-                      // IgnorePointer lets PopupMenuButton handle the tap
-                      // while the button still looks enabled.
-                      child: IgnorePointer(
-                        child: FilledButton.tonal(
-                          onPressed: () {},
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                'Path ${_selectedIndex + 1} of ${_paths.length}',
-                              ),
-                              const SizedBox(width: 4),
-                              const Icon(Icons.arrow_drop_down, size: 18),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    FilledButton.tonal(
-                      onPressed: _selectedIndex < _paths.length - 1
-                          ? () => setState(() => _selectedIndex++)
-                          : null,
-                      child: const Icon(Icons.chevron_right, size: 18),
-                    ),
-                    const SizedBox(width: 4),
-                    FilledButton.tonal(
-                      onPressed: () {
-                        setState(() {
-                          _paths.removeAt(_selectedIndex);
-                          if (_selectedIndex >= _paths.length &&
-                              _paths.isNotEmpty) {
-                            _selectedIndex = _paths.length - 1;
-                          }
-                        });
-                      },
-                      child: const Icon(Icons.delete_outline, size: 18),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-
-                // Viewer
+              else
                 Expanded(
-                  child: BotPathViewer(
+                  child: BotPathViewerWithSelector(
                     config: _configWithBrightness,
-                    pathData: _selectedPath!,
+                    teams: _teamPaths,
                   ),
                 ),
-                const SizedBox(height: 8),
-
-                // Serialized data
-                Text('Serialized path data:',
-                    style: Theme.of(context).textTheme.labelSmall),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 6),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          _selectedPath!,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontFamily: 'monospace',
-                            fontSize: 11,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    FilledButton.tonal(
-                      onPressed: () {
-                        Clipboard.setData(
-                            ClipboardData(text: _selectedPath!));
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Copied!'),
-                            duration: Duration(seconds: 1),
-                          ),
-                        );
-                      },
-                      child: const Icon(Icons.copy, size: 16),
-                    ),
-                  ],
-                ),
-              ],
             ],
           ),
         ),

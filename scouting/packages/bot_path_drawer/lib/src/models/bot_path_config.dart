@@ -54,10 +54,20 @@ class BotPathConfig {
   /// Color used for the path line, intake edge, rotation dial indicator,
   /// and touch highlight circle (at reduced opacity).
   ///
+  /// Always used by [BotPathDrawer] during drawing. Used by [BotPathViewer]
+  /// only with the legacy single-path [pathData] API; when using [paths]
+  /// with [BotViewerPath] entries, each path's [BotViewerPath.color] takes
+  /// precedence.
+  ///
   /// Defaults to [Colors.yellow].
   final Color pathColor;
 
   /// Fill color for the robot body rectangle.
+  ///
+  /// Always used by [BotPathDrawer] during drawing. Used by [BotPathViewer]
+  /// only with the legacy single-path [pathData] API; when using [paths]
+  /// with [BotViewerPath] entries, the robot color is derived from each
+  /// path's [BotViewerPath.color] at 30% opacity.
   ///
   /// Defaults to semi-transparent blue: Color(0x332196F3).
   final Color robotColor;

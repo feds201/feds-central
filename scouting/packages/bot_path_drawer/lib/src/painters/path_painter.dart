@@ -147,7 +147,23 @@ class PathPainter extends CustomPainter {
       canvas.drawPath(curvePath, curvePaint);
 
       canvas.drawCircle(startPt, dotRadius, Paint()..color = config.startColor);
+      canvas.drawCircle(
+        startPt,
+        dotRadius,
+        Paint()
+          ..color = config.pathColor
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 1.5,
+      );
       canvas.drawCircle(endPt, dotRadius, Paint()..color = config.endColor);
+      canvas.drawCircle(
+        endPt,
+        dotRadius,
+        Paint()
+          ..color = config.pathColor
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 1.5,
+      );
     }
 
     // Live robot with optional highlight circle (while finger/mouse is held down)

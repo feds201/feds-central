@@ -47,9 +47,9 @@ BotPathDrawer(
 
 The example opens it in a dialog — see [`_openDrawer()`](example/lib/main.dart) (line 129). That function also shows how to lock orientation to landscape while drawing.
 
-### 4. Play back a saved path
+### 4. Play back saved paths
 
-Pass the saved string to a `BotPathViewer`:
+Pass one or more saved paths to a `BotPathViewer`. The single-path API still works:
 
 ```dart
 BotPathViewer(
@@ -58,7 +58,43 @@ BotPathViewer(
 )
 ```
 
-See [the example's viewer usage](example/lib/main.dart) (line 315).
+To display multiple paths simultaneously, each with its own color:
+
+```dart
+BotPathViewer(
+  config: config,
+  paths: [
+    BotViewerPath(pathData: path1, color: Colors.red),
+    BotViewerPath(pathData: path2, color: Colors.blue),
+  ],
+)
+```
+
+Each path's `color` is used for the path line, robot fill (at 30% opacity), intake edge, and start/end dot outlines. The dot fills stay green/red from `BotPathConfig.startColor`/`endColor`.
+
+### 5. Team/path strategy viewer
+
+For match strategy, use `BotPathViewerWithSelector` to let users pick which paths to display from multiple teams:
+
+```dart
+BotPathViewerWithSelector(
+  config: config,
+  teams: {
+    '201': TeamPaths(paths: {
+      'Left Start': serializedPath1,
+      'Center Start': serializedPath2,
+    }),
+    '254': TeamPaths(
+      paths: {'Rush': serializedPath3},
+      color: Colors.purple,  // optional override
+    ),
+  },
+)
+```
+
+This shows a collapsible sidebar with expandable team sections and checkboxes per path. The first path of each team is selected by default.
+
+**Color assignment:** Teams are auto-assigned base colors (red, green, blue) unless overridden via `TeamPaths.color`. Selected paths within a team vary by saturation from 100% down to 30%.
 
 ### Run the example
 
@@ -84,8 +120,8 @@ Shared configuration for both widgets. Only `backgroundImage` is required.
 | `defaultPlaybackSpeed` | `4.0` | Initial speed multiplier. |
 | `maxPlaybackSpeed` | `10.0` | Maximum speed multiplier. |
 | `playbackDurationMs` | `20000` | Base playback duration at 1x speed (ms). Defaults to 20s (FRC auto period). Set to `null` to use the path's actual recorded duration instead. |
-| `pathColor` | yellow | Path line, intake edge, dial indicator, highlight. |
-| `robotColor` | semi-transparent blue | Robot body fill. |
+| `pathColor` | yellow | Path line, intake edge, dial indicator, highlight. Used by `BotPathDrawer` always; used by `BotPathViewer` only with the legacy `pathData` API (overridden by `BotViewerPath.color` when using `paths`). |
+| `robotColor` | semi-transparent blue | Robot body fill. Same scoping as `pathColor` — overridden per-path when using `paths`. |
 | `startColor` / `endColor` | green / red | Endpoint indicator circles. |
 | `highlightSizeMultiplier` | `5.0` | Touch highlight circle radius relative to robot size. |
 | `simplificationError` | `50` | Curve fitting error tolerance. Lower = tighter fit (more curves). Higher = simpler (fewer curves). |
@@ -121,11 +157,31 @@ The drawing widget. Props: `config` and `onSave`.
 
 ### BotPathViewer
 
-The playback widget. Props: `config` and `pathData` (the serialized string from `BotPathDrawer`).
+The playback widget. Props: `config`, and either `pathData` (single path) or `paths` (multiple `BotViewerPath` entries).
 
+- Renders one or many paths simultaneously, each with its own color
 - Play/Stop toggle and discrete speed steps, overlaid on the canvas
-- Shows the robot at the end of the path when not playing
-- Re-parses automatically if `pathData` changes. No re-parse needed on resize.
+- All paths animate in sync; the longest path determines the base duration
+- Shows each robot at its end position when not playing
+- Re-parses automatically when `pathData` or `paths` changes. No re-parse needed on resize.
+
+### BotViewerPath
+
+A path entry for multi-path viewing. Fields: `pathData` (serialized string) and `color` (used for path line, robot fill at 30% opacity, intake edge, and start/end dot outlines).
+
+### BotPathViewerWithSelector
+
+A wrapper around `BotPathViewer` with a collapsible sidebar for team/path selection. Props: `config` and `teams` (a `Map<String, TeamPaths>`).
+
+- Sidebar shows expandable team sections with checkboxes per path
+- Colored dots next to teams (base color) and paths (saturation variant)
+- First path of each team is selected by default
+- Teams auto-assigned base colors (red, green, blue) unless `TeamPaths.color` is set
+- Selected paths within a team vary by saturation: 100% → 30%
+
+### TeamPaths
+
+A team's paths for `BotPathViewerWithSelector`. Fields: `paths` (map of name → serialized path string) and optional `color` (base color override).
 
 ### BotPathData
 
