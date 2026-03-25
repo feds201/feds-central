@@ -7,23 +7,20 @@ package frc.robot.subsystems.led;
 
 import com.lumynlabs.connection.usb.USBPort;
 import com.lumynlabs.devices.ConnectorXAnimate;
-import com.lumynlabs.domain.config.ConfigBuilder;
 import com.lumynlabs.domain.led.Animation;
-import com.lumynlabs.domain.led.DirectLED;
 
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.units.Units;
-import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.shooter.ShooterWheels.shooter_state;
 import frc.robot.commands.swerve.TeleopSwerve.driveMode;
-import frc.robot.subsystems.shooter.ShooterHood.shooterhood_state;;
+import frc.robot.subsystems.shooter.ShooterHood.shooterhood_state;
+import frc.robot.subsystems.shooter.ShooterWheels.shooter_state;;
 
 
 public class LedsSubsystem extends SubsystemBase {
@@ -32,7 +29,9 @@ public class LedsSubsystem extends SubsystemBase {
   public static shooter_state m_shooter_state;
   public static driveMode m_driveMode;
   public static shooterhood_state m_shooterhood_state;
-
+  LEDState desiredState = LEDState.IDLE;
+  private double m_lastHeartbeat = -1;
+  private int m_heartbeatStuckCount = 0;
 
 
 
@@ -43,17 +42,28 @@ public class LedsSubsystem extends SubsystemBase {
     return instance;
   }
 
-  private boolean isLimelightConnected() {
-    var entry = NetworkTableInstance.getDefault()
-        .getTable("limelight")
-        .getEntry("tv");
-
-    long lastUpdate = entry.getLastChange();
-    long now = System.currentTimeMillis();
-
-    return (now - lastUpdate) < 500; // 0.5 sec timeout
+  public static boolean isjammed() {
+    // Placeholder for actual jamming detection logic
+    // This could be based on motor current spikes, encoder feedback, etc.
+    return false; // Replace with real condition
   }
 
+  public boolean isLimelightStable() {
+    double currentHeartbeat = NetworkTableInstance.getDefault()
+        .getTable("limelight")
+        .getEntry("hb")
+        .getDouble(-1);
+
+    if (currentHeartbeat == m_lastHeartbeat) {
+        m_heartbeatStuckCount++;
+    } else {
+        m_heartbeatStuckCount = 0;
+        m_lastHeartbeat = currentHeartbeat;
+    }
+
+    // If the heartbeat hasn't changed in 10 loops (~200ms), it's unstable
+    return m_heartbeatStuckCount < 10;
+}
 
 
   public static enum LEDState {              
@@ -128,91 +138,52 @@ public class LedsSubsystem extends SubsystemBase {
     return m_isConnected;
   }
 
-  
-
-  // private LEDState checkForErrors() {
-  //   // CAN errors
-  //   if (RobotController.getCANStatus().percentBusUtilization > 0.8) {
-  //       return LEDState.ERROR_CAN;
-  //   }
-  //       if (!isLimelightConnected()) {
-  //       return LEDState.ERROR_LL;
-  //   }
-
-
-  //   else {
-
-  //     return null; // No errors detected
-  //   }
-
-  // }
-
-  
-  
-
   @Override
   public void periodic() {  
-
-      // LEDState errorState = checkForErrors();
-    
-    // if (errorState != null) {
-    //   if (m_currentState != errorState) {
-    //     m_currentState = errorState;
-    //     applyState(m_currentState);
-    //     m_lastState = m_currentState; // Update last state to prevent immediate override
-    //   }
-
-    //   else if (m_currentState == errorState) {
-    //     // Already in the correct error state, no need to re-apply
-    //   }
-    //   return; // Skip normal state handling if we're in an error state
-    // }
-    
-
-  
-    if (m_shooter_state == shooter_state.SHOOTING || m_shooter_state == shooter_state.HALFCOURT || m_shooter_state == shooter_state.LAYUP || m_shooter_state == shooter_state.TEST || m_shooter_state == shooter_state.PASSING) {
-      setState(LEDState.SHOOTING);
+ //Highest Priority: probs
+    if (RobotController.getCANStatus().percentBusUtilization > 0.8) {
+        desiredState = LEDState.ERROR_CAN;
+    } 
+    else if (isLimelightStable() == false) {
+        desiredState = LEDState.ERROR_LL;
     }
-    // Use null-safe name() checks instead of direct enum constants so this file compiles
-    // even if the enum declares different constant names.
-    if (m_driveMode != null && "FALCON_DRIVE".equals(m_driveMode.name())) {
-      setState(LEDState.FALCON_DRIVE);
+
+    else if ( isjammed() = DriverStation.reportError) { 
+        desiredState = LEDState.ERROR_JAMMING;
+    }
+
+    //2 Highest Priority: Shooter
+    if (m_shooter_state == shooter_state.SHOOTING || m_shooter_state == shooter_state.HALFCOURT 
+        || m_shooter_state == shooter_state.LAYUP || m_shooter_state == shooter_state.TEST 
+        || m_shooter_state == shooter_state.PASSING) {
+        desiredState = LEDState.SHOOTING;
+    } 
+    // Medium Priority: Driving Modes
+    else if (m_driveMode != null && "FALCON_DRIVE".equals(m_driveMode.name())) {
+        desiredState = LEDState.FALCON_DRIVE;
     }
     else if (m_driveMode != null && "HUB_DRIVE".equals(m_driveMode.name())) {
-      setState(LEDState.HUB_DRIVE);
+        desiredState = LEDState.HUB_DRIVE;
     }
-      else if (m_shooterhood_state != null && "AIMING_UP".equals(m_shooterhood_state.name())) {
-        setState(LEDState.AIMED);
-      }
-      else if (m_shooterhood_state != null && "AIMING_DOWN".equals(m_shooterhood_state.name())) {
-        setState(LEDState.AIMED);
-      }
-    
-
-    // Handle IDLE state dynamic changes based on Robot Mode (Disabled/Enabled/Auto)
-    if (m_currentState == LEDState.IDLE) {
-      boolean isDisabled = DriverStation.isDisabled();
-      boolean isAuto = DriverStation.isAutonomous();
-      // If the robot mode changed, we need to re-apply the IDLE state to update the pattern
-      if (isDisabled != m_wasDisabled || isAuto != m_wasAuto) {
-        applyState(LEDState.IDLE);
-        m_wasDisabled = isDisabled;
-        m_wasAuto = isAuto;
-      }
+    // Lower Priority: Aiming
+    else if (m_shooterhood_state != null && 
+            ("AIMING_UP".equals(m_shooterhood_state.name()) || "AIMING_DOWN".equals(m_shooterhood_state.name()))) {
+        desiredState = LEDState.AIMED;
     }
 
-    // Check if state requested changed explicitly
-    if (m_currentState != m_lastState) {
-      applyState(m_currentState);
-      m_lastState = m_currentState;
-
+    // 2. Handle IDLE sub-states (Disabled/Auto/Tele)
+    if (desiredState == LEDState.IDLE) {
+        if (DriverStation.isDisabled()) desiredState = LEDState.DISABLE;
+        else if (DriverStation.isAutonomous()) desiredState = LEDState.AUTON;
+        else desiredState = LEDState.TELEOP;
     }
 
-    else {
-    setState(LEDState.IDLE); // Default to IDLE if no other state is active
+    // 3. Only apply if the state actually changed
+    if (desiredState != m_lastState) {
+        applyState(desiredState);
+        m_lastState = desiredState;
     }
-
-  }
+}
 
  
 
@@ -368,17 +339,6 @@ public class LedsSubsystem extends SubsystemBase {
 
   public Command setStateCommand(LEDState state) {
     return runOnce(() -> setState(state)).ignoringDisable(true);
-  }
-  
-  public Command runStateCommand(LEDState state) {
-    return startEnd(
-      () -> setState(state),
-      () -> setState(LEDState.IDLE)
-    ).ignoringDisable(false);
-  }
-  
-  public Command tempStateCommand(LEDState state, double seconds) {
-    return runStateCommand(state).withTimeout(seconds);
   }
 
 
