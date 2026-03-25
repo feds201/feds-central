@@ -58,7 +58,6 @@ public final class RobotMap {
         public static final int kLimit_switch_lID = 3; 
         public static final int kRollerMotorID = 62;
         public static final double agitateCycleConstant = 0.5;
-        public static final double burstAgitation = 7.7;
 
     }
 
