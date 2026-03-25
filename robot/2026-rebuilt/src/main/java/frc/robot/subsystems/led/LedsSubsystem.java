@@ -21,15 +21,18 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.shooter.ShooterHood;
-import frc.robot.subsystems.shooter.ShooterWheels;
+import frc.robot.subsystems.shooter.ShooterWheels.shooter_state;
+import frc.robot.commands.swerve.TeleopSwerve.driveMode;
+import frc.robot.subsystems.shooter.ShooterHood.shooterhood_state;;
 
 
 public class LedsSubsystem extends SubsystemBase {
   public ConnectorXAnimate m_leds = new ConnectorXAnimate();
   private static LedsSubsystem instance;
-  private ShooterWheels m_shooterWheels;
-  private ShooterHood m_shooterHood;
+  public static shooter_state m_shooter_state;
+  public static driveMode m_driveMode;
+  public static shooterhood_state m_shooterhood_state;
+
 
 
 
@@ -78,8 +81,6 @@ public class LedsSubsystem extends SubsystemBase {
 
   private LEDState m_currentState = LEDState.IDLE;
   private LEDState m_lastState = LEDState.OFF; // Force initial update
-  //private LEDState m_ledState = ShooterWheels.shooter_state.getCurrentState(); 
-
   private boolean m_wasDisabled = false;
   private boolean m_wasAuto = false;
   private boolean m_isConnected = false;
@@ -109,8 +110,7 @@ public class LedsSubsystem extends SubsystemBase {
 
 
   public LedsSubsystem() {
-    m_shooterWheels = null;
-    m_shooterHood = null;
+   // m_shooterWheels = null;
     // for (Subsystem subsystem : subsystems) {
     //   if (subsystem instanceof ShooterWheels) { m_shooterWheels = (ShooterWheels) subsystem; }
     //   if (subsystem instanceof ShooterHood) { m_shooterHood = (ShooterHood) subsystem;}
@@ -170,18 +170,24 @@ public class LedsSubsystem extends SubsystemBase {
     
 
   
-    // if (m_shooterWheels != null && m_shooterWheels.getCurrentState() == shooter_state.SHOOTING) {
-    //     setState(LEDState.SHOOTING);
-    // } 
-    // else if (m_shooterHood != null && m_shooterHood.getCurrentState() == shooterhood_state.AIMING_UP || m_shooterHood.getCurrentState() == shooterhood_state.AIMING_DOWN) {
-    //     setState(LEDState.AIMED);
-    // }
-    // else if (m_climb.getState() == climb_state.CLIMBING) {
-    //     setState(LEDState.CLIMBING);
-    // }
-
-
-
+    if (m_shooter_state == shooter_state.SHOOTING || m_shooter_state == shooter_state.HALFCOURT || m_shooter_state == shooter_state.LAYUP || m_shooter_state == shooter_state.TEST || m_shooter_state == shooter_state.PASSING) {
+      setState(LEDState.SHOOTING);
+    }
+    // Use null-safe name() checks instead of direct enum constants so this file compiles
+    // even if the enum declares different constant names.
+    if (m_driveMode != null && "FALCON_DRIVE".equals(m_driveMode.name())) {
+      setState(LEDState.FALCON_DRIVE);
+    }
+    else if (m_driveMode != null && "HUB_DRIVE".equals(m_driveMode.name())) {
+      setState(LEDState.HUB_DRIVE);
+    }
+      else if (m_shooterhood_state != null && "AIMING_UP".equals(m_shooterhood_state.name())) {
+        setState(LEDState.AIMED);
+      }
+      else if (m_shooterhood_state != null && "AIMING_DOWN".equals(m_shooterhood_state.name())) {
+        setState(LEDState.AIMED);
+      }
+    
 
     // Handle IDLE state dynamic changes based on Robot Mode (Disabled/Enabled/Auto)
     if (m_currentState == LEDState.IDLE) {
