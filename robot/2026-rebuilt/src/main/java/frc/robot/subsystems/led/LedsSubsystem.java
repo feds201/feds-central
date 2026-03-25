@@ -4,13 +4,12 @@
 
 package frc.robot.subsystems.led;
 
-import java.lang.ModuleLayer.Controller;
 
-import com.ctre.phoenix6.hardware.TalonFX;
 import com.lumynlabs.connection.usb.USBPort;
 import com.lumynlabs.devices.ConnectorXAnimate;
 import com.lumynlabs.domain.led.Animation;
-import edu.wpi.first.hal.simulation.AnalogInDataJNI;
+
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
@@ -19,12 +18,9 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.utils.LimelightHelpers;
-import frc.robot.RobotContainer;
-import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.shooter.ShooterHood;
-import frc.robot.subsystems.shooter.ShooterWheels;
 import frc.robot.subsystems.shooter.ShooterHood.shooterhood_state;
+import frc.robot.subsystems.shooter.ShooterWheels;
 import frc.robot.subsystems.shooter.ShooterWheels.shooter_state;
 
 
@@ -35,12 +31,24 @@ public class LedsSubsystem extends SubsystemBase {
   private ShooterHood m_shooterHood;
 
 
-   public static LedsSubsystem getInstance(Subsystem[] subsystems) { 
+   public static LedsSubsystem getInstance() { 
     if (instance == null) {
-      instance = new LedsSubsystem(subsystems);
+      instance = new LedsSubsystem();
     }
     return instance;
   }
+
+  private boolean isLimelightConnected() {
+    var entry = NetworkTableInstance.getDefault()
+        .getTable("limelight")
+        .getEntry("tv");
+
+    long lastUpdate = entry.getLastChange();
+    long now = System.currentTimeMillis();
+
+    return (now - lastUpdate) < 500; // 0.5 sec timeout
+  }
+
 
 
   public static enum LEDState {              
@@ -48,15 +56,17 @@ public class LedsSubsystem extends SubsystemBase {
     HUB_DRIVE,                       // TBD
     AIMED,                          // When aimed should be fill solid Red
     SHOOTING,                      // Shooting should be blue coment kinda fast
-    CLIMBING,                     // Rainbow         
+    // CLIMBING,                     // Rainbow         
     ERROR_LL,                    //Error limelight should be blink Limelight green at 200ms
     ERROR_CAN,                  //Error: CAN blink green and yellow at 400ms and should be altrnate
     ERROR_JAMMING,             //Error: jamming should be blink scarlett at 200ms
     ERROR_OTHER,              // blink pruple at 200ms
     IDLE,                    // Default state, should be solid yellow when disabled, solid red in auto, and blinking yellow in teleop
     OFF,                    // All LEDs off   
-    STARTUP_TEST,          // Tests state for startup testing animation;
-
+    STARTUP_TEST,         // Tests state for startup testing animation;
+    DISABLE,
+    TELEOP,
+    AUTON;
 
                //Error: other should blink purple at 200ms
                     
@@ -96,19 +106,19 @@ public class LedsSubsystem extends SubsystemBase {
   private static final Color COLOR_PURPLE = new Color(new Color8Bit(128, 0, 128));
 
 
-  public LedsSubsystem(Subsystem[] subsystems) {
+  public LedsSubsystem() {
     m_shooterWheels = null;
     m_shooterHood = null;
     // m_climb = null;
 
 
 
-    for (Subsystem subsystem : subsystems) {
-      if (subsystem instanceof ShooterWheels) { m_shooterWheels = (ShooterWheels) subsystem; break; }
-      if (subsystem instanceof ShooterHood) { m_shooterHood = (ShooterHood) subsystem; break; }
-      // Climb is currently not used for LED state changes, but we can easily add it in the future if needed
-      // else if (subsystem instanceof Climb) { m_climb = (Climb) subsystem; break; }
-    }
+    // for (Subsystem subsystem : subsystems) {
+    //   if (subsystem instanceof ShooterWheels) { m_shooterWheels = (ShooterWheels) subsystem; }
+    //   if (subsystem instanceof ShooterHood) { m_shooterHood = (ShooterHood) subsystem;}
+    //   // Climb is currently not used for LED state changes, but we can easily add it in the future if needed
+    //   // else if (subsystem instanceof Climb) { m_climb = (Climb) subsystem;  }
+    // }
 
 
     // Connect to the device on USB port 2
@@ -124,18 +134,22 @@ public class LedsSubsystem extends SubsystemBase {
 
   
 
-  private LEDState checkForErrors() {
-    // CAN errors
-    if (RobotController.getCANStatus().percentBusUtilization > 0.8) {
-        return LEDState.ERROR_CAN;
-    }
+  // private LEDState checkForErrors() {
+  //   // CAN errors
+  //   if (RobotController.getCANStatus().percentBusUtilization > 0.8) {
+  //       return LEDState.ERROR_CAN;
+  //   }
+  //       if (!isLimelightConnected()) {
+  //       return LEDState.ERROR_LL;
+  //   }
 
-    else {
 
-      return LEDState.IDLE;
-    }
+  //   else {
 
-  }
+  //     return null; // No errors detected
+  //   }
+
+  // }
 
   
   
@@ -143,29 +157,29 @@ public class LedsSubsystem extends SubsystemBase {
   @Override
   public void periodic() {  
 
-    LEDState errorState = checkForErrors();
+      // LEDState errorState = checkForErrors();
     
-    if (errorState != null) {
-      if (m_currentState != errorState) {
-        m_currentState = errorState;
-        applyState(m_currentState);
-        m_lastState = m_currentState; // Update last state to prevent immediate override
-      }
+    // if (errorState != null) {
+    //   if (m_currentState != errorState) {
+    //     m_currentState = errorState;
+    //     applyState(m_currentState);
+    //     m_lastState = m_currentState; // Update last state to prevent immediate override
+    //   }
 
-      else if (m_currentState == errorState) {
-        // Already in the correct error state, no need to re-apply
-      }
-      return; // Skip normal state handling if we're in an error state
-    }
+    //   else if (m_currentState == errorState) {
+    //     // Already in the correct error state, no need to re-apply
+    //   }
+    //   return; // Skip normal state handling if we're in an error state
+    // }
     
 
   
-    if (m_shooterWheels.getCurrentState() == shooter_state.SHOOTING) {
-        setState(LEDState.SHOOTING);
-    } 
-    if (m_shooterHood.getCurrentState() == shooterhood_state.AIMING_UP || m_shooterHood.getCurrentState() == shooterhood_state.AIMING_DOWN) {
-        setState(LEDState.AIMED);
-    }
+    // if (m_shooterWheels != null && m_shooterWheels.getCurrentState() == shooter_state.SHOOTING) {
+    //     setState(LEDState.SHOOTING);
+    // } 
+    // else if (m_shooterHood != null && m_shooterHood.getCurrentState() == shooterhood_state.AIMING_UP || m_shooterHood.getCurrentState() == shooterhood_state.AIMING_DOWN) {
+    //     setState(LEDState.AIMED);
+    // }
     // else if (m_climb.getState() == climb_state.CLIMBING) {
     //     setState(LEDState.CLIMBING);
     // }
@@ -177,7 +191,6 @@ public class LedsSubsystem extends SubsystemBase {
     if (m_currentState == LEDState.IDLE) {
       boolean isDisabled = DriverStation.isDisabled();
       boolean isAuto = DriverStation.isAutonomous();
-      
       // If the robot mode changed, we need to re-apply the IDLE state to update the pattern
       if (isDisabled != m_wasDisabled || isAuto != m_wasAuto) {
         applyState(LEDState.IDLE);
@@ -193,6 +206,10 @@ public class LedsSubsystem extends SubsystemBase {
 
     }
 
+    else {
+    setState(LEDState.IDLE); // Default to IDLE if no other state is active
+    }
+
   }
 
  
@@ -201,11 +218,14 @@ public class LedsSubsystem extends SubsystemBase {
    * Directly set the state of the LEDs.
    * @param state The target state
    */
+
   public void setState(LEDState state) {
     m_currentState = state;
+        System.out.println("setState"+ state);
   }
 
   private void applyState(LEDState state) {
+            System.out.println("ApplyState"+ state);
     switch (state) {
       case OFF:
         m_leds.leds.SetColor(GR_300, new Color(0, 0, 0));
@@ -223,6 +243,21 @@ public class LedsSubsystem extends SubsystemBase {
             .RunOnce(false);
         break; 
 
+      case FALCON_DRIVE:
+        m_leds.leds.SetAnimation(Animation.Blink)
+            .ForGroup(GR_300)
+            .WithColor(COLOR_ORANGE)
+            .WithDelay(Units.Milliseconds.of(200))
+            .RunOnce(false);
+        break;
+
+      case HUB_DRIVE:
+        m_leds.leds.SetAnimation(Animation.Confetti)
+            .ForGroup(GR_300)
+            .WithColor(COLOR_GREEN)
+            .WithDelay(Units.Milliseconds.of(10))
+            .RunOnce(false);
+        break;
 
       case SHOOTING:
         m_leds.leds.SetAnimation(Animation.Comet)
@@ -232,14 +267,14 @@ public class LedsSubsystem extends SubsystemBase {
             .RunOnce(false);
         break;
         
-      case CLIMBING:
-        m_leds.leds.SetAnimation(Animation.RainbowRoll)
-            .ForGroup(GR_300)
-            .WithColor(COLOR_WHITE) // Color is ignored for Rainbow, but set it anyway
-            .WithDelay(Units.Milliseconds.of(10))
-            .Reverse(false)
-            .RunOnce(false);
-        break;
+      // case CLIMBING:
+      //   m_leds.leds.SetAnimation(Animation.RainbowRoll)
+      //       .ForGroup(GR_300)
+      //       .WithColor(COLOR_WHITE) // Color is ignored for Rainbow, but set it anyway
+      //       .WithDelay(Units.Milliseconds.of(10))
+      //       .Reverse(false)
+      //       .RunOnce(false);
+      //   break;
         
       case ERROR_LL:
           m_leds.leds.SetAnimation(Animation.Comet)
@@ -253,7 +288,7 @@ public class LedsSubsystem extends SubsystemBase {
           m_leds.leds.SetAnimation(Animation.Comet)
             .ForZone(ZONE_1)
             .WithColor(COLOR_YELLOW)
-            .ForGroup(ZONE_2)
+            .ForZone(ZONE_2)
             .WithColor(COLOR_GREEN)
             .ForZone(ZONE_3)
             .WithColor(COLOR_YELLOW)
@@ -292,36 +327,53 @@ public class LedsSubsystem extends SubsystemBase {
             .WithDelay(Units.Milliseconds.of(10))
             .RunOnce(true); // Run once for startup animation
         break;
+      
+      case DISABLE:
+        m_leds.leds.SetAnimation(Animation.Confetti)
+          .ForGroup(GR_300)
+          .WithColor(COLOR_PURPLE)
+          .WithDelay(Units.Milliseconds.of(10))
+          .RunOnce(false);
+        break;
+      
+      case AUTON:
+         m_leds.leds.SetAnimation(Animation.Fill)//Auton should be Confettie fast
+          .ForGroup(GR_300)
+          .WithColor(COLOR_RED)
+          .WithDelay(Units.Milliseconds.of(1))
+          .Reverse(false)
+          .RunOnce(false);
+        break;
+      case TELEOP:
+        m_leds.leds.SetAnimation(Animation.Blink)
+          .ForGroup(GR_300)
+          .WithColor(COLOR_YELLOW)
+          .WithDelay(Units.Milliseconds.of(200))  // Adjust speed here
+          .RunOnce(false);
+        break;
+        
+
     }
   }
 
  private void applyIdlePattern() {
   if (DriverStation.isDisabled()) {
     // Disabled – turn LEDs off (or change if you prefer something else)
-    m_leds.leds.SetAnimation(Animation.Confetti)
-            .ForGroup(GR_300)
-            .WithColor(COLOR_YELLOW)
-            .WithDelay(Units.Milliseconds.of(10))
-            .RunOnce(false);
+   setState(LEDState.DISABLE);
     
   } else if (DriverStation.isAutonomous()) {
     //  AUTON – Solid Red
-    m_leds.leds.SetAnimation(Animation.Fill)//Auton should be Confettie fast
-      .ForGroup(GR_300)
-      .WithColor(COLOR_RED)
-      .WithDelay(Units.Milliseconds.of(1))
-      .Reverse(false)
-      .RunOnce(false);
+   setState(LEDState.AUTON);
 
-  } else {
+  } else if (DriverStation.isTeleop()) {
     //Teleop should be Fill solid blue
-    m_leds.leds.SetAnimation(Animation.Blink)
-      .ForGroup(GR_300)
-      .WithColor(COLOR_YELLOW)
-      .WithDelay(Units.Milliseconds.of(200))  // Adjust speed here
-      .RunOnce(false);
+    setState(LEDState.TELEOP);
   }
 }
+
+
+
+
   public Command setStateCommand(LEDState state) {
     return runOnce(() -> setState(state)).ignoringDisable(true);
   }
@@ -338,7 +390,7 @@ public class LedsSubsystem extends SubsystemBase {
   }
 
   public Command shootingSignal() { return runStateCommand(LEDState.SHOOTING); }
-  public Command climbingSignal() { return runStateCommand(LEDState.CLIMBING); }
+  // public Command climbingSignal() { return runStateCommand(LEDState.CLIMBING); }
   public Command resetLEDS() { return setStateCommand(LEDState.IDLE); }
 
   @Deprecated
