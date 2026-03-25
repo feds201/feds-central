@@ -183,7 +183,7 @@ class PitRecord {
   final bool attitude;
   final String scoutingAccuracy;
   final String notCooperativeReason;
-  final String pathDraw;
+  final List<String?> pathDraw;
 
   PitRecord(
       {required this.teamNumber,
@@ -197,7 +197,7 @@ class PitRecord {
       required this.botImage1,
       required this.botImage2,
       required this.botImage3,
-      this.autoRoutes = const [],
+      this.autoRoutes =  const [],
       this.autoFuel = 0,
       this.gameData = false,
       this.weight = 0.0,
@@ -219,7 +219,7 @@ class PitRecord {
       this.attitude = true,
       this.scoutingAccuracy = '',
       this.notCooperativeReason = '',
-      this.pathDraw = ''});
+      this.pathDraw = const []});
 
   Map<String, dynamic> toJson() {
     return {
@@ -336,7 +336,9 @@ class PitRecord {
       attitude: json['attitude'] ?? true,
       scoutingAccuracy: json['scoutingAccuracy'] ?? '',
       notCooperativeReason: json['notCooperativeReason'] ?? '',
-      pathDraw: json['pathDraw'] ?? '',
+      pathDraw: json['pathDraw'] != null
+          ? List<String?>.from(json['pathDraw'])
+          : [],
     );
   }
 }

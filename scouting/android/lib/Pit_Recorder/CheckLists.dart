@@ -67,7 +67,7 @@ class _RecordState extends State<Record> {
   late String AttitudeController;
   late String ScoutingAccuracyController;
   late TextEditingController NotCooperativeReasonController;
-  late String PathDataController;
+  late List<String?> PathDataController;
 
   // Unit selectors
   String weightUnit = 'lbs';
@@ -117,7 +117,7 @@ class _RecordState extends State<Record> {
     AttitudeController = "Yes";
     ScoutingAccuracyController = "Accurate";
     NotCooperativeReasonController = TextEditingController();
-    PathDataController = " ";
+    PathDataController = [];
     // Load database and try to get existing data for this team
     PitDataBase.LoadAll();
     try {
@@ -265,8 +265,7 @@ class _RecordState extends State<Record> {
                       child: BotPathDrawer(
                         config: config,
                         onSave: (String? pathData) {
-                          String tempData = pathData ?? "";
-                          PathDataController = PathDataController + " New Path: " + tempData;
+                          PathDataController.add(pathData);
                         },
                       ),
                     ),
