@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../data/data_store.dart';
@@ -8,10 +9,10 @@ import '../data/models.dart';
 import '../import/drive_access.dart';
 import '../import/import_pipeline.dart';
 import '../import/local_drive_access.dart';
-import '../import/test_drive_access.dart';
+import '../import/usb_drive_service.dart';
 import '../import/video_metadata_service.dart';
+import '../util/constants.dart';
 import '../util/result.dart';
-import '../util/test_flags.dart';
 import 'import_preview_row.dart';
 
 class ImportTab extends StatefulWidget {
@@ -48,25 +49,55 @@ class _ImportTabState extends State<ImportTab>
   /// The active LocalDriveAccess when importing from a local source.
   LocalDriveAccess? _activeLocalDriveAccess;
 
-  late final DriveAccess _driveAccess;
+  /// Detected USB drives (null = not yet scanned, empty = no drives found).
+  List<DetectedUsbDrive>? _detectedDrives;
+  bool _isDetectingDrives = false;
+  bool _hasStoragePermission = true;
+  final UsbDriveService _usbDriveService = UsbDriveService();
+
   late final VideoMetadataService _metadataService;
   late ImportPipeline _pipeline;
-
 
   @override
   void initState() {
     super.initState();
-    _driveAccess = TestFlags.useSampleVideos
-        ? TestDriveAccess()
-        : TestDriveAccess(); // TODO: Replace with SafDriveAccess for production
     _metadataService = VideoMetadataService();
+    // Initialize with a dummy pipeline; it gets replaced when a source is selected
     _pipeline = ImportPipeline(
-      driveAccess: _driveAccess,
+      driveAccess: const LocalDriveAccess(dirPath: '', label: ''),
       metadataService: _metadataService,
       dataStore: widget.dataStore,
       storageDir: widget.storageDir,
     );
+    _checkPermissionAndDetectDrives();
+  }
 
+  Future<void> _checkPermissionAndDetectDrives() async {
+    final status = await Permission.manageExternalStorage.status;
+    if (mounted) {
+      setState(() => _hasStoragePermission = status.isGranted);
+    }
+    await _detectUsbDrives();
+  }
+
+  Future<void> _detectUsbDrives() async {
+    setState(() => _isDetectingDrives = true);
+    try {
+      final drives = await _usbDriveService.detectDrives();
+      if (mounted) {
+        setState(() {
+          _detectedDrives = drives;
+          _isDetectingDrives = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          _detectedDrives = [];
+          _isDetectingDrives = false;
+        });
+      }
+    }
   }
 
   Future<void> _connectDrive(String driveUri, {DateTime? newerThan}) async {
@@ -166,27 +197,51 @@ class _ImportTabState extends State<ImportTab>
       _isLocalSource = false;
       _activeLocalDriveAccess = null;
       _error = null;
-      // Restore the default pipeline
-      _pipeline = ImportPipeline(
-        driveAccess: _driveAccess,
-        metadataService: _metadataService,
-        dataStore: widget.dataStore,
-        storageDir: widget.storageDir,
-      );
     });
+    _detectUsbDrives();
   }
 
-  Future<void> _pickDrive() async {
-    final uri = await _driveAccess.pickDrive();
-    if (uri != null && mounted) {
-      _connectDrive(uri);
+  /// Connect a USB drive source (no time window, with optional pre-set alliance side).
+  Future<void> _connectUsbSource(DetectedUsbDrive detected) async {
+    final access = LocalDriveAccess(
+      dirPath: detected.drive.path,
+      label: detected.drive.label,
+    );
+    final dir = Directory(access.dirPath);
+    if (!await dir.exists()) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${access.label} is no longer connected')),
+        );
+      }
+      _detectUsbDrives();
+      return;
+    }
+
+    setState(() {
+      _isLocalSource = false;
+      _activeLocalDriveAccess = access;
+    });
+
+    _pipeline = ImportPipeline(
+      driveAccess: access,
+      metadataService: _metadataService,
+      dataStore: widget.dataStore,
+      storageDir: widget.storageDir,
+    );
+
+    await _connectDrive(access.dirPath);
+
+    // After scan completes, if alliance side was detected, apply it to all rows
+    if (detected.allianceSide != null && _sessionState != null) {
+      _onSetAllAllianceSide(detected.allianceSide!);
     }
   }
 
   /// Check if the drive is still connected. Returns true if connected.
   Future<bool> _checkDriveConnected() async {
     if (_sessionState == null) return false;
-    return _driveAccess.hasPermission(_sessionState!.driveUri);
+    return _pipeline.driveAccess.hasPermission(_sessionState!.driveUri);
   }
 
   /// Show a dialog when the drive is disconnected during review.
@@ -199,7 +254,7 @@ class _ImportTabState extends State<ImportTab>
       context: context,
       barrierDismissible: false,
       builder: (ctx) => _DriveDisconnectedDialog(
-        driveAccess: _driveAccess,
+        driveAccess: _pipeline.driveAccess,
         driveUri: _sessionState!.driveUri,
       ),
     );
@@ -438,10 +493,56 @@ class _ImportTabState extends State<ImportTab>
     }
 
     if (_sessionState == null) {
-      return Center(
+      return _buildSourceSelection();
+    }
+
+    return _buildPreviewList();
+  }
+
+  Widget _buildSourceSelection() {
+    final mappedDrives = _detectedDrives
+        ?.where((d) => d.allianceSide != null)
+        .toList() ?? [];
+    final unmappedDrives = _detectedDrives
+        ?.where((d) => d.allianceSide == null)
+        .toList() ?? [];
+    final noDrives = _detectedDrives != null && _detectedDrives!.isEmpty;
+
+    return Center(
+      child: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            // Permission warning banner
+            if (!_hasStoragePermission) ...[
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 24),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.red.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.red.shade300),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.warning, color: Colors.red.shade700),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'Storage permission required for USB drives',
+                        style: TextStyle(color: Colors.red.shade700),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () => openAppSettings(),
+                      child: const Text('Grant'),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
+
             const Icon(Icons.video_library, size: 64, color: Colors.grey),
             const SizedBox(height: 16),
             const Text(
@@ -449,20 +550,8 @@ class _ImportTabState extends State<ImportTab>
               style: TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 24),
-            FilledButton.icon(
-              onPressed: () {
-                // TODO: Replace with _pickDrive when SAF implementation exists
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('No USB drive connected'),
-                    duration: Duration(seconds: 2),
-                  ),
-                );
-              },
-              icon: const Icon(Icons.usb),
-              label: const Text('USB Drive'),
-            ),
-            const SizedBox(height: 12),
+
+            // Local sources first
             FilledButton.icon(
               onPressed: () => _connectLocalSource(
                 const LocalDriveAccess(dirPath: kCameraDir, label: 'Camera'),
@@ -478,29 +567,78 @@ class _ImportTabState extends State<ImportTab>
               icon: const Icon(Icons.share),
               label: const Text('Quick Share'),
             ),
-            if (TestFlags.useSampleVideos) ...[
-              const SizedBox(height: 12),
-              const Text(
-                'Test drives available:',
-                style: TextStyle(color: Colors.grey, fontSize: 12),
-              ),
-              const SizedBox(height: 8),
-              ...TestDriveAccess.availableDriveUris.map((uri) {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 4),
-                  child: OutlinedButton(
-                    onPressed: () => _connectDrive(uri),
-                    child: Text(uri.replaceFirst('test://', '')),
+
+            // USB drives section
+            const SizedBox(height: 24),
+            const Divider(indent: 48, endIndent: 48),
+            const SizedBox(height: 16),
+
+            // Alliance-detected USB drives
+            ...mappedDrives.map((detected) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: _UsbDriveButton(
+                  detected: detected,
+                  onTap: () => _connectUsbSource(detected),
+                ),
+              );
+            }),
+
+            // Unmapped USB drives
+            ...unmappedDrives.map((detected) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: OutlinedButton.icon(
+                  onPressed: () => _connectUsbSource(detected),
+                  icon: const Icon(Icons.usb),
+                  label: Text('USB: ${detected.drive.label}'),
+                ),
+              );
+            }),
+
+            // No drives — disabled button
+            if (noDrives)
+              Column(
+                children: [
+                  FilledButton.icon(
+                    onPressed: null,
+                    icon: const Icon(Icons.usb),
+                    label: const Text('USB Drive'),
                   ),
-                );
-              }),
-            ],
+                  const SizedBox(height: 4),
+                  Text(
+                    'No USB drive detected',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Colors.grey,
+                    ),
+                  ),
+                ],
+              ),
+
+            // Still detecting
+            if (_isDetectingDrives && _detectedDrives == null)
+              const Padding(
+                padding: EdgeInsets.only(top: 8),
+                child: SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+              ),
+
+            // Refresh button
+            const SizedBox(height: 8),
+            IconButton(
+              onPressed: _isDetectingDrives ? null : () {
+                _checkPermissionAndDetectDrives();
+              },
+              icon: const Icon(Icons.refresh, size: 20),
+              tooltip: 'Refresh USB drives',
+            ),
           ],
         ),
-      );
-    }
-
-    return _buildPreviewList();
+      ),
+    );
   }
 
   Widget _buildPreviewList() {
@@ -658,19 +796,19 @@ class _ImportTabState extends State<ImportTab>
           const Text('Set all: '),
           _AllianceButton(
             label: 'RED',
-            color: Colors.red,
+            color: AppColors.redAlliance,
             onTap: () => _onSetAllAllianceSide('red'),
           ),
           const SizedBox(width: 4),
           _AllianceButton(
             label: 'BLUE',
-            color: Colors.blue,
+            color: AppColors.blueAlliance,
             onTap: () => _onSetAllAllianceSide('blue'),
           ),
           const SizedBox(width: 4),
           _AllianceButton(
             label: 'FULL',
-            color: Colors.purple,
+            color: AppColors.fullAlliance,
             onTap: () => _onSetAllAllianceSide('full'),
           ),
         ],
@@ -768,6 +906,59 @@ class _AllianceButton extends StatelessWidget {
             fontSize: 12,
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// Color-coded button for a USB drive with a detected alliance side.
+class _UsbDriveButton extends StatelessWidget {
+  final DetectedUsbDrive detected;
+  final VoidCallback onTap;
+
+  const _UsbDriveButton({
+    required this.detected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final side = detected.allianceSide!;
+    final Color color;
+    final String label;
+
+    switch (side) {
+      case 'red':
+        color = AppColors.redAlliance;
+        label = 'Sync Red Matches';
+      case 'blue':
+        color = AppColors.blueAlliance;
+        label = 'Sync Blue Matches';
+      case 'full':
+        color = AppColors.fullAlliance;
+        label = 'Sync Full Field Matches';
+      default:
+        color = Colors.grey;
+        label = 'Sync Matches';
+    }
+
+    return FilledButton.icon(
+      onPressed: onTap,
+      icon: const Icon(Icons.usb),
+      label: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(label),
+          Text(
+            detected.drive.label,
+            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.normal),
+          ),
+        ],
+      ),
+      style: FilledButton.styleFrom(
+        backgroundColor: color,
+        foregroundColor: Colors.white,
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
       ),
     );
   }
