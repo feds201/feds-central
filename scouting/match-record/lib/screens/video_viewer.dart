@@ -111,8 +111,10 @@ class _VideoViewerState extends State<VideoViewer> {
   final _fullZoomController = TransformationController();
 
   // Unified pointer tracking for the top-level Listener
-  int? _activePointer; // pointer ID for 1-finger scrub or draw
-  bool _activePointerIsScrub = false; // true = scrub, false = draw
+  final Set<int> _activePointers = {}; // all pointers currently down
+  int? _primaryPointer; // pointer ID for 1-finger scrub or draw
+  bool _primaryPointerIsScrub = false; // true = scrub, false = draw
+  bool _multiTouchDetected = false; // true once 2+ fingers detected
   bool? _activeDrawingOnLeft; // which pane is being drawn on (dual mode)
   double? _scrubStartX; // initial X for scrub delta calculation
 
@@ -426,57 +428,62 @@ class _VideoViewerState extends State<VideoViewer> {
   // --- Unified Pointer Handling (Scrub + Draw) ---
 
   void _onPointerDown(PointerDownEvent event) {
-    // Ignore if we already have an active pointer (multi-touch handled by
-    // InteractiveViewer via gesture arena)
-    if (_activePointer != null) return;
+    _activePointers.add(event.pointer);
 
-    _activePointer = event.pointer;
+    if (_activePointers.length == 1) {
+      // First finger — start scrub or draw
+      _primaryPointer = event.pointer;
 
-    if (_isPlaying) {
-      // 1-finger while playing = scrub
-      _activePointerIsScrub = true;
-      _scrubStartX = event.position.dx;
-      _wasPlayingBeforeScrub = true;
-      _isFingerScrubbing = true;
-      _scrubBasePosition = _syncEngine?.intendedEarlierPosition ?? _position;
+      if (_isPlaying) {
+        // 1-finger while playing = scrub
+        _primaryPointerIsScrub = true;
+        _scrubStartX = event.position.dx;
+        _wasPlayingBeforeScrub = true;
+        _isFingerScrubbing = true;
+        _scrubBasePosition = _syncEngine?.intendedEarlierPosition ?? _position;
 
-      // Pause players for scrub (playback suspended, not a user pause)
-      if (_syncEngine != null) {
-        _syncEngine!.pauseBoth();
+        // Pause players for scrub (playback suspended, not a user pause)
+        if (_syncEngine != null) {
+          _syncEngine!.pauseBoth();
+        } else {
+          (_redPlayer ?? _bluePlayer ?? _fullPlayer)?.pause();
+        }
+
+        // Start coalescing timer for smooth finger scrubbing
+        _scrubController.startCoalescing(
+          intervalMs: widget.dataStore.settings.scrubCoalescingIntervalMs,
+          onTick: _onScrubCoalescingTick,
+        );
       } else {
-        (_redPlayer ?? _bluePlayer ?? _fullPlayer)?.pause();
+        // 1-finger while paused = draw
+        _primaryPointerIsScrub = false;
+        if (_drawingColor == null) return;
+
+        final hit = _hitTestPane(event.position);
+        if (hit == null) return;
+
+        _activeDrawingOnLeft = hit.isLeft;
+        hit.drawingController.onPointerDown(event.position);
+
+        // Push no-op to the other controller in dual mode to keep undo stacks synced
+        if (_viewMode == ViewMode.both) {
+          final otherController = hit.isLeft
+              ? (_sidesSwapped ? _redDrawingController : _blueDrawingController)
+              : (_sidesSwapped ? _blueDrawingController : _redDrawingController);
+          otherController.pushNoOp();
+        }
       }
-
-      // Start coalescing timer for smooth finger scrubbing
-      _scrubController.startCoalescing(
-        intervalMs: widget.dataStore.settings.scrubCoalescingIntervalMs,
-        onTick: _onScrubCoalescingTick,
-      );
-    } else {
-      // 1-finger while paused = draw
-      _activePointerIsScrub = false;
-      if (_drawingColor == null) return;
-
-      final hit = _hitTestPane(event.position);
-      if (hit == null) return;
-
-      _activeDrawingOnLeft = hit.isLeft;
-      hit.drawingController.onPointerDown(event.position);
-
-      // Push no-op to the other controller in dual mode to keep undo stacks synced
-      if (_viewMode == ViewMode.both) {
-        final otherController = hit.isLeft
-            ? (_sidesSwapped ? _redDrawingController : _blueDrawingController)
-            : (_sidesSwapped ? _blueDrawingController : _redDrawingController);
-        otherController.pushNoOp();
-      }
+    } else if (!_multiTouchDetected) {
+      // 2nd+ finger arrived — cancel the 1-finger action
+      _multiTouchDetected = true;
+      _cancelPrimaryPointerAction();
     }
   }
 
   void _onPointerMove(PointerMoveEvent event) {
-    if (event.pointer != _activePointer) return;
+    if (event.pointer != _primaryPointer) return;
 
-    if (_activePointerIsScrub) {
+    if (_primaryPointerIsScrub) {
       // Scrub: compute offset using full gesture layer width
       if (_scrubStartX == null) return;
       final deltaX = event.position.dx - _scrubStartX!;
@@ -510,9 +517,20 @@ class _VideoViewerState extends State<VideoViewer> {
   }
 
   void _onPointerUp(PointerUpEvent event) {
-    if (event.pointer != _activePointer) return;
+    _activePointers.remove(event.pointer);
 
-    if (_activePointerIsScrub) {
+    if (_multiTouchDetected) {
+      // Multi-touch gesture — skip all scrub/draw finalization.
+      // Reset when all fingers are lifted.
+      if (_activePointers.isEmpty) {
+        _multiTouchDetected = false;
+      }
+      return;
+    }
+
+    if (event.pointer != _primaryPointer) return;
+
+    if (_primaryPointerIsScrub) {
       _isFingerScrubbing = false;
 
       // Stop coalescing timer and do a final seek if needed
@@ -541,7 +559,52 @@ class _VideoViewerState extends State<VideoViewer> {
       _activeDrawingOnLeft = null;
     }
 
-    _activePointer = null;
+    _primaryPointer = null;
+  }
+
+  /// Cancel the in-progress 1-finger action (scrub or draw) because
+  /// a 2nd finger was detected, indicating a zoom/pan gesture.
+  void _cancelPrimaryPointerAction() {
+    if (_primaryPointer == null) return;
+
+    if (_primaryPointerIsScrub) {
+      // Cancel scrub: stop coalescing, clear scrub state, resume playback
+      _isFingerScrubbing = false;
+      _scrubController.stopCoalescing();
+      _scrubController.reset();
+      _scrubStartX = null;
+
+      // Resume playback since the user intended to zoom while playing
+      if (_wasPlayingBeforeScrub) {
+        _wasPlayingBeforeScrub = false;
+        if (_syncEngine != null) {
+          _syncEngine!.startSyncedPlayback();
+        } else {
+          (_redPlayer ?? _bluePlayer ?? _fullPlayer)?.play();
+        }
+      }
+    } else {
+      // Cancel draw: discard in-progress stroke and clean up no-op
+      if (_activeDrawingOnLeft != null) {
+        final controller = _viewMode == ViewMode.both
+            ? (_activeDrawingOnLeft!
+                ? (_sidesSwapped ? _blueDrawingController : _redDrawingController)
+                : (_sidesSwapped ? _redDrawingController : _blueDrawingController))
+            : _activeDrawingControllers.first;
+        controller.cancelStroke();
+
+        // Remove the no-op from the other controller in dual mode
+        if (_viewMode == ViewMode.both) {
+          final otherController = _activeDrawingOnLeft!
+              ? (_sidesSwapped ? _redDrawingController : _blueDrawingController)
+              : (_sidesSwapped ? _blueDrawingController : _redDrawingController);
+          otherController.popLastStroke();
+        }
+      }
+      _activeDrawingOnLeft = null;
+    }
+
+    _primaryPointer = null;
   }
 
   /// Called by the coalescing timer at fixed intervals.
@@ -1093,8 +1156,8 @@ class _VideoViewerState extends State<VideoViewer> {
     if (_viewMode == ViewMode.both) {
       final leftIsRed = !_sidesSwapped;
       final rightIsRed = _sidesSwapped;
-      final leftColor = _sidesSwapped ? Colors.blue : Colors.red;
-      final rightColor = _sidesSwapped ? Colors.red : Colors.blue;
+      final leftColor = _sidesSwapped ? AppColors.blueAlliance : AppColors.redAlliance;
+      final rightColor = _sidesSwapped ? AppColors.redAlliance : AppColors.blueAlliance;
       final leftRec = _sidesSwapped
           ? widget.matchWithVideos.blueRecording
           : widget.matchWithVideos.redRecording;
@@ -1119,14 +1182,14 @@ class _VideoViewerState extends State<VideoViewer> {
     } else if (_viewMode == ViewMode.fullOnly) {
       children.add(_buildPaneChrome(
         paneKey: _singlePaneKey,
-        allianceColor: Colors.purple,
+        allianceColor: AppColors.fullAlliance,
         containsUserTeam: _containsUserTeam(widget.matchWithVideos.fullRecording),
         onRotate: () => _rotatePane(isFull: true),
         onEdit: _openEditMetadata,
       ));
     } else {
       final isRed = _viewMode == ViewMode.redOnly;
-      final color = isRed ? Colors.red : Colors.blue;
+      final color = isRed ? AppColors.redAlliance : AppColors.blueAlliance;
       final recording = isRed
           ? widget.matchWithVideos.redRecording
           : widget.matchWithVideos.blueRecording;
@@ -1458,21 +1521,21 @@ class _EditMetadataSheetState extends State<_EditMetadataSheet> {
                 ChoiceChip(
                   label: const Text('Red'),
                   selected: _allianceSide == 'red',
-                  selectedColor: Colors.red.shade300,
+                  selectedColor: AppColors.redAllianceLight,
                   onSelected: (_) => setState(() => _allianceSide = 'red'),
                 ),
                 const SizedBox(width: 8),
                 ChoiceChip(
                   label: const Text('Blue'),
                   selected: _allianceSide == 'blue',
-                  selectedColor: Colors.blue.shade300,
+                  selectedColor: AppColors.blueAllianceLight,
                   onSelected: (_) => setState(() => _allianceSide = 'blue'),
                 ),
                 const SizedBox(width: 8),
                 ChoiceChip(
                   label: const Text('Full'),
                   selected: _allianceSide == 'full',
-                  selectedColor: Colors.purple.shade300,
+                  selectedColor: AppColors.fullAllianceLight,
                   onSelected: (_) => setState(() => _allianceSide = 'full'),
                 ),
               ],

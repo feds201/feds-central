@@ -323,4 +323,110 @@ void main() {
       expect(controller.hasNonEmptyStrokes, isFalse);
     });
   });
+
+  group('DrawingController cancelStroke', () {
+    test('discards in-progress stroke', () {
+      controller.onPointerDown(const Offset(10, 20));
+      controller.onPointerMove(const Offset(30, 40));
+      expect(controller.currentStrokePoints, hasLength(2));
+
+      controller.cancelStroke();
+      expect(controller.currentStrokePoints, isEmpty);
+      expect(controller.strokes, isEmpty);
+    });
+
+    test('with no in-progress stroke does nothing', () {
+      final countBefore = notifyCount;
+      controller.cancelStroke();
+      expect(notifyCount, countBefore);
+    });
+
+    test('notifies listeners', () {
+      controller.onPointerDown(const Offset(10, 20));
+      final countBefore = notifyCount;
+      controller.cancelStroke();
+      expect(notifyCount, countBefore + 1);
+    });
+
+    test('does not affect completed strokes', () {
+      controller.onPointerDown(const Offset(0, 0));
+      controller.onPointerUp();
+      expect(controller.strokes, hasLength(1));
+
+      controller.onPointerDown(const Offset(10, 10));
+      controller.onPointerMove(const Offset(20, 20));
+      controller.cancelStroke();
+
+      expect(controller.strokes, hasLength(1));
+      expect(controller.currentStrokePoints, isEmpty);
+    });
+
+    test('does not affect redo stack', () {
+      controller.onPointerDown(const Offset(0, 0));
+      controller.onPointerUp();
+      controller.undo();
+      expect(controller.canRedo, isTrue);
+
+      controller.onPointerDown(const Offset(10, 10));
+      controller.cancelStroke();
+      expect(controller.canRedo, isTrue);
+    });
+  });
+
+  group('DrawingController popLastStroke', () {
+    test('removes last stroke', () {
+      controller.onPointerDown(const Offset(0, 0));
+      controller.onPointerUp();
+      controller.onPointerDown(const Offset(10, 10));
+      controller.onPointerUp();
+      expect(controller.strokes, hasLength(2));
+
+      controller.popLastStroke();
+      expect(controller.strokes, hasLength(1));
+    });
+
+    test('does not push to redo stack', () {
+      controller.onPointerDown(const Offset(0, 0));
+      controller.onPointerUp();
+
+      controller.popLastStroke();
+      expect(controller.strokes, isEmpty);
+      expect(controller.canRedo, isFalse);
+    });
+
+    test('with no strokes does nothing', () {
+      final countBefore = notifyCount;
+      controller.popLastStroke();
+      expect(notifyCount, countBefore);
+    });
+
+    test('notifies listeners', () {
+      controller.onPointerDown(const Offset(0, 0));
+      controller.onPointerUp();
+      final countBefore = notifyCount;
+      controller.popLastStroke();
+      expect(notifyCount, countBefore + 1);
+    });
+
+    test('cleans up no-op after cancelled multi-touch draw', () {
+      final controller2 = DrawingController();
+
+      // Simulate: draw starts on controller1, no-op pushed to controller2
+      controller.onPointerDown(const Offset(10, 10));
+      controller.onPointerMove(const Offset(20, 20));
+      controller2.pushNoOp();
+
+      // Multi-touch detected: cancel stroke on controller1, pop no-op on controller2
+      controller.cancelStroke();
+      controller2.popLastStroke();
+
+      expect(controller.strokes, isEmpty);
+      expect(controller.currentStrokePoints, isEmpty);
+      expect(controller2.strokes, isEmpty);
+      expect(controller.canUndo, isFalse);
+      expect(controller2.canUndo, isFalse);
+
+      controller2.dispose();
+    });
+  });
 }

@@ -3,6 +3,8 @@ import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+import '../util/constants.dart';
+
 /// Color for a drawing stroke.
 enum DrawingColor {
   red,
@@ -11,9 +13,9 @@ enum DrawingColor {
   Color get color {
     switch (this) {
       case DrawingColor.red:
-        return Colors.red;
+        return AppColors.redAlliance;
       case DrawingColor.blue:
-        return Colors.blue;
+        return AppColors.blueAlliance;
     }
   }
 }
@@ -80,6 +82,25 @@ class DrawingController extends ChangeNotifier {
       _strokes.add(ColoredStroke(List.of(_currentStrokePoints), _currentColor));
       _currentStrokePoints = [];
       _redoStack.clear();
+      notifyListeners();
+    }
+  }
+
+  /// Cancel the current in-progress stroke without finalizing it.
+  /// Used when a 2nd finger is detected, converting the gesture to zoom/pan.
+  void cancelStroke() {
+    if (_currentStrokePoints.isNotEmpty) {
+      _currentStrokePoints = [];
+      notifyListeners();
+    }
+  }
+
+  /// Remove the last stroke from the stack without pushing to redo.
+  /// Used to clean up a no-op that was pushed before the gesture was
+  /// recognized as multi-touch.
+  void popLastStroke() {
+    if (_strokes.isNotEmpty) {
+      _strokes.removeLast();
       notifyListeners();
     }
   }

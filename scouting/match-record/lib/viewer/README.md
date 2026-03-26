@@ -33,6 +33,10 @@ There are no other gesture combinations. There is no "drawing off while paused" 
 
 **Why:** This is the simplest possible gesture model. Play state determines whether one finger scrubs or draws. Two fingers always zoom. No toggles, no modes to remember, no conflicting gesture recognizers.
 
+**Multi-touch disambiguation.** When the first finger touches down, the gesture layer immediately starts the appropriate 1-finger action (scrub or draw). If a second finger arrives, the 1-finger action is cancelled — scrub state is cleaned up and playback resumes (if it was playing), or the in-progress drawing stroke is discarded. The gesture becomes a zoom/pan handled by InteractiveViewer for its entire remaining lifetime: even if the user lifts back to one finger, scrub/draw does not resume. The gesture resets only when all fingers are lifted.
+
+**Why immediate start + cancel:** Deferring the 1-finger action (e.g., with a timer) would add latency to every touch. The split-second of scrub or draw before the 2nd finger lands is within the scrub dead zone (3px) and acceptable for drawing (will be further mitigated by a drawing dead zone in a future update).
+
 ### Scrubbing
 
 Scrubbing lets the user control the playback position by dragging horizontally.
@@ -192,6 +196,8 @@ The play/pause button has a subtle lighter gray background to make it visually d
 **Strokes.** Each stroke is a `List<Offset>` with a `DrawingColor`. `onPointerDown` starts a new stroke, `onPointerMove` appends points, `onPointerUp` finalizes it into `_strokes` and clears the redo stack (any new stroke after an undo invalidates the redo history). `strokes` and `currentStroke` are exposed as unmodifiable lists.
 
 **Undo/redo.** `undo()` moves the last completed stroke to `_redoStack`. `redo()` moves it back. `clear()` wipes everything.
+
+**Cancel/cleanup.** `cancelStroke()` discards the current in-progress stroke without finalizing it (used when multi-touch is detected). `popLastStroke()` removes the last completed stroke without pushing to the redo stack (used to clean up no-ops that were pushed before the gesture was recognized as multi-touch).
 
 **Opacity.** `setOpacity(value)` controls drawing visibility (1.0 when paused, 0.3 when playing). Applied via the `Paint.color` alpha channel, not via a Flutter `Opacity` widget (which would create an offscreen compositing layer).
 
