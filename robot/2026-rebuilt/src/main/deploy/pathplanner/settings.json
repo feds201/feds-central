@@ -7,9 +7,9 @@
     "DoublePassTest",
     "MidIntakeToLeftBump",
     "MidIntakeToRightBump",
+    "CircleCenter",
     "RightBumpToOutpost",
     "TestAutos",
-    "GriefAuto",
     "Trenches"
   ],
   "autoFolders": [],

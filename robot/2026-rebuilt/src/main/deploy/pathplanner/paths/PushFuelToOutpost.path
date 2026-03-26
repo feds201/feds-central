@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 2.3,
-        "y": 2.6
+        "x": 0.75,
+        "y": 0.6619928825628518
       },
       "prevControl": {
-        "x": 2.549720866214681,
-        "y": 2.6118105451605484
+        "x": 0.9997208662146813,
+        "y": 0.6738034277234002
       },
       "nextControl": null,
       "isLocked": false,
@@ -69,10 +69,10 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 31.594828188350032
+    "rotation": 0.0
   },
   "reversed": false,
-  "folder": "GriefAuto",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
     "rotation": 130.0
