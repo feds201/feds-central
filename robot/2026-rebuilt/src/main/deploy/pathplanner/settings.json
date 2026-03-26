@@ -4,10 +4,11 @@
   "holonomicMode": true,
   "pathFolders": [
     "CenterOverBump",
+    "CircleCenter",
     "DoublePassTest",
     "MidIntakeToLeftBump",
     "MidIntakeToRightBump",
-    "CircleCenter",
+    "CenterDepotOutpost",
     "RightBumpToOutpost",
     "TestAutos",
     "Trenches"
