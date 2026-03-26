@@ -10,6 +10,7 @@ import '../data/models.dart';
 import '../import/drive_access.dart';
 import '../import/import_pipeline.dart';
 import '../import/local_drive_access.dart';
+import '../import/storage_checker.dart';
 import '../import/usb_drive_service.dart';
 import '../import/video_metadata_service.dart';
 import '../util/constants.dart';
@@ -271,6 +272,46 @@ class _ImportTabState extends State<ImportTab>
     if (!connected) {
       final reconnected = await _showDriveDisconnectedDialog();
       if (!reconnected || !mounted) return;
+    }
+
+    // Check free storage space before copying files
+    final storageStatus = await StorageChecker.check(widget.storageDir);
+    if (!mounted) return;
+
+    if (storageStatus == StorageStatus.blocked) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Not enough storage space to import. Free up space and try again.',
+          ),
+          duration: Duration(seconds: 5),
+        ),
+      );
+      return;
+    }
+
+    if (storageStatus == StorageStatus.low) {
+      final proceed = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Low Storage'),
+          content: const Text(
+            'Device storage is running low (under 1 GB free). '
+            'Import may fail if you run out of space. Continue anyway?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: const Text('Continue'),
+            ),
+          ],
+        ),
+      );
+      if (proceed != true || !mounted) return;
     }
 
     setState(() {
