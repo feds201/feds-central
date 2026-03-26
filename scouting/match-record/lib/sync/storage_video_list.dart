@@ -11,6 +11,7 @@ class StorageVideoList extends StatelessWidget {
   final Set<String> selectedIds;
   final DataStore dataStore;
   final void Function(String id) onToggleSelection;
+  final void Function(Recording recording) onPlayVideo;
 
   const StorageVideoList({
     super.key,
@@ -18,6 +19,7 @@ class StorageVideoList extends StatelessWidget {
     required this.selectedIds,
     required this.dataStore,
     required this.onToggleSelection,
+    required this.onPlayVideo,
   });
 
   @override
@@ -97,6 +99,14 @@ class StorageVideoList extends StatelessWidget {
                     ),
                   ),
                 ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+              child: IconButton(
+                icon: const Icon(Icons.play_circle_outline),
+                iconSize: 28,
+                onPressed: () => onPlayVideo(recording),
               ),
             ),
           ],

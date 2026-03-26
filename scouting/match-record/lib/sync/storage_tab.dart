@@ -6,6 +6,7 @@ import '../data/data_store.dart';
 import '../data/models.dart';
 import '../util/constants.dart';
 import 'storage_video_list.dart';
+import 'video_preview_dialog.dart';
 
 class StorageTab extends StatefulWidget {
   final DataStore dataStore;
@@ -97,6 +98,15 @@ class _StorageTabState extends State<StorageTab> {
 
   void _deselectAll() {
     setState(() => _selectedIds.clear());
+  }
+
+  void _playVideo(Recording recording) {
+    final filePath =
+        '${widget.storageDir}/${AppConstants.recordingsDirName}/${recording.id}${recording.fileExtension}';
+    showDialog(
+      context: context,
+      builder: (ctx) => VideoPreviewDialog(filePath: filePath),
+    );
   }
 
   Future<void> _deleteSelected() async {
@@ -249,6 +259,7 @@ class _StorageTabState extends State<StorageTab> {
                 selectedIds: _selectedIds,
                 dataStore: widget.dataStore,
                 onToggleSelection: _toggleSelection,
+                onPlayVideo: _playVideo,
               ),
             ),
 

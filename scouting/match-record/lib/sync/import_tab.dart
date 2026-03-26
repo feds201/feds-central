@@ -2,7 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:url_launcher/url_launcher.dart';
+
+import 'video_preview_dialog.dart';
 
 import '../data/data_store.dart';
 import '../data/models.dart';
@@ -816,14 +817,11 @@ class _ImportTabState extends State<ImportTab>
     );
   }
 
-  Future<void> _playPreview(ImportPreviewRow row) async {
-    final uri = Uri.file(row.metadata.sourceUri);
-    final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
-    if (!launched && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No video player found')),
-      );
-    }
+  void _playPreview(ImportPreviewRow row) {
+    showDialog(
+      context: context,
+      builder: (ctx) => VideoPreviewDialog(filePath: row.metadata.sourceUri),
+    );
   }
 
   Widget _buildTimeWindowStrip() {
