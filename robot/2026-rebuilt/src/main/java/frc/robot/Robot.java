@@ -119,6 +119,7 @@ public class Robot extends LoggedRobot {
     // Publish a small set of live telemetry for the RTU dashboard
     m_robotContainer.publishTelemetry();
     m_robotContainer.limelightConnection();
+    m_robotContainer.usbStorage();
     //Log Hub shift times
     Logger.recordOutput("Robot/HubShift/RemainingTime", HubShiftUtil.getOfficialShiftInfo().remainingTime());
     Logger.recordOutput("Robot/HubShift/ElapsedTime", HubShiftUtil.getOfficialShiftInfo().elapsedTime());
