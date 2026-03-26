@@ -17,6 +17,105 @@
       }
     },
     {
+      "name": "Tab 3",
+      "grid_layout": {
+        "layouts": [],
+        "containers": [
+          {
+            "title": "ShooterVelocity",
+            "x": 512.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Robot/Shooter/ShooterVelocity",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Pose",
+            "x": 640.0,
+            "y": 0.0,
+            "width": 640.0,
+            "height": 384.0,
+            "type": "Field",
+            "properties": {
+              "topic": "/Pose",
+              "period": 0.06,
+              "field_game": "Rebuilt",
+              "robot_width": 0.85,
+              "robot_length": 0.85,
+              "show_other_objects": true,
+              "show_trajectories": true,
+              "field_rotation": 0.0,
+              "robot_color": 4294198070,
+              "trajectory_color": 4294967295,
+              "show_robot_outside_widget": true
+            }
+          },
+          {
+            "title": "hood pos",
+            "x": 512.0,
+            "y": 384.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/Shuffleboard/testing/hood pos",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "wheel speed",
+            "x": 640.0,
+            "y": 384.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/Shuffleboard/testing/wheel speed",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": true
+            }
+          },
+          {
+            "title": "Dist to hub",
+            "x": 768.0,
+            "y": 384.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Dist to hub",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Dist to Red hub",
+            "x": 896.0,
+            "y": 384.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Dist to Red hub",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          }
+        ]
+      }
+    },
+    {
       "name": "Rebuilt-Display",
       "grid_layout": {
         "layouts": [],
@@ -991,14 +1090,14 @@
             },
             "children": [
               {
-                "title": "shooter1 Motor is Connected",
+                "title": "Bottom Left Motor is Connected",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Shooter Wheel Health/shooter1 Motor is Connected",
+                  "topic": "/Shuffleboard/Pit Testing/Shooter Wheel Health/Bottom Left Motor is Connected",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -1008,14 +1107,14 @@
                 }
               },
               {
-                "title": "shooter2 Motor is Powered",
+                "title": "Bottom Left Motor is Powered",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Shooter Wheel Health/shooter2 Motor is Powered",
+                  "topic": "/Shuffleboard/Pit Testing/Shooter Wheel Health/Bottom Left Motor is Powered",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -1025,14 +1124,14 @@
                 }
               },
               {
-                "title": "shooter3 Motor is Connected",
+                "title": "Bottom Right Motor is Connected",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Shooter Wheel Health/shooter3 Motor is Connected",
+                  "topic": "/Shuffleboard/Pit Testing/Shooter Wheel Health/Bottom Right Motor is Connected",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -1042,14 +1141,14 @@
                 }
               },
               {
-                "title": "shooter3 Motor is Powered",
+                "title": "Bottom Right Motor is Powered",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Shooter Wheel Health/shooter3 Motor is Powered",
+                  "topic": "/Shuffleboard/Pit Testing/Shooter Wheel Health/Bottom Right Motor is Powered",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -1059,14 +1158,14 @@
                 }
               },
               {
-                "title": "shooter4 Motor is Connected",
+                "title": "Top Left Motor is Connected",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Shooter Wheel Health/shooter4 Motor is Connected",
+                  "topic": "/Shuffleboard/Pit Testing/Shooter Wheel Health/Top Left Motor is Connected",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -1076,14 +1175,14 @@
                 }
               },
               {
-                "title": "shooter4 Motor is Powered",
+                "title": "Top Left Motor is Powered",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Shooter Wheel Health/shooter4 Motor is Powered",
+                  "topic": "/Shuffleboard/Pit Testing/Shooter Wheel Health/Top Left Motor is Powered",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -1093,14 +1192,14 @@
                 }
               },
               {
-                "title": "shooter1 Motor is Powered",
+                "title": "Top Right Motor is Connected",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Shooter Wheel Health/shooter1 Motor is Powered",
+                  "topic": "/Shuffleboard/Pit Testing/Shooter Wheel Health/Top Right Motor is Connected",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -1110,14 +1209,14 @@
                 }
               },
               {
-                "title": "shooter2 Motor is Connected",
+                "title": "Top Right Motor is Powered",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Shooter Wheel Health/shooter2 Motor is Connected",
+                  "topic": "/Shuffleboard/Pit Testing/Shooter Wheel Health/Top Right Motor is Powered",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
