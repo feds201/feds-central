@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../util/constants.dart';
 import '../viewer/drawing_controller.dart';
 
 /// Mute state for the video viewer audio.
@@ -222,15 +223,15 @@ class ControlSidebar extends StatelessWidget {
         label = 'Muted';
       case MuteState.redAudio:
         icon = Icons.volume_up;
-        circleColor = Colors.red;
+        circleColor = AppColors.redAlliance;
         label = 'Red audio';
       case MuteState.blueAudio:
         icon = Icons.volume_up;
-        circleColor = Colors.blue;
+        circleColor = AppColors.blueAlliance;
         label = 'Blue audio';
       case MuteState.fullAudio:
         icon = Icons.volume_up;
-        circleColor = Colors.purple;
+        circleColor = AppColors.fullAlliance;
         label = 'Full audio';
     }
 
@@ -303,15 +304,15 @@ class ControlSidebar extends StatelessWidget {
       case ViewMode.redOnly:
         icon = Icons.crop_square;
         label = 'Red only';
-        circleColor = Colors.red;
+        circleColor = AppColors.redAlliance;
       case ViewMode.blueOnly:
         icon = Icons.crop_square;
         label = 'Blue only';
-        circleColor = Colors.blue;
+        circleColor = AppColors.blueAlliance;
       case ViewMode.fullOnly:
         icon = Icons.crop_square;
         label = 'Full field';
-        circleColor = Colors.purple;
+        circleColor = AppColors.fullAlliance;
     }
 
     // Use colored circle indicator (like mute button) when showing a single source
@@ -443,11 +444,11 @@ class ControlSidebar extends StatelessWidget {
       case DrawingColor.red:
         icon = isPaused ? Icons.edit : Icons.edit_off;
         label = 'Red draw';
-        activeColor = Colors.red;
+        activeColor = AppColors.redAlliance;
       case DrawingColor.blue:
         icon = Icons.edit;
         label = 'Blue draw';
-        activeColor = Colors.blue;
+        activeColor = AppColors.blueAlliance;
     }
 
     final isEnabled = isPaused;

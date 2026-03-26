@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../data/models.dart';
+import '../util/constants.dart';
 
 class MatchRow extends StatelessWidget {
   final MatchWithVideos matchWithVideos;
@@ -157,7 +158,7 @@ class MatchRow extends StatelessWidget {
                       _buildTeamNumbers(
                         context,
                         teamKeys: m.redTeamKeys,
-                        color: Colors.red.shade300,
+                        color: AppColors.redAllianceLight,
                         allianceLabel: _findAllianceLabel(m.redTeamKeys),
                       ),
                       if (showEventLabel && matchWithVideos.eventShortName != null) ...[
@@ -176,7 +177,7 @@ class MatchRow extends StatelessWidget {
                   _buildTeamNumbers(
                     context,
                     teamKeys: m.blueTeamKeys,
-                    color: Colors.blue.shade300,
+                    color: AppColors.blueAllianceLight,
                     allianceLabel: _findAllianceLabel(m.blueTeamKeys),
                   ),
                 ],
@@ -187,9 +188,9 @@ class MatchRow extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                _buildScore(context, score: m.redScore, color: Colors.red.shade300, isWinner: m.winningAlliance == 'red', played: played),
+                _buildScore(context, score: m.redScore, color: AppColors.redAllianceLight, isWinner: m.winningAlliance == 'red', played: played),
                 const SizedBox(height: 2),
-                _buildScore(context, score: m.blueScore, color: Colors.blue.shade300, isWinner: m.winningAlliance == 'blue', played: played),
+                _buildScore(context, score: m.blueScore, color: AppColors.blueAllianceLight, isWinner: m.winningAlliance == 'blue', played: played),
               ],
             ),
             // Video icons

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../data/data_store.dart';
 import '../data/models.dart';
 import '../import/import_pipeline.dart';
+import '../util/constants.dart';
 
 class ImportPreviewRowWidget extends StatelessWidget {
   final ImportPreviewRow row;
@@ -46,11 +47,7 @@ class ImportPreviewRowWidget extends StatelessWidget {
         border: Border(
           bottom: BorderSide(color: theme.dividerColor.withValues(alpha: 0.3)),
           left: BorderSide(
-            color: row.allianceSide == 'red'
-                ? Colors.red
-                : row.allianceSide == 'blue'
-                    ? Colors.blue
-                    : Colors.purple,
+            color: AppColors.colorForAllianceSide(row.allianceSide),
             width: 4,
           ),
         ),
@@ -263,11 +260,7 @@ class ImportPreviewRowWidget extends StatelessWidget {
 
   Widget _buildTeamChips(BuildContext context) {
     final theme = Theme.of(context);
-    final allianceColor = row.allianceSide == 'red'
-        ? Colors.red
-        : row.allianceSide == 'blue'
-            ? Colors.blue
-            : Colors.purple;
+    final allianceColor = AppColors.colorForAllianceSide(row.allianceSide);
     final eventKeys = dataStore.settings.selectedEventKeys;
     final alliances = dataStore.getAlliancesForEvents(eventKeys);
 
@@ -280,7 +273,7 @@ class ImportPreviewRowWidget extends StatelessWidget {
       }
       final team = row.teams[i];
       final color = row.allianceSide == 'full'
-          ? (i < 3 ? Colors.red : Colors.blue)
+          ? (i < 3 ? AppColors.redAlliance : AppColors.blueAlliance)
           : allianceColor;
       teamWidgets.add(Text(
         team > 0 ? '$team' : '---',
@@ -335,11 +328,7 @@ class ImportPreviewRowWidget extends StatelessWidget {
         : row.allianceSide == 'blue'
             ? 'full'
             : 'red';
-    final color = row.allianceSide == 'red'
-        ? Colors.red
-        : row.allianceSide == 'blue'
-            ? Colors.blue
-            : Colors.purple;
+    final color = AppColors.colorForAllianceSide(row.allianceSide);
 
     return InkWell(
       onTap: () => onAllianceSideChanged(nextSide),

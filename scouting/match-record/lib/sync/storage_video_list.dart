@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../data/data_store.dart';
 import '../data/models.dart';
+import '../util/constants.dart';
 
 /// Shared list component for displaying video recordings.
 /// Used by both tablet storage mode and flash drive mode.
@@ -48,11 +49,7 @@ class StorageVideoList extends StatelessWidget {
     final isSelected = selectedIds.contains(recording.id);
     final match = dataStore.getMatchByKey(recording.matchKey);
     final matchDisplay = match?.displayName ?? recording.matchKey;
-    final allianceColor = recording.allianceSide == 'red'
-        ? Colors.red
-        : recording.allianceSide == 'blue'
-            ? Colors.blue
-            : Colors.purple;
+    final allianceColor = AppColors.colorForAllianceSide(recording.allianceSide);
     final eventShortName = _getEventShortName(recording.eventKey);
 
     return InkWell(

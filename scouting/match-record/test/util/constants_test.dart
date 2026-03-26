@@ -30,12 +30,60 @@ void main() {
       expect(AppColors.matchCategory, Colors.orange);
     });
 
-    test('allianceCategory is purple', () {
-      expect(AppColors.allianceCategory, Colors.purple);
+    test('allianceCategory is green', () {
+      expect(AppColors.allianceCategory, Colors.green);
     });
 
     test('searchCategory is blue', () {
       expect(AppColors.searchCategory, Colors.blue);
+    });
+  });
+
+  group('AppColors alliance colors', () {
+    test('base alliance colors are defined', () {
+      expect(AppColors.redAlliance, Colors.red);
+      expect(AppColors.blueAlliance, Colors.blue);
+      expect(AppColors.fullAlliance, Colors.green);
+    });
+
+    test('light alliance colors are shade300 variants', () {
+      expect(AppColors.redAllianceLight, Colors.red.shade300);
+      expect(AppColors.blueAllianceLight, Colors.blue.shade300);
+      expect(AppColors.fullAllianceLight, Colors.green.shade300);
+    });
+
+    test('colorForAllianceSide returns correct color for red', () {
+      expect(AppColors.colorForAllianceSide('red'), AppColors.redAlliance);
+    });
+
+    test('colorForAllianceSide returns correct color for blue', () {
+      expect(AppColors.colorForAllianceSide('blue'), AppColors.blueAlliance);
+    });
+
+    test('colorForAllianceSide returns full color for full', () {
+      expect(AppColors.colorForAllianceSide('full'), AppColors.fullAlliance);
+    });
+
+    test('colorForAllianceSide defaults to full for unknown values', () {
+      expect(AppColors.colorForAllianceSide(''), AppColors.fullAlliance);
+      expect(AppColors.colorForAllianceSide('unknown'), AppColors.fullAlliance);
+    });
+
+    test('lightColorForAllianceSide returns correct light color for red', () {
+      expect(AppColors.lightColorForAllianceSide('red'), AppColors.redAllianceLight);
+    });
+
+    test('lightColorForAllianceSide returns correct light color for blue', () {
+      expect(AppColors.lightColorForAllianceSide('blue'), AppColors.blueAllianceLight);
+    });
+
+    test('lightColorForAllianceSide returns full light color for full', () {
+      expect(AppColors.lightColorForAllianceSide('full'), AppColors.fullAllianceLight);
+    });
+
+    test('lightColorForAllianceSide defaults to full for unknown values', () {
+      expect(AppColors.lightColorForAllianceSide(''), AppColors.fullAllianceLight);
+      expect(AppColors.lightColorForAllianceSide('unknown'), AppColors.fullAllianceLight);
     });
   });
 }
