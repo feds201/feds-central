@@ -100,10 +100,8 @@ class _VideoViewerState extends State<VideoViewer> {
   bool _laterWaiting = false;
   Duration _countdownRemaining = Duration.zero;
 
-  // Drawing controllers (one per video source)
-  final _redDrawingController = DrawingController();
-  final _blueDrawingController = DrawingController();
-  final _fullDrawingController = DrawingController();
+  // Single drawing controller — strokes are in screen space, not per-pane
+  final _drawingController = DrawingController();
 
   // Zoom controllers (one per video source)
   final _redZoomController = TransformationController();
@@ -115,13 +113,12 @@ class _VideoViewerState extends State<VideoViewer> {
   int? _primaryPointer; // pointer ID for 1-finger scrub or draw
   bool _primaryPointerIsScrub = false; // true = scrub, false = draw
   bool _multiTouchDetected = false; // true once 2+ fingers detected
-  bool? _activeDrawingOnLeft; // which pane is being drawn on (dual mode)
   double? _scrubStartX; // initial X for scrub delta calculation
 
   // Gesture layer width (full video area) for scrub calculations
   double _gestureLayerWidth = 1.0;
 
-  // Global keys for pane positions (used for chrome overlay + drawing hit-test)
+  // Global keys for pane positions (used for chrome overlay)
   final _leftPaneKey = GlobalKey();
   final _rightPaneKey = GlobalKey();
   final _singlePaneKey = GlobalKey();
@@ -138,9 +135,7 @@ class _VideoViewerState extends State<VideoViewer> {
     // Default to the highest-priority available view mode
     _viewMode = _availableViewModes.first;
     _lockLandscape();
-    _redDrawingController.addListener(_onDrawingChanged);
-    _blueDrawingController.addListener(_onDrawingChanged);
-    _fullDrawingController.addListener(_onDrawingChanged);
+    _drawingController.addListener(_onDrawingChanged);
     _initPlayers();
   }
 
@@ -240,16 +235,11 @@ class _VideoViewerState extends State<VideoViewer> {
           if (mounted) {
             setState(() {
               _isPlaying = playing;
-              final opacity = playing ? 0.3 : 1.0;
-              _redDrawingController.setOpacity(opacity);
-              _blueDrawingController.setOpacity(opacity);
-              _fullDrawingController.setOpacity(opacity);
+              _drawingController.setOpacity(playing ? 0.3 : 1.0);
               // Auto-enable drawing on pause, disable on play
               if (!playing) {
                 _drawingColor ??= DrawingColor.red;
-                for (final c in _activeDrawingControllers) {
-                  c.setColor(_drawingColor!);
-                }
+                _drawingController.setColor(_drawingColor!);
               }
             });
           }
@@ -282,12 +272,8 @@ class _VideoViewerState extends State<VideoViewer> {
     _redPlayer?.dispose();
     _bluePlayer?.dispose();
     _fullPlayer?.dispose();
-    _redDrawingController.removeListener(_onDrawingChanged);
-    _blueDrawingController.removeListener(_onDrawingChanged);
-    _fullDrawingController.removeListener(_onDrawingChanged);
-    _redDrawingController.dispose();
-    _blueDrawingController.dispose();
-    _fullDrawingController.dispose();
+    _drawingController.removeListener(_onDrawingChanged);
+    _drawingController.dispose();
     _redZoomController.dispose();
     _blueZoomController.dispose();
     _fullZoomController.dispose();
@@ -458,20 +444,7 @@ class _VideoViewerState extends State<VideoViewer> {
         // 1-finger while paused = draw
         _primaryPointerIsScrub = false;
         if (_drawingColor == null) return;
-
-        final hit = _hitTestPane(event.position);
-        if (hit == null) return;
-
-        _activeDrawingOnLeft = hit.isLeft;
-        hit.drawingController.onPointerDown(event.position);
-
-        // Push no-op to the other controller in dual mode to keep undo stacks synced
-        if (_viewMode == ViewMode.both) {
-          final otherController = hit.isLeft
-              ? (_sidesSwapped ? _redDrawingController : _blueDrawingController)
-              : (_sidesSwapped ? _blueDrawingController : _redDrawingController);
-          otherController.pushNoOp();
-        }
+        _drawingController.onPointerDown(event.position);
       }
     } else if (!_multiTouchDetected) {
       // 2nd+ finger arrived — cancel the 1-finger action
@@ -504,15 +477,9 @@ class _VideoViewerState extends State<VideoViewer> {
       // Store desired position — coalescing timer will dispatch the seek
       _scrubController.updateDesiredPosition(target);
     } else {
-      // Draw: continue stroke on whichever controller it started on
-      if (_drawingColor == null || _activeDrawingOnLeft == null) return;
-
-      final controller = _viewMode == ViewMode.both
-          ? (_activeDrawingOnLeft!
-              ? (_sidesSwapped ? _blueDrawingController : _redDrawingController)
-              : (_sidesSwapped ? _redDrawingController : _blueDrawingController))
-          : _activeDrawingControllers.first;
-      controller.onPointerMove(event.position);
+      // Draw: continue stroke
+      if (_drawingColor == null) return;
+      _drawingController.onPointerMove(event.position);
     }
   }
 
@@ -548,15 +515,7 @@ class _VideoViewerState extends State<VideoViewer> {
       }
     } else {
       // Finalize drawing stroke
-      if (_activeDrawingOnLeft != null) {
-        final controller = _viewMode == ViewMode.both
-            ? (_activeDrawingOnLeft!
-                ? (_sidesSwapped ? _blueDrawingController : _redDrawingController)
-                : (_sidesSwapped ? _redDrawingController : _blueDrawingController))
-            : _activeDrawingControllers.first;
-        controller.onPointerUp();
-      }
-      _activeDrawingOnLeft = null;
+      _drawingController.onPointerUp();
     }
 
     _primaryPointer = null;
@@ -584,24 +543,8 @@ class _VideoViewerState extends State<VideoViewer> {
         }
       }
     } else {
-      // Cancel draw: discard in-progress stroke and clean up no-op
-      if (_activeDrawingOnLeft != null) {
-        final controller = _viewMode == ViewMode.both
-            ? (_activeDrawingOnLeft!
-                ? (_sidesSwapped ? _blueDrawingController : _redDrawingController)
-                : (_sidesSwapped ? _redDrawingController : _blueDrawingController))
-            : _activeDrawingControllers.first;
-        controller.cancelStroke();
-
-        // Remove the no-op from the other controller in dual mode
-        if (_viewMode == ViewMode.both) {
-          final otherController = _activeDrawingOnLeft!
-              ? (_sidesSwapped ? _redDrawingController : _blueDrawingController)
-              : (_sidesSwapped ? _blueDrawingController : _redDrawingController);
-          otherController.popLastStroke();
-        }
-      }
-      _activeDrawingOnLeft = null;
+      // Cancel draw: discard in-progress stroke
+      _drawingController.cancelStroke();
     }
 
     _primaryPointer = null;
@@ -635,130 +578,8 @@ class _VideoViewerState extends State<VideoViewer> {
         case DrawingColor.red:
           _drawingColor = DrawingColor.blue;
       }
-      for (final c in _activeDrawingControllers) {
-        c.setColor(_drawingColor!);
-      }
+      _drawingController.setColor(_drawingColor!);
     });
-  }
-
-  /// Get the active drawing controllers for the current view mode.
-  List<DrawingController> get _activeDrawingControllers {
-    switch (_viewMode) {
-      case ViewMode.both:
-        return [_redDrawingController, _blueDrawingController];
-      case ViewMode.redOnly:
-        return [_redDrawingController];
-      case ViewMode.blueOnly:
-        return [_blueDrawingController];
-      case ViewMode.fullOnly:
-        return [_fullDrawingController];
-    }
-  }
-
-  bool get _combinedCanUndo =>
-      _activeDrawingControllers.any((c) => c.canUndo);
-
-  bool get _combinedCanRedo =>
-      _activeDrawingControllers.any((c) => c.canRedo);
-
-  bool get _combinedHasDrawings =>
-      _activeDrawingControllers.any((c) => c.hasNonEmptyStrokes);
-
-  void _combinedUndo() {
-    for (final c in _activeDrawingControllers) {
-      c.undo();
-    }
-  }
-
-  void _combinedRedo() {
-    for (final c in _activeDrawingControllers) {
-      c.redo();
-    }
-  }
-
-  void _combinedClear() {
-    for (final c in _activeDrawingControllers) {
-      c.clear();
-    }
-  }
-
-  /// Get the screen-space bounds of the chrome button area for a pane.
-  /// Returns null if the button bounds can't be calculated.
-  Rect? _getChromeButtonBounds(GlobalKey paneKey) {
-    final paneBox = paneKey.currentContext?.findRenderObject() as RenderBox?;
-    if (paneBox == null) return null;
-
-    final paneGlobal = paneBox.localToGlobal(Offset.zero);
-    final paneSize = paneBox.size;
-
-    // Button is positioned at the top-right of the pane
-    // Buttons are 40x40 each, positioned at top + 2, right edge - 2
-    final buttonWidth = 84.0; // 40 + 40 + 2 gap (max for both buttons)
-    final buttonHeight = 40.0;
-    final buttonLeft = paneGlobal.dx + paneSize.width - 2 - buttonWidth;
-    final buttonTop = paneGlobal.dy + 2;
-
-    return Rect.fromLTWH(buttonLeft, buttonTop, buttonWidth, buttonHeight);
-  }
-
-  /// Determine which pane a screen point falls in and return its drawing
-  /// controller. Screen-space drawing: the point is used as-is, no transforms.
-  /// Excludes chrome button areas from hit detection.
-  _PaneHitInfo? _hitTestPane(Offset screenPoint) {
-    if (_viewMode == ViewMode.both) {
-      // Check left pane
-      final leftBox = _leftPaneKey.currentContext?.findRenderObject() as RenderBox?;
-      if (leftBox != null) {
-        final topLeft = leftBox.localToGlobal(Offset.zero);
-        final paneRect = topLeft & leftBox.size;
-
-        // Exclude chrome button area
-        final buttonBounds = _getChromeButtonBounds(_leftPaneKey);
-        if (buttonBounds != null && buttonBounds.contains(screenPoint)) {
-          // Point is in button area, not a pane hit
-        } else if (paneRect.contains(screenPoint)) {
-          return _PaneHitInfo(
-            drawingController: _sidesSwapped ? _blueDrawingController : _redDrawingController,
-            isLeft: true,
-          );
-        }
-      }
-      // Check right pane
-      final rightBox = _rightPaneKey.currentContext?.findRenderObject() as RenderBox?;
-      if (rightBox != null) {
-        final topLeft = rightBox.localToGlobal(Offset.zero);
-        final paneRect = topLeft & rightBox.size;
-
-        // Exclude chrome button area
-        final buttonBounds = _getChromeButtonBounds(_rightPaneKey);
-        if (buttonBounds != null && buttonBounds.contains(screenPoint)) {
-          // Point is in button area, not a pane hit
-        } else if (paneRect.contains(screenPoint)) {
-          return _PaneHitInfo(
-            drawingController: _sidesSwapped ? _redDrawingController : _blueDrawingController,
-            isLeft: false,
-          );
-        }
-      }
-      return null;
-    } else {
-      // Single pane mode — check and exclude button area
-      final buttonBounds = _getChromeButtonBounds(_singlePaneKey);
-      if (buttonBounds != null && buttonBounds.contains(screenPoint)) {
-        return null; // Point is in button area
-      }
-
-      final controller = switch (_viewMode) {
-        ViewMode.redOnly => _redDrawingController,
-        ViewMode.blueOnly => _blueDrawingController,
-        ViewMode.fullOnly => _fullDrawingController,
-        ViewMode.both => _redDrawingController, // unreachable
-      };
-      return _PaneHitInfo(
-        drawingController: controller,
-        isLeft: true,
-      );
-    }
   }
 
   // --- Rotation ---
@@ -957,9 +778,9 @@ class _VideoViewerState extends State<VideoViewer> {
               muteState: _muteState,
               viewMode: _viewMode,
               drawingColor: _drawingColor,
-              canUndo: _combinedCanUndo,
-              canRedo: _combinedCanRedo,
-              hasDrawings: _combinedHasDrawings,
+              canUndo: _drawingController.canUndo,
+              canRedo: _drawingController.canRedo,
+              hasDrawings: _drawingController.hasNonEmptyStrokes,
               canToggleViewMode: _availableViewModes.length > 1,
               isPaused: !_isPlaying,
               onBack: () => Navigator.of(context).pop(),
@@ -971,9 +792,9 @@ class _VideoViewerState extends State<VideoViewer> {
               onForward10: _forward10,
               onRestart: _restart,
               onToggleDrawing: _cycleDrawingColor,
-              onUndo: _combinedUndo,
-              onRedo: _combinedRedo,
-              onClearDrawing: _combinedClear,
+              onUndo: _drawingController.undo,
+              onRedo: _drawingController.redo,
+              onClearDrawing: _drawingController.clear,
             ),
           ],
         ),
@@ -1129,17 +950,14 @@ class _VideoViewerState extends State<VideoViewer> {
     return IgnorePointer(
       ignoring: true,
       child: ListenableBuilder(
-        listenable: Listenable.merge(_activeDrawingControllers),
+        listenable: _drawingController,
         builder: (context, _) {
-          final controller = _activeDrawingControllers.first;
           return CustomPaint(
             painter: StrokePainter(
-              strokes: _activeDrawingControllers
-                  .expand((c) => c.strokes)
-                  .toList(),
-              currentStrokePoints: controller.currentStrokePoints,
-              currentColor: controller.currentColor,
-              opacity: controller.opacity,
+              strokes: _drawingController.strokes,
+              currentStrokePoints: _drawingController.currentStrokePoints,
+              currentColor: _drawingController.currentColor,
+              opacity: _drawingController.opacity,
             ),
             size: Size.infinite,
           );
@@ -1321,19 +1139,6 @@ class _PaneOverlayButton extends StatelessWidget {
       ),
     );
   }
-}
-
-/// A stroke painter that clips and translates strokes to the video's rendered
-/// rect, so drawings align with the video even when letterboxed/pillarboxed.
-/// Result of hit-testing a screen point against a video pane.
-class _PaneHitInfo {
-  final DrawingController drawingController;
-  final bool isLeft;
-
-  _PaneHitInfo({
-    required this.drawingController,
-    required this.isLeft,
-  });
 }
 
 /// Bottom sheet for editing recording metadata (match, alliance, teams).

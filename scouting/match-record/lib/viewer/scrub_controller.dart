@@ -52,7 +52,7 @@ class ScrubController {
     double paneWidth, {
     double exponent = AppConstants.defaultScrubExponent,
     int maxRangeMs = AppConstants.defaultScrubMaxRangeMs,
-    double deadZonePx = AppConstants.scrubDeadZonePx,
+    double deadZonePx = AppConstants.touchDeadZonePx,
   }) {
     if (paneWidth <= 0) return 0;
 

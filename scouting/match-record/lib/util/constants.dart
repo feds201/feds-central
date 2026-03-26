@@ -51,8 +51,10 @@ class AppConstants {
   // Scrub settings
   static const double defaultScrubExponent = 2.5;
   static const int defaultScrubMaxRangeMs = 90000;
-  static const double scrubDeadZonePx = 3.0;
   static const int defaultScrubCoalescingIntervalMs = 25;
+
+  // Touch deadzone (shared by scrub and drawing)
+  static const double touchDeadZonePx = 3.0;
 
   // Drawing
   static const double strokeWidth = 3.5;

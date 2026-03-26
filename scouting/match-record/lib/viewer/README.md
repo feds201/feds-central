@@ -35,7 +35,7 @@ There are no other gesture combinations. There is no "drawing off while paused" 
 
 **Multi-touch disambiguation.** When the first finger touches down, the gesture layer immediately starts the appropriate 1-finger action (scrub or draw). If a second finger arrives, the 1-finger action is cancelled — scrub state is cleaned up and playback resumes (if it was playing), or the in-progress drawing stroke is discarded. The gesture becomes a zoom/pan handled by InteractiveViewer for its entire remaining lifetime: even if the user lifts back to one finger, scrub/draw does not resume. The gesture resets only when all fingers are lifted.
 
-**Why immediate start + cancel:** Deferring the 1-finger action (e.g., with a timer) would add latency to every touch. The split-second of scrub or draw before the 2nd finger lands is within the scrub dead zone (3px) and acceptable for drawing (will be further mitigated by a drawing dead zone in a future update).
+**Why immediate start + cancel:** Deferring the 1-finger action (e.g., with a timer) would add latency to every touch. The split-second of scrub or draw before the 2nd finger lands is within the dead zone (3px) for both scrub and drawing, so no visible effect occurs.
 
 ### Scrubbing
 
@@ -83,7 +83,9 @@ The drawing color button in the sidebar cycles through: red -> blue -> red -> bl
 
 **Why screen-space, not video-space:** Video-space drawing requires inverting zoom, pan, and rotation transforms on input, then re-applying them on render, and recomputing when rotation changes. This produced persistent coordinate bugs at odd rotation angles. Screen-space eliminates all transform math. The trade-off (strokes don't track video content through zoom/rotate) is acceptable because drawings are ephemeral telestration, not permanent annotations.
 
-**Per-pane drawing controllers.** Each video source (red, blue, full) has its own drawing controller. In dual mode, the touch point's horizontal position determines which controller receives the stroke (left half vs right half). When a stroke is drawn on one pane, a no-op is pushed to the other pane's undo stack so that undo/redo stays synchronized.
+**Single drawing controller.** One `DrawingController` handles all drawing regardless of view mode. Since strokes are in screen space (not video space), there's no need for per-pane controllers — touch input goes directly to the single controller, and the single canvas renders all strokes.
+
+**Drawing deadzone.** A 3px deadzone (shared with scrub via `AppConstants.touchDeadZonePx`) prevents accidental strokes. After finger down, pointer moves are ignored until the finger has moved 3px from the initial position. If the finger lifts without passing the deadzone, no stroke is created. This also prevents accidental strokes when tapping chrome buttons (rotate, edit) while paused.
 
 **Drawing is in-memory only.** Strokes are not persisted to disk. Navigating away loses all drawings.
 
@@ -193,11 +195,11 @@ The play/pause button has a subtle lighter gray background to make it visually d
 
 `DrawingController` manages freehand drawing strokes with undo/redo, extending `ChangeNotifier` so widgets rebuild on changes.
 
-**Strokes.** Each stroke is a `List<Offset>` with a `DrawingColor`. `onPointerDown` starts a new stroke, `onPointerMove` appends points, `onPointerUp` finalizes it into `_strokes` and clears the redo stack (any new stroke after an undo invalidates the redo history). `strokes` and `currentStroke` are exposed as unmodifiable lists.
+**Strokes with deadzone.** `onPointerDown` stores the initial position but does not start a stroke. `onPointerMove` checks distance from the initial position — if less than `AppConstants.touchDeadZonePx` (3px), the move is ignored. Once the deadzone is passed, the initial position and current position become the first two stroke points, and subsequent moves append normally. `onPointerUp` finalizes into `_strokes` and clears the redo stack (any new stroke after an undo invalidates the redo history). If the deadzone was never passed, `onPointerUp` silently resets with no stroke created. `strokes` and `currentStrokePoints` are exposed as unmodifiable lists.
 
 **Undo/redo.** `undo()` moves the last completed stroke to `_redoStack`. `redo()` moves it back. `clear()` wipes everything.
 
-**Cancel/cleanup.** `cancelStroke()` discards the current in-progress stroke without finalizing it (used when multi-touch is detected). `popLastStroke()` removes the last completed stroke without pushing to the redo stack (used to clean up no-ops that were pushed before the gesture was recognized as multi-touch).
+**Cancel.** `cancelStroke()` discards the current in-progress stroke without finalizing it and resets deadzone state (used when multi-touch is detected).
 
 **Opacity.** `setOpacity(value)` controls drawing visibility (1.0 when paused, 0.3 when playing). Applied via the `Paint.color` alpha channel, not via a Flutter `Opacity` widget (which would create an offscreen compositing layer).
 

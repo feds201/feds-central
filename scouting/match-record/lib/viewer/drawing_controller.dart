@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
@@ -41,6 +42,10 @@ class DrawingController extends ChangeNotifier {
   final List<ColoredStroke> _redoStack = [];
   double _opacity = 1.0;
 
+  // Deadzone state: ignore moves < touchDeadZonePx from initial down position
+  Offset? _downPosition;
+  bool _deadzonePassed = false;
+
   /// All completed strokes.
   List<ColoredStroke> get strokes => List.unmodifiable(_strokes);
 
@@ -50,7 +55,7 @@ class DrawingController extends ChangeNotifier {
   /// Color of the stroke currently being drawn.
   DrawingColor get currentColor => _currentColor;
 
-  /// Current drawing opacity (1.0 when paused, 0.5 when playing).
+  /// Current drawing opacity (1.0 when paused, reduced when playing).
   double get opacity => _opacity;
 
   bool get canUndo => _strokes.isNotEmpty;
@@ -65,19 +70,52 @@ class DrawingController extends ChangeNotifier {
   }
 
   /// Called when a pointer makes contact with the surface.
+  ///
+  /// Stores the initial position for deadzone checking. No stroke points are
+  /// added and no listeners are notified until the finger moves past the
+  /// deadzone (see [onPointerMove]).
   void onPointerDown(Offset position) {
-    _currentStrokePoints = [position];
-    notifyListeners();
+    _downPosition = position;
+    _deadzonePassed = false;
   }
 
   /// Called when a pointer moves across the surface.
+  ///
+  /// If the finger hasn't moved [AppConstants.touchDeadZonePx] from the
+  /// initial down position, the move is ignored. Once the deadzone is passed,
+  /// the initial down position and current position are added as the first
+  /// two stroke points, and subsequent moves append normally.
   void onPointerMove(Offset position) {
+    if (_downPosition == null) return;
+
+    if (!_deadzonePassed) {
+      final dx = position.dx - _downPosition!.dx;
+      final dy = position.dy - _downPosition!.dy;
+      final distance = sqrt(dx * dx + dy * dy);
+      if (distance < AppConstants.touchDeadZonePx) return;
+
+      _deadzonePassed = true;
+      _currentStrokePoints = [_downPosition!, position];
+      notifyListeners();
+      return;
+    }
+
     _currentStrokePoints.add(position);
     notifyListeners();
   }
 
   /// Called when a pointer lifts from the surface. Finalizes the current stroke.
+  ///
+  /// If the deadzone was never passed (finger didn't move enough), no stroke
+  /// is created and state is silently reset.
   void onPointerUp() {
+    if (!_deadzonePassed) {
+      _downPosition = null;
+      return;
+    }
+
+    _downPosition = null;
+    _deadzonePassed = false;
     if (_currentStrokePoints.isNotEmpty) {
       _strokes.add(ColoredStroke(List.of(_currentStrokePoints), _currentColor));
       _currentStrokePoints = [];
@@ -88,19 +126,12 @@ class DrawingController extends ChangeNotifier {
 
   /// Cancel the current in-progress stroke without finalizing it.
   /// Used when a 2nd finger is detected, converting the gesture to zoom/pan.
+  /// Resets deadzone state unconditionally.
   void cancelStroke() {
+    _downPosition = null;
+    _deadzonePassed = false;
     if (_currentStrokePoints.isNotEmpty) {
       _currentStrokePoints = [];
-      notifyListeners();
-    }
-  }
-
-  /// Remove the last stroke from the stack without pushing to redo.
-  /// Used to clean up a no-op that was pushed before the gesture was
-  /// recognized as multi-touch.
-  void popLastStroke() {
-    if (_strokes.isNotEmpty) {
-      _strokes.removeLast();
       notifyListeners();
     }
   }
@@ -126,20 +157,12 @@ class DrawingController extends ChangeNotifier {
     _strokes.clear();
     _currentStrokePoints = [];
     _redoStack.clear();
+    _downPosition = null;
+    _deadzonePassed = false;
     notifyListeners();
   }
 
-  /// Push an empty stroke (no-op) to keep undo stacks synced across controllers.
-  ///
-  /// When drawing on one pane, the other pane's controller gets a pushNoOp()
-  /// so that undo/redo operations stay aligned between the two controllers.
-  void pushNoOp() {
-    _strokes.add(ColoredStroke([], _currentColor));
-    _redoStack.clear();
-    notifyListeners();
-  }
-
-  /// Set drawing opacity. Use 1.0 when paused, 0.5 when playing.
+  /// Set drawing opacity. Use 1.0 when paused, lower when playing.
   void setOpacity(double value) {
     if (_opacity != value) {
       _opacity = value;
