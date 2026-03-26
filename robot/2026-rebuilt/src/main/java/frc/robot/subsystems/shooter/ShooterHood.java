@@ -144,7 +144,7 @@ public class ShooterHood extends SubsystemBase {
     Logger.recordOutput("Robot/Shooter/HoodAngleRotations", getPosition().in(Rotations));
     // This method will be called once per scheduler run
     shooterHoodConnectedEntry.setBoolean(hoodMotor.isConnected());
-  shooterHoodPoweredEntry.setBoolean(hoodMotor.getSupplyVoltage().getValueAsDouble() > frc.robot.subsystems.swerve.generated.TunerConstants.kPoweredThresholdVolts);
+  shooterHoodPoweredEntry.setBoolean(hoodMotor.getSupplyVoltage().getValueAsDouble() > RobotMap.PitConstants.kPoweredThresholdVolts);
   }
 
   public void setAngle(Angle targetAngle){

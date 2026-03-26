@@ -186,13 +186,13 @@ public class ShooterWheels extends SubsystemBase {
     }
 
     shooter1ConnectedEntry.setBoolean(shooterLeader.isConnected());
-    shooter1PoweredEntry.setBoolean(shooterLeader.getSupplyVoltage().getValueAsDouble() > frc.robot.subsystems.swerve.generated.TunerConstants.kPoweredThresholdVolts);
+    shooter1PoweredEntry.setBoolean(shooterLeader.getSupplyVoltage().getValueAsDouble() > RobotMap.PitConstants.kPoweredThresholdVolts);
     shooter2ConnectedEntry.setBoolean(shooterFollower1.isConnected());
-    shooter2PoweredEntry.setBoolean(shooterFollower1.getSupplyVoltage().getValueAsDouble() > frc.robot.subsystems.swerve.generated.TunerConstants.kPoweredThresholdVolts);
+    shooter2PoweredEntry.setBoolean(shooterFollower1.getSupplyVoltage().getValueAsDouble() > RobotMap.PitConstants.kPoweredThresholdVolts);
     shooter3ConnectedEntry.setBoolean(shooterFollower2.isConnected());
-    shooter3PoweredEntry.setBoolean(shooterFollower2.getSupplyVoltage().getValueAsDouble() > frc.robot.subsystems.swerve.generated.TunerConstants.kPoweredThresholdVolts);
+    shooter3PoweredEntry.setBoolean(shooterFollower2.getSupplyVoltage().getValueAsDouble() > RobotMap.PitConstants.kPoweredThresholdVolts);
     shooter4ConnectedEntry.setBoolean(shooterFollower3.isConnected());
-    shooter4PoweredEntry.setBoolean(shooterFollower3.getSupplyVoltage().getValueAsDouble() > frc.robot.subsystems.swerve.generated.TunerConstants.kPoweredThresholdVolts);
+    shooter4PoweredEntry.setBoolean(shooterFollower3.getSupplyVoltage().getValueAsDouble() > RobotMap.PitConstants.kPoweredThresholdVolts);
   }
 
   public void setVelocity(AngularVelocity velocity){

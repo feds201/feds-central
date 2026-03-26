@@ -23,6 +23,9 @@ public class PitTesting {
             .getLayout("Test Commands", BuiltInLayouts.kList)
             .withSize(2, 5);
     private static SwerveRequest.FieldCentric driveRequest = new SwerveRequest.FieldCentric();
+    
+    private static double testTime = 1.5;
+    private static double drivetrainTestTime = 0.75;
 
     public static void addCommands() {
 
@@ -40,49 +43,48 @@ public class PitTesting {
 
         testLayout.add("Run Feeder", Commands.sequence(
             feederSubsystem.setStateCommand(feeder_state.RUN),
-            Commands.waitSeconds(2),
+            Commands.waitSeconds(testTime),
             feederSubsystem.setStateCommand(feeder_state.STOP)));
         
         testLayout.add("Run Intake", Commands.sequence(
             intakeSubsystem.setIntakeStateCommand(IntakeState.INTAKING),
-            Commands.waitSeconds(2),
+            Commands.waitSeconds(testTime),
             intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT)));
         
         testLayout.add("Run Intake and Rollers", Commands.sequence(
             intakeSubsystem.setIntakeStateCommand(IntakeState.INTAKING),
-            Commands.waitSeconds(2),
+            Commands.waitSeconds(testTime),
             intakeSubsystem.setRollerStateCommand(RollerState.ON),
-            Commands.waitSeconds(2),
+            Commands.waitSeconds(testTime),
             intakeSubsystem.setRollerStateCommand(RollerState.OFF),
-            Commands.waitSeconds(2),
+            Commands.waitSeconds(testTime),
             intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT)));
 
         testLayout.add("Run Spindexer", Commands.sequence(
             spinDexer.setStateCommand(spindexer_state.RUN),
-            Commands.waitSeconds(2),
+            Commands.waitSeconds(testTime),
             spinDexer.setStateCommand(spindexer_state.STOP)));
 
         testLayout.add("Run Shooter Wheels", Commands.sequence(
             shooterWheels.setStateCommand(shooter_state.SHOOTING),
-            Commands.waitSeconds(2),
+            Commands.waitSeconds(testTime),
             shooterWheels.setStateCommand(shooter_state.IDLE)));
         
         testLayout.add("Move Shooter Hood", Commands.sequence(
             shooterHood.setStateCommand(shooterhood_state.OUT),
-            Commands.waitSeconds(2),
+            Commands.waitSeconds(testTime),
             shooterHood.setStateCommand(shooterhood_state.IN)));
         
         testLayout.add("test Drivetrain translation", Commands.sequence(
-            new InstantCommand(() -> drivetrain.setControl(driveRequest
+            drivetrain.runOnce(() -> drivetrain.setControl(driveRequest
                 .withVelocityX(0.5))),
-            Commands.waitSeconds(2),
-            new InstantCommand(() -> drivetrain.setControl(new SwerveRequest.Idle()))));
+            Commands.waitSeconds(drivetrainTestTime),
+            drivetrain.runOnce(() -> drivetrain.setControl(new SwerveRequest.Idle()))));
 
         testLayout.add("test Drivetrain rotation", Commands.sequence(
-            new InstantCommand(() -> drivetrain.setControl(driveRequest
+            drivetrain.runOnce(() -> drivetrain.setControl(driveRequest
                 .withRotationalRate(1.0))),
-            Commands.waitSeconds(2),
-            new InstantCommand(() -> drivetrain.setControl(new SwerveRequest.Idle()))));
-            
+            Commands.waitSeconds(drivetrainTestTime),
+            drivetrain.runOnce(() -> drivetrain.setControl(new SwerveRequest.Idle()))));
     }
 }

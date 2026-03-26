@@ -62,6 +62,9 @@ public class RobotContainer extends ControllerBindings {
     private final LimelightWrapper ll4 = new LimelightWrapper("limelight-two", true);
     private final LimelightWrapper ll3 = new LimelightWrapper("limelight-five", false);
 
+    private static java.io.File usb = RobotMap.PitConstants.usb;
+     
+
     private final CommandXboxController controller = new CommandXboxController(0);
     private final CommandXboxController operaterController = new CommandXboxController(1);
 
@@ -323,4 +326,19 @@ public void limelightConnection(){
     ll4conect.setBoolean(ll4.isConnected());
 }
 
+private final GenericEntry testLayout = Shuffleboard.getTab("Pit Testing").add("storage", false).getEntry();
+
+public void usbStorage() {                                                                                                                                                                                                                                                     
+                                                                                                           
+  boolean mounted = usb.exists() && usb.isDirectory();                                                                                                         
+  long totalBytes = usb.getTotalSpace();                                   
+  long freeBytes  = usb.getUsableSpace();  
+                                                                                                                                                               
+  boolean storageOk = mounted && freeBytes >= RobotMap.PitConstants.STORAGE_ACCEPTABLE_BYTES;
+  String label = !mounted ? "NO DRIVE"                                                                                                                         
+      : String.format("%.1f GB free / %.1f GB total", freeBytes / 1e9, totalBytes / 1e9);                                                                      
+   
+  testLayout.setString("Logs Flash Drive: " + label);
+  testLayout.setBoolean(storageOk);
+}
 }

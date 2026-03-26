@@ -352,7 +352,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             });
         }
 
-    final double poweredThreshold = frc.robot.subsystems.swerve.generated.TunerConstants.kPoweredThresholdVolts;
+    final double poweredThreshold = RobotMap.PitConstants.kPoweredThresholdVolts;
 
         for (int i = 0; i < 4; ++i) {
             TalonFX drive = getDriveMotor(i);

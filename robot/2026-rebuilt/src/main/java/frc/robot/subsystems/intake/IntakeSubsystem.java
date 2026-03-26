@@ -510,9 +510,9 @@ public class IntakeSubsystem extends SubsystemBase {
     super.periodic();
 
     intakeConnectedEntry.setBoolean(motor.isConnected());
-  intakePoweredEntry.setBoolean(motor.getSupplyVoltage().getValueAsDouble() > frc.robot.subsystems.swerve.generated.TunerConstants.kPoweredThresholdVolts);
+  intakePoweredEntry.setBoolean(motor.getSupplyVoltage().getValueAsDouble() > RobotMap.PitConstants.kPoweredThresholdVolts);
   rollerConnectedEntry.setBoolean(rollerMotor.isConnected());
-  rollerPoweredEntry.setBoolean(rollerMotor.getSupplyVoltage().getValueAsDouble() > frc.robot.subsystems.swerve.generated.TunerConstants.kPoweredThresholdVolts);
+  rollerPoweredEntry.setBoolean(rollerMotor.getSupplyVoltage().getValueAsDouble() > RobotMap.PitConstants.kPoweredThresholdVolts);
   }
   
 

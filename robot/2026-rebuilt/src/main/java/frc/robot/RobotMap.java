@@ -120,6 +120,14 @@ public final class RobotMap {
         public static final double rotD = 0.0;
     }
 
+    public static class PitConstants {
+        public static final double kPoweredThresholdVolts = 4.0;
+
+        final static long STORAGE_PER_MATCH_BYTES = 300_000_000L;  // ~300 MB (TODO: confirm with Laney!)
+        final static long STORAGE_ACCEPTABLE_BYTES = 4 * STORAGE_PER_MATCH_BYTES; 
+        static java.io.File usb = new java.io.File("/media/sda1"); 
+    }
+
     public static class ShooterConstants {
         public static final int ShooterRightTop = 53;
         public static final int ShooterRightBottom = 52;
