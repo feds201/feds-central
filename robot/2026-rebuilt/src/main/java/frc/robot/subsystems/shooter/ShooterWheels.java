@@ -149,14 +149,14 @@ public class ShooterWheels extends SubsystemBase {
                 speed = () -> swanNeckPivotSpeedSetter.getDouble(0);
     pitTab = Shuffleboard.getTab("Pit Testing");
     shooterLayout = pitTab.getLayout("Shooter Wheel Health", BuiltInLayouts.kList).withSize(2,4).withPosition(6, 2);
-    shooter1ConnectedEntry = shooterLayout.add("shooter1 Motor is Connected", false).getEntry();
-    shooter1PoweredEntry = shooterLayout.add("shooter1 Motor is Powered", false).getEntry();
-    shooter2ConnectedEntry = shooterLayout.add("shooter2 Motor is Connected", false).getEntry();
-    shooter2PoweredEntry = shooterLayout.add("shooter2 Motor is Powered", false).getEntry();
-    shooter3ConnectedEntry = shooterLayout.add("shooter3 Motor is Connected", false).getEntry();
-    shooter3PoweredEntry = shooterLayout.add("shooter3 Motor is Powered", false).getEntry();
-    shooter4ConnectedEntry = shooterLayout.add("shooter4 Motor is Connected", false).getEntry();
-    shooter4PoweredEntry = shooterLayout.add("shooter4 Motor is Powered", false).getEntry();
+    shooter1ConnectedEntry = shooterLayout.add("Top Right Motor is Connected", false).getEntry();
+    shooter1PoweredEntry = shooterLayout.add("Top Right Motor is Powered", false).getEntry();
+    shooter2ConnectedEntry = shooterLayout.add("Bottom Left Motor is Connected", false).getEntry();
+    shooter2PoweredEntry = shooterLayout.add("Bottom Left Motor is Powered", false).getEntry();
+    shooter3ConnectedEntry = shooterLayout.add("Bottom Right Motor is Connected", false).getEntry();
+    shooter3PoweredEntry = shooterLayout.add("Bottom Right Motor is Powered", false).getEntry();
+    shooter4ConnectedEntry = shooterLayout.add("Top Left Motor is Connected", false).getEntry();
+    shooter4PoweredEntry = shooterLayout.add("Top Left Motor is Powered", false).getEntry();
   }
 
   @Override

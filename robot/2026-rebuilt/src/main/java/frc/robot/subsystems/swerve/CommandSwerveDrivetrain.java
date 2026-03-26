@@ -6,6 +6,7 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
 
+import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Supplier;
@@ -83,6 +84,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private final GenericEntry[] steerPoweredEntries  = new GenericEntry[4];
     private final GenericEntry[] encConnectedEntries  = new GenericEntry[4];
     private final GenericEntry[] encPoweredEntries    = new GenericEntry[4];
+
+    private final String[] moduleNames = {"Front Left", "Front Right", "Back Left", "Back Right"};
 
     private GenericEntry pigeonConnectedEntry;
     private GenericEntry pigeonPoweredEntry;
@@ -250,6 +253,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     private void initShuffleboardEntries() {
         
+        //order FrontLeft, FrontRight, BackLeft, BackRight
+        //TODO: implement module names.
         for (int i = 0; i < 4; ++i) {
             driveConnectedEntries[i] = drivetrainLayout.add("Drive " + (i + 1) + " Connected", false).getEntry();
             drivePoweredEntries[i]  = drivetrainLayout3.add("Drive " + (i + 1) + " Powered", false).getEntry();
