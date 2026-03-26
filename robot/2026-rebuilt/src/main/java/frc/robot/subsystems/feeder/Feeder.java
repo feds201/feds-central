@@ -62,12 +62,12 @@ public class Feeder extends SubsystemBase {
   //Timer to switch between forward and reverse during indexing
   private Timer washingMachineTimer = new Timer();
 
-  public Feeder() {
+    public Feeder() {
     feederMotor = new TalonFX(FeederConstants.kFeederKickerMotorId);
 
     config = new TalonFXConfiguration();
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-    config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     config.CurrentLimits.StatorCurrentLimitEnable = true;
     config.CurrentLimits.StatorCurrentLimit = 60;
     // config.CurrentLimits.StatorCurrentLimit = 40;
@@ -76,6 +76,7 @@ public class Feeder extends SubsystemBase {
       if (status.isOK())
         break;
     }
+
 
     SubsystemStatusManager.addSubsystem(getName(), feederMotor);
     DeviceTempReporter.addDevices(feederMotor);

@@ -3,48 +3,52 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.22393831553974,
-        "y": 5.030225385527876
+        "x": 2.483832781456954,
+        "y": 6.728435430463576
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.22393831553974,
-        "y": 6.230225385527876
+        "x": 1.9611175496688742,
+        "y": 7.7230463576158925
       },
       "isLocked": false,
-      "linkedName": "LeftReadyToShoot"
+      "linkedName": "BumpShoot1"
     },
     {
       "anchor": {
-        "x": 0.7785164051355205,
-        "y": 5.982268188302426
+        "x": 7.819884105960265,
+        "y": 6.9607533112582765
       },
       "prevControl": {
-        "x": 1.6102187521932898,
-        "y": 5.982268188302426
+        "x": 7.574293755351825,
+        "y": 7.469820316121073
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "PickedUpFromDepot"
+      "linkedName": "TrenchIntake"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.8000000000000075,
+      "waypointRelativePos": 0.36319612590799283,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 0.5786924939467305,
       "rotationDegrees": 0.0
     }
   ],
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 0.743179680150507,
-      "maxWaypointRelativePos": 1.0,
+      "minWaypointRelativePos": 0.3604240282685512,
+      "maxWaypointRelativePos": 0.5469964664310953,
       "constraints": {
-        "maxVelocity": 1.0,
+        "maxVelocity": 3.0,
         "maxAcceleration": 4.0,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 360.0,
-        "nominalVoltage": 12.0,
+        "nominalVoltage": 11.8,
         "unlimited": false
       }
     }
@@ -52,22 +56,22 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 4.0,
+    "maxVelocity": 5.0,
     "maxAcceleration": 4.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 360.0,
-    "nominalVoltage": 12.0,
+    "nominalVoltage": 11.8,
     "unlimited": false
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 90.0
   },
   "reversed": false,
-  "folder": "MidIntakeToLeftBump",
+  "folder": "LeftTrenchBumpShoot",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -35.584373608459686
+    "rotation": -51.37767671243816
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

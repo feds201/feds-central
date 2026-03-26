@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 8.635812574134597,
-        "y": 0.8341399762698256
+        "x": 7.5060972716488745,
+        "y": 0.7373072360616835
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 8.603534994068804,
-        "y": 2.37270462633452
+        "x": 8.28075919335706,
+        "y": 1.017046263345195
       },
       "prevControl": {
-        "x": 8.538979833921074,
-        "y": 0.9309727164833488
+        "x": 8.258393542883375,
+        "y": 0.5175467361393238
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "RightIntakeStart"
+      "linkedName": "AcrossBumpMidintakeStart"
     }
   ],
   "rotationTargets": [
@@ -38,8 +38,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 4.0,
+    "maxVelocity": 5.0,
+    "maxAcceleration": 4.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 360.0,
     "nominalVoltage": 12.0,
@@ -47,7 +47,7 @@
   },
   "goalEndState": {
     "velocity": 2.0,
-    "rotation": -89.10892860108419
+    "rotation": -78.99645914825032
   },
   "reversed": false,
   "folder": "MidIntakeToRightBump",

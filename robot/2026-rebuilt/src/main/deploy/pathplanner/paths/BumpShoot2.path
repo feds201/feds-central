@@ -3,61 +3,65 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.109,
-        "y": 5.65
+        "x": 7.819884105960265,
+        "y": 5.436167218543046
       },
       "prevControl": null,
       "nextControl": {
-        "x": 8.200669039145907,
-        "y": 4.868837485172005
+        "x": 6.891859980517387,
+        "y": 5.492224287667034
       },
       "isLocked": false,
-      "linkedName": "FuelCloseLeft"
+      "linkedName": "NuetralIntake1"
     },
     {
       "anchor": {
-        "x": 5.461578313253011,
-        "y": 5.379108433734939
+        "x": 4.640033112582781,
+        "y": 5.501506622516556
       },
       "prevControl": {
-        "x": 5.711396407198632,
-        "y": 5.388643628404021
+        "x": 6.062980132450331,
+        "y": 5.407127483443707
       },
       "nextControl": {
-        "x": 5.211760219307391,
-        "y": 5.369573239065857
+        "x": 3.6422254860291203,
+        "y": 5.567687740604299
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.5467141162514837,
-        "y": 5.379108433734939
+        "x": 2.483832781456954,
+        "y": 6.728435430463576
       },
       "prevControl": {
-        "x": 3.7964780394882265,
-        "y": 5.368246451899633
+        "x": 2.941208609271523,
+        "y": 6.2202400662251645
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "LeftBumpCrossOver"
+      "linkedName": "BumpShoot1"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.8184615384615297,
-      "rotationDegrees": -135.0
+      "waypointRelativePos": 0.6561743341404251,
+      "rotationDegrees": 24.775
+    },
+    {
+      "waypointRelativePos": 1.191283292978211,
+      "rotationDegrees": 24.775
     }
   ],
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 0.89934148635936,
-      "maxWaypointRelativePos": 2.0,
+      "minWaypointRelativePos": 0.808480565371025,
+      "maxWaypointRelativePos": 1.3936395759717315,
       "constraints": {
-        "maxVelocity": 2.0,
-        "maxAcceleration": 6.0,
+        "maxVelocity": 3.0,
+        "maxAcceleration": 4.0,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 360.0,
         "nominalVoltage": 11.8,
@@ -76,14 +80,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0.25,
-    "rotation": -135.0
+    "velocity": 0,
+    "rotation": -51.37767671243816
   },
   "reversed": false,
-  "folder": "MidIntakeToLeftBump",
+  "folder": "LeftTrenchBumpShoot",
   "idealStartingState": {
-    "velocity": 2.0,
-    "rotation": 85.0
+    "velocity": 0,
+    "rotation": 90.0
   },
   "useDefaultConstraints": true
 }

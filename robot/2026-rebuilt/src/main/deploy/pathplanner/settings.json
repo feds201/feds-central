@@ -6,14 +6,18 @@
     "CenterOverBump",
     "CircleCenter",
     "DoublePassTest",
+    "GriefAuto",
     "MidIntakeToLeftBump",
     "MidIntakeToRightBump",
     "CenterDepotOutpost",
+    "LeftTrenchBumpShoot",
     "RightBumpToOutpost",
     "TestAutos",
     "Trenches"
   ],
-  "autoFolders": [],
+  "autoFolders": [
+    "New Folder"
+  ],
   "defaultMaxVel": 5.0,
   "defaultMaxAccel": 4.0,
   "defaultMaxAngVel": 540.0,
