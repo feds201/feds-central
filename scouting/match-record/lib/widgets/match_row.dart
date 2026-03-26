@@ -299,12 +299,8 @@ class MatchRow extends StatelessWidget {
             constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
             onPressed: () async {
               final key = matchWithVideos.match.youtubeKey!;
-              // Try YouTube deep link first, fall back to https URL
-              final deepLink = Uri.parse('vnd.youtube://$key');
-              if (!await launchUrl(deepLink, mode: LaunchMode.externalApplication)) {
-                final webUrl = Uri.parse('https://www.youtube.com/watch?v=$key');
-                launchUrl(webUrl, mode: LaunchMode.externalApplication);
-              }
+              final url = Uri.parse('https://www.youtube.com/watch?v=$key');
+              launchUrl(url, mode: LaunchMode.externalApplication);
             },
           )
         else
