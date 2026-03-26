@@ -85,7 +85,7 @@ public class ShooterHood extends SubsystemBase {
     config.Slot0.kP = 1; // Proportional gain 
     config.Slot0.kD = 0.0; // Derivative gain
     config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 30; 
-    config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0.5; 
+    config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0.0; 
     config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
     config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
     // Apply config multiple times to ensure application
