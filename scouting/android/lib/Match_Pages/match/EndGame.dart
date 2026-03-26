@@ -76,6 +76,7 @@ class EndGameState extends State<EndGame> {
     endgameTime = widget.matchRecord.endPoints.endgameTime;
     endgameshootingCycles = widget.matchRecord.endPoints.endgameshootingCycles;
     robotBroken = widget.matchRecord.endPoints.robotBroken;
+    commentController.text = widget.matchRecord.endPoints.Comments;
   }
 
   void UpdateData() {
@@ -94,6 +95,7 @@ class EndGameState extends State<EndGame> {
     widget.matchRecord.endPoints.endgameshootingCycles = endgameshootingCycles;
     widget.matchRecord.endPoints.robotBroken = robotBroken;
     endPoints = widget.matchRecord.endPoints;
+    widget.matchRecord.endPoints.Comments = commentController.text;
     saveState();
   }
 
