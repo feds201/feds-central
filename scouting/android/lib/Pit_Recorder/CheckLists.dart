@@ -13,6 +13,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:confetti/confetti.dart';
 import 'package:bot_path_drawer/bot_path_drawer.dart';
+import 'dart:async';
+
 
 class Record extends StatefulWidget {
   final Team team;
@@ -24,6 +26,7 @@ class Record extends StatefulWidget {
 
 class _RecordState extends State<Record> {
   int _pressCount = 0;
+  Timer? _pathSavedTimer;
   final int _requiredPresses = 1;
   final config = BotPathConfig(
     backgroundImage: AssetImage('assets/2026/Aerna2026.png'),
@@ -68,13 +71,16 @@ class _RecordState extends State<Record> {
   late String AttitudeController;
   late String ScoutingAccuracyController;
   late TextEditingController NotCooperativeReasonController;
-  late List<String?> PathDataController;
+  late TextEditingController PathNameController;
+  late List<Map<String, String?>> PathDataController;
 
   // Unit selectors
   String weightUnit = 'lbs';
   String speedUnit = 'ft/s';
   String clearanceUnit = 'in';
   String shootingRateUnit = 'balls/sec';
+  bool _pathSaved = false;
+
 
   @override
   void initState() {
@@ -118,6 +124,7 @@ class _RecordState extends State<Record> {
     AttitudeController = "Yes";
     ScoutingAccuracyController = "Accurate";
     NotCooperativeReasonController = TextEditingController();
+    PathNameController = TextEditingController();
     PathDataController = [];
     // Load database and try to get existing data for this team
     PitDataBase.LoadAll();
@@ -158,8 +165,9 @@ class _RecordState extends State<Record> {
           AttitudeController = existingRecord.attitude ? "Yes" : "No";
           ScoutingAccuracyController = existingRecord.scoutingAccuracy;
           NotCooperativeReasonController.text = existingRecord.notCooperativeReason;
-          PathDataController = existingRecord.pathDraw;
-
+          PathDataController = List<Map<String, String?>>.from(
+              existingRecord.pathDraw.map((e) => Map<String, String?>.from(e))
+          );
           // Combine the existing images into ImageBlob
           // Filter out empty images and join with comma
           List<String> images = [ImageBlob1, ImageBlob2, ImageBlob3]
@@ -202,6 +210,14 @@ class _RecordState extends State<Record> {
       body: _buildQuestions(),
     );
   }
+
+  @override
+  void dispose() {
+    _pathSavedTimer?.cancel();
+    // ... rest of your existing dispose code
+    super.dispose();
+  }
+
 
   Widget _buildQuestions() {
     return SingleChildScrollView(
@@ -255,22 +271,54 @@ class _RecordState extends State<Record> {
             [
               Container(
                 width: double.infinity,
-                height: 500,
-                child:
-                Column(
+                height: 560,
+                child: Column(
                   children: [
                     Text("Auton Path", textAlign: TextAlign.center,
-                        style: GoogleFonts.museoModerno(fontSize: 30, fontWeight: FontWeight.bold,color: Colors.blue)),
+                        style: GoogleFonts.museoModerno(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.blue)),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      child: TextField(
+                        controller: PathNameController,
+                        decoration: InputDecoration(
+                          labelText: "Path Name",
+                          hintText: "ex. Left Side Rush",
+                          prefixIcon: Icon(Icons.label_outline),
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                        ),
+                      ),
+                    ),
                     SizedBox(
                       width: 1600,
                       height: 450,
-                      child: BotPathDrawer(
-                        config: config,
-                        onSave: (String? pathData) {
-                          PathDataController.add(pathData);
-                        },
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: _pathSaved ? Colors.green : Colors.transparent,
+                            width: 3,
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: BotPathDrawer(
+                          config: config,
+                          onSave: (String? pathData) {
+                            setState(() {
+                              PathDataController.add({
+                              'name': PathNameController.text,
+                              'path': pathData,
+                            });
+                           _pathSaved = true;
+                          });
+                             _pathSavedTimer?.cancel();
+                             _pathSavedTimer = Timer(const Duration(seconds: 5), () {
+                             setState(() => _pathSaved = false);
+                               });
+                          },
+                        ),
                       ),
                     ),
+
                   ],
                 ),
               ),

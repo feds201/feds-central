@@ -183,7 +183,7 @@ class PitRecord {
   final bool attitude;
   final String scoutingAccuracy;
   final String notCooperativeReason;
-  final List<String?> pathDraw;
+  final List<Map<String, String?>> pathDraw;
 
   PitRecord(
       {required this.teamNumber,
@@ -337,8 +337,16 @@ class PitRecord {
       scoutingAccuracy: json['scoutingAccuracy'] ?? '',
       notCooperativeReason: json['notCooperativeReason'] ?? '',
       pathDraw: json['pathDraw'] != null
-    ? List<String?>.from(json['pathDraw'])
-        : [],
+          ? List<dynamic>.from(json['pathDraw']).map((e) {
+        if (e is Map) {
+          return Map<String, String?>.from(
+              e.map((k, v) => MapEntry(k.toString(), v?.toString()))
+          );
+        }
+        // backward compat: old plain string entries get wrapped
+        return <String, String?>{'name': null, 'path': e?.toString()};
+      }).toList()
+          : [],
     );
   }
 }
