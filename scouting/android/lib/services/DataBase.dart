@@ -1014,7 +1014,7 @@ class EndPoints {
   }
 
   String toCsv() {
-    return '$ClimbStatus,${Park ? 1 : 0},${PushBallsEnd},$Passing,$EndNeutralTrips,$ShootingAccuracy,$endgameTime,$endgameshootingCycles,$robotBroken, ${Comments.replaceAll('"', '""')}';
+    return '$ClimbStatus,${Park ? 1 : 0},${PushBallsEnd},$Passing,$EndNeutralTrips,$ShootingAccuracy,$endgameTime,$endgameshootingCycles,$robotBroken, "${Comments.replaceAll('"', '""')}"';
   }
 
   @override
@@ -1170,12 +1170,12 @@ class LocalDataBase {
 
   static TeleOpPoints fromJson(Map<String, dynamic> json) {
     return TeleOpPoints(
-      (json['TotalShootingTime1'] ?? json['TotalShootingTime'] ?? 0).toDouble(),
-      _toInt(json['TotalAmount1']),
+      (json['TotalShootingTime1'] ?? 0).toDouble(),
+      _toInt(json['TotalAmount1'] ?? 0),
       json['Defense'] ?? false,
-      _toInt(json['NeutralTrips'] ?? json['NeutralTips']),
-      _toInt(json['PushBallsEnd'] ?? json['PushBallsEnd']),
-      _toInt(json['passing']),
+      _toInt(json['NeutralTrips'] ?? 0),
+      _toInt(json['PushBallsEnd'] ?? 0),
+      _toInt(json['passing'] ?? 0),
     );
   }
 
