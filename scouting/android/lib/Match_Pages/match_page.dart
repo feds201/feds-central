@@ -14,6 +14,7 @@ import 'package:scout_ops_android/main.dart';
 
 import '../services/Colors.dart';
 import '../services/DataBase.dart';
+import '../services/NeonMatchService.dart';
 import 'match.dart';
 
 class MatchPage extends StatefulWidget {
@@ -90,6 +91,36 @@ class MatchPageState extends State<MatchPage>
     );
   }
 
+  //sending data to neon
+  bool _isSyncing = false;
+
+  Future<void> _syncAllMatches() async {
+    setState(() => _isSyncing = true);
+    int success = 0;
+    int failed = 0;
+
+    final allMatches = MatchDataBase.Export() as Map<String, dynamic>;
+
+    for (final entry in allMatches.entries) {
+      final record = MatchRecord.fromJson(entry.value);
+      final payload = {
+        'id': entry.key,
+        'created_at': DateTime.now().toIso8601String(),
+        'data': record.toJson(),
+      };
+      final ok = await NeonMatchService.insert(record.eventKey, payload);
+      ok ? success++ : failed++;
+    }
+
+    setState(() => _isSyncing = false);
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('Synced $success matches${failed > 0 ? ', $failed failed' : ''}'),
+      backgroundColor: failed > 0 ? Colors.red : Colors.green,
+    ));
+  }
+
+
   AppBar _buildAppBar() {
     return AppBar(
       elevation: 0,
@@ -126,6 +157,23 @@ class MatchPageState extends State<MatchPage>
             ),
           )),
       centerTitle: true,
+
+        actions: [
+          _isSyncing
+              ? const Padding(
+            padding: EdgeInsets.all(14),
+            child: SizedBox(
+              width: 22, height: 22,
+              child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+            ),
+          )
+              : IconButton(
+            icon: const Icon(Icons.cloud_upload_outlined),
+            color: Colors.white,
+            tooltip: 'Sync to Neon',
+            onPressed: _syncAllMatches,
+          ),
+        ]
     );
   }
 
@@ -744,6 +792,7 @@ class MatchPageState extends State<MatchPage>
       );
       return;
     }
+
 
     // Get actual battery percentage
     int batteryPercentage = await _getBatteryPercentage();
