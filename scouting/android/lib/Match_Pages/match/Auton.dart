@@ -37,7 +37,7 @@ class AutonState extends State<Auton> {
   void initState() {
     super.initState();
     //   log(widget.matchRecord.toString());
-    autoClimb = false;
+    autoClimb = widget.matchRecord.autonPoints.climb;
     assignedTeam = widget.matchRecord.teamNumber;
     assignedStation = widget.matchRecord.station;
     matchKey = widget.matchRecord.matchKey;

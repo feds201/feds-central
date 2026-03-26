@@ -71,7 +71,7 @@ dependencies:
     git:
       url: https://github.com/feds201/feds-central.git
       path: scouting/packages/bot_path_drawer
-      ref: scouting-app
+      ref: main
 
 
 

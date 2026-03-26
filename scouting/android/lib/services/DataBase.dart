@@ -248,7 +248,7 @@ class PitRecord {
       "framePerimeter": framePerimeter,
       "shootingRate": shootingRate,
       "hopperSealed": hopperSealed,
-      "trechUnder": trenchUnder,
+      "trenchUnder": trenchUnder,
       "bumpOver": bumpOver,
       "driverYear": driverYear,
       "interviewerName": interviewerName,
@@ -981,7 +981,7 @@ class EndPoints {
     return {
       "ClimbStatus": ClimbStatus,
       "Park": Park,
-      "FeedToHP": PushBallsEnd,
+      "PushBallsEnd": PushBallsEnd,
       "Passing": Passing,
       "EndNeutralTrips": EndNeutralTrips,
       "ShootingAccuracy": ShootingAccuracy,
@@ -1014,7 +1014,7 @@ class EndPoints {
   }
 
   String toCsv() {
-    return '$ClimbStatus,${Park ? 1 : 0},${PushBallsEnd},$Passing,$EndNeutralTrips,$ShootingAccuracy,$endgameTime,$endgameshootingCycles,$robotBroken, $Comments}';
+    return '$ClimbStatus,${Park ? 1 : 0},${PushBallsEnd},$Passing,$EndNeutralTrips,$ShootingAccuracy,$endgameTime,$endgameshootingCycles,$robotBroken, ${Comments.replaceAll('"', '""')}';
   }
 
   @override
@@ -1174,7 +1174,7 @@ class LocalDataBase {
       _toInt(json['TotalAmount1']),
       json['Defense'] ?? false,
       _toInt(json['NeutralTrips'] ?? json['NeutralTips']),
-      json['FeedToHPStation'] ?? false,
+      _toInt(json['PushBallsEnd'] ?? json['PushBallsEnd']),
       _toInt(json['passing']),
     );
   }
