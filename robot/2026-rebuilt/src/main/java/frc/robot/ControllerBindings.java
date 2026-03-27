@@ -226,12 +226,12 @@ public class ControllerBindings {
                 .onTrue(new InstantCommand(() -> shooterHood.updateHoodAngleMultiplier(-.01)));
 
          operator.y()
-                .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.AGITATE_IN))
-                .onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT));
+                .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.AGITATE_IN).alongWith(intakeSubsystem.setRollerStateCommand(RollerState.ON)))
+                .onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT).alongWith(intakeSubsystem.setRollerStateCommand(RollerState.OFF)));
 
         operator.start()
-                .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.CLOSE_AGITATION))
-                .onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT));
+                .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.CLOSE_AGITATION).alongWith(intakeSubsystem.setRollerStateCommand(RollerState.ON)))
+                .onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT).alongWith(intakeSubsystem.setRollerStateCommand(RollerState.OFF)));
     }
 
 }
