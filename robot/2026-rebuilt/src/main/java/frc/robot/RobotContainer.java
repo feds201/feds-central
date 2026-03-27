@@ -327,6 +327,7 @@ public void limelightConnection(){
 }
 
 private final GenericEntry testLayout = Shuffleboard.getTab("Pit Testing").add("storage", false).getEntry();
+private final GenericEntry displayLayout = Shuffleboard.getTab("Pit Testing").add("storage info", "").getEntry();
 
 public void usbStorage() {                                                                                                                                                                                                                                                     
                                                                                                            
@@ -338,7 +339,7 @@ public void usbStorage() {
   String label = !mounted ? "NO DRIVE"                                                                                                                         
       : String.format("%.1f GB free / %.1f GB total", freeBytes / 1e9, totalBytes / 1e9);                                                                      
    
-  testLayout.setString("Logs Flash Drive: " + label);
+  displayLayout.setString("Logs Flash Drive: " + label);
   testLayout.setBoolean(storageOk);
 }
 }
