@@ -72,12 +72,12 @@ public class Feeder extends SubsystemBase {
   private final GenericEntry feederPoweredEntry;
   private final ShuffleboardLayout feederLayout;
 
-  public Feeder() {
+    public Feeder() {
     feederMotor = new TalonFX(FeederConstants.kFeederKickerMotorId);
 
     config = new TalonFXConfiguration();
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-    config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     config.CurrentLimits.StatorCurrentLimitEnable = true;
     config.CurrentLimits.StatorCurrentLimit = 60;
     // config.CurrentLimits.StatorCurrentLimit = 40;
@@ -86,6 +86,7 @@ public class Feeder extends SubsystemBase {
       if (status.isOK())
         break;
     }
+
 
     SubsystemStatusManager.addSubsystem(getName(), feederMotor);
     DeviceTempReporter.addDevices(feederMotor);
@@ -149,7 +150,11 @@ public class Feeder extends SubsystemBase {
         
         break;
 
-      case STOP:
+       case STOP, PRUN, PREVERSE:
+        if(washingMachineTimer.isRunning()){
+            washingMachineTimer.reset();
+            washingMachineTimer.stop();
+          }
         break;
     }
   }

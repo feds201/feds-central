@@ -3,39 +3,48 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.828873072360619,
-        "y": 1.0600830367734273
+        "x": 2.483832781456954,
+        "y": 6.728435430463576
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.80735468565188,
-        "y": 2.1467615658362984
+        "x": 1.9611175496688742,
+        "y": 7.7230463576158925
       },
       "isLocked": false,
-      "linkedName": "RightFuel"
+      "linkedName": "BumpShoot1"
     },
     {
       "anchor": {
-        "x": 7.828873072360619,
-        "y": 2.99673784104389
+        "x": 7.819884105960265,
+        "y": 6.9607533112582765
       },
       "prevControl": {
-        "x": 7.828873072365997,
-        "y": 2.146761565836299
+        "x": 7.574293755351825,
+        "y": 7.469820316121073
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "IntakedFuel"
+      "linkedName": "TrenchIntake"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.36319612590799283,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 0.5786924939467305,
+      "rotationDegrees": 0.0
+    }
+  ],
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 0.014134275618374716,
-      "maxWaypointRelativePos": 0.8480565371024709,
+      "minWaypointRelativePos": 0.3604240282685512,
+      "maxWaypointRelativePos": 0.5469964664310953,
       "constraints": {
-        "maxVelocity": 1.5,
+        "maxVelocity": 3.0,
         "maxAcceleration": 4.0,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 360.0,
@@ -56,13 +65,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -92.20259816121586
+    "rotation": 90.0
   },
   "reversed": false,
-  "folder": "RightBumpToOutpost",
+  "folder": "LeftTrenchBumpShoot",
   "idealStartingState": {
-    "velocity": 1.5,
-    "rotation": -90.0
+    "velocity": 0,
+    "rotation": -51.37767671243816
   },
   "useDefaultConstraints": true
 }

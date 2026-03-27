@@ -58,9 +58,9 @@ public class IntakeSubsystem extends SubsystemBase {
   private final DigitalInput limit_switch_l;
   private final SysIdRoutine sysID;
   private final LedsSubsystem leds = LedsSubsystem.getInstance();
-  private final double extendedRotations = 15.4;
+  private final double extendedRotations = 18.0; //TUNE on new intake
   private final double retractedRotations = 0.1;
-  private final double agitateOut = 5.0;
+  public final double burstAgitation = extendedRotations / 2.0;
   // Desired motion timing: target to complete extend/retract in under 1s
   private static final double MOVE_TARGET_SECONDS = .45;
   // Aggressive acceleration multiplier requested (20x faster than default)
@@ -98,7 +98,6 @@ public class IntakeSubsystem extends SubsystemBase {
     EXTENDED,
     CLOSE_RETRACTED, // 2
     INTAKING,
-    AGITATE,
     AGITATE_IN,
     AGITATE_OUT,
     CLOSE_AGITATION, //35
@@ -143,7 +142,7 @@ public class IntakeSubsystem extends SubsystemBase {
         moveIntakeWithPosition(extendedRotations);
       }
       case CLOSE_AGITATION -> {
-        moveIntakeWithPosition(IntakeSubsystemConstants.burstAgitation);
+        moveIntakeWithPosition(burstAgitation);
       }
     }
 
@@ -361,12 +360,12 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
       var config = new TalonFXConfiguration();
-      config.Slot0.kP = 3.0;
-    config.Slot0.kS = 0.3;
+      config.Slot0.kP = 4;
+    config.Slot0.kS = 0.42; //TUNE on new intake
     config.Slot0.kI = 0.0;
     config.Slot0.kD = 0.0;
       // config.CurrentLimits.SupplyCurrentLimit = 40.0;
-      config.CurrentLimits.StatorCurrentLimit = 40.0;
+      config.CurrentLimits.StatorCurrentLimit = 45.0;
       config.CurrentLimits.SupplyCurrentLimitEnable = true;
   
   

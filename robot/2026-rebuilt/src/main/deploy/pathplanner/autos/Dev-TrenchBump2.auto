@@ -1,0 +1,87 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Extend Intake"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.5
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Run Rollers"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "TrenchIntake1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "NeutralIntake1"
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Start Shooter Spin"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "BumpShoot1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "TrenchIntake2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "NeutralIntake2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "BumpShoot2"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

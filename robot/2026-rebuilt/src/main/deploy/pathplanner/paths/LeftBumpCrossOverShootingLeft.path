@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.4068446026097274,
+        "x": 3.5467141162514837,
         "y": 5.379108433734939
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.1280846118663286,
-        "y": 4.80912578019558
+        "x": 3.4700947650150935,
+        "y": 5.1411389503634055
       },
       "isLocked": false,
       "linkedName": "LeftBumpCrossOver"
     },
     {
       "anchor": {
-        "x": 2.9004564907275316,
-        "y": 4.3908131241084165
+        "x": 3.22393831553974,
+        "y": 5.030225385527876
       },
       "prevControl": {
-        "x": 3.0186918759818386,
-        "y": 4.611086576148751
+        "x": 3.343177599543966,
+        "y": 5.288282947229882
       },
       "nextControl": null,
       "isLocked": false,
@@ -44,7 +44,7 @@
   ],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 0.75,
+    "maxVelocity": 0.25,
     "maxAcceleration": 4.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 360.0,
@@ -53,12 +53,12 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -10.59476571233713
+    "rotation": -35.584373608459686
   },
   "reversed": false,
   "folder": "MidIntakeToLeftBump",
   "idealStartingState": {
-    "velocity": 1.0,
+    "velocity": 0.4,
     "rotation": -135.0
   },
   "useDefaultConstraints": false
