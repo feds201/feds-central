@@ -11,8 +11,7 @@ import com.lumynlabs.domain.led.Animation;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -124,7 +123,15 @@ public class LedsSubsystem extends SubsystemBase {
     // it in the future if needed
     // // else if (subsystem instanceof Climb) { m_climb = (Climb) subsystem;
     // Connect to the device on USB port 2
-    m_isConnected = m_leds.Connect(USBPort.kUSB1);
+
+    if (!RobotBase.isSimulation()) {
+      m_isConnected = m_leds.Connect(USBPort.kUSB1);
+    } else {
+      m_isConnected = true; // Assume connected in simulation
+      // Assume connected in simulation
+    
+
+
     System.out.println("ConnectorX connected: " + m_isConnected);
 
     // Initial State application will happen in periodic loop or manually here

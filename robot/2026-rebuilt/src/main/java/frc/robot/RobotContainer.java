@@ -254,7 +254,7 @@ public class RobotContainer extends ControllerBindings {
 
     public void initSimulation() {
         simManager = new RebuiltSimManager(drivetrain,
-                intakeSubsystem, feederSubsystem, shooterWheels, shooterHood, spinDexer);
+                intakeSubsystem, feederSubsystem, shooterWheels, shooterHood, spinDexer, ledsSubsystem);
         Logger.recordOutput("Sim/State", "Ready");
         drivetrain.resetPose(RebuiltSimManager.STARTING_POSE);
     }
