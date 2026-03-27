@@ -127,10 +127,9 @@ public class LedsSubsystem extends SubsystemBase {
     if (!RobotBase.isSimulation()) {
       m_isConnected = m_leds.Connect(USBPort.kUSB1);
     } else {
-      m_isConnected = true; // Assume connected in simulation
-      // Assume connected in simulation
-    
+      m_isConnected = true; // Assume connected in simulation for testing purposes
 
+    }
 
     System.out.println("ConnectorX connected: " + m_isConnected);
 
