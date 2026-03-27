@@ -67,6 +67,11 @@ dependencies:
   battery_plus: ^6.2.2
   http: ^1.1.0
   postgres: ^3.5.9
+  bot_path_drawer:
+    git:
+      url: https://github.com/feds201/feds-central.git
+      path: scouting/packages/bot_path_drawer
+      ref: main
 
 
 
@@ -114,6 +119,7 @@ flutter:
     - assets/2026/RedAlliance_StartPosition.png
     - assets/2026/RedAlliance_2026.png
     - assets/2026/BlueAlliance_2026.png
+    - assets/2026/Aerna2026.png
     - assets/Swerve.png
     - assets/logo.png
     - assets/logo__.png

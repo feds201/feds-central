@@ -1,0 +1,16 @@
+name: bot_path_drawer
+description: >
+  A Flutter library for drawing and viewing robot paths on field
+  images. Designed for FRC scouting apps. Provides two widgets: BotPathDrawer
+  for recording paths and BotPathViewer for playing them back.
+
+version: 0.1.0
+
+environment:
+  sdk: '>=3.4.3 <5.0.0'
+  flutter: ">=3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  fit_curve: ^1.0.4
