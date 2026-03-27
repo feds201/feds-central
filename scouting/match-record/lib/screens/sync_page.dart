@@ -6,6 +6,7 @@ import '../data/data_store.dart';
 import '../sync/history_tab.dart';
 import '../sync/import_tab.dart';
 import '../sync/storage_tab.dart';
+import '../sync/usb_instructions_tab.dart';
 
 class SyncPage extends StatefulWidget {
   final DataStore dataStore;
@@ -109,7 +110,7 @@ class _SyncPageState extends State<SyncPage> {
     }
 
     return DefaultTabController(
-      length: 3,
+      length: 4,
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Sync'),
@@ -118,6 +119,7 @@ class _SyncPageState extends State<SyncPage> {
               Tab(text: 'Import'),
               Tab(text: 'History'),
               Tab(text: 'Storage'),
+              Tab(text: 'USB Transfer Guide'),
             ],
           ),
         ),
@@ -132,6 +134,7 @@ class _SyncPageState extends State<SyncPage> {
               dataStore: widget.dataStore,
               storageDir: _storageDir!,
             ),
+            const UsbInstructionsTab(),
           ],
         ),
       ),

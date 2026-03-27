@@ -74,13 +74,14 @@ Search state is owned entirely by `_MainScreenState`: the `TextEditingController
 
 ### Sync Page Tabs
 
-`SyncPage` uses `DefaultTabController` + `TabBar` + `TabBarView` with three tabs:
+`SyncPage` uses `DefaultTabController` + `TabBar` + `TabBarView` with four tabs:
 
 | Tab | Widget | Purpose |
 |---|---|---|
 | Import | `ImportTab` | Connect a USB drive, scan for videos, preview/assign matches, and execute the import. |
 | History | `HistoryTab` | Shows past import sessions in reverse chronological order. Tapping a session opens `_SessionReEditPage` for metadata-only re-editing. |
 | Storage | `StorageTab` | Lists app-imported recordings only. Supports multi-select with smart selection modes (Select All, All But Ours, Past Events) and batch deletion. Camera and Quick Share source file management is not yet implemented as separate tabs. |
+| USB Transfer Guide | `UsbInstructionsTab` | Static step-by-step instructions for transferring videos from phones to USB drives (Android and iOS). Responsive layout: cards stack vertically in portrait, side-by-side in landscape. |
 
 ### Key Callbacks and Data Flow
 
@@ -149,7 +150,7 @@ VideoViewer (StatefulWidget)
 
 SyncPage (StatefulWidget)
   DefaultTabController
-    TabBar: Import | History | Storage
+    TabBar: Import | History | Storage | USB Transfer Guide
     TabBarView
       ImportTab (StatefulWidget)
         ImportPreviewRowWidget (per scanned video)
@@ -158,6 +159,9 @@ SyncPage (StatefulWidget)
            ImportPreviewRowWidget (per entry, metadata-only)
       StorageTab (StatefulWidget)
         StorageVideoList -> recording rows
+      UsbInstructionsTab (StatelessWidget)
+        _PlatformCard (Android) -> _StepRow (per step)
+        _PlatformCard (iOS) -> _StepRow (per step)
 ```
 
 ### Search State Ownership
