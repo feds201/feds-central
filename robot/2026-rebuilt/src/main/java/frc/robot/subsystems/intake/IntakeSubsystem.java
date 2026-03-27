@@ -4,11 +4,13 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.fasterxml.jackson.databind.ser.std.StdKeySerializers.Default;
+
 import frc.robot.commands.intake.AgitateWhileHeldTimeCommand;
 import frc.robot.commands.intake.AgitateWhileHeldRotationsCommand;
 import static edu.wpi.first.units.Units.Rotations;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
+
 import java.io.ObjectInputFilter.Config;
 import java.util.ArrayList;
 import java.util.Set;
@@ -17,6 +19,7 @@ import org.littletonrobotics.junction.Logger;
 import com.ctre.phoenix6.controls.MotionMagicVelocityDutyCycle;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import frc.robot.RobotMap;
+import frc.robot.RobotMap.IntakeSubsystemConstants;
 import frc.robot.RobotMap.IntakeSubsystemConstants;
 import frc.robot.subsystems.led.LedsSubsystem;
 import frc.robot.subsystems.shooter.ShooterWheels.shooter_state;
@@ -47,6 +50,7 @@ public class IntakeSubsystem extends SubsystemBase {
   private final DigitalInput limit_switch_r;
   private final DigitalInput limit_switch_l;
   private final SysIdRoutine sysID;
+  private final LedsSubsystem leds = LedsSubsystem.getInstance();
   private final double extendedRotations = 15.4;
   private final double retractedRotations = 0.1;
   private final double agitateOut = 5.0;

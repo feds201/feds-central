@@ -50,7 +50,7 @@
     "rotation": 0.0
   },
   "reversed": false,
-  "folder": "RightBumpToOutpost",
+  "folder": "MidRightToOutpost",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 34.01934998960452

@@ -1,6 +1,6 @@
 {
   "neonUrl": "postgresql://data_owner:npg_qu3HCrEX8eFk@ep-weathered-base-a5ilny8n-pooler.us-east-2.aws.neon.tech/data?sslmode=require&channel_binding=require",
   "matchTable": "midlandcomp",
-  "pitTable": "2026week0_pit_scouting",
+  "pitTable": "2026mimid_pit_scouting",
   "tbaKey": "2ujRBcLLwzp008e9TxIrLYKG6PCt2maIpmyiWtfWGl2bT6ddpqGLoLM79o56mx3W"
 }

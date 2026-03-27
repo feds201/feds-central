@@ -23,12 +23,12 @@ if (-not (Test-Path -Path $windowsAssetsDir)) {
 
 # Move the generated executable into the 'Assets\Windows' folder
 # The path is based on the electron-packager output
-$desktopExeSourceDir = "winx64\Scout_Ops_Windowsapp-win32-x64"
-if (Test-Path -Path $desktopExeSourceDir) {
+$desktopExeSourceDir = Get-ChildItem -Path "winx64" -Directory | Where-Object { $_.Name -like "*-win32-x64" } | Select-Object -First 1 -ExpandProperty FullName
+if ($desktopExeSourceDir -and (Test-Path -Path $desktopExeSourceDir)) {
     Copy-Item "$desktopExeSourceDir\*" $windowsAssetsDir -Recurse -Force
-    Write-Host "Scout Ops Desktop executable and files moved to $windowsAssetsDir"
+    Write-Host "Scout Ops Desktop executable and files moved to $windowsAssetsDir from $desktopExeSourceDir"
 } else {
-    Write-Host "Error: Scout Ops Desktop build not found at $desktopExeSourceDir" -ForegroundColor Red
+    Write-Host "Error: Scout Ops Desktop build not found in winx64 directory" -ForegroundColor Red
 }
 
 Write-Host "Build process completed for Scout Ops Desktop."
