@@ -163,36 +163,38 @@ class ControlSidebar extends StatelessWidget {
   }
 
   /// Build a button row: icon-only in compact mode, icon+label in expanded mode.
+  /// The returned widget is meant to be wrapped in Expanded by the caller,
+  /// so the InkWell fills the full cell height for a large tap target.
   Widget _buildItem({
     required IconData icon,
     required String label,
     VoidCallback? onPressed,
     bool isActive = false,
   }) {
-    if (!_expanded) {
-      return IconButton(
-        icon: Icon(icon),
-        tooltip: label,
-        onPressed: onPressed,
-        color: isActive ? Colors.blue : Colors.white,
-        disabledColor: Colors.white38,
-        iconSize: 28,
-        constraints: const BoxConstraints(minWidth: 56, minHeight: 56),
-      );
-    }
-
     final color = onPressed == null
         ? Colors.white38
         : isActive
             ? Colors.blue
             : Colors.white;
 
+    if (!_expanded) {
+      return Tooltip(
+        message: label,
+        child: InkWell(
+          onTap: onPressed,
+          child: Center(
+            child: Icon(icon, color: color, size: 28),
+          ),
+        ),
+      );
+    }
+
     return InkWell(
       onTap: onPressed,
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(minHeight: 48),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        child: Align(
+          alignment: Alignment.centerLeft,
           child: Row(
             children: [
               Icon(icon, color: color, size: 24),
@@ -238,20 +240,20 @@ class ControlSidebar extends StatelessWidget {
     if (!_expanded) {
       return Tooltip(
         message: label,
-        child: Container(
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(
-              color: circleColor ?? Colors.transparent,
-              width: 2,
+        child: InkWell(
+          onTap: onToggleMute,
+          child: Center(
+            child: Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: circleColor ?? Colors.transparent,
+                  width: 2,
+                ),
+              ),
+              padding: const EdgeInsets.all(2),
+              child: Icon(icon, color: Colors.white, size: 28),
             ),
-          ),
-          child: IconButton(
-            icon: Icon(icon),
-            onPressed: onToggleMute,
-            color: Colors.white,
-            iconSize: 28,
-            constraints: const BoxConstraints(minWidth: 56, minHeight: 56),
           ),
         ),
       );
@@ -259,10 +261,10 @@ class ControlSidebar extends StatelessWidget {
 
     return InkWell(
       onTap: onToggleMute,
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(minHeight: 48),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        child: Align(
+          alignment: Alignment.centerLeft,
           child: Row(
             children: [
               Container(
@@ -320,21 +322,24 @@ class ControlSidebar extends StatelessWidget {
       if (!_expanded) {
         return Tooltip(
           message: label,
-          child: Container(
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: circleColor,
-                width: 2,
+          child: InkWell(
+            onTap: canToggleViewMode ? onToggleViewMode : null,
+            child: Center(
+              child: Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: circleColor,
+                    width: 2,
+                  ),
+                ),
+                padding: const EdgeInsets.all(2),
+                child: Icon(
+                  icon,
+                  color: canToggleViewMode ? Colors.white : Colors.white38,
+                  size: 28,
+                ),
               ),
-            ),
-            child: IconButton(
-              icon: Icon(icon),
-              onPressed: canToggleViewMode ? onToggleViewMode : null,
-              color: Colors.white,
-              disabledColor: Colors.white38,
-              iconSize: 28,
-              constraints: const BoxConstraints(minWidth: 56, minHeight: 56),
             ),
           ),
         );
@@ -342,10 +347,10 @@ class ControlSidebar extends StatelessWidget {
 
       return InkWell(
         onTap: canToggleViewMode ? onToggleViewMode : null,
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: 48),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: Align(
+            alignment: Alignment.centerLeft,
             child: Row(
               children: [
                 Container(
@@ -386,33 +391,36 @@ class ControlSidebar extends StatelessWidget {
     final label = isPlaying ? 'Pause' : 'Play';
 
     if (!_expanded) {
-      return Container(
-        decoration: BoxDecoration(
-          color: const Color(0xFF2A2A2A),
+      return Tooltip(
+        message: label,
+        child: InkWell(
+          onTap: onPlayPause,
           borderRadius: BorderRadius.circular(8),
-        ),
-        child: IconButton(
-          icon: Icon(icon),
-          tooltip: label,
-          onPressed: onPlayPause,
-          color: Colors.white,
-          iconSize: 28,
-          constraints: const BoxConstraints(minWidth: 56, minHeight: 56),
+          child: Container(
+            decoration: BoxDecoration(
+              color: const Color(0xFF404040),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Center(
+              child: Icon(icon, color: Colors.white, size: 28),
+            ),
+          ),
         ),
       );
     }
 
     return InkWell(
       onTap: onPlayPause,
+      borderRadius: BorderRadius.circular(8),
       child: Container(
         decoration: BoxDecoration(
-          color: const Color(0xFF2A2A2A),
+          color: const Color(0xFF404040),
           borderRadius: BorderRadius.circular(8),
         ),
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: 48),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: Align(
+            alignment: Alignment.centerLeft,
             child: Row(
               children: [
                 Icon(icon, color: Colors.white, size: 24),
@@ -453,28 +461,28 @@ class ControlSidebar extends StatelessWidget {
 
     final isEnabled = isPaused;
 
-    if (!_expanded) {
-      return IconButton(
-        icon: Icon(icon),
-        tooltip: label,
-        onPressed: isEnabled ? onToggleDrawing : null,
-        color: isPaused ? activeColor : Colors.white,
-        disabledColor: Colors.white38,
-        iconSize: 28,
-        constraints: const BoxConstraints(minWidth: 56, minHeight: 56),
-      );
-    }
-
     final color = !isEnabled
         ? Colors.white38
         : activeColor;
 
+    if (!_expanded) {
+      return Tooltip(
+        message: label,
+        child: InkWell(
+          onTap: isEnabled ? onToggleDrawing : null,
+          child: Center(
+            child: Icon(icon, color: color, size: 28),
+          ),
+        ),
+      );
+    }
+
     return InkWell(
       onTap: isEnabled ? onToggleDrawing : null,
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(minHeight: 48),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        child: Align(
+          alignment: Alignment.centerLeft,
           child: Row(
             children: [
               Icon(icon, color: color, size: 24),
