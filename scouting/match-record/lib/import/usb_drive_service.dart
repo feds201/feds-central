@@ -34,7 +34,7 @@ class DetectedUsbDrive {
 /// Uses a Kotlin platform channel to enumerate removable storage volumes
 /// via Android's StorageManager API.
 class UsbDriveService {
-  static const _channel = MethodChannel('com.feds201.match_record/usb_drive');
+  static const _channel = MethodChannel('com.feds201.match_record/native');
 
   /// Pattern matching FEDS drive naming convention.
   /// Accepts any separator: dash, underscore, dot, slash, backslash, space, etc.

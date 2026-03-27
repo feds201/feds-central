@@ -1,13 +1,9 @@
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:match_record/import/drive_access.dart';
 import 'package:match_record/import/video_metadata_service.dart';
 
 void main() {
-  group('kAndroidFinalizationOffset', () {
-    test('is 700 milliseconds', () {
-      expect(kAndroidFinalizationOffset, const Duration(milliseconds: 700));
-    });
-  });
-
   group('parseRecordingStartFromFilename', () {
     group('Pixel format (PXL_YYYYMMDD_HHMMSSmmm)', () {
       test('parses standard Pixel filename as UTC with milliseconds', () {
@@ -66,8 +62,10 @@ void main() {
         // Scenario: VID recorded at 14:30:25 local (EST, UTC-5)
         // creation_time = end = 14:31:25 EST = 19:31:25 UTC
         // duration = 60000ms
-        // Expected: 14:30:25 local → 19:30:25 UTC
-        final creationTime = DateTime.utc(2026, 3, 15, 19, 31, 25, 700);
+        // approxStartUtc = 19:31:25 - 60s = 19:30:25 UTC
+        // filename says 14:30:25 local → offset = -5h
+        // result = 14:30:25 + 5h = 19:30:25 UTC
+        final creationTime = DateTime.utc(2026, 3, 15, 19, 31, 25);
         final result = parseRecordingStartFromFilename(
           'VID_20260315_143025.mp4',
           creationTime: creationTime,
@@ -241,12 +239,12 @@ void main() {
     });
 
     test('Android VID_ without offset infers from creation_time', () {
-      // creation_time = 19:31:25.700 UTC (end time)
-      // duration = 60s, finalization = 0.7s
-      // approx start = 19:31:25.700 - 60s - 0.7s = 19:30:25.000 UTC
+      // creation_time = 19:31:25 UTC (end time)
+      // duration = 60s
+      // approx start = 19:31:25 - 60s = 19:30:25 UTC
       // filename says 14:30:25 local → offset = local - UTC = -5h
       // result = 14:30:25 - (-5h) = 19:30:25 UTC
-      final endTime = DateTime.utc(2026, 3, 15, 19, 31, 25, 700);
+      final endTime = DateTime.utc(2026, 3, 15, 19, 31, 25);
       final meta = VideoMetadata(
         sourceUri: 'test://file',
         originalFilename: 'VID_20260315_143025.mp4',
@@ -260,7 +258,7 @@ void main() {
       );
     });
 
-    test('Android fallback subtracts duration and finalization offset', () {
+    test('Android fallback subtracts duration (no finalization offset)', () {
       final endTime = DateTime.utc(2026, 3, 15, 14, 31, 25);
       final meta = VideoMetadata(
         sourceUri: 'test://file',
@@ -269,14 +267,14 @@ void main() {
         durationMs: 60000,
         ftypBrand: 'isom',
       );
-      // Should be: endTime - 60s - 0.7s
+      // Should be: endTime - 60s (no finalization offset)
       expect(
         meta.recordingStartTime,
-        DateTime.utc(2026, 3, 15, 14, 30, 24, 300),
+        DateTime.utc(2026, 3, 15, 14, 30, 25),
       );
     });
 
-    test('Android fallback without duration returns date as-is', () {
+    test('Android without duration returns null (not end time)', () {
       final endTime = DateTime.utc(2026, 3, 15, 14, 31, 25);
       final meta = VideoMetadata(
         sourceUri: 'test://file',
@@ -284,7 +282,9 @@ void main() {
         date: endTime,
         ftypBrand: 'isom',
       );
-      expect(meta.recordingStartTime, endTime);
+      // Must NOT return endTime — that's the Android END time, not start.
+      // Without duration we can't compute start, so return null.
+      expect(meta.recordingStartTime, isNull);
     });
 
     test('returns null when date is null and no filename match', () {
@@ -363,6 +363,231 @@ void main() {
       );
       // 14:30:25 - 5:45 = 08:45:25 UTC
       expect(result, DateTime.utc(2026, 3, 15, 8, 45, 25));
+    });
+  });
+
+  group('VideoMetadataService._parseMetadataDate', () {
+    // _parseMetadataDate is static — we test it via getMetadata with a mock channel
+
+    test('parses ISO 8601 format', () {
+      final result = VideoMetadataService.parseMetadataDate('2026-03-15T14:30:25Z');
+      expect(result, DateTime.utc(2026, 3, 15, 14, 30, 25));
+    });
+
+    test('parses compact MediaMetadataRetriever format preserving milliseconds', () {
+      final result = VideoMetadataService.parseMetadataDate('20260315T143025.000Z');
+      expect(result, DateTime.utc(2026, 3, 15, 14, 30, 25, 0));
+    });
+
+    test('parses compact format with non-zero milliseconds', () {
+      final result = VideoMetadataService.parseMetadataDate('20260315T143025.500Z');
+      expect(result, DateTime.utc(2026, 3, 15, 14, 30, 25, 500));
+    });
+
+    test('parses compact format with microsecond precision', () {
+      final result = VideoMetadataService.parseMetadataDate('20260315T143025.123456Z');
+      expect(result, DateTime.utc(2026, 3, 15, 14, 30, 25, 123, 456));
+    });
+
+    test('parses compact format without fractional seconds', () {
+      final result = VideoMetadataService.parseMetadataDate('20260315T143025');
+      expect(result, DateTime.utc(2026, 3, 15, 14, 30, 25));
+    });
+
+    test('parses compact format without trailing Z', () {
+      final result = VideoMetadataService.parseMetadataDate('20260315T143025.750');
+      expect(result, DateTime.utc(2026, 3, 15, 14, 30, 25, 750));
+    });
+
+    test('returns null for garbage', () {
+      expect(VideoMetadataService.parseMetadataDate('not a date'), isNull);
+    });
+
+    test('returns null for empty string', () {
+      expect(VideoMetadataService.parseMetadataDate(''), isNull);
+    });
+  });
+
+  group('VideoMetadataService.getMetadata', () {
+    TestWidgetsFlutterBinding.ensureInitialized();
+
+    final testFile = DriveFile(
+      uri: '/storage/USB/video.mp4',
+      name: 'video.mp4',
+      sizeBytes: 50000000,
+      lastModified: DateTime.utc(2026, 3, 15),
+    );
+
+    test('uses platform channel data when available', () async {
+      final binding = TestDefaultBinaryMessengerBinding.instance;
+      binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        const MethodChannel('com.feds201.match_record/native'),
+        (call) async {
+          if (call.method == 'getVideoMetadata') {
+            return {
+              'durationMs': 150000,
+              'date': '20260315T143025.000Z',
+              'mimetype': 'video/mp4',
+              'width': 3840,
+              'height': 2160,
+              'orientation': 90,
+              'framerate': 60.0,
+              'ftypBrand': 'isom',
+              'fileSize': 50000000,
+            };
+          }
+          return null;
+        },
+      );
+
+      try {
+        final service = VideoMetadataService();
+        final meta = await service.getMetadata(testFile);
+
+        expect(meta.durationMs, 150000);
+        expect(meta.date, DateTime.utc(2026, 3, 15, 14, 30, 25));
+        expect(meta.width, 3840);
+        expect(meta.height, 2160);
+        expect(meta.orientation, 90);
+        expect(meta.framerate, 60.0);
+        expect(meta.ftypBrand, 'isom');
+        expect(meta.fileSize, 50000000);
+        expect(meta.originalFilename, 'video.mp4');
+        expect(meta.sourceUri, '/storage/USB/video.mp4');
+      } finally {
+        binding.defaultBinaryMessenger.setMockMethodCallHandler(
+          const MethodChannel('com.feds201.match_record/native'),
+          null,
+        );
+      }
+    });
+
+    test('uses platform channel data for iOS video', () async {
+      final iosFile = DriveFile(
+        uri: '/storage/USB/IMG_1234.MOV',
+        name: 'IMG_1234.MOV',
+        sizeBytes: 80000000,
+      );
+
+      final binding = TestDefaultBinaryMessengerBinding.instance;
+      binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        const MethodChannel('com.feds201.match_record/native'),
+        (call) async {
+          if (call.method == 'getVideoMetadata') {
+            return {
+              'durationMs': 180000,
+              'date': '2026-03-15T14:30:25.000Z',
+              'mimetype': 'video/quicktime',
+              'width': 1920,
+              'height': 1080,
+              'orientation': 0,
+              'framerate': 30.0,
+              'ftypBrand': 'qt  ',
+              'fileSize': 80000000,
+            };
+          }
+          return null;
+        },
+      );
+
+      try {
+        final service = VideoMetadataService();
+        final meta = await service.getMetadata(iosFile);
+
+        expect(meta.ftypBrand, 'qt  ');
+        expect(meta.isIOSRecording, isTrue);
+        expect(meta.durationMs, 180000);
+        // iOS: recordingStartTime = date directly (with sub-second precision)
+        expect(meta.recordingStartTime, DateTime.utc(2026, 3, 15, 14, 30, 25, 0));
+      } finally {
+        binding.defaultBinaryMessenger.setMockMethodCallHandler(
+          const MethodChannel('com.feds201.match_record/native'),
+          null,
+        );
+      }
+    });
+
+    test('falls back to synthetic when channel throws PlatformException', () async {
+      final binding = TestDefaultBinaryMessengerBinding.instance;
+      binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        const MethodChannel('com.feds201.match_record/native'),
+        (call) async {
+          throw PlatformException(code: 'ERROR', message: 'native failed');
+        },
+      );
+
+      try {
+        final service = VideoMetadataService();
+        final meta = await service.getMetadata(testFile);
+
+        // Should get synthetic data, not crash
+        expect(meta.originalFilename, 'video.mp4');
+        expect(meta.sourceUri, '/storage/USB/video.mp4');
+        expect(meta.durationMs, isNotNull);
+        expect(meta.fileSize, 50000000);
+      } finally {
+        binding.defaultBinaryMessenger.setMockMethodCallHandler(
+          const MethodChannel('com.feds201.match_record/native'),
+          null,
+        );
+      }
+    });
+
+    test('falls back to synthetic when channel is not available', () async {
+      // Don't register any mock — simulates MissingPluginException
+      final binding = TestDefaultBinaryMessengerBinding.instance;
+      binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        const MethodChannel('com.feds201.match_record/native'),
+        null,
+      );
+
+      final service = VideoMetadataService();
+      final meta = await service.getMetadata(testFile);
+
+      // Should get synthetic data
+      expect(meta.originalFilename, 'video.mp4');
+      expect(meta.durationMs, isNotNull);
+    });
+
+    test('handles partial channel results gracefully', () async {
+      final binding = TestDefaultBinaryMessengerBinding.instance;
+      binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        const MethodChannel('com.feds201.match_record/native'),
+        (call) async {
+          if (call.method == 'getVideoMetadata') {
+            // Only duration and ftyp, everything else null
+            return {
+              'durationMs': 120000,
+              'date': null,
+              'mimetype': null,
+              'width': null,
+              'height': null,
+              'orientation': null,
+              'framerate': null,
+              'ftypBrand': 'mp42',
+              'fileSize': null,
+            };
+          }
+          return null;
+        },
+      );
+
+      try {
+        final service = VideoMetadataService();
+        final meta = await service.getMetadata(testFile);
+
+        expect(meta.durationMs, 120000);
+        expect(meta.ftypBrand, 'mp42');
+        expect(meta.date, isNull);
+        expect(meta.width, isNull);
+        // fileSize should fall back to DriveFile.sizeBytes
+        expect(meta.fileSize, 50000000);
+      } finally {
+        binding.defaultBinaryMessenger.setMockMethodCallHandler(
+          const MethodChannel('com.feds201.match_record/native'),
+          null,
+        );
+      }
     });
   });
 }

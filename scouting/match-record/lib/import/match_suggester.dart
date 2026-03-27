@@ -1,5 +1,4 @@
 import '../data/models.dart';
-import '../util/test_flags.dart';
 import 'video_metadata_service.dart';
 
 enum MatchSuggestionConfidence {
@@ -31,22 +30,13 @@ class MatchSuggester {
   /// [videos] must be sorted by recordingStartTime (ascending).
   /// [schedule] is the list of matches (will be sorted internally by bestTime).
   /// [gapMinMinutes] and [gapMaxMinutes] are the thresholds for sequential logic.
-  /// [useForcedAssignment] controls whether TestFlags.forceSampleMatchAssignment
-  /// is respected. Defaults to the flag value. Pass false in unit tests to
-  /// exercise the real algorithm regardless of build-time flags.
   static List<MatchSuggestion> suggest({
     required List<VideoMetadata> videos,
     required List<Match> schedule,
     required int gapMinMinutes,
     required int gapMaxMinutes,
-    bool? useForcedAssignment,
   }) {
     if (videos.isEmpty) return [];
-
-    // When test flag is active, assign sample videos to forced matches
-    if (useForcedAssignment ?? TestFlags.forceSampleMatchAssignment) {
-      return _forcedSampleAssignment(videos, schedule);
-    }
 
     if (schedule.isEmpty) {
       return List.filled(
@@ -203,38 +193,6 @@ class MatchSuggester {
       }
     }
     return null; // Match not found in schedule
-  }
-
-  /// Forced assignment for sample data when test flag is active.
-  static List<MatchSuggestion> _forcedSampleAssignment(
-    List<VideoMetadata> videos,
-    List<Match> schedule,
-  ) {
-    final eventKey =
-        TestFlags.forceEventId ? TestFlags.forcedEventIds.last : '';
-
-    final match1Key = '${eventKey}_qm${TestFlags.sampleMatch1Number}';
-    final match2Key = '${eventKey}_qm${TestFlags.sampleMatch2Number}';
-
-    // Check if the forced match keys exist in the schedule
-    final match1Exists = schedule.any((m) => m.matchKey == match1Key);
-    final match2Exists = schedule.any((m) => m.matchKey == match2Key);
-
-    return [
-      for (int i = 0; i < videos.length; i++)
-        if (i == 0 && match1Exists)
-          MatchSuggestion(
-            matchKey: match1Key,
-            confidence: MatchSuggestionConfidence.high,
-          )
-        else if (i == 1 && match2Exists)
-          MatchSuggestion(
-            matchKey: match2Key,
-            confidence: MatchSuggestionConfidence.high,
-          )
-        else
-          const MatchSuggestion(confidence: MatchSuggestionConfidence.none),
-    ];
   }
 
   /// Cascade match changes from a manual edit at [rowIndex].

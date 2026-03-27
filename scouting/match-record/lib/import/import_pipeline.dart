@@ -149,37 +149,38 @@ class ImportPipeline {
       final suggestion = suggestions[i];
 
       // Compute video identity for skip tracking
-      VideoIdentity? identity;
-      if (meta.recordingStartTime != null &&
-          meta.durationMs != null &&
-          meta.fileSize != null) {
-        identity = VideoIdentity(
-          recordingStartTime: meta.recordingStartTime!,
-          durationMs: meta.durationMs!,
-          fileSizeBytes: meta.fileSize!,
-        );
-      }
+      final identity = VideoIdentity(
+        recordingStartTime: meta.recordingStartTime,
+        durationMs: meta.durationMs,
+        fileSizeBytes: meta.fileSize,
+      );
 
       // Check auto-skip conditions
       bool isAutoSkipped = false;
       String? autoSkipReason;
 
+      // Recording time check — highest priority error
+      if (meta.recordingStartTime == null) {
+        isAutoSkipped = true;
+        autoSkipReason = 'Could not determine recording time';
+      }
+
       // Short video check
-      if (meta.durationMs != null &&
+      if (!isAutoSkipped &&
+          meta.durationMs != null &&
           meta.durationMs! < dataStore.settings.shortVideoThresholdMs) {
         isAutoSkipped = true;
         autoSkipReason = 'Video is under 30 seconds';
       }
 
       // Previously skipped check
-      if (!isAutoSkipped && identity != null && dataStore.isSkipped(identity)) {
+      if (!isAutoSkipped && dataStore.isSkipped(identity)) {
         isAutoSkipped = true;
         autoSkipReason = 'This video was skipped before';
       }
 
       // Check if already imported (reimport prevention)
       if (!isAutoSkipped &&
-          identity != null &&
           dataStore.getRecordingByIdentity(identity) != null) {
         isAutoSkipped = true;
         autoSkipReason = 'Already imported';
@@ -354,10 +355,9 @@ class ImportPipeline {
         matchKey: row.matchKey!,
         allianceSide: row.allianceSide,
         fileExtension: ext,
-        recordingStartTime:
-            row.metadata.recordingStartTime ?? DateTime.now(),
-        durationMs: row.metadata.durationMs ?? 0,
-        fileSizeBytes: row.metadata.fileSize ?? 0,
+        recordingStartTime: row.metadata.recordingStartTime,
+        durationMs: row.metadata.durationMs,
+        fileSizeBytes: row.metadata.fileSize,
         sourceDeviceType: row.metadata.isIOSRecording ? 'ios' : 'android',
         originalFilename: row.metadata.originalFilename,
         team1: row.teams.isNotEmpty ? row.teams[0] : 0,

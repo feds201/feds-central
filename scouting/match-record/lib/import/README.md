@@ -70,8 +70,6 @@ final suggestions = MatchSuggester.suggest(
 // suggestions[i].confidence -- high, requiresManual, or none
 ```
 
-For unit testing, pass `useForcedAssignment: false` to bypass the `TestFlags.forceSampleMatchAssignment` flag and exercise the real algorithm.
-
 The static `MatchSuggester.cascadeMatchChange` method can update a list of `MatchSuggestion` objects in-place without needing an `ImportPipeline` instance:
 
 ```dart
@@ -158,8 +156,6 @@ The `recordingStartTime` getter normalizes this: for iOS files it returns `date`
    - **Gap < `gapMinMinutes` (default 10):** Treat as sequential -- assign the next match in schedule order after the previous video's match.
    - **Gap > `gapMaxMinutes` (default 20):** Treat as a new session (e.g., lunch break) -- find the nearest match by timestamp again.
    - **Gap between min and max:** Ambiguous -- still suggests the next sequential match, but marks confidence as `requiresManual` so the UI highlights the row for user verification.
-
-3. **Forced assignment mode:** When `TestFlags.forceSampleMatchAssignment` is true, the algorithm is bypassed entirely. The first two videos are hardcoded to specific match numbers (configurable in `TestFlags`), and any additional videos get `confidence: none`.
 
 ### Cascade logic
 

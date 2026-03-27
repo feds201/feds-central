@@ -4,6 +4,7 @@ import '../data/data_store.dart';
 import '../data/models.dart';
 import '../import/import_pipeline.dart';
 import '../import/video_metadata_service.dart';
+import '../util/format.dart';
 import 'import_preview_row.dart';
 
 class HistoryTab extends StatelessWidget {
@@ -67,7 +68,7 @@ class HistoryTab extends StatelessWidget {
         leading: const Icon(Icons.usb),
         title: Text(session.driveLabel),
         subtitle: Text(
-          '${_formatDateTime(session.importedAt)} -- ${session.videoCount} video(s)',
+          '${formatDateTime(session.importedAt)} -- ${session.videoCount} video(s)',
         ),
         trailing: Icon(
           Icons.chevron_right,
@@ -89,15 +90,6 @@ class HistoryTab extends StatelessWidget {
     );
   }
 
-  String _formatDateTime(DateTime dt) {
-    final months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
-    ];
-    final hour = dt.hour > 12 ? dt.hour - 12 : dt.hour;
-    final amPm = dt.hour >= 12 ? 'PM' : 'AM';
-    return '${months[dt.month - 1]} ${dt.day}, ${hour == 0 ? 12 : hour}:${dt.minute.toString().padLeft(2, '0')} $amPm';
-  }
 }
 
 /// Full-screen page that shows the import preview UI for a past import session,
@@ -336,7 +328,7 @@ class _SessionReEditPageState extends State<_SessionReEditPage> {
                         style: Theme.of(context).textTheme.titleSmall,
                       ),
                       Text(
-                        '${_formatDateTime(widget.session.importedAt)} -- '
+                        '${formatDateTime(widget.session.importedAt)} -- '
                         '${widget.session.videoCount} imported',
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
@@ -464,15 +456,6 @@ class _SessionReEditPageState extends State<_SessionReEditPage> {
     );
   }
 
-  String _formatDateTime(DateTime dt) {
-    final months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
-    ];
-    final hour = dt.hour > 12 ? dt.hour - 12 : dt.hour;
-    final amPm = dt.hour >= 12 ? 'PM' : 'AM';
-    return '${months[dt.month - 1]} ${dt.day}, ${hour == 0 ? 12 : hour}:${dt.minute.toString().padLeft(2, '0')} $amPm';
-  }
 }
 
 /// Mutable row for the re-edit UI.

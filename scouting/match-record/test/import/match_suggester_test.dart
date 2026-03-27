@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:match_record/data/models.dart';
 import 'package:match_record/import/match_suggester.dart';
-import 'package:match_record/import/video_metadata_service.dart';
+import 'package:match_record/import/video_metadata_service.dart' show VideoMetadata;
 
 void main() {
   // Helper to create a Match at a specific Unix timestamp
@@ -62,7 +62,7 @@ void main() {
         schedule: schedule,
         gapMinMinutes: 10,
         gapMaxMinutes: 20,
-        useForcedAssignment: false,
+
       );
 
       expect(results.length, 1);
@@ -89,7 +89,7 @@ void main() {
         schedule: schedule,
         gapMinMinutes: 10,
         gapMaxMinutes: 20,
-        useForcedAssignment: false,
+
       );
 
       expect(results.length, 2);
@@ -119,7 +119,7 @@ void main() {
         schedule: schedule,
         gapMinMinutes: 10,
         gapMaxMinutes: 20,
-        useForcedAssignment: false,
+
       );
 
       expect(results.length, 2);
@@ -146,7 +146,7 @@ void main() {
         schedule: schedule,
         gapMinMinutes: 10,
         gapMaxMinutes: 20,
-        useForcedAssignment: false,
+
       );
 
       expect(results.length, 2);
@@ -174,7 +174,7 @@ void main() {
         schedule: schedule,
         gapMinMinutes: 10,
         gapMaxMinutes: 20,
-        useForcedAssignment: false,
+
       );
 
       expect(results.length, 1);
@@ -214,7 +214,7 @@ void main() {
         schedule: schedule,
         gapMinMinutes: 10,
         gapMaxMinutes: 20,
-        useForcedAssignment: false,
+
       );
 
       expect(results.length, 2);
@@ -234,16 +234,15 @@ void main() {
       expect(results, isEmpty);
     });
 
-    test('Android video recordingStartTime subtracts duration and finalization offset', () {
+    test('Android video recordingStartTime subtracts duration (no finalization offset)', () {
       final androidVideo = makeVideo(
         recordingStartTime: baseTime,
         durationMs: 60000,
         isIOS: false,
       );
       // Android: date = end time = baseTime + 60s
-      // recordingStartTime = date - duration - 0.7s finalization offset
-      expect(androidVideo.recordingStartTime,
-          baseTime.subtract(kAndroidFinalizationOffset));
+      // recordingStartTime = date - duration = baseTime
+      expect(androidVideo.recordingStartTime, baseTime);
     });
 
     test('iOS video recordingStartTime equals date directly', () {

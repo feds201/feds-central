@@ -12,6 +12,7 @@ import '../tabs/matches_tab.dart';
 import '../tabs/search_tab.dart';
 import '../tabs/teams_tab.dart';
 import '../util/constants.dart';
+import '../util/format.dart';
 import '../util/result.dart';
 import '../util/test_flags.dart';
 import '../widgets/app_search_bar.dart';
@@ -371,14 +372,6 @@ class _MainScreenState extends State<MainScreen> {
     AppColors.allianceCategory,
   ];
 
-  // m9: Format last TBA fetch time in short format
-  String _formatFetchTime(DateTime time) {
-    final h = time.hour > 12 ? time.hour - 12 : (time.hour == 0 ? 12 : time.hour);
-    final m = time.minute.toString().padLeft(2, '0');
-    final amPm = time.hour >= 12 ? 'pm' : 'am';
-    return '${time.month}/${time.day} $h:$m$amPm';
-  }
-
   Widget _buildEventSubTabs() {
     final eventKeys = _dataStore.settings.selectedEventKeys;
     final yourTeamNumber = _dataStore.settings.teamNumber;
@@ -658,7 +651,7 @@ class _MainScreenState extends State<MainScreen> {
     final lastFetch = _dataStore.settings.lastTbaFetchTime;
     final hasEvents = _dataStore.settings.selectedEventKeys.isNotEmpty;
     final tooltip = lastFetch != null
-        ? 'Sync TBA data (last: ${_formatFetchTime(lastFetch)})'
+        ? 'Sync TBA data (last: ${formatFetchTime(lastFetch)})'
         : 'Sync TBA data';
 
     final icon = _isTbaSyncing
@@ -691,7 +684,7 @@ class _MainScreenState extends State<MainScreen> {
               children: [
                 icon,
                 Text(
-                  _formatFetchTime(lastFetch),
+                  formatFetchTime(lastFetch),
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
                     fontSize: 9,
                     color: Theme.of(context).colorScheme.onSurfaceVariant,

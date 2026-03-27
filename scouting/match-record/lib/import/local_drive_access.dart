@@ -38,6 +38,7 @@ class LocalDriveAccess implements DriveAccess {
       await for (final entity in dir.list(followLinks: false)) {
         if (entity is! File) continue;
         final name = entity.uri.pathSegments.last;
+        if (name.startsWith('.')) continue;
         final ext = name.contains('.')
             ? '.${name.split('.').last}'.toLowerCase()
             : '';

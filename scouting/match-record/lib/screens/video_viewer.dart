@@ -226,10 +226,26 @@ class _VideoViewerState extends State<VideoViewer> {
       _subscriptions.add(
         primaryPlayer.stream.duration.listen((dur) {
           if (mounted) {
-            setState(() => _duration = dur);
+            setState(() {
+              _duration = _syncEngine?.unifiedDuration ?? dur;
+            });
           }
         }),
       );
+      // When sync engine exists, also subscribe to the later player's duration
+      // so we recompute the unified timeline when either duration becomes known.
+      if (_syncEngine != null) {
+        _subscriptions.add(
+          _syncEngine!.laterPlayer.stream.duration.listen((dur) {
+            if (mounted) {
+              final unified = _syncEngine?.unifiedDuration;
+              if (unified != null) {
+                setState(() => _duration = unified);
+              }
+            }
+          }),
+        );
+      }
       _subscriptions.add(
         primaryPlayer.stream.playing.listen((playing) {
           if (mounted) {
@@ -735,6 +751,64 @@ class _VideoViewerState extends State<VideoViewer> {
     return _syncEngine!.isLaterSide('blue') && _laterWaiting;
   }
 
+  /// Whether the red pane's video has ended at the current position.
+  bool _isRedEnded() {
+    if (_syncEngine == null) return false;
+    final redDur = _syncEngine!.redPlayer.state.duration;
+    if (redDur == Duration.zero) return false;
+    if (_syncEngine!.earlierIsRed) {
+      // Red is earlier — ended when position exceeds red's duration
+      return _position > redDur;
+    } else {
+      // Red is later — derive red's local position and check against its duration
+      final redPos = SyncEngine.laterPositionFor(_position, _syncEngine!.syncOffset);
+      if (redPos == null) return false; // red hasn't started yet
+      return redPos > redDur;
+    }
+  }
+
+  /// Whether the blue pane's video has ended at the current position.
+  bool _isBlueEnded() {
+    if (_syncEngine == null) return false;
+    final blueDur = _syncEngine!.bluePlayer.state.duration;
+    if (blueDur == Duration.zero) return false;
+    if (!_syncEngine!.earlierIsRed) {
+      // Blue is earlier — ended when position exceeds blue's duration
+      return _position > blueDur;
+    } else {
+      // Blue is later — derive blue's local position and check against its duration
+      final bluePos = SyncEngine.laterPositionFor(_position, _syncEngine!.syncOffset);
+      if (bluePos == null) return false; // blue hasn't started yet
+      return bluePos > blueDur;
+    }
+  }
+
+  /// How long ago the red video ended (only meaningful when _isRedEnded()).
+  Duration _redEndedAgo() {
+    if (_syncEngine == null) return Duration.zero;
+    final redDur = _syncEngine!.redPlayer.state.duration;
+    if (_syncEngine!.earlierIsRed) {
+      return _position - redDur;
+    } else {
+      final redPos = SyncEngine.laterPositionFor(_position, _syncEngine!.syncOffset);
+      if (redPos == null) return Duration.zero;
+      return redPos - redDur;
+    }
+  }
+
+  /// How long ago the blue video ended (only meaningful when _isBlueEnded()).
+  Duration _blueEndedAgo() {
+    if (_syncEngine == null) return Duration.zero;
+    final blueDur = _syncEngine!.bluePlayer.state.duration;
+    if (!_syncEngine!.earlierIsRed) {
+      return _position - blueDur;
+    } else {
+      final bluePos = SyncEngine.laterPositionFor(_position, _syncEngine!.syncOffset);
+      if (bluePos == null) return Duration.zero;
+      return bluePos - blueDur;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -979,6 +1053,10 @@ class _VideoViewerState extends State<VideoViewer> {
           : widget.matchWithVideos.blueRecording;
       final leftWaiting = _sidesSwapped ? _isBlueWaiting() : _isRedWaiting();
       final rightWaiting = _sidesSwapped ? _isRedWaiting() : _isBlueWaiting();
+      final leftEnded = _sidesSwapped ? _isBlueEnded() : _isRedEnded();
+      final rightEnded = _sidesSwapped ? _isRedEnded() : _isBlueEnded();
+      final leftEndedAgo = _sidesSwapped ? _blueEndedAgo() : _redEndedAgo();
+      final rightEndedAgo = _sidesSwapped ? _redEndedAgo() : _blueEndedAgo();
 
       children.add(_buildPaneChrome(
         paneKey: _leftPaneKey,
@@ -988,6 +1066,8 @@ class _VideoViewerState extends State<VideoViewer> {
         onEdit: _openEditMetadata,
         isWaiting: leftWaiting,
         countdownRemaining: _countdownRemaining,
+        hasEnded: leftEnded,
+        endedAgo: leftEndedAgo,
       ));
       children.add(_buildPaneChrome(
         paneKey: _rightPaneKey,
@@ -997,6 +1077,8 @@ class _VideoViewerState extends State<VideoViewer> {
         onEdit: _openEditMetadata,
         isWaiting: rightWaiting,
         countdownRemaining: _countdownRemaining,
+        hasEnded: rightEnded,
+        endedAgo: rightEndedAgo,
       ));
     } else if (_viewMode == ViewMode.fullOnly) {
       children.add(_buildPaneChrome(
@@ -1013,6 +1095,8 @@ class _VideoViewerState extends State<VideoViewer> {
           ? widget.matchWithVideos.redRecording
           : widget.matchWithVideos.blueRecording;
       final isWaiting = isRed ? _isRedWaiting() : _isBlueWaiting();
+      final isEnded = isRed ? _isRedEnded() : _isBlueEnded();
+      final endedAgo = isRed ? _redEndedAgo() : _blueEndedAgo();
       children.add(_buildPaneChrome(
         paneKey: _singlePaneKey,
         allianceColor: color,
@@ -1021,6 +1105,8 @@ class _VideoViewerState extends State<VideoViewer> {
         onEdit: _openEditMetadata,
         isWaiting: isWaiting,
         countdownRemaining: _countdownRemaining,
+        hasEnded: isEnded,
+        endedAgo: endedAgo,
       ));
     }
 

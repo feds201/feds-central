@@ -65,30 +65,31 @@ class SyncEngine {
     Recording? fullRecording,
     Player? fullPlayer,
   }) {
-    final offset = computeSyncOffset(
-      redRecording.recordingStartTime,
-      blueRecording.recordingStartTime,
-    );
+    // Viewer-local effective start times: if one recording has null start time,
+    // treat it as starting at the same time as the other (sync offset = 0).
+    // These are NEVER persisted back to the Recording or database.
+    final redStart = redRecording.recordingStartTime
+        ?? blueRecording.recordingStartTime
+        ?? DateTime.now();
+    final blueStart = blueRecording.recordingStartTime
+        ?? redRecording.recordingStartTime
+        ?? DateTime.now();
 
-    final redIsEarlier =
-        !redRecording.recordingStartTime.isAfter(blueRecording.recordingStartTime);
+    final offset = computeSyncOffset(redStart, blueStart);
 
-    final earlierStartTime = redIsEarlier
-        ? redRecording.recordingStartTime
-        : blueRecording.recordingStartTime;
+    final redIsEarlier = !redStart.isAfter(blueStart);
+
+    final earlierStartTime = redIsEarlier ? redStart : blueStart;
 
     Duration computedFullOffset = Duration.zero;
     if (fullRecording != null) {
-      computedFullOffset = computeSyncOffset(
-        earlierStartTime,
-        fullRecording.recordingStartTime,
-      );
+      final fullStart = fullRecording.recordingStartTime ?? earlierStartTime;
+      computedFullOffset = computeSyncOffset(earlierStartTime, fullStart);
       // If full started before the earlier player, its offset is negative in
       // the timeline sense — the full player starts before earlier. We handle
       // this by treating the full player as simply offset 0 relative to itself;
       // use signed difference so we can compute the correct derived position.
-      final signedDiff =
-          fullRecording.recordingStartTime.difference(earlierStartTime);
+      final signedDiff = fullStart.difference(earlierStartTime);
       computedFullOffset = signedDiff.isNegative
           ? Duration(milliseconds: -signedDiff.inMilliseconds.abs())
           : signedDiff.abs();
@@ -112,6 +113,17 @@ class SyncEngine {
 
   /// Get the blue player regardless of which is earlier/later.
   Player get bluePlayer => earlierIsRed ? laterPlayer : earlierPlayer;
+
+  /// The total duration of the unified timeline:
+  /// max(earlierDuration, syncOffset + laterDuration).
+  /// Returns null if neither player has reported a duration yet.
+  Duration? get unifiedDuration {
+    final earlierDur = earlierPlayer.state.duration;
+    final laterDur = laterPlayer.state.duration;
+    if (earlierDur == Duration.zero && laterDur == Duration.zero) return null;
+    final laterEnd = syncOffset + laterDur;
+    return earlierDur > laterEnd ? earlierDur : laterEnd;
+  }
 
   /// Whether a given side is the later (waiting) side.
   bool isLaterSide(String allianceSide) {
@@ -206,17 +218,22 @@ class SyncEngine {
     }
   }
 
-  /// Seek to a position on the earlier player's timeline.
+  /// Seek to a position on the unified timeline.
   ///
-  /// Clamps to valid range. Updates all other players accordingly.
+  /// [earlierPos] is the unified timeline position (may exceed the earlier
+  /// player's actual duration when the later video extends further).
+  /// Each player's seek is clamped independently to its own duration.
   Future<void> seekToEarlierPosition(Duration earlierPos) async {
     if (earlierPos < Duration.zero) earlierPos = Duration.zero;
-    final earlierDur = earlierPlayer.state.duration;
-    if (earlierDur > Duration.zero && earlierPos > earlierDur) {
-      earlierPos = earlierDur;
-    }
 
     _intendedEarlierPosition = earlierPos;
+
+    // Clamp the earlier player's actual seek to its own duration
+    final earlierDur = earlierPlayer.state.duration;
+    var clampedEarlier = earlierPos;
+    if (earlierDur > Duration.zero && clampedEarlier > earlierDur) {
+      clampedEarlier = earlierDur;
+    }
 
     final laterTarget = laterPositionFor(earlierPos, syncOffset);
 
@@ -227,7 +244,7 @@ class SyncEngine {
       laterWaiting = true;
       countdownRemaining = syncOffset - earlierPos;
       // Seek earlier player while pausing+resetting later player in parallel
-      seeks.add(earlierPlayer.seek(earlierPos));
+      seeks.add(earlierPlayer.seek(clampedEarlier));
       seeks.add(laterPlayer.pause().then((_) => laterPlayer.seek(Duration.zero)));
     } else {
       var clampedLater = laterTarget;
@@ -237,7 +254,7 @@ class SyncEngine {
       }
       laterWaiting = false;
       countdownRemaining = Duration.zero;
-      seeks.add(earlierPlayer.seek(earlierPos));
+      seeks.add(earlierPlayer.seek(clampedEarlier));
       seeks.add(laterPlayer.seek(clampedLater));
     }
 

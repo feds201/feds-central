@@ -93,7 +93,7 @@ class StorageVideoList extends StatelessWidget {
                   const SizedBox(height: 2),
                   // Line 3: File size · original filename
                   Text(
-                    '${_formatFileSize(recording.fileSizeBytes)}  \u00b7  ${recording.originalFilename}',
+                    '${recording.fileSizeBytes != null ? _formatFileSize(recording.fileSizeBytes!) : 'Unknown size'}  \u00b7  ${recording.originalFilename}',
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                     ),

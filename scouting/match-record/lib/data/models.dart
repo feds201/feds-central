@@ -380,9 +380,9 @@ class Recording {
   final String matchKey;
   final String allianceSide;
   final String fileExtension;
-  final DateTime recordingStartTime;
-  final int durationMs;
-  final int fileSizeBytes;
+  final DateTime? recordingStartTime;
+  final int? durationMs;
+  final int? fileSizeBytes;
   final String sourceDeviceType;
   final String originalFilename;
   final int team1;
@@ -419,7 +419,7 @@ class Recording {
         'matchKey': matchKey,
         'allianceSide': allianceSide,
         'fileExtension': fileExtension,
-        'recordingStartTime': recordingStartTime.toIso8601String(),
+        'recordingStartTime': recordingStartTime?.toIso8601String(),
         'durationMs': durationMs,
         'fileSizeBytes': fileSizeBytes,
         'sourceDeviceType': sourceDeviceType,
@@ -440,9 +440,9 @@ class Recording {
         fileExtension: json['fileExtension'] as String? ?? '.mp4',
         recordingStartTime: json['recordingStartTime'] != null
             ? DateTime.parse(json['recordingStartTime'] as String)
-            : DateTime(2000),
-        durationMs: json['durationMs'] as int? ?? 0,
-        fileSizeBytes: json['fileSizeBytes'] as int? ?? 0,
+            : null,
+        durationMs: json['durationMs'] as int?,
+        fileSizeBytes: json['fileSizeBytes'] as int?,
         sourceDeviceType: json['sourceDeviceType'] as String? ?? '',
         originalFilename: json['originalFilename'] as String? ?? '',
         team1: json['team1'] as int? ?? 0,
@@ -754,9 +754,9 @@ class ImportSessionEntry {
 }
 
 class VideoSkipEntry {
-  final DateTime recordingStartTime;
-  final int durationMs;
-  final int fileSizeBytes;
+  final DateTime? recordingStartTime;
+  final int? durationMs;
+  final int? fileSizeBytes;
   final String? skipReason;
 
   const VideoSkipEntry({
@@ -767,7 +767,7 @@ class VideoSkipEntry {
   });
 
   Map<String, dynamic> toJson() => {
-        'recordingStartTime': recordingStartTime.toIso8601String(),
+        'recordingStartTime': recordingStartTime?.toIso8601String(),
         'durationMs': durationMs,
         'fileSizeBytes': fileSizeBytes,
         'skipReason': skipReason,
@@ -776,9 +776,9 @@ class VideoSkipEntry {
   factory VideoSkipEntry.fromJson(Map<String, dynamic> json) => VideoSkipEntry(
         recordingStartTime: json['recordingStartTime'] != null
             ? DateTime.parse(json['recordingStartTime'] as String)
-            : DateTime(2000),
-        durationMs: json['durationMs'] as int? ?? 0,
-        fileSizeBytes: json['fileSizeBytes'] as int? ?? 0,
+            : null,
+        durationMs: json['durationMs'] as int?,
+        fileSizeBytes: json['fileSizeBytes'] as int?,
         skipReason: json['skipReason'] as String?,
       );
 
@@ -811,9 +811,9 @@ class VideoSkipEntry {
 }
 
 class VideoIdentity {
-  final DateTime recordingStartTime;
-  final int durationMs;
-  final int fileSizeBytes;
+  final DateTime? recordingStartTime;
+  final int? durationMs;
+  final int? fileSizeBytes;
 
   const VideoIdentity({
     required this.recordingStartTime,

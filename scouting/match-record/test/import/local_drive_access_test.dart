@@ -86,6 +86,22 @@ void main() {
       }
     });
 
+    test('skips hidden files (dotfiles and macOS resource forks)', () async {
+      // Real video that should be listed
+      File('${tempDir.path}/match1.mp4').writeAsStringSync('video');
+      // macOS resource fork (Apple Double) — should be skipped
+      File('${tempDir.path}/._match1.mp4').writeAsStringSync('resource fork');
+      // Generic dotfile with video extension — should be skipped
+      File('${tempDir.path}/.hidden.mp4').writeAsStringSync('hidden');
+      // macOS metadata — should be skipped (also not a video ext, but testing the dot check)
+      File('${tempDir.path}/.DS_Store').writeAsStringSync('metadata');
+
+      final result = await access.listVideoFiles(tempDir.path);
+      final files = (result as Ok).value;
+      expect(files.length, 1);
+      expect(files.first.name, 'match1.mp4');
+    });
+
     test('does not list subdirectories', () async {
       Directory('${tempDir.path}/subdir').createSync();
       File('${tempDir.path}/video.mp4').writeAsStringSync('video');

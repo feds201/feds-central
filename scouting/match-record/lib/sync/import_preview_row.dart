@@ -4,6 +4,7 @@ import '../data/data_store.dart';
 import '../data/models.dart';
 import '../import/import_pipeline.dart';
 import '../util/constants.dart';
+import '../util/format.dart';
 
 class ImportPreviewRowWidget extends StatelessWidget {
   final ImportPreviewRow row;
@@ -81,7 +82,7 @@ class ImportPreviewRowWidget extends StatelessWidget {
                     children: [
                       if (row.metadata.recordingStartTime != null) ...[
                         Text(
-                          _formatTime(row.metadata.recordingStartTime!),
+                          formatDateTime(row.metadata.recordingStartTime!),
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: theme.colorScheme.onSurfaceVariant,
                           ),
@@ -350,12 +351,6 @@ class ImportPreviewRowWidget extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  String _formatTime(DateTime time) {
-    final hour = time.hour > 12 ? time.hour - 12 : time.hour;
-    final amPm = time.hour >= 12 ? 'PM' : 'AM';
-    return '${hour == 0 ? 12 : hour}:${time.minute.toString().padLeft(2, '0')} $amPm';
   }
 
   String _formatDuration(int durationMs) {

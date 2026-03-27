@@ -4,6 +4,7 @@ import '../data/data_store.dart';
 import '../data/models.dart';
 import '../tba/tba_client.dart';
 import '../tba/tba_config.dart';
+import '../util/format.dart';
 import '../util/result.dart';
 import '../util/test_flags.dart';
 
@@ -208,7 +209,7 @@ class _SettingsPageState extends State<SettingsPage> {
         children: unselected
             .map((e) => SimpleDialogOption(
                   onPressed: () => Navigator.pop(context, e),
-                  child: Text('${_formatDate(e.startDate)} \u2014 ${e.name}'),
+                  child: Text('${formatDate(e.startDate)} \u2014 ${e.name}'),
                 ))
             .toList(),
       ),
@@ -363,21 +364,6 @@ class _SettingsPageState extends State<SettingsPage> {
     return sorted;
   }
 
-  String _formatDate(DateTime date) {
-    const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
-    ];
-    return '${months[date.month - 1]} ${date.day}, ${date.year}';
-  }
-
-  String _formatFetchTime(DateTime time) {
-    final h = time.hour > 12 ? time.hour - 12 : (time.hour == 0 ? 12 : time.hour);
-    final m = time.minute.toString().padLeft(2, '0');
-    final amPm = time.hour >= 12 ? 'pm' : 'am';
-    return '${time.month}/${time.day} $h:$m$amPm';
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -449,7 +435,7 @@ class _SettingsPageState extends State<SettingsPage> {
             Padding(
               padding: const EdgeInsets.only(top: 4),
               child: Text(
-                'Last fetched: ${_formatFetchTime(settings.lastTbaFetchTime!)}',
+                'Last fetched: ${formatFetchTime(settings.lastTbaFetchTime!)}',
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                 ),

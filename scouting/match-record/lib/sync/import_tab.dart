@@ -47,7 +47,7 @@ class _ImportTabState extends State<ImportTab>
   /// Whether the current import session is from a local source (Camera/Quick Share).
   bool _isLocalSource = false;
   /// Rolling time window for local sources (hours).
-  int _localTimeWindowHours = 12;
+  int _localTimeWindowHours = 24;
   /// The active LocalDriveAccess when importing from a local source.
   LocalDriveAccess? _activeLocalDriveAccess;
 
@@ -139,7 +139,7 @@ class _ImportTabState extends State<ImportTab>
 
     setState(() {
       _isLocalSource = true;
-      _localTimeWindowHours = 12;
+      _localTimeWindowHours = 24;
       _activeLocalDriveAccess = access;
     });
 
@@ -184,7 +184,7 @@ class _ImportTabState extends State<ImportTab>
     }
 
     setState(() {
-      _localTimeWindowHours += 12;
+      _localTimeWindowHours += 24;
     });
 
     final newerThan = DateTime.now().subtract(Duration(hours: _localTimeWindowHours));
@@ -885,7 +885,7 @@ class _ImportTabState extends State<ImportTab>
           ),
           const SizedBox(width: 8),
           ActionChip(
-            label: const Text('Expand +12h'),
+            label: const Text('Expand +24h'),
             onPressed: _expandTimeWindow,
             visualDensity: VisualDensity.compact,
           ),

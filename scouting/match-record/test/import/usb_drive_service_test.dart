@@ -85,7 +85,7 @@ void main() {
     tearDown(() {
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(
-        const MethodChannel('com.feds201.match_record/usb_drive'),
+        const MethodChannel('com.feds201.match_record/native'),
         null,
       );
     });
@@ -93,7 +93,7 @@ void main() {
     void mockChannel(dynamic Function(MethodCall) handler) {
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(
-        const MethodChannel('com.feds201.match_record/usb_drive'),
+        const MethodChannel('com.feds201.match_record/native'),
         (call) async => handler(call),
       );
     }

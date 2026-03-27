@@ -1,8 +1,6 @@
-import 'drive_access.dart';
+import 'package:flutter/services.dart';
 
-/// Estimated delay between Android stopping recording and writing creation_time.
-/// Tested across devices: most are under 1s, some outliers at 3s+ but rare.
-const kAndroidFinalizationOffset = Duration(milliseconds: 700);
+import 'drive_access.dart';
 
 /// Metadata extracted from a video file.
 class VideoMetadata {
@@ -55,7 +53,10 @@ class VideoMetadata {
   ///
   /// 1. iOS (has QuickTime creationdate or ftyp "qt"): creation_time IS the start.
   /// 2. Filename parsing (PXL_, VID_, YYYYMMDD_HHMMSS): extract start directly.
-  /// 3. Fallback: creation_time - duration - finalization offset (0.7s).
+  /// 3. Fallback: creation_time - duration.
+  ///
+  /// Returns null when start time cannot be determined. For Android, returning
+  /// date directly would give the END time (wrong), so we require duration.
   DateTime? get recordingStartTime {
     // Priority 1: iOS — creation_time is already the start time
     if (isIOSRecording) return date;
@@ -69,14 +70,13 @@ class VideoMetadata {
     );
     if (fromFilename != null) return fromFilename;
 
-    // Priority 3: Fallback — creation_time - duration - finalization offset
-    if (date == null) return null;
-    if (durationMs != null && durationMs! > 0) {
-      return date!
-          .subtract(Duration(milliseconds: durationMs!))
-          .subtract(kAndroidFinalizationOffset);
+    // Priority 3: Fallback — creation_time - duration
+    // Without duration we cannot convert Android's end-time creation_time
+    // to a start time, so we return null rather than a wrong value.
+    if (date != null && durationMs != null && durationMs! > 0) {
+      return date!.subtract(Duration(milliseconds: durationMs!));
     }
-    return date;
+    return null;
   }
 }
 
@@ -136,8 +136,7 @@ DateTime? parseRecordingStartFromFilename(
     // Infer UTC offset from creation_time - duration
     if (creationTime != null && durationMs != null && durationMs > 0) {
       final approxStartUtc = creationTime.toUtc()
-          .subtract(Duration(milliseconds: durationMs))
-          .subtract(kAndroidFinalizationOffset);
+          .subtract(Duration(milliseconds: durationMs));
       // Treat filename values as if they were UTC to get a comparable reference
       final filenameAsUtc = DateTime.utc(year, month, day, hour, minute, second);
       // The difference = UTC offset (how far ahead local is from UTC)
@@ -166,22 +165,108 @@ Duration? _parseSamsungUtcOffset(String offset) {
 }
 
 /// Service for extracting video metadata.
-/// On real Android: uses platform channel with MediaMetadataRetriever.
-/// Currently: generates synthetic metadata based on filenames (see TODO for platform channel).
+/// On Android: uses platform channel with MediaMetadataRetriever + ftyp header reading.
+/// Falls back to synthetic estimation when the platform channel is unavailable (e.g. tests).
 class VideoMetadataService {
+  static const _channel = MethodChannel('com.feds201.match_record/native');
+
   /// Extract metadata from a single video file. Never throws.
   Future<VideoMetadata> getMetadata(DriveFile file) async {
+    try {
+      final result = await _channel.invokeMethod<Map<dynamic, dynamic>>(
+        'getVideoMetadata',
+        {'filePath': file.uri},
+      );
+      if (result != null) {
+        return _fromChannelResult(result, file);
+      }
+    } on MissingPluginException {
+      // Platform channel not available (running on desktop or in tests)
+    } on PlatformException {
+      // Native side failed
+    } catch (_) {
+      // Any other error
+    }
     return _generateSyntheticMetadata(file);
   }
 
   /// Batch extraction. Returns list in same order as input.
   Future<List<VideoMetadata>> getMetadataBatch(List<DriveFile> files) async {
-    return files.map(_generateSyntheticMetadata).toList();
+    final results = <VideoMetadata>[];
+    for (final file in files) {
+      results.add(await getMetadata(file));
+    }
+    return results;
   }
 
-  /// Generate synthetic but realistic metadata until platform channel is implemented.
-  /// For iOS files (.MOV): set ftypBrand to "qt  ", date = recording start time.
-  /// For Android files (.mp4): set ftypBrand to "isom", date = end time.
+  /// Parse the platform channel result into a VideoMetadata.
+  VideoMetadata _fromChannelResult(Map<dynamic, dynamic> result, DriveFile file) {
+    // Parse creation date from MediaMetadataRetriever's METADATA_KEY_DATE.
+    // Format is typically "YYYYMMDDTHHMMSS.000Z" or similar ISO-ish format.
+    DateTime? date;
+    final dateStr = result['date'] as String?;
+    if (dateStr != null) {
+      date = parseMetadataDate(dateStr);
+    }
+
+    return VideoMetadata(
+      sourceUri: file.uri,
+      originalFilename: file.name,
+      durationMs: (result['durationMs'] as num?)?.toInt(),
+      date: date,
+      mimetype: result['mimetype'] as String?,
+      width: (result['width'] as num?)?.toInt(),
+      height: (result['height'] as num?)?.toInt(),
+      orientation: (result['orientation'] as num?)?.toInt(),
+      framerate: (result['framerate'] as num?)?.toDouble(),
+      ftypBrand: result['ftypBrand'] as String?,
+      fileSize: (result['fileSize'] as num?)?.toInt() ?? file.sizeBytes,
+    );
+  }
+
+  /// Parse the date string from MediaMetadataRetriever.
+  /// Handles formats: "20260315T143025.000Z", "2026-03-15T14:30:25Z",
+  /// "2026-03-15 14:30:25", "20260315T143025", etc.
+  /// MediaMetadataRetriever always stores UTC, so all results are UTC.
+  /// Preserves sub-second precision when available.
+  static DateTime? parseMetadataDate(String dateStr) {
+    // Try compact format first: "YYYYMMDDTHHMMSS" (with optional .ffffffZ).
+    // MediaMetadataRetriever uses this format. Must check before DateTime.tryParse
+    // because tryParse would treat "20260315T143025" as local time, not UTC.
+    final compact = RegExp(
+      r'(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})(?:\.(\d+))?',
+    ).firstMatch(dateStr);
+    if (compact != null) {
+      int ms = 0;
+      int us = 0;
+      final fracStr = compact.group(7);
+      if (fracStr != null) {
+        // Pad/truncate to 6 digits for microsecond precision
+        final padded = fracStr.padRight(6, '0').substring(0, 6);
+        ms = int.parse(padded.substring(0, 3));
+        us = int.parse(padded.substring(3, 6));
+      }
+      return DateTime.utc(
+        int.parse(compact.group(1)!),
+        int.parse(compact.group(2)!),
+        int.parse(compact.group(3)!),
+        int.parse(compact.group(4)!),
+        int.parse(compact.group(5)!),
+        int.parse(compact.group(6)!),
+        ms,
+        us,
+      );
+    }
+
+    // Fall back to standard ISO parse for other formats
+    final parsed = DateTime.tryParse(dateStr);
+    if (parsed != null) return parsed.toUtc();
+
+    return null;
+  }
+
+  /// Fallback: generate synthetic metadata from filename and file size.
+  /// Used when platform channel is unavailable.
   VideoMetadata _generateSyntheticMetadata(DriveFile file) {
     final isIOS = file.name.toLowerCase().endsWith('.mov');
     final durationMs = _estimateDuration(file);
@@ -202,33 +287,21 @@ class VideoMetadataService {
     );
   }
 
-  /// Estimate a realistic duration based on file size.
-  /// ~2MB per 10 seconds at 1080p is a reasonable approximation.
+  /// Estimate duration from file size (~200KB/s for compressed video).
   int _estimateDuration(DriveFile file) {
-    // Roughly 200KB/s for compressed video
     final seconds = (file.sizeBytes / (200 * 1024)).round();
-    // Clamp to reasonable range (10-120 seconds for sample videos)
     return (seconds.clamp(10, 120)) * 1000;
   }
 
-  /// Extract or generate a synthetic creation_time.
-  /// For Android files with Pixel filenames, simulates creation_time = end of recording
-  /// by parsing the start time from the filename and adding duration + finalization offset.
-  /// For iOS or unrecognized filenames, falls back to file's lastModified.
+  /// Extract or generate a synthetic creation_time from filename.
   DateTime? _extractDate(DriveFile file, bool isIOS, int durationMs) {
     if (!isIOS) {
-      // Try to parse start time from filename (Pixel, Samsung, generic Android)
       final startTime = parseRecordingStartFromFilename(file.name);
       if (startTime != null) {
-        // Simulate Android creation_time = end of recording
-        return startTime
-            .add(Duration(milliseconds: durationMs))
-            .add(kAndroidFinalizationOffset);
+        return startTime.add(Duration(milliseconds: durationMs));
       }
     }
 
-    // For iOS files or files without parseable timestamps, use the file's
-    // last modified time if available
     if (file.lastModified != null) {
       return file.lastModified;
     }

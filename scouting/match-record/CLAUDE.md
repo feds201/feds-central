@@ -75,7 +75,6 @@ Issues are labeled by screen area (m = main screen, v = video player, s = sync/i
 `lib/util/test_flags.dart` contains flags for development:
 - `useSampleVideos` — uses sample videos from device filesystem instead of USB drives (see `TestDriveAccess` for adb push instructions)
 - `forceEventId` — auto-loads 2026mimid TBA data on first launch
-- `forceSampleMatchAssignment` — assigns sample videos to Q1
 
 These make the app testable on devices without USB drives.
 

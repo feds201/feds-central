@@ -307,8 +307,8 @@ void main() {
       final recording = Recording.fromJson({});
       expect(recording.id, '');
       expect(recording.fileExtension, '.mp4');
-      expect(recording.durationMs, 0);
-      expect(recording.fileSizeBytes, 0);
+      expect(recording.durationMs, isNull);
+      expect(recording.fileSizeBytes, isNull);
       expect(recording.team1, 0);
     });
 
@@ -461,8 +461,8 @@ void main() {
 
     test('fromJson with missing fields uses defaults', () {
       final entry = VideoSkipEntry.fromJson({});
-      expect(entry.durationMs, 0);
-      expect(entry.fileSizeBytes, 0);
+      expect(entry.durationMs, isNull);
+      expect(entry.fileSizeBytes, isNull);
       expect(entry.skipReason, isNull);
     });
 
