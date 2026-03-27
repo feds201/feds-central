@@ -49,8 +49,7 @@ public class ControllerBindings {
                         shooterWheels.setStateCommand(shooter_state.SHOOTING),
                         shooterHood.setStateCommand(shooterhood_state.SHOOTING),
                         feederSubsystem.setStateCommand(feeder_state.RUN),
-                        spinDexer.setStateCommand(spindexer_state.RUN),
-                        intakeSubsystem.setIntakeStateCommand(IntakeState.AGITATE)
+                        spinDexer.setStateCommand(spindexer_state.RUN)
                 ))
                 .onFalse(Commands.sequence(
                         feederSubsystem.setStateCommand(feeder_state.STOP),
@@ -169,7 +168,6 @@ public class ControllerBindings {
                         feederSubsystem.setStateCommand(feeder_state.PRUN),
                         spinDexer.setStateCommand(spindexer_state.PFORWARD),
                         intakeSubsystem.setRollerStateCommand(RollerState.ON)
-                        // intakeSubsystem.setIntakeStateCommand(IntakeState.AGITATE)
                 )
         ).onFalse(
                 Commands.sequence(

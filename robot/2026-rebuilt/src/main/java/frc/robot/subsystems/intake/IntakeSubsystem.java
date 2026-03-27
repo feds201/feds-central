@@ -86,7 +86,6 @@ public class IntakeSubsystem extends SubsystemBase {
     EXTENDED,
     CLOSE_RETRACTED, // 2
     INTAKING,
-    AGITATE,
     AGITATE_IN,
     AGITATE_OUT,
     CLOSE_AGITATION, //35
