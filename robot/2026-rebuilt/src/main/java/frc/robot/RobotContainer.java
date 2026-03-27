@@ -20,6 +20,7 @@ import frc.robot.RobotMap.DrivetrainConstants;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem.IntakeState;
 import frc.robot.subsystems.intake.IntakeSubsystem.RollerState;
+import frc.robot.subsystems.led.LedsSubsystem;
 import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.subsystems.feeder.Feeder.feeder_state;
 import frc.robot.subsystems.shooter.ShooterHood;
@@ -66,7 +67,8 @@ public class RobotContainer extends ControllerBindings {
     private final ShooterHood shooterHood = new ShooterHood(drivetrain);
     private final ShooterWheels shooterWheels = new ShooterWheels(drivetrain);
     private final Spindexer spinDexer = new Spindexer();
-
+    private final LedsSubsystem ledsSubsystem = new LedsSubsystem();
+    
     // Simulation
     private RebuiltSimManager simManager;
 
@@ -111,6 +113,10 @@ public class RobotContainer extends ControllerBindings {
 
     public CommandSwerveDrivetrain getDrivetrain() {
         return drivetrain;
+    }
+    public LedsSubsystem getLedsSubsystem() {
+        return ledsSubsystem;
+
     }
 
     public RobotContainer() {

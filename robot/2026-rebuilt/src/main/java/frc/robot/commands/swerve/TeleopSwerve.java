@@ -3,7 +3,7 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.commands.swerve;
-
+//latest untested change: drivemode became static
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Radians;
@@ -73,7 +73,7 @@ public class TeleopSwerve extends Command {
    private Angle currentJoystickAngle = Degrees.of(0);
    private Translation2d redHub = FlippingUtil.flipFieldPosition(ShooterConstants.hubCenter);
 
-   private driveMode mode = driveMode.NORMALDRIVE;
+   private static driveMode mode = driveMode.NORMALDRIVE;
 
    
 
@@ -133,6 +133,10 @@ public class TeleopSwerve extends Command {
   @Override
   public void initialize() {
     
+  }
+
+  public static driveMode getDriveMode(){
+    return mode;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
