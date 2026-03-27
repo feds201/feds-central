@@ -169,7 +169,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "CrossOverShootingLeftToDepotAcquire"
+            "pathName": "ShootingLeftToDepotAcquire"
           }
         },
         {
