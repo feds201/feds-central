@@ -1,0 +1,93 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.687110927152318,
+        "y": 4.1584188741721855
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.3241142384105955,
+        "y": 2.1111175496688723
+      },
+      "isLocked": false,
+      "linkedName": "FirstCircleShooting"
+    },
+    {
+      "anchor": {
+        "x": 6.883352649006622,
+        "y": 2.5467135761589397
+      },
+      "prevControl": {
+        "x": 6.5276158940397355,
+        "y": 2.147417218543047
+      },
+      "nextControl": {
+        "x": 7.049654159543746,
+        "y": 2.733378536965915
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.101150662251656,
+        "y": 4.005960264900661
+      },
+      "prevControl": {
+        "x": 7.202789735099339,
+        "y": 3.6284437086092716
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "SecondCircleMid"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.36319612590798944,
+      "rotationDegrees": -113.212
+    },
+    {
+      "waypointRelativePos": 0.6440677966101659,
+      "rotationDegrees": -113.212
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.3731448763250883,
+      "maxWaypointRelativePos": 0.647349823321555,
+      "constraints": {
+        "maxVelocity": 3.5,
+        "maxAcceleration": 4.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 360.0,
+        "nominalVoltage": 11.8,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 4.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 360.0,
+    "nominalVoltage": 11.8,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -104.23728046576119
+  },
+  "reversed": false,
+  "folder": "CircleCenter",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -3.0127875041833683
+  },
+  "useDefaultConstraints": true
+}

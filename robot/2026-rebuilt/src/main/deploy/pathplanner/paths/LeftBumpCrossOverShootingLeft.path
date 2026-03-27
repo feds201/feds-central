@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.1449036144578315,
+        "x": 3.5467141162514837,
         "y": 5.379108433734939
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.8809849861160726,
-        "y": 5.255048843614801
+        "x": 3.4700947650150935,
+        "y": 5.1411389503634055
       },
       "isLocked": false,
       "linkedName": "LeftBumpCrossOver"
     },
     {
       "anchor": {
-        "x": 1.8136091298145502,
-        "y": 4.921298145506419
+        "x": 3.22393831553974,
+        "y": 5.030225385527876
       },
       "prevControl": {
-        "x": 2.05944365192582,
-        "y": 4.985991440798859
+        "x": 3.343177599543966,
+        "y": 5.288282947229882
       },
       "nextControl": null,
       "isLocked": false,
@@ -37,14 +37,14 @@
         "y": 4.0
       },
       "rotationOffset": 0.0,
-      "minWaypointRelativePos": 0.36514719848052885,
+      "minWaypointRelativePos": 0.5456255879586097,
       "maxWaypointRelativePos": 1.0,
       "name": "Point Towards Zone"
     }
   ],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 1.0,
+    "maxVelocity": 0.25,
     "maxAcceleration": 4.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 360.0,
@@ -53,12 +53,12 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -17.48799737614853
+    "rotation": -35.584373608459686
   },
   "reversed": false,
   "folder": "MidIntakeToLeftBump",
   "idealStartingState": {
-    "velocity": 1.0,
+    "velocity": 0.4,
     "rotation": -135.0
   },
   "useDefaultConstraints": false

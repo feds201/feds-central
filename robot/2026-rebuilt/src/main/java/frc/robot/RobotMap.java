@@ -3,6 +3,7 @@ package frc.robot;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
+import java.lang.reflect.Field;
 import java.util.Map;
 
 import edu.wpi.first.math.Matrix;
@@ -56,6 +57,7 @@ public final class RobotMap {
         public static final int kLimit_switch_rID = 2;
         public static final int kLimit_switch_lID = 3; 
         public static final int kRollerMotorID = 62;
+        public static final double agitateCycleConstant = 0.5;
 
     }
 
@@ -127,61 +129,87 @@ public final class RobotMap {
          public static final Angle postionTolerance = Rotations.of(.05);
 
          public static final Angle maxHoodAngle = Rotations.of(27); //tune
-         public static final Angle minHoodAngle = Rotations.of(.5); //tune
+         public static final Angle minHoodAngle = Rotations.of(0); //tune
 
         //offset of the shooter from robot center
         public static final Translation2d robotShooterOffset = new Translation2d(.25, 0); //TODO: tune
         //rotation of the shooter relative to robot forward
         public static final Rotation2d robotToShooterRotation = Rotation2d.fromDegrees(0.0);
         public static final Translation2d hubCenter = FieldConstants.Hub.innerCenterPoint.toTranslation2d();   
-        public static final Translation2d passingRight = FieldConstants.Outpost.centerPoint;
-        public static final Translation2d passingLeft = new Translation2d(0, 7.44);
+        public static final Rectangle2d trench = new Rectangle2d(robotShooterOffset, hubCenter);
+        public static final Translation2d passingRight = FieldConstants.Outpost.centerPoint.plus(new Translation2d(0, 2));
+        public static final Translation2d passingLeft = new Translation2d(0, 7.44).minus(new Translation2d(0, 2));
+        public static final Translation2d BlueLeftTopLeft = new Translation2d(4.0, 8.208);
+        public static final Translation2d BlueLeftBottomRight = new Translation2d(5.17, 6.75);
+        public static final Rectangle2d BlueLeftTrench = new Rectangle2d(BlueLeftTopLeft, BlueLeftBottomRight);
+
+        public static final Translation2d RedLeftTopLeft = new Translation2d(11.375, 1.221);
+        public static final Translation2d RedLeftBottomRight = new Translation2d(12.6, 0.082);
+        public static final Rectangle2d RedLeftTrench = new Rectangle2d(RedLeftTopLeft, RedLeftBottomRight);
+
+        public static final Translation2d BlueRightTopLeft = new Translation2d(5.2, 0.018);
+        public static final Translation2d BlueRightBottomRight = new Translation2d(4, 1.26);
+        public static final Rectangle2d BlueRightTrench = new Rectangle2d(BlueRightTopLeft, BlueRightBottomRight);
+
+        public static final Translation2d RedRightTopRight = new Translation2d(12.56, 6.88);
+        public static final Translation2d RedRightBottomRight = new Translation2d(11.181, 8.104);
+        public static final Rectangle2d RedRightTrench = new Rectangle2d(RedRightTopRight, RedRightBottomRight);
+
         public static final Rectangle2d neutralZone = new Rectangle2d(FieldConstants.LeftTrench.openingTopLeft.toTranslation2d(), FieldConstants.RightTrench.oppOpeningTopRight.toTranslation2d());
     
         // This map is used to determine the velocity of the shooter based on the distance to the target. 
         //The key is the distance to the target in meters, and the value is the velocity of the shooter in rotations per second.`
         public static final InterpolatingDoubleTreeMap kShootingVelocityMap = InterpolatingDoubleTreeMap.ofEntries(
-            Map.entry(1.44, 27.0),//done
-            Map.entry(1.63, 28.0),//done
-            Map.entry(1.98, 29.0),//done
-            Map.entry(2.57, 32.0),//done
-            Map.entry(2.83, 33.0),//done
-             Map.entry(3.09, 36.0),//done --- AUTON SHOOTING POSITION
-            Map.entry(3.42, 38.0), //done
-            Map.entry(4.59, 40.5), //done
-            Map.entry(100.0, 40.5)//far off top limit to prevent unwanted scaling past this distance 
+            Map.entry(1.44, 26.5),//done
+            Map.entry(1.7, 26.5),//done
+            Map.entry(2.01, 27.5),//done
+            Map.entry(2.56, 29.5),//done
+            Map.entry(2.89, 29.5),//done
+             Map.entry(3.08, 31.5),//done --- AUTON SHOOTING POSITION
+            Map.entry(3.37, 33.5),
+            Map.entry(3.97,34.5), //done
+            Map.entry(4.75, 37.5),//done
+            Map.entry(100.0, 40.0)//far off top limit to prevent unwanted scaling past this distance 
         );
 
         public static final InterpolatingDoubleTreeMap kShootingPositionMap = InterpolatingDoubleTreeMap.ofEntries(
             Map.entry(1.44, 0.0),//done
-            Map.entry(1.63, 3.0),//done
-            Map.entry(1.98, 7.0),//done
-            Map.entry(2.57, 10.0),//done
-            Map.entry(2.83, 15.0),//done
-             Map.entry(3.09, 16.0),// -- AUTON SHOOTING POSITION
-            Map.entry(3.42, 16.7),//done
-            Map.entry(4.59, 23.2), //done
-            Map.entry(100.0, 23.2) //far off top limit to prevent unwanted scaling past this distance 
+            Map.entry(1.77, 0.0),//done
+            Map.entry(2.01, 3.8),//done
+            Map.entry(2.56, 8.8),//done
+            Map.entry(2.89, 8.8),//done
+             Map.entry(3.08, 7.3),// -- AUTON SHOOTING POSITION
+            Map.entry(3.37, 7.4),
+            Map.entry(3.97,7.3),//done
+            Map.entry(4.75, 8.3), //done
+            Map.entry(100.0, 9.8) //far off top limit to prevent unwanted scaling past this distance 
         );
 
         public static final InterpolatingDoubleTreeMap kPassingVelocityMap = InterpolatingDoubleTreeMap.ofEntries(
-            Map.entry(0.0, 0.0)
+           Map.entry(5.07, 26.0),
+           Map.entry(6.5, 30.0),
+           Map.entry(8.53, 35.0),
+           Map.entry(11.12, 44.0)
         );
 
 
          public static final InterpolatingDoubleTreeMap kPassingPositionMap = InterpolatingDoubleTreeMap.ofEntries(
-            Map.entry(0.0, 0.0)
+            Map.entry(5.07, 29.0),
+            Map.entry(6.5,29.0),
+            Map.entry(8.53, 29.0),
+            Map.entry(11.12, 29.0)
         );
 
          
 
-        //TODO: tune
         public static final InterpolatingDoubleTreeMap kFlightTimeMap =
         InterpolatingDoubleTreeMap.ofEntries(
-            Map.entry(1.61, 1.01),
-            Map.entry(2.58, 0.84),
-            Map.entry(2.9, 0.98),
-            Map.entry(3.6, 1.27)
+            Map.entry(1.5, .87),
+            Map.entry(2.0, 0.93),
+            Map.entry(2.5, 1.03),
+            Map.entry(3.0, 1.09),
+            Map.entry(3.5, 1.27),
+            Map.entry(4.0, 1.8)
         );
 
         

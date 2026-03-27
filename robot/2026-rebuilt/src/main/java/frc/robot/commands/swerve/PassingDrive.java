@@ -30,9 +30,9 @@ import org.littletonrobotics.junction.Logger;
 public class PassingDrive extends Command {
   private static final double MAX_SPEED = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
   private static final double MAX_ANGULAR_RATE = RotationsPerSecond.of(2).in(RadiansPerSecond);
-  private Translation2d aimLeft = RobotMap.ShooterConstants.passingLeft;
-  private Translation2d aimRight = RobotMap.ShooterConstants.passingRight;
-  private Collection<Translation2d> aimPoints;
+  private static Translation2d aimLeft = RobotMap.ShooterConstants.passingLeft;
+  private static Translation2d aimRight = RobotMap.ShooterConstants.passingRight;
+  private static Collection<Translation2d> aimPoints;
   private CommandSwerveDrivetrain dt;
   private CommandXboxController controller;
   private static boolean isFlipped = false;

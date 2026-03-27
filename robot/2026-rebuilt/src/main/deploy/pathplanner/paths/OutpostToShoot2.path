@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 0.6398096026490065,
+        "y": 0.6591307947019869
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.2206043046357866,
+        "y": 1.2617052980083634
+      },
+      "isLocked": false,
+      "linkedName": "ShootToOutpost2"
+    },
+    {
+      "anchor": {
+        "x": 1.9828973509933774,
+        "y": 2.15467715231788
+      },
+      "prevControl": {
+        "x": 0.9737665562913909,
+        "y": 1.0293874172185429
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 4.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 360.0,
+    "nominalVoltage": 11.8,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 40.97664768096668
+  },
+  "reversed": false,
+  "folder": "CenterDepotOutpost",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "useDefaultConstraints": true
+}

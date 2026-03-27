@@ -92,9 +92,9 @@ public class HubDrive extends Command {
           double smoothVelY = yLimiter.calculate(targetVelY);
 
           if(smoothRotation > 0){
-            smoothRotation+= 15;
+            smoothRotation+= 20;
           } else {
-            smoothRotation -= 15;
+            smoothRotation -= 20;
           }
 
           dt.setControl(driveNormal

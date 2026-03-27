@@ -37,10 +37,10 @@ class NeonService {
       final endpoint = Endpoint(
         host: uri.host,
         database:
-            uri.pathSegments.isNotEmpty ? uri.pathSegments.first : 'neondb',
+        uri.pathSegments.isNotEmpty ? uri.pathSegments.first : 'neondb',
         username: uri.userInfo.split(':').first,
         password:
-            uri.userInfo.contains(':') ? uri.userInfo.split(':').last : '',
+        uri.userInfo.contains(':') ? uri.userInfo.split(':').last : '',
         port: uri.hasPort ? uri.port : 5432,
       );
 
@@ -64,7 +64,6 @@ class NeonService {
           scoreObject TEXT,
           scoreType JSONB,
           climbType JSONB,
-          intake JSONB,
           botImage1 TEXT,
           botImage2 TEXT,
           botImage3 TEXT,
@@ -81,6 +80,16 @@ class NeonService {
           batteries INTEGER,
           framePerimeter TEXT,
           shootingRate DOUBLE PRECISION,
+          hopperSealed BOOLEAN,
+          trechUnder TEXT,
+          bumpOver BOOLEAN,
+          driverYear INTEGER,
+          interviewerName TEXT,
+          interviewerRole TEXT,
+          attitude BOOLEAN,
+          scoutingAccuracy TEXT,
+          notCooperativeReason TEXT,
+          pathDraw JSONB,
           id TEXT,
           created_at TIMESTAMPTZ
         );
@@ -91,14 +100,17 @@ class NeonService {
       final stmt = await conn.prepare('''
         INSERT INTO "$table" (
           team, scouterName, eventKey, driveTrain, auton, scoreObject,
-          scoreType, climbType, intake, botImage1, botImage2, botImage3,
+          scoreType, climbType, botImage1, botImage2, botImage3,
           autoRoutes, autoFuel, gameData, weight, speed, driveMotorType,
           groundClearance, maxFuelCapacity, avgCycleTime, climbSuccessProb,
-          batteries, framePerimeter, shootingRate, id, created_at
+          batteries, framePerimeter, shootingRate, hopperSealed, trechUnder,
+          bumpOver, driverYear, interviewerName, interviewerRole, attitude,
+          scoutingAccuracy, notCooperativeReason, pathDraw, id, created_at
         ) VALUES (
           \$1, \$2, \$3, \$4, \$5, \$6, \$7, \$8, \$9, \$10, \$11, \$12,
           \$13, \$14, \$15, \$16, \$17, \$18, \$19, \$20, \$21, \$22,
-          \$23, \$24, \$25, \$26, \$27
+          \$23, \$24, \$25, \$26, \$27, \$28, \$29, \$30, \$31, \$32,
+          \$33, \$34, \$35, \$36
         )
         ON CONFLICT (team) DO UPDATE SET
           scouterName = EXCLUDED.scouterName,
@@ -108,7 +120,6 @@ class NeonService {
           scoreObject = EXCLUDED.scoreObject,
           scoreType = EXCLUDED.scoreType,
           climbType = EXCLUDED.climbType,
-          intake = EXCLUDED.intake,
           botImage1 = EXCLUDED.botImage1,
           botImage2 = EXCLUDED.botImage2,
           botImage3 = EXCLUDED.botImage3,
@@ -125,6 +136,16 @@ class NeonService {
           batteries = EXCLUDED.batteries,
           framePerimeter = EXCLUDED.framePerimeter,
           shootingRate = EXCLUDED.shootingRate,
+          hopperSealed = EXCLUDED.hopperSealed,
+          trechUnder = EXCLUDED.trechUnder,
+          bumpOver = EXCLUDED.bumpOver,
+          driverYear = EXCLUDED.driverYear,
+          interviewerName = EXCLUDED.interviewerName,
+          interviewerRole = EXCLUDED.interviewerRole,
+          attitude = EXCLUDED.attitude,
+          scoutingAccuracy = EXCLUDED.scoutingAccuracy,
+          notCooperativeReason = EXCLUDED.notCooperativeReason,
+          pathDraw = EXCLUDED.pathDraw,
           id = EXCLUDED.id,
           created_at = EXCLUDED.created_at;
       ''');
@@ -138,7 +159,6 @@ class NeonService {
         data['scoreObject']?.toString() ?? '',
         jsonEncode(data['scoreType'] ?? []),
         jsonEncode(data['climbType'] ?? []),
-        jsonEncode(data['intake'] ?? []),
         data['botImage1']?.toString() ?? '',
         data['botImage2']?.toString() ?? '',
         data['botImage3']?.toString() ?? '',
@@ -155,6 +175,16 @@ class NeonService {
         data['batteries'] ?? 0,
         data['framePerimeter']?.toString() ?? '',
         data['shootingRate']?.toDouble() ?? 0.0,
+        data['hopperSealed'] ?? false,
+        data['trechUnder']?.toString() ?? '',
+        data['bumpOver'] ?? false,
+        data['driverYear'] ?? 0,
+        data['interviewerName']?.toString() ?? '',
+        data['interviewerRole']?.toString() ?? '',
+        data['attitude'] ?? true,
+        data['scoutingAccuracy']?.toString() ?? '',
+        data['notCooperativeReason']?.toString() ?? '',
+        jsonEncode(data['pathDraw'] ?? []),
         payload['id'].toString(),
         DateTime.parse(payload['created_at'].toString()),
       ]).timeout(const Duration(seconds: 10));
