@@ -133,7 +133,11 @@ public class Feeder extends SubsystemBase {
         
         break;
 
-      case STOP:
+       case STOP, PRUN, PREVERSE:
+        if(washingMachineTimer.isRunning()){
+            washingMachineTimer.reset();
+            washingMachineTimer.stop();
+          }
         break;
     }
   }
