@@ -756,7 +756,7 @@ class _VideoViewerState extends State<VideoViewer> {
                       children: [
                         Positioned.fill(child: _buildVideoLayout()),
                         Positioned.fill(child: _buildDrawingLayer()),
-                        _buildChromeOverlay(),
+                        Positioned.fill(child: _buildChromeOverlay()),
                       ],
                     ),
                   );
@@ -835,17 +835,14 @@ class _VideoViewerState extends State<VideoViewer> {
       Player? player;
       VideoController? controller;
       bool isRed = true;
-      bool isWaiting = false;
 
       if (_viewMode == ViewMode.redOnly || (redRec != null && blueRec == null)) {
         player = _redPlayer;
         controller = _redController;
-        isWaiting = _isRedWaiting();
         isRed = true;
       } else {
         player = _bluePlayer;
         controller = _blueController;
-        isWaiting = _isBlueWaiting();
         isRed = false;
       }
 
@@ -865,18 +862,21 @@ class _VideoViewerState extends State<VideoViewer> {
         player: player,
         videoController: controller,
         quarterTurns: isRed ? _redQuarterTurns : _blueQuarterTurns,
-        isWaiting: isWaiting,
         fit: BoxFit.contain,
       );
     }
 
     // Dual video mode — red on left, blue on right (or swapped)
+    if (_redPlayer == null || _bluePlayer == null ||
+        _redController == null || _blueController == null) {
+      return const Center(
+        child: Text('Loading...', style: TextStyle(color: Colors.white54)),
+      );
+    }
     final leftPlayer = _sidesSwapped ? _bluePlayer! : _redPlayer!;
     final rightPlayer = _sidesSwapped ? _redPlayer! : _bluePlayer!;
     final leftController = _sidesSwapped ? _blueController! : _redController!;
     final rightController = _sidesSwapped ? _redController! : _blueController!;
-    final leftWaiting = _sidesSwapped ? _isBlueWaiting() : _isRedWaiting();
-    final rightWaiting = _sidesSwapped ? _isRedWaiting() : _isBlueWaiting();
     final leftIsRed = !_sidesSwapped;
     final rightIsRed = _sidesSwapped;
 
@@ -890,7 +890,6 @@ class _VideoViewerState extends State<VideoViewer> {
             player: leftPlayer,
             videoController: leftController,
             quarterTurns: leftIsRed ? _redQuarterTurns : _blueQuarterTurns,
-            isWaiting: leftWaiting,
             fit: BoxFit.fitWidth,
           ),
         ),
@@ -902,7 +901,6 @@ class _VideoViewerState extends State<VideoViewer> {
             player: rightPlayer,
             videoController: rightController,
             quarterTurns: rightIsRed ? _redQuarterTurns : _blueQuarterTurns,
-            isWaiting: rightWaiting,
             fit: BoxFit.fitWidth,
           ),
         ),
@@ -920,12 +918,11 @@ class _VideoViewerState extends State<VideoViewer> {
     required VideoController videoController,
     required int quarterTurns,
     required BoxFit fit,
-    bool isWaiting = false,
   }) {
     return InteractiveViewer(
       key: paneKey,
       transformationController: zoomController,
-      panEnabled: true,
+      panEnabled: false,
       scaleEnabled: true,
       minScale: 1.0,
       maxScale: 5.0,
@@ -934,8 +931,6 @@ class _VideoViewerState extends State<VideoViewer> {
         child: VideoPane(
           player: player,
           videoController: videoController,
-          isWaiting: isWaiting,
-          countdownRemaining: _countdownRemaining,
           fit: fit,
         ),
       ),
@@ -982,6 +977,8 @@ class _VideoViewerState extends State<VideoViewer> {
       final rightRec = _sidesSwapped
           ? widget.matchWithVideos.redRecording
           : widget.matchWithVideos.blueRecording;
+      final leftWaiting = _sidesSwapped ? _isBlueWaiting() : _isRedWaiting();
+      final rightWaiting = _sidesSwapped ? _isRedWaiting() : _isBlueWaiting();
 
       children.add(_buildPaneChrome(
         paneKey: _leftPaneKey,
@@ -989,6 +986,8 @@ class _VideoViewerState extends State<VideoViewer> {
         containsUserTeam: _containsUserTeam(leftRec),
         onRotate: () => _rotatePane(isRed: leftIsRed),
         onEdit: _openEditMetadata,
+        isWaiting: leftWaiting,
+        countdownRemaining: _countdownRemaining,
       ));
       children.add(_buildPaneChrome(
         paneKey: _rightPaneKey,
@@ -996,6 +995,8 @@ class _VideoViewerState extends State<VideoViewer> {
         containsUserTeam: _containsUserTeam(rightRec),
         onRotate: () => _rotatePane(isRed: rightIsRed),
         onEdit: _openEditMetadata,
+        isWaiting: rightWaiting,
+        countdownRemaining: _countdownRemaining,
       ));
     } else if (_viewMode == ViewMode.fullOnly) {
       children.add(_buildPaneChrome(
@@ -1011,32 +1012,39 @@ class _VideoViewerState extends State<VideoViewer> {
       final recording = isRed
           ? widget.matchWithVideos.redRecording
           : widget.matchWithVideos.blueRecording;
+      final isWaiting = isRed ? _isRedWaiting() : _isBlueWaiting();
       children.add(_buildPaneChrome(
         paneKey: _singlePaneKey,
         allianceColor: color,
         containsUserTeam: _containsUserTeam(recording),
         onRotate: () => _rotatePane(isRed: isRed),
         onEdit: _openEditMetadata,
+        isWaiting: isWaiting,
+        countdownRemaining: _countdownRemaining,
       ));
     }
 
     return Stack(children: children);
   }
 
-  /// Builds chrome elements (alliance bar, star, rotate/edit buttons) positioned
-  /// over a pane identified by its GlobalKey. These are outside InteractiveViewer
-  /// so they never zoom or rotate.
+  /// Builds chrome elements (alliance bar, star, rotate/edit buttons, countdown/
+  /// ended overlays) positioned over a pane identified by its GlobalKey.
+  /// These are outside InteractiveViewer so they never zoom or rotate.
   Widget _buildPaneChrome({
     required GlobalKey paneKey,
     required Color allianceColor,
     required bool containsUserTeam,
     VoidCallback? onRotate,
     VoidCallback? onEdit,
+    bool isWaiting = false,
+    Duration countdownRemaining = Duration.zero,
+    bool hasEnded = false,
+    Duration endedAgo = Duration.zero,
   }) {
     return LayoutBuilder(
       builder: (context, constraints) {
         final renderBox = paneKey.currentContext?.findRenderObject() as RenderBox?;
-        if (renderBox == null) {
+        if (renderBox == null || !renderBox.hasSize) {
           // First frame — pane hasn't been laid out yet. Will render next frame.
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted) setState(() {});
@@ -1055,6 +1063,47 @@ class _VideoViewerState extends State<VideoViewer> {
 
         return Stack(
           children: [
+            // Countdown overlay when waiting for sync
+            if (isWaiting)
+              Positioned(
+                left: paneLocal.dx,
+                top: paneLocal.dy,
+                width: paneSize.width,
+                height: paneSize.height,
+                child: Container(
+                  color: Colors.black,
+                  child: Center(
+                    child: Text(
+                      'Starting in ${(countdownRemaining.inMilliseconds / 1000.0).toStringAsFixed(1)}s',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            // Video ended overlay
+            if (hasEnded)
+              Positioned(
+                left: paneLocal.dx,
+                top: paneLocal.dy,
+                width: paneSize.width,
+                height: paneSize.height,
+                child: Container(
+                  color: Colors.black87,
+                  child: Center(
+                    child: Text(
+                      'Video ended ${(endedAgo.inMilliseconds / 1000.0).toStringAsFixed(1)}s ago',
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 18,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             // Alliance color bar
             Positioned(
               left: paneLocal.dx,
