@@ -45,6 +45,18 @@ class TbaService {
     return jsonDecode(resp.body) as Map<String, dynamic>;
   }
 
+  /// Fetch all matches for an event (raw JSON list).
+  Future<List<dynamic>> fetchMatches(String eventKey) async {
+    final uri = Uri.parse('$_base/event/$eventKey/matches');
+    final resp = await http.get(uri, headers: {'X-TBA-Auth-Key': apiKey});
+
+    if (resp.statusCode != 200) {
+      throw TbaException('TBA ${resp.statusCode}: ${resp.body}');
+    }
+
+    return jsonDecode(resp.body) as List<dynamic>;
+  }
+
   /// Fetch the team list for an event (returns list of team numbers).
   Future<List<int>> fetchTeamNumbers(String eventKey) async {
     final uri = Uri.parse('$_base/event/$eventKey/teams/keys');
