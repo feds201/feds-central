@@ -150,15 +150,22 @@ class NeonDatabase {
 
     for (final record in csvRecords) {
       try {
-        final cols = record.split(',');
+        // TODO: Properly handle commas in free-text fields (e.g. quoted CSV parsing) instead of replacing them
+        final commentIndex = columns.indexOf('end_comments'); // 27
+        final parts = record.split(',');
+        // If extra commas exist (from end_comments), rejoin the comment portion with semicolons
+        if (commentIndex >= 0 && parts.length > columns.length - 1) {
+          final extraCount = parts.length - (columns.length - 1); // how many extra commas
+          final commentParts = parts.sublist(commentIndex, commentIndex + extraCount + 1);
+          parts.replaceRange(commentIndex, commentIndex + extraCount + 1, [commentParts.join(';')]);
+        }
+        final cols = parts;
 
         // Build values list according to columns (except raw_csv which is full record)
         final values = <String>[];
         for (int i = 0; i < columns.length - 1; i++) {
           if (i < cols.length) {
             var val = cols[i].trim();
-            // TODO: Properly handle commas in free-text fields instead of replacing them
-            if (columns[i] == 'end_comments') val = val.replaceAll(',', ';');
             values.add(val);
           } else {
             values.add('');

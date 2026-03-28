@@ -20,7 +20,7 @@ class ScoutOpsService {
   ScoutOpsService._internal();
 
   final StreamController<ScoutOpsData> _dataController =
-      StreamController<ScoutOpsData>.broadcast();
+  StreamController<ScoutOpsData>.broadcast();
   Stream<ScoutOpsData> get dataStream => _dataController.stream;
 
   ScoutOpsData _currentData = ScoutOpsData(
@@ -32,7 +32,7 @@ class ScoutOpsService {
   ScoutOpsData get currentData => _currentData;
 
   static const String csvHeaders =
-      'Battery%,Team,Scout,MatchKey,Alliance,Event,Station,MatchNumber,LeftStartingPos,FuelDepot,FuelOutpost,FuelNeutralZone,AutonShootingTime,AutonShots,AutonClimb,AutonWinAfterAuton,BotPosX,BotPosY,BotSizeW,BotSizeH,BotAngle,AutonPassing,TeleOpShootingTime1,TeleOpShootingTimeA1,TeleOpShootingTimeA2,ShootingI1,ShootingI2,TeleOpTotal1,TeleOpTotalA1,TeleOpTotalA2,TeleOpTotalI1,TeleOpTotalI2,TripAmount1,Defense,DefenseA1,DefenseA2,DefenseI1,DefenseI2,NeutralTrips,NeutralTripsA1,NeutralTripsA2,NeutralTripsI1,NeutralTripsI2,FeedToHPStation,FeedToHPA1,FeedToHPA2,FeedToHPI1,FeedToHPI2,Passing,PassingA1,PassingA2,PassingI1,PassingI2,ClimbStatus,Park,FeedToHP,PassingEnd,EndNeutralTrips,ShootingAccuracy,EndgameTime,EndgameShootingCycles,RobotBroken,DrawingData';
+      'Team,MatchKey,MatchNumber,ScouterName,AllianceColor,EventKey,Station,BatteryPercentage,AutonTotalShootingTime,AutonAmountOfShooting,AutonClimb,AutonPassing,TeleOpTotalShootingTime,TeleOpTotalAmount,TeleOpDefense,TeleOpNeutralTrips,TeleOpPushBalls,TeleOpPassing,EndClimbStatus,EndPark,EndPushBalls,EndPassing,EndRobotBroken,EndNeutralTrips,EndShootingAccuracy,EndEndgameTime,EndShootingCycles,EndComments,Id';
 
   void updateBatteryLevels(int moduleBattery, int targetBattery) {
     _currentData = _currentData.copyWith(
@@ -98,22 +98,23 @@ class ScoutOpsService {
     String? station;
     String? alliance;
 
-    // As per user provided headers:
-    // 0: Battery%
-    // 4: Alliance
+    // As per new headers:
+    // 0: Team
+    // 1: MatchKey
+    // 2: MatchNumber
+    // 4: AllianceColor
     // 6: Station
-    // 7: MatchNumber
+    // 7: BatteryPercentage
     if (columns.length > 7) {
-      if (int.tryParse(columns[0]) != null) {
-        targetBattery = int.parse(columns[0]);
+      if (int.tryParse(columns[7]) != null) {
+        targetBattery = int.parse(columns[7]);
       } else {
-        // sometimes it might have a % sign, e.g. "80%"
-        String battStr = columns[0].replaceAll('%', '').trim();
+        String battStr = columns[7].replaceAll('%', '').trim();
         targetBattery = int.tryParse(battStr) ?? _currentData.targetBattery;
       }
       alliance = columns[4].trim();
       station = columns[6].trim();
-      matchNumber = columns[7].trim();
+      matchNumber = columns[2].trim();
     }
 
     // prevent duplicate scans
@@ -145,7 +146,7 @@ class ScoutOpsService {
         return SyncResult(
           success: false,
           message:
-              'Database not configured. Open Settings to add your Neon connection string.',
+          'Database not configured. Open Settings to add your Neon connection string.',
         );
       }
 
@@ -158,18 +159,18 @@ class ScoutOpsService {
         return SyncResult(
             success: false,
             message:
-                'Failed to connect to Neon. Check credentials and network.');
+            'Failed to connect to Neon. Check credentials and network.');
       }
 
       final headers = csvHeaders.split(',');
       final count =
-          await db.insertRecords(_currentData.scannedRecords, headers);
+      await db.insertRecords(_currentData.scannedRecords, headers);
 
       if (count == 0) {
         return SyncResult(
             success: false,
             message:
-                'No records were inserted. Possible duplicates or parse errors.');
+            'No records were inserted. Possible duplicates or parse errors.');
       }
 
       return SyncResult(
