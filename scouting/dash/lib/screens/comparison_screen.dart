@@ -123,24 +123,6 @@ class _ComparisonScreenState extends State<ComparisonScreen> {
               ),
             ),
 
-          // ── Selectors ─────────────────────────────────────────────
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-            child: Column(
-              children: [
-                MatchSelector(onSelected: _onMatchSelected),
-                const SizedBox(height: 8),
-                for (int i = 0; i < 3; i++) ...[
-                  if (i > 0) const SizedBox(height: 8),
-                  TeamSelector(
-                    slotIndex: i,
-                    value: _selectedTeams[i],
-                    onChanged: (team) => _onTeamChanged(i, team),
-                  ),
-                ],
-              ],
-            ),
-          ),
 
           // ── Body ───────────────────────────────────────────────────
           Expanded(
@@ -150,6 +132,24 @@ class _ComparisonScreenState extends State<ComparisonScreen> {
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
+                  // ── Selectors ─────────────────────────────────────────────
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                    child: Column(
+                      children: [
+                        MatchSelector(onSelected: _onMatchSelected),
+                        const SizedBox(height: 8),
+                        for (int i = 0; i < 3; i++) ...[
+                          if (i > 0) const SizedBox(height: 8),
+                          TeamSelector(
+                            slotIndex: i,
+                            value: _selectedTeams[i],
+                            onChanged: (team) => _onTeamChanged(i, team),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
                   // ── One big shared field with all paths ───────
                   Card(
                     child: SizedBox(
