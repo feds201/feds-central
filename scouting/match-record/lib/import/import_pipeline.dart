@@ -289,7 +289,7 @@ class ImportPipeline {
 
       // Generate UUID for filename
       final recordingId = uuid.v4();
-      final ext = _getExtension(row.metadata.originalFilename);
+      final ext = row.metadata.fileExtension;
       final destPath = '$storageDir/recordings/$recordingId$ext';
 
       // Copy file
@@ -477,10 +477,4 @@ class ImportPipeline {
         .toList();
   }
 
-  /// Get file extension from filename.
-  String _getExtension(String filename) {
-    final dotIndex = filename.lastIndexOf('.');
-    if (dotIndex < 0) return '.mp4';
-    return filename.substring(dotIndex).toLowerCase();
-  }
 }

@@ -40,7 +40,7 @@ Match _makeMatch({
 
 ImportPreviewRow _makeRow() {
   return ImportPreviewRow(
-    metadata: const VideoMetadata(
+    metadata: VideoMetadata(
       sourceUri: 'test://video.mp4',
       originalFilename: 'video.mp4',
       durationMs: 60000,
