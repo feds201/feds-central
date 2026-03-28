@@ -2,10 +2,13 @@ import 'dart:html' as html;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/data_service.dart';
+import '../services/local_prefs.dart';
 import '../theme.dart';
 
 class EventEntryScreen extends StatefulWidget {
-  const EventEntryScreen({super.key});
+  const EventEntryScreen({super.key, this.autoLoad = true});
+
+  final bool autoLoad;
 
   @override
   State<EventEntryScreen> createState() => _EventEntryScreenState();
@@ -34,6 +37,26 @@ class _EventEntryScreenState extends State<EventEntryScreen>
     );
     _fadeAnim = CurvedAnimation(parent: _fadeCtl, curve: Curves.easeOut);
     _fadeCtl.forward();
+
+    _restoreFromStorage();
+    if (widget.autoLoad) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _tryAutoLoad());
+    }
+  }
+
+  void _restoreFromStorage() {
+    final saved = LocalPrefs.resolveConfig();
+    if (saved == null) return;
+    if (saved.eventKey.isNotEmpty) _eventKeyCtl.text = saved.eventKey;
+    if (saved.tableName.isNotEmpty) _tableCtl.text = saved.tableName;
+    if (saved.neonConn.isNotEmpty) _neonCtl.text = saved.neonConn;
+    if (saved.tbaKey.isNotEmpty) _tbaCtl.text = saved.tbaKey;
+  }
+
+  Future<void> _tryAutoLoad() async {
+    if (_neonCtl.text.trim().isEmpty) return;
+    if (_tableCtl.text.trim().isEmpty) return;
+    await _loadNeon();
   }
 
   @override
@@ -84,6 +107,12 @@ class _EventEntryScreenState extends State<EventEntryScreen>
     if (svc.scoutingByTeam.isEmpty) {
       _showError('No teams found in CSV');
     } else {
+      LocalPrefs.saveConfig(
+        eventKey: _eventKeyCtl.text.trim(),
+        tableName: _tableCtl.text.trim(),
+        neonConn: _neonCtl.text.trim(),
+        tbaKey: _tbaCtl.text.trim(),
+      );
       Navigator.of(context).pushReplacementNamed('/compare');
     }
   }
@@ -106,6 +135,19 @@ class _EventEntryScreenState extends State<EventEntryScreen>
     if (svc.error != null && svc.scoutingByTeam.isEmpty) {
       _showError(svc.error!);
     } else {
+      LocalPrefs.saveConfig(
+        eventKey: _eventKeyCtl.text.trim(),
+        tableName: _tableCtl.text.trim(),
+        neonConn: _neonCtl.text.trim(),
+        tbaKey: _tbaCtl.text.trim(),
+      );
+      LocalPrefs.saveData(
+        eventKey: _eventKeyCtl.text.trim(),
+        scoutingByTeam: svc.scoutingByTeam,
+        scoutingColumns: svc.scoutingColumns,
+        oprByTeam: svc.oprByTeam,
+        epaByTeam: svc.epaByTeam,
+      );
       Navigator.of(context).pushReplacementNamed('/compare');
     }
   }

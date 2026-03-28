@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import '../models/match_entry.dart';
 import 'neon_service.dart';
 import 'tba_service.dart';
 import 'statbotics_service.dart';
@@ -30,7 +31,8 @@ class DataService extends ChangeNotifier {
   // ── State ──────────────────────────────────────────────────────────
   bool loading = false;
   String? error;
-  String _dataSource = ''; // 'neon' or 'csv'
+  String _dataSource = ''; // 'neon', 'csv', or 'cache'
+  DateTime? lastUpdated;
 
   String get dataSource => _dataSource;
 
@@ -38,6 +40,7 @@ class DataService extends ChangeNotifier {
   Map<int, List<Map<String, dynamic>>> scoutingByTeam = {};
   Map<int, double> oprByTeam = {};
   Map<int, double> epaByTeam = {};
+  List<MatchEntry> matchEntries = [];
 
   List<int> get teamNumbers {
     final nums = scoutingByTeam.keys.toList()..sort();
@@ -49,6 +52,24 @@ class DataService extends ChangeNotifier {
     return scoutingColumns
         .where((c) => !skip.contains(c.toLowerCase()))
         .toList();
+  }
+
+  // ── Load from cache ─────────────────────────────────────────────────
+
+  void loadFromCache({
+    required Map<int, List<Map<String, dynamic>>> scoutingByTeam,
+    required List<String> scoutingColumns,
+    required Map<int, double> oprByTeam,
+    required Map<int, double> epaByTeam,
+    DateTime? lastUpdated,
+  }) {
+    this.scoutingByTeam = scoutingByTeam;
+    this.scoutingColumns = scoutingColumns;
+    this.oprByTeam = oprByTeam;
+    this.epaByTeam = epaByTeam;
+    this.lastUpdated = lastUpdated;
+    _dataSource = 'cache';
+    notifyListeners();
   }
 
   // ── Load from CSV string ───────────────────────────────────────────
@@ -76,6 +97,7 @@ class DataService extends ChangeNotifier {
       error = 'CSV parse error: $e';
     } finally {
       loading = false;
+      lastUpdated = DateTime.now();
       notifyListeners();
     }
   }
@@ -117,7 +139,14 @@ class DataService extends ChangeNotifier {
       try {
         oprByTeam = await tba.fetchOprs(_eventKey);
       } catch (e) {
-        errors.add('TBA: $e');
+        errors.add('TBA OPR: $e');
+      }
+
+      try {
+        final rawMatches = await tba.fetchMatches(_eventKey);
+        matchEntries = parseMatches(rawMatches, ourTeamKey: 'frc201');
+      } catch (e) {
+        errors.add('TBA matches: $e');
       }
 
       try {
@@ -131,6 +160,7 @@ class DataService extends ChangeNotifier {
       error = e.toString();
     } finally {
       loading = false;
+      lastUpdated = DateTime.now();
       notifyListeners();
     }
   }
@@ -148,7 +178,14 @@ class DataService extends ChangeNotifier {
     try {
       oprByTeam = await tba.fetchOprs(_eventKey);
     } catch (e) {
-      errors.add('TBA: $e');
+      errors.add('TBA OPR: $e');
+    }
+
+    try {
+      final rawMatches = await tba.fetchMatches(_eventKey);
+      matchEntries = parseMatches(rawMatches, ourTeamKey: 'frc201');
+    } catch (e) {
+      errors.add('TBA matches: $e');
     }
 
     try {
