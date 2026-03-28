@@ -26,11 +26,13 @@ import '../widgets/video_pane.dart';
 class VideoViewer extends StatefulWidget {
   final MatchWithVideos matchWithVideos;
   final DataStore dataStore;
+  final bool startPaused;
 
   const VideoViewer({
     super.key,
     required this.matchWithVideos,
     required this.dataStore,
+    this.startPaused = false,
   });
 
   @override
@@ -258,12 +260,14 @@ class _VideoViewerState extends State<VideoViewer> {
       );
     }
 
-    // Autoplay: start playback after initialization
-    if (_syncEngine != null) {
-      await _syncEngine!.startSyncedPlayback();
-    } else {
-      final player = _redPlayer ?? _bluePlayer ?? _fullPlayer;
-      await player?.play();
+    // Autoplay: start playback after initialization (unless startPaused)
+    if (!widget.startPaused) {
+      if (_syncEngine != null) {
+        await _syncEngine!.startSyncedPlayback();
+      } else {
+        final player = _redPlayer ?? _bluePlayer ?? _fullPlayer;
+        await player?.play();
+      }
     }
 
     if (mounted) setState(() {});
