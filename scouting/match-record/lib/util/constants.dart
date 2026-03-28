@@ -71,4 +71,10 @@ class AppConstants {
 
   // Search debounce
   static const int searchDebounceMs = 250;
+
+  // Match notifications
+  static const int matchNotificationWindowSeconds = 3 * 60 * 60; // 3 hours
+  static const int queueMatchesBefore = 2;
+  static const String redChannelId = 'red_alliance_matches';
+  static const String blueChannelId = 'blue_alliance_matches';
 }

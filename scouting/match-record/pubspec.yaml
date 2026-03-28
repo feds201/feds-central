@@ -21,7 +21,9 @@ dependencies:
   logger: any
   wakelock_plus: ^1.2.8
   permission_handler: any
+  camera: ^0.11.0+2
   flutter_dotenv: ^6.0.0
+  flutter_local_notifications: ^19.0.0
 
 dev_dependencies:
   flutter_test:

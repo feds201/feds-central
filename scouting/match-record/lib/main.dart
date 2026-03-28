@@ -8,6 +8,7 @@ import 'app.dart';
 import 'data/data_store.dart';
 import 'data/json_persistence.dart';
 import 'import/integrity_checker.dart';
+import 'notifications/notification_service.dart';
 import 'tba/tba_config.dart';
 import 'util/constants.dart';
 
@@ -35,8 +36,14 @@ void main() async {
     dataStore: dataStore,
   );
 
+  // Initialize match notifications
+  final notificationService = NotificationService();
+  await notificationService.init();
+  await notificationService.requestPermission();
+
   runApp(MatchRecordApp(
     dataStore: dataStore,
     integrityCleanupCount: cleanedUp,
+    notificationService: notificationService,
   ));
 }

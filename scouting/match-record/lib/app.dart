@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'data/data_store.dart';
+import 'notifications/notification_service.dart';
 import 'screens/main_screen.dart';
 import 'tba/tba_client.dart';
 import 'tba/tba_config.dart';
@@ -9,12 +10,14 @@ class MatchRecordApp extends StatelessWidget {
   final DataStore dataStore;
   final TbaClient? tbaClient;
   final int integrityCleanupCount;
+  final NotificationService? notificationService;
 
   const MatchRecordApp({
     super.key,
     required this.dataStore,
     this.tbaClient,
     this.integrityCleanupCount = 0,
+    this.notificationService,
   });
 
   @override
@@ -35,6 +38,7 @@ class MatchRecordApp extends StatelessWidget {
         dataStore: dataStore,
         tbaClient: tbaClient,
         integrityCleanupCount: integrityCleanupCount,
+        notificationService: notificationService,
       ),
     );
   }
@@ -46,11 +50,13 @@ class _AppHome extends StatefulWidget {
   final DataStore dataStore;
   final TbaClient? tbaClient;
   final int integrityCleanupCount;
+  final NotificationService? notificationService;
 
   const _AppHome({
     required this.dataStore,
     this.tbaClient,
     required this.integrityCleanupCount,
+    this.notificationService,
   });
 
   @override
@@ -61,6 +67,7 @@ class _AppHomeState extends State<_AppHome> {
   bool _toastShown = false;
   late TbaClient _tbaClient;
   String? _currentApiKey;
+  String? _initialNotificationPayload;
 
   @override
   void initState() {
@@ -68,6 +75,7 @@ class _AppHomeState extends State<_AppHome> {
     _currentApiKey = _resolveApiKey();
     _tbaClient = widget.tbaClient ?? TbaClient(apiKey: _currentApiKey);
     widget.dataStore.addListener(_onDataStoreChanged);
+    _checkInitialNotification();
   }
 
   @override
@@ -87,6 +95,15 @@ class _AppHomeState extends State<_AppHome> {
         _currentApiKey = newKey;
         _tbaClient = TbaClient(apiKey: _currentApiKey);
       });
+    }
+  }
+
+  Future<void> _checkInitialNotification() async {
+    final service = widget.notificationService;
+    if (service == null) return;
+    final payload = await service.getInitialPayload();
+    if (payload != null && mounted) {
+      setState(() => _initialNotificationPayload = payload);
     }
   }
 
@@ -115,6 +132,8 @@ class _AppHomeState extends State<_AppHome> {
     return MainScreen(
       dataStore: widget.dataStore,
       tbaClient: _tbaClient,
+      notificationService: widget.notificationService,
+      initialNotificationPayload: _initialNotificationPayload,
     );
   }
 }

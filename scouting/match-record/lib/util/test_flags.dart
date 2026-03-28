@@ -16,4 +16,8 @@ class TestFlags {
     '2026mimid',
   ];
 
+  /// When true, injects a fake match notification 15 minutes from now
+  /// on every TBA sync. Uses fake team data so you can test the full
+  /// notification flow without a real event.
+  static const bool fakeMatchNotification = false;
 }

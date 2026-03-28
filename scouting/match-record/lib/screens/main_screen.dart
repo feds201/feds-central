@@ -6,6 +6,8 @@ import 'package:flutter/services.dart';
 
 import '../data/data_store.dart';
 import '../data/models.dart';
+import '../notifications/match_notification_builder.dart';
+import '../notifications/notification_service.dart';
 import '../tba/tba_client.dart';
 import '../tabs/alliances_tab.dart';
 import '../tabs/matches_tab.dart';
@@ -18,17 +20,22 @@ import '../util/test_flags.dart';
 import '../widgets/app_search_bar.dart';
 import '../widgets/autocomplete_overlay.dart';
 import '../widgets/sync_button.dart';
+import 'record_video_page.dart';
 import 'settings_page.dart';
 import 'video_viewer.dart';
 
 class MainScreen extends StatefulWidget {
   final DataStore dataStore;
   final TbaClient tbaClient;
+  final NotificationService? notificationService;
+  final String? initialNotificationPayload;
 
   const MainScreen({
     super.key,
     required this.dataStore,
     required this.tbaClient,
+    this.notificationService,
+    this.initialNotificationPayload,
   });
 
   @override
@@ -64,6 +71,7 @@ class _MainScreenState extends State<MainScreen> {
     _searchFocusNode.addListener(_onFocusChange);
     _maybeAutoLoad();
     _startAutoSync();
+    _initNotifications();
   }
 
   @override
@@ -153,9 +161,101 @@ class _MainScreenState extends State<MainScreen> {
           lastTbaFetchTime: () => DateTime.now(),
         ),
       );
+
+      _updateMatchNotifications();
     } finally {
       _isTbaSyncing = false;
     }
+  }
+
+  void _initNotifications() {
+    final service = widget.notificationService;
+    if (service == null) return;
+
+    // Register foreground tap handler
+    service.onTap = _handleNotificationTap;
+
+    // Handle cold-start payload
+    final initialPayload = widget.initialNotificationPayload;
+    if (initialPayload != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _handleNotificationTap(initialPayload);
+      });
+    }
+  }
+
+  void _updateMatchNotifications() {
+    final service = widget.notificationService;
+    if (service == null) return;
+
+    final teamNumber = _dataStore.settings.teamNumber;
+    if (teamNumber == null) return;
+
+    final eventKeys = _dataStore.settings.selectedEventKeys;
+    if (eventKeys.isEmpty) return;
+
+    final ourMatches = _dataStore.getMatchesForTeam(teamNumber, eventKeys);
+    final allMatches = _dataStore.getMatchesForEvents(eventKeys);
+    final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+
+    // Include event short name when multiple events are selected
+    final eventShortName = eventKeys.length > 1
+        ? null // per-match event name handled below
+        : null;
+
+    final notifications = <MatchNotificationData>[];
+    if (eventKeys.length > 1) {
+      // Multi-event: build per-event with short names
+      final eventNameMap = <String, String>{};
+      for (final e in _dataStore.events) {
+        eventNameMap[e.eventKey] = e.shortName;
+      }
+      for (final eventKey in eventKeys) {
+        final eventOurMatches = ourMatches
+            .where((m) => m.eventKey == eventKey)
+            .toList();
+        final eventAllMatches = allMatches
+            .where((m) => m.eventKey == eventKey)
+            .toList();
+        notifications.addAll(MatchNotificationBuilder.build(
+          ourMatches: eventOurMatches,
+          allMatches: eventAllMatches,
+          teamNumber: teamNumber,
+          nowUnixSeconds: now,
+          eventShortName: eventNameMap[eventKey],
+        ));
+      }
+      // Sort combined results by chronometer target
+      notifications.sort(
+        (a, b) => a.chronometerTargetMs.compareTo(b.chronometerTargetMs),
+      );
+    } else {
+      notifications.addAll(MatchNotificationBuilder.build(
+        ourMatches: ourMatches,
+        allMatches: allMatches,
+        teamNumber: teamNumber,
+        nowUnixSeconds: now,
+        eventShortName: eventShortName,
+      ));
+    }
+
+    service.showMatchNotifications(notifications);
+  }
+
+  void _handleNotificationTap(String payload) {
+    final action = MatchNotificationBuilder.parsePayload(payload);
+    if (action == null) return;
+
+    setState(() {
+      _chips.clear();
+      for (final teamNum in action.teamNumbers) {
+        final chip = SearchChip.team(teamNum, '$teamNum');
+        if (!_chips.contains(chip)) {
+          _chips.add(chip);
+        }
+      }
+      _selectedTab = 0;
+    });
   }
 
   Future<void> _maybeAutoLoad() async {
@@ -338,16 +438,18 @@ class _MainScreenState extends State<MainScreen> {
 
   // m11: unfocus search bar before navigating away
   void _onMatchTap(MatchWithVideos mwv) {
+    _searchFocusNode.unfocus();
     if (!mwv.hasRecordings) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('No recordings for ${mwv.match.displayName}'),
-          duration: const Duration(seconds: 1),
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => RecordVideoPage(
+            matchWithVideos: mwv,
+            dataStore: _dataStore,
+          ),
         ),
       );
       return;
     }
-    _searchFocusNode.unfocus();
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => VideoViewer(
