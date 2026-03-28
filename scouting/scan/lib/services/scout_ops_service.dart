@@ -31,8 +31,9 @@ class ScoutOpsService {
 
   ScoutOpsData get currentData => _currentData;
 
+  // Headers matching the Android app's CSV export order (MatchRecord.toCsv)
   static const String csvHeaders =
-      'Team,MatchKey,MatchNumber,ScouterName,AllianceColor,EventKey,Station,BatteryPercentage,AutonTotalShootingTime,AutonAmountOfShooting,AutonClimb,AutonPassing,TeleOpTotalShootingTime,TeleOpTotalAmount,TeleOpDefense,TeleOpNeutralTrips,TeleOpPushBalls,TeleOpPassing,EndClimbStatus,EndPark,EndPushBalls,EndPassing,EndRobotBroken,EndNeutralTrips,EndShootingAccuracy,EndEndgameTime,EndShootingCycles,EndComments,Id';
+      'BatteryPercentage,Team,ScouterName,MatchKey,AllianceColor,EventKey,Station,MatchNumber,AutonTotalShootingTime,AutonAmountOfShooting,AutonClimb,AutonPassing,TeleOpTotalShootingTime,TeleOpTotalAmount,TeleOpDefense,TeleOpNeutralTrips,TeleOpPushBalls,TeleOpPassing,EndClimbStatus,EndPark,EndPushBalls,EndPassing,EndNeutralTrips,EndShootingAccuracy,EndEndgameTime,EndShootingCycles,EndRobotBroken,EndComments,Id';
 
   void updateBatteryLevels(int moduleBattery, int targetBattery) {
     _currentData = _currentData.copyWith(
@@ -98,23 +99,25 @@ class ScoutOpsService {
     String? station;
     String? alliance;
 
-    // As per new headers:
-    // 0: Team
-    // 1: MatchKey
-    // 2: MatchNumber
+    // Android CSV column indices (MatchRecord.toCsv):
+    // 0: BatteryPercentage
+    // 1: Team
+    // 2: ScouterName
+    // 3: MatchKey
     // 4: AllianceColor
+    // 5: EventKey
     // 6: Station
-    // 7: BatteryPercentage
+    // 7: MatchNumber
     if (columns.length > 7) {
-      if (int.tryParse(columns[7]) != null) {
-        targetBattery = int.parse(columns[7]);
+      if (int.tryParse(columns[0]) != null) {
+        targetBattery = int.parse(columns[0]);
       } else {
-        String battStr = columns[7].replaceAll('%', '').trim();
+        String battStr = columns[0].replaceAll('%', '').trim();
         targetBattery = int.tryParse(battStr) ?? _currentData.targetBattery;
       }
       alliance = columns[4].trim();
       station = columns[6].trim();
-      matchNumber = columns[2].trim();
+      matchNumber = columns[7].trim();
     }
 
     // prevent duplicate scans

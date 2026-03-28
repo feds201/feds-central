@@ -115,16 +115,16 @@ class NeonDatabase {
     final table = config.tableName;
     int inserted = 0;
 
-    // Columns in the same order as ensureTable (except raw_csv which we'll append)
+    // Columns in the same order as the Android app's CSV export (MatchRecord.toCsv)
     final columns = [
+      'batteryPercentage',
       'team',
-      'matchKey',
-      'matchNumber',
       'scouterName',
+      'matchKey',
       'allianceColor',
       'eventKey',
       'station',
-      'batteryPercentage',
+      'matchNumber',
       'auton_total_shooting_time',
       'auton_amount_of_shooting',
       'auton_climb',
@@ -139,11 +139,11 @@ class NeonDatabase {
       'end_park',
       'end_push_balls',
       'end_passing',
-      'end_robot_broken',
       'end_neutral_trips',
       'end_shooting_accuracy',
       'end_endgame_time',
       'end_shooting_cycles',
+      'end_robot_broken',
       'end_comments',
       'id',
       'raw_csv',
