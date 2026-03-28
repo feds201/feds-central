@@ -126,9 +126,8 @@ class _ComparisonScreenState extends State<ComparisonScreen> {
 
           // ── Body ───────────────────────────────────────────────────
           Expanded(
-            child: filledCount == 0
-                ? _EmptyState()
-                : SingleChildScrollView(
+            child:
+            SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
@@ -149,8 +148,10 @@ class _ComparisonScreenState extends State<ComparisonScreen> {
                         ],
                       ],
                     ),
-                  ),
-                  // ── One big shared field with all paths ───────
+                  ), // ── One big shared field with all paths ───────
+                  if(filledCount == 0)
+                    _EmptyState()
+                  else ... [
                   Card(
                     child: SizedBox(
                       height: 450,
@@ -176,13 +177,13 @@ class _ComparisonScreenState extends State<ComparisonScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         for (int i = 0; i < 3; i++) ...[
-                          if (i > 0) const SizedBox(width: 10),
+                  if (i > 0) const SizedBox(width: 10),
                           Expanded(
                             child: _selectedTeams[i] != null
                                 ? TeamDataColumn(
                               teamNumber: _selectedTeams[i]!,
                               slotIndex: i,
-                            )
+                             )
                                 : const SizedBox.shrink(),
                           ),
                         ],
@@ -190,7 +191,7 @@ class _ComparisonScreenState extends State<ComparisonScreen> {
                     ),
                   ),
                 ],
-              ),
+              ]),
             ),
           ),
         ],
@@ -198,6 +199,7 @@ class _ComparisonScreenState extends State<ComparisonScreen> {
     );
   }
 }
+
 
 // ═══════════════════════════════════════════════════════════════════════
 // Top Bar
