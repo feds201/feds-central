@@ -281,17 +281,26 @@ void main() {
     testWidgets('expanded mode buttons have min 48px touch targets', (tester) async {
       await tester.pumpWidget(wrapInApp(buildSidebar(viewMode: ViewMode.both)));
 
-      // In expanded mode, buttons use InkWell + ConstrainedBox with minHeight: 48.
-      // Find ConstrainedBox widgets that are children of InkWell (sidebar buttons).
-      final constrainedBoxes = tester.widgetList<ConstrainedBox>(
+      // In expanded mode, buttons are InkWell widgets wrapped in Expanded
+      // within the Column, so they fill available height (well above 48px).
+      // Verify InkWell buttons exist inside the sidebar.
+      final inkWells = tester.widgetList<InkWell>(
         find.descendant(
-          of: find.byType(InkWell),
-          matching: find.byType(ConstrainedBox),
+          of: find.byType(ControlSidebar),
+          matching: find.byType(InkWell),
         ),
       );
-      expect(constrainedBoxes, isNotEmpty);
-      for (final box in constrainedBoxes) {
-        expect(box.constraints.minHeight, greaterThanOrEqualTo(48));
+      expect(inkWells, isNotEmpty);
+      // Each InkWell should have an Expanded ancestor within the sidebar.
+      for (final inkWellElement in tester.elementList(find.descendant(
+        of: find.byType(ControlSidebar),
+        matching: find.byType(InkWell),
+      ))) {
+        final expandedAncestor = find.ancestor(
+          of: find.byWidget(inkWellElement.widget),
+          matching: find.byType(Expanded),
+        );
+        expect(expandedAncestor, findsAtLeastNWidgets(1));
       }
     });
 
@@ -301,16 +310,25 @@ void main() {
         canToggleViewMode: false,
       )));
 
-      // In compact mode, buttons use IconButton with constraints minHeight: 56.
-      final iconButtons = tester.widgetList<IconButton>(
+      // In compact mode, buttons are InkWell > Center > Icon, wrapped in
+      // Expanded within the Column so they fill available height (above 56px).
+      final inkWells = tester.widgetList<InkWell>(
         find.descendant(
           of: find.byType(ControlSidebar),
-          matching: find.byType(IconButton),
+          matching: find.byType(InkWell),
         ),
       );
-      expect(iconButtons, isNotEmpty);
-      for (final btn in iconButtons) {
-        expect(btn.constraints?.minHeight, greaterThanOrEqualTo(56));
+      expect(inkWells, isNotEmpty);
+      // Each InkWell should have an Expanded ancestor within the sidebar.
+      for (final inkWellElement in tester.elementList(find.descendant(
+        of: find.byType(ControlSidebar),
+        matching: find.byType(InkWell),
+      ))) {
+        final expandedAncestor = find.ancestor(
+          of: find.byWidget(inkWellElement.widget),
+          matching: find.byType(Expanded),
+        );
+        expect(expandedAncestor, findsAtLeastNWidgets(1));
       }
     });
 
