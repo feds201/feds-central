@@ -1,9 +1,0 @@
-{
-  "name": "Scout-Ops Dash",
-  "short_name": "ScoutOps",
-  "start_url": ".",
-  "display": "standalone",
-  "background_color": "#0B0F19",
-  "theme_color": "#38BDF8",
-  "description": "FRC Team 201 scouting dashboard"
-}
