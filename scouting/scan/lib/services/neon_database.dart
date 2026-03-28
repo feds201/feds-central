@@ -37,6 +37,7 @@ class NeonDatabase {
       if (response.statusCode == 200) {
         return jsonDecode(response.body) as Map<String, dynamic>;
       } else {
+        // Helpful debug output for failures
         print('Neon query failed. SQL: $sql');
         print('Params: $params');
         print('Response (${response.statusCode}): ${response.body}');
@@ -52,11 +53,11 @@ class NeonDatabase {
     }
   }
 
-  /// Create the match scouting table if it doesn't exist.
-  /// Schema matches NeonMatchService.dart from the android project.
+  /// Create the scouting_data table if it doesn't exist.
   Future<void> ensureTable() async {
     final table = config.tableName;
 
+    // Define columns matching the CSV headers used by the scanner.
     final sql = '''
       CREATE TABLE IF NOT EXISTS $table (
         team TEXT NOT NULL,
@@ -113,72 +114,68 @@ class NeonDatabase {
     final table = config.tableName;
     int inserted = 0;
 
+    // Columns in the same order as ensureTable (except raw_csv which we'll append)
+    final columns = [
+      'team',
+      'matchKey',
+      'matchNumber',
+      'scouterName',
+      'allianceColor',
+      'eventKey',
+      'station',
+      'batteryPercentage',
+      'auton_total_shooting_time',
+      'auton_amount_of_shooting',
+      'auton_climb',
+      'auton_passing',
+      'teleop_total_shooting_time',
+      'teleop_total_amount',
+      'teleop_defense',
+      'teleop_neutral_trips',
+      'teleop_push_balls',
+      'teleop_passing',
+      'end_climb_status',
+      'end_park',
+      'end_push_balls',
+      'end_passing',
+      'end_robot_broken',
+      'end_neutral_trips',
+      'end_shooting_accuracy',
+      'end_endgame_time',
+      'end_shooting_cycles',
+      'end_comments',
+      'id',
+      'raw_csv',
+    ];
+
     for (final record in csvRecords) {
       try {
         final cols = record.split(',');
 
-        // Parse fields from CSV — adjust indices to match your CSV column order
-        final team = _col(cols, 0);
-        final matchKey = _col(cols, 1);
-        final matchNumber = _intCol(cols, 2);
-        final scouterName = _col(cols, 3);
-        final allianceColor = _col(cols, 4);
-        final eventKey = _col(cols, 5);
-        final station = _intCol(cols, 6);
-        final batteryPercentage = _intCol(cols, 7);
+        // Build values list according to columns (except raw_csv which is full record)
+        final values = <String>[];
+        for (int i = 0; i < columns.length - 1; i++) {
+          if (i < cols.length) {
+            var val = cols[i].trim();
+            // TODO: Properly handle commas in free-text fields instead of replacing them
+            if (columns[i] == 'end_comments') val = val.replaceAll(',', ';');
+            values.add(val);
+          } else {
+            values.add('');
+          }
+        }
 
-        // Auton
-        final autonTotalShootingTime = _doubleCol(cols, 8);
-        final autonAmountOfShooting = _intCol(cols, 9);
-        final autonClimb = _boolCol(cols, 10);
-        final autonPassing = _intCol(cols, 11);
+        // Append raw CSV as last param
+        values.add(record);
 
-        // TeleOp
-        final teleopTotalShootingTime = _doubleCol(cols, 12);
-        final teleopTotalAmount = _intCol(cols, 13);
-        final teleopDefense = _boolCol(cols, 14);
-        final teleopNeutralTrips = _intCol(cols, 15);
-        final teleopPushBalls = _intCol(cols, 16);
-        final teleopPassing = _intCol(cols, 17);
+        // Build placeholders dynamically
+        final placeholders =
+        List.generate(values.length, (i) => '\$${i + 1}').join(', ');
 
-        // Endgame
-        final endClimbStatus = _intCol(cols, 18);
-        final endPark = _boolCol(cols, 19);
-        final endPushBalls = _intCol(cols, 20);
-        final endPassing = _intCol(cols, 21);
-        final endRobotBroken = _boolCol(cols, 22);
-        final endNeutralTrips = _intCol(cols, 23);
-        final endShootingAccuracy = _intCol(cols, 24);
-        final endEndgameTime = _doubleCol(cols, 25);
-        final endShootingCycles = _intCol(cols, 26);
-        final endComments = _col(cols, 27);
-
-        final sql = '''
-          INSERT INTO $table (
-            team, matchKey, matchNumber, scouterName, allianceColor,
-            eventKey, station, batteryPercentage,
-            auton_total_shooting_time, auton_amount_of_shooting,
-            auton_climb, auton_passing,
-            teleop_total_shooting_time, teleop_total_amount,
-            teleop_defense, teleop_neutral_trips,
-            teleop_push_balls, teleop_passing,
-            end_climb_status, end_park, end_push_balls,
-            end_passing, end_robot_broken, end_neutral_trips,
-            end_shooting_accuracy, end_endgame_time,
-            end_shooting_cycles, end_comments,
-            raw_csv
-          ) VALUES (
-            \$1,  \$2,  \$3,  \$4,  \$5,
-            \$6,  \$7,  \$8,
-            \$9,  \$10, \$11, \$12,
-            \$13, \$14, \$15, \$16,
-            \$17, \$18,
-            \$19, \$20, \$21, \$22,
-            \$23, \$24, \$25, \$26,
-            \$27, \$28,
-            \$29
-          )
+        final sql = '''INSERT INTO $table (${columns.join(', ')})
+          VALUES ($placeholders)
           ON CONFLICT (team, matchKey) DO UPDATE SET
+            raw_csv = EXCLUDED.raw_csv,
             matchNumber = EXCLUDED.matchNumber,
             scouterName = EXCLUDED.scouterName,
             allianceColor = EXCLUDED.allianceColor,
@@ -205,50 +202,20 @@ class NeonDatabase {
             end_endgame_time = EXCLUDED.end_endgame_time,
             end_shooting_cycles = EXCLUDED.end_shooting_cycles,
             end_comments = EXCLUDED.end_comments,
-            raw_csv = EXCLUDED.raw_csv,
-            created_at = NOW()
-        ''';
+            id = EXCLUDED.id,
+            created_at = NOW()''';
 
-        await query(sql, params: [
-          team, matchKey, matchNumber, scouterName, allianceColor,
-          eventKey, station, batteryPercentage,
-          autonTotalShootingTime, autonAmountOfShooting,
-          autonClimb, autonPassing,
-          teleopTotalShootingTime, teleopTotalAmount,
-          teleopDefense, teleopNeutralTrips,
-          teleopPushBalls, teleopPassing,
-          endClimbStatus, endPark, endPushBalls,
-          endPassing, endRobotBroken, endNeutralTrips,
-          endShootingAccuracy, endEndgameTime,
-          endShootingCycles, endComments,
-          record, // raw_csv
-        ]);
+        await query(sql, params: values);
         inserted++;
       } catch (e, st) {
         print('Insert failed for record: $record');
         print('Error: $e');
         print(st);
-        // continue with next record
+        // continue
       }
     }
 
     return inserted;
-  }
-
-  // ── CSV parsing helpers ──────────────────────────────────────────
-
-  static String _col(List<String> cols, int i) =>
-      i < cols.length ? cols[i].trim() : '';
-
-  static int _intCol(List<String> cols, int i) =>
-      int.tryParse(_col(cols, i)) ?? 0;
-
-  static double _doubleCol(List<String> cols, int i) =>
-      double.tryParse(_col(cols, i)) ?? 0.0;
-
-  static bool _boolCol(List<String> cols, int i) {
-    final v = _col(cols, i).toLowerCase();
-    return v == 'true' || v == '1';
   }
 
   /// Fetch all records from the DB (for verification).
