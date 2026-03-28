@@ -66,7 +66,6 @@ class _ComparisonScreenState extends State<ComparisonScreen> {
 
     final config = BotPathConfig(
         backgroundImage: const AssetImage('assets/Aerna2026.png'),
-        cropFraction: 1.0,
         brightness: Brightness.dark
     );
     print(teamsMap);

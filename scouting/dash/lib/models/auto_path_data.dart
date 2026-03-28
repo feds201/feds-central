@@ -22,33 +22,36 @@ class AutoRoute {
 }
 
 /// Parse the `pathdraw` column value into a list of [AutoRoute]s.
+///
+/// Handles both a raw JSON string and an already-decoded [List] (which is
+/// what Neon returns for `jsonb` columns).
 List<AutoRoute> parsePathDraw(dynamic raw) {
   if (raw == null) return [];
 
-  String jsonStr;
-  if (raw is String) {
-    jsonStr = raw.trim();
+  List<dynamic> decoded;
+
+  if (raw is List) {
+    decoded = raw;
   } else {
-    jsonStr = raw.toString().trim();
-  }
-
-  if (jsonStr.isEmpty || jsonStr == '[]') return [];
-
-  try {
-    final decoded = jsonDecode(jsonStr);
-    if (decoded is! List) return [];
-
-    return decoded.map<AutoRoute?>((item) {
-      if (item is! Map) return null;
-      final name = (item['name'] ?? '').toString();
-      final path = (item['path'] ?? '').toString();
-      if (path.isEmpty) return null;
-      return AutoRoute(name: name, pathData: path);
-    }).whereType<AutoRoute>().toList();
-  } catch (_) {
-    if (jsonStr.contains('M') && jsonStr.contains('|')) {
-      return [AutoRoute(name: '', pathData: jsonStr)];
+    String jsonStr = raw is String ? raw.trim() : raw.toString().trim();
+    if (jsonStr.isEmpty || jsonStr == '[]') return [];
+    try {
+      final result = jsonDecode(jsonStr);
+      if (result is! List) return [];
+      decoded = result;
+    } catch (_) {
+      if (jsonStr.contains('M') && jsonStr.contains('|')) {
+        return [AutoRoute(name: '', pathData: jsonStr)];
+      }
+      return [];
     }
-    return [];
   }
+
+  return decoded.map<AutoRoute?>((item) {
+    if (item is! Map) return null;
+    final name = (item['name'] ?? '').toString();
+    final path = (item['path'] ?? '').toString();
+    if (path.isEmpty) return null;
+    return AutoRoute(name: name, pathData: path);
+  }).whereType<AutoRoute>().toList();
 }
