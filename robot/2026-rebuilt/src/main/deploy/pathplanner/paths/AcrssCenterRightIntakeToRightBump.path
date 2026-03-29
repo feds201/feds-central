@@ -4,12 +4,12 @@
     {
       "anchor": {
         "x": 8.28075919335706,
-        "y": 3.2872360616844607
+        "y": 2.8
       },
       "prevControl": null,
       "nextControl": {
-        "x": 8.302960954255143,
-        "y": 3.8535108961215463
+        "x": 7.3520722891566255,
+        "y": 4.493963855421687
       },
       "isLocked": false,
       "linkedName": "AcrossBumpMidintakeEnd"
@@ -40,7 +40,7 @@
         "y": 2.6
       },
       "nextControl": {
-        "x": 3.504407988587732,
+        "x": 3.5044079885877313,
         "y": 2.6
       },
       "isLocked": false,

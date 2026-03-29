@@ -235,7 +235,7 @@ public class RobotContainer extends ControllerBindings {
   
 
     public void updateLocalization() {
-        if (ll4.getNTTable().containsKey("tv")) {
+        if (ll4.isConnected()) {
             ll4.updateLocalizationLimelight(drivetrain);
         } else {
             ll3.updateLocalizationLimelight(drivetrain);
