@@ -36,29 +36,6 @@ public class LedsSubsystem extends SubsystemBase {
     return instance;
   }
 
-  // public static boolean isjammed() {
-  // // Placeholder for actual jamming detection logic
-  // // This could be based on motor current spikes, encoder feedback, etc.
-  // return false; // Replace with real condition
-  // }
-
-  // public boolean isLimelightStable() {
-  // double currentHeartbeat = NetworkTableInstance.getDefault()
-  // .getTable("limelight")
-  // .getEntry("hb")
-  // .getDouble(-1);
-
-  // if (currentHeartbeat == m_lastHeartbeat) {
-  // m_heartbeatStuckCount++;
-  // } else {
-  // m_heartbeatStuckCount = 0;
-  // m_lastHeartbeat = currentHeartbeat;
-  // }
-
-  // // If the heartbeat hasn't changed in 10 loops (~200ms), it's unstable
-  // return m_heartbeatStuckCount < 10;
-  // }
-
   public static enum LEDState {
     FALCON_DRIVE, // Flashing Orange at 200ms
     HUB_DRIVE, // TBD
@@ -67,8 +44,7 @@ public class LedsSubsystem extends SubsystemBase {
     ERROR_CAN, // Error: CAN blink green and yellow at 400ms and should be altrnate
     ERROR_JAMMING, // Error: jamming should be blink scarlett at 200ms
     ERROR_OTHER, // blink pruple at 200ms
-    IDLE, // Default state, should be solid yellow when disabled, solid red in auto, and
-
+    robotState, // Default state, should be solid yellow when disabled, solid red in auto, 
     OFF, // All LEDs off
     STARTUP_TEST; // Tests state for startup testing animation;
 
@@ -76,10 +52,10 @@ public class LedsSubsystem extends SubsystemBase {
 
   }
 
-  private LEDState m_currentState = LEDState.OFF;
-  private LEDState DesiredState = LEDState.IDLE; // Force initial update
+  private LEDState m_currentState = LEDState.robotState;
+  private LEDState lastState = LEDState.OFF; // Force initial update
   private boolean m_isConnected = false;
-  private boolean m_wasDisabled = true; // Tracks if DriverStation mode changed
+  private int m_lastDSMode = -1; // -1 = Unknown, 0 = Disabled, 1 = Auto, 2 = Teleop, 3 = Test
 
   // Configuration
   private static final String ZONE_1 = "ZONE_50_1";
@@ -89,9 +65,6 @@ public class LedsSubsystem extends SubsystemBase {
   private static final String ZONE_5 = "ZONE_50_5";
   private static final String ZONE_6 = "ZONE_50_6";
   private static final String GR_300 = "GR_300";
-  private static final String GR_100_1 = "GR_100";
-  private static final String GR_200_2 = "GR_100_2";
-  private static final String GR_200_3 = "GR_100_3";
 
   // Colors
   private static final Color COLOR_ORANGE = new Color(new Color8Bit(255, 100, 0));
@@ -104,57 +77,79 @@ public class LedsSubsystem extends SubsystemBase {
   private static final Color COLOR_SCARLET = new Color(new Color8Bit(100, 14, 0));
   private static final Color COLOR_PURPLE = new Color(new Color8Bit(128, 0, 128));
 
-  public LedsSubsystem() {
 
-    if (!RobotBase.isSimulation()) {
-      m_isConnected = m_leds.Connect(USBPort.kUSB1);
+ public LedsSubsystem() {
+    if (RobotBase.isSimulation()) {
+        m_isConnected = true; 
+        // In simulation, we don't call .Connect()
+         m_isConnected = m_leds.Connect(USBPort.kUSB1);
+        System.out.println("ConnectorX: Running in Simulation Mode");
     } else {
-      m_isConnected = true; // Assume connected in simulation for testing purposes
-
+        m_isConnected = m_leds.Connect(USBPort.kUSB1);
+        System.out.println("ConnectorX connected: " + m_isConnected);
     }
+}
+    public LEDState Next_DiseredState() {
 
-    System.out.println("ConnectorX connected: " + m_isConnected);
+    if (m_shooter_state == shooter_state.SHOOTING || m_shooter_state == shooter_state.HALFCOURT
+        || m_shooter_state == shooter_state.LAYUP || m_shooter_state == shooter_state.TEST
+        || m_shooter_state == shooter_state.PASSING) {
+      return LEDState.SHOOTING;
+    }
+    else {
+      return LEDState.robotState;
+    }
+  }
 
-    // Initial State application will happen in periodic loop or manually here
-    // But periodic handles state change, so setting lastState to OFF calls
-    // applyState(IDLE) in first loop.
+  public LEDState desiredDriveMode() {
+    if (m_driveMode == driveMode.FALCONDRIVE) {
+      return LEDState.FALCON_DRIVE;
+    } else if (m_driveMode == driveMode.HUBDRIVE) {
+      return LEDState.HUB_DRIVE;
+    }
+    else {
+      return LEDState.robotState  ;
+    }
   }
 
   public boolean isConnected() {
     return m_isConnected;
   }
 
-  @Override
-  public void periodic() {
-
+ @Override
+public void periodic() {
     m_currentState = Next_DiseredState();
 
-    // 2. Determine if the DriverStation mode flipped (e.g. Disabled -> Teleop)
-    boolean isDisabled = DriverStation.isDisabled();
-    boolean modeChanged = (isDisabled != m_wasDisabled);
+    // Determine current DS Mode as an integer
+    int currentDSMode = -1;
+    if (DriverStation.isDisabled()) currentDSMode = 0;
+    else if (DriverStation.isAutonomous()) currentDSMode = 1;
+    else if (DriverStation.isTeleop()) currentDSMode = 2;
+    else if (DriverStation.isTest()) currentDSMode = 3;
 
-    // 3. Apply changes only if the State changed OR the DS mode changed while in
-    // IDLE
-    if (m_currentState != DesiredState || (modeChanged)) {
-      applyState(DesiredState);
-      System.out.println(m_currentState);
-    } else {
-      System.out.println("Current=Desired" + ", ModeChanged: " + modeChanged);
-      // Update our "memory" variables
-      DesiredState = m_currentState;
-      m_wasDisabled = isDisabled;
+    // Check if the LED state changed OR if the Driver Station mode changed
+    boolean dsModeChanged = (currentDSMode != m_lastDSMode);
+
+    if (m_currentState != lastState || dsModeChanged) {
+        
+        // Apply the NEW state
+        applyState(m_currentState);
+        
+        System.out.println("Switching LEDs to: " + m_currentState + " (DS Mode: " + currentDSMode + ")");
+
+        // Sync our memory variables
+        lastState = m_currentState;
+        m_lastDSMode = currentDSMode;
     }
+}
 
-  }
-
-  /**
+  /** 
    * Directly set the state of the LEDs.
    * 
    * @param state The target state
    */
 
   private void setState(LEDState state) {
-    System.out.println(m_currentState);
   }
 
   private void applyState(LEDState state) {
@@ -164,9 +159,9 @@ public class LedsSubsystem extends SubsystemBase {
         m_leds.leds.SetColor(GR_300, new Color(0, 0, 0));
         break;
 
-      case IDLE:
+      case robotState:
 
-        System.out.println("applyState: IDLE");
+        System.out.println("applyState: robotState");
         applyRobotState();
         break;
 
@@ -187,9 +182,9 @@ public class LedsSubsystem extends SubsystemBase {
         break;
 
       case SHOOTING:
-        m_leds.leds.SetAnimation(Animation.Comet)
+        m_leds.leds.SetAnimation(Animation.Fill)
             .ForGroup(GR_300)
-            .WithColor(COLOR_FEDS_BLUE)
+            .WithColor(COLOR_YELLOW)
             .WithDelay(Units.Milliseconds.of(20))
             .RunOnce(false);
         break;
@@ -204,19 +199,9 @@ public class LedsSubsystem extends SubsystemBase {
 
       case ERROR_CAN:
         m_leds.leds.SetAnimation(Animation.Comet)
-            .ForZone(ZONE_1)
-            .WithColor(COLOR_YELLOW)
-            .ForZone(ZONE_2)
+            .ForGroup(GR_300)
             .WithColor(COLOR_GREEN)
-            .ForZone(ZONE_3)
-            .WithColor(COLOR_YELLOW)
-            .ForZone(ZONE_4)
-            .WithColor(COLOR_GREEN)
-            .ForZone(ZONE_5)
-            .WithColor(COLOR_YELLOW)
-            .ForZone(ZONE_6)
-            .WithColor(COLOR_GREEN)
-            .WithDelay(Units.Milliseconds.of(100))
+            .WithDelay(Units.Milliseconds.of(400))
             .RunOnce(false);
         break;
 
@@ -225,7 +210,7 @@ public class LedsSubsystem extends SubsystemBase {
             .ForGroup(GR_300)
             .WithColor(COLOR_SCARLET)
             .WithDelay(Units.Milliseconds.of(200))
-            .RunOnce(false);
+            .RunOnce(false);  
         break;
 
       case ERROR_OTHER:
@@ -270,37 +255,20 @@ public class LedsSubsystem extends SubsystemBase {
           // blinking yellow in teleop
           .ForZone(GR_300)
           .WithColor(COLOR_YELLOW)
-          .WithDelay(Units.Milliseconds.of(15))
+          .WithDelay(Units.Milliseconds.of(150))
           .RunOnce(false);
     } else if (DriverStation.isTest()) {
       System.out.println("Test");
       // Fallback for any other state, solid white
-      m_leds.leds.SetAnimation(Animation.Breathe)
+      m_leds.leds.SetAnimation(Animation.Chase)
           .ForZone(GR_300)
           .WithColor(COLOR_YELLOW)
-          .WithDelay(Units.Milliseconds.of(10))
+          .WithDelay(Units.Milliseconds.of(100))
           .Reverse(false)
           .RunOnce(false);
     }
   }
 
-  public LEDState Next_DiseredState() {
-
-    if (m_shooter_state == shooter_state.SHOOTING || m_shooter_state == shooter_state.HALFCOURT
-        || m_shooter_state == shooter_state.LAYUP || m_shooter_state == shooter_state.TEST
-        || m_shooter_state == shooter_state.PASSING) {
-      return LEDState.SHOOTING;
-    } else if (m_driveMode == driveMode.FALCONDRIVE) {
-      return LEDState.FALCON_DRIVE;
-    } else if (m_driveMode == driveMode.HUBDRIVE) {
-      return LEDState.HUB_DRIVE;
-    }
-
-    else {
-      return LEDState.IDLE;
-    }
-
-  }
 
   public Command setStateCommand(LEDState state) {
     return runOnce(() -> setState(state)).ignoringDisable(true);
