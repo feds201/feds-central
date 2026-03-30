@@ -182,6 +182,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void simulationInit() {
     m_robotContainer.initSimulation();
+    System.out.println("initSimulation called");
   }
 
   @Override

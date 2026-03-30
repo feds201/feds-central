@@ -3,7 +3,7 @@ package frc.robot.sim;
 import com.lumynlabs.devices.ConnectorXAnimate;
 import com.lumynlabs.domain.config.ConfigBuilder;
 import com.lumynlabs.domain.config.LumynDeviceConfig;
-import com.lumynlabs.domain.config.LumynDeviceConfig;
+
 
 import edu.wpi.first.wpilibj.RobotBase;
 
@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.RobotBase;
  * Simulator helper for LEDs.
  */
 public class LedsSim {
-
+    
   private final ConnectorXAnimate m_leds;
 
   /**
@@ -24,6 +24,7 @@ public class LedsSim {
 
     if (RobotBase.isSimulation()) {
       m_leds.ApplyConfiguration(buildConfig());
+      System.out.println("LedsSim constructed, applying config");
     }
   }
 
@@ -69,7 +70,6 @@ public class LedsSim {
             .addZone("ZONE_50_5")
             .addZone("ZONE_50_6")
         .endGroup()
-        
         .build();
   }
-}
+} 
