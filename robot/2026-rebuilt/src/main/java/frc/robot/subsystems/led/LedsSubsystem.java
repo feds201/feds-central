@@ -167,7 +167,7 @@ public class LedsSubsystem extends SubsystemBase {
       case IDLE:
 
         System.out.println("applyState: IDLE");
-        applyIdlePattern();
+        applyRobotState();
         break;
 
       case FALCON_DRIVE:
@@ -246,7 +246,7 @@ public class LedsSubsystem extends SubsystemBase {
     }
   }
 
-  private static void applyIdlePattern() {
+  private static void applyRobotState() {
     if (DriverStation.isDisabled()) {
       System.out.println("isDisabled");
       // Disabled: Breathe Red indicating standby/disabled
