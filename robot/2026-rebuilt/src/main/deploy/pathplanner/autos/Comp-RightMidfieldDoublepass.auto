@@ -41,12 +41,6 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Stop Rollers"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
                   "name": "Start Shooter Spin"
                 }
               }
