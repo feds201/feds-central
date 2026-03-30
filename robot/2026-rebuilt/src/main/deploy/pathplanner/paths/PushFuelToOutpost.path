@@ -72,7 +72,7 @@
     "rotation": 0.0
   },
   "reversed": false,
-  "folder": "GriefAuto",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
     "rotation": 130.0

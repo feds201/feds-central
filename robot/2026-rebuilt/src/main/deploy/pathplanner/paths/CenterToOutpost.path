@@ -1,0 +1,89 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.55830298013245,
+        "y": 3.5558443708609264
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.4033919079876958,
+        "y": 3.7520650622442835
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.26603476821192,
+        "y": 5.973402317880795
+      },
+      "prevControl": {
+        "x": 2.7126829814633626,
+        "y": 5.973402317880795
+      },
+      "nextControl": {
+        "x": 1.5763410596026488,
+        "y": 5.973402317880795
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 0.6543294701986755,
+        "y": 5.973402317880795
+      },
+      "prevControl": {
+        "x": 1.2278642384105958,
+        "y": 5.966142384105961
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "depot3"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.1331719128329334,
+      "rotationDegrees": 0.0
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 1.1929328621908122,
+      "maxWaypointRelativePos": 1.953356890459364,
+      "constraints": {
+        "maxVelocity": 1.5,
+        "maxAcceleration": 4.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 360.0,
+        "nominalVoltage": 11.8,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 4.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 360.0,
+    "nominalVoltage": 11.8,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 1.0,
+    "rotation": 0.0
+  },
+  "reversed": false,
+  "folder": "CenterDepotOutpost",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "useDefaultConstraints": true
+}

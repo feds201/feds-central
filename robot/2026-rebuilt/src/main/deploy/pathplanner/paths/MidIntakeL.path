@@ -16,11 +16,11 @@
     },
     {
       "anchor": {
-        "x": 7.791,
+        "x": 8.109,
         "y": 5.65
       },
       "prevControl": {
-        "x": 7.763207589971198,
+        "x": 8.081207589971196,
         "y": 7.050776862713546
       },
       "nextControl": null,
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 2.0,
-    "rotation": 90.0
+    "rotation": 85.0
   },
   "reversed": false,
   "folder": "MidIntakeToLeftBump",
   "idealStartingState": {
     "velocity": 1.3,
-    "rotation": 90.0
+    "rotation": 85.0
   },
   "useDefaultConstraints": false
 }

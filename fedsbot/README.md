@@ -32,30 +32,7 @@ AI assistant Discord bot for The FEDS (FRC Team 201). Uses the Claude Agent SDK 
 - Node.js 20+ installed on your server
 - Discord bot token ([create one here](https://discord.com/developers/applications))
 - Anthropic API key ([get one here](https://platform.claude.com))
-- Discord bot with the correct permissions (see [Discord Permissions](#discord-permissions) below)
-
-### Discord Permissions
-
-When creating the OAuth2 URL to add the bot to your server, you need the following:
-
-**OAuth2 Scopes:**
-- `bot`
-- `applications.commands`
-
-**Bot Permissions:**
-| Permission | Reason |
-|---|---|
-| View Channels | See channels where students @mention the bot |
-| Send Messages | Respond to questions in channels and DMs |
-| Create Public Threads | Start a new thread for each question |
-| Send Messages in Threads | Reply inside question threads |
-| Read Message History | Detect DM conversation boundaries (30-min gap = new conversation) and collapse previous status embeds |
-| Embed Links | Display rich status embeds showing AI thinking/tool progress |
-
-**Privileged Gateway Intents (must be enabled in the [Discord Developer Portal](https://discord.com/developers/applications) > Bot settings):**
-- **Message Content Intent** — read the actual text of messages so the bot can answer questions
-
-The non-privileged intents (`Guilds`, `GuildMessages`, `DirectMessages`) are declared in `src/discord.ts` and work automatically.
+- Discord bot intents and permissions — see `src/discord.ts` for the exact intents/partials declared in code
 
 ### Installation
 
@@ -132,7 +109,7 @@ See `.env.example` for the full list with descriptions.
 - View error logs: `tail -n 50 /var/log/fedsbot.log`
 
 ### Bot doesn't respond
-- Check Discord permissions (see [Discord Permissions](#discord-permissions))
+- Check Discord permissions (see `src/discord.ts` for required intents)
 - Check logs for errors
 
 ### Session/thread issues

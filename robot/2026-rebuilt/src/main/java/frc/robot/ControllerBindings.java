@@ -49,8 +49,7 @@ public class ControllerBindings {
                         shooterWheels.setStateCommand(shooter_state.SHOOTING),
                         shooterHood.setStateCommand(shooterhood_state.SHOOTING),
                         feederSubsystem.setStateCommand(feeder_state.RUN),
-                        spinDexer.setStateCommand(spindexer_state.RUN),
-                        intakeSubsystem.setIntakeStateCommand(IntakeState.AGITATE)
+                        spinDexer.setStateCommand(spindexer_state.RUN)
                 ))
                 .onFalse(Commands.sequence(
                         feederSubsystem.setStateCommand(feeder_state.STOP),
@@ -96,8 +95,6 @@ public class ControllerBindings {
 
         // Default drive command: field-centric swerve with left stick + right stick rotation
         drivetrain.setDefaultCommand(new TeleopSwerve(drivetrain, driver, 1));
-        driver.b().onTrue(feederSubsystem.setStateCommand(feeder_state.PREVERSE).andThen(spinDexer.setStateCommand(spindexer_state.PREVERSE)))
-        .onFalse(feederSubsystem.setStateCommand(feeder_state.STOP).andThen(spinDexer.setStateCommand(spindexer_state.STOP)));
         driver.b().onTrue(feederSubsystem.setStateCommand(feeder_state.PREVERSE).andThen(spinDexer.setStateCommand(spindexer_state.PREVERSE)))
         .onFalse(feederSubsystem.setStateCommand(feeder_state.STOP).andThen(spinDexer.setStateCommand(spindexer_state.STOP)));
         // M key (Right bumper): reverse intake rollers
@@ -171,7 +168,6 @@ public class ControllerBindings {
                         feederSubsystem.setStateCommand(feeder_state.PRUN),
                         spinDexer.setStateCommand(spindexer_state.PFORWARD),
                         intakeSubsystem.setRollerStateCommand(RollerState.ON)
-                        // intakeSubsystem.setIntakeStateCommand(IntakeState.AGITATE)
                 )
         ).onFalse(
                 Commands.sequence(
@@ -228,12 +224,12 @@ public class ControllerBindings {
                 .onTrue(new InstantCommand(() -> shooterHood.updateHoodAngleMultiplier(-.01)));
 
          operator.y()
-                .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.AGITATE_IN))
-                .onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT));
+                .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.AGITATE_IN).alongWith(intakeSubsystem.setRollerStateCommand(RollerState.ON)))
+                .onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT).alongWith(intakeSubsystem.setRollerStateCommand(RollerState.OFF)));
 
         operator.start()
-                .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.CLOSE_AGITATION))
-                .onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT));
+                .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.CLOSE_AGITATION).alongWith(intakeSubsystem.setRollerStateCommand(RollerState.ON)))
+                .onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT).alongWith(intakeSubsystem.setRollerStateCommand(RollerState.OFF)));
     }
 
 }
