@@ -24,8 +24,7 @@ public class LedsSubsystem extends SubsystemBase {
   private static LedsSubsystem instance;
   public static shooter_state m_shooterstate = shooter_state.IDLE;
   public static driveMode m_driveMode = driveMode.NORMALDRIVE;
-  // private double m_lastHeartbeat = -1;
-  // private int m_heartbeatStuckCount = 0;
+
 
   public static LedsSubsystem getInstance() {
     if (instance == null) {
