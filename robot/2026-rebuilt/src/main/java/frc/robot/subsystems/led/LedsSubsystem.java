@@ -73,7 +73,6 @@ public class LedsSubsystem extends SubsystemBase {
   private static final Color COLOR_WHITE = new Color(new Color8Bit(255, 255, 255));
   private static final Color COLOR_YELLOW = new Color(new Color8Bit(255, 255, 0));
   private static final Color COLOR_GREEN = new Color(new Color8Bit(0, 255, 0));
-  private static final Color COLOR_FEDS_BLUE = new Color(new Color8Bit(0, 255, 255));
   private static final Color COLOR_SCARLET = new Color(new Color8Bit(100, 14, 0));
   private static final Color COLOR_PURPLE = new Color(new Color8Bit(128, 0, 128));
 
@@ -124,39 +123,32 @@ public class LedsSubsystem extends SubsystemBase {
 
  @Override
 public void periodic() {
-  m_shooterstate = RobotContainer.getInstance().getShooterWheelsState();
     m_currentState = getShootingleds();
-      applyState(m_currentState);
-      System.out.println("[Periodic] Get Shooter State: " + m_shooterstate);
-      System.out.println("[Periodic] Current LED State: " + m_currentState);
-      
-    //  m_currentState = getShootingleds();
-    //  m_shooterstate = RobotContainer.getInstance().getShooterWheelsState();
-    //  System.out.println("[Periodic] Get Shooter State: " + m_shooterstate);
-    
-    // System.out.println("[Periodic] Current LED State: " + m_currentState);
+    m_shooterstate = RobotContainer.getInstance().getShooterWheelsState();
+    System.out.println("[Periodic] Get Shooter State: " + m_shooterstate);
+    System.out.println("[Periodic] Current LED State: " + m_currentState);
 
-    // // Determine current DS Mode as an integer
-    // int currentDSMode = -1;
-    // if (DriverStation.isDisabled()) currentDSMode = 0;
-    // else if (DriverStation.isAutonomous()) currentDSMode = 1;
-    // else if (DriverStation.isTeleop()) currentDSMode = 2;
-    // else if (DriverStation.isTest()) currentDSMode = 3;
+    // Determine current DS Mode as an integer
+    int currentDSMode = -1;
+    if (DriverStation.isDisabled()) currentDSMode = 0;
+    else if (DriverStation.isAutonomous()) currentDSMode = 1;
+    else if (DriverStation.isTeleop()) currentDSMode = 2;
+    else if (DriverStation.isTest()) currentDSMode = 3;
 
-    // // Check if the LED state changed OR if the Driver Station mode changed
-    // boolean dsModeChanged = (currentDSMode != m_lastDSMode);
+    // Check if the LED state changed OR if the Driver Station mode changed
+    boolean dsModeChanged = (currentDSMode != m_lastDSMode);
 
-    // if (m_currentState != m_lastState || dsModeChanged) {
+    if (m_currentState != m_lastState || dsModeChanged) {
         
-    //     // Apply the NEW state
-    //     applyState(m_currentState);
+        // Apply the NEW state
+        applyState(m_currentState);
         
-    //     System.out.println("Switching LEDs to: " + m_currentState + " (DS Mode: " + currentDSMode + ")");
+        System.out.println("Switching LEDs to: " + m_currentState + " (DS Mode: " + currentDSMode + ")");
 
-    //     // Sync our memory variables
-    //     m_lastState = m_currentState;
-    //     m_lastDSMode = currentDSMode;
-    // }
+        // Sync our memory variables
+        m_lastState = m_currentState;
+        m_lastDSMode = currentDSMode;
+    }
 }
   private void applyState(LEDState state) {
     switch (state) {
@@ -188,15 +180,13 @@ public void periodic() {
         break;
 
       case SHOOTING:
-        System.out.println("applyState: SHOOTING");
-       m_leds.leds.SetAnimation(Animation.RainbowRoll)
+      System.out.println("applyState: SHOOTING");
+             m_leds.leds.SetAnimation(Animation.Blink)
           .ForZone(GR_300)
           .WithColor(COLOR_WHITE)
           .WithDelay(Units.Milliseconds.of(10))
           .Reverse(false)
           .RunOnce(false);
-
-        System.out.println("Applied SHOOTING LED pattern");
         break;
 
       case ERROR_LL:

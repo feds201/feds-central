@@ -44,7 +44,7 @@ public class Robot extends LoggedRobot {
   // Use a longer loop period during simulation so simulated time appears slower.
   // Set to 0.5 seconds in simulation -> 2 periods per second.
   // TimedRobot/LoggedRobot accepts a period in seconds via the super(...) constructor.
-  super(RobotBase.isSimulation() ? 0.5 : 0.02);
+  super(RobotBase.isSimulation() ? 0.05 : 0.02);
     // DO NOT COMMENT THIS OUT!
     // If build fails the 1st time because no BuildConstant:
     //  1. clean your workspace cache
