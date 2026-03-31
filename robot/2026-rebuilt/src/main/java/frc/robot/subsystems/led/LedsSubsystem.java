@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.commands.swerve.TeleopSwerve.driveMode;
 import frc.robot.subsystems.shooter.ShooterWheels.shooter_state;
@@ -38,20 +37,20 @@ public class LedsSubsystem extends SubsystemBase {
 
   public enum RobotLEDState {
     IDLE, // Handles Disabled/Auto/Teleop colors
-    SHOOTING,
-    STARTUP_TEST,
-    ERROR_LL,
-    ERROR_CAN,
-    ERROR_JAMMING,
-    ERROR_OTHER,
-    OFF
+    SHOOTING, // Shooting should be blue coment kinda fast
+    STARTUP_TEST, //TBD
+    ERROR_LL, // Error limelight should be blink Limelight green at 200ms
+    ERROR_CAN, // Error: CAN blink green and yellow at 400ms and should be altrnate
+    ERROR_JAMMING, // Error: jamming should be blink scarlett at 200ms
+    ERROR_OTHER, // Error: other should be blink purple at 200ms
+    OFF;
   }
 
   public enum DriveLEDState {
-    NORMAL_DRIVE,
-    HUB_DRIVE,
-    FALCON_DRIVE,
-    OFF
+    NORMAL_DRIVE,  //TBD
+    HUB_DRIVE,    //TBD
+    FALCON_DRIVE,  //TBD
+    OFF;          //NONE
   }
 
   private RobotLEDState m_currentState = RobotLEDState.OFF;
