@@ -19,8 +19,9 @@ import com.pathplanner.lib.commands.FollowPathCommand;
 import com.ctre.phoenix6.SignalLogger;
 
 import edu.wpi.first.hal.AllianceStationID;
-import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.net.WebServer;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -41,10 +42,7 @@ public class Robot extends LoggedRobot {
 
 
   public Robot() {
-  // Use a longer loop period during simulation so simulated time appears slower.
-  // Set to 0.5 seconds in simulation -> 2 periods per second.
-  // TimedRobot/LoggedRobot accepts a period in seconds via the super(...) constructor.
-  super(RobotBase.isSimulation() ? 0.05 : 0.02);
+    WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
     // DO NOT COMMENT THIS OUT!
     // If build fails the 1st time because no BuildConstant:
     //  1. clean your workspace cache
@@ -121,6 +119,8 @@ public class Robot extends LoggedRobot {
     CommandScheduler.getInstance().run();
     // Publish a small set of live telemetry for the RTU dashboard
     m_robotContainer.publishTelemetry();
+    m_robotContainer.limelightConnection();
+    m_robotContainer.usbStorage();
     //Log Hub shift times
     Logger.recordOutput("Robot/HubShift/RemainingTime", HubShiftUtil.getOfficialShiftInfo().remainingTime());
     Logger.recordOutput("Robot/HubShift/ElapsedTime", HubShiftUtil.getOfficialShiftInfo().elapsedTime());
@@ -173,12 +173,12 @@ public class Robot extends LoggedRobot {
   @Override
   public void testInit() {
     CommandScheduler.getInstance().cancelAll();
-    m_robotContainer.runRootTests();
+    //m_robotContainer.runRootTests();
   }
 
   @Override
   public void testPeriodic() {
-    m_robotContainer.updateRootTests();
+    //m_robotContainer.updateRootTests();
   }
 
   @Override

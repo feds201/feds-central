@@ -1,0 +1,209 @@
+{
+  "version": 1.0,
+  "grid_size": 128,
+  "tabs": [
+    {
+      "name": "Rebuilt-Display",
+      "grid_layout": {
+        "layouts": [],
+        "containers": [
+          {
+            "title": "Extended",
+            "x": 896.0,
+            "y": 512.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Robot/Intake/Extended",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "RollerState",
+            "x": 1152.0,
+            "y": 512.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Large Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Robot/Intake/RollerState",
+              "period": 0.06,
+              "data_type": "string"
+            }
+          },
+          {
+            "title": "FeederState",
+            "x": 1024.0,
+            "y": 384.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Large Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Robot/Shooter/FeederState",
+              "period": 0.06,
+              "data_type": "string"
+            }
+          },
+          {
+            "title": "ShooterState",
+            "x": 896.0,
+            "y": 384.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Large Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Robot/Shooter/ShooterState",
+              "period": 0.06,
+              "data_type": "string"
+            }
+          },
+          {
+            "title": "Shooter Hood State",
+            "x": 1024.0,
+            "y": 512.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Large Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Robot/Shooter/Shooter Hood State",
+              "period": 0.06,
+              "data_type": "string"
+            }
+          },
+          {
+            "title": "SpindexerState",
+            "x": 1152.0,
+            "y": 384.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Large Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Robot/Shooter/SpindexerState",
+              "period": 0.06,
+              "data_type": "string"
+            }
+          },
+          {
+            "title": "Pose",
+            "x": 768.0,
+            "y": 0.0,
+            "width": 512.0,
+            "height": 384.0,
+            "type": "Field",
+            "properties": {
+              "topic": "/Pose",
+              "period": 0.06,
+              "field_game": "Rebuilt",
+              "robot_width": 0.85,
+              "robot_length": 0.85,
+              "show_other_objects": true,
+              "show_trajectories": true,
+              "field_rotation": 0.0,
+              "robot_color": 4294198070,
+              "trajectory_color": 4294967295,
+              "show_robot_outside_widget": true
+            }
+          },
+          {
+            "title": "limelight-two",
+            "x": 384.0,
+            "y": 0.0,
+            "width": 384.0,
+            "height": 384.0,
+            "type": "Camera Stream",
+            "properties": {
+              "topic": "/CameraPublisher/limelight-two",
+              "period": 0.06,
+              "rotation_turns": 0
+            }
+          },
+          {
+            "title": "CurrentShift",
+            "x": 0.0,
+            "y": 512.0,
+            "width": 384.0,
+            "height": 128.0,
+            "type": "Large Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Robot/HubShift/CurrentShift",
+              "period": 0.06,
+              "data_type": "string"
+            }
+          },
+          {
+            "title": "Active",
+            "x": 0.0,
+            "y": 256.0,
+            "width": 384.0,
+            "height": 256.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Robot/HubShift/Active",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "RemainingTime",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 384.0,
+            "height": 256.0,
+            "type": "Match Time",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Robot/HubShift/RemainingTime",
+              "period": 0.06,
+              "data_type": "double",
+              "time_display_mode": "Minutes and Seconds",
+              "red_start_time": 20,
+              "yellow_start_time": 30
+            }
+          },
+          {
+            "title": "Auto Chooser",
+            "x": 640.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "ComboBox Chooser",
+            "properties": {
+              "topic": "/SmartDashboard/Auto Chooser",
+              "period": 0.06,
+              "sort_options": false
+            }
+          },
+          {
+            "title": "HoodAngleMultiplier",
+            "x": 384.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "Large Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/Robot/Shooter/HoodAngleMultiplier",
+              "period": 0.06,
+              "data_type": "double"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Tab 2",
+      "grid_layout": {
+        "layouts": [],
+        "containers": []
+      }
+    }
+  ]
+}
