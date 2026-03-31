@@ -13,16 +13,15 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.commands.swerve.TeleopSwerve.driveMode;
 import frc.robot.subsystems.shooter.ShooterHood.shooterhood_state;
-import frc.robot.subsystems.shooter.ShooterWheels.shooter_state;;
+import frc.robot.subsystems.shooter.ShooterWheels.shooter_state;
 
 public class LedsSubsystem extends SubsystemBase {
   public static ConnectorXAnimate m_leds = new ConnectorXAnimate();
   private static LedsSubsystem instance;
-  public static shooter_state m_shooter_state;
+  public static shooter_state m_shooterstate;
   public static driveMode m_driveMode;
   public static shooterhood_state m_shooterhood_state;
   // private double m_lastHeartbeat = -1;
@@ -52,8 +51,8 @@ public class LedsSubsystem extends SubsystemBase {
 
   }
 
-  private LEDState m_currentState = LEDState.robotState;
-  private LEDState lastState = LEDState.OFF; // Force initial update
+  private LEDState m_currentState = LEDState.OFF;
+  private LEDState m_lastState = LEDState.OFF; // Force initial update
   private boolean m_isConnected = false;
   private int m_lastDSMode = -1; // -1 = Unknown, 0 = Disabled, 1 = Auto, 2 = Teleop, 3 = Test
 
@@ -79,24 +78,29 @@ public class LedsSubsystem extends SubsystemBase {
 
 
  public LedsSubsystem() {
+  m_isConnected = m_leds.Connect(USBPort.kUSB1);
     if (RobotBase.isSimulation()) {
-        m_isConnected = true; 
-        // In simulation, we don't call .Connect()
-         m_isConnected = m_leds.Connect(USBPort.kUSB1);
+        m_isConnected = true;
         System.out.println("ConnectorX: Running in Simulation Mode");
     } else {
-        m_isConnected = m_leds.Connect(USBPort.kUSB1);
-        System.out.println("ConnectorX connected: " + m_isConnected);
+       System.out.println("ConnectorX Connected: " + m_isConnected);
     }
-}
-    public LEDState Next_DiseredState() {
 
-    if (m_shooter_state == shooter_state.SHOOTING || m_shooter_state == shooter_state.HALFCOURT
-        || m_shooter_state == shooter_state.LAYUP || m_shooter_state == shooter_state.TEST
-        || m_shooter_state == shooter_state.PASSING) {
+    }
+
+    public LEDState getShootingleds() {
+    // if (m_shooterstate == null) {
+    //   System.out.println("getShootingleds: robotState");
+    //     return LEDState.robotState;
+    // }
+    if (m_shooterstate == shooter_state.SHOOTING || m_shooterstate == shooter_state.HALFCOURT
+        || m_shooterstate == shooter_state.LAYUP || m_shooterstate == shooter_state.TEST
+        || m_shooterstate == shooter_state.PASSING || m_shooterstate == null && DriverStation.isTeleop()) {
+          System.out.println("getShootingleds: SHOOTING");
       return LEDState.SHOOTING;
     }
     else {
+      System.out.println("getShootingleds: robotState");
       return LEDState.robotState;
     }
   }
@@ -118,7 +122,10 @@ public class LedsSubsystem extends SubsystemBase {
 
  @Override
 public void periodic() {
-    m_currentState = Next_DiseredState();
+    m_currentState = LEDState.robotState;
+    // m_currentState = getShootingleds();
+    
+    System.out.println("Current LED State: " + m_currentState);
 
     // Determine current DS Mode as an integer
     int currentDSMode = -1;
@@ -130,7 +137,7 @@ public void periodic() {
     // Check if the LED state changed OR if the Driver Station mode changed
     boolean dsModeChanged = (currentDSMode != m_lastDSMode);
 
-    if (m_currentState != lastState || dsModeChanged) {
+    if (m_currentState != m_lastState || dsModeChanged) {
         
         // Apply the NEW state
         applyState(m_currentState);
@@ -138,20 +145,10 @@ public void periodic() {
         System.out.println("Switching LEDs to: " + m_currentState + " (DS Mode: " + currentDSMode + ")");
 
         // Sync our memory variables
-        lastState = m_currentState;
+        m_lastState = m_currentState;
         m_lastDSMode = currentDSMode;
     }
 }
-
-  /** 
-   * Directly set the state of the LEDs.
-   * 
-   * @param state The target state
-   */
-
-  private void setState(LEDState state) {
-  }
-
   private void applyState(LEDState state) {
     switch (state) {
 
@@ -182,10 +179,10 @@ public void periodic() {
         break;
 
       case SHOOTING:
-        m_leds.leds.SetAnimation(Animation.Fill)
+        m_leds.leds.SetAnimation(Animation.Blink)
             .ForGroup(GR_300)
-            .WithColor(COLOR_YELLOW)
-            .WithDelay(Units.Milliseconds.of(20))
+            .WithColor(COLOR_FEDS_BLUE)
+            .WithDelay(Units.Milliseconds.of(50))
             .RunOnce(false);
         break;
 
@@ -267,16 +264,6 @@ public void periodic() {
           .Reverse(false)
           .RunOnce(false);
     }
-  }
-
-
-  public Command setStateCommand(LEDState state) {
-    return runOnce(() -> setState(state)).ignoringDisable(true);
-  }
-
-  @Deprecated
-  public Command setLEDState(LEDState state) {
-    return setStateCommand(state);
   }
 
 }
