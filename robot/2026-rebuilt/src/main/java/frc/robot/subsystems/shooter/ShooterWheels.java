@@ -33,6 +33,7 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -46,21 +47,27 @@ import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 public class ShooterWheels extends SubsystemBase {
 
     public enum shooter_state {
-    TEST(RotationsPerSecond.of(0)),
-    SHOOTING(RotationsPerSecond.of(0)),
-    IDLE(RotationsPerSecond.of(0)),
-    PASSING(RotationsPerSecond.of(0)),
-    LAYUP(RotationsPerSecond.of(33)), // 30
-    HALFCOURT (RotationsPerSecond.of(35)); // 85 
+    TEST(RotationsPerSecond.of(0), "Test"),
+    SHOOTING(RotationsPerSecond.of(0), "Shooting"),
+    IDLE(RotationsPerSecond.of(0), "Idle"),
+    PASSING(RotationsPerSecond.of(0), "Passing"),
+    LAYUP(RotationsPerSecond.of(33), "Layup"), // 30
+    HALFCOURT (RotationsPerSecond.of(35), "Half Court"); // 85 
 
     private final AngularVelocity targetVelocity;
+    private final String name;
 
-    shooter_state(AngularVelocity targetVelocity) {
+    shooter_state(AngularVelocity targetVelocity, String name) {
       this.targetVelocity = targetVelocity;
+      this.name = name;
     }
 
     public AngularVelocity getVelocity() {
       return targetVelocity;
+    }
+    @Override
+    public String toString() {
+      return this.name;
     }
   } 
 
@@ -141,6 +148,7 @@ public class ShooterWheels extends SubsystemBase {
 
   @Override
   public void periodic() {
+    SmartDashboard.putString("ShooterWheelsState", currentState.toString());
         Logger.recordOutput("Robot/Shooter/ShooterVelocity", getVelocity().in(RotationsPerSecond));
 
     Logger.recordOutput("Robot/Shooter/IsShooting", currentState == shooter_state.SHOOTING);

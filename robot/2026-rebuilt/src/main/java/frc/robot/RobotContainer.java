@@ -33,7 +33,6 @@ import frc.robot.subsystems.spindexer.Spindexer;
 import frc.robot.subsystems.spindexer.Spindexer.spindexer_state;
 import frc.robot.sim.RebuiltSimManager;
 
-
 import org.littletonrobotics.junction.Logger;
 
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
@@ -70,16 +69,13 @@ public class RobotContainer extends ControllerBindings {
     private final ShooterWheels shooterWheels = new ShooterWheels(drivetrain);
     private final Spindexer spinDexer = new Spindexer();
     private final LedsSubsystem ledsSubsystem = new LedsSubsystem();
-    
+
     // Simulation
     private RebuiltSimManager simManager;
 
- 
-
     private final RTUManager rtumanager = new RTUManager();
 
-
-  private final SendableChooser<Command> autoChooser;
+    private final SendableChooser<Command> autoChooser;
 
     public static RobotContainer getInstance() {
         return instance;
@@ -116,27 +112,46 @@ public class RobotContainer extends ControllerBindings {
     public CommandSwerveDrivetrain getDrivetrain() {
         return drivetrain;
     }
+
     public LedsSubsystem getLedsSubsystem() {
         return ledsSubsystem;
 
     }
 
-    public RobotContainer() {
-    instance = this;
-    ll4.getSettings().withImuMode(ImuMode.ExternalImu).save();
-    setupDriveBindings(controller);
-    setupOperatorBindings(operaterController);
-    configureRootTests();
-    new Trigger(drivetrain::withinTrench).and(DriverStation::isTeleop).onTrue(shooterHood.setStateCommand(shooterhood_state.IN).andThen(intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED)));
-    new Trigger(drivetrain::withinTrench).and(DriverStation::isTeleop).onTrue(shooterHood.setStateCommand(shooterhood_state.IN).andThen(intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED)));
 
-    // TODO: migrate to LoggedDashboardChooser from AdvantageKit
-    registerNamedCommands();
-    autoChooser = AutoBuilder.buildAutoChooser();
-    SmartDashboard.putData("Auto Chooser", autoChooser);
-    drivetrain.registerTelemetry(telemetry::telemeterize);
-  }
-  
+    public shooter_state getShooterWheelsState() {
+        return shooterWheels.getCurrentState();
+    }
+    public shooterhood_state getShooterHoodState() {
+        return shooterHood.getCurrentState();
+    }
+    public IntakeState getIntakeState() {
+        return intakeSubsystem.getCurrentState();
+    }
+    public feeder_state getFeederState() {
+        return feederSubsystem.getCurrentState();
+    }
+
+    public RobotContainer() {
+        instance = this;
+        ll4.getSettings().withImuMode(ImuMode.ExternalImu).save();
+        setupDriveBindings(controller);
+        setupOperatorBindings(operaterController);
+        configureRootTests();
+        new Trigger(drivetrain::withinTrench).and(DriverStation::isTeleop)
+                .onTrue(shooterHood.setStateCommand(shooterhood_state.IN)
+                        .andThen(intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED)));
+        new Trigger(drivetrain::withinTrench).and(DriverStation::isTeleop)
+                .onTrue(shooterHood.setStateCommand(shooterhood_state.IN)
+                        .andThen(intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED)));
+
+        // TODO: migrate to LoggedDashboardChooser from AdvantageKit
+        registerNamedCommands();
+        autoChooser = AutoBuilder.buildAutoChooser();
+        SmartDashboard.putData("Auto Chooser", autoChooser);
+        drivetrain.registerTelemetry(telemetry::telemeterize);
+    }
+
     // --- APIs used by the diagnostic server / UI to command shooter/hood ---
     private final AutoSweeper autoSweeper = new AutoSweeper(
             rps -> {
@@ -171,7 +186,9 @@ public class RobotContainer extends ControllerBindings {
         }
     }
 
-    /** Backwards-compatible API: set hood angle in degrees (360deg = 1 rotation). */
+    /**
+     * Backwards-compatible API: set hood angle in degrees (360deg = 1 rotation).
+     */
     public synchronized void setHoodAngleDeg(double deg) {
         try {
             shooterHood.setAngle(Rotations.of(deg / 360.0));
@@ -206,32 +223,31 @@ public class RobotContainer extends ControllerBindings {
      * Start a dynamic auto-sweep driven by the diagnostic dashboard's telemetry
      * values. Puts shooter wheels and hood into TEST state while the sweep runs
      * and restores them when it finishes.
+     * 
      * @param holdMs milliseconds to hold each supplier sample
      */
     public synchronized void startAutoSweepFromDiagnostic(int holdMs) {
-    // enter test mode immediately
-    shooterWheels.setState(frc.robot.subsystems.shooter.ShooterWheels.shooter_state.TEST);
-    shooterHood.setState(frc.robot.subsystems.shooter.ShooterHood.shooterhood_state.TEST);
+        // enter test mode immediately
+        shooterWheels.setState(frc.robot.subsystems.shooter.ShooterWheels.shooter_state.TEST);
+        shooterHood.setState(frc.robot.subsystems.shooter.ShooterHood.shooterhood_state.TEST);
 
         autoSweeper.startDynamic(
-            // shooter velocity supplier (RPS) comes from TelemetryPublisher
-            () -> frc.robot.utils.RTU.TelemetryPublisher.getShooterVelocityRps(),
-            // hood angle supplier (degrees) comes from TelemetryPublisher
-            () -> frc.robot.utils.RTU.TelemetryPublisher.getHoodAngleDeg(),
-            // enter test mode (redundant but safe)
-            () -> {
-                shooterWheels.setState(frc.robot.subsystems.shooter.ShooterWheels.shooter_state.TEST);
-                shooterHood.setState(frc.robot.subsystems.shooter.ShooterHood.shooterhood_state.TEST);
-            },
-            // exit test mode: restore reasonable idle states
-            () -> {
-                shooterWheels.setState(frc.robot.subsystems.shooter.ShooterWheels.shooter_state.IDLE);
-                shooterHood.setState(frc.robot.subsystems.shooter.ShooterHood.shooterhood_state.IN);
-            },
-            holdMs
-        );
+                // shooter velocity supplier (RPS) comes from TelemetryPublisher
+                () -> frc.robot.utils.RTU.TelemetryPublisher.getShooterVelocityRps(),
+                // hood angle supplier (degrees) comes from TelemetryPublisher
+                () -> frc.robot.utils.RTU.TelemetryPublisher.getHoodAngleDeg(),
+                // enter test mode (redundant but safe)
+                () -> {
+                    shooterWheels.setState(frc.robot.subsystems.shooter.ShooterWheels.shooter_state.TEST);
+                    shooterHood.setState(frc.robot.subsystems.shooter.ShooterHood.shooterhood_state.TEST);
+                },
+                // exit test mode: restore reasonable idle states
+                () -> {
+                    shooterWheels.setState(frc.robot.subsystems.shooter.ShooterWheels.shooter_state.IDLE);
+                    shooterHood.setState(frc.robot.subsystems.shooter.ShooterHood.shooterhood_state.IN);
+                },
+                holdMs);
     }
-  
 
     public void updateLocalization() {
         if (ll4.getNTTable().containsKey("tv")) {
@@ -265,9 +281,9 @@ public class RobotContainer extends ControllerBindings {
         }
     }
 
-  public Command getAutonomousCommand() {
-    return autoChooser.getSelected();
-  }
+    public Command getAutonomousCommand() {
+        return autoChooser.getSelected();
+    }
 
     private void configureRootTests() {
         // Keep this method for compatibility but delegate to RTUManager
@@ -293,31 +309,51 @@ public class RobotContainer extends ControllerBindings {
     public void runRootTests() {
         rtumanager.runAll();
     }
-    public void updateRootTests() {
 
+    public void updateRootTests() {
 
         rtumanager.periodic();
     }
 
+    public void registerNamedCommands() {
+        NamedCommands.registerCommand("Extend Hopper", intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED));
+        NamedCommands.registerCommand("Extend Intake", intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED));
+        NamedCommands.registerCommand("Retract Intake", intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT));
+        NamedCommands.registerCommand("Run Rollers", intakeSubsystem.setRollerStateCommand(RollerState.ON));
+        NamedCommands.registerCommand("Stop Rollers", intakeSubsystem.setRollerStateCommand(RollerState.OFF));
+        NamedCommands.registerCommand("Start Shooter Spin", shooterWheels.setStateCommand(shooter_state.SHOOTING)
+                .alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
+        NamedCommands.registerCommand("Stop Shooter Spin",
+                shooterWheels.setStateCommand(shooter_state.IDLE)
+                        .alongWith(shooterHood.setStateCommand(shooterhood_state.IN))
+                        .alongWith(spinDexer.setStateCommand(spindexer_state.STOP))
+                        .alongWith(feederSubsystem.setStateCommand(feeder_state.STOP)));
+        NamedCommands.registerCommand("End Shooter Spin",
+                shooterWheels.setStateCommand(shooter_state.IDLE)
+                        .alongWith(shooterHood.setStateCommand(shooterhood_state.IN))
+                        .alongWith(spinDexer.setStateCommand(spindexer_state.STOP))
+                        .alongWith(feederSubsystem.setStateCommand(feeder_state.STOP)));
+        NamedCommands.registerCommand("Run Shooter",
+                shooterWheels.setStateCommand(shooter_state.SHOOTING)
+                        .alongWith(feederSubsystem.setStateCommand(feeder_state.PRUN))
+                        .alongWith(spinDexer.setStateCommand(spindexer_state.PFORWARD))
+                        .alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
+        NamedCommands.registerCommand("Shooting",
+                shooterWheels.setStateCommand(shooter_state.SHOOTING)
+                        .alongWith(feederSubsystem.setStateCommand(feeder_state.PRUN))
+                        .alongWith(spinDexer.setStateCommand(spindexer_state.PFORWARD))
+                        .alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
+        NamedCommands.registerCommand("Run Shooter",
+                shooterWheels.setStateCommand(shooter_state.SHOOTING)
+                        .alongWith(feederSubsystem.setStateCommand(feeder_state.PRUN))
+                        .alongWith(spinDexer.setStateCommand(spindexer_state.PFORWARD))
+                        .alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
+        NamedCommands.registerCommand("Shooting",
+                shooterWheels.setStateCommand(shooter_state.SHOOTING)
+                        .alongWith(feederSubsystem.setStateCommand(feeder_state.PRUN))
+                        .alongWith(spinDexer.setStateCommand(spindexer_state.PFORWARD))
+                        .alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
 
-public void registerNamedCommands() {
-  NamedCommands.registerCommand("Extend Hopper", intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED));
-  NamedCommands.registerCommand("Extend Intake", intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED));
-  NamedCommands.registerCommand("Retract Intake", intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT));
-  NamedCommands.registerCommand("Run Rollers", intakeSubsystem.setRollerStateCommand(RollerState.ON));
-  NamedCommands.registerCommand("Stop Rollers", intakeSubsystem.setRollerStateCommand(RollerState.OFF));
-  NamedCommands.registerCommand("Start Shooter Spin", shooterWheels.setStateCommand(shooter_state.SHOOTING).alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
-  NamedCommands.registerCommand("Stop Shooter Spin", shooterWheels.setStateCommand(shooter_state.IDLE).alongWith(shooterHood.setStateCommand(shooterhood_state.IN)).alongWith(spinDexer.setStateCommand(spindexer_state.STOP)).alongWith(feederSubsystem.setStateCommand(feeder_state.STOP)));
-  NamedCommands.registerCommand("End Shooter Spin", shooterWheels.setStateCommand(shooter_state.IDLE).alongWith(shooterHood.setStateCommand(shooterhood_state.IN)).alongWith(spinDexer.setStateCommand(spindexer_state.STOP)).alongWith(feederSubsystem.setStateCommand(feeder_state.STOP)));
-  NamedCommands.registerCommand("Run Shooter", shooterWheels.setStateCommand(shooter_state.SHOOTING).alongWith(feederSubsystem.setStateCommand(feeder_state.PRUN)).alongWith(spinDexer.setStateCommand(spindexer_state.PFORWARD)).alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
-  NamedCommands.registerCommand("Shooting", shooterWheels.setStateCommand(shooter_state.SHOOTING).alongWith(feederSubsystem.setStateCommand(feeder_state.PRUN)).alongWith(spinDexer.setStateCommand(spindexer_state.PFORWARD)).alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
-  NamedCommands.registerCommand("Run Shooter", shooterWheels.setStateCommand(shooter_state.SHOOTING).alongWith(feederSubsystem.setStateCommand(feeder_state.PRUN)).alongWith(spinDexer.setStateCommand(spindexer_state.PFORWARD)).alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
-  NamedCommands.registerCommand("Shooting", shooterWheels.setStateCommand(shooter_state.SHOOTING).alongWith(feederSubsystem.setStateCommand(feeder_state.PRUN)).alongWith(spinDexer.setStateCommand(spindexer_state.PFORWARD)).alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
-
-
-}
-
-
-
+    }
 
 }

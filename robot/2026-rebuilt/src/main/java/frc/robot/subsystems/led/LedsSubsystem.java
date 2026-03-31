@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotContainer;
 import frc.robot.commands.swerve.TeleopSwerve.driveMode;
 import frc.robot.subsystems.shooter.ShooterHood.shooterhood_state;
 import frc.robot.subsystems.shooter.ShooterWheels.shooter_state;
@@ -21,7 +22,7 @@ import frc.robot.subsystems.shooter.ShooterWheels.shooter_state;
 public class LedsSubsystem extends SubsystemBase {
   public static ConnectorXAnimate m_leds = new ConnectorXAnimate();
   private static LedsSubsystem instance;
-  public static shooter_state m_shooterstate;
+  public static shooter_state m_shooterstate = shooter_state.IDLE;
   public static driveMode m_driveMode;
   public static shooterhood_state m_shooterhood_state;
   // private double m_lastHeartbeat = -1;
@@ -43,7 +44,7 @@ public class LedsSubsystem extends SubsystemBase {
     ERROR_CAN, // Error: CAN blink green and yellow at 400ms and should be altrnate
     ERROR_JAMMING, // Error: jamming should be blink scarlett at 200ms
     ERROR_OTHER, // blink pruple at 200ms
-    robotState, // Default state, should be solid yellow when disabled, solid red in auto, 
+    IDLE, // Default state, should be solid yellow when disabled, solid red in auto, 
     OFF, // All LEDs off
     STARTUP_TEST; // Tests state for startup testing animation;
 
@@ -78,6 +79,7 @@ public class LedsSubsystem extends SubsystemBase {
 
 
  public LedsSubsystem() {
+  m_currentState = LEDState.IDLE; // Start with IDLE to show DS mode on startup
   m_isConnected = m_leds.Connect(USBPort.kUSB1);
     if (RobotBase.isSimulation()) {
         m_isConnected = true;
@@ -89,21 +91,21 @@ public class LedsSubsystem extends SubsystemBase {
     }
 
     public LEDState getShootingleds() {
-    // if (m_shooterstate == null) {
-    //   System.out.println("getShootingleds: robotState");
-    //     return LEDState.robotState;
-    // }
-    if (m_shooterstate == shooter_state.SHOOTING || m_shooterstate == shooter_state.HALFCOURT
-        || m_shooterstate == shooter_state.LAYUP || m_shooterstate == shooter_state.TEST
-        || m_shooterstate == shooter_state.PASSING || m_shooterstate == null && DriverStation.isTeleop()) {
-          System.out.println("getShootingleds: SHOOTING");
+    
+    switch (m_shooterstate) {
+      case SHOOTING:
+      case HALFCOURT:
+      case LAYUP:
+      case TEST:
+      case PASSING:
+      System.out.println("[LedsSubsystem] Returning Shooting");
       return LEDState.SHOOTING;
+
+      default:
+      System.out.println("[LedsSubsystem] Returning State-based Idle");
+      return LEDState.IDLE;
     }
-    else {
-      System.out.println("getShootingleds: robotState");
-      return LEDState.robotState;
     }
-  }
 
   public LEDState desiredDriveMode() {
     if (m_driveMode == driveMode.FALCONDRIVE) {
@@ -112,7 +114,7 @@ public class LedsSubsystem extends SubsystemBase {
       return LEDState.HUB_DRIVE;
     }
     else {
-      return LEDState.robotState  ;
+      return LEDState.IDLE  ;
     }
   }
 
@@ -122,32 +124,39 @@ public class LedsSubsystem extends SubsystemBase {
 
  @Override
 public void periodic() {
-    m_currentState = LEDState.robotState;
-    // m_currentState = getShootingleds();
+  m_shooterstate = RobotContainer.getInstance().getShooterWheelsState();
+    m_currentState = getShootingleds();
+      applyState(m_currentState);
+      System.out.println("[Periodic] Get Shooter State: " + m_shooterstate);
+      System.out.println("[Periodic] Current LED State: " + m_currentState);
+      
+    //  m_currentState = getShootingleds();
+    //  m_shooterstate = RobotContainer.getInstance().getShooterWheelsState();
+    //  System.out.println("[Periodic] Get Shooter State: " + m_shooterstate);
     
-    System.out.println("Current LED State: " + m_currentState);
+    // System.out.println("[Periodic] Current LED State: " + m_currentState);
 
-    // Determine current DS Mode as an integer
-    int currentDSMode = -1;
-    if (DriverStation.isDisabled()) currentDSMode = 0;
-    else if (DriverStation.isAutonomous()) currentDSMode = 1;
-    else if (DriverStation.isTeleop()) currentDSMode = 2;
-    else if (DriverStation.isTest()) currentDSMode = 3;
+    // // Determine current DS Mode as an integer
+    // int currentDSMode = -1;
+    // if (DriverStation.isDisabled()) currentDSMode = 0;
+    // else if (DriverStation.isAutonomous()) currentDSMode = 1;
+    // else if (DriverStation.isTeleop()) currentDSMode = 2;
+    // else if (DriverStation.isTest()) currentDSMode = 3;
 
-    // Check if the LED state changed OR if the Driver Station mode changed
-    boolean dsModeChanged = (currentDSMode != m_lastDSMode);
+    // // Check if the LED state changed OR if the Driver Station mode changed
+    // boolean dsModeChanged = (currentDSMode != m_lastDSMode);
 
-    if (m_currentState != m_lastState || dsModeChanged) {
+    // if (m_currentState != m_lastState || dsModeChanged) {
         
-        // Apply the NEW state
-        applyState(m_currentState);
+    //     // Apply the NEW state
+    //     applyState(m_currentState);
         
-        System.out.println("Switching LEDs to: " + m_currentState + " (DS Mode: " + currentDSMode + ")");
+    //     System.out.println("Switching LEDs to: " + m_currentState + " (DS Mode: " + currentDSMode + ")");
 
-        // Sync our memory variables
-        m_lastState = m_currentState;
-        m_lastDSMode = currentDSMode;
-    }
+    //     // Sync our memory variables
+    //     m_lastState = m_currentState;
+    //     m_lastDSMode = currentDSMode;
+    // }
 }
   private void applyState(LEDState state) {
     switch (state) {
@@ -156,10 +165,10 @@ public void periodic() {
         m_leds.leds.SetColor(GR_300, new Color(0, 0, 0));
         break;
 
-      case robotState:
+      case IDLE:
 
-        System.out.println("applyState: robotState");
-        applyRobotState();
+        System.out.println("applyState: IDLE");
+        applyIDLE();
         break;
 
       case FALCON_DRIVE:
@@ -179,11 +188,15 @@ public void periodic() {
         break;
 
       case SHOOTING:
-        m_leds.leds.SetAnimation(Animation.Blink)
-            .ForGroup(GR_300)
-            .WithColor(COLOR_FEDS_BLUE)
-            .WithDelay(Units.Milliseconds.of(50))
-            .RunOnce(false);
+        System.out.println("applyState: SHOOTING");
+       m_leds.leds.SetAnimation(Animation.RainbowRoll)
+          .ForZone(GR_300)
+          .WithColor(COLOR_WHITE)
+          .WithDelay(Units.Milliseconds.of(10))
+          .Reverse(false)
+          .RunOnce(false);
+
+        System.out.println("Applied SHOOTING LED pattern");
         break;
 
       case ERROR_LL:
@@ -228,7 +241,7 @@ public void periodic() {
     }
   }
 
-  private static void applyRobotState() {
+  private static void applyIDLE() {
     if (DriverStation.isDisabled()) {
       System.out.println("isDisabled");
       // Disabled: Breathe Red indicating standby/disabled

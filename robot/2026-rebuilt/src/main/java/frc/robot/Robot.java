@@ -19,6 +19,7 @@ import com.pathplanner.lib.commands.FollowPathCommand;
 import com.ctre.phoenix6.SignalLogger;
 
 import edu.wpi.first.hal.AllianceStationID;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
@@ -40,6 +41,10 @@ public class Robot extends LoggedRobot {
 
 
   public Robot() {
+  // Use a longer loop period during simulation so simulated time appears slower.
+  // Set to 0.5 seconds in simulation -> 2 periods per second.
+  // TimedRobot/LoggedRobot accepts a period in seconds via the super(...) constructor.
+  super(RobotBase.isSimulation() ? 0.5 : 0.02);
     // DO NOT COMMENT THIS OUT!
     // If build fails the 1st time because no BuildConstant:
     //  1. clean your workspace cache
