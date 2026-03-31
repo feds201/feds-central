@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 public class LedsSim {
     
   private final ConnectorXAnimate m_leds;
+  private final ConnectorXAnimate m_leds2;
 
   /**
    * Constructor for LedsSim.
@@ -21,9 +22,11 @@ public class LedsSim {
    */
   public LedsSim(ConnectorXAnimate leds) {
     this.m_leds = leds;
+    this.m_leds2 = leds;
 
     if (RobotBase.isSimulation()) {
       m_leds.ApplyConfiguration(buildConfig());
+      m_leds2.ApplyConfiguration(buildConfig());
       System.out.println("LedsSim constructed, applying config");
     }
   }
@@ -38,6 +41,9 @@ public class LedsSim {
         // Use "GR_300" here so it matches your LedsSubsystem constant
         .addChannel(1, "port1", 300)
             .addStripZone("GR_300", 300, false) 
+        .endChannel()
+        .addChannel(2, "port2", 50)
+            .addStripZone("ZONE_50_1", 50, false) 
         .endChannel()
         .build();
 }

@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.RobotMap.DrivetrainConstants;
+import frc.robot.commands.swerve.TeleopSwerve.driveMode;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem.IntakeState;
 import frc.robot.subsystems.intake.IntakeSubsystem.RollerState;
@@ -35,6 +36,7 @@ import frc.robot.subsystems.shooter.ShooterWheels;
 import frc.robot.subsystems.shooter.ShooterWheels.shooter_state;
 import frc.robot.subsystems.spindexer.Spindexer;
 import frc.robot.subsystems.spindexer.Spindexer.spindexer_state;
+import frc.robot.commands.swerve.TeleopSwerve;
 import frc.robot.sim.RebuiltSimManager;
 
 import org.littletonrobotics.junction.Logger;
@@ -138,6 +140,9 @@ public class RobotContainer extends ControllerBindings {
     }
     public feeder_state getFeederState() {
         return feederSubsystem.getCurrentState();
+    }
+    public driveMode getDriveMode() {
+        return TeleopSwerve.getDriveMode();
     }
 
     public RobotContainer() {
