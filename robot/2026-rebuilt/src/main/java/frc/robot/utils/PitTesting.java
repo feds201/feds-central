@@ -52,11 +52,7 @@ public class PitTesting {
             intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT)));
         
         testLayout.add("Run Intake and Rollers", Commands.sequence(
-            intakeSubsystem.setIntakeStateCommand(IntakeState.INTAKING),
-            Commands.waitSeconds(testTime),
-            intakeSubsystem.setRollerStateCommand(RollerState.ON),
-            Commands.waitSeconds(testTime),
-            intakeSubsystem.setRollerStateCommand(RollerState.OFF),
+            intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED),
             Commands.waitSeconds(testTime),
             intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT)));
 
