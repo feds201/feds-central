@@ -49,7 +49,7 @@ class _RecordState extends State<Record> {
   late String ImageBlob; // Add this variable to store combined images
 
   // New FRC 2026 State Variables
-  late List<String> AutoRoutesController;
+  late String AutoRoutesController;
   late int AutoFuelController;
   late String GameDataController; // "Yes" or "No"
   late double WeightController;
@@ -80,7 +80,7 @@ class _RecordState extends State<Record> {
   String clearanceUnit = 'in';
   String shootingRateUnit = 'balls/sec';
   bool _pathSaved = false;
-
+  bool isPageScrollable = true;
 
   @override
   void initState() {
@@ -102,7 +102,7 @@ class _RecordState extends State<Record> {
     ImageBlob = ""; // Initialize the combined blob
 
     // New Fields Init
-    AutoRoutesController = [];
+    AutoRoutesController = "Yes";
     AutoFuelController = 0;
     GameDataController = "No";
     WeightController = 0.0;
@@ -221,6 +221,7 @@ class _RecordState extends State<Record> {
 
   Widget _buildQuestions() {
     return SingleChildScrollView(
+        physics: isPageScrollable ? null : const NeverScrollableScrollPhysics(),
         scrollDirection: Axis.vertical,
         child: Column(children: [
           buildTextBoxs(
@@ -271,7 +272,7 @@ class _RecordState extends State<Record> {
             [
               Container(
                 width: double.infinity,
-                height: 560,
+                height: 600,
                 child: Column(
                   children: [
                     Text("Auton Path", textAlign: TextAlign.center,
@@ -318,15 +319,33 @@ class _RecordState extends State<Record> {
                         ),
                       ),
                     ),
-
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        TextButton.icon(
+                          onPressed: () {
+                            setState(() {
+                              isPageScrollable = !isPageScrollable;
+                            });
+                          },
+                          icon:
+                          Icon(isPageScrollable ? Icons.lock_outline : Icons.lock_open),
+                          label: Text(isPageScrollable ? "Unlock" : "Lock"),
+                          style: TextButton.styleFrom(
+                            foregroundColor:
+                            islightmode() ? Colors.black : Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ),
-
-              buildMultiChoiceBox(
-                  "Auto Starting Positions",
-                  Icon(Icons.start, size: 30, color: Colors.green),
-                  ["Left", "Center", "Right"],
+              buildChoiceBox(
+                  "Were Autons Shared?",
+                  Icon(Icons.gesture,
+                      size: 30, color: Colors.purple),
+                  ["Yes", "No, Did Not Have Auton", "No, Team Refused To Share"],
                   AutoRoutesController, (value) {
                 setState(() {
                   AutoRoutesController = value;
