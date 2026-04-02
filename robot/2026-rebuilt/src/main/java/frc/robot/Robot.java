@@ -20,6 +20,8 @@ import com.ctre.phoenix6.SignalLogger;
 
 import edu.wpi.first.hal.AllianceStationID;
 import edu.wpi.first.net.WebServer;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.simulation.DriverStationSim;
@@ -54,8 +56,11 @@ public class Robot extends LoggedRobot {
     Logger.recordMetadata("ProjectName", "2026-Rebuilt");
 
       switch (RobotMap.getRobotMode()) {
+      // Network tables now logged for more complete logging data, AdvantageKit logs send to Network Tables only 
       case REAL:
-        Logger.addDataReceiver(new WPILOGWriter()); // Saves logs to RoboRIO
+        // Logger.addDataReceiver(new WPILOGWriter()); // Saves logs to RoboRIO
+        DataLogManager.start(); 
+        NetworkTableInstance.getDefault().startEntryDataLog(DataLogManager.getLog(), "", "");
         Logger.addDataReceiver(new NT4Publisher()); // Publishes logs to network tables
         break;
 
@@ -64,8 +69,9 @@ public class Robot extends LoggedRobot {
         //   ./gradlew simulateJava -PsimLogging=true
         if (Boolean.getBoolean("simLogging")) {
           Logger.addDataReceiver(new WPILOGWriter("logs"));
+          DataLogManager.start();
+          NetworkTableInstance.getDefault().startEntryDataLog(DataLogManager.getLog(), "", "");
         }
-        //Logger.addDataReceiver(new WPILOGWriter("log"));
         Logger.addDataReceiver(new NT4Publisher());
         break;
 

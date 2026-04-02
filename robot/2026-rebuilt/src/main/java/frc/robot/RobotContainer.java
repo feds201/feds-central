@@ -311,6 +311,8 @@ public void registerNamedCommands() {
   NamedCommands.registerCommand("Stop Shooter Spin", shooterWheels.setStateCommand(shooter_state.IDLE).alongWith(shooterHood.setStateCommand(shooterhood_state.IN)).alongWith(spinDexer.setStateCommand(spindexer_state.STOP)).alongWith(feederSubsystem.setStateCommand(feeder_state.STOP)));
   NamedCommands.registerCommand("End Shooter Spin", shooterWheels.setStateCommand(shooter_state.IDLE).alongWith(shooterHood.setStateCommand(shooterhood_state.IN)).alongWith(spinDexer.setStateCommand(spindexer_state.STOP)).alongWith(feederSubsystem.setStateCommand(feeder_state.STOP)));
   NamedCommands.registerCommand("Run Shooter", shooterWheels.setStateCommand(shooter_state.SHOOTING).alongWith(feederSubsystem.setStateCommand(feeder_state.PRUN)).alongWith(spinDexer.setStateCommand(spindexer_state.PFORWARD)).alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
+  // DO NOT SUBMIT (should we do agitate in+out??)
+  NamedCommands.registerCommand("Run Shooter With Agitate", shooterWheels.setStateCommand(shooter_state.SHOOTING).alongWith(feederSubsystem.setStateCommand(feeder_state.PRUN)).alongWith(spinDexer.setStateCommand(spindexer_state.PFORWARD)).alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)).alongWith(intakeSubsystem.setIntakeStateCommand(IntakeState.AGITATE_IN)));
   NamedCommands.registerCommand("Shooting", shooterWheels.setStateCommand(shooter_state.SHOOTING).alongWith(feederSubsystem.setStateCommand(feeder_state.PRUN)).alongWith(spinDexer.setStateCommand(spindexer_state.PFORWARD)).alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
 
 
