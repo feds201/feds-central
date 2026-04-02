@@ -7,9 +7,10 @@ import 'services/local_prefs.dart';
 import 'theme.dart';
 import 'screens/event_entry_screen.dart';
 import 'screens/comparison_screen.dart';
+import 'package:flutter/foundation.dart';
 
 void main() {
-  setPathUrlStrategy();
+  if (kIsWeb) setPathUrlStrategy();
 
   final dataService = DataService();
   final config = LocalPrefs.resolveConfig();
