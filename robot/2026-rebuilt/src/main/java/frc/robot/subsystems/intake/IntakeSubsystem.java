@@ -68,14 +68,6 @@ public class IntakeSubsystem extends SubsystemBase {
   private static final double ROLLER_OUTPUT = 0.90; //90% for rollers, 70% originally;
   private final Timer timer = new Timer();
 
-  private final ShuffleboardTab pitTab;
-  private final ShuffleboardLayout intakeLayout;
-  private final GenericEntry intakeConnectedEntry;
-  private final GenericEntry intakePoweredEntry;
-  private final GenericEntry rollerConnectedEntry;
-  private final GenericEntry rollerPoweredEntry;
-
-
 
   // MotionMagic helper (create once and reuse)
   private final MotionMagicVoltage positionOut = new MotionMagicVoltage(Rotations.of(0));
@@ -399,13 +391,6 @@ public class IntakeSubsystem extends SubsystemBase {
       if (RobotBase.isSimulation()) {
         initSimulation();
       }
-
-    pitTab = Shuffleboard.getTab("Pit Testing");
-    intakeLayout = pitTab.getLayout("intake Health", BuiltInLayouts.kList).withSize(2,2).withPosition(4, 0);
-    intakeConnectedEntry = intakeLayout.add("intake Motor is Connected", false).getEntry();
-    intakePoweredEntry = intakeLayout.add("intake Motor is Powered", false).getEntry();
-    rollerConnectedEntry = intakeLayout.add("roller Motor is Connected", false).getEntry();
-    rollerPoweredEntry = intakeLayout.add("roller Motor is Powered", false).getEntry();
     }
   
     private void initSimulation() {
@@ -507,11 +492,6 @@ public class IntakeSubsystem extends SubsystemBase {
     Logger.recordOutput("Robot/Limelights/limelight-one/TY", LimelightHelpers.getTY("limelight-one"));
     Logger.recordOutput("Robot/Limelights/limelight-one/TA", LimelightHelpers.getTA("limelight-one"));
     super.periodic();
-
-    intakeConnectedEntry.setBoolean(motor.isConnected());
-  intakePoweredEntry.setBoolean(motor.getSupplyVoltage().getValueAsDouble() > RobotMap.PitConstants.kPoweredThresholdVolts);
-  rollerConnectedEntry.setBoolean(rollerMotor.isConnected());
-  rollerPoweredEntry.setBoolean(rollerMotor.getSupplyVoltage().getValueAsDouble() > RobotMap.PitConstants.kPoweredThresholdVolts);
   }
   
 
@@ -575,5 +555,12 @@ public class IntakeSubsystem extends SubsystemBase {
      return limit_switch_l.get();
     }
 
+    public TalonFX getIntakeMotor() {
+      return motor;
+    }
+
+    public TalonFX getRollerMotor() {
+      return rollerMotor;
+    }
 }
 

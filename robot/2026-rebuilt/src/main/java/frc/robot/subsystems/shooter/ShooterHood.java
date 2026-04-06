@@ -72,10 +72,6 @@ public class ShooterHood extends SubsystemBase {
   private double HoodAngleMultiplier = 1;
   private ShuffleboardTab tab = Shuffleboard.getTab("testing");
   public DoubleSupplier pos = ()->0.0;
-  private final ShuffleboardTab pitTab;
-  private final ShuffleboardLayout shooterHoodLayout;
-  private final GenericEntry shooterHoodConnectedEntry;
-  private final GenericEntry shooterHoodPoweredEntry;
 
   /** Creates a new Shooter. */
   public ShooterHood(CommandSwerveDrivetrain dt) {
@@ -105,10 +101,6 @@ public class ShooterHood extends SubsystemBase {
                 .withProperties(Map.of("min", 0, "max", .2))
                 .getEntry();
                 pos = () -> swanNeckPivotSpeedSetter.getDouble(0);
-    pitTab = Shuffleboard.getTab("Pit Testing");
-    shooterHoodLayout = pitTab.getLayout("Shooter Hood Health", BuiltInLayouts.kList).withSize(2,1).withPosition(4, 4);
-    shooterHoodConnectedEntry = shooterHoodLayout.add("shooter Hood Motor is Connected", false).getEntry();
-    shooterHoodPoweredEntry = shooterHoodLayout.add("shooter Hood Motor is Powered", false).getEntry();
   }
 
   @Override
@@ -143,8 +135,6 @@ public class ShooterHood extends SubsystemBase {
     }
     Logger.recordOutput("Robot/Shooter/HoodAngleRotations", getPosition().in(Rotations));
     // This method will be called once per scheduler run
-    shooterHoodConnectedEntry.setBoolean(hoodMotor.isConnected());
-  shooterHoodPoweredEntry.setBoolean(hoodMotor.getSupplyVoltage().getValueAsDouble() > RobotMap.PitConstants.kPoweredThresholdVolts);
   }
 
   public void setAngle(Angle targetAngle){
@@ -213,5 +203,9 @@ public class ShooterHood extends SubsystemBase {
 
   public Command resetHoodAngle(){
     return runOnce(() -> hoodMotor.setPosition(0));
+  }
+
+  public TalonFX getShooterHoodMotor() {
+    return hoodMotor;
   }
 }

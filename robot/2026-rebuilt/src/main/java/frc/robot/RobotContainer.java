@@ -128,7 +128,7 @@ public class RobotContainer extends ControllerBindings {
     setupDriveBindings(controller);
     setupOperatorBindings(operaterController);
     configureRootTests();
-    PitTesting.addCommands();
+    PitTesting.createDashboard();
     new Trigger(drivetrain::withinTrench).and(DriverStation::isTeleop).onTrue(shooterHood.setStateCommand(shooterhood_state.IN).andThen(intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED)));
 
     // TODO: migrate to LoggedDashboardChooser from AdvantageKit
