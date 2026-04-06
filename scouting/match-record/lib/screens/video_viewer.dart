@@ -80,7 +80,7 @@ class _VideoViewerState extends State<VideoViewer> {
   late ViewMode _viewMode;
   late bool _sidesSwapped;
   bool _isPlaying = false;
-  DrawingColor? _drawingColor; // null while playing, red/blue while paused
+  bool _drawButtonHeld = false;
   bool _isScrubBarDragging = false;
   bool _isFingerScrubbing = false;
   bool _wasPlayingBeforeScrub = false;
@@ -251,12 +251,7 @@ class _VideoViewerState extends State<VideoViewer> {
           if (mounted) {
             setState(() {
               _isPlaying = playing;
-              _drawingController.setOpacity(playing ? 0.3 : 1.0);
-              // Auto-enable drawing on pause, disable on play
-              if (!playing) {
-                _drawingColor ??= DrawingColor.red;
-                _drawingController.setColor(_drawingColor!);
-              }
+              _drawingController.setOpacity(playing ? 0.4 : 1.0);
             });
           }
         }),
@@ -436,19 +431,25 @@ class _VideoViewerState extends State<VideoViewer> {
       // First finger — start scrub or draw
       _primaryPointer = event.pointer;
 
-      if (_isPlaying) {
-        // 1-finger while playing = scrub
+      if (_drawButtonHeld) {
+        // 1-finger with draw button held = draw
+        _primaryPointerIsScrub = false;
+        _drawingController.onPointerDown(event.position);
+      } else {
+        // 1-finger without draw button = scrub
         _primaryPointerIsScrub = true;
         _scrubStartX = event.position.dx;
-        _wasPlayingBeforeScrub = true;
+        _wasPlayingBeforeScrub = _isPlaying;
         _isFingerScrubbing = true;
         _scrubBasePosition = _syncEngine?.intendedEarlierPosition ?? _position;
 
-        // Pause players for scrub (playback suspended, not a user pause)
-        if (_syncEngine != null) {
-          _syncEngine!.pauseBoth();
-        } else {
-          (_redPlayer ?? _bluePlayer ?? _fullPlayer)?.pause();
+        // Pause players for scrub if currently playing
+        if (_isPlaying) {
+          if (_syncEngine != null) {
+            _syncEngine!.pauseBoth();
+          } else {
+            (_redPlayer ?? _bluePlayer ?? _fullPlayer)?.pause();
+          }
         }
 
         // Start coalescing timer for smooth finger scrubbing
@@ -456,11 +457,6 @@ class _VideoViewerState extends State<VideoViewer> {
           intervalMs: widget.dataStore.settings.scrubCoalescingIntervalMs,
           onTick: _onScrubCoalescingTick,
         );
-      } else {
-        // 1-finger while paused = draw
-        _primaryPointerIsScrub = false;
-        if (_drawingColor == null) return;
-        _drawingController.onPointerDown(event.position);
       }
     } else if (!_multiTouchDetected) {
       // 2nd+ finger arrived — cancel the 1-finger action
@@ -494,7 +490,6 @@ class _VideoViewerState extends State<VideoViewer> {
       _scrubController.updateDesiredPosition(target);
     } else {
       // Draw: continue stroke
-      if (_drawingColor == null) return;
       _drawingController.onPointerMove(event.position);
     }
   }
@@ -584,18 +579,13 @@ class _VideoViewerState extends State<VideoViewer> {
 
   // --- Drawing ---
 
-  void _cycleDrawingColor() {
-    setState(() {
-      // Cycle: red → blue → red → blue (no "off" state)
-      switch (_drawingColor) {
-        case null:
-        case DrawingColor.blue:
-          _drawingColor = DrawingColor.red;
-        case DrawingColor.red:
-          _drawingColor = DrawingColor.blue;
-      }
-      _drawingController.setColor(_drawingColor!);
-    });
+  void _onDrawStart() {
+    setState(() => _drawButtonHeld = true);
+    _drawingController.setColor(DrawingColor.red);
+  }
+
+  void _onDrawEnd() {
+    setState(() => _drawButtonHeld = false);
   }
 
   // --- Rotation ---
@@ -851,12 +841,11 @@ class _VideoViewerState extends State<VideoViewer> {
               isPlaying: _isPlaying,
               muteState: _muteState,
               viewMode: _viewMode,
-              drawingColor: _drawingColor,
+              isDrawing: _drawButtonHeld,
               canUndo: _drawingController.canUndo,
               canRedo: _drawingController.canRedo,
               hasDrawings: _drawingController.hasNonEmptyStrokes,
               canToggleViewMode: _availableViewModes.length > 1,
-              isPaused: !_isPlaying,
               onBack: () => Navigator.of(context).pop(),
               onSwapSides: _swapSides,
               onToggleMute: _toggleMute,
@@ -865,7 +854,8 @@ class _VideoViewerState extends State<VideoViewer> {
               onRewind10: _rewind10,
               onForward10: _forward10,
               onRestart: _restart,
-              onToggleDrawing: _cycleDrawingColor,
+              onDrawStart: _onDrawStart,
+              onDrawEnd: _onDrawEnd,
               onUndo: _drawingController.undo,
               onRedo: _drawingController.redo,
               onClearDrawing: _drawingController.clear,
