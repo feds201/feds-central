@@ -2,6 +2,7 @@ package frc.robot.utils;
 
 import java.util.ArrayList;
 
+import com.ctre.phoenix6.Orchestra;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -29,6 +30,7 @@ import frc.robot.RobotMap;
 
 public class PitTesting {
     static RobotContainer container = RobotContainer.getInstance();
+    static Orchestra m_orchestra = new Orchestra();
 
     static CommandSwerveDrivetrain drivetrain = container.getDrivetrain();
     static IntakeSubsystem intake = container.getIntakeSubsystem();
@@ -36,6 +38,9 @@ public class PitTesting {
     static Spindexer spindexer = container.getSpindexer();
     static ShooterHood shooterHood = container.getShooterHood();
     static ShooterWheels shooterWheels = container.getShooterWheels();
+
+    m_orchestra.addInstrument(m_motor);
+    m_orchestra.addInstrument(m_motor);
 
     static double poweredThreshold = RobotMap.PitConstants.kPoweredThresholdVolts;
     
@@ -118,20 +123,23 @@ public class PitTesting {
 
     public static void updateDashboard() {
 
-        updateEntry("feeder");
-        updateEntry("intake");
-        updateEntry("roller");
-        updateEntry("shooterHood");
-        updateEntry("shooterWheels");
-        updateEntry("spindexer");
+        updateEntry("feeder", feeder.getFeederMotor());
+        updateEntry("intake", intake.getIntakeMotor());
+        updateEntry("roller", intake.getRollerMotor());
+        updateEntry("shooterHood", shooterHood.getShooterHoodMotor());
+        updateEntry("shooterWheels", shooterWheels.getShooterLeader());
+        updateEntry("shooterWheels", shooterWheels.getShooterFollower1());
+        updateEntry("shooterWheels", shooterWheels.getShooterFollower2());
+        updateEntry("shooterWheels", shooterWheels.getShooterFollower3());
+        updateEntry("spindexer", spindexer.getSpindexerMotor());
 
         for (int i = 0; i < 4; ++i) {
-            updateEntry("drive" + (i + 1));
-            updateEntry("steer" + (i + 1));
-            updateEntry("encoder" + (i + 1));
+            updateEntry("drive" + (i + 1), drivetrain.getDriveMotor(i));
+            updateEntry("steer" + (i + 1), drivetrain.getSteerMotor(i));
+            updateEntry("encoder" + (i + 1), drivetrain.getModuleEncoder(i));
         }
 
-        updateEntry("pigeon");
+        updateEntry("pigeon", pigeon);
     }
 
     private static void registerEntry(String name){
@@ -139,7 +147,13 @@ public class PitTesting {
         pitEntries.add(pitTab.add(name + " Motor is Powered", false).getEntry());
     }
 
-    private static void updateEntry(String name){
-        pitEntries.get(pitEntries.indexOf(pitTab.add(name + " Motor is Connected", false).getEntry())).setBoolean(shooterHood.getShooterHoodMotor().isConnected());
+    private static void updateEntry(String name, TalonFX motor){
+        pitEntries.get(pitEntries.indexOf(pitTab.add(name + " Motor is Connected", false).getEntry())).setBoolean(motor.isConnected());
+        pitEntries.get(pitEntries.indexOf(pitTab.add(name + " Motor is Powered", false).getEntry())).setBoolean(motor.getSupplyVoltage().getValueAsDouble() > poweredThreshold);
+    }
+
+    private static void updateEntry(String name, CANcoder encoder){
+        pitEntries.get(pitEntries.indexOf(pitTab.add(name + " Encoder is Connected", false).getEntry())).setBoolean(encoder.isConnected());
+        pitEntries.get(pitEntries.indexOf(pitTab.add(name + " Encoder is Powered", false).getEntry())).setBoolean(encoder.getSupplyVoltage().getValueAsDouble() > poweredThreshold);
     }
 }
