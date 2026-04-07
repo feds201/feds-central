@@ -176,20 +176,22 @@ public final class RobotMap {
              Map.entry(3.08, 31.0),//done --- AUTON SHOOTING POSITION
             Map.entry(3.37, 33.5),
             Map.entry(3.97,40.0), //done - increased by 0.5
-            Map.entry(4.75, 38.0),//done - increase by 0.5
+            Map.entry(4.75, 38.0),
+            Map.entry(6.02, 42.0),//done - increase by 0.5
             Map.entry(100.0, 40.0)//far off top limit to prevent unwanted scaling past this distance 
         );
 
         public static final InterpolatingDoubleTreeMap kShootingPositionMap = InterpolatingDoubleTreeMap.ofEntries(
             Map.entry(1.44, 0.0),//done
             Map.entry(1.77, 0.0),//done
-            Map.entry(2.01, 3.5),//done - changed by 0.3
-            Map.entry(2.56, 8.5),//done - changed by 0.3
-            Map.entry(2.89, 8.8),//done
-             Map.entry(3.08, 7.3),// -- AUTON SHOOTING POSITION
+            Map.entry(2.01, 3.8),//done 
+            Map.entry(2.56, 9.0),//done 
+            Map.entry(2.89, 9.0),//done
+            Map.entry(3.08, 7.6),// -- AUTON SHOOTING POSITION
             Map.entry(3.37, 7.4),
             Map.entry(3.97,7.3),//done
-            Map.entry(4.75, 8.6), //done - increased by 0.3
+            Map.entry(4.75, 8.6),
+            Map.entry(6.02, 22.0), //done - increased by 0.3
             Map.entry(100.0, 9.8) //far off top limit to prevent unwanted scaling past this distance 
         );
 
