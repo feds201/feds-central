@@ -168,28 +168,28 @@ public final class RobotMap {
         // This map is used to determine the velocity of the shooter based on the distance to the target. 
         //The key is the distance to the target in meters, and the value is the velocity of the shooter in rotations per second.`
         public static final InterpolatingDoubleTreeMap kShootingVelocityMap = InterpolatingDoubleTreeMap.ofEntries(
-            Map.entry(1.44, 26.5),//done
-            Map.entry(1.7, 26.5),//done
-            Map.entry(2.01, 27.5),//done
-            Map.entry(2.56, 29.5),//done
-            Map.entry(2.89, 29.5),//done
-             Map.entry(3.08, 31.5),//done --- AUTON SHOOTING POSITION
+            Map.entry(1.44, 26.5),//done - changed by 0.5
+            Map.entry(1.7, 26.0),//done - changed by 0.5
+            Map.entry(2.01, 25.9),//done - changed by 0.10
+            Map.entry(2.56, 28.7),//done - changed by 0.8
+            Map.entry(2.89, 29.0),//done - changed by 0.5
+             Map.entry(3.08, 31.0),//done --- AUTON SHOOTING POSITION
             Map.entry(3.37, 33.5),
-            Map.entry(3.97,34.5), //done
-            Map.entry(4.75, 37.5),//done
+            Map.entry(3.97,40.0), //done - increased by 0.5
+            Map.entry(4.75, 38.0),//done - increase by 0.5
             Map.entry(100.0, 40.0)//far off top limit to prevent unwanted scaling past this distance 
         );
 
         public static final InterpolatingDoubleTreeMap kShootingPositionMap = InterpolatingDoubleTreeMap.ofEntries(
             Map.entry(1.44, 0.0),//done
             Map.entry(1.77, 0.0),//done
-            Map.entry(2.01, 3.8),//done
-            Map.entry(2.56, 8.8),//done
+            Map.entry(2.01, 3.5),//done - changed by 0.3
+            Map.entry(2.56, 8.5),//done - changed by 0.3
             Map.entry(2.89, 8.8),//done
              Map.entry(3.08, 7.3),// -- AUTON SHOOTING POSITION
             Map.entry(3.37, 7.4),
             Map.entry(3.97,7.3),//done
-            Map.entry(4.75, 8.3), //done
+            Map.entry(4.75, 8.6), //done - increased by 0.3
             Map.entry(100.0, 9.8) //far off top limit to prevent unwanted scaling past this distance 
         );
 
