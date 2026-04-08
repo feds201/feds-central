@@ -147,7 +147,7 @@ public class Robot extends LoggedRobot {
     }
     HubShiftUtil.initialize();
   }
-
+ 
 
   @Override
   public void autonomousPeriodic() {}
@@ -192,4 +192,5 @@ public class Robot extends LoggedRobot {
   public void simulationPeriodic() {
     m_robotContainer.updateSimulation();
   }
+  
 }
