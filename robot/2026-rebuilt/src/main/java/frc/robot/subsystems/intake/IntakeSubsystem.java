@@ -99,7 +99,8 @@ public class IntakeSubsystem extends SubsystemBase {
     AGITATE_IN,
     AGITATE_OUT,
     CLOSE_AGITATION, //35
-   
+    DITHERIN_AGITATION,
+    DITHEROUT_AGITATION // 4
   }
 
   public enum RollerState {
@@ -482,7 +483,35 @@ public class IntakeSubsystem extends SubsystemBase {
             timer.reset();
         }
           break;
+
+        case DITHERIN_AGITATION:
+        if(!timer.isRunning()){
+          timer.start();
       }
+        motor.set(-0.3); 
+
+        if(timer.hasElapsed(0.3)){
+            setState(IntakeState.DITHEROUT_AGITATION);
+            timer.stop();
+            timer.reset();
+        }
+          break;
+
+        case DITHEROUT_AGITATION:
+        if(!timer.isRunning()){
+          timer.start();
+      }
+        motor.set(0.3); 
+
+        if(timer.hasElapsed(0.1)){
+            setState(IntakeState.DITHERIN_AGITATION); // small retract from extended
+            timer.stop();
+            timer.reset();
+          break;
+
+        }
+      }
+
     switch (currentRollerState) {
       case ON:
         rollerMotor.set(ROLLER_OUTPUT);
@@ -512,6 +541,7 @@ public class IntakeSubsystem extends SubsystemBase {
   rollerConnectedEntry.setBoolean(rollerMotor.isConnected());
   rollerPoweredEntry.setBoolean(rollerMotor.getSupplyVoltage().getValueAsDouble() > RobotMap.PitConstants.kPoweredThresholdVolts);
   }
+  
   
 
   @Override

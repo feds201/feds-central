@@ -7,6 +7,7 @@ package frc.robot;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -154,13 +155,14 @@ public class RobotContainer extends ControllerBindings {
     PitTesting.addCommands();
     new Trigger(drivetrain::withinTrench).and(DriverStation::isTeleop).onTrue(shooterHood.setStateCommand(shooterhood_state.IN).andThen(intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED)));
 
-        // TODO: migrate to LoggedDashboardChooser from AdvantageKit
-        registerNamedCommands();
-        autoChooser = AutoBuilder.buildAutoChooser();
-        SmartDashboard.putData("Auto Chooser", autoChooser);
-        drivetrain.registerTelemetry(telemetry::telemeterize);
-    }
-
+    // TODO: migrate to LoggedDashboardChooser from AdvantageKit
+    registerNamedCommands();
+    autoChooser = AutoBuilder.buildAutoChooser();
+    SmartDashboard.putData("Auto Chooser", autoChooser);
+    autoChooser.addOption("LeftMidfieldDoublePass", new PathPlannerAuto("RightMidfieldDoublePass", true)); //!!!!!
+    drivetrain.registerTelemetry(telemetry::telemeterize);
+  }
+  
     // --- APIs used by the diagnostic server / UI to command shooter/hood ---
     private final AutoSweeper autoSweeper = new AutoSweeper(
             rps -> {
@@ -367,3 +369,4 @@ public void usbStorage() {
   testLayout.setBoolean(storageOk);
 }
 }
+>>>>>>> RobotTroy
