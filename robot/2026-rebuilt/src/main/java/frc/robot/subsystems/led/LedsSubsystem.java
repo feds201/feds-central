@@ -61,6 +61,7 @@ public class LedsSubsystem extends SubsystemBase {
   // Configuration
   private static final String ZONE_LEFT = "ZONE_LEFT";
   private static final String ZONE_RIGHT = "ZONE_RIGHT";
+  private static final String GR_ALL = "GR_ALL";
   // Colors
   private static final Color COLOR_ORANGE = new Color(new Color8Bit(255, 100, 0));
   private static final Color COLOR_LL = new Color(new Color8Bit(102, 191, 13));
@@ -168,7 +169,7 @@ public class LedsSubsystem extends SubsystemBase {
       case SHOOTING:
         System.out.println("applyState: SHOOTING");
         m_leds.leds.SetAnimation(Animation.Blink)
-            .ForZone(ZONE_LEFT)
+            .ForGroup(GR_ALL)
             .WithColor(COLOR_WHITE)
             .WithDelay(Units.Milliseconds.of(10))
             .Reverse(false)
@@ -252,7 +253,7 @@ public class LedsSubsystem extends SubsystemBase {
       System.out.println("isDisabled");
       // Disabled: Breathe Red indicating standby/disabled
       m_leds.leds.SetAnimation(Animation.Breathe)
-          .ForGroup("GR_ALL")
+          .ForGroup(GR_ALL)
           .WithColor(COLOR_RED)
           .WithDelay(Units.Milliseconds.of(20))
           .RunOnce(false);
@@ -260,7 +261,7 @@ public class LedsSubsystem extends SubsystemBase {
       System.out.println("isAuto");
       // Auto: Rainbow indicating Autonomous mode
       m_leds.leds.SetAnimation(Animation.RainbowRoll)
-          .ForGroup("GR_ALL")
+          .ForGroup(GR_ALL)
           .WithColor(COLOR_WHITE)
           .WithDelay(Units.Milliseconds.of(10))
           .Reverse(false)
@@ -269,7 +270,7 @@ public class LedsSubsystem extends SubsystemBase {
       System.out.println("Teleop");
       m_leds.leds.SetAnimation(Animation.Blink)
           // blinking yellow in teleop
-          .ForGroup("GR_ALL")
+          .ForGroup(GR_ALL)
           .WithColor(COLOR_YELLOW)
           .WithDelay(Units.Milliseconds.of(150))
           .RunOnce(false);
@@ -277,7 +278,7 @@ public class LedsSubsystem extends SubsystemBase {
       System.out.println("Test");
       // Fallback for any other state, solid white
       m_leds.leds.SetAnimation(Animation.Chase)
-          .ForGroup("GR_ALL")
+          .ForGroup(GR_ALL)
           .WithColor(COLOR_YELLOW)
           .WithDelay(Units.Milliseconds.of(100))
           .Reverse(false)

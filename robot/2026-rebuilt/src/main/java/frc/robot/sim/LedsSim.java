@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj.RobotBase;
 public class LedsSim {
     
   private final ConnectorXAnimate m_leds;
-  private final ConnectorXAnimate m_leds2;
 
   /**
    * Constructor for LedsSim.
@@ -22,11 +21,9 @@ public class LedsSim {
    */
   public LedsSim(ConnectorXAnimate leds) {
     this.m_leds = leds;
-    this.m_leds2 = leds;
 
     if (RobotBase.isSimulation()) {
       m_leds.ApplyConfiguration(buildConfig());
-      m_leds2.ApplyConfiguration(buildConfig());
       System.out.println("LedsSim constructed, applying config");
     }
   }
