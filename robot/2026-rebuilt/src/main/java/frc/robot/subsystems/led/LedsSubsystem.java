@@ -20,7 +20,6 @@ import frc.robot.subsystems.shooter.ShooterWheels.shooter_state;
 
 public class LedsSubsystem extends SubsystemBase {
   public static ConnectorXAnimate m_leds = new ConnectorXAnimate();
-  public static ConnectorXAnimate m_leds2 = new ConnectorXAnimate();
   private static LedsSubsystem instance;
   public static shooter_state m_shooterstate = shooter_state.IDLE;
   public static driveMode m_driveMode = driveMode.NORMALDRIVE;
@@ -52,23 +51,16 @@ public class LedsSubsystem extends SubsystemBase {
     OFF;          //NONE
   }
 
-  private RobotLEDState m_currentState = RobotLEDState.OFF;
-  private RobotLEDState m_lastState = RobotLEDState.OFF; // Force initial update
-  private DriveLEDState m_currentState2 = DriveLEDState.OFF;
-  private DriveLEDState m_lastState2 = DriveLEDState.OFF;
+  private RobotLEDState m_currentStateLeft = RobotLEDState.OFF;
+  private RobotLEDState m_lastStateLeft = RobotLEDState.OFF; // Force initial update
+  private DriveLEDState m_currentStateRight = DriveLEDState.OFF;
+  private DriveLEDState m_lastStateRight = DriveLEDState.OFF;
   private boolean m_isConnected = false;
-  private boolean m_isConnected_2 = false;
   private int m_lastDSMode = -1; // -1 = Unknown, 0 = Disabled, 1 = Auto, 2 = Teleop, 3 = Test
 
   // Configuration
-  private static final String ZONE_1 = "ZONE_50_1";
-  private static final String ZONE_2 = "ZONE_50_2";
-  private static final String ZONE_3 = "ZONE_50_3";
-  private static final String ZONE_4 = "ZONE_50_4";
-  private static final String ZONE_5 = "ZONE_50_5";
-  private static final String ZONE_6 = "ZONE_50_6";
-  private static final String GR_300 = "GR_300";
-
+  private static final String ZONE_LEFT = "ZONE_LEFT";
+  private static final String ZONE_RIGHT = "ZONE_RIGHT";
   // Colors
   private static final Color COLOR_ORANGE = new Color(new Color8Bit(255, 100, 0));
   private static final Color COLOR_LL = new Color(new Color8Bit(102, 191, 13));
@@ -80,15 +72,13 @@ public class LedsSubsystem extends SubsystemBase {
   private static final Color COLOR_PURPLE = new Color(new Color8Bit(128, 0, 128));
 
   public LedsSubsystem() {
-    m_currentState = RobotLEDState.IDLE; // Start with IDLE to show DS mode on startup
+    m_currentStateLeft = RobotLEDState.IDLE; // Start with IDLE to show DS mode on startup
     m_isConnected = m_leds.Connect(USBPort.kUSB1);// PIN2
-    m_isConnected_2 = m_leds2.Connect(USBPort.kUSB2);// PIN3
     if (RobotBase.isSimulation()) {
       m_isConnected = true;
       System.out.println("ConnectorX: Running in Simulation Mode");
     } else {
       System.out.println("ConnectorX Connected: " + m_isConnected);
-      System.out.println("ConnectorX2 Connected: " + m_isConnected_2);
     }
 
   }
@@ -121,15 +111,11 @@ public class LedsSubsystem extends SubsystemBase {
     return m_isConnected;
   }
 
-  public boolean m_isConnected_2() {
-    return m_isConnected_2;
-  }
-
   @Override
   public void periodic() {
     m_driveMode = RobotContainer.getInstance().getDriveMode();
-    m_currentState2 = desiredDriveMode();
-    m_currentState = getShootingleds();
+    m_currentStateRight = desiredDriveMode();
+    m_currentStateLeft = getShootingleds();
     m_shooterstate = RobotContainer.getInstance().getShooterWheelsState();
 
     // Determine current DS Mode as an integer
@@ -146,21 +132,22 @@ public class LedsSubsystem extends SubsystemBase {
     // Check if the LED state changed OR if the Driver Station mode changed
     boolean dsModeChanged = (currentDSMode != m_lastDSMode);
 
-    if (m_currentState != m_lastState || dsModeChanged) {
+    if (m_currentStateLeft != m_lastStateLeft || dsModeChanged) {
 
       // Apply the NEW state
-      applyState(m_currentState);
+      applyState(m_currentStateLeft);
+     
 
-      System.out.println("Switching LEDs to: " + m_currentState + " (DS Mode: " + currentDSMode + ")");
+      System.out.println("Switching LEDs to: " + m_currentStateLeft + " (DS Mode: " + currentDSMode + ")");
       // Sync our memory variables
-      m_lastState = m_currentState;
+      m_lastStateLeft = m_currentStateLeft;
       m_lastDSMode = currentDSMode;
     }
-    if (m_currentState2 != m_lastState2) {
-      applyLeds2State(m_currentState2);
-      System.out.println("Switching LEDs 2 to: " + m_currentState2);
-      m_lastState2 = m_currentState2;
-    }
+    // if (m_currentStateRight != m_lastStateRight) {
+    //   applyLeds2State(m_currentStateRight);
+    //   System.out.println("Switching LEDs 2 to: " + m_currentStateRight);
+    //   m_lastStateRight = m_currentStateRight;
+    // }
 
     m_lastDSMode = currentDSMode;
   }
@@ -169,7 +156,8 @@ public class LedsSubsystem extends SubsystemBase {
     switch (state) {
 
       case OFF:
-        m_leds.leds.SetColor(GR_300, new Color(0, 0, 0));
+        m_leds.leds.SetColor(ZONE_LEFT, new Color(0, 0, 0));
+        m_leds.leds.SetColor(ZONE_RIGHT, new Color(0, 0, 0));
         break;
 
       case IDLE:
@@ -180,7 +168,7 @@ public class LedsSubsystem extends SubsystemBase {
       case SHOOTING:
         System.out.println("applyState: SHOOTING");
         m_leds.leds.SetAnimation(Animation.Blink)
-            .ForZone(GR_300)
+            .ForZone(ZONE_LEFT)
             .WithColor(COLOR_WHITE)
             .WithDelay(Units.Milliseconds.of(10))
             .Reverse(false)
@@ -189,7 +177,7 @@ public class LedsSubsystem extends SubsystemBase {
 
       case ERROR_LL:
         m_leds.leds.SetAnimation(Animation.Comet)
-            .ForGroup(GR_300)
+            .ForZone(ZONE_LEFT)
             .WithColor(COLOR_LL)
             .WithDelay(Units.Milliseconds.of(100))
             .RunOnce(false);
@@ -197,7 +185,7 @@ public class LedsSubsystem extends SubsystemBase {
 
       case ERROR_CAN:
         m_leds.leds.SetAnimation(Animation.Comet)
-            .ForGroup(GR_300)
+            .ForZone(ZONE_LEFT)
             .WithColor(COLOR_GREEN)
             .WithDelay(Units.Milliseconds.of(400))
             .RunOnce(false);
@@ -205,7 +193,7 @@ public class LedsSubsystem extends SubsystemBase {
 
       case ERROR_JAMMING:
         m_leds.leds.SetAnimation(Animation.Blink)
-            .ForGroup(GR_300)
+            .ForZone(ZONE_LEFT)
             .WithColor(COLOR_SCARLET)
             .WithDelay(Units.Milliseconds.of(200))
             .RunOnce(false);
@@ -213,7 +201,7 @@ public class LedsSubsystem extends SubsystemBase {
 
       case ERROR_OTHER:
         m_leds.leds.SetAnimation(Animation.Blink)
-            .ForGroup(GR_300)
+            .ForZone(ZONE_LEFT)
             .WithColor(COLOR_PURPLE)
             .WithDelay(Units.Milliseconds.of(200))
             .RunOnce(false);
@@ -221,7 +209,7 @@ public class LedsSubsystem extends SubsystemBase {
 
       case STARTUP_TEST:
         m_leds.leds.SetAnimation(Animation.Blink)
-            .ForGroup(GR_300)
+            .ForZone(ZONE_LEFT)
             .WithColor(COLOR_ORANGE)
             .WithDelay(Units.Milliseconds.of(10))
             .RunOnce(true); // Run once for startup animation
@@ -232,26 +220,26 @@ public class LedsSubsystem extends SubsystemBase {
   private void applyLeds2State(DriveLEDState state) {
     switch (state) {
       case OFF:
-        m_leds2.leds.SetColor(GR_300, new Color(0, 0, 0));
+        m_leds.leds.SetColor(ZONE_RIGHT, new Color(0, 0, 0));
         break;
       case NORMAL_DRIVE:
-        m_leds2.leds.SetAnimation(Animation.Chase)
-            .ForZone(ZONE_1)
+        m_leds.leds.SetAnimation(Animation.Chase)
+            .ForZone(ZONE_RIGHT)
             .WithColor(COLOR_GREEN)
             .WithDelay(Units.Milliseconds.of(100))
             .Reverse(false)
             .RunOnce(false);
         break;
       case HUB_DRIVE:
-        m_leds2.leds.SetAnimation(Animation.Confetti)
-            .ForZone(ZONE_1)
+        m_leds.leds.SetAnimation(Animation.Confetti)
+            .ForZone(ZONE_RIGHT)
             .WithColor(COLOR_GREEN)
             .WithDelay(Units.Milliseconds.of(10))
             .RunOnce(false);
         break;
       case FALCON_DRIVE:
-        m_leds2.leds.SetAnimation(Animation.Blink)
-            .ForZone(ZONE_1)
+        m_leds.leds.SetAnimation(Animation.Blink)
+            .ForZone(ZONE_RIGHT)
             .WithColor(COLOR_ORANGE)
             .WithDelay(Units.Milliseconds.of(200))
             .RunOnce(false);
@@ -264,7 +252,7 @@ public class LedsSubsystem extends SubsystemBase {
       System.out.println("isDisabled");
       // Disabled: Breathe Red indicating standby/disabled
       m_leds.leds.SetAnimation(Animation.Breathe)
-          .ForZone(GR_300)
+          .ForGroup("GR_ALL")
           .WithColor(COLOR_RED)
           .WithDelay(Units.Milliseconds.of(20))
           .RunOnce(false);
@@ -272,7 +260,7 @@ public class LedsSubsystem extends SubsystemBase {
       System.out.println("isAuto");
       // Auto: Rainbow indicating Autonomous mode
       m_leds.leds.SetAnimation(Animation.RainbowRoll)
-          .ForZone(GR_300)
+          .ForGroup("GR_ALL")
           .WithColor(COLOR_WHITE)
           .WithDelay(Units.Milliseconds.of(10))
           .Reverse(false)
@@ -281,7 +269,7 @@ public class LedsSubsystem extends SubsystemBase {
       System.out.println("Teleop");
       m_leds.leds.SetAnimation(Animation.Blink)
           // blinking yellow in teleop
-          .ForZone(GR_300)
+          .ForGroup("GR_ALL")
           .WithColor(COLOR_YELLOW)
           .WithDelay(Units.Milliseconds.of(150))
           .RunOnce(false);
@@ -289,12 +277,11 @@ public class LedsSubsystem extends SubsystemBase {
       System.out.println("Test");
       // Fallback for any other state, solid white
       m_leds.leds.SetAnimation(Animation.Chase)
-          .ForZone(GR_300)
+          .ForGroup("GR_ALL")
           .WithColor(COLOR_YELLOW)
           .WithDelay(Units.Milliseconds.of(100))
           .Reverse(false)
           .RunOnce(false);
     }
   }
-
 }

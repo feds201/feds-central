@@ -38,13 +38,16 @@ public class LedsSim {
  private LumynDeviceConfig buildConfig() {
     return new ConfigBuilder()
         .forTeam("201")
-        // Use "GR_300" here so it matches your LedsSubsystem constant
-        .addChannel(1, "port1", 300)
-            .addStripZone("GR_300", 300, false) 
+
+        .addChannel(1, "port1", 60)
+            .addStripZone("ZONE_LEFT", 60, false) 
         .endChannel()
-        .addChannel(2, "port2", 50)
-            .addStripZone("ZONE_50_1", 50, false) 
+        .addChannel(2, "port2", 60)
+            .addStripZone("ZONE_RIGHT", 60, false) 
         .endChannel()
+
+        // Groups
+        .addGroup("GR_ALL").addZone ("ZONE_LEFT").addZone("ZONE_RIGHT").endGroup()
         .build();
 }
 }
