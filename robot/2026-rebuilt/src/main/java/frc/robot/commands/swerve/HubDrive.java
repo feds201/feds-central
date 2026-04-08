@@ -33,9 +33,7 @@ public class HubDrive extends Command {
   private CommandXboxController controller;
   
   // Slew rate limiters to smooth joystick and rotation commands
-  private final SlewRateLimiter xLimiter = new SlewRateLimiter(3.0); // m/s per second
-  private final SlewRateLimiter yLimiter = new SlewRateLimiter(3.0); // m/s per second
-  private final SlewRateLimiter rotLimiter = new SlewRateLimiter(2000.0); // deg/s per second
+  private final SlewRateLimiter rotLimiter = new SlewRateLimiter(10000.0); // deg/s per second
 
   private SwerveRequest.FieldCentric driveNormal;
 
@@ -86,10 +84,8 @@ public class HubDrive extends Command {
           double smoothRotation = rotLimiter.calculate(clampedRotation);
 
           // Scale joystick velocities to robot MAX_SPEED and smooth them
-          double targetVelX = -controller.getLeftY() * MAX_SPEED;
-          double targetVelY = -controller.getLeftX() * MAX_SPEED;
-          double smoothVelX = xLimiter.calculate(targetVelX);
-          double smoothVelY = yLimiter.calculate(targetVelY);
+          double targetVelX = -controller.getLeftY();
+          double targetVelY = -controller.getLeftX();
 
           if(smoothRotation > 0){
             smoothRotation+= 20;
@@ -98,13 +94,13 @@ public class HubDrive extends Command {
           }
 
           dt.setControl(driveNormal
-              .withVelocityX(smoothVelX)
-              .withVelocityY(smoothVelY)
+              .withVelocityX(targetVelX)
+              .withVelocityY(targetVelY)
               .withRotationalRate(DegreesPerSecond.of(smoothRotation)));
 
          Logger.recordOutput("angular velocity (deg/s)", smoothRotation);
-         Logger.recordOutput("targetVelX", smoothVelX);
-         Logger.recordOutput("targetVelY", smoothVelY);
+         Logger.recordOutput("targetVelX", targetVelX);
+         Logger.recordOutput("targetVelY", targetVelY);
          Logger.recordOutput("angular velocity (deg/Error", hubRotPID.getError());
           
     }
