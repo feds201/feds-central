@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:url_strategy/url_strategy.dart';
 
 import 'services/data_service.dart';
 import 'services/local_prefs.dart';
 import 'theme.dart';
 import 'screens/event_entry_screen.dart';
 import 'screens/comparison_screen.dart';
-import 'package:flutter/foundation.dart';
 
-void main() {
-  if (kIsWeb) setPathUrlStrategy();
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
 
   final dataService = DataService();
-  final config = LocalPrefs.resolveConfig();
   String initialRoute = '/';
+
+  final config = await LocalPrefs.resolveConfig();
 
   if (config != null) {
     dataService.configure(
@@ -24,14 +23,14 @@ void main() {
       tbaApiKey: config.tbaKey,
     );
 
-    final cached = LocalPrefs.loadData(config.eventKey);
+    final cached = await LocalPrefs.loadData(config.eventKey);
     if (cached != null) {
       dataService.loadFromCache(
         scoutingByTeam: cached.scoutingByTeam,
         scoutingColumns: cached.scoutingColumns,
         oprByTeam: cached.oprByTeam,
         epaByTeam: cached.epaByTeam,
-        lastUpdated: LocalPrefs.lastUpdated,
+        lastUpdated: await LocalPrefs.lastUpdated,
       );
       initialRoute = '/compare';
     }

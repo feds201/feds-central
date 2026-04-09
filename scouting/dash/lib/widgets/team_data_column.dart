@@ -62,8 +62,8 @@ class TeamDataColumn extends StatelessWidget {
             Row(
               children: [
                 _MetricBadge(label: 'OPR', value: opr, color: AppTheme.accent),
-                const SizedBox(width: 8),
-                _MetricBadge(label: 'EPA', value: epa, color: AppTheme.gold),
+                // const SizedBox(width: 8),
+                // _MetricBadge(label: 'EPA', value: epa, color: AppTheme.gold),
               ],
             ),
             const SizedBox(height: 10),

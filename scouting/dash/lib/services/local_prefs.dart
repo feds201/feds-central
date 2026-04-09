@@ -1,7 +1,7 @@
 import 'dart:convert';
-import 'dart:html' show window;
+import 'package:shared_preferences/shared_preferences.dart';
 
-/// Thin wrapper around browser localStorage for persisting config and data.
+/// Persists config and cached scouting data using SharedPreferences (Android).
 class LocalPrefs {
   static const _kEventKey = 'scout_ops.eventKey';
   static const _kTableName = 'scout_ops.tableName';
@@ -12,68 +12,70 @@ class LocalPrefs {
   static const _kLastUpdated = 'scout_ops.lastUpdated';
 
   // ── Config ──────────────────────────────────────────────────────────
-
-  static void saveConfig({
+  static dynamic _toJsonSafe(dynamic value) {
+    if (value is DateTime) return value.toIso8601String();
+    if (value is Map) return value.map((k, v) => MapEntry(k.toString(), _toJsonSafe(v)));
+    if (value is List) return value.map(_toJsonSafe).toList();
+    return value;
+  }
+  static Future<void> saveConfig({
     required String eventKey,
     required String tableName,
     required String neonConn,
     required String tbaKey,
-  }) {
+  }) async {
     try {
-      final s = window.localStorage;
-      s[_kEventKey] = eventKey;
-      s[_kTableName] = tableName;
-      s[_kNeonConn] = neonConn;
-      s[_kTbaKey] = tbaKey;
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_kEventKey, eventKey);
+      await prefs.setString(_kTableName, tableName);
+      await prefs.setString(_kNeonConn, neonConn);
+      await prefs.setString(_kTbaKey, tbaKey);
       print('[LocalPrefs] saveConfig OK');
     } catch (e) {
       print('[LocalPrefs] saveConfig FAILED: $e');
     }
   }
 
-  /// Resolve config from URL params (highest priority) then localStorage.
-  /// Returns null if no Neon connection string is available.
-  static ({
-    String eventKey,
-    String tableName,
-    String neonConn,
-    String tbaKey,
-  })? resolveConfig() {
-    final params = Uri.base.queryParameters;
-    final s = window.localStorage;
-
-    final neonConn = params['neon'] ?? s[_kNeonConn] ?? '';
+  static Future<({
+  String eventKey,
+  String tableName,
+  String neonConn,
+  String tbaKey,
+  })?> resolveConfig() async {
+    final prefs = await SharedPreferences.getInstance();
+    final neonConn = prefs.getString(_kNeonConn) ?? '';
     if (neonConn.isEmpty) return null;
 
     return (
-      eventKey: params['event'] ?? s[_kEventKey] ?? '',
-      tableName: params['table'] ?? s[_kTableName] ?? 'scouting_data',
-      neonConn: neonConn,
-      tbaKey: params['tba'] ?? s[_kTbaKey] ?? '',
+    eventKey: prefs.getString(_kEventKey) ?? '',
+    tableName: prefs.getString(_kTableName) ?? 'scouting_data',
+    neonConn: neonConn,
+    tbaKey: prefs.getString(_kTbaKey) ?? '',
     );
   }
 
   // ── Data cache ──────────────────────────────────────────────────────
 
-  static void saveData({
+  static Future<void> saveData({
     required String eventKey,
     required Map<int, List<Map<String, dynamic>>> scoutingByTeam,
     required List<String> scoutingColumns,
     required Map<int, double> oprByTeam,
     required Map<int, double> epaByTeam,
-  }) {
-    final s = window.localStorage;
-    s[_kCachedEvent] = eventKey;
-    s[_kLastUpdated] = DateTime.now().toIso8601String();
+  }) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_kCachedEvent, eventKey);
+    await prefs.setString(_kLastUpdated, DateTime.now().toIso8601String());
 
-    // Drop base64 image columns to stay under localStorage quota.
     const dropCols = {'botimage1', 'botimage2', 'botimage3'};
     final teamData = scoutingByTeam.map(
-      (k, v) => MapEntry(
+          (k, v) => MapEntry(
         k.toString(),
-        v.map((row) => Map.fromEntries(
-          row.entries.where((e) => !dropCols.contains(e.key)),
-        )).toList(),
+            v.map((row) => Map.fromEntries(
+              row.entries
+                  .where((e) => !dropCols.contains(e.key))
+                  .map((e) => MapEntry(e.key, _toJsonSafe(e.value))),
+            )).toList(),
       ),
     );
     final opr = oprByTeam.map((k, v) => MapEntry(k.toString(), v));
@@ -92,83 +94,80 @@ class LocalPrefs {
         '${scoutingColumns.length} cols');
 
     try {
-      s[_kCachedData] = encoded;
+      await prefs.setString(_kCachedData, encoded);
     } catch (e) {
       print('[LocalPrefs] saveData FAILED: $e');
-      s.remove(_kCachedData);
-      s.remove(_kCachedEvent);
-      s.remove(_kLastUpdated);
+      await prefs.remove(_kCachedData);
+      await prefs.remove(_kCachedEvent);
+      await prefs.remove(_kLastUpdated);
     }
   }
 
-  /// Load cached data if it matches [eventKey]. Returns null on mismatch
-  /// or if no cache exists.
-  static ({
-    Map<int, List<Map<String, dynamic>>> scoutingByTeam,
-    List<String> scoutingColumns,
-    Map<int, double> oprByTeam,
-    Map<int, double> epaByTeam,
-  })? loadData(String eventKey) {
-    final s = window.localStorage;
-    if (s[_kCachedEvent] != eventKey) return null;
+  static Future<({
+  Map<int, List<Map<String, dynamic>>> scoutingByTeam,
+  List<String> scoutingColumns,
+  Map<int, double> oprByTeam,
+  Map<int, double> epaByTeam,
+  })?> loadData(String eventKey) async {
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getString(_kCachedEvent) != eventKey) return null;
 
-    final raw = s[_kCachedData];
+    final raw = prefs.getString(_kCachedData);
     if (raw == null || raw.isEmpty) return null;
 
     try {
       final decoded = json.decode(raw) as Map<String, dynamic>;
 
       final teamMap = (decoded['scoutingByTeam'] as Map<String, dynamic>).map(
-        (k, v) => MapEntry(
+            (k, v) => MapEntry(
           int.parse(k),
           (v as List).map((e) => Map<String, dynamic>.from(e as Map)).toList(),
         ),
       );
-
-      final columns =
-          (decoded['scoutingColumns'] as List).cast<String>().toList();
-
+      final columns = (decoded['scoutingColumns'] as List).cast<String>().toList();
       final opr = (decoded['oprByTeam'] as Map<String, dynamic>).map(
-        (k, v) => MapEntry(int.parse(k), (v as num).toDouble()),
+            (k, v) => MapEntry(int.parse(k), (v as num).toDouble()),
       );
-
       final epa = (decoded['epaByTeam'] as Map<String, dynamic>).map(
-        (k, v) => MapEntry(int.parse(k), (v as num).toDouble()),
+            (k, v) => MapEntry(int.parse(k), (v as num).toDouble()),
       );
 
       return (
-        scoutingByTeam: teamMap,
-        scoutingColumns: columns,
-        oprByTeam: opr,
-        epaByTeam: epa,
+      scoutingByTeam: teamMap,
+      scoutingColumns: columns,
+      oprByTeam: opr,
+      epaByTeam: epa,
       );
     } on Exception {
-      // Corrupted cache — clear and return null.
-      s.remove(_kCachedData);
-      s.remove(_kCachedEvent);
-      s.remove(_kLastUpdated);
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove(_kCachedData);
+      await prefs.remove(_kCachedEvent);
+      await prefs.remove(_kLastUpdated);
       return null;
     }
   }
 
   // ── Last updated ────────────────────────────────────────────────────
 
-  static DateTime? get lastUpdated {
-    final raw = window.localStorage[_kLastUpdated];
+  static Future<DateTime?> get lastUpdated async {
+    final prefs = await SharedPreferences.getInstance();
+    final raw = prefs.getString(_kLastUpdated);
     if (raw == null || raw.isEmpty) return null;
     return DateTime.tryParse(raw);
   }
 
   // ── Clear ───────────────────────────────────────────────────────────
 
-  static void clear() {
-    final s = window.localStorage;
-    s.remove(_kEventKey);
-    s.remove(_kTableName);
-    s.remove(_kNeonConn);
-    s.remove(_kTbaKey);
-    s.remove(_kCachedData);
-    s.remove(_kCachedEvent);
-    s.remove(_kLastUpdated);
+  static Future<void> clear() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_kEventKey);
+    await prefs.remove(_kTableName);
+    await prefs.remove(_kNeonConn);
+    await prefs.remove(_kTbaKey);
+    await prefs.remove(_kCachedData);
+    await prefs.remove(_kCachedEvent);
+    await prefs.remove(_kLastUpdated);
   }
 }
+
+// ---------------

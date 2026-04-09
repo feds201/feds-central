@@ -1,6 +1,6 @@
-import 'dart:html' as html;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:file_picker/file_picker.dart';
 import '../services/data_service.dart';
 import '../services/local_prefs.dart';
 import '../theme.dart';
@@ -44,13 +44,15 @@ class _EventEntryScreenState extends State<EventEntryScreen>
     }
   }
 
-  void _restoreFromStorage() {
-    final saved = LocalPrefs.resolveConfig();
-    if (saved == null) return;
-    if (saved.eventKey.isNotEmpty) _eventKeyCtl.text = saved.eventKey;
-    if (saved.tableName.isNotEmpty) _tableCtl.text = saved.tableName;
-    if (saved.neonConn.isNotEmpty) _neonCtl.text = saved.neonConn;
-    if (saved.tbaKey.isNotEmpty) _tbaCtl.text = saved.tbaKey;
+  Future<void> _restoreFromStorage() async {
+    final saved = await LocalPrefs.resolveConfig();
+    if (saved == null || !mounted) return;
+    setState(() {
+      if (saved.eventKey.isNotEmpty) _eventKeyCtl.text = saved.eventKey;
+      if (saved.tableName.isNotEmpty) _tableCtl.text = saved.tableName;
+      if (saved.neonConn.isNotEmpty) _neonCtl.text = saved.neonConn;
+      if (saved.tbaKey.isNotEmpty) _tbaCtl.text = saved.tbaKey;
+    });
   }
 
   Future<void> _tryAutoLoad() async {
@@ -69,20 +71,20 @@ class _EventEntryScreenState extends State<EventEntryScreen>
     super.dispose();
   }
 
-  void _pickCsv() {
-    final input = html.FileUploadInputElement()..accept = '.csv';
-    input.click();
-    input.onChange.listen((_) {
-      final file = input.files?.first;
-      if (file == null) return;
-      final reader = html.FileReader();
-      reader.readAsText(file);
-      reader.onLoadEnd.listen((_) {
-        setState(() {
-          _csvFileName = file.name;
-          _csvContent = reader.result as String?;
-        });
-      });
+  Future<void> _pickCsv() async {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['csv'],
+      withData: true,
+    );
+
+    if (result == null || result.files.isEmpty) return;
+    final file = result.files.first;
+    if (file.bytes == null) return;
+
+    setState(() {
+      _csvFileName = file.name;
+      _csvContent = String.fromCharCodes(file.bytes!);
     });
   }
 
@@ -107,12 +109,13 @@ class _EventEntryScreenState extends State<EventEntryScreen>
     if (svc.scoutingByTeam.isEmpty) {
       _showError('No teams found in CSV');
     } else {
-      LocalPrefs.saveConfig(
+      await LocalPrefs.saveConfig(
         eventKey: _eventKeyCtl.text.trim(),
         tableName: _tableCtl.text.trim(),
         neonConn: _neonCtl.text.trim(),
         tbaKey: _tbaCtl.text.trim(),
       );
+      if (!mounted) return;
       Navigator.of(context).pushReplacementNamed('/compare');
     }
   }
@@ -135,19 +138,20 @@ class _EventEntryScreenState extends State<EventEntryScreen>
     if (svc.error != null && svc.scoutingByTeam.isEmpty) {
       _showError(svc.error!);
     } else {
-      LocalPrefs.saveConfig(
+      await LocalPrefs.saveConfig(
         eventKey: _eventKeyCtl.text.trim(),
         tableName: _tableCtl.text.trim(),
         neonConn: _neonCtl.text.trim(),
         tbaKey: _tbaCtl.text.trim(),
       );
-      LocalPrefs.saveData(
+      await LocalPrefs.saveData(
         eventKey: _eventKeyCtl.text.trim(),
         scoutingByTeam: svc.scoutingByTeam,
         scoutingColumns: svc.scoutingColumns,
         oprByTeam: svc.oprByTeam,
         epaByTeam: svc.epaByTeam,
       );
+      if (!mounted) return;
       Navigator.of(context).pushReplacementNamed('/compare');
     }
   }
@@ -192,7 +196,8 @@ class _EventEntryScreenState extends State<EventEntryScreen>
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Container(
-                          width: 44, height: 44,
+                          width: 44,
+                          height: 44,
                           decoration: BoxDecoration(
                             color: AppTheme.accent.withOpacity(0.12),
                             borderRadius: BorderRadius.circular(12),
@@ -228,11 +233,9 @@ class _EventEntryScreenState extends State<EventEntryScreen>
                       children: [
                         const Expanded(child: Divider()),
                         Padding(
-                          padding:
-                              const EdgeInsets.symmetric(horizontal: 12),
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
                           child: Text('Load scouting data from',
-                              style:
-                                  Theme.of(context).textTheme.bodySmall),
+                              style: Theme.of(context).textTheme.bodySmall),
                         ),
                         const Expanded(child: Divider()),
                       ],
@@ -264,8 +267,7 @@ class _EventEntryScreenState extends State<EventEntryScreen>
                                   decoration: BoxDecoration(
                                     color: AppTheme.surfaceHi,
                                     borderRadius: BorderRadius.circular(8),
-                                    border:
-                                        Border.all(color: AppTheme.border),
+                                    border: Border.all(color: AppTheme.border),
                                   ),
                                   child: Text(
                                     _csvFileName ?? 'No file selected',
@@ -286,8 +288,8 @@ class _EventEntryScreenState extends State<EventEntryScreen>
                                   onPressed: _pickCsv,
                                   style: OutlinedButton.styleFrom(
                                     side: BorderSide(
-                                        color: AppTheme.accent
-                                            .withOpacity(0.4)),
+                                        color:
+                                        AppTheme.accent.withOpacity(0.4)),
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 14),
                                   ),
@@ -302,18 +304,18 @@ class _EventEntryScreenState extends State<EventEntryScreen>
                             SizedBox(
                               height: 44,
                               child: ElevatedButton.icon(
-                                onPressed:
-                                    (loading || _csvContent == null)
-                                        ? null
-                                        : _loadCsv,
+                                onPressed: (loading || _csvContent == null)
+                                    ? null
+                                    : _loadCsv,
                                 icon: loading
                                     ? const SizedBox(
-                                        width: 18, height: 18,
-                                        child: CircularProgressIndicator(
-                                            strokeWidth: 2,
-                                            color: AppTheme.bg))
+                                    width: 18,
+                                    height: 18,
+                                    child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: AppTheme.bg))
                                     : const Icon(Icons.upload_rounded,
-                                        size: 18),
+                                    size: 18),
                                 label: const Text('Load CSV'),
                               ),
                             ),
@@ -361,13 +363,14 @@ class _EventEntryScreenState extends State<EventEntryScreen>
                                     backgroundColor: AppTheme.gold),
                                 icon: loading
                                     ? const SizedBox(
-                                        width: 18, height: 18,
-                                        child: CircularProgressIndicator(
-                                            strokeWidth: 2,
-                                            color: AppTheme.bg))
+                                    width: 18,
+                                    height: 18,
+                                    child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: AppTheme.bg))
                                     : const Icon(
-                                        Icons.cloud_download_rounded,
-                                        size: 18),
+                                    Icons.cloud_download_rounded,
+                                    size: 18),
                                 label: const Text('Load from Neon'),
                               ),
                             ),
