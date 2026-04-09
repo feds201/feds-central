@@ -168,20 +168,20 @@ public final class RobotMap {
         // This map is used to determine the velocity of the shooter based on the distance to the target. 
         //The key is the disance to the target in meters, and the value is the velocity of the shooter in rotations per second.`
         public static final InterpolatingDoubleTreeMap kShootingVelocityMap = InterpolatingDoubleTreeMap.ofEntries(
-            Map.entry(1.44, 28.0),//done - changed by 0.5
-            Map.entry(1.7, 28.0),//done - changed by 0.5
-            Map.entry(2.01, 28.0),//done - changed by 0.10
-            Map.entry(2.56, 30.0),//done - changed by 0.8
-            Map.entry(2.89, 31.0),//done - changed by 0.5
-             Map.entry(3.08, 33.5),//done --- AUTON SHOOTING POSITION
-            Map.entry(3.37, 34.5),
-            Map.entry(3.97,38.0), //done - increased by 0.5
-            Map.entry(4.75, 39.5),
+            Map.entry(1.44, 28.0),//done 
+            Map.entry(1.7, 28.0),//done 
+            Map.entry(2.01, 28.0),//done
+            Map.entry(2.56, 30.0),//done
+            Map.entry(2.89, 31.0),//done
+             Map.entry(3.08, 33.5),//done 
+            Map.entry(3.37, 34.5),//done
+            Map.entry(3.97,38.0), //done 
+            Map.entry(4.75, 39.5),//done
             Map.entry(5.36, 40.0), // done
-            Map.entry(6.02, 42.0),//done - increase by 0.5
+            Map.entry(6.02, 42.0),//done 
             Map.entry(6.85,43.0), // Done
             Map.entry(7.6, 45.5), // done   
-            Map.entry(100.0, 40.0)//far off top limit to prevent unwanted scaling past this distance 
+            Map.entry(100.0, 45.5)//far off top limit to prevent unwanted scaling past this distance 
         );
 
         public static final InterpolatingDoubleTreeMap kShootingPositionMap = InterpolatingDoubleTreeMap.ofEntries(
@@ -190,15 +190,15 @@ public final class RobotMap {
             Map.entry(2.01, 3.8),//done 
             Map.entry(2.56, 9.0),//done 
             Map.entry(2.89, 9.0),//done
-            Map.entry(3.08, 8.0),// -- AUTON SHOOTING POSITION
-            Map.entry(3.37, 8.0),
+            Map.entry(3.08, 8.0),//done
+            Map.entry(3.37, 8.0),//done
             Map.entry(3.97,10.0),//done
-            Map.entry(4.75, 14.0),
+            Map.entry(4.75, 14.0),//done
             Map.entry(5.36,15.0), // done
-            Map.entry(6.02, 22.0), //done - increased by 0.3
+            Map.entry(6.02, 22.0), //done 
             Map.entry(6.85, 25.0), // done
             Map.entry(7.6, 29.0), // done
-            Map.entry(100.0, 9.8) //far off top limit to prevent unwanted scaling past this distance 
+            Map.entry(100.0, 29.0) //far off top limit to prevent unwanted scaling past this distance 
         );
 
         public static final InterpolatingDoubleTreeMap kPassingVelocityMap = InterpolatingDoubleTreeMap.ofEntries(
