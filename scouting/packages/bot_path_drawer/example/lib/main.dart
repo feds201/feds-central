@@ -303,7 +303,7 @@ class _DemoHomeState extends State<DemoHome> {
               else
                 Expanded(
                   child: BotPathViewerWithSelector(
-                    config: _configWithBrightness,
+                    config: _configWithBrightness.copyWith(cropFraction: 1.0),
                     teams: _teamPaths,
                   ),
                 ),

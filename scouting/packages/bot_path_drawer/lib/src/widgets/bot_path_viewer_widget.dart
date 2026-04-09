@@ -385,7 +385,7 @@ class _BotPathViewerState extends State<BotPathViewer>
       _cachedScaledCurves = List.filled(_effectivePaths.length, const []);
       _lastScaledSize = canvasSize;
     }
-    _cachedScaledCurves[index] = data.scaledCurves(canvasSize);
+    _cachedScaledCurves[index] = data.scaledCurves(canvasSize, cropFraction: widget.config.cropFraction);
     return _cachedScaledCurves[index];
   }
 
@@ -393,7 +393,7 @@ class _BotPathViewerState extends State<BotPathViewer>
   Offset? _endRobotPos(int index, Size canvasSize) {
     final data = _parsedPaths[index];
     if (data == null || data.curves.isEmpty) return null;
-    final endpoints = data.scaledEndpoints(canvasSize);
+    final endpoints = data.scaledEndpoints(canvasSize, cropFraction: widget.config.cropFraction);
     return endpoints.last;
   }
 
@@ -408,7 +408,11 @@ class _BotPathViewerState extends State<BotPathViewer>
   Offset? _scaledPlaybackPos(int index, Size canvasSize) {
     final pos = _playbackPositions[index];
     if (pos == null) return null;
-    final scale = max(canvasSize.width, canvasSize.height);
+    final data = _parsedPaths[index];
+    if (data == null) return null;
+    final scale = BotPathData.scaleFactor(
+      data.formatVersion, canvasSize, widget.config.cropFraction,
+    );
     return Offset(pos.dx * scale, pos.dy * scale);
   }
 
