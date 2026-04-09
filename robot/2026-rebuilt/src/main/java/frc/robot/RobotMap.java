@@ -166,18 +166,21 @@ public final class RobotMap {
         public static final Rectangle2d neutralZone = new Rectangle2d(FieldConstants.LeftTrench.openingTopLeft.toTranslation2d(), FieldConstants.RightTrench.oppOpeningTopRight.toTranslation2d());
     
         // This map is used to determine the velocity of the shooter based on the distance to the target. 
-        //The key is the distance to the target in meters, and the value is the velocity of the shooter in rotations per second.`
+        //The key is the disance to the target in meters, and the value is the velocity of the shooter in rotations per second.`
         public static final InterpolatingDoubleTreeMap kShootingVelocityMap = InterpolatingDoubleTreeMap.ofEntries(
-            Map.entry(1.44, 26.5),//done - changed by 0.5
-            Map.entry(1.7, 26.0),//done - changed by 0.5
-            Map.entry(2.01, 25.9),//done - changed by 0.10
-            Map.entry(2.56, 28.7),//done - changed by 0.8
-            Map.entry(2.89, 29.0),//done - changed by 0.5
-             Map.entry(3.08, 31.0),//done --- AUTON SHOOTING POSITION
-            Map.entry(3.37, 33.5),
-            Map.entry(3.97,40.0), //done - increased by 0.5
-            Map.entry(4.75, 38.0),
+            Map.entry(1.44, 28.0),//done - changed by 0.5
+            Map.entry(1.7, 28.0),//done - changed by 0.5
+            Map.entry(2.01, 28.0),//done - changed by 0.10
+            Map.entry(2.56, 30.0),//done - changed by 0.8
+            Map.entry(2.89, 31.0),//done - changed by 0.5
+             Map.entry(3.08, 33.5),//done --- AUTON SHOOTING POSITION
+            Map.entry(3.37, 34.5),
+            Map.entry(3.97,38.0), //done - increased by 0.5
+            Map.entry(4.75, 39.5),
+            Map.entry(5.36, 40.0), // done
             Map.entry(6.02, 42.0),//done - increase by 0.5
+            Map.entry(6.85,43.0), // Done
+            Map.entry(7.6, 45.5), // done   
             Map.entry(100.0, 40.0)//far off top limit to prevent unwanted scaling past this distance 
         );
 
@@ -187,11 +190,14 @@ public final class RobotMap {
             Map.entry(2.01, 3.8),//done 
             Map.entry(2.56, 9.0),//done 
             Map.entry(2.89, 9.0),//done
-            Map.entry(3.08, 7.6),// -- AUTON SHOOTING POSITION
-            Map.entry(3.37, 7.4),
-            Map.entry(3.97,7.3),//done
-            Map.entry(4.75, 8.6),
+            Map.entry(3.08, 8.0),// -- AUTON SHOOTING POSITION
+            Map.entry(3.37, 8.0),
+            Map.entry(3.97,10.0),//done
+            Map.entry(4.75, 14.0),
+            Map.entry(5.36,15.0), // done
             Map.entry(6.02, 22.0), //done - increased by 0.3
+            Map.entry(6.85, 25.0), // done
+            Map.entry(7.6, 29.0), // done
             Map.entry(100.0, 9.8) //far off top limit to prevent unwanted scaling past this distance 
         );
 
@@ -224,7 +230,8 @@ public final class RobotMap {
             Map.entry(2.5, 1.03),
             Map.entry(3.0, 1.09),
             Map.entry(3.5, 1.27),
-            Map.entry(4.0, 1.8)
+            Map.entry(4.0, 1.8),
+            Map.entry(7.6, 1.43)
         );
 
         

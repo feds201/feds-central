@@ -33,7 +33,7 @@ public class HubDrive extends Command {
   private CommandXboxController controller;
   
   // Slew rate limiters to smooth joystick and rotation commands
-  private final SlewRateLimiter rotLimiter = new SlewRateLimiter(10000.0); // deg/s per second
+  private final SlewRateLimiter rotLimiter = new SlewRateLimiter(3000.0); // deg/s per second
 
   private SwerveRequest.FieldCentric driveNormal;
 
