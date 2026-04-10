@@ -1,18 +1,24 @@
 package frc.robot;
 
+import java.util.Timer;
+
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.intake.IntakeSubsystem.IntakeState;
 import frc.robot.subsystems.intake.IntakeSubsystem.RollerState;
 import frc.robot.subsystems.feeder.Feeder.feeder_state;
 import frc.robot.subsystems.shooter.ShooterHood.shooterhood_state;
 import frc.robot.subsystems.shooter.ShooterWheels.shooter_state;
+import frc.robot.subsystems.spindexer.Spindexer;
 import frc.robot.subsystems.spindexer.Spindexer.spindexer_state;
 import frc.robot.commands.swerve.HubDrive;
 import frc.robot.commands.swerve.PassingDrive;
 import frc.robot.commands.swerve.TeleopSwerve;
 import frc.robot.RobotMap.ShooterConstants;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 /**
  * Helper that wires controller buttons to subsystem commands. Dependencies
@@ -81,6 +87,8 @@ public class ControllerBindings {
         var shooterHood = container.getShooterHood();
         var shooterWheels = container.getShooterWheels();
 
+   
+
         // Button to reset field centric direction (backup if vision fails)
         driver.start()
                 .onTrue(new InstantCommand(drivetrain::seedFieldCentric));
@@ -143,6 +151,7 @@ public class ControllerBindings {
         // If out of neutral zone, face hub and ready shoot
         driver.povRight().and(() -> !ShooterConstants.neutralZone.contains(drivetrain.getState().Pose.getTranslation())).whileTrue(
                 Commands.sequence(
+                        spinDexer.spindexerAimingMode(0.1).alongWith(feederSubsystem.FeederAimingMode(0.1)),
                         shooterHood.setStateCommand(shooterhood_state.SHOOTING),
                         shooterWheels.setStateCommand(shooter_state.SHOOTING)
                 ).alongWith(new HubDrive(drivetrain, driver)))

@@ -356,7 +356,7 @@ public class IntakeSubsystem extends SubsystemBase {
       rollerMotor = new TalonFX(RobotMap.IntakeSubsystemConstants.kRollerMotorID);
       limit_switch_r = new DigitalInput(RobotMap.IntakeSubsystemConstants.kLimit_switch_rID);
       limit_switch_l = new DigitalInput(RobotMap.IntakeSubsystemConstants.kLimit_switch_lID);
-      
+
 
       var rollerConfig = new TalonFXConfiguration();
     rollerConfig.CurrentLimits.StatorCurrentLimit = 40.0;
@@ -376,9 +376,9 @@ public class IntakeSubsystem extends SubsystemBase {
       config.CurrentLimits.StatorCurrentLimit = 45.0;
       config.CurrentLimits.SupplyCurrentLimitEnable = true;
 
-      config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 78; // TUNE
+      config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = upperLimit; // TUNE
       config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
-      config.SoftwareLimitSwitch. ReverseSoftLimitThreshold = 0; // Tune
+      config.SoftwareLimitSwitch. ReverseSoftLimitThreshold = lowerLimit; // Tune
       config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
     
       // Configure MotionMagic cruise velocity and acceleration so moves complete
