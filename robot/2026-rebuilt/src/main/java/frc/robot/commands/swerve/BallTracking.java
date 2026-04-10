@@ -3,6 +3,8 @@ package frc.robot.commands.swerve;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.subsystems.shooter.ShooterWheels.shooter_state;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import frc.robot.utils.LimelightHelpers;
 
@@ -22,16 +24,13 @@ public enum ObjectDetectionState {
     driveNormal = new SwerveRequest.RobotCentric();
 
     hubRotPID.setTolerance(1.0);
-  }
+  } 
 
- 
-
-  // Called when the command is initially scheduled.
+  // Called when the command is initially scheduled.1
   @Override
   public void initialize() {
     hubRotPID.setSetpoint(0.0);
   }
-
 
    @Override
 public void execute() {
@@ -95,5 +94,10 @@ public void execute() {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Unimplemented method 'setObjectDetectionStateCommand'");
   }
+
+public Command setStateCommand(ObjectDetectionState on) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'setStateCommand'");
+}
 }
 
