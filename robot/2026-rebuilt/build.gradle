@@ -2,6 +2,7 @@ plugins {
     id "java"
     id "edu.wpi.first.GradleRIO" version "2026.2.1"
     id "com.peterabeles.gversion" version "1.10.2"
+    id "com.diffplug.spotless" version "7.0.4"
 }
 
 // Additional maven repositories used by optional simulation vendor libraries
@@ -190,3 +191,49 @@ task fetchModels(type: Exec) {
 }
 
 simulateJava.dependsOn fetchModels
+
+// Spotless is a formatter that makes code look pretty and readable.
+// This only runs when you run the gradle commands below.
+// Reformatting that happens automatically on save is done separately by VS Code, but
+// uses the exact same formatting config file (eclipse-java-google-style.xml), so they should
+// behave the same!
+//   ./gradlew format      — auto-formats ALL FILES for this year's robot!
+//   ./gradlew formatCheck — check formatting without changing them
+spotless {
+    java {
+        target fileTree('.') {
+            include '**/*.java'
+            exclude '**/build/**', '**/build-*/**', '**/bin/**'
+        }
+        toggleOffOn() // skips formatting any code between `// @formatter:off` and `// @formatter:on` comments
+        eclipse().configFile('eclipse-java-google-style.xml') // uses same formatter as format-on-save
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+
+    // Build files
+    groovyGradle {
+        target fileTree('.') {
+            include '**/*.gradle'
+            exclude '**/build/**', '**/build-*/**'
+        }
+        greclipse()
+        indentWithSpaces(4)
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+
+    // Markdown and .gitignore
+    format 'misc', {
+        target fileTree('.') {
+            include '**/*.md', '**/.gitignore'
+            exclude '**/build/**', '**/build-*/**'
+        }
+        trimTrailingWhitespace()
+        indentWithSpaces(2)
+        endWithNewline()
+    }
+}
+task format { dependsOn spotlessApply }
+task formatCheck { dependsOn spotlessCheck }
