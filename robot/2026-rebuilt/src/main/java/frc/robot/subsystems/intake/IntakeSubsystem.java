@@ -1,5 +1,6 @@
 package frc.robot.subsystems.intake;
 import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -50,10 +51,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+
+
 public class IntakeSubsystem extends SubsystemBase {
 
   private final TalonFX motor;
   private final TalonFX rollerMotor;
+ 
   private final DigitalInput limit_switch_r;
   private final DigitalInput limit_switch_l;
   private final SysIdRoutine sysID;
@@ -67,6 +71,9 @@ public class IntakeSubsystem extends SubsystemBase {
   private static final double MOTION_MAGIC_ACCEL_MULTIPLIER = 40.0;
   private static final double ROLLER_OUTPUT = 0.90; //90% for rollers, 70% originally;
   private final Timer timer = new Timer();
+
+  private static final int lowerLimit = 0; // tune
+  private static final int upperLimit = 100; // tune
 
   private final ShuffleboardTab pitTab;
   private final ShuffleboardLayout intakeLayout;
@@ -349,6 +356,7 @@ public class IntakeSubsystem extends SubsystemBase {
       rollerMotor = new TalonFX(RobotMap.IntakeSubsystemConstants.kRollerMotorID);
       limit_switch_r = new DigitalInput(RobotMap.IntakeSubsystemConstants.kLimit_switch_rID);
       limit_switch_l = new DigitalInput(RobotMap.IntakeSubsystemConstants.kLimit_switch_lID);
+      
 
       var rollerConfig = new TalonFXConfiguration();
     rollerConfig.CurrentLimits.StatorCurrentLimit = 40.0;
@@ -367,8 +375,12 @@ public class IntakeSubsystem extends SubsystemBase {
       // config.CurrentLimits.SupplyCurrentLimit = 40.0;
       config.CurrentLimits.StatorCurrentLimit = 45.0;
       config.CurrentLimits.SupplyCurrentLimitEnable = true;
-  
-  
+
+      config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 78; // TUNE
+      config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+      config.SoftwareLimitSwitch. ReverseSoftLimitThreshold = 0; // Tune
+      config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+    
       // Configure MotionMagic cruise velocity and acceleration so moves complete
       // near our desired MOVE_TARGET_SECONDS. Units: motor rotations / sec and
       // rotations / sec^2 respectively.
@@ -415,6 +427,8 @@ public class IntakeSubsystem extends SubsystemBase {
       rollerMotorSim = new DCMotorSim(rollerPlant, DCMotor.getKrakenX60(1));
       limitSwitchRSim = new DIOSim(limit_switch_r);
       limitSwitchLSim = new DIOSim(limit_switch_l);
+
+     
   
       // Default limit switch state (True = Not Pressed for most switches)
       limitSwitchRSim.setValue(true);
