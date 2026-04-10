@@ -121,7 +121,7 @@ public class ControllerBindings {
                 .whileTrue(Commands.sequence(
                   intakeSubsystem.setRollerStateCommand(RollerState.ON),
                         feederSubsystem.setStateCommand(feeder_state.RUN),
-                        spinDexer.setStateCommand(spindexer_state.RUN),
+                        spinDexer.setStateCommand(spindexer_state.PFORWARD),
                         // Pulse intake extend/retract while held (5 roller rotations per pulse, 0.3s retract dwell)
                         shooterWheels.setStateCommand(shooter_state.TEST),
                         shooterHood.setStateCommand(shooterhood_state.TEST)
@@ -229,7 +229,7 @@ public class ControllerBindings {
                 .onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT).alongWith(intakeSubsystem.setRollerStateCommand(RollerState.OFF)));
 
         operator.x()
-                .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.CLOSE_AGITATION).alongWith(intakeSubsystem.setRollerStateCommand(RollerState.ON)))
+                .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.CLOSE_AGITATION_OUT).alongWith(intakeSubsystem.setRollerStateCommand(RollerState.ON)))
                 .onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT).alongWith(intakeSubsystem.setRollerStateCommand(RollerState.OFF)));
 
         operator.rightTrigger()

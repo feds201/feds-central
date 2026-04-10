@@ -94,15 +94,21 @@ public class IntakeSubsystem extends SubsystemBase {
   private MechanismLigament2d rollerLigament;
 
   public enum IntakeState {
-    DEFAULT,
-    EXTENDED,
-    CLOSE_RETRACTED, // 2
-    INTAKING,
-    AGITATE_IN,
-    AGITATE_OUT,
-    CLOSE_AGITATION, //35
-    DITHERIN_AGITATION,
-    DITHEROUT_AGITATION // 4
+    DEFAULT, //Retracted, assumed to be starting state
+    EXTENDED, //Fully extended
+    INTAKING, //Fully extended with rollers on, used for actively intaking fuel
+
+    //State loop 1: Agitate
+    AGITATE_IN, //Inwards portion of the agitate state-loop, intake will toggle between the agitates on a timer when set to one of these states
+    AGITATE_OUT, //Agitation causes the intake to move outwards, then inwards back to default in order to agitate the fuel in the full hopper
+
+    //State loop 2: Close Agitation
+    CLOSE_AGITATION_IN, //Inwards portion of the close agitation state-loop, intake will toggle between the close agitates on a timer when set to one of these states
+    CLOSE_AGITATION_OUT, //Close agitation causes the intake to move outwards, then inwards about halfway to extended in order to agitate the close half of the hopper
+
+    //State loop 3: Dither Agitation (experimental, may not be used)
+    DITHERIN_AGITATION, //Inwards portion of dithering state-loop, intake will toggle between the dithers on a timer when set to one of these states
+    DITHEROUT_AGITATION //Dithering causes the intake to move inwards, then outwards half as much in order to slowly bring in the intake while also agitating
   }
 
   public enum RollerState {
@@ -128,7 +134,7 @@ public class IntakeSubsystem extends SubsystemBase {
         moveIntakeWithPosition(extendedRotations);
         setRollerState(RollerState.OFF);
       }
-      case CLOSE_RETRACTED -> {
+      case CLOSE_AGITATION_IN -> {
         moveIntakeWithPosition(0.0);
         
       }
@@ -142,7 +148,7 @@ public class IntakeSubsystem extends SubsystemBase {
       case AGITATE_OUT -> {
         moveIntakeWithPosition(extendedRotations);
       }
-      case CLOSE_AGITATION -> {
+      case CLOSE_AGITATION_OUT -> {
         moveIntakeWithPosition(burstAgitation);
       }
     }
@@ -461,24 +467,24 @@ public class IntakeSubsystem extends SubsystemBase {
       }
       break;
 
-        case CLOSE_AGITATION: 
+        case CLOSE_AGITATION_OUT: 
           if(!timer.isRunning()){
             timer.start();
           }
           if(timer.hasElapsed(0.2)){
-            setState(IntakeState.CLOSE_RETRACTED); // really close to default
+            setState(IntakeState.CLOSE_AGITATION_IN); // really close to default
             timer.stop();
             timer.reset();
           }
           break;
 
-          case CLOSE_RETRACTED  : 
+          case CLOSE_AGITATION_IN  : 
           if(!timer.isRunning()){
             timer.start();
           }
 
           if(timer.hasElapsed(0.2)){
-            setState(IntakeState.CLOSE_AGITATION); // about halfway from bumper to extended
+            setState(IntakeState.CLOSE_AGITATION_OUT); // about halfway from bumper to extended
             timer.stop();
             timer.reset();
         }
@@ -507,9 +513,10 @@ public class IntakeSubsystem extends SubsystemBase {
             setState(IntakeState.DITHERIN_AGITATION); // small retract from extended
             timer.stop();
             timer.reset();
-          break;
+         
 
         }
+         break;
       }
 
     switch (currentRollerState) {
