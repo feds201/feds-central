@@ -59,7 +59,7 @@ public class IntakeSubsystem extends SubsystemBase {
   private final SysIdRoutine sysID;
   private final LedsSubsystem leds = LedsSubsystem.getInstance();
   private final double extendedRotations = 18.0; //TUNE on new intake
-  private final double retractedRotations = 0.1;
+  private final double retractedRotations = 0.39;
   public final double burstAgitation = extendedRotations / 2.0;
   // Desired motion timing: target to complete extend/retract in under 1s
   private static final double MOVE_TARGET_SECONDS = .45;

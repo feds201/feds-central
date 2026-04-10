@@ -225,12 +225,14 @@ public final class RobotMap {
 
         public static final InterpolatingDoubleTreeMap kFlightTimeMap =
         InterpolatingDoubleTreeMap.ofEntries(
-            Map.entry(1.5, .87),
-            Map.entry(2.0, 0.93),
-            Map.entry(2.5, 1.03),
-            Map.entry(3.0, 1.09),
-            Map.entry(3.5, 1.27),
-            Map.entry(4.0, 1.8),
+            Map.entry(1.44, (8.2-7.21)),
+            Map.entry(2.11, (2.2-1.25)),
+            Map.entry(2.24, (19.75-18.79)),
+            Map.entry(2.96, (18.91-17.84)),
+            Map.entry(3.39, (4.15-3.34)),
+            Map.entry(4.07, (7.01-5.69)),
+            Map.entry(4.6, (13.03-11.59)),
+            Map.entry(5.23, (1.42-0.07)),
             Map.entry(7.6, 1.43)
         );
 
