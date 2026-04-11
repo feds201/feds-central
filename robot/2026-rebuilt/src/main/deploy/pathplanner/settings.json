@@ -15,6 +15,7 @@
     "TestAutos",
     "Trenches"
   ],
+  "autoFolders": [],
   "defaultMaxVel": 5.0,
   "defaultMaxAccel": 4.0,
   "defaultMaxAngVel": 540.0,
