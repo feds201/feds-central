@@ -1,5 +1,11 @@
 package frc.robot;
 
+import java.util.Set;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathPlannerPath;
+
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -9,6 +15,9 @@ import frc.robot.subsystems.feeder.Feeder.feeder_state;
 import frc.robot.subsystems.shooter.ShooterHood.shooterhood_state;
 import frc.robot.subsystems.shooter.ShooterWheels.shooter_state;
 import frc.robot.subsystems.spindexer.Spindexer.spindexer_state;
+import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
+import frc.robot.commands.swerve.BallTracking;
+import frc.robot.commands.swerve.BallTracking.BallTrackingState;
 import frc.robot.commands.swerve.HubDrive;
 import frc.robot.commands.swerve.PassingDrive;
 import frc.robot.commands.swerve.TeleopSwerve;
@@ -33,6 +42,7 @@ public class ControllerBindings {
         var spinDexer = container.getSpindexer();
         var shooterHood = container.getShooterHood();
         var shooterWheels = container.getShooterWheels();
+       
 
         drivetrain.setDefaultCommand(new TeleopSwerve(drivetrain, test, 0.2));
 
@@ -80,6 +90,7 @@ public class ControllerBindings {
         var spinDexer = container.getSpindexer();
         var shooterHood = container.getShooterHood();
         var shooterWheels = container.getShooterWheels();
+        var ballTracking = container.getBallTracking();
 
         // Button to reset field centric direction (backup if vision fails)
         driver.start()
@@ -164,6 +175,10 @@ public class ControllerBindings {
                                 shooterWheels.setStateCommand(shooter_state.IDLE)
                         ));
 
+         driver.povDown()
+                .onTrue((container.FDMidIntakeToLeftBumpSequence()))
+                .onFalse(ballTracking.setStateCommand(BallTrackingState.OFF)); 
+
         // Button to fire, if swerve is aimed and shooter is at speed.
         driver.rightTrigger().and(HubDrive::pidAtSetpoint).and(shooterWheels::atSetpoint).whileTrue(
                 Commands.sequence(
@@ -203,8 +218,10 @@ public class ControllerBindings {
 
         var feederSubsystem = container.getFeederSubsystem();
         var intakeSubsystem = container.getIntakeSubsystem();
+        var ballTracking = container.getBallTracking();
         var shooterHood = container.getShooterHood();
         var spindexerSubsystem = container.getSpindexer();
+        var RobotContainer = container; 
         // Manual way to change the angle of the shooter hood
         operator.leftTrigger()
                 .onTrue(shooterHood.setMotorPower(0.1))
@@ -232,6 +249,8 @@ public class ControllerBindings {
         operator.x()
                 .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.CLOSE_AGITATION).alongWith(intakeSubsystem.setRollerStateCommand(RollerState.ON)))
                 .onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT).alongWith(intakeSubsystem.setRollerStateCommand(RollerState.OFF)));
+       
     }
+
 
 }

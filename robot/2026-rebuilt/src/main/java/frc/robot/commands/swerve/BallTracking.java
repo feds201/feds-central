@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Rectangle2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import frc.robot.utils.LimelightHelpers;
 
@@ -40,8 +41,13 @@ public class BallTracking extends Command {
      state = BallTrackingState.ON; 
     }
 
-    public void setState(BallTrackingState state) {
-      this.state = state;
+    public void setState(BallTrackingState newState) {
+          this.state = newState;
+        }
+    
+        
+      public Command setStateCommand(BallTrackingState targState){
+          return Commands.runOnce(() -> setState(targState));
     }
 
       public boolean withinBlueAlliance()

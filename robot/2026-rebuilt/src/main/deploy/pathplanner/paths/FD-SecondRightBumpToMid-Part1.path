@@ -1,0 +1,113 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.107475035663337,
+        "y": 2.8122967189728967
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.322053920605606,
+        "y": 1.2091769087739865
+      },
+      "isLocked": false,
+      "linkedName": "RightFirstShootPosition"
+    },
+    {
+      "anchor": {
+        "x": 3.944804270462635,
+        "y": 0.554400948991697
+      },
+      "prevControl": {
+        "x": 2.423947475988192,
+        "y": 0.5544009489916972
+      },
+      "nextControl": {
+        "x": 4.4289679715302475,
+        "y": 0.554400948991697
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.838422301304864,
+        "y": 0.554400948991697
+      },
+      "prevControl": {
+        "x": 4.80660164892337,
+        "y": 0.603748100064752
+      },
+      "nextControl": {
+        "x": 7.053766048502139,
+        "y": 0.4962767475035662
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.2774465049928665,
+        "y": 2.0230385164051357
+      },
+      "prevControl": {
+        "x": 6.3938944365192585,
+        "y": 1.4407988587731824
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "SecondRightIntakePosition"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.8847184986595117,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 2.05,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 2.3,
+      "rotationDegrees": -90.0
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.6310756972111495,
+      "maxWaypointRelativePos": 1.2334661354581693,
+      "constraints": {
+        "maxVelocity": 2.0,
+        "maxAcceleration": 4.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 360.0,
+        "nominalVoltage": 11.8,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 4.0,
+    "maxAcceleration": 4.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 360.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 2.0,
+    "rotation": -90.0
+  },
+  "reversed": false,
+  "folder": "MidIntakeToRightBump",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 39.01940047523653
+  },
+  "useDefaultConstraints": false
+}
