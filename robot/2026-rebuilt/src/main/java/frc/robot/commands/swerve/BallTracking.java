@@ -1,6 +1,5 @@
 package   frc.robot.commands.swerve;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,9 +9,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rectangle2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.RobotMap.ShooterConstants;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import frc.robot.utils.LimelightHelpers;
 
@@ -24,15 +21,27 @@ public class BallTracking extends Command {
   private ArrayList<Double> tyHistory = new ArrayList<Double>(List.of(0.0, 0.0, 0.0, 0.0, 0.0));
   private double averageTy; 
   private boolean hasTarget;
+  private BallTrackingState state; 
 
 
 
-  public BallTracking(CommandSwerveDrivetrain dt) {
+
+    public enum BallTrackingState { 
+      ON, 
+      OFF
+    }
+
+     public BallTracking(CommandSwerveDrivetrain dt) {
     this.dt = dt;
     addRequirements(this.dt);
     driveNormal = new SwerveRequest.RobotCentric();
     hubRotPID.setTolerance(1.0);
     maxVelocity = 2; 
+     state = BallTrackingState.ON; 
+    }
+
+    public void setState(BallTrackingState state) {
+      this.state = state;
     }
 
       public boolean withinBlueAlliance()
@@ -85,6 +94,7 @@ public class BallTracking extends Command {
   @Override
   public void initialize() {
     hubRotPID.setSetpoint(0.0);
+      state = BallTrackingState.ON;
   }
 
 
@@ -94,13 +104,21 @@ public void execute() {
   
       hasTarget = LimelightHelpers.getTV("limelight-one");
 
+      if (state == BallTrackingState.OFF) {
+      dt.setControl(driveNormal
+            .withVelocityX(0)
+            .withVelocityY(0)
+            .withRotationalRate(0) //in radians per second
+        );
+      }
+
     if (withinBlueAlliance()){ 
 
       if (withinTransition()) {
         dt.setControl(driveNormal
             .withVelocityX(2.0)
             .withVelocityY(0)
-            .withRotationalRate(3.2) //in radians per second
+            .withRotationalRate(3.2) 
         );
       }
 
@@ -214,6 +232,7 @@ if (hasTarget) {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    state = BallTrackingState.OFF;
   }
 
   // Returns true when the command should end.
