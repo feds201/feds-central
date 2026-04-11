@@ -200,6 +200,10 @@ simulateJava.dependsOn fetchModels
 //   ./gradlew format      — auto-formats ALL FILES for this year's robot!
 //   ./gradlew formatCheck — check formatting without changing them
 spotless {
+    // When `true`, Spotless hooks up `formatCheck` to run anytime you do a build which is really annoying,
+    // so we set it to `false`. You can still run `./gradlew formatCheck` manually to check formatting.
+    enforceCheck = false
+
     java {
         target fileTree('.') {
             include '**/*.java'
@@ -237,3 +241,4 @@ spotless {
 }
 task format { dependsOn spotlessApply }
 task formatCheck { dependsOn spotlessCheck }
+
