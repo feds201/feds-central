@@ -73,6 +73,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.2"
+  bot_path_drawer:
+    dependency: "direct main"
+    description:
+      path: "scouting/packages/bot_path_drawer"
+      ref: main
+      resolved-ref: "3e8ac1d8b3ecee011133504e4731b7c35e790020"
+      url: "https://github.com/feds201/feds-central.git"
+    source: git
+    version: "0.1.0"
   buffer:
     dependency: transitive
     description:
@@ -297,6 +306,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.7"
+  curve:
+    dependency: transitive
+    description:
+      name: curve
+      sha256: "74bed1eb8d8111b90f2e35861ff7a4eb3b27c0495302a4a4298712563ef43a9e"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.2.0"
   dart_style:
     dependency: transitive
     description:
@@ -393,6 +410,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.9.3+5"
+  fit_curve:
+    dependency: transitive
+    description:
+      name: fit_curve
+      sha256: f2ba74f3aba41e67bc0d8a69c4d5e3ce8f8f6b12c1eda4d6a035eecb38dd9e47
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.4"
   fixnum:
     dependency: transitive
     description:
@@ -676,10 +701,10 @@ packages:
     dependency: transitive
     description:
       name: matcher
-      sha256: dc0b7dc7651697ea4ff3e69ef44b0407ea32c487a39fff6a4004fa585e901861
+      sha256: "12956d0ad8390bbcc63ca2e1469c0619946ccb52809807067a7020d57e647aa6"
       url: "https://pub.dev"
     source: hosted
-    version: "0.12.19"
+    version: "0.12.18"
   material_color_utilities:
     dependency: transitive
     description:
@@ -1089,10 +1114,10 @@ packages:
     dependency: transitive
     description:
       name: test_api
-      sha256: "8161c84903fd860b26bfdefb7963b3f0b68fee7adea0f59ef805ecca346f0c7a"
+      sha256: "93167629bfc610f71560ab9312acdda4959de4df6fac7492c89ff0d3886f6636"
       url: "https://pub.dev"
     source: hosted
-    version: "0.7.10"
+    version: "0.7.9"
   timeline_tile:
     dependency: "direct main"
     description:
