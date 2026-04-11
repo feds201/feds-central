@@ -124,19 +124,7 @@ class BotPathConfig {
     this.simplificationError = 50,
     this.pointFilterDistance = 2.0,
     this.brightness,
-  })  : assert(cropFraction > 0 && cropFraction <= 1,
-            'cropFraction must be in (0, 1]'),
-        assert(robotSizeFraction > 0 && robotSizeFraction < 1,
-            'robotSizeFraction must be in (0, 1)'),
-        assert(defaultPlaybackSpeed > 0, 'defaultPlaybackSpeed must be > 0'),
-        assert(maxPlaybackSpeed >= defaultPlaybackSpeed,
-            'maxPlaybackSpeed must be >= defaultPlaybackSpeed'),
-        assert(playbackDurationMs == null || playbackDurationMs > 0,
-            'playbackDurationMs must be > 0 if non-null'),
-        assert(highlightSizeMultiplier > 0,
-            'highlightSizeMultiplier must be > 0'),
-        assert(simplificationError > 0, 'simplificationError must be > 0'),
-        assert(pointFilterDistance >= 0, 'pointFilterDistance must be >= 0');
+  });
 
   /// Returns a copy of this config with the given fields replaced.
   ///
