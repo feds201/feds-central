@@ -11,18 +11,22 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.RobotMap.DrivetrainConstants;
+import frc.robot.commands.swerve.BallTracking;
+import frc.robot.commands.swerve.BallTracking.BallTrackingState;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem.IntakeState;
 import frc.robot.subsystems.intake.IntakeSubsystem.RollerState;
@@ -35,19 +39,27 @@ import frc.robot.subsystems.shooter.ShooterWheels.shooter_state;
 import frc.robot.subsystems.spindexer.Spindexer;
 import frc.robot.subsystems.spindexer.Spindexer.spindexer_state;
 import frc.robot.sim.RebuiltSimManager;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.util.FileVersionException;
+import com.pathplanner.lib.path.GoalEndState;
 
-
+import org.json.simple.parser.ParseException;
 import org.littletonrobotics.junction.Logger;
 
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.utils.LimelightWrapper;
 import frc.robot.utils.PitTesting;
-import frc.robot.utils.RTU.RootTestingUtility;
 import frc.robot.rtu.RTUManager;
 import frc.robot.utils.AutoSweeper;
 import limelight.networktables.LimelightSettings.ImuMode;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import static edu.wpi.first.units.Units.Rotations;
 
 public class RobotContainer extends ControllerBindings {
@@ -76,6 +88,7 @@ public class RobotContainer extends ControllerBindings {
     private final ShooterHood shooterHood = new ShooterHood(drivetrain);
     private final ShooterWheels shooterWheels = new ShooterWheels(drivetrain);
     private final Spindexer spinDexer = new Spindexer();
+    private final BallTracking ball = new BallTracking(drivetrain);
 
     // Simulation
     private RebuiltSimManager simManager;
@@ -302,6 +315,65 @@ public class RobotContainer extends ControllerBindings {
 
         rtumanager.periodic();
     }
+    
+   public Command FDMidIntakeToLeftBump() {
+    return Commands.defer(() -> {
+
+        PathPlannerPath originalPath;
+        try {
+            originalPath = PathPlannerPath.fromPathFile("FD-MidIntakeToLeftBump-Part1");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Commands.print("Failed to load path: " + e.getMessage());
+        }
+
+        List<Pose2d> originalPoses = originalPath.getPathPoses();
+        Pose2d originalEnd = originalPoses.get(originalPoses.size() - 1);
+        Pose2d currentPose = drivetrain.getState().Pose;
+
+        Translation2d translationDelta = currentPose.getTranslation()
+            .minus(originalEnd.getTranslation());
+        Rotation2d rotationDelta = currentPose.getRotation()
+            .minus(originalEnd.getRotation());
+        Transform2d transform = new Transform2d(translationDelta, rotationDelta);
+
+        List<Pose2d> shiftedPoses = originalPoses.stream()
+            .map(pose -> pose.transformBy(transform))
+            .collect(Collectors.toList());
+
+        PathPlannerPath newPath = new PathPlannerPath(
+            PathPlannerPath.waypointsFromPoses(shiftedPoses),
+            originalPath.getGlobalConstraints(),
+            null,
+            new GoalEndState(0.0, currentPose.getRotation())
+        );
+
+        newPath.preventFlipping = true;
+        return AutoBuilder.followPath(newPath);
+
+    }, Set.of(drivetrain));
+}
+
+public Command FDMidIntakeToLeftBumpSequence() {
+    return Commands.defer(() -> {
+        try {
+            return Commands.sequence(
+                    AutoBuilder.followPath(
+                            PathPlannerPath.fromPathFile("FD-MidIntakeToLeftBump-Part1")),
+                    Commands.runOnce(() -> ball.setState(BallTrackingState.ON)),
+                    ball.withTimeout(3.0),
+                    Commands.runOnce(() -> ball.setState(BallTrackingState.OFF)),
+                    AutoBuilder.followPath(
+                            PathPlannerPath.fromPathFile("FD-MidIntakeToLeftBump-Part2")),
+                    FDMidIntakeToLeftBump());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Commands.print("Failed to load path: " + e.getMessage());
+        }
+    }, Set.of(drivetrain));
+}
+
+
 
 
 public void registerNamedCommands() {
@@ -315,6 +387,11 @@ public void registerNamedCommands() {
   NamedCommands.registerCommand("End Shooter Spin", shooterWheels.setStateCommand(shooter_state.IDLE).alongWith(shooterHood.setStateCommand(shooterhood_state.IN)).alongWith(spinDexer.setStateCommand(spindexer_state.STOP)).alongWith(feederSubsystem.setStateCommand(feeder_state.STOP)));
   NamedCommands.registerCommand("Run Shooter", shooterWheels.setStateCommand(shooter_state.SHOOTING).alongWith(feederSubsystem.setStateCommand(feeder_state.PRUN)).alongWith(spinDexer.setStateCommand(spindexer_state.PFORWARD)).alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
   NamedCommands.registerCommand("Shooting", shooterWheels.setStateCommand(shooter_state.SHOOTING).alongWith(feederSubsystem.setStateCommand(feeder_state.PRUN)).alongWith(spinDexer.setStateCommand(spindexer_state.PFORWARD)).alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
+  NamedCommands.registerCommand("Run Object Detection", 
+    Commands.runOnce(() -> ball.setState(BallTrackingState.ON)));
+    NamedCommands.registerCommand("Stop Object Detection", 
+    Commands.runOnce(() -> ball.setState(BallTrackingState.OFF)));
+    NamedCommands.registerCommand("FullBallSequence", FDMidIntakeToLeftBumpSequence());
 
 
 }
