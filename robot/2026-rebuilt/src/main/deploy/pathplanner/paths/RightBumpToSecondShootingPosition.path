@@ -48,12 +48,12 @@
     },
     {
       "anchor": {
-        "x": 3.107475035663337,
-        "y": 2.8122967189728967
+        "x": 2.965717674970344,
+        "y": 2.265112692763938
       },
       "prevControl": {
-        "x": 3.482696148359485,
-        "y": 2.5147075606276768
+        "x": 3.22393831553974,
+        "y": 2.37270462633452
       },
       "nextControl": null,
       "isLocked": false,
@@ -73,10 +73,23 @@
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 1.3119658119658077,
+      "minWaypointRelativePos": 0.9516310461192441,
       "maxWaypointRelativePos": 2.075498575498568,
       "constraints": {
-        "maxVelocity": 2.5,
+        "maxVelocity": 2.3,
+        "maxAcceleration": 4.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 360.0,
+        "nominalVoltage": 11.8,
+        "unlimited": false
+      }
+    },
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 2.6,
+      "maxWaypointRelativePos": 3.0,
+      "constraints": {
+        "maxVelocity": 0.6,
         "maxAcceleration": 4.0,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 360.0,
@@ -97,13 +110,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 39.01940047523653
+    "rotation": 47.444068057635405
   },
   "reversed": false,
   "folder": "MidIntakeToRightBump",
   "idealStartingState": {
     "velocity": 2.0,
-    "rotation": 59.99999999999999
+    "rotation": 117.18999999999998
   },
   "useDefaultConstraints": true
 }
