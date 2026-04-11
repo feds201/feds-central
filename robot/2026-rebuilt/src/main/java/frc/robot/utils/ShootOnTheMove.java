@@ -35,13 +35,24 @@ public class ShootOnTheMove {
         // Compute shooter field velocity
         Translation2d shooterVelocity = getShooterFieldVelocity(robotPose, chassisSpeeds);
 
+        Translation2d virtualGoal = hubCenter;
         // Compute approximate flight time
-        double distToGoal = shooterFieldPosition.getDistance(hubCenter);
+        double previousDistToGoal = 0;
+
+        for(int i=0; i<=10; i++){ 
+        double distToGoal = shooterFieldPosition.getDistance(virtualGoal);
 
         // Adjust goal position for motion
         double flightTime = ShooterConstants.kFlightTimeMap.get(distToGoal);
-        Translation2d virtualGoal = hubCenter.minus(shooterVelocity.times(flightTime));
+        virtualGoal = hubCenter.minus(shooterVelocity.times(flightTime));
 
+        if(Math.abs(previousDistToGoal - distToGoal) <= 0.1)
+        {
+          return virtualGoal;
+        }
+        previousDistToGoal = distToGoal;
+    }
+ 
         return virtualGoal;
 
     }
