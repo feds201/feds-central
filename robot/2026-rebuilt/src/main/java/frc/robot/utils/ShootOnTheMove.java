@@ -4,6 +4,8 @@
 
 package frc.robot.utils;
 
+import static edu.wpi.first.units.Units.Rotations;
+
 import org.littletonrobotics.junction.Logger;
 
 import com.pathplanner.lib.util.FlippingUtil;
@@ -13,9 +15,16 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.RobotMap;
+import frc.robot.RobotMap.DrivetrainConstants;
 import frc.robot.RobotMap.ShooterConstants;
+import frc.robot.subsystems.shooter.ShooterHood;
+import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
+import frc.robot.subsystems.shooter.ShooterHood;
+import frc.robot.subsystems.shooter.ShooterHood.shooterhood_state;
+import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 
 public class ShootOnTheMove {
+    
     /**
      * Get the field-relative position of the virtual goal
      * 
@@ -39,20 +48,26 @@ public class ShootOnTheMove {
         // Compute approximate flight time
         double previousDistToGoal = 0;
 
+       
+
+
+        
         for(int i=0; i<=10; i++){ 
-        double distToGoal = shooterFieldPosition.getDistance(virtualGoal);
+            double distToGoal = shooterFieldPosition.getDistance(virtualGoal);
+                
+            // Adjust goal position for motion
+            double flightTime = ShooterConstants.kFlightTimeMap.get(distToGoal);
+            double hoodangle = RobotMap.ShooterConstants.kShootingPositionMap.get(distToGoal);
+            double wheelVelocity = ShooterConstants.kShootingVelocityMap.get(distToGoal);
+            flightTime = -0.000772833*Math.pow(wheelVelocity, 2) + 0.00465107*wheelVelocity*hoodangle + 0.0621835*wheelVelocity - 0.00218423*Math.pow(hoodangle, 2) - 0.136261*hoodangle - 0.149612;
+            virtualGoal = hubCenter.minus(shooterVelocity.times(flightTime));
 
-        // Adjust goal position for motion
-        double flightTime = ShooterConstants.kFlightTimeMap.get(distToGoal);
-        virtualGoal = hubCenter.minus(shooterVelocity.times(flightTime));
-
-        if(Math.abs(previousDistToGoal - distToGoal) <= 0.1)
-        {
-          return virtualGoal;
+            if(Math.abs(previousDistToGoal - distToGoal) <= 0.1) {
+                return virtualGoal;
+            }
+            previousDistToGoal = distToGoal;
         }
-        previousDistToGoal = distToGoal;
-    }
- 
+    
         return virtualGoal;
 
     }
@@ -69,7 +84,6 @@ public class ShootOnTheMove {
             ChassisSpeeds chassisSpeeds) {
         // Get shooter field position
         Translation2d shooterFieldPosition = getShooterFieldPosition(robotPose);
-
         // Compute field-relative angle shooter must point
         Translation2d virtualGoal = calculateVirtualGoal(robotPose, chassisSpeeds);
         Translation2d shooterToGoal = virtualGoal.minus(shooterFieldPosition);
