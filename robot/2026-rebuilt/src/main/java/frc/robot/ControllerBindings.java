@@ -104,18 +104,24 @@ public class ControllerBindings {
                 .whileTrue(intakeSubsystem.setRollerStateCommand(RollerState.REVERSE))
                 .onFalse(intakeSubsystem.setRollerStateCommand(RollerState.OFF));
 
+        // DO NOT SUBMIT, added agitate for testing
         driver.y()
                 .onTrue(Commands.sequence(
+                        intakeSubsystem.setIntakeStateCommand(IntakeState.AGITATE_IN),
+                        intakeSubsystem.setRollerStateCommand(RollerState.ON),
                         feederSubsystem.setStateCommand(feeder_state.RUN),
                         spinDexer.setStateCommand(spindexer_state.RUN),
                         shooterHood.setStateCommand(shooterhood_state.HALFCOURT),
                         shooterWheels.setStateCommand(shooter_state.HALFCOURT)))
                 .onFalse(Commands.sequence(
+                        intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT),
+                        intakeSubsystem.setRollerStateCommand(RollerState.OFF),
                         feederSubsystem.setStateCommand(feeder_state.STOP),
                         spinDexer.setStateCommand(spindexer_state.STOP),
                         shooterWheels.setStateCommand(shooter_state.IDLE),
                         shooterHood.setStateCommand(shooterhood_state.IN)));
 
+        // DO NOT SUBMIT tempory for testing only
         // Button to shoot from against hub — run shooter/feeder/spindexer + agitate in parallel while held
         driver.x()
                 .whileTrue(Commands.sequence(

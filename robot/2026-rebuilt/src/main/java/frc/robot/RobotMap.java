@@ -57,8 +57,12 @@ public final class RobotMap {
         public static final int kLimit_switch_rID = 2;
         public static final int kLimit_switch_lID = 3; 
         public static final int kRollerMotorID = 62;
-        public static final double agitateCycleConstant = 0.5;
 
+        // DO NOT SUBMIT (it takes 0.8s to move the full 20", so this moves in 8", then out 2")
+        // Net speed id (8-2)/2 = 3" per sec. so in 4x runs we'll go 12", and that's what we need
+        // to traverse the full distance minus the 1st cycle (ie 20"-8"=12")
+        public static final double agitateCycleConstantIn = 0.5;
+        public static final double agitateCycleConstantOut = 0.25;
     }
 
 
@@ -96,8 +100,9 @@ public final class RobotMap {
     }
 
     public static class indexingConstants {
-        public static final double forwardTime = 2;
-        public static final double reverseTime = .5;
+        // DO NOT SUBMIT
+        public static final double forwardTime = 1.25;
+        public static final double reverseTime = 0.10;
     }
 
     public static class FeederConstants

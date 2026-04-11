@@ -133,9 +133,10 @@ public class Feeder extends SubsystemBase {
           washingMachineTimer.start();
         }
         if(washingMachineTimer.hasElapsed(indexingConstants.forwardTime)){
-          setState(feeder_state.REVERSE);
-          washingMachineTimer.stop();
-          washingMachineTimer.reset();
+          // DO NOT SUBMIT
+          // setState(feeder_state.REVERSE);
+          // washingMachineTimer.stop();
+          // washingMachineTimer.reset();
         }
         break;
       case REVERSE:

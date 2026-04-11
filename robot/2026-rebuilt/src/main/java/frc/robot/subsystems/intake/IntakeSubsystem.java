@@ -62,7 +62,7 @@ public class IntakeSubsystem extends SubsystemBase {
   private final double retractedRotations = 0.39;
   public final double burstAgitation = extendedRotations / 2.0;
   // Desired motion timing: target to complete extend/retract in under 1s
-  private static final double MOVE_TARGET_SECONDS = .45;
+  private static final double MOVE_TARGET_SECONDS = 1.5;
   // Aggressive acceleration multiplier requested (20x faster than default)
   private static final double MOTION_MAGIC_ACCEL_MULTIPLIER = 40.0;
   private static final double ROLLER_OUTPUT = 0.90; //90% for rollers, 70% originally;
@@ -446,26 +446,26 @@ public class IntakeSubsystem extends SubsystemBase {
     
     switch (currentState) {
       case AGITATE_IN:
-       if(! timer.isRunning()){
-          timer.start();  
-       }
-       if(timer.hasElapsed(IntakeSubsystemConstants.agitateCycleConstant)){
-        setState(IntakeState.AGITATE_OUT);
-        timer.stop();
-        timer.reset();
-       }
+        if(!timer.isRunning()){
+            timer.start();  
+        }
+        if(timer.hasElapsed(IntakeSubsystemConstants.agitateCycleConstantIn)){
+          setState(IntakeState.AGITATE_OUT);
+          timer.stop();
+          timer.reset();
+        }
         break;
 
-        case AGITATE_OUT:
-           if(! timer.isRunning()){
+      case AGITATE_OUT:
+        if(!timer.isRunning()){
           timer.start();  
-       }
-        if(timer.hasElapsed(IntakeSubsystemConstants.agitateCycleConstant)){
-        setState(IntakeState.AGITATE_IN);
-        timer.stop();
-        timer.reset();
-      }
-      break;
+        }
+        if(timer.hasElapsed(IntakeSubsystemConstants.agitateCycleConstantOut)){
+          setState(IntakeState.AGITATE_IN);
+          timer.stop();
+          timer.reset();
+        }
+        break;
 
         case CLOSE_AGITATION_OUT: 
           if(!timer.isRunning()){
