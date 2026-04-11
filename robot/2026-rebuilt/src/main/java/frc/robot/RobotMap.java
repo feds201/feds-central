@@ -176,8 +176,8 @@ public final class RobotMap {
              Map.entry(3.08, 33.5),//done 
             Map.entry(3.37, 34.5),//done
             Map.entry(3.97,38.0), //done 
-            Map.entry(4.75, 39.5),//done
-            Map.entry(5.36, 40.0), // done
+            Map.entry(4.75, 39.5),
+            Map.entry(5.0,42.0),// done
             Map.entry(6.02, 42.0),//done 
             Map.entry(6.85,43.0), // Done
             Map.entry(7.6, 45.5), // done   
@@ -193,8 +193,8 @@ public final class RobotMap {
             Map.entry(3.08, 8.0),//done
             Map.entry(3.37, 8.0),//done
             Map.entry(3.97,10.0),//done
-            Map.entry(4.75, 14.0),//done
-            Map.entry(5.36,15.0), // done
+            Map.entry(4.75, 14.0),
+            Map.entry(5.0, 15.0),// done
             Map.entry(6.02, 22.0), //done 
             Map.entry(6.85, 25.0), // done
             Map.entry(7.6, 29.0), // done
@@ -229,7 +229,7 @@ public final class RobotMap {
             Map.entry(2.11, (2.2-1.25)),
             Map.entry(2.24, (19.75-18.79)),
             Map.entry(2.96, (18.91-17.84)),
-            Map.entry(3.39, (4.15-3.34)),
+            // Map.entry(3.39, (4.15-3.34)),
             Map.entry(4.07, (7.01-5.69)),
             Map.entry(4.6, (13.03-11.59)),
             Map.entry(5.23, (1.42-0.07)),
