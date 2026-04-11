@@ -31,8 +31,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 import frc.robot.RobotMap.SpindexerConstants;
 import frc.robot.RobotMap.indexingConstants;
-import frc.robot.subsystems.feeder.Feeder;
-import frc.robot.subsystems.feeder.Feeder.feeder_state;
 import frc.robot.utils.DeviceTempReporter;
 import frc.robot.utils.SubsystemStatusManager;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -61,9 +59,6 @@ public class Spindexer extends SubsystemBase {
       return targetPosition;
     }
   }
-    Feeder feeder = new Feeder();
-
-
 
   //susbsytem components
   private final TalonFX spindexerMotor;
