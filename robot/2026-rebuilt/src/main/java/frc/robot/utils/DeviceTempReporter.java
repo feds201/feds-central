@@ -30,6 +30,10 @@ public class DeviceTempReporter {
         Supplier<Temperature> supplier;
         for(TalonFX t: talons){
             id = Integer.toString(t.getDeviceID());
+            if (deviceTempEntries.containsKey(id)) {
+                System.err.println("[DeviceTempReporter] Skipping duplicate device ID: " + id);
+                continue;
+            }
             supplier = ()-> t.getDeviceTemp().getValue();
             deviceTempSuppliers.put(id, supplier);
             deviceTempEntries.put(id, tab.add(id, -1).getEntry()); //Initial before polling
@@ -44,6 +48,10 @@ public class DeviceTempReporter {
     public static synchronized void addDevice(String id, Supplier<Temperature> tempSupplier){
         if (id == null || tempSupplier == null) {
             throw new IllegalArgumentException("id and tempSupplier must be non-null");
+        }
+        if (deviceTempEntries.containsKey(id)) {
+            System.err.println("[DeviceTempReporter] Skipping duplicate device: " + id);
+            return;
         }
 
         deviceTempSuppliers.put(id, tempSupplier);
