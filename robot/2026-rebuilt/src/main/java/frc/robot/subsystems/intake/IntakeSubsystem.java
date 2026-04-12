@@ -141,6 +141,7 @@ public class IntakeSubsystem extends SubsystemBase {
       case DEFAULT -> {
         moveIntakeWithPosition(retractedRotations);
       }
+      
       case EXTENDED -> {
         moveIntakeWithPosition(extendedRotations);
         setRollerState(RollerState.OFF);
@@ -156,15 +157,24 @@ public class IntakeSubsystem extends SubsystemBase {
       case AGITATE_IN -> {
         moveIntakeWithPosition(retractedRotations);
       }
+
       case AGITATE_OUT -> {
         moveIntakeWithPosition(extendedRotations);
       }
       case CLOSE_AGITATION_OUT -> {
         moveIntakeWithPosition(burstAgitation);
       }
+      case DETECT_RESISTANCE -> {
+        moveIntakeWithPosition(retractedRotations);
+      }
+      case DETECTED_RESISTANCE -> {
+        moveIntakeWithPosition(extendedRotations);
+        setRollerState(RollerState.REVERSE);
       
     }
 
+
+  }
     }
       // Hi Clifford
 
@@ -521,20 +531,22 @@ public class IntakeSubsystem extends SubsystemBase {
        double motorVoltage = motor.getMotorVoltage().getValueAsDouble();
 
         switch(currentState){
+
         case DETECT_RESISTANCE:
-        retractSlowly();
           if(motorVoltage > resistanceVoltage){
-            setIntakeStateCommand(IntakeState.DETECTED_RESISTANCE);
+            setState(IntakeState.DETECTED_RESISTANCE);
           }
         break;
+
         case DETECTED_RESISTANCE:
-          setIntakeStateCommand(IntakeState.EXTENDED);
           timer.start();
-          setRollerStateCommand(RollerState.REVERSE);
           if(timer.hasElapsed(0.5)){
-            setRollerStateCommand(RollerState.OFF);
+            setRollerState(RollerState.OFF);
+            timer.stop();
+            timer.reset();
           }
-        setIntakeStateCommand(IntakeState.AGITATE_IN);
+
+        setState(IntakeState.AGITATE_IN);
         break;
 
       }

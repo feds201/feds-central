@@ -151,8 +151,8 @@ public class ControllerBindings {
         // If out of neutral zone, face hub and ready shoot
         driver.povRight().and(() -> !ShooterConstants.neutralZone.contains(drivetrain.getState().Pose.getTranslation())).whileTrue(
                 Commands.sequence(
-                        spinDexer.spindexerAimingMode(0.1)
-                        .alongWith(feederSubsystem.FeederAimingMode(0.1)),
+                       spinDexer.setStateCommand(spindexer_state.REVERSE_SHORT)
+                       .alongWith(feederSubsystem.setStateCommand(feeder_state.REVERSE_SHORT)),
                         shooterHood.setStateCommand(shooterhood_state.SHOOTING),
                         shooterWheels.setStateCommand(shooter_state.SHOOTING)
                 ).alongWith(new HubDrive(drivetrain, driver)))
@@ -242,7 +242,7 @@ public class ControllerBindings {
                 .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.CLOSE_AGITATION_OUT).alongWith(intakeSubsystem.setRollerStateCommand(RollerState.ON)))
                 .onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT).alongWith(intakeSubsystem.setRollerStateCommand(RollerState.OFF)));
 
-        operator.povUp()
+        operator.povUp()   // DO NOT SUBMIT
                 .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.DETECT_RESISTANCE))
                 .onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT));
 

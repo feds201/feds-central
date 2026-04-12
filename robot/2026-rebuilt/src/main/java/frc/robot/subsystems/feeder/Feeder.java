@@ -44,7 +44,8 @@ public class Feeder extends SubsystemBase {
     PRUN(Volts.of(7)),
     REVERSE(Volts.of(-7)),
     PREVERSE(Volts.of(-6)),
-    STOP(Volts.of(0));
+    STOP(Volts.of(0)),
+    REVERSE_SHORT(Volts.of(-7));
 
     private final Voltage targetVoltage;
 
@@ -67,6 +68,7 @@ public class Feeder extends SubsystemBase {
   private final SysIdRoutine m_feederSysId;
   //Timer to switch between forward and reverse during indexing
   private Timer washingMachineTimer = new Timer();
+  private Timer reverseTimer = new Timer();
   private final ShuffleboardTab pitTab;
   private final GenericEntry feederConnectedEntry;
   private final GenericEntry feederPoweredEntry;
@@ -146,9 +148,17 @@ public class Feeder extends SubsystemBase {
           setState(feeder_state.RUN);
           washingMachineTimer.stop();
           washingMachineTimer.reset();
-        }
-        
+        } 
         break;
+      case REVERSE_SHORT:
+        reverseTimer.start();
+        if(reverseTimer.hasElapsed(0.1)){
+          setState(feeder_state.STOP);
+          reverseTimer.stop();
+          reverseTimer.reset();
+        }
+        break;
+        
 
        case STOP, PRUN, PREVERSE:
         if(washingMachineTimer.isRunning()){
@@ -203,11 +213,11 @@ public class Feeder extends SubsystemBase {
     return new InstantCommand(() -> setState(feeder_state.STOP));
   }
 
-     public final Command FeederAimingMode(double seconds){
-  return runOnce(() ->{
-      setStateCommand(feeder_state.REVERSE);})
-      .withTimeout(seconds);
-  };
+  //    public final Command FeederAimingMode(double seconds){
+  // return runOnce(() ->{
+  //     setStateCommand(feeder_state.REVERSE);})
+  //     .withTimeout(seconds);
+  // };
 
   public Command feederSysIdQuasistatic(SysIdRoutine.Direction dir) { return m_feederSysId.quasistatic(dir); }
   public Command feederSysIdDynamic(SysIdRoutine.Direction dir) { return m_feederSysId.dynamic(dir); }
