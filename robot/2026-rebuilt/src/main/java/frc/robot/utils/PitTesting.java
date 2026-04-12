@@ -28,7 +28,11 @@ import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import frc.robot.RobotContainer;
 import frc.robot.RobotMap;
 
-
+//
+//
+//TODO: update, limelights, storage, encoders/voltage, website.
+//
+//
 public class PitTesting {
     static double poweredThreshold = RobotMap.PitConstants.kPoweredThresholdVolts;
 
@@ -104,59 +108,78 @@ public class PitTesting {
         }
 
         registerEntry("pigeon");
-
-        Command music = new SequentialCommandGroup(
-            new InstantCommand(() -> Elastic.sendNotification(new Elastic.Notification(Elastic.NotificationLevel.ERROR, "Robot Enabling", "Clear the area"))),
-            new InstantCommand(() -> orchestra.play()),
-            Commands.waitSeconds(musicTime),
-            new InstantCommand(() -> orchestra.stop())); 
+        
 
         // Add commands
         testLayout.add("Run Feeder", Commands.sequence(
-            music,
+            new InstantCommand(() -> Elastic.sendNotification(new Elastic.Notification(Elastic.NotificationLevel.ERROR, "Robot Enabling", "Clear the area"))),
+            new InstantCommand(() -> orchestra.play()),
+            Commands.waitSeconds(musicTime),
+            new InstantCommand(() -> orchestra.stop()) ,
             feeder.setStateCommand(feeder_state.RUN),
             Commands.waitSeconds(testTime),
             feeder.setStateCommand(feeder_state.STOP)));
         
         testLayout.add("Run Intake", Commands.sequence(
-            music,
+            new InstantCommand(() -> Elastic.sendNotification(new Elastic.Notification(Elastic.NotificationLevel.ERROR, "Robot Enabling", "Clear the area"))),
+            new InstantCommand(() -> orchestra.play()),
+            Commands.waitSeconds(musicTime),
+            new InstantCommand(() -> orchestra.stop()) ,
             intake.setIntakeStateCommand(IntakeState.INTAKING),
             Commands.waitSeconds(testTime),
             intake.setIntakeStateCommand(IntakeState.DEFAULT)));
         
         testLayout.add("Run Intake and Rollers", Commands.sequence(
-            music,
+            new InstantCommand(() -> Elastic.sendNotification(new Elastic.Notification(Elastic.NotificationLevel.ERROR, "Robot Enabling", "Clear the area"))),
+            new InstantCommand(() -> orchestra.play()),
+            Commands.waitSeconds(musicTime),
+            new InstantCommand(() -> orchestra.stop()) ,
             intake.setIntakeStateCommand(IntakeState.EXTENDED),
             Commands.waitSeconds(testTime),
             intake.setIntakeStateCommand(IntakeState.DEFAULT)));
 
         testLayout.add("Run Spindexer", Commands.sequence(
-            music,
+            new InstantCommand(() -> Elastic.sendNotification(new Elastic.Notification(Elastic.NotificationLevel.ERROR, "Robot Enabling", "Clear the area"))),
+            new InstantCommand(() -> orchestra.play()),
+            Commands.waitSeconds(musicTime),
+            new InstantCommand(() -> orchestra.stop()) ,
             spindexer.setStateCommand(spindexer_state.RUN),
             Commands.waitSeconds(testTime),
             spindexer.setStateCommand(spindexer_state.STOP)));
 
         testLayout.add("Run Shooter Wheels", Commands.sequence(
-            music,
+            new InstantCommand(() -> Elastic.sendNotification(new Elastic.Notification(Elastic.NotificationLevel.ERROR, "Robot Enabling", "Clear the area"))),
+            new InstantCommand(() -> orchestra.play()),
+            Commands.waitSeconds(musicTime),
+            new InstantCommand(() -> orchestra.stop()) ,
             shooterWheels.setStateCommand(shooter_state.SHOOTING),
             Commands.waitSeconds(testTime),
             shooterWheels.setStateCommand(shooter_state.IDLE)));
         
         testLayout.add("Move Shooter Hood", Commands.sequence(
-            music,
+            new InstantCommand(() -> Elastic.sendNotification(new Elastic.Notification(Elastic.NotificationLevel.ERROR, "Robot Enabling", "Clear the area"))),
+            new InstantCommand(() -> orchestra.play()),
+            Commands.waitSeconds(musicTime),
+            new InstantCommand(() -> orchestra.stop()) ,
             shooterHood.setStateCommand(shooterhood_state.OUT),
             Commands.waitSeconds(testTime),
             shooterHood.setStateCommand(shooterhood_state.IN)));
         
-        testLayout.add("test Drivetrain translation", Commands.sequence(
-            music,
+        testLayout.add("test Drivetrain translation", Commands.sequence(           
+            new InstantCommand(() -> Elastic.sendNotification(new Elastic.Notification(Elastic.NotificationLevel.ERROR, "Robot Enabling", "Clear the area"))),
+            new InstantCommand(() -> orchestra.play()),
+            Commands.waitSeconds(musicTime),
+            new InstantCommand(() -> orchestra.stop()) ,
             drivetrain.runOnce(() -> drivetrain.setControl(driveRequest
                 .withVelocityX(0.5))),
             Commands.waitSeconds(drivetrainTestTime),
             drivetrain.runOnce(() -> drivetrain.setControl(new SwerveRequest.Idle()))));
 
         testLayout.add("test Drivetrain rotation", Commands.sequence(
-            music,
+            new InstantCommand(() -> Elastic.sendNotification(new Elastic.Notification(Elastic.NotificationLevel.ERROR, "Robot Enabling", "Clear the area"))),
+            new InstantCommand(() -> orchestra.play()),
+            Commands.waitSeconds(musicTime),
+            new InstantCommand(() -> orchestra.stop()) ,
             drivetrain.runOnce(() -> drivetrain.setControl(driveRequest
                 .withRotationalRate(1.0))),
             Commands.waitSeconds(drivetrainTestTime),

@@ -327,14 +327,14 @@
             },
             "children": [
               {
-                "title": "Encoder 1 Connected",
+                "title": "encoder1 Connected",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Drivetrain Health 2/Encoder 1 Connected",
+                  "topic": "/Shuffleboard/Pit Testing/encoder1 Connected",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -344,14 +344,14 @@
                 }
               },
               {
-                "title": "Encoder 2 Connected",
+                "title": "encoder2 Connected",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Drivetrain Health 2/Encoder 2 Connected",
+                  "topic": "/Shuffleboard/Pit Testing/encoder2 Connected",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -361,14 +361,14 @@
                 }
               },
               {
-                "title": "Encoder 3 Connected",
+                "title": "encoder3 Connected",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Drivetrain Health 2/Encoder 3 Connected",
+                  "topic": "/Shuffleboard/Pit Testing/encoder3 Connected",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -378,14 +378,14 @@
                 }
               },
               {
-                "title": "Encoder 4 Connected",
+                "title": "encoder4 Connected",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Drivetrain Health 2/Encoder 4 Connected",
+                  "topic": "/Shuffleboard/Pit Testing/encoder4 Connected",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -395,14 +395,14 @@
                 }
               },
               {
-                "title": "Pigeon Connected",
+                "title": "pigeon Connected",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Drivetrain Health 2/Pigeon Connected",
+                  "topic": "/Shuffleboard/Pit Testing/pigeon Connected",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -425,14 +425,14 @@
             },
             "children": [
               {
-                "title": "Drive 1 Powered",
+                "title": "drive1 Powered",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Drivetrain Health 3/Drive 1 Powered",
+                  "topic": "/Shuffleboard/Pit Testing/drive1 Powered",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -442,14 +442,14 @@
                 }
               },
               {
-                "title": "Drive 2 Powered",
+                "title": "drive2 Powered",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Drivetrain Health 3/Drive 2 Powered",
+                  "topic": "/Shuffleboard/Pit Testing/drive2 Powered",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -459,14 +459,14 @@
                 }
               },
               {
-                "title": "Drive 3 Powered",
+                "title": "drive3 Powered",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Drivetrain Health 3/Drive 3 Powered",
+                  "topic": "/Shuffleboard/Pit Testing/drive3 Powered",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -476,14 +476,14 @@
                 }
               },
               {
-                "title": "Drive 4 Powered",
+                "title": "drive4 Powered",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Drivetrain Health 3/Drive 4 Powered",
+                  "topic": "/Shuffleboard/Pit Testing/drive4 Powered",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -493,14 +493,14 @@
                 }
               },
               {
-                "title": "Steer 1 Powered",
+                "title": "steer1 Powered",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Drivetrain Health 3/Steer 1 Powered",
+                  "topic": "/Shuffleboard/Pit Testing/steer1 Powered",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -510,14 +510,14 @@
                 }
               },
               {
-                "title": "Steer 2 Powered",
+                "title": "steer2 Powered",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Drivetrain Health 3/Steer 2 Powered",
+                  "topic": "/Shuffleboard/Pit Testing/steer2 Powered",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -527,14 +527,14 @@
                 }
               },
               {
-                "title": "Steer 3 Powered",
+                "title": "steer3 Powered",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Drivetrain Health 3/Steer 3 Powered",
+                  "topic": "/Shuffleboard/Pit Testing/steer3 Powered",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -544,14 +544,14 @@
                 }
               },
               {
-                "title": "Steer 4 Powered",
+                "title": "steer4 Powered",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Drivetrain Health 3/Steer 4 Powered",
+                  "topic": "/Shuffleboard/Pit Testing/steer4 Powered",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -621,14 +621,14 @@
             },
             "children": [
               {
-                "title": "shooter Hood Motor is Connected",
+                "title": "shooter hood Connected",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Shooter Hood Health/shooter Hood Motor is Connected",
+                  "topic": "/Shuffleboard/Pit Testing/shooter hood Connected",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -638,14 +638,14 @@
                 }
               },
               {
-                "title": "shooter Hood Motor is Powered",
+                "title": "shooter hood Powered",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Shooter Hood Health/shooter Hood Motor is Powered",
+                  "topic": "/Shuffleboard/Pit Testing/shooter hood Powered",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -715,14 +715,14 @@
             },
             "children": [
               {
-                "title": "feeder Motor is Connected",
+                "title": "feeder Connected",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/feeder Health/feeder Motor is Connected",
+                  "topic": "/Shuffleboard/Pit Testing/feeder Connected",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -732,14 +732,14 @@
                 }
               },
               {
-                "title": "feeder Motor is Powered",
+                "title": "feeder Powered",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/feeder Health/feeder Motor is Powered",
+                  "topic": "/Shuffleboard/Pit Testing/feeder Powered",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -762,14 +762,14 @@
             },
             "children": [
               {
-                "title": "intake Motor is Connected",
+                "title": "intake Connected",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/intake Health/intake Motor is Connected",
+                  "topic": "/Shuffleboard/Pit Testing/intake Connected",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -779,14 +779,14 @@
                 }
               },
               {
-                "title": "intake Motor is Powered",
+                "title": "intake Powered",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/intake Health/intake Motor is Powered",
+                  "topic": "/Shuffleboard/Pit Testing/intake Powered",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -796,14 +796,14 @@
                 }
               },
               {
-                "title": "roller Motor is Connected",
+                "title": "roller Connected",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/intake Health/roller Motor is Connected",
+                  "topic": "/Shuffleboard/Pit Testing/roller Connected",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -813,14 +813,14 @@
                 }
               },
               {
-                "title": "roller Motor is Powered",
+                "title": "roller Powered",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/intake Health/roller Motor is Powered",
+                  "topic": "/Shuffleboard/Pit Testing/roller Powered",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -843,14 +843,14 @@
             },
             "children": [
               {
-                "title": "Drive 1 Connected",
+                "title": "drive1 Connected",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Drivetrain Health 1/Drive 1 Connected",
+                  "topic": "/Shuffleboard/Pit Testing/drive1 Connected",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -860,14 +860,14 @@
                 }
               },
               {
-                "title": "Drive 2 Connected",
+                "title": "drive2 Connected",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Drivetrain Health 1/Drive 2 Connected",
+                  "topic": "/Shuffleboard/Pit Testing/drive2 Connected",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -877,14 +877,14 @@
                 }
               },
               {
-                "title": "Drive 3 Connected",
+                "title": "drive3 Connected",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Drivetrain Health 1/Drive 3 Connected",
+                  "topic": "/Shuffleboard/Pit Testing/drive3 Connected",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -894,14 +894,14 @@
                 }
               },
               {
-                "title": "Drive 4 Connected",
+                "title": "drive4 Connected",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Drivetrain Health 1/Drive 4 Connected",
+                  "topic": "/Shuffleboard/Pit Testing/drive4 Connected",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -911,14 +911,14 @@
                 }
               },
               {
-                "title": "Steer 1 Connected",
+                "title": "steer1 Connected",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Drivetrain Health 1/Steer 1 Connected",
+                  "topic": "/Shuffleboard/Pit Testing/steer1 Connected",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -928,14 +928,14 @@
                 }
               },
               {
-                "title": "Steer 2 Connected",
+                "title": "steer2 Connected",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Drivetrain Health 1/Steer 2 Connected",
+                  "topic": "/Shuffleboard/Pit Testing/steer2 Connected",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -945,14 +945,14 @@
                 }
               },
               {
-                "title": "Steer 3 Connected",
+                "title": "steer3 Connected",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Drivetrain Health 1/Steer 3 Connected",
+                  "topic": "/Shuffleboard/Pit Testing/steer3 Connected",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -962,14 +962,14 @@
                 }
               },
               {
-                "title": "Steer 4 Connected",
+                "title": "steer4 Connected",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Drivetrain Health 1/Steer 4 Connected",
+                  "topic": "/Shuffleboard/Pit Testing/steer4 Connected",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -992,14 +992,14 @@
             },
             "children": [
               {
-                "title": "Encoder 1 Powered",
+                "title": "encoder1 Powered",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Drivetrain Health 2/Encoder 1 Powered",
+                  "topic": "/Shuffleboard/Pit Testing/encoder1 Powered",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -1009,14 +1009,14 @@
                 }
               },
               {
-                "title": "Encoder 2 Powered",
+                "title": "encoder2 Powered",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Drivetrain Health 2/Encoder 2 Powered",
+                  "topic": "/Shuffleboard/Pit Testing/encoder2 Powered",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -1026,14 +1026,14 @@
                 }
               },
               {
-                "title": "Encoder 3 Powered",
+                "title": "encoder3 Powered",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Drivetrain Health 2/Encoder 3 Powered",
+                  "topic": "/Shuffleboard/Pit Testing/encoder3 Powered",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -1043,14 +1043,14 @@
                 }
               },
               {
-                "title": "Encoder 4 Powered",
+                "title": "encoder4 Powered",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Drivetrain Health 2/Encoder 4 Powered",
+                  "topic": "/Shuffleboard/Pit Testing/encoder4 Powered",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -1060,14 +1060,14 @@
                 }
               },
               {
-                "title": "Pigeon Powered",
+                "title": "pigeon Powered",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Drivetrain Health 2/Pigeon Powered",
+                  "topic": "/Shuffleboard/Pit Testing/pigeon Powered",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -1090,14 +1090,14 @@
             },
             "children": [
               {
-                "title": "Bottom Right Motor is Connected",
+                "title": "Bottom Left Connected",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Shooter Wheel Health/Bottom Right Motor is Connected",
+                  "topic": "/Shuffleboard/Pit Testing/Bottom Left Connected",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -1107,14 +1107,14 @@
                 }
               },
               {
-                "title": "Bottom Right Motor is Powered",
+                "title": "Bottom Left Powered",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Shooter Wheel Health/Bottom Right Motor is Powered",
+                  "topic": "/Shuffleboard/Pit Testing/Bottom Left Powered",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -1124,14 +1124,14 @@
                 }
               },
               {
-                "title": "Top Left Motor is Connected",
+                "title": "Bottom Right Connected",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Shooter Wheel Health/Top Left Motor is Connected",
+                  "topic": "/Shuffleboard/Pit Testing/Bottom Right Connected",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -1141,14 +1141,14 @@
                 }
               },
               {
-                "title": "Top Left Motor is Powered",
+                "title": "Bottom Right Powered",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Shooter Wheel Health/Top Left Motor is Powered",
+                  "topic": "/Shuffleboard/Pit Testing/Bottom Right Powered",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -1158,14 +1158,14 @@
                 }
               },
               {
-                "title": "Top Right Motor is Connected",
+                "title": "Top Left Connected",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Shooter Wheel Health/Top Right Motor is Connected",
+                  "topic": "/Shuffleboard/Pit Testing/Top Left Connected",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -1175,14 +1175,14 @@
                 }
               },
               {
-                "title": "Top Right Motor is Powered",
+                "title": "Top Left Powered",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Shooter Wheel Health/Top Right Motor is Powered",
+                  "topic": "/Shuffleboard/Pit Testing/Top Left Powered",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -1192,14 +1192,14 @@
                 }
               },
               {
-                "title": "Bottom Left Motor is Connected",
+                "title": "Top Right Connected",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Shooter Wheel Health/Bottom Left Motor is Connected",
+                  "topic": "/Shuffleboard/Pit Testing/Top Right Connected",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -1209,14 +1209,14 @@
                 }
               },
               {
-                "title": "Bottom Left Motor is Powered",
+                "title": "Top Right Powered",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Shooter Wheel Health/Bottom Left Motor is Powered",
+                  "topic": "/Shuffleboard/Pit Testing/Top Right Powered",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -1229,6 +1229,20 @@
           }
         ],
         "containers": [
+          {
+            "title": "storage info",
+            "x": 960.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/Shuffleboard/Pit Testing/storage info",
+              "period": 0.06,
+              "data_type": "string",
+              "show_submit_button": false
+            }
+          },
           {
             "title": "storage",
             "x": 960.0,
@@ -1245,20 +1259,6 @@
               "true_icon": "None",
               "false_icon": "None"
             }
-          },
-          {
-            "title": "storage info",
-            "x": 960.0,
-            "y": 0.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/Shuffleboard/Pit Testing/storage info",
-              "period": 0.06,
-              "data_type": "string",
-              "show_submit_button": false
-            }
           }
         ]
       }
@@ -1267,89 +1267,6 @@
       "name": "pit test",
       "grid_layout": {
         "layouts": [
-          {
-            "title": "required",
-            "x": 0.0,
-            "y": 0.0,
-            "width": 320.0,
-            "height": 576.0,
-            "type": "List Layout",
-            "properties": {
-              "label_position": "TOP"
-            },
-            "children": [
-              {
-                "title": "Move Shooter Hood",
-                "x": 384.0,
-                "y": 320.0,
-                "width": 256.0,
-                "height": 128.0,
-                "type": "Command",
-                "properties": {
-                  "topic": "/Shuffleboard/Pit Commands/Test Commands/Move Shooter Hood",
-                  "period": 0.06,
-                  "show_type": true,
-                  "maximize_button_space": false
-                }
-              },
-              {
-                "title": "Run Spindexer",
-                "x": 512.0,
-                "y": 384.0,
-                "width": 256.0,
-                "height": 128.0,
-                "type": "Command",
-                "properties": {
-                  "topic": "/Shuffleboard/Pit Commands/Test Commands/Run Spindexer",
-                  "period": 0.06,
-                  "show_type": true,
-                  "maximize_button_space": false
-                }
-              },
-              {
-                "title": "Run Feeder",
-                "x": 384.0,
-                "y": 320.0,
-                "width": 256.0,
-                "height": 128.0,
-                "type": "Command",
-                "properties": {
-                  "topic": "/Shuffleboard/Pit Commands/Test Commands/Run Feeder",
-                  "period": 0.06,
-                  "show_type": true,
-                  "maximize_button_space": false
-                }
-              },
-              {
-                "title": "Run Intake and Rollers",
-                "x": 448.0,
-                "y": 320.0,
-                "width": 256.0,
-                "height": 128.0,
-                "type": "Command",
-                "properties": {
-                  "topic": "/Shuffleboard/Pit Commands/Test Commands/Run Intake and Rollers",
-                  "period": 0.06,
-                  "show_type": true,
-                  "maximize_button_space": false
-                }
-              },
-              {
-                "title": "Run Shooter Wheels",
-                "x": 128.0,
-                "y": 448.0,
-                "width": 256.0,
-                "height": 128.0,
-                "type": "Command",
-                "properties": {
-                  "topic": "/Shuffleboard/Pit Commands/Test Commands/Run Shooter Wheels",
-                  "period": 0.06,
-                  "show_type": true,
-                  "maximize_button_space": false
-                }
-              }
-            ]
-          },
           {
             "title": "extra/optional",
             "x": 320.0,
@@ -1363,8 +1280,8 @@
             "children": [
               {
                 "title": "Run Intake",
-                "x": 576.0,
-                "y": 64.0,
+                "x": 0.0,
+                "y": 0.0,
                 "width": 256.0,
                 "height": 128.0,
                 "type": "Command",
@@ -1376,9 +1293,23 @@
                 }
               },
               {
+                "title": "test Drivetrain rotation",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 256.0,
+                "height": 128.0,
+                "type": "Command",
+                "properties": {
+                  "topic": "/Shuffleboard/Pit Commands/Test Commands/test Drivetrain rotation",
+                  "period": 0.06,
+                  "show_type": true,
+                  "maximize_button_space": false
+                }
+              },
+              {
                 "title": "test Drivetrain translation",
-                "x": 576.0,
-                "y": 128.0,
+                "x": 0.0,
+                "y": 0.0,
                 "width": 256.0,
                 "height": 128.0,
                 "type": "Command",
@@ -1388,16 +1319,85 @@
                   "show_type": true,
                   "maximize_button_space": false
                 }
-              },
+              }
+            ]
+          },
+          {
+            "title": "required",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 320.0,
+            "height": 576.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
               {
-                "title": "test Drivetrain rotation",
-                "x": 512.0,
-                "y": 256.0,
+                "title": "Move Shooter Hood",
+                "x": 0.0,
+                "y": 0.0,
                 "width": 256.0,
                 "height": 128.0,
                 "type": "Command",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Commands/Test Commands/test Drivetrain rotation",
+                  "topic": "/Shuffleboard/Pit Commands/Test Commands/Move Shooter Hood",
+                  "period": 0.06,
+                  "show_type": true,
+                  "maximize_button_space": false
+                }
+              },
+              {
+                "title": "Run Feeder",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 256.0,
+                "height": 128.0,
+                "type": "Command",
+                "properties": {
+                  "topic": "/Shuffleboard/Pit Commands/Test Commands/Run Feeder",
+                  "period": 0.06,
+                  "show_type": true,
+                  "maximize_button_space": false
+                }
+              },
+              {
+                "title": "Run Intake and Rollers",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 256.0,
+                "height": 128.0,
+                "type": "Command",
+                "properties": {
+                  "topic": "/Shuffleboard/Pit Commands/Test Commands/Run Intake and Rollers",
+                  "period": 0.06,
+                  "show_type": true,
+                  "maximize_button_space": false
+                }
+              },
+              {
+                "title": "Run Shooter Wheels",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 256.0,
+                "height": 128.0,
+                "type": "Command",
+                "properties": {
+                  "topic": "/Shuffleboard/Pit Commands/Test Commands/Run Shooter Wheels",
+                  "period": 0.06,
+                  "show_type": true,
+                  "maximize_button_space": false
+                }
+              },
+              {
+                "title": "Run Spindexer",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 256.0,
+                "height": 128.0,
+                "type": "Command",
+                "properties": {
+                  "topic": "/Shuffleboard/Pit Commands/Test Commands/Run Spindexer",
                   "period": 0.06,
                   "show_type": true,
                   "maximize_button_space": false
