@@ -47,6 +47,7 @@ public class ShooterHood extends SubsystemBase {
       LAYUP(ShooterConstants.maxHoodAngle),
       HALFCOURT(ShooterConstants.minHoodAngle),
       MANUAL(Rotations.of(0)),
+      
       //Sim states
       AIMING_UP(Rotations.of(0)),
       AIMING_DOWN(Rotations.of(0));

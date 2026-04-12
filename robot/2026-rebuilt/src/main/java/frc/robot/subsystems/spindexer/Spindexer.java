@@ -26,13 +26,17 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 import frc.robot.RobotMap.SpindexerConstants;
 import frc.robot.RobotMap.indexingConstants;
+import frc.robot.subsystems.feeder.Feeder;
+import frc.robot.subsystems.feeder.Feeder.feeder_state;
 import frc.robot.utils.DeviceTempReporter;
 import frc.robot.utils.SubsystemStatusManager;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+
 
 
 
@@ -57,6 +61,7 @@ public class Spindexer extends SubsystemBase {
       return targetPosition;
     }
   }
+    Feeder feeder = new Feeder();
 
 
 
@@ -206,4 +211,12 @@ public void setState(spindexer_state state)
 public Command setStateCommand(spindexer_state state) {
     return runOnce(() -> setState(state));
 }
+  
+     public final Command spindexerAimingMode(double seconds){
+  return runOnce(() ->{
+      setStateCommand(spindexer_state.REVERSE);})
+      .withTimeout(seconds);
+  };
+
 }
+

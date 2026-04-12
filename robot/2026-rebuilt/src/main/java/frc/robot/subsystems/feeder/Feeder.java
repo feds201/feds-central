@@ -203,6 +203,12 @@ public class Feeder extends SubsystemBase {
     return new InstantCommand(() -> setState(feeder_state.STOP));
   }
 
+     public final Command FeederAimingMode(double seconds){
+  return runOnce(() ->{
+      setStateCommand(feeder_state.REVERSE);})
+      .withTimeout(seconds);
+  };
+
   public Command feederSysIdQuasistatic(SysIdRoutine.Direction dir) { return m_feederSysId.quasistatic(dir); }
   public Command feederSysIdDynamic(SysIdRoutine.Direction dir) { return m_feederSysId.dynamic(dir); }
 }
