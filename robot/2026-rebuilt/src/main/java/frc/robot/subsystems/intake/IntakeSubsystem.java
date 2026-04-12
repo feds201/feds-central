@@ -116,7 +116,10 @@ public class IntakeSubsystem extends SubsystemBase {
 
     //State loop 3: Dither Agitation (experimental, may not be used)
     DITHERIN_AGITATION, //Inwards portion of dithering state-loop, intake will toggle between the dithers on a timer when set to one of these states
-    DITHEROUT_AGITATION //Dithering causes the intake to move inwards, then outwards half as much in order to slowly bring in the intake while also agitating
+    DITHEROUT_AGITATION, //Dithering causes the intake to move inwards, then outwards half as much in order to slowly bring in the intake while also agitating
+  
+    DETECT_RESISTANCE,
+    DETECTED_RESISTANCE 
   }
 
   public enum RollerState {
@@ -159,10 +162,11 @@ public class IntakeSubsystem extends SubsystemBase {
       case CLOSE_AGITATION_OUT -> {
         moveIntakeWithPosition(burstAgitation);
       }
+      
     }
 
     }
-  
+      // Hi Clifford
 
   public Command extendIntake(){
     return Commands.runOnce(() -> setState(IntakeState.EXTENDED));
