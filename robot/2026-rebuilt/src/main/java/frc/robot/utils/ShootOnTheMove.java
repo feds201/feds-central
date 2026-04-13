@@ -67,7 +67,7 @@ public class ShootOnTheMove {
             }
             previousDistToGoal = distToGoal;
         }
-    
+        Logger.recordOutput("ShootOnTheMove", new Pose2d(hubCenter, new Rotation2d()));
         return virtualGoal;
 
     }
@@ -88,7 +88,8 @@ public class ShootOnTheMove {
         Translation2d virtualGoal = calculateVirtualGoal(robotPose, chassisSpeeds);
         Translation2d shooterToGoal = virtualGoal.minus(shooterFieldPosition);
         Logger.recordOutput("VirtualGoal", new Pose2d(virtualGoal.getX(), virtualGoal.getY(), virtualGoal.getAngle()));
-        
+  
+
         Rotation2d shooterFieldAngle = new Rotation2d(
                 shooterToGoal.getX(),
                 shooterToGoal.getY());
