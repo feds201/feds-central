@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.utils.DeviceTempReporter;
 import frc.robot.utils.HubShiftUtil;
+import frc.robot.utils.PitTesting;
 import frc.robot.utils.SubsystemStatusManager;
 import frc.robot.utils.DeviceTempReporter;
 import frc.robot.utils.SubsystemStatusManager;
@@ -118,6 +119,8 @@ public class Robot extends LoggedRobot {
     CommandScheduler.getInstance().run();
     // Publish a small set of live telemetry for the RTU dashboard
     m_robotContainer.publishTelemetry();
+
+    PitTesting.updateDashboard();
     m_robotContainer.limelightConnection();
     m_robotContainer.usbStorage();
     //Log Hub shift times

@@ -621,14 +621,14 @@
             },
             "children": [
               {
-                "title": "shooter hood Connected",
+                "title": "hood Connected",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/shooter hood Connected",
+                  "topic": "/Shuffleboard/Pit Testing/hood Connected",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -638,14 +638,14 @@
                 }
               },
               {
-                "title": "shooter hood Powered",
+                "title": "hood Powered",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/shooter hood Powered",
+                  "topic": "/Shuffleboard/Pit Testing/hood Powered",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -668,14 +668,14 @@
             },
             "children": [
               {
-                "title": "spindexer Motor is Connected",
+                "title": "spindexer Connected",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Spindexer Health/spindexer Motor is Connected",
+                  "topic": "/Shuffleboard/Pit Testing/spindexer Connected",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -685,14 +685,14 @@
                 }
               },
               {
-                "title": "spindexer Motor is Powered",
+                "title": "spindexer Powered",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Spindexer Health/spindexer Motor is Powered",
+                  "topic": "/Shuffleboard/Pit Testing/spindexer Powered",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -1090,14 +1090,14 @@
             },
             "children": [
               {
-                "title": "Bottom Left Connected",
+                "title": "bottomLeft Connected",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Bottom Left Connected",
+                  "topic": "/Shuffleboard/Pit Testing/bottomLeft Connected",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -1107,14 +1107,14 @@
                 }
               },
               {
-                "title": "Bottom Left Powered",
+                "title": "bottomLeft Powered",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Bottom Left Powered",
+                  "topic": "/Shuffleboard/Pit Testing/bottomLeft Powered",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -1124,14 +1124,14 @@
                 }
               },
               {
-                "title": "Bottom Right Connected",
+                "title": "bottomRight Connected",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Bottom Right Connected",
+                  "topic": "/Shuffleboard/Pit Testing/bottomRight Connected",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -1141,14 +1141,14 @@
                 }
               },
               {
-                "title": "Bottom Right Powered",
+                "title": "bottomRight Powered",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Bottom Right Powered",
+                  "topic": "/Shuffleboard/Pit Testing/bottomRight Powered",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -1158,14 +1158,14 @@
                 }
               },
               {
-                "title": "Top Left Connected",
+                "title": "topLeft Connected",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Top Left Connected",
+                  "topic": "/Shuffleboard/Pit Testing/topLeft Connected",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -1175,14 +1175,14 @@
                 }
               },
               {
-                "title": "Top Left Powered",
+                "title": "topLeft Powered",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Top Left Powered",
+                  "topic": "/Shuffleboard/Pit Testing/topLeft Powered",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -1192,14 +1192,14 @@
                 }
               },
               {
-                "title": "Top Right Connected",
+                "title": "topRight Connected",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Top Right Connected",
+                  "topic": "/Shuffleboard/Pit Testing/topRight Connected",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -1209,14 +1209,14 @@
                 }
               },
               {
-                "title": "Top Right Powered",
+                "title": "topRight Powered",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Top Right Powered",
+                  "topic": "/Shuffleboard/Pit Testing/topRight Powered",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,

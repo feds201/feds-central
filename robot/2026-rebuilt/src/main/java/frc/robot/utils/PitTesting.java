@@ -1,6 +1,7 @@
 package frc.robot.utils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.ctre.phoenix6.Orchestra;
 import com.ctre.phoenix6.hardware.CANcoder;
@@ -53,7 +54,7 @@ public class PitTesting {
    
     
     private static ShuffleboardTab pitTab = Shuffleboard.getTab("Pit Testing");
-    private static ArrayList<GenericEntry> pitEntries = new ArrayList<GenericEntry>();
+    private static HashMap<String, GenericEntry> entryMap = new HashMap<String, GenericEntry>();
     private static ShuffleboardLayout testLayout = Shuffleboard.getTab("Pit Commands")
             .getLayout("Test Commands", BuiltInLayouts.kList)
             .withSize(2, 5);
@@ -94,11 +95,12 @@ public class PitTesting {
         registerEntry("feeder");
         registerEntry("intake");
         registerEntry("roller");
-        registerEntry("shooter hood");
-        registerEntry("Top Right");
-        registerEntry("Bottom Left");
-        registerEntry("Bottom Right");
-        registerEntry("Top Left");
+        registerEntry("hood");
+        registerEntry("topRight");
+        registerEntry("bottomLeft");
+        registerEntry("bottomRight");
+        registerEntry("topLeft");
+        registerEntry("spindexer");
         
         //drivetrain
         for (int i = 0; i < 4; ++i) {
@@ -191,11 +193,11 @@ public class PitTesting {
         updateEntry("feeder", feeder.getFeederMotor());
         updateEntry("intake", intake.getIntakeMotor());
         updateEntry("roller", intake.getRollerMotor());
-        updateEntry("Hood", shooterHood.getShooterHoodMotor());
-        updateEntry("RightTop", shooterWheels.getShooterLeader());
-        updateEntry("BottomLeft", shooterWheels.getShooterFollower1());
-        updateEntry("BottomRight", shooterWheels.getShooterFollower2());
-        updateEntry("TopLeft", shooterWheels.getShooterFollower3());
+        updateEntry("hood", shooterHood.getShooterHoodMotor());
+        updateEntry("topRight", shooterWheels.getShooterLeader());
+        updateEntry("bottomLeft", shooterWheels.getShooterFollower1());
+        updateEntry("bottomRight", shooterWheels.getShooterFollower2());
+        updateEntry("topLeft", shooterWheels.getShooterFollower3());
         updateEntry("spindexer", spindexer.getSpindexerMotor());
 
         for (int i = 0; i < 4; ++i) {
@@ -208,22 +210,28 @@ public class PitTesting {
     }
 
     private static void registerEntry(String name){
-        pitEntries.add(pitTab.add(name + " Connected", false).getEntry());  
-        pitEntries.add(pitTab.add(name + " Powered", false).getEntry());
+        entryMap.put(name + " Connected", pitTab.add(name + " Connected", false).getEntry());
+        entryMap.put(name + " Powered", pitTab.add(name + " Powered", false).getEntry());
     }
 
     private static void updateEntry(String name, TalonFX motor){
-        pitEntries.get(pitEntries.indexOf(pitTab.add(name + " Connected", false).getEntry())).setBoolean(motor.isConnected());
-        pitEntries.get(pitEntries.indexOf(pitTab.add(name + " Powered", false).getEntry())).setBoolean(motor.getSupplyVoltage().getValueAsDouble() > poweredThreshold);
+        if(entryMap.get(name + " Connected") != null){
+            entryMap.get(name + " Connected").setBoolean(motor.isConnected());
+            entryMap.get(name + " Powered").setBoolean(motor.getSupplyVoltage().getValueAsDouble() > poweredThreshold);
+        }
     }
 
     private static void updateEntry(String name, CANcoder encoder){
-        pitEntries.get(pitEntries.indexOf(pitTab.add(name + " Connected", false).getEntry())).setBoolean(encoder.isConnected());
-        pitEntries.get(pitEntries.indexOf(pitTab.add(name + " Powered", false).getEntry())).setBoolean(encoder.getSupplyVoltage().getValueAsDouble() > poweredThreshold);
+        if(entryMap.get(name + " Connected") != null){
+            entryMap.get(name + " Connected").setBoolean(encoder.isConnected());
+            entryMap.get(name + " Powered").setBoolean(encoder.getSupplyVoltage().getValueAsDouble() > poweredThreshold);
+        }
     }
 
     private static void updateEntry(String name, Pigeon2 pigeon){
-        pitEntries.get(pitEntries.indexOf(pitTab.add(name + " Connected", false).getEntry())).setBoolean(pigeon.isConnected());
-        pitEntries.get(pitEntries.indexOf(pitTab.add(name + " Powered", false).getEntry())).setBoolean(pigeon.getSupplyVoltage().getValueAsDouble() > poweredThreshold);
+        if(entryMap.get(name + " Connected") != null){
+            entryMap.get(name + " Connected").setBoolean(pigeon.isConnected());
+            entryMap.get(name + " Powered").setBoolean(pigeon.getSupplyVoltage().getValueAsDouble() > poweredThreshold);
+        }
     }
 }
