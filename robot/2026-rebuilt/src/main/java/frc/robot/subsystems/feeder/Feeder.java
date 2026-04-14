@@ -125,7 +125,6 @@ public class Feeder extends SubsystemBase {
     feederConnectedEntry.setBoolean(feederMotor.isConnected());
   feederPoweredEntry.setBoolean(feederMotor.getSupplyVoltage().getValueAsDouble() > RobotMap.PitConstants.kPoweredThresholdVolts);
 
-    Logger.recordOutput("Robot/Shooter/FeederOn", currentState == feeder_state.RUN);
     Logger.recordOutput("Robot/Shooter/FeederState", currentState.toString());
      switch (currentState) {
       case RUN:
@@ -205,4 +204,28 @@ public class Feeder extends SubsystemBase {
 
   public Command feederSysIdQuasistatic(SysIdRoutine.Direction dir) { return m_feederSysId.quasistatic(dir); }
   public Command feederSysIdDynamic(SysIdRoutine.Direction dir) { return m_feederSysId.dynamic(dir); }
+
+  // ////////////////////////////////////////////////////////////////////////
+  // SIMULATION SUPPORT — Code below is used only by the simulator
+  // ////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Returns the feeder motor sim state so RebuiltSimManager can drive feeder physics
+   * (DCMotorSim voltage input and position/velocity write-back). Sim use only.
+   */
+  public com.ctre.phoenix6.sim.TalonFXSimState getFeederMotorSimState() {
+      return feederMotor.getSimState();
+  }
+
+  /**
+   * Returns feeder motor velocity in RPS. Used by RebuiltSimManager to gate ball launches
+   * (feeder must be spinning forward above threshold). Sim use only.
+   */
+  public double getMotorVelocityRPS() {
+      return feederMotor.getVelocity().getValue().in(edu.wpi.first.units.Units.RotationsPerSecond);
+  }
+
+  // ////////////////////////////////////////////////////////////////////////
+  // END SIMULATION SUPPORT
+  // ////////////////////////////////////////////////////////////////////////
 }

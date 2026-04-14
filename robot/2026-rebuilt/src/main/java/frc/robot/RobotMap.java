@@ -128,6 +128,8 @@ public final class RobotMap {
     }
 
     public static class ShooterConstants {
+        /** Hood motor forward soft limit in rotor rotations — the maximum travel position. */
+        public static final double HOOD_FORWARD_SOFT_LIMIT_ROT = 30.0;
         public static final int ShooterRightTop = 53;
         public static final int ShooterRightBottom = 52;
         public static final int ShooterBottomLeft = 51;

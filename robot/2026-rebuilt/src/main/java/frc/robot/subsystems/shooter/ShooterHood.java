@@ -90,7 +90,7 @@ public class ShooterHood extends SubsystemBase {
     config.Slot0.kS = .235; // Constant applied for friction compensation (static gain)
     config.Slot0.kP = 1; // Proportional gain 
     config.Slot0.kD = 0.0; // Derivative gain
-    config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 30; 
+    config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = ShooterConstants.HOOD_FORWARD_SOFT_LIMIT_ROT;
     config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0.0; 
     config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
     config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
@@ -214,4 +214,20 @@ public class ShooterHood extends SubsystemBase {
   public Command resetHoodAngle(){
     return runOnce(() -> hoodMotor.setPosition(0));
   }
+
+  // ////////////////////////////////////////////////////////////////////////
+  // SIMULATION SUPPORT — Code below is used only by the simulator
+  // ////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Returns the hood motor sim state so RebuiltSimManager can drive hood arm physics
+   * (SingleJointedArmSim voltage input and position/velocity write-back). Sim use only.
+   */
+  public com.ctre.phoenix6.sim.TalonFXSimState getHoodMotorSimState() {
+      return hoodMotor.getSimState();
+  }
+
+  // ////////////////////////////////////////////////////////////////////////
+  // END SIMULATION SUPPORT
+  // ////////////////////////////////////////////////////////////////////////
 }

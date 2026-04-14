@@ -163,7 +163,6 @@ public class ShooterWheels extends SubsystemBase {
   public void periodic() {
         Logger.recordOutput("Robot/Shooter/ShooterVelocity", getVelocity().in(RotationsPerSecond));
 
-    Logger.recordOutput("Robot/Shooter/IsShooting", currentState == shooter_state.SHOOTING);
     Logger.recordOutput("Robot/Shooter/ShooterState", currentState.toString());
     switch (currentState) {
       case SHOOTING:
@@ -236,5 +235,21 @@ public class ShooterWheels extends SubsystemBase {
 
   public Command setStateCommand(shooter_state state) {
     return runOnce(() -> setState(state));
-  } 
+  }
+
+  // ////////////////////////////////////////////////////////////////////////
+  // SIMULATION SUPPORT — Code below is used only by the simulator
+  // ////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Returns the leader TalonFX sim state so RebuiltSimManager can drive flywheel physics
+   * (FlywheelSim voltage input and velocity write-back). Sim use only.
+   */
+  public com.ctre.phoenix6.sim.TalonFXSimState getLeaderSimState() {
+      return shooterLeader.getSimState();
+  }
+
+  // ////////////////////////////////////////////////////////////////////////
+  // END SIMULATION SUPPORT
+  // ////////////////////////////////////////////////////////////////////////
 }

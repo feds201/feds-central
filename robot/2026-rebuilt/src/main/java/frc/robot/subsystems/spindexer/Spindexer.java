@@ -123,7 +123,6 @@ public class Spindexer extends SubsystemBase {
    
   @Override
   public void periodic() {
-    Logger.recordOutput("Robot/Shooter/SpindexerOn", currentState == spindexer_state.RUN || currentState == spindexer_state.REVERSE);
     Logger.recordOutput("Robot/Shooter/SpindexerState", currentState.toString());
 
     switch (currentState) {
@@ -206,4 +205,28 @@ public void setState(spindexer_state state)
 public Command setStateCommand(spindexer_state state) {
     return runOnce(() -> setState(state));
 }
+
+// ////////////////////////////////////////////////////////////////////////
+// SIMULATION SUPPORT — Code below is used only by the simulator
+// ////////////////////////////////////////////////////////////////////////
+
+/**
+ * Returns the spindexer motor sim state so RebuiltSimManager can drive spindexer physics
+ * (DCMotorSim voltage input and position/velocity write-back). Sim use only.
+ */
+public com.ctre.phoenix6.sim.TalonFXSimState getSpindexerMotorSimState() {
+    return spindexerMotor.getSimState();
+}
+
+/**
+ * Returns spindexer motor velocity in RPS. Used by RebuiltSimManager to drive the
+ * spindexer animation accumulator each tick. Sim use only.
+ */
+public double getMotorVelocityRPS() {
+    return spindexerMotor.getVelocity().getValue().in(edu.wpi.first.units.Units.RotationsPerSecond);
+}
+
+// ////////////////////////////////////////////////////////////////////////
+// END SIMULATION SUPPORT
+// ////////////////////////////////////////////////////////////////////////
 }
