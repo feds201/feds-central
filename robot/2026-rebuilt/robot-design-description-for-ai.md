@@ -19,7 +19,7 @@ Ball-scoring robot for the REBUILT game. Collects fuel (balls) from the floor, s
 - Limelight 3 aimed at the floor does ball detection
 
 ### Hopper
-- Storage capacity: ~70 balls max
+- Storage capacity: ~50 balls max
 - Sits between intake and feeder
 
 ### Feeder
@@ -32,12 +32,9 @@ Ball-scoring robot for the REBUILT game. Collects fuel (balls) from the floor, s
 - Single set of flywheel rollers (shared between barrels)
 - Adjustable hood controls vertical angle of release
 - No horizontal turret - robot rotation aims left/right
-- Limelight 4 with Hailo 8 coprocessor detects APRIL tags to aims us towards the target
+- Limelight 4 detects APRIL tags to aims us towards the target
 
-### Climber (not designed yet)
-- On one side of the robot
-- Hook design that can pull it up off the ground
-- uses the Limelight 4 to detect APRIL tags for adjusting the robot position
+### Climber (cut from the robot, do not need to sim it at all!)
 
 ## Simulation
 
@@ -63,7 +60,7 @@ Connect AdvantageScope to see the 3D view with the robot and ~400 fuel balls on 
 ### What You'll See
 
 - The robot driving around the REBUILT field with swerve physics
-- ~400 fuel balls spawned across the neutral zone and depots (plus 8 pre-loaded in the hopper)
+- ~200 fuel balls spawned across the neutral zone and depots (plus 8 pre-loaded in the hopper)
 - Balls getting picked up when you drive over them with the intake running
 - Balls launching from the shooter with hood angle and velocity
 - Balls scoring when they enter the hub funnel
