@@ -70,6 +70,7 @@ public class PitTesting {
 
     private static Orchestra orchestra = new Orchestra();
 
+    private static GenericEntry tent = pitTab.add("testState", false).getEntry();
 
 
     public static void createDashboard() {
@@ -120,7 +121,14 @@ public class PitTesting {
         }
 
         registerEntry("pigeon");
-        
+        // Commands.parallel(
+        //         new InstantCommand(() -> Elastic.sendNotification(new Elastic.Notification(Elastic.NotificationLevel.ERROR, "Robot Enabling", "Clear the area"))),
+        //         Commands.sequence( 
+        //             new InstantCommand(() -> testOrchestra.play()),
+        //             Commands.waitSeconds(musicTime),
+        //             new InstantCommand(() -> testOrchestra.stop())
+        //         )
+        //     ),
 
         // Add commands
         testLayout.add("Run Testing", Commands.sequence(
@@ -219,6 +227,8 @@ public class PitTesting {
         updateEntry("topLeft", shooterWheels.getShooterFollower3());
         updateEntry("spindexer", spindexer.getSpindexerMotor());
         updateEntry("testing", testing.getMotor());
+
+        tent.setBoolean(testing.getState() == MotorState.ON);
 
         for (int i = 0; i < 4; ++i) {
             updateEntry("drive" + (i + 1), drivetrain.getModule(i).getDriveMotor());

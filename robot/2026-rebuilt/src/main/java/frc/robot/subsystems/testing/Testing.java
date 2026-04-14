@@ -47,6 +47,10 @@ public class Testing extends SubsystemBase {
     return motor;
   }
 
+  public MotorState getState() {
+    return currentMotorState;
+  }
+
   @Override
   public void periodic() {
     switch (currentMotorState) {
