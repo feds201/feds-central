@@ -175,9 +175,9 @@ public class ControllerBindings {
                                 shooterWheels.setStateCommand(shooter_state.IDLE)
                         ));
 
-         driver.povDown()
-                .onTrue((container.FDMidIntakeToLeftBumpSequence()))
-                .onFalse(ballTracking.setStateCommand(BallTrackingState.OFF)); 
+        //  driver.povDown()
+        //         .onTrue((container.FDMidIntakeToLeftBumpSequence()))
+        //         .onFalse(ballTracking.setStateCommand(BallTrackingState.OFF)); need to edit bcs of new code
 
         // Button to fire, if swerve is aimed and shooter is at speed.
         driver.rightTrigger().and(HubDrive::pidAtSetpoint).and(shooterWheels::atSetpoint).whileTrue(

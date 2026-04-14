@@ -16,13 +16,18 @@ import frc.robot.utils.LimelightHelpers;
 
 public class BallTracking extends Command {
   private CommandSwerveDrivetrain dt;
-  private final PIDController hubRotPID = new PIDController(0.1, 0, 0);
   private SwerveRequest.RobotCentric driveNormal;
   private double maxVelocity;
   private ArrayList<Double> tyHistory = new ArrayList<Double>(List.of(0.0, 0.0, 0.0, 0.0, 0.0));
   private double averageTy; 
   private boolean hasTarget;
-  private BallTrackingState state; 
+  private BallTrackingState state;
+  private final PIDController hubRotPID = new PIDController(0.1, 0, 0);
+  private final double velocityCapX = 3.0; // velocity that robot will move when fuel is detected, max velocity when detected 
+  private final double rotationalRate = 3.2; // amount of rotation the robot preforms when searching for fuel, in radians per second
+  private final double tyOffset = 23.0; // used to scale foward velocity based on ty  
+  private final double tyCutOff = -5.0; // limit to ty, if ty is less then num robot will stop and look for ball
+  private final double txDeadband = 1.5; // tx for which robot will stop (when robot is too close)
 
   public enum BallTrackingState { 
     ON, 
@@ -97,16 +102,16 @@ public class BallTracking extends Command {
       dt.setControl(driveNormal
           .withVelocityX(0)
           .withVelocityY(0)
-          .withRotationalRate(0) //in radians per second
+          .withRotationalRate(0) 
       );
     }
 
     if (withinBlueAlliance()) {
       if (withinTransition()) {
         dt.setControl(driveNormal
-            .withVelocityX(2.0)
+            .withVelocityX(velocityCapX)
             .withVelocityY(0)
-            .withRotationalRate(3.2) 
+            .withRotationalRate(rotationalRate) 
         );
       }
 
@@ -114,20 +119,20 @@ public class BallTracking extends Command {
         double tx = LimelightHelpers.getTX("limelight-one");
         double ty = LimelightHelpers.getTY("limelight-one");
 
-        if (Math.abs(tx) < 1.5) {
+        if (Math.abs(tx) < txDeadband) {
           tx = 0.0;
         }
 
         double rotationOutput = -hubRotPID.calculate(tx);
         rotationOutput = Math.max(-2.0, Math.min(2.0, rotationOutput));
 
-        double forwardVelocity = Math.abs((ty - 23) * 0.1);
+        double forwardVelocity = Math.abs((ty - tyOffset) * 0.1);
 
         if (forwardVelocity >= maxVelocity){
           forwardVelocity = averageTy; 
         }
 
-        if (ty > -5) {
+        if (ty > tyCutOff) {
           dt.setControl(driveNormal
               .withVelocityX(forwardVelocity)
               .withVelocityY(0)
@@ -138,7 +143,7 @@ public class BallTracking extends Command {
         dt.setControl(driveNormal
             .withVelocityX(0)
             .withVelocityY(0)
-            .withRotationalRate(3.2) //in radians per second
+            .withRotationalRate(rotationalRate)
         );
       }
     }
@@ -146,9 +151,9 @@ public class BallTracking extends Command {
     if (withinRedAlliance()) {
       if (withinTransition()) {
         dt.setControl(driveNormal
-            .withVelocityX(3.0)
+            .withVelocityX(velocityCapX)
             .withVelocityY(0)
-            .withRotationalRate(3.2) //in radians per second
+            .withRotationalRate(rotationalRate) 
         );
       }
 
@@ -156,20 +161,20 @@ public class BallTracking extends Command {
         double tx = LimelightHelpers.getTX("limelight-one");
         double ty = LimelightHelpers.getTY("limelight-one");
 
-        if (Math.abs(tx) < 1.5) {
+        if (Math.abs(tx) < txDeadband) {
           tx = 0.0;
         }
 
         double rotationOutput = -hubRotPID.calculate(tx);
         rotationOutput = Math.max(-2.0, Math.min(2.0, rotationOutput));
 
-        double forwardVelocity = Math.abs((ty - 23) * 0.1);
+        double forwardVelocity = Math.abs((ty - tyOffset) * 0.1);
 
         if (forwardVelocity >= maxVelocity){
           forwardVelocity = averageTy; 
         }
 
-        if (ty > -5) {
+        if (ty > tyCutOff) {
           dt.setControl(driveNormal
               .withVelocityX(forwardVelocity)
               .withVelocityY(0)
@@ -180,7 +185,7 @@ public class BallTracking extends Command {
           dt.setControl(driveNormal
               .withVelocityX(0)
               .withVelocityY(0)
-              .withRotationalRate(3.2) //in radians per second
+              .withRotationalRate(rotationalRate) 
           );
       }
     }
