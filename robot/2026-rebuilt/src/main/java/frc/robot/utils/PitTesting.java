@@ -26,6 +26,8 @@ import frc.robot.subsystems.shooter.ShooterWheels.shooter_state;
 import frc.robot.subsystems.spindexer.Spindexer;
 import frc.robot.subsystems.spindexer.Spindexer.spindexer_state;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
+import frc.robot.subsystems.testing.Testing;
+import frc.robot.subsystems.testing.Testing.MotorState;
 import frc.robot.RobotContainer;
 import frc.robot.RobotMap;
 
@@ -39,7 +41,7 @@ public class PitTesting {
 
 
     static RobotContainer container = RobotContainer.getInstance();
-    static Orchestra m_orchestra = new Orchestra();
+    static Orchestra testOrchestra = new Orchestra();
 
     static CommandSwerveDrivetrain drivetrain = container.getDrivetrain();
     static IntakeSubsystem intake = container.getIntakeSubsystem();
@@ -47,6 +49,7 @@ public class PitTesting {
     static Spindexer spindexer = container.getSpindexer();
     static ShooterHood shooterHood = container.getShooterHood();
     static ShooterWheels shooterWheels = container.getShooterWheels();
+    static Testing testing = new Testing();
 
     private static String[] moduleNames = {"Front Left", "Front Right", "Back Left", "Back Right"};
 
@@ -62,7 +65,7 @@ public class PitTesting {
 
     private static double testTime = 1.5;
     private static double drivetrainTestTime = 0.75;
-    private static double musicTime = 3.0;
+    private static double musicTime = 5.0;
 
 
     private static Orchestra orchestra = new Orchestra();
@@ -79,6 +82,7 @@ public class PitTesting {
         orchestra.addInstrument(shooterWheels.getShooterFollower1());
         orchestra.addInstrument(shooterWheels.getShooterFollower2());
         orchestra.addInstrument(shooterWheels.getShooterFollower3());
+        testOrchestra.addInstrument(testing.getMotor());
 
         for (int i = 0; i < 4; ++i) {
             orchestra.addInstrument(drivetrain.getModule(i).getDriveMotor());
@@ -87,8 +91,13 @@ public class PitTesting {
         }
 
         //TODO: add music
-        var status = orchestra.loadMusic("track.chrp");
+        var status = orchestra.loadMusic("output.chrp");
         if(!status.isOK()) {
+            System.out.println("Failed to load music");
+        }
+
+        var testStatus = testOrchestra.loadMusic("output.chrp");
+        if(!testStatus.isOK()) {
             System.out.println("Failed to load music");
         }
 
@@ -101,6 +110,7 @@ public class PitTesting {
         registerEntry("bottomRight");
         registerEntry("topLeft");
         registerEntry("spindexer");
+        registerEntry("testing");
         
         //drivetrain
         for (int i = 0; i < 4; ++i) {
@@ -113,6 +123,15 @@ public class PitTesting {
         
 
         // Add commands
+        testLayout.add("Run Testing", Commands.sequence(
+            new InstantCommand(() -> Elastic.sendNotification(new Elastic.Notification(Elastic.NotificationLevel.ERROR, "Robot Enabling", "Clear the area"))),
+            new InstantCommand(() -> testOrchestra.play()),
+            Commands.waitSeconds(musicTime),
+            new InstantCommand(() -> testOrchestra.stop()) ,
+            testing.setStateCommand(MotorState.ON),
+            Commands.waitSeconds(testTime),
+            testing.setStateCommand(MotorState.OFF)));
+
         testLayout.add("Run Feeder", Commands.sequence(
             new InstantCommand(() -> Elastic.sendNotification(new Elastic.Notification(Elastic.NotificationLevel.ERROR, "Robot Enabling", "Clear the area"))),
             new InstantCommand(() -> orchestra.play()),
@@ -199,6 +218,7 @@ public class PitTesting {
         updateEntry("bottomRight", shooterWheels.getShooterFollower2());
         updateEntry("topLeft", shooterWheels.getShooterFollower3());
         updateEntry("spindexer", spindexer.getSpindexerMotor());
+        updateEntry("testing", testing.getMotor());
 
         for (int i = 0; i < 4; ++i) {
             updateEntry("drive" + (i + 1), drivetrain.getModule(i).getDriveMotor());
