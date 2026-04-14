@@ -242,9 +242,10 @@ public class ControllerBindings {
                 .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.CLOSE_AGITATION_OUT).alongWith(intakeSubsystem.setRollerStateCommand(RollerState.ON)))
                 .onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT).alongWith(intakeSubsystem.setRollerStateCommand(RollerState.OFF)));
 
-        operator.povUp()   // DO NOT SUBMIT
-                .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.DETECT_RESISTANCE))
-                .onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT));
+        // operator.povUp()   
+        //         .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.DETECT_RESISTANCE))
+        //         .onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT));
+        //hi 
 
         
 

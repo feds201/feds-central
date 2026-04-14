@@ -166,6 +166,8 @@ public class IntakeSubsystem extends SubsystemBase {
       }
       case DETECT_RESISTANCE -> {
         moveIntakeWithPosition(retractedRotations);
+       motor.getPosition().getValue().in(Units.Rotations);
+       final double motorPosition = motor.getPosition().getValue().in(Units.Rotations);
       }
       case DETECTED_RESISTANCE -> {
         moveIntakeWithPosition(extendedRotations);
@@ -534,7 +536,12 @@ public class IntakeSubsystem extends SubsystemBase {
 
         case DETECT_RESISTANCE:
           if(motorVoltage > resistanceVoltage){
-            setState(IntakeState.DETECTED_RESISTANCE);
+            if (motor.getPosition().getValue().in(Units.Rotations) < 4.4 ) {    // Tune value
+              setState(IntakeState.DETECTED_RESISTANCE);
+            }
+          else{
+            setState(IntakeState.AGITATE_IN);
+          }
           }
         break;
 
