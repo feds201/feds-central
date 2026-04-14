@@ -131,11 +131,16 @@ Fast objects (e.g., a ball at 30 m/s) can tunnel through thin walls in a single 
 
 ### Proximity Sleep/Wake
 
-With hundreds of game pieces, simulating every one is expensive. `GamePieceManager` uses a **hysteresis pattern**:
-- **Wake** pieces within 1.5m of the robot
-- **Sleep** pieces beyond 3.0m
+With hundreds of game pieces, simulating every one is expensive. `GamePieceManager` uses a **chunk-based 2×2m grid system**:
+- Game pieces are assigned to chunks based on their position
+- Only chunks within a certain radius of the robot are kept active
+- A hysteresis gap (wake radius < sleep radius) prevents thrashing at the boundary
 
-The gap prevents thrashing at the boundary. Fast-moving pieces (launched shots) also create wake zones so nearby pieces react to collisions. Result: only ~20-30 pieces are active at any time, even with 400+ on the field.
+<Callout type="warning">
+**Known bug:** The chunk-based system can occasionally let balls tunnel through surfaces when a ball moves across a chunk boundary in a single physics step. This will be fixed in a future update. If you see balls passing through walls, this is likely the cause.
+</Callout>
+
+The older approach used a simple radius hysteresis: wake pieces within 1.5m, sleep beyond 3.0m. The current chunk system replaces this but follows the same principle. See the constants at the top of `RebuiltSimManager.java` for the current proximity radii.
 
 ### Terrain Surfaces
 
@@ -234,11 +239,59 @@ Two adapter types in 2026's `RebuiltSimManager`:
 
 Both connect to `SimulatedBattery` for brownout effects.
 
+### Motor-Based Mechanism Simulation
+
+All six non-drivetrain motors are simulated in `RebuiltSimManager` using WPILib's built-in physics sim classes, not state-enum reads:
+
+| Mechanism | WPILib Sim Class | What it models |
+|-----------|-----------------|----------------|
+| Shooter wheels | `DCMotorSim` | Motor voltage → angular position and velocity |
+| Shooter hood | `SingleJointedArmSim` | Motor voltage → arm angle, with gravity and hard angle limits |
+| Feeder | `DCMotorSim` | Motor voltage → angular position and velocity |
+| Spindexer | `DCMotorSim` | Motor voltage → angular position and velocity |
+| Intake deploy | `DCMotorSim` | Motor voltage → angular position and velocity |
+| Intake roller | `DCMotorSim` | Motor voltage → angular position and velocity |
+
+**The per-motor wiring pattern** (same for each mechanism):
+1. `talonFXSimState.setSupplyVoltage(batteryVoltage)`
+2. `physicsSim.setInputVoltage(voltage)` — see inversion note below
+3. `physicsSim.update(DT)`
+4. `talonFXSimState.setRawRotorPosition(gearRatio * sim position)` — see inversion note below
+5. `talonFXSimState.setRotorVelocity(gearRatio * sim velocity)` — see inversion note below
+
+This closes the loop: robot code commands a motor → CTRE writes the voltage → sim computes physics → sim writes encoder feedback → robot code reads the encoder.
+
+**Motor inversion convention:** WPILib sims use CCW-positive convention. CTRE `TalonFXSimState` reports voltage and expects position/velocity in the motor's configured positive direction.
+
+- **4 motors are `Clockwise_Positive`** (shooter, feeder, spindexer, and the hood mechanically): voltage must be **negated** before passing to the WPILib sim, and position/velocity from the sim must be **negated** before writing back to CTRE.
+- **Hood exception:** The hood is `Clockwise_Positive` in CTRE config, but CW motor rotation physically increases the arm angle — which aligns with SingleJointedArmSim's CCW-positive convention. So the hood uses **no negation** on either input or writeback.
+- **2 intake motors are `CounterClockwise_Positive`** (default, no inversion config): pass voltage through directly, no negation in either direction.
+
+**Subsystem sim accessor pattern:** Subsystems expose their `TalonFXSimState` via accessor methods inside a clearly delimited `SIMULATION SUPPORT` block:
+
+```java
+// ////////////////////////////////////////////////////////////////////////
+// SIMULATION SUPPORT — Code below is used only by the simulator
+// ////////////////////////////////////////////////////////////////////////
+
+public com.ctre.phoenix6.sim.TalonFXSimState getDeployMotorSimState() {
+    return motor.getSimState();
+}
+```
+
+`RebuiltSimManager` caches these states in its constructor. No subsystem owns or steps a `DCMotorSim` — that all lives in `RebuiltSimManager`. Subsystems expose only the state handle; `RebuiltSimManager` does the physics.
+
+**Battery simulation:** `BatterySim.calculateDefaultBatteryLoadedVoltage()` aggregates current draws from all six motors each tick (shooter counted ×4 for leader + 3 followers). `RoboRioSim.setVInVoltage()` is set first so `setInputVoltage`'s internal voltage clamp uses the correct value.
+
+See the motor physics constants (`SHOOTER_MOI`, `HOOD_GEAR_RATIO`, etc.) at the top of `RebuiltSimManager.java` for the current tuning values. These are placeholders — update them with real measured values as the robot is built.
+
 ---
 
 ## Component Animation
 
-The SimManager maintains rotation accumulators for animated mechanisms (rollers, feeders, shooter wheels). Each tick, if a mechanism is active, its angle accumulator increments by a speed constant. These are published as an array of `Pose3d` values to AdvantageKit, which AdvantageScope renders as articulated robot parts.
+The SimManager drives mechanism animation from **live motor sim readings** — no separate angle accumulators. Each tick, the roller, spindexer, feeder, and shooter angles are read directly from the corresponding `DCMotorSim.getAngularPositionRotations()`. The hood angle comes directly from `SingleJointedArmSim.getAngleRads()` — it reflects real physics, including gravity droop.
+
+These are published as an array of `Pose3d` values to AdvantageKit, which AdvantageScope renders as articulated robot parts. Array index order must match the `model_N.glb` files listed in the AdvantageScope config.
 
 ---
 
@@ -299,19 +352,27 @@ When creating a new year's robot project from the template:
 
 | Class | Purpose |
 |-------|---------|
-| `RebuiltSimManager` | Orchestrator. Sim loop at 50Hz. Bridges MapleSim ↔ ODE4J. |
+| `RebuiltSimManager` | Orchestrator. Sim loop at 50Hz. Bridges MapleSim ↔ ODE4J. Motor-based mechanism simulation. |
 | `RebuiltField` | Field layout: hubs, ramps, scoring zones, fuel spawn positions. Loads `field_collision.obj`. |
-| `RebuiltGamePieces` | Fuel ball config: sphere, 0.075m radius, 0.2kg, bounce 0.15. |
-| `ShooterSim` | Bridges shooter subsystem to game piece launches. 100ms cooldown. |
+| `RebuiltGamePieces` | Fuel ball config: sphere, radius and mass defined in class constants. |
+| `ShooterSim` | Bridges shooter subsystem to game piece launches. Uses `DoubleSupplier` for live hood angle and launch velocity. |
+
+**Mechanism simulation approach:** All six non-drivetrain motors (shooter wheels, hood, feeder, spindexer, intake deploy, intake roller) are simulated in `RebuiltSimManager` using `DCMotorSim` or `SingleJointedArmSim`. No subsystem overrides `simulationPeriodic()` — all motor physics live in the orchestrator. Subsystems expose their `TalonFXSimState` via accessor methods so `RebuiltSimManager` can read voltages and write back encoder state each tick. Subsystem PID controllers run against realistic simulated motor behavior, not instant state changes.
 
 **Vision cameras:** Three simulated Limelights:
-- **limelight-two** (LL4, AprilTag): 60 FPS, front-right mount, 25° inward yaw
-- **limelight-five** (LL3, AprilTag): 30 FPS, front-left mount, -25° inward yaw
-- **limelight-one** (LL4, Game Piece): 5 FPS, rear-facing mount, detects fuel within 0.3–3.0m frustum
+- **limelight-two** (LL4, AprilTag): 60 FPS, front-right mount — see `RebuiltSimManager.java` for mount angles
+- **limelight-five** (LL3, AprilTag): 30 FPS, front-left mount — see `RebuiltSimManager.java` for mount angles
+- **limelight-one** (LL3, Game Piece): 5 FPS, rear-facing mount — see `RebuiltSimManager.java` for mount angles and frustum distances
 
-**Field:** 16.54m × 8.07m with two hubs, ramps, 360-400 fuel balls in neutral zone, 24 per depot.
+**Field:** 16.54m × 8.07m with two hubs, ramps, and fuel balls in neutral zones and depots.
 
-**Hood state machine:** `RebuiltSimManager` tracks hood angle (`simHoodAngleRad`) by watching the `ShooterHood` subsystem state (AIMING_UP / AIMING_DOWN) and applying `HOOD_ADJUST_RATE` within min/max bounds.
+**Telemetry changes vs. earlier versions:**
+- `Robot/Intake/Extended` (boolean) → replaced by `Robot/Intake/ExtensionPct` (0–100% double)
+- `Robot/Shooter/FeederOn`, `Robot/Shooter/SpindexerOn`, `Robot/Shooter/IsShooting` removed (were state-enum booleans, misleading with pulsed states)
+
+**Debug telemetry:** 16 entries under `Sim/Debug/` are published each tick for tuning and troubleshooting: `ShooterVelocityRPS`, `ShooterVoltageIn`, `FeederVelocityRPS`, `FeederVoltageIn`, `SpindexerVelocityRPS`, `SpindexerVoltageIn`, `HoodAngleDeg`, `HoodVoltageIn`, `HoodPositionRot`, `IntakeDeployPositionRot`, `IntakeDeployExtendedPct`, `IntakeRollerVelocityRPS`, `IntakeZoneActive`, `ShootingGateOpen`, `BatteryVoltage`, `FuelHeld`.
+
+**Shot cooldown:** The shooter fires at a fixed rate. See `SHOTS_PER_SECOND` in `RebuiltSimManager.java` for the current value. The cooldown is `1.0 / SHOTS_PER_SECOND` seconds between shot events.
 
 **Field mesh loading:** `RebuiltField` tries the deploy directory first, falls back to classpath. Check console for warnings if the mesh isn't found.
 
@@ -319,21 +380,20 @@ When creating a new year's robot project from the template:
 
 1. MapleSim steps drivetrain (motor voltages → tire forces → chassis state)
 2. Read robot pose + velocity from MapleSim
-3. Convert velocity to world frame (robot-relative → field-relative rotation)
-4. Update ODE4J chassis body (corrective force to match MapleSim velocity)
-5. Wake nearby game pieces (1.5m radius)
+3. Convert robot-relative speeds to world-frame velocities for ODE4J
+4. Update ODE4J chassis body (corrective velocity to track MapleSim pose)
+5. Wake nearby game pieces (proximity chunk activation)
 6. Check intake zone (before physics step, to prevent re-consuming launched balls)
-7. Enable/disable game piece detection sensors (FPS gating)
-8. ODE4J physics step (with adaptive sub-stepping)
-9. Sync gyro (MapleSim yaw → Pigeon2 sim state)
-10. Update AprilTag vision (write true pose to simulated Limelight NT entries)
-11. Update game piece detection cameras (read sensor contacts → publish tv/tx/ty/ta)
-12. Update game piece states (auto-disable settled pieces)
-13. Check scoring zones (sensor geom overlaps)
-14. Update hood angle (watching ShooterHood state)
-15. Update shooter (launch if firing + cooldown expired + hopper > 0)
-16. Update animation accumulators (rollers, feeders, shooter wheels)
-17. Publish telemetry (poses, scores, components → AdvantageKit)
+6b. Enable/disable game piece detection sensors (FPS gating)
+7. ODE4J physics step (with adaptive sub-stepping)
+8. Sync gyro (MapleSim yaw → Pigeon2 sim state)
+8b. Update AprilTag vision (write true pose to simulated Limelight NT entries)
+8c. Update game piece detection cameras (read sensor contacts → publish tv/tx/ty/ta)
+9. Update game piece states (auto-disable settled pieces)
+10. Check scoring zones (sensor geom overlaps)
+11. Step all 6 mechanism physics sims and write back to CTRE sim states (shooter, hood, feeder, spindexer, intake deploy, intake roller)
+12. Update shooter (launch if firing + cooldown expired + hopper > 0)
+13. Publish telemetry (poses, scores, components, debug → AdvantageKit)
 
 ---
 
@@ -341,7 +401,7 @@ When creating a new year's robot project from the template:
 
 ### Supplier-Based Decoupling
 
-`ShooterSim`, `IntakeZone`, and other bridges use `Supplier<T>` / `DoubleSupplier` to lazily read subsystem state. This avoids snapshot inconsistencies within a tick and decouples sim-core from concrete subsystem classes.
+`ShooterSim`, `IntakeZone`, and other bridges use `Supplier<T>` / `DoubleSupplier` / `BooleanSupplier` to lazily read subsystem state each tick. This avoids snapshot inconsistencies within a tick and decouples sim-core from concrete subsystem classes. For example, `ShooterSim` receives a `DoubleSupplier` for hood angle (backed by `SingleJointedArmSim.getAngleRads()`) and a `BooleanSupplier` for the shooting gate (velocity-based checks on flywheel and feeder).
 
 ### BiConsumer Publish Callback
 
@@ -360,7 +420,7 @@ MapleSim owns the "truth" for robot pose. ODE4J applies corrective forces (`F = 
 3. **Configure the chassis** — mass, dimensions via `ChassisConfig.Builder`
 4. **Write the SimManager** — initialize MapleSim + sim-core, run the sim loop, publish telemetry
 5. **Add scoring zones** — sensor geoms at scoring locations, register with `ScoringTracker`
-6. **Add mechanism bridges** — connect subsystem state to intake zones and launch parameters
+6. **Add mechanism bridges** — wire each non-drivetrain motor to a WPILib physics sim (`DCMotorSim`, `SingleJointedArmSim`), then connect subsystem state to intake zones and launch parameters via suppliers
 
 Use `RebuiltSimManager` as the reference implementation.
 
@@ -388,7 +448,7 @@ Keep field OBJ meshes simple. Every triangle is a collision surface. 500 triangl
 
 **Balls fall through the floor:** Verify `PhysicsWorld` has gravity enabled and the OBJ mesh loaded without errors.
 
-**Balls tunnel through walls:** Adaptive sub-stepping should prevent this. If it happens, the launch velocity may exceed the 0.1m sub-step threshold.
+**Balls tunnel through walls:** Adaptive sub-stepping should prevent this. If it happens, the launch velocity may exceed the 0.1m sub-step threshold. Also check the known chunk-boundary bug noted in the Proximity Sleep/Wake section above.
 
 **`ClassNotFoundException: frc.sim.core.PhysicsWorld`:** sim-core isn't on the classpath. In `settings.gradle`:
 ```gradle
@@ -400,6 +460,6 @@ And in `build.gradle`:
 implementation project(':sim-core')
 ```
 
-**Slow performance:** Check active piece count. Default wake radius (1.5m) should keep it under 30. Also make sure you ran the mesh simplify script.
+**Slow performance:** Check active piece count. The proximity system should keep active pieces well under 100. Also make sure you ran the mesh simplify script.
 
 **Encoder mismatch:** Check MapleSim gear ratios match the physical robot config.
