@@ -4,7 +4,6 @@
 
 package frc.robot.utils;
 
-import static edu.wpi.first.units.Units.Rotations;
 
 import org.littletonrobotics.junction.Logger;
 
@@ -15,13 +14,8 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.RobotMap;
-import frc.robot.RobotMap.DrivetrainConstants;
 import frc.robot.RobotMap.ShooterConstants;
-import frc.robot.subsystems.shooter.ShooterHood;
-import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
-import frc.robot.subsystems.shooter.ShooterHood;
-import frc.robot.subsystems.shooter.ShooterHood.shooterhood_state;
-import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
+
 
 public class ShootOnTheMove {
     
@@ -51,7 +45,6 @@ public class ShootOnTheMove {
        
 
 
-        
         for(int i=0; i<=10; i++){ 
             double distToGoal = shooterFieldPosition.getDistance(virtualGoal);
                 
@@ -59,6 +52,7 @@ public class ShootOnTheMove {
             double flightTime = ShooterConstants.kFlightTimeMap.get(distToGoal);
             double hoodangle = RobotMap.ShooterConstants.kShootingPositionMap.get(distToGoal);
             double wheelVelocity = ShooterConstants.kShootingVelocityMap.get(distToGoal);
+            //for the flightTime calculation I used WolfRam(https://www.wolframalpha.com/input?i2d=true&i=fit%5C%2891%2928%5C%2844%29+Error%3F%5C%2893%29) FIt method/function 
             flightTime = -0.000772833*Math.pow(wheelVelocity, 2) + 0.00465107*wheelVelocity*hoodangle + 0.0621835*wheelVelocity - 0.00218423*Math.pow(hoodangle, 2) - 0.136261*hoodangle - 0.149612;
             virtualGoal = hubCenter.minus(shooterVelocity.times(flightTime));
 
