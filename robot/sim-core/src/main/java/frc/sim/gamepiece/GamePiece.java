@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Translation3d;
 import frc.sim.core.PhysicsWorld;
 import frc.sim.core.SimMath;
 import frc.sim.core.TerrainSurface;
+import org.ode4j.math.DVector3;
 import org.ode4j.math.DVector3C;
 import org.ode4j.ode.*;
 
@@ -89,6 +90,10 @@ public class GamePiece {
     }
 
     public void launch(Translation3d position, Translation3d velocity) {
+        launch(position, velocity, new DVector3(0, 0, 0));
+    }
+
+    public void launch(Translation3d position, Translation3d velocity, DVector3 angularVelocity) {
         state = State.IN_FLIGHT;
         initialX = position.getX();
         initialY = position.getY();
@@ -98,7 +103,7 @@ public class GamePiece {
         }
         body.setPosition(position.getX(), position.getY(), position.getZ());
         body.setLinearVel(velocity.getX(), velocity.getY(), velocity.getZ());
-        body.setAngularVel(0, 0, 0);
+        body.setAngularVel(angularVelocity.get0(), angularVelocity.get1(), angularVelocity.get2());
         body.setLinearDamping(0);
         body.setAngularDamping(0);
         body.enable();

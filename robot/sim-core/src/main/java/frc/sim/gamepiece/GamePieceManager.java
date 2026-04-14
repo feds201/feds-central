@@ -4,6 +4,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import frc.sim.core.PhysicsWorld;
+import org.ode4j.math.DVector3;
 import org.ode4j.math.DVector3C;
 
 import java.util.*;
@@ -25,6 +26,9 @@ public class GamePieceManager {
     // Counter-based intake tracking
     private int heldCount = 0;
     private int maxCapacity = 70; // hopper capacity
+
+    // Magnus effect coefficient (0 = disabled). Set via setMagnusCoefficient().
+    private double magnusCoefficient = 0.0;
 
 
     public GamePieceManager(PhysicsWorld physicsWorld) {
@@ -79,12 +83,24 @@ public class GamePieceManager {
      * @return the launched piece, or null if nothing to launch
      */
     public GamePiece launchPiece(GamePieceConfig config, Translation3d position, Translation3d velocity) {
+        return launchPiece(config, position, velocity, new DVector3(0, 0, 0));
+    }
+
+    /**
+     * Launch a piece from the robot with initial angular velocity (e.g., backspin).
+     * @param config          piece type to launch
+     * @param position        launch position (world frame)
+     * @param velocity        launch velocity (world frame)
+     * @param angularVelocity initial angular velocity (rad/s, world frame)
+     * @return the launched piece, or null if nothing to launch
+     */
+    public GamePiece launchPiece(GamePieceConfig config, Translation3d position, Translation3d velocity, DVector3 angularVelocity) {
         if (heldCount <= 0) return null;
 
         heldCount--;
         String name = config.getName();
         GamePiece piece = new GamePiece(physicsWorld, config, position.getX(), position.getY(), position.getZ());
-        piece.launch(position, velocity);
+        piece.launch(position, velocity, angularVelocity);
         pieces.add(piece);
         piecesByType.computeIfAbsent(name, k -> new ArrayList<>()).add(piece);
         publishKeys.computeIfAbsent(name, k -> "Sim/GamePieces/" + k);
@@ -92,13 +108,31 @@ public class GamePieceManager {
         return piece;
     }
 
-    /** Update all piece states (check for auto-disable / at rest). */
+    /** Set the Magnus lift coefficient for spinning balls in flight. */
+    public void setMagnusCoefficient(double coefficient) {
+        this.magnusCoefficient = coefficient;
+    }
+
+    /** Update all piece states and apply Magnus force to non-sleeping airborne pieces. */
     public void update() {
         for (GamePiece piece : pieces) {
             if (piece.isActive()) {
                 piece.updateState();
+                if (magnusCoefficient != 0.0 && piece.hasPhysics() && piece.getBody().isEnabled()) {
+                    applyMagnus(piece);
+                }
             }
         }
+    }
+
+    private void applyMagnus(GamePiece piece) {
+        DVector3C vel = piece.getBody().getLinearVel();
+        DVector3C spin = piece.getBody().getAngularVel();
+        // F = magnusCoefficient * cross(spin, vel)
+        double fx = (spin.get1() * vel.get2() - spin.get2() * vel.get1()) * magnusCoefficient;
+        double fy = (spin.get2() * vel.get0() - spin.get0() * vel.get2()) * magnusCoefficient;
+        double fz = (spin.get0() * vel.get1() - spin.get1() * vel.get0()) * magnusCoefficient;
+        piece.getBody().addForce(fx, fy, fz);
     }
 
     /** Grow the reusable pose buffer when a new piece is added for a type. */
