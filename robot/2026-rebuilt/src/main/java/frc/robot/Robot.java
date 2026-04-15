@@ -57,9 +57,9 @@ public class Robot extends LoggedRobot {
 
       switch (RobotMap.getRobotMode()) {
       case REAL:
-        // Logger.addDataReceiver(new WPILOGWriter()); // Saves logs to RoboRIO
+        Logger.addDataReceiver(new WPILOGWriter()); // Saves logs to RoboRIO
         DataLogManager.start();
-        NetworkTableInstance.getDefault().startEntryDataLog(DataLogManager.getLog(), "", "");
+        // NetworkTableInstance.getDefault().startEntryDataLog(DataLogManager.getLog(), "", "");
         Logger.addDataReceiver(new NT4Publisher()); // Publishes logs to network tables
         break;
 
@@ -67,11 +67,11 @@ public class Robot extends LoggedRobot {
         // To save .wpilog files during sim (e.g. for SysID characterization), run:
         //   ./gradlew simulateJava -PsimLogging=true
         if (Boolean.getBoolean("simLogging")) {
-          // Logger.addDataReceiver(new WPILOGWriter("logs"));
+          Logger.addDataReceiver(new WPILOGWriter("logs"));
         DataLogManager.start();
-        NetworkTableInstance.getDefault().startEntryDataLog(DataLogManager.getLog(), "", "");
+        // NetworkTableInstance.getDefault().startEntryDataLog(DataLogManager.getLog(), "", "");
         }
-        //Logger.addDataReceiver(new WPILOGWriter("log"));
+        Logger.addDataReceiver(new WPILOGWriter("log"));
         Logger.addDataReceiver(new NT4Publisher());
         break;
 
