@@ -4,7 +4,6 @@
 
 package frc.robot.utils;
 
-
 import org.littletonrobotics.junction.Logger;
 
 import com.pathplanner.lib.util.FlippingUtil;
@@ -16,9 +15,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.RobotMap;
 import frc.robot.RobotMap.ShooterConstants;
 
-
 public class ShootOnTheMove {
-    
     /**
      * Get the field-relative position of the virtual goal
      * 
@@ -27,45 +24,44 @@ public class ShootOnTheMove {
      * @return The distance to the target goal
      */
     public static Translation2d calculateVirtualGoal(Pose2d robotPose, ChassisSpeeds chassisSpeeds) {
-        // Get shooter field position
         Translation2d hubCenter = RobotMap.ShooterConstants.hubCenter;
-         if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
-                hubCenter = FlippingUtil.flipFieldPosition(RobotMap.ShooterConstants.hubCenter);
-            }
-        
+        if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
+            hubCenter = FlippingUtil.flipFieldPosition(RobotMap.ShooterConstants.hubCenter);
+        }
+
+        // Get shooter field position
         Translation2d shooterFieldPosition = getShooterFieldPosition(robotPose);
 
         // Compute shooter field velocity
         Translation2d shooterVelocity = getShooterFieldVelocity(robotPose, chassisSpeeds);
 
-        Translation2d virtualGoal = hubCenter;
         // Compute approximate flight time
         double previousDistToGoal = 0;
 
-       
-
-
+        // Adjust goal position for motion
+        Translation2d virtualGoal = hubCenter;
         for(int i=0; i<=10; i++){ 
             double distToGoal = shooterFieldPosition.getDistance(virtualGoal);
                 
-            // Adjust goal position for motion
-            double flightTime = ShooterConstants.kFlightTimeMap.get(distToGoal);
+            // Used WolframAlpha to fit a formula to empirical measures of time of flight.
+            // Raw data: https://docs.google.com/spreadsheets/d/1soxpyImFWBpTkXsz01xsferNdRXlu_cC-2IQG3SakfE
+            // Wolfram Code: Fit[{{0, 0, 0}, {1, 0, 1}, {0, 1, 1}, {1, 1, 4}, {2, 0, 4}, {0, 2, 4}, {2, 2, 12}}, {1, x, y, x^2, y^2, x y}, {x, y}]
+            double flightTime = -0.000772833*Math.pow(wheelVelocity, 2) + 0.00465107*wheelVelocity*hoodangle + 0.0621835*wheelVelocity - 0.00218423*Math.pow(hoodangle, 2) - 0.136261*hoodangle - 0.149612;
             double hoodangle = RobotMap.ShooterConstants.kShootingPositionMap.get(distToGoal);
             double wheelVelocity = ShooterConstants.kShootingVelocityMap.get(distToGoal);
-            //for the flightTime calculation I used WolfRam(https://www.wolframalpha.com/input?i2d=true&i=fit%5C%2891%2928%5C%2844%29+Error%3F%5C%2893%29) FIt method/function 
-            //Fit[{{0, 0, 0}, {1, 0, 1}, {0, 1, 1}, {1, 1, 4}, {2, 0, 4}, {0, 2, 4}, {2, 2, 12}}, {1, x, y, x^2, y^2, x y}, {x, y}]
-            //    ^ ->                    (Put all the data we have on tof in the the brackets)^
-            flightTime = -0.000772833*Math.pow(wheelVelocity, 2) + 0.00465107*wheelVelocity*hoodangle + 0.0621835*wheelVelocity - 0.00218423*Math.pow(hoodangle, 2) - 0.136261*hoodangle - 0.149612;
+
             virtualGoal = hubCenter.minus(shooterVelocity.times(flightTime));
 
             if(Math.abs(previousDistToGoal - distToGoal) <= 0.1) {
                 return virtualGoal;
             }
+
             previousDistToGoal = distToGoal;
         }
-        Logger.recordOutput("ShootOnTheMove", new Pose2d(hubCenter, new Rotation2d()));
-        return virtualGoal;
 
+        Logger.recordOutput("ShootOnTheMove", new Pose2d(hubCenter, new Rotation2d()));
+
+        return virtualGoal;
     }
 
     /**
