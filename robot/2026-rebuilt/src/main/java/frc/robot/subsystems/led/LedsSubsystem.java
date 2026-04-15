@@ -168,7 +168,7 @@ public class LedsSubsystem extends SubsystemBase {
         m_leds.leds.SetAnimation(Animation.Blink)
             .ForGroup(GR_ALL)
             .WithColor(COLOR_WHITE)
-            .WithDelay(Units.Milliseconds.of(10))
+            .WithDelay(Units.Milliseconds.of(100))
             .Reverse(false)
             .RunOnce(false);
         break;
