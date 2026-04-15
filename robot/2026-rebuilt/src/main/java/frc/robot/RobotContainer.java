@@ -152,15 +152,17 @@ public class RobotContainer extends ControllerBindings {
     setupOperatorBindings(operaterController);
     configureRootTests();
     PitTesting.addCommands();
-    new Trigger(drivetrain::withinTrench).and(DriverStation::isTeleop).onTrue(shooterHood.setStateCommand(shooterhood_state.IN).andThen(intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED)));
-
-        // TODO: migrate to LoggedDashboardChooser from AdvantageKit
-        registerNamedCommands();
-        autoChooser = AutoBuilder.buildAutoChooser();
-        SmartDashboard.putData("Auto Chooser", autoChooser);
-        drivetrain.registerTelemetry(telemetry::telemeterize);
-    }
-
+    new Trigger(drivetrain::withinTrench).and(DriverStation::isTeleop).onTrue(shooterHood.setStateCommand(shooterhood_state.IN));
+    // TODO: migrate to LoggedDashboardChooser from AdvantageKit
+    registerNamedCommands();
+    autoChooser = AutoBuilder.buildAutoChooser();
+    SmartDashboard.putData("Auto Chooser", autoChooser);
+    //Adds a mirrored-to-the-right version of the LeftMidfieldDoublePass path
+    autoChooser.addOption("Comp-LeftMidfieldDoublePass", new PathPlannerAuto("Comp-RightMidfieldDoublepass", true)); 
+    autoChooser.addOption("Dev-MidIntakeToRightBump", new PathPlannerAuto("Comp-MidIntakeToLeftBump", true)); //TESTING - DO NOT USE
+    drivetrain.registerTelemetry(telemetry::telemeterize);
+  }
+  
     // --- APIs used by the diagnostic server / UI to command shooter/hood ---
     private final AutoSweeper autoSweeper = new AutoSweeper(
             rps -> {

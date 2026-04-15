@@ -25,15 +25,15 @@ import frc.robot.subsystems.swerve.generated.TunerConstants;
 public class HubDrive extends Command {
  
 
-  public static final double MAX_SPEED = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+  public static final double MAX_SPEED = 1.0;
   public static final double MAX_ANGULAR_RATE = RotationsPerSecond.of(2).in(RadiansPerSecond);
   // PID tuned for smoother response (lower P, small I). Units: degrees.
-  private static final PIDController hubRotPID = new PIDController(6.7, 0.00, 0.2);
+  private static final PIDController hubRotPID = new PIDController(8.5, 0.00, 0);
   private CommandSwerveDrivetrain dt;
   private CommandXboxController controller;
   
   // Slew rate limiters to smooth joystick and rotation commands
-  private final SlewRateLimiter rotLimiter = new SlewRateLimiter(10000.0); // deg/s per second
+  private final SlewRateLimiter rotLimiter = new SlewRateLimiter(3000.0); // deg/s per second
 
   private SwerveRequest.FieldCentric driveNormal;
 
@@ -47,7 +47,7 @@ public class HubDrive extends Command {
     .withDeadband(MAX_SPEED*.07)
     .withRotationalDeadband(MAX_ANGULAR_RATE*.07);
     hubRotPID.enableContinuousInput(-180, 180);
-  hubRotPID.setTolerance(3);
+    hubRotPID.setTolerance(5.0);
     
     addRequirements(this.dt);
   }
@@ -84,8 +84,8 @@ public class HubDrive extends Command {
           double smoothRotation = rotLimiter.calculate(clampedRotation);
 
           // Scale joystick velocities to robot MAX_SPEED and smooth them
-          double targetVelX = -controller.getLeftY();
-          double targetVelY = -controller.getLeftX();
+          double targetVelX = -controller.getLeftY() * MAX_SPEED;
+          double targetVelY = -controller.getLeftX() * MAX_SPEED;
 
           if(smoothRotation > 0){
             smoothRotation+= 20;
