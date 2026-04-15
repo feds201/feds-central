@@ -326,6 +326,9 @@ public class IntakeSubsystem extends SubsystemBase {
     public double getRollerPosition() {
       return rollerMotor.getPosition().getValue().in(Units.Rotations);
     }
+    public double getMotorPosition() {
+      return motor.getPosition().getValue().in(Units.Rotations);
+    }
   
   
     public Command emergencyStop() {
@@ -346,11 +349,6 @@ public class IntakeSubsystem extends SubsystemBase {
     public Command resetIntakeEncoder() {
         return Commands.runOnce(() -> motor.setPosition(0));
       }
-
-      public void smartAgitation(){
-
-
-};
 
 
     public IntakeSubsystem() {
@@ -530,13 +528,13 @@ public class IntakeSubsystem extends SubsystemBase {
         }
          break;
       }
-       double motorVoltage = motor.getMotorVoltage().getValueAsDouble();
+    
 
         switch(currentState){
 
         case DETECT_RESISTANCE:
-          if(motorVoltage > resistanceVoltage){
-            if (motor.getPosition().getValue().in(Units.Rotations) < 4.4 ) {    // Tune value
+          if(getMotorPosition() > resistanceVoltage){ // tune
+            if (getRollerPosition() < 4.4 ) {    // Tune value
               setState(IntakeState.DETECTED_RESISTANCE);
             }
           else{
@@ -553,7 +551,7 @@ public class IntakeSubsystem extends SubsystemBase {
             timer.reset();
           }
 
-        setState(IntakeState.AGITATE_IN);
+      
         break;
 
       }
