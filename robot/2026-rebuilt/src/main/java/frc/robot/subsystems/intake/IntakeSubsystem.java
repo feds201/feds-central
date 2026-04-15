@@ -133,6 +133,11 @@ public class IntakeSubsystem extends SubsystemBase {
   
 
   public void setState(IntakeState targetState) {
+    if (this.currentState != targetState) {
+      timer.stop();
+      timer.reset();
+    }
+
     this.currentState = targetState;
     switch (targetState) {
       case DEFAULT -> {
@@ -163,12 +168,12 @@ public class IntakeSubsystem extends SubsystemBase {
       }
       case DETECT_RESISTANCE -> {
         moveIntakeWithPosition(retractedRotations);
+        setRollerState(RollerState.ON);
       }
       case DETECTED_RESISTANCE -> {
         moveIntakeWithPosition(extendedRotations);
         setRollerState(RollerState.REVERSE);
-      
-    }
+      }
 
 
   }
@@ -456,8 +461,6 @@ public class IntakeSubsystem extends SubsystemBase {
        }
        if(timer.hasElapsed(IntakeSubsystemConstants.agitateCycleConstant)){
         setState(IntakeState.AGITATE_OUT);
-        timer.stop();
-        timer.reset();
        }
         break;
 
@@ -467,8 +470,6 @@ public class IntakeSubsystem extends SubsystemBase {
        }
         if(timer.hasElapsed(IntakeSubsystemConstants.agitateCycleConstant)){
         setState(IntakeState.AGITATE_IN);
-        timer.stop();
-        timer.reset();
       }
       break;
 
@@ -478,8 +479,6 @@ public class IntakeSubsystem extends SubsystemBase {
           }
           if(timer.hasElapsed(0.2)){
             setState(IntakeState.CLOSE_AGITATION_IN); // really close to default
-            timer.stop();
-            timer.reset();
           }
           break;
 
@@ -490,8 +489,6 @@ public class IntakeSubsystem extends SubsystemBase {
 
           if(timer.hasElapsed(0.2)){
             setState(IntakeState.CLOSE_AGITATION_OUT); // about halfway from bumper to extended
-            timer.stop();
-            timer.reset();
         }
           break;
 
@@ -503,8 +500,6 @@ public class IntakeSubsystem extends SubsystemBase {
 
         if(timer.hasElapsed(0.3)){
             setState(IntakeState.DITHEROUT_AGITATION);
-            timer.stop();
-            timer.reset();
         }
           break;
 
@@ -516,10 +511,6 @@ public class IntakeSubsystem extends SubsystemBase {
 
         if(timer.hasElapsed(0.1)){
             setState(IntakeState.DITHERIN_AGITATION); // small retract from extended
-            timer.stop();
-            timer.reset();
-         
-
         }
          break;
       }
@@ -529,23 +520,23 @@ public class IntakeSubsystem extends SubsystemBase {
 
         case DETECT_RESISTANCE:
           if(motor.getStatorCurrent().getValueAsDouble() > 10){ // tune
-            if (getMotorPosition()< extendedRotations - 4.5){ // tune
+            if (getMotorPosition()< 12.5){ // tune
               setState(IntakeState.DETECTED_RESISTANCE);
+            }
+            else {
+              setState(IntakeState.AGITATE_IN);
             }
           }
         break;
 
         case DETECTED_RESISTANCE:
-          timer.start();
-          if(timer.hasElapsed(0.5)){
-            setRollerState(RollerState.OFF);
-            timer.stop();
-            timer.reset();
+          if (!timer.isRunning()) {
+            timer.start();
           }
-
-      
+          if(timer.hasElapsed(0.5)){
+            setState(IntakeState.DETECT_RESISTANCE);
+          }
         break;
-
       }
     switch (currentRollerState) {
       case ON:
