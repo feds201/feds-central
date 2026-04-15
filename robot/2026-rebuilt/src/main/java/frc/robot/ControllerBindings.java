@@ -97,6 +97,8 @@ public class ControllerBindings {
         drivetrain.setDefaultCommand(new TeleopSwerve(drivetrain, driver, 1));
         driver.b().onTrue(feederSubsystem.setStateCommand(feeder_state.PREVERSE).andThen(spinDexer.setStateCommand(spindexer_state.PREVERSE)))
         .onFalse(feederSubsystem.setStateCommand(feeder_state.STOP).andThen(spinDexer.setStateCommand(spindexer_state.STOP)));
+        driver.b().onTrue(feederSubsystem.setStateCommand(feeder_state.PREVERSE).andThen(spinDexer.setStateCommand(spindexer_state.PREVERSE)))
+        .onFalse(feederSubsystem.setStateCommand(feeder_state.STOP).andThen(spinDexer.setStateCommand(spindexer_state.STOP)));
         // M key (Right bumper): reverse intake rollers
         driver.rightBumper()
                 .whileTrue(intakeSubsystem.setRollerStateCommand(RollerState.REVERSE))
@@ -217,9 +219,9 @@ public class ControllerBindings {
         onFalse(feederSubsystem.setStateCommand(feeder_state.STOP).alongWith(spindexerSubsystem.setStateCommand(spindexer_state.STOP)));
         
         //Add multiplier to hood angle
-        operator.povUp()
+        operator.a()
                 .onTrue(new InstantCommand(() -> shooterHood.updateHoodAngleMultiplier(.01)));
-        operator.povDown()
+        operator.b()
                 .onTrue(new InstantCommand(() -> shooterHood.updateHoodAngleMultiplier(-.01)));
 
          operator.y()

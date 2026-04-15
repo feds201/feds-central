@@ -3,7 +3,7 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.commands.swerve;
-//latest untested change: drivemode became static
+
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Radians;
@@ -17,12 +17,9 @@ import org.littletonrobotics.junction.Logger;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.util.FlippingUtil;
 
-import com.pathplanner.lib.util.FlippingUtil;
-
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.units.measure.Angle;
@@ -34,9 +31,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.RobotMap.ShooterConstants;
 // import frc.robot.RobotMap.SafetyMap.SwerveConstants;
@@ -77,9 +72,7 @@ public class TeleopSwerve extends Command {
    private Angle currentJoystickAngle = Degrees.of(0);
    private Translation2d redHub = FlippingUtil.flipFieldPosition(ShooterConstants.hubCenter);
 
-   private static driveMode mode = driveMode.NORMALDRIVE;
-
-   
+   private driveMode mode = driveMode.NORMALDRIVE;
 
   /** Command used to control swerve in teleop. */
   public TeleopSwerve(CommandSwerveDrivetrain dt, CommandXboxController controller) {
@@ -139,16 +132,10 @@ public class TeleopSwerve extends Command {
     
   }
 
-  public static driveMode getDriveMode(){
-    return mode;
-  }
-
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     SmartDashboard.putNumber("Dist to hub", dt.getState().Pose.getTranslation().getDistance(ShooterConstants.hubCenter));
-    SmartDashboard.putNumber("Dist to Red hub", dt.getState().Pose.getTranslation().getDistance(redHub));
-    
     SmartDashboard.putNumber("Dist to Red hub", dt.getState().Pose.getTranslation().getDistance(redHub));
     
     Logger.recordOutput("CTRERobotPose", dt.getState().Pose);
