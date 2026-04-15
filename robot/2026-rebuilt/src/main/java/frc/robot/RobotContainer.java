@@ -7,6 +7,7 @@ package frc.robot;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -21,6 +22,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.RobotMap.DrivetrainConstants;
@@ -86,6 +88,7 @@ public class RobotContainer extends ControllerBindings {
     private final ShooterWheels shooterWheels = new ShooterWheels(drivetrain);
     private final Spindexer spinDexer = new Spindexer();
     private final BallTracking ball = new BallTracking(drivetrain);
+    
 
     // Simulation
     private RebuiltSimManager simManager;
@@ -149,6 +152,22 @@ public class RobotContainer extends ControllerBindings {
     // TODO: migrate to LoggedDashboardChooser from AdvantageKit
     registerNamedCommands();
     autoChooser = AutoBuilder.buildAutoChooser();
+    autoChooser.addOption("FD-RightMidFieldDoublepass", new SequentialCommandGroup(
+            AutoBuilder.buildAuto("FD-RightMidFieldDoublepass-Part1")
+            .andThen(NamedCommands.getCommand("Ball Track And Return"))
+            .andThen(AutoBuilder.buildAuto("FD-RightMidFieldDoublepass-Part2"))
+            .andThen(AutoBuilder.buildAuto("FD-RightMidFieldDoublepass-Part3"))));
+
+    autoChooser.addOption("FD-MidIntakeToLeftBump", new SequentialCommandGroup(
+            AutoBuilder.buildAuto("FD-MidIntakeToLeftBump-Part1")
+            .andThen(NamedCommands.getCommand("Ball Track And Return"))
+            .andThen(AutoBuilder.buildAuto("FD-MidIntakeToLeftBump-Part2"))));
+    SmartDashboard.putData("Auto Chooser", autoChooser);
+
+     autoChooser.addOption("FD-MidIntakeToLeftBump", new SequentialCommandGroup(
+            AutoBuilder.buildAuto("FD-MidIntakeToLeftBump-Part1")
+            .andThen(NamedCommands.getCommand("Ball Track And Return"))
+            .andThen(AutoBuilder.buildAuto("FD-MidIntakeToLeftBump-Part2"))));
     SmartDashboard.putData("Auto Chooser", autoChooser);
     drivetrain.registerTelemetry(telemetry::telemeterize);
   }
@@ -328,8 +347,6 @@ public void registerNamedCommands() {
   NamedCommands.registerCommand("End Shooter Spin", shooterWheels.setStateCommand(shooter_state.IDLE).alongWith(shooterHood.setStateCommand(shooterhood_state.IN)).alongWith(spinDexer.setStateCommand(spindexer_state.STOP)).alongWith(feederSubsystem.setStateCommand(feeder_state.STOP)));
   NamedCommands.registerCommand("Run Shooter", shooterWheels.setStateCommand(shooter_state.SHOOTING).alongWith(feederSubsystem.setStateCommand(feeder_state.PRUN)).alongWith(spinDexer.setStateCommand(spindexer_state.PFORWARD)).alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
   NamedCommands.registerCommand("Shooting", shooterWheels.setStateCommand(shooter_state.SHOOTING).alongWith(feederSubsystem.setStateCommand(feeder_state.PRUN)).alongWith(spinDexer.setStateCommand(spindexer_state.PFORWARD)).alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
-  NamedCommands.registerCommand("Run Object Detection",
-    Commands.defer(() -> new BallTracking(drivetrain).withTimeout(3.0), Set.of(drivetrain)));
   NamedCommands.registerCommand("Ball Track And Return",
     Commands.defer(() -> {
         Pose2d startPose = drivetrain.getState().Pose;
@@ -346,6 +363,8 @@ public void registerNamedCommands() {
             ));
     }, Set.of(drivetrain)));
 }
+
+
 
 private final ShuffleboardLayout llLayout = Shuffleboard.getTab("Pit Testing").getLayout("Limelight Health", BuiltInLayouts.kList).withSize(2,1).withPosition(4, 5);
 private GenericEntry ll3conect = llLayout.add("ll3 isConnected", false).getEntry();
@@ -366,6 +385,7 @@ public void usbStorage() {
   long totalBytes = usb.getTotalSpace();
   long freeBytes  = usb.getUsableSpace();
 
+
   boolean storageOk = mounted && freeBytes >= RobotMap.PitConstants.STORAGE_ACCEPTABLE_BYTES;
   String label = !mounted ? "NO DRIVE"
       : String.format("%.1f GB free / %.1f GB total", freeBytes / 1e9, totalBytes / 1e9);
@@ -373,4 +393,6 @@ public void usbStorage() {
   displayLayout.setString("Logs Flash Drive: " + label);
   testLayout.setBoolean(storageOk);
 }
+
+  
 }
