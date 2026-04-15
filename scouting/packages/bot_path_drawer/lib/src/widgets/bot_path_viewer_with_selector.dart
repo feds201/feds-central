@@ -11,11 +11,23 @@ import 'bot_path_viewer_widget.dart';
 const _compactBreakpoint = 600.0;
 
 /// Hard-coded base team colors (fully saturated).
+///
+/// Indices 0-2 are warm (used for red alliance when alliances are active).
+/// Indices 3-5 are cool (used for blue alliance when alliances are active).
 const _teamBaseColors = [
   Color(0xFFFF0000), // Red
-  Color(0xFF00AA00), // Green
-  Color(0xFF0055FF), // Blue
+  Color(0xFFFF9900), // Orange
+  Color(0xFFFFFF00), // Yellow
+  Color(0xFF0044FF), // Blue
+  Color(0xFF00FF44), // Green
+  Color(0xFF00FFFF), // Cyan
 ];
+
+/// Warm color subset indices for red alliance teams.
+const _warmIndices = [0, 1, 2];
+
+/// Cool color subset indices for blue alliance teams.
+const _coolIndices = [3, 4, 5];
 
 /// A viewer widget with a sidebar for selecting which team paths to display.
 ///
@@ -27,7 +39,9 @@ const _teamBaseColors = [
 ///
 /// Each team is assigned a base color:
 /// - If [TeamPaths.color] is set, that color is used.
-/// - Otherwise, colors are auto-assigned from a palette (red, green, blue).
+/// - Otherwise, colors are auto-assigned from a palette of 6 colors.
+/// - When alliance mode is active, warm colors are used for red alliance
+///   teams and cool colors for blue alliance teams.
 ///
 /// Within a team, selected paths vary by saturation from 100% down to 30%,
 /// evenly spaced.
@@ -52,11 +66,18 @@ class BotPathViewerWithSelector extends StatefulWidget {
   /// and an optional base color override.
   final Map<String, TeamPaths> teams;
 
+  /// Optional callback invoked when the user taps the add-path button
+  /// on a team header. The team label is passed as the argument.
+  ///
+  /// If null, no add-path button is shown.
+  final void Function(String teamLabel)? onAddPath;
+
   /// Creates a [BotPathViewerWithSelector].
   const BotPathViewerWithSelector({
     super.key,
     required this.config,
     required this.teams,
+    this.onAddPath,
   });
 
   @override
@@ -72,14 +93,24 @@ class _BotPathViewerWithSelectorState
   /// Which teams are expanded in the sidebar.
   late Set<String> _expandedTeams;
 
+  /// Which paths are vertically mirrored (teamKey → set of pathNames).
+  late Map<String, Set<String>> _mirrored;
+
   /// Whether the sidebar is visible. Null means not yet resolved (will be
   /// set on first build based on available width).
   bool? _sidebarVisible;
+
+  /// Whether alliance mode is active (all teams have alliance set).
+  bool _allianceMode = false;
+
+  /// Effective crop fraction (may be overridden when alliance mode is active).
+  double _effectiveCropFraction = 1.0;
 
   @override
   void initState() {
     super.initState();
     _initSelection();
+    _resolveAllianceMode();
   }
 
   @override
@@ -87,6 +118,9 @@ class _BotPathViewerWithSelectorState
     super.didUpdateWidget(oldWidget);
     if (!_teamsEqual(oldWidget.teams, widget.teams)) {
       _initSelection();
+      _resolveAllianceMode();
+    } else if (oldWidget.config.cropFraction != widget.config.cropFraction) {
+      _resolveAllianceMode();
     }
   }
 
@@ -101,6 +135,7 @@ class _BotPathViewerWithSelectorState
       final aTeam = a[key]!;
       final bTeam = b[key]!;
       if (aTeam.color != bTeam.color) return false;
+      if (aTeam.alliance != bTeam.alliance) return false;
       final aPaths = aTeam.paths;
       final bPaths = bTeam.paths;
       if (aPaths.length != bPaths.length) return false;
@@ -111,10 +146,38 @@ class _BotPathViewerWithSelectorState
     return true;
   }
 
+  /// Determines whether alliance mode should be active.
+  void _resolveAllianceMode() {
+    final teams = widget.teams.values;
+    final withAlliance = teams.where((t) => t.alliance != null).length;
+
+    if (withAlliance == teams.length && teams.isNotEmpty) {
+      _allianceMode = true;
+    } else {
+      _allianceMode = false;
+      if (withAlliance > 0) {
+        debugPrint(
+          'Warning: alliance set for some but not all teams, '
+          'ignoring alliance fields',
+        );
+      }
+    }
+
+    if (_allianceMode && widget.config.cropFraction != 1.0) {
+      debugPrint(
+        'Warning: cropFraction ignored when both alliances shown, using 1.0',
+      );
+      _effectiveCropFraction = 1.0;
+    } else {
+      _effectiveCropFraction = widget.config.cropFraction;
+    }
+  }
+
   /// Initializes the selection state: first path of each team is selected.
   void _initSelection() {
     _selected = {};
     _expandedTeams = {};
+    _mirrored = {};
     for (final entry in widget.teams.entries) {
       final teamKey = entry.key;
       final pathKeys = entry.value.paths.keys.toList();
@@ -124,15 +187,26 @@ class _BotPathViewerWithSelectorState
       } else {
         _selected[teamKey] = {};
       }
+      _mirrored[teamKey] = {};
     }
   }
 
-  /// Returns the base color for a team at the given [index] in the team list.
-  Color _teamBaseColor(String teamKey, int index) {
+  /// Returns the base color for a team at the given [colorIndex].
+  ///
+  /// When alliance mode is active, [colorIndex] indexes into the warm or
+  /// cool subset based on the team's alliance. Otherwise it indexes into
+  /// the full palette.
+  Color _teamBaseColor(String teamKey, int colorIndex) {
     final teamData = widget.teams[teamKey];
     if (teamData?.color != null) return teamData!.color!;
-    // Auto-assign from palette, wrapping around
-    return _teamBaseColors[index % _teamBaseColors.length];
+
+    if (_allianceMode) {
+      final alliance = teamData?.alliance;
+      final subset = alliance == Alliance.red ? _warmIndices : _coolIndices;
+      return _teamBaseColors[subset[colorIndex % subset.length]];
+    }
+
+    return _teamBaseColors[colorIndex % _teamBaseColors.length];
   }
 
   /// Computes the display color for a path within a team.
@@ -152,18 +226,78 @@ class _BotPathViewerWithSelectorState
     return hsl.withSaturation(saturation.clamp(0.0, 1.0)).toColor();
   }
 
+  /// Returns teams grouped by alliance when alliance mode is active.
+  /// The first list is red alliance teams, the second is blue.
+  (List<String>, List<String>) _teamsByAlliance() {
+    final red = <String>[];
+    final blue = <String>[];
+    for (final entry in widget.teams.entries) {
+      if (entry.value.alliance == Alliance.red) {
+        red.add(entry.key);
+      } else {
+        blue.add(entry.key);
+      }
+    }
+    return (red, blue);
+  }
+
+  /// Returns the color index for a team within its alliance group.
+  int _allianceColorIndex(String teamKey, List<String> allianceTeams) {
+    return allianceTeams.indexOf(teamKey);
+  }
+
   /// Builds the list of [BotViewerPath] from the current selection.
   List<BotViewerPath> _buildViewerPaths() {
     final viewerPaths = <BotViewerPath>[];
-    var teamIndex = 0;
 
-    for (final entry in widget.teams.entries) {
-      final teamKey = entry.key;
-      final teamData = entry.value;
-      final baseColor = _teamBaseColor(teamKey, teamIndex);
+    if (_allianceMode) {
+      final (redTeams, blueTeams) = _teamsByAlliance();
+      _addViewerPathsForTeams(redTeams, redTeams, viewerPaths);
+      _addViewerPathsForTeams(blueTeams, blueTeams, viewerPaths);
+    } else {
+      final allTeams = widget.teams.keys.toList();
+      var colorIndex = 0;
+      for (final teamKey in allTeams) {
+        final teamData = widget.teams[teamKey]!;
+        final baseColor = _teamBaseColor(teamKey, colorIndex);
+        final selectedPaths = _selected[teamKey] ?? {};
+        final mirroredPaths = _mirrored[teamKey] ?? {};
+
+        final selectedOrdered = teamData.paths.keys
+            .where((name) => selectedPaths.contains(name))
+            .toList();
+
+        for (var i = 0; i < selectedOrdered.length; i++) {
+          final pathName = selectedOrdered[i];
+          final pathData = teamData.paths[pathName];
+          if (pathData != null) {
+            viewerPaths.add(BotViewerPath(
+              pathData: pathData,
+              color: _pathColor(baseColor, i, selectedOrdered.length),
+              mirrored: mirroredPaths.contains(pathName),
+            ));
+          }
+        }
+        colorIndex++;
+      }
+    }
+
+    return viewerPaths;
+  }
+
+  /// Helper to add viewer paths for a list of teams within an alliance group.
+  void _addViewerPathsForTeams(
+    List<String> teams,
+    List<String> allianceGroup,
+    List<BotViewerPath> viewerPaths,
+  ) {
+    for (final teamKey in teams) {
+      final teamData = widget.teams[teamKey]!;
+      final colorIdx = _allianceColorIndex(teamKey, allianceGroup);
+      final baseColor = _teamBaseColor(teamKey, colorIdx);
       final selectedPaths = _selected[teamKey] ?? {};
+      final mirroredPaths = _mirrored[teamKey] ?? {};
 
-      // Collect selected path names in their original order
       final selectedOrdered = teamData.paths.keys
           .where((name) => selectedPaths.contains(name))
           .toList();
@@ -175,25 +309,23 @@ class _BotPathViewerWithSelectorState
           viewerPaths.add(BotViewerPath(
             pathData: pathData,
             color: _pathColor(baseColor, i, selectedOrdered.length),
+            alliance: teamData.alliance,
+            mirrored: mirroredPaths.contains(pathName),
           ));
         }
       }
-
-      teamIndex++;
     }
-
-    return viewerPaths;
   }
 
   /// Returns the color for the dot next to a path checkbox.
   /// If the path is selected, returns its computed color; otherwise grey.
-  Color _pathDotColor(String teamKey, int teamIndex, String pathName) {
+  Color _pathDotColor(String teamKey, int colorIndex, String pathName) {
     final selected = _selected[teamKey] ?? {};
     if (!selected.contains(pathName)) {
       return Colors.grey.shade400;
     }
 
-    final baseColor = _teamBaseColor(teamKey, teamIndex);
+    final baseColor = _teamBaseColor(teamKey, colorIndex);
     final teamData = widget.teams[teamKey]!;
     final selectedOrdered = teamData.paths.keys
         .where((name) => selected.contains(name))
@@ -223,20 +355,60 @@ class _BotPathViewerWithSelectorState
           Expanded(
             child: ListView(
               padding: const EdgeInsets.symmetric(horizontal: 8),
-              children: [
-                for (var i = 0; i < widget.teams.length; i++)
-                  _buildTeamSection(
-                    widget.teams.keys.elementAt(i),
-                    i,
-                    theme,
-                    isDark,
-                  ),
-              ],
+              children: _buildTeamList(theme, isDark),
             ),
           ),
         ],
       ),
     );
+  }
+
+  /// Builds the list of team section widgets, with alliance headers if active.
+  List<Widget> _buildTeamList(ThemeData theme, bool isDark) {
+    if (!_allianceMode) {
+      final allTeams = widget.teams.keys.toList();
+      return [
+        for (var i = 0; i < allTeams.length; i++)
+          _buildTeamSection(allTeams[i], i, theme, isDark),
+      ];
+    }
+
+    final (redTeams, blueTeams) = _teamsByAlliance();
+    return [
+      // Red alliance header
+      Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+        child: Text(
+          'RED ALLIANCE',
+          style: theme.textTheme.titleSmall?.copyWith(
+            color: _teamBaseColors[0],
+          ),
+        ),
+      ),
+      for (var i = 0; i < redTeams.length; i++)
+        _buildTeamSection(redTeams[i], i, theme, isDark),
+      const Divider(),
+      // Blue alliance header
+      Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+        child: Text(
+          'BLUE ALLIANCE',
+          style: theme.textTheme.titleSmall?.copyWith(
+            color: const Color(0xFF4488FF),
+          ),
+        ),
+      ),
+      for (var i = 0; i < blueTeams.length; i++)
+        _buildTeamSection(blueTeams[i], i, theme, isDark),
+    ];
+  }
+
+  /// Returns the effective config, with cropFraction overridden if needed.
+  BotPathConfig get _effectiveConfig {
+    if (_effectiveCropFraction != widget.config.cropFraction) {
+      return widget.config.copyWith(cropFraction: _effectiveCropFraction);
+    }
+    return widget.config;
   }
 
   @override
@@ -248,7 +420,7 @@ class _BotPathViewerWithSelectorState
     final isDark = brightness == Brightness.dark;
 
     final viewer = BotPathViewer(
-      config: widget.config,
+      config: _effectiveConfig,
       paths: viewerPaths,
     );
 
@@ -335,13 +507,13 @@ class _BotPathViewerWithSelectorState
 
   Widget _buildTeamSection(
     String teamKey,
-    int teamIndex,
+    int colorIndex,
     ThemeData theme,
     bool isDark,
   ) {
     final teamData = widget.teams[teamKey]!;
     final isExpanded = _expandedTeams.contains(teamKey);
-    final baseColor = _teamBaseColor(teamKey, teamIndex);
+    final baseColor = _teamBaseColor(teamKey, colorIndex);
     final pathCount = teamData.paths.length;
     final selected = _selected[teamKey] ?? {};
 
@@ -392,6 +564,17 @@ class _BotPathViewerWithSelectorState
                     color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
                   ),
                 ),
+                if (widget.onAddPath != null)
+                  IconButton(
+                    icon: const Icon(Icons.add, size: 18),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(
+                      minWidth: 28,
+                      minHeight: 28,
+                    ),
+                    onPressed: () => widget.onAddPath!(teamKey),
+                    tooltip: 'Add path',
+                  ),
               ],
             ),
           ),
@@ -405,7 +588,7 @@ class _BotPathViewerWithSelectorState
                 for (final pathName in teamData.paths.keys)
                   _buildPathRow(
                     teamKey,
-                    teamIndex,
+                    colorIndex,
                     pathName,
                     selected.contains(pathName),
                     theme,
@@ -420,12 +603,14 @@ class _BotPathViewerWithSelectorState
 
   Widget _buildPathRow(
     String teamKey,
-    int teamIndex,
+    int colorIndex,
     String pathName,
     bool isChecked,
     ThemeData theme,
   ) {
-    final dotColor = _pathDotColor(teamKey, teamIndex, pathName);
+    final dotColor = _pathDotColor(teamKey, colorIndex, pathName);
+    final isMirrored =
+        (_mirrored[teamKey] ?? {}).contains(pathName);
 
     return InkWell(
       onTap: () {
@@ -480,6 +665,33 @@ class _BotPathViewerWithSelectorState
                 overflow: TextOverflow.ellipsis,
               ),
             ),
+            // Mirror toggle button (only shown when path is checked)
+            if (isChecked)
+              IconButton(
+                icon: Icon(
+                  Icons.swap_vert,
+                  size: 18,
+                  color: isMirrored
+                      ? theme.colorScheme.primary
+                      : theme.colorScheme.onSurface.withAlpha(100),
+                ),
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(
+                  minWidth: 28,
+                  minHeight: 28,
+                ),
+                onPressed: () {
+                  setState(() {
+                    final set = _mirrored[teamKey] ??= {};
+                    if (set.contains(pathName)) {
+                      set.remove(pathName);
+                    } else {
+                      set.add(pathName);
+                    }
+                  });
+                },
+                tooltip: isMirrored ? 'Unmirror path' : 'Mirror path',
+              ),
           ],
         ),
       ),

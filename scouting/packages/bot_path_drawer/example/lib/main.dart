@@ -92,13 +92,26 @@ class _DemoHomeState extends State<DemoHome> {
   /// Mutable team data: team label -> {path name -> path data}.
   late Map<String, Map<String, String>> _teams;
 
+  /// Per-team alliance selection (null = no alliance).
+  late Map<String, Alliance?> _teamAlliances;
+
+  /// Alliance selection for the next team to be drawn.
+  Alliance? _selectedAlliance;
+
   /// Text controllers for the draw dialog.
-  final _pathNameController = TextEditingController(text: 'Sample');
+  final _pathNameController = TextEditingController(text: 'Path');
   final _teamNameController = TextEditingController(text: '201');
+
+  /// Crop fraction for the drawer (0.1 to 1.0).
+  double _drawerCropFraction = 0.7;
+
+  /// Crop fraction for the viewer (0.1 to 1.0).
+  double _viewerCropFraction = 0.7;
 
   BotPathConfig get _config {
     return BotPathConfig(
       backgroundImage: const AssetImage('assets/bg.jpg'),
+      cropFraction: _drawerCropFraction,
     );
   }
 
@@ -121,6 +134,7 @@ class _DemoHomeState extends State<DemoHome> {
   void initState() {
     super.initState();
     _teams = {};
+    _teamAlliances = {};
   }
 
   @override
@@ -133,7 +147,10 @@ class _DemoHomeState extends State<DemoHome> {
   Map<String, TeamPaths> get _teamPaths {
     return {
       for (final entry in _teams.entries)
-        entry.key: TeamPaths(paths: entry.value),
+        entry.key: TeamPaths(
+          paths: entry.value,
+          alliance: _teamAlliances[entry.key],
+        ),
     };
   }
 
@@ -168,6 +185,8 @@ class _DemoHomeState extends State<DemoHome> {
                   if (teamName.isNotEmpty && pathName.isNotEmpty) {
                     setState(() {
                       _teams.putIfAbsent(teamName, () => {});
+                      // Store alliance for this team (latest selection wins)
+                      _teamAlliances[teamName] = _selectedAlliance;
                       // Ensure unique name within team
                       var name = pathName;
                       var counter = 2;
@@ -272,6 +291,31 @@ class _DemoHomeState extends State<DemoHome> {
                     ),
                   ),
                   const SizedBox(width: 8),
+                  // Alliance selector
+                  SegmentedButton<Alliance?>(
+                    segments: const [
+                      ButtonSegment(
+                        value: null,
+                        label: Text('None', style: TextStyle(fontSize: 12)),
+                      ),
+                      ButtonSegment(
+                        value: Alliance.red,
+                        label: Text('Red', style: TextStyle(fontSize: 12)),
+                      ),
+                      ButtonSegment(
+                        value: Alliance.blue,
+                        label: Text('Blue', style: TextStyle(fontSize: 12)),
+                      ),
+                    ],
+                    selected: {_selectedAlliance},
+                    onSelectionChanged: (selected) {
+                      setState(() => _selectedAlliance = selected.first);
+                    },
+                    style: SegmentedButton.styleFrom(
+                      visualDensity: VisualDensity.compact,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
                   FilledButton.tonalIcon(
                     onPressed: _openDrawer,
                     icon: const Icon(Icons.draw, size: 18),
@@ -280,9 +324,49 @@ class _DemoHomeState extends State<DemoHome> {
                   const SizedBox(width: 8),
                   FilledButton.tonal(
                     onPressed: () {
-                      setState(() => _teams.clear());
+                      setState(() {
+                        _teams.clear();
+                        _teamAlliances.clear();
+                      });
                     },
                     child: const Text('Clear All'),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+
+              // Crop fraction sliders
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Drawer crop: ${_drawerCropFraction.toStringAsFixed(2)}',
+                    style: const TextStyle(fontSize: 12),
+                  ),
+                  SizedBox(
+                    width: 120,
+                    child: Slider(
+                      value: _drawerCropFraction,
+                      min: 0.1,
+                      max: 1.0,
+                      onChanged: (v) =>
+                          setState(() => _drawerCropFraction = v),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Text(
+                    'Viewer crop: ${_viewerCropFraction.toStringAsFixed(2)}',
+                    style: const TextStyle(fontSize: 12),
+                  ),
+                  SizedBox(
+                    width: 120,
+                    child: Slider(
+                      value: _viewerCropFraction,
+                      min: 0.1,
+                      max: 1.0,
+                      onChanged: (v) =>
+                          setState(() => _viewerCropFraction = v),
+                    ),
                   ),
                 ],
               ),
@@ -303,8 +387,17 @@ class _DemoHomeState extends State<DemoHome> {
               else
                 Expanded(
                   child: BotPathViewerWithSelector(
-                    config: _configWithBrightness.copyWith(cropFraction: 1.0),
+                    config: _configWithBrightness.copyWith(
+                      cropFraction: _viewerCropFraction,
+                    ),
                     teams: _teamPaths,
+                    onAddPath: (teamLabel) {
+                      setState(() {
+                        _teamNameController.text = teamLabel;
+                        _pathNameController.text = 'Path';
+                      });
+                      _openDrawer();
+                    },
                   ),
                 ),
             ],
