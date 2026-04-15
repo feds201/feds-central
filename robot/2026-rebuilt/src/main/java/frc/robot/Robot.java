@@ -33,14 +33,13 @@ import frc.robot.utils.HubShiftUtil;
 import frc.robot.utils.SubsystemStatusManager;
 import frc.robot.utils.DeviceTempReporter;
 import frc.robot.utils.SubsystemStatusManager;
-import frc.robot.subsystems.led.LedsSubsystem;
 
+//comment out the above line if you don't have a LedsSubsystem, and comment out the line in RobotContainer that creates the LedsSubsystem, and comment out the line in RobotContainer that sets the default command for the LedsSubsystem. You can also delete the LedsSubsystem class if you don't have it, but it's easier to just comment out those lines.
 public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
 
   private final RobotContainer m_robotContainer;
-
-
+  // public LedsSubsystem m_ledsSubsystem = new LedsSubsystem();
 
 
   public Robot() {
@@ -193,7 +192,6 @@ public class Robot extends LoggedRobot {
   @Override
   public void simulationInit() {
     m_robotContainer.initSimulation();
-    System.out.println("initSimulation called");
   }
 
   @Override

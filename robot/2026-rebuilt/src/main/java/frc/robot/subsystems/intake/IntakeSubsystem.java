@@ -15,11 +15,13 @@ import java.io.ObjectInputFilter.Config;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.List;
+
 import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix6.controls.MotionMagicVelocityDutyCycle;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+
 import frc.robot.RobotMap;
-import frc.robot.RobotMap.IntakeSubsystemConstants;
 import frc.robot.RobotMap.IntakeSubsystemConstants;
 import frc.robot.subsystems.led.LedsSubsystem;
 import frc.robot.subsystems.shooter.ShooterWheels.shooter_state;
@@ -120,9 +122,7 @@ public class IntakeSubsystem extends SubsystemBase {
   private IntakeState currentState = IntakeState.DEFAULT;
   private RollerState currentRollerState = RollerState.OFF;
  
-  public IntakeState getCurrentState() {
-    return currentState;
-  }
+  
 
   public void setState(IntakeState targetState) {
     this.currentState = targetState;
@@ -150,12 +150,6 @@ public class IntakeSubsystem extends SubsystemBase {
       }
       case CLOSE_AGITATION_OUT -> {
         moveIntakeWithPosition(burstAgitation);
-      }
-      case FAR_AGITATION_IN -> {
-        moveIntakeWithPosition(farAgitationRotations);
-      }
-      case FAR_AGITATION_OUT -> {
-        moveIntakeWithPosition(closeAgitationRotations);
       }
     }
 
@@ -528,6 +522,7 @@ public class IntakeSubsystem extends SubsystemBase {
     switch (currentRollerState) {
       case ON:
         rollerMotor.set(ROLLER_OUTPUT);
+        leds.intakeSignal();
         break;
       case REVERSE:
         rollerMotor.set(-ROLLER_OUTPUT);

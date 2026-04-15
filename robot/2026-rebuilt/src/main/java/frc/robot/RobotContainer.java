@@ -22,13 +22,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.RobotMap.DrivetrainConstants;
-import frc.robot.commands.swerve.TeleopSwerve.driveMode;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem.IntakeState;
 import frc.robot.subsystems.intake.IntakeSubsystem.RollerState;
-import frc.robot.subsystems.led.LedsSubsystem;
 import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.subsystems.feeder.Feeder.feeder_state;
 import frc.robot.subsystems.shooter.ShooterHood;
@@ -37,8 +34,8 @@ import frc.robot.subsystems.shooter.ShooterWheels;
 import frc.robot.subsystems.shooter.ShooterWheels.shooter_state;
 import frc.robot.subsystems.spindexer.Spindexer;
 import frc.robot.subsystems.spindexer.Spindexer.spindexer_state;
-import frc.robot.commands.swerve.TeleopSwerve;
 import frc.robot.sim.RebuiltSimManager;
+
 
 import org.littletonrobotics.junction.Logger;
 
@@ -79,14 +76,16 @@ public class RobotContainer extends ControllerBindings {
     private final ShooterHood shooterHood = new ShooterHood(drivetrain);
     private final ShooterWheels shooterWheels = new ShooterWheels(drivetrain);
     private final Spindexer spinDexer = new Spindexer();
-    private final LedsSubsystem ledsSubsystem = new LedsSubsystem();
 
     // Simulation
     private RebuiltSimManager simManager;
 
+ 
+
     private final RTUManager rtumanager = new RTUManager();
 
-    private final SendableChooser<Command> autoChooser;
+
+  private final SendableChooser<Command> autoChooser;
 
     public static RobotContainer getInstance() {
         return instance;
@@ -124,28 +123,6 @@ public class RobotContainer extends ControllerBindings {
         return drivetrain;
     }
 
-    public LedsSubsystem getLedsSubsystem() {
-        return ledsSubsystem;
-
-    }
-
-
-    public shooter_state getShooterWheelsState() {
-        return shooterWheels.getCurrentState();
-    }
-    public shooterhood_state getShooterHoodState() {
-        return shooterHood.getCurrentState();
-    }
-    public IntakeState getIntakeState() {
-        return intakeSubsystem.getCurrentState();
-    }
-    public feeder_state getFeederState() {
-        return feederSubsystem.getCurrentState();
-    }
-    public driveMode getDriveMode() {
-        return TeleopSwerve.getDriveMode();
-    }
-
     public RobotContainer() {
     instance = this;
     ll4.getSettings().withImuMode(ImuMode.ExternalImu).save();
@@ -153,7 +130,8 @@ public class RobotContainer extends ControllerBindings {
     setupOperatorBindings(operaterController);
     configureRootTests();
     PitTesting.addCommands();
-    new Trigger(drivetrain::withinTrench).and(DriverStation::isTeleop).onTrue(shooterHood.setStateCommand(shooterhood_state.IN));
+    new Trigger(drivetrain::withinTrench).and(DriverStation::isTeleop).onTrue(shooterHood.setStateCommand(shooterhood_state.IN).andThen(intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED)));
+
     // TODO: migrate to LoggedDashboardChooser from AdvantageKit
     registerNamedCommands();
     autoChooser = AutoBuilder.buildAutoChooser();
@@ -197,9 +175,7 @@ public class RobotContainer extends ControllerBindings {
         }
     }
 
-    /**
-     * Backwards-compatible API: set hood angle in degrees (360deg = 1 rotation).
-     */
+    /** Backwards-compatible API: set hood angle in degrees (360deg = 1 rotation). */
     public synchronized void setHoodAngleDeg(double deg) {
         try {
             shooterHood.setAngle(Rotations.of(deg / 360.0));
@@ -234,31 +210,32 @@ public class RobotContainer extends ControllerBindings {
      * Start a dynamic auto-sweep driven by the diagnostic dashboard's telemetry
      * values. Puts shooter wheels and hood into TEST state while the sweep runs
      * and restores them when it finishes.
-     * 
      * @param holdMs milliseconds to hold each supplier sample
      */
     public synchronized void startAutoSweepFromDiagnostic(int holdMs) {
-        // enter test mode immediately
-        shooterWheels.setState(frc.robot.subsystems.shooter.ShooterWheels.shooter_state.TEST);
-        shooterHood.setState(frc.robot.subsystems.shooter.ShooterHood.shooterhood_state.TEST);
+    // enter test mode immediately
+    shooterWheels.setState(frc.robot.subsystems.shooter.ShooterWheels.shooter_state.TEST);
+    shooterHood.setState(frc.robot.subsystems.shooter.ShooterHood.shooterhood_state.TEST);
 
         autoSweeper.startDynamic(
-                // shooter velocity supplier (RPS) comes from TelemetryPublisher
-                () -> frc.robot.utils.RTU.TelemetryPublisher.getShooterVelocityRps(),
-                // hood angle supplier (degrees) comes from TelemetryPublisher
-                () -> frc.robot.utils.RTU.TelemetryPublisher.getHoodAngleDeg(),
-                // enter test mode (redundant but safe)
-                () -> {
-                    shooterWheels.setState(frc.robot.subsystems.shooter.ShooterWheels.shooter_state.TEST);
-                    shooterHood.setState(frc.robot.subsystems.shooter.ShooterHood.shooterhood_state.TEST);
-                },
-                // exit test mode: restore reasonable idle states
-                () -> {
-                    shooterWheels.setState(frc.robot.subsystems.shooter.ShooterWheels.shooter_state.IDLE);
-                    shooterHood.setState(frc.robot.subsystems.shooter.ShooterHood.shooterhood_state.IN);
-                },
-                holdMs);
+            // shooter velocity supplier (RPS) comes from TelemetryPublisher
+            () -> frc.robot.utils.RTU.TelemetryPublisher.getShooterVelocityRps(),
+            // hood angle supplier (degrees) comes from TelemetryPublisher
+            () -> frc.robot.utils.RTU.TelemetryPublisher.getHoodAngleDeg(),
+            // enter test mode (redundant but safe)
+            () -> {
+                shooterWheels.setState(frc.robot.subsystems.shooter.ShooterWheels.shooter_state.TEST);
+                shooterHood.setState(frc.robot.subsystems.shooter.ShooterHood.shooterhood_state.TEST);
+            },
+            // exit test mode: restore reasonable idle states
+            () -> {
+                shooterWheels.setState(frc.robot.subsystems.shooter.ShooterWheels.shooter_state.IDLE);
+                shooterHood.setState(frc.robot.subsystems.shooter.ShooterHood.shooterhood_state.IN);
+            },
+            holdMs
+        );
     }
+  
 
     public void updateLocalization() {
         if (ll4.isConnected()) {
@@ -281,7 +258,7 @@ public class RobotContainer extends ControllerBindings {
 
     public void initSimulation() {
         simManager = new RebuiltSimManager(drivetrain,
-                intakeSubsystem, feederSubsystem, shooterWheels, shooterHood, spinDexer, ledsSubsystem);
+                intakeSubsystem, feederSubsystem, shooterWheels, shooterHood, spinDexer);
         Logger.recordOutput("Sim/State", "Ready");
         drivetrain.resetPose(RebuiltSimManager.STARTING_POSE);
     }
@@ -292,9 +269,9 @@ public class RobotContainer extends ControllerBindings {
         }
     }
 
-    public Command getAutonomousCommand() {
-        return autoChooser.getSelected();
-    }
+  public Command getAutonomousCommand() {
+    return autoChooser.getSelected();
+  }
 
     private void configureRootTests() {
         // Keep this method for compatibility but delegate to RTUManager
@@ -320,8 +297,8 @@ public class RobotContainer extends ControllerBindings {
     public void runRootTests() {
         rtumanager.runAll();
     }
-
     public void updateRootTests() {
+
 
         rtumanager.periodic();
     }
