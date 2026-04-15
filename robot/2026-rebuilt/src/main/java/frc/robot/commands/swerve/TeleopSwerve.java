@@ -71,7 +71,8 @@ public class TeleopSwerve extends Command {
    private Time deltaTime;
    private Angle currentJoystickAngle = Degrees.of(0);
    private Translation2d redHub = FlippingUtil.flipFieldPosition(ShooterConstants.hubCenter);
-   private driveMode mode = driveMode.NORMALDRIVE;
+
+   private static driveMode mode = driveMode.NORMALDRIVE;
 
   /** Command used to control swerve in teleop. */
   public TeleopSwerve(CommandSwerveDrivetrain dt, CommandXboxController controller) {
@@ -131,7 +132,7 @@ public class TeleopSwerve extends Command {
     
   }
 
-  public driveMode getDriveMode() {
+  public static driveMode getDriveMode() {
     return mode;
   }
 
