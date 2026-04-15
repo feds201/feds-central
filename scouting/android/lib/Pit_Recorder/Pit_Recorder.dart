@@ -199,7 +199,8 @@ class PitRecorderState extends State<PitRecorder>
           ),
           IconButton(
               icon: const Icon(Icons.share_rounded),
-              color: dark ? Colors.white70 : Colors.black54,
+              iconSize: 45,
+              color: Colors.red,
               onPressed: () {
                 Navigator.push(
                   context,
@@ -231,6 +232,7 @@ class PitRecorderState extends State<PitRecorder>
       body: Column(
         children: [
           // ─── PROGRESS HEADER ───────────────────────────────
+
           FadeTransition(
             opacity: _animController,
             child: Container(
