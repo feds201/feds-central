@@ -157,10 +157,10 @@ public class IntakeSubsystem extends SubsystemBase {
         moveIntakeWithPosition(burstAgitation);
       }
       case FAR_AGITATION_IN -> {
-        moveIntakeWithPosition(farAgitationRotations);
+        moveIntakeWithPosition(burstAgitation);
       }
       case FAR_AGITATION_OUT -> {
-        moveIntakeWithPosition(closeAgitationRotations);
+        moveIntakeWithPosition(extendedRotations);
       }
     }
 
@@ -477,6 +477,29 @@ public class IntakeSubsystem extends SubsystemBase {
         timer.reset();
       }
       break;
+
+      case FAR_AGITATION_IN:
+       if(! timer.isRunning()){
+          timer.start();  
+       }
+       if(timer.hasElapsed(.2)){
+        setState(IntakeState.FAR_AGITATION_OUT);
+        timer.stop();
+        timer.reset();
+       }
+        break;
+
+        case FAR_AGITATION_OUT:
+           if(! timer.isRunning()){
+          timer.start();  
+       }
+        if(timer.hasElapsed(.2)){
+        setState(IntakeState.FAR_AGITATION_IN);
+        timer.stop();
+        timer.reset();
+      }
+      break;
+
 
         case CLOSE_AGITATION_OUT: 
           if(!timer.isRunning()){

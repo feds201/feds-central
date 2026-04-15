@@ -96,8 +96,8 @@ public final class RobotMap {
     }
 
     public static class indexingConstants {
-        public static final double forwardTime = 2;
-        public static final double reverseTime = .5;
+        public static final double forwardTime = 1.25;
+        public static final double reverseTime = .1;
     }
 
     public static class FeederConstants
