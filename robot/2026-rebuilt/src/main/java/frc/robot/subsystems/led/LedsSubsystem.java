@@ -162,12 +162,9 @@ public class LedsSubsystem extends SubsystemBase {
         break;
 
       case IDLE:
-
-        System.out.println("applyState: IDLE");
         applyIDLE();
         break;
       case SHOOTING:
-        System.out.println("applyState: SHOOTING");
         m_leds.leds.SetAnimation(Animation.Blink)
             .ForGroup(GR_ALL)
             .WithColor(COLOR_WHITE)
@@ -250,7 +247,6 @@ public class LedsSubsystem extends SubsystemBase {
 
   private static void applyIDLE() {
     if (DriverStation.isDisabled()) {
-      System.out.println("isDisabled");
       // Disabled: Breathe Red indicating standby/disabled
       m_leds.leds.SetAnimation(Animation.Breathe)
           .ForGroup(GR_ALL)
@@ -258,7 +254,6 @@ public class LedsSubsystem extends SubsystemBase {
           .WithDelay(Units.Milliseconds.of(20))
           .RunOnce(false);
     } else if (DriverStation.isAutonomous()) {
-      System.out.println("isAuto");
       // Auto: Rainbow indicating Autonomous mode
       m_leds.leds.SetAnimation(Animation.RainbowRoll)
           .ForGroup(GR_ALL)
@@ -267,7 +262,6 @@ public class LedsSubsystem extends SubsystemBase {
           .Reverse(false)
           .RunOnce(false);
     } else if (DriverStation.isTeleop()) {
-      System.out.println("Teleop");
       m_leds.leds.SetAnimation(Animation.Blink)
           // blinking yellow in teleop
           .ForGroup(GR_ALL)
@@ -275,7 +269,6 @@ public class LedsSubsystem extends SubsystemBase {
           .WithDelay(Units.Milliseconds.of(150))
           .RunOnce(false);
     } else if (DriverStation.isTest()) {
-      System.out.println("Test");
       // Fallback for any other state, solid white
       m_leds.leds.SetAnimation(Animation.Chase)
           .ForGroup(GR_ALL)
