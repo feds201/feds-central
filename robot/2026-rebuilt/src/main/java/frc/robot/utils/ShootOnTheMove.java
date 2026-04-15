@@ -53,6 +53,8 @@ public class ShootOnTheMove {
             double hoodangle = RobotMap.ShooterConstants.kShootingPositionMap.get(distToGoal);
             double wheelVelocity = ShooterConstants.kShootingVelocityMap.get(distToGoal);
             //for the flightTime calculation I used WolfRam(https://www.wolframalpha.com/input?i2d=true&i=fit%5C%2891%2928%5C%2844%29+Error%3F%5C%2893%29) FIt method/function 
+            //Fit[{{0, 0, 0}, {1, 0, 1}, {0, 1, 1}, {1, 1, 4}, {2, 0, 4}, {0, 2, 4}, {2, 2, 12}}, {1, x, y, x^2, y^2, x y}, {x, y}]
+            //    ^ ->                    (Put all the data we have on tof in the the brackets)^
             flightTime = -0.000772833*Math.pow(wheelVelocity, 2) + 0.00465107*wheelVelocity*hoodangle + 0.0621835*wheelVelocity - 0.00218423*Math.pow(hoodangle, 2) - 0.136261*hoodangle - 0.149612;
             virtualGoal = hubCenter.minus(shooterVelocity.times(flightTime));
 
