@@ -61,7 +61,7 @@ public class IntakeSubsystem extends SubsystemBase {
   private final DigitalInput limit_switch_l;
   private final SysIdRoutine sysID;
   private final LedsSubsystem leds = LedsSubsystem.getInstance();
-  private final double extendedRotations = 18.0; //TUNE on new intake
+  private final double extendedRotations = 18.0; 
   private final double retractedRotations = 0.39;
   public final double burstAgitation = extendedRotations / 2.0;
   // Desired motion timing: target to complete extend/retract in under 1s
@@ -72,9 +72,6 @@ public class IntakeSubsystem extends SubsystemBase {
   private final Timer timer = new Timer();
   private final double resistanceVoltage = 10; // tune
   
-
-  private static final int lowerLimit = 0; // tune
-  private static final int upperLimit = 100; // tune
 
   private final ShuffleboardTab pitTab;
   private final ShuffleboardLayout intakeLayout;
@@ -166,8 +163,6 @@ public class IntakeSubsystem extends SubsystemBase {
       }
       case DETECT_RESISTANCE -> {
         moveIntakeWithPosition(retractedRotations);
-       motor.getPosition().getValue().in(Units.Rotations);
-       final double motorPosition = motor.getPosition().getValue().in(Units.Rotations);
       }
       case DETECTED_RESISTANCE -> {
         moveIntakeWithPosition(extendedRotations);
@@ -372,16 +367,16 @@ public class IntakeSubsystem extends SubsystemBase {
 
       var config = new TalonFXConfiguration();
       config.Slot0.kP = 4;
-    config.Slot0.kS = 0.42; //TUNE on new intake
+    config.Slot0.kS = 0.42; 
     config.Slot0.kI = 0.0;
     config.Slot0.kD = 0.0;
       // config.CurrentLimits.SupplyCurrentLimit = 40.0;
       config.CurrentLimits.StatorCurrentLimit = 45.0;
       config.CurrentLimits.SupplyCurrentLimitEnable = true;
 
-      config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = upperLimit; // TUNE
+      config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = extendedRotations; 
       config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
-      config.SoftwareLimitSwitch. ReverseSoftLimitThreshold = lowerLimit; // Tune
+      config.SoftwareLimitSwitch. ReverseSoftLimitThreshold = retractedRotations; 
       config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
     
       // Configure MotionMagic cruise velocity and acceleration so moves complete
@@ -533,13 +528,10 @@ public class IntakeSubsystem extends SubsystemBase {
         switch(currentState){
 
         case DETECT_RESISTANCE:
-          if(getMotorPosition() > resistanceVoltage){ // tune
-            if (getRollerPosition() < 4.4 ) {    // Tune value
+          if(motor.getStatorCurrent().getValueAsDouble() > 10){ // tune
+            if (getMotorPosition()< extendedRotations - 4.5){ // tune
               setState(IntakeState.DETECTED_RESISTANCE);
             }
-          else{
-            setState(IntakeState.AGITATE_IN);
-          }
           }
         break;
 
