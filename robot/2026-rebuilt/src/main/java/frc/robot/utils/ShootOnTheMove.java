@@ -40,13 +40,19 @@ public class ShootOnTheMove {
 
         // Adjust goal position for motion
         Translation2d virtualGoal = hubCenter;
-        for(int i=0; i<=10; i++){ 
+        for(int i = 0; i <= 10; i++) { 
             double distToGoal = shooterFieldPosition.getDistance(virtualGoal);
                 
             // Used WolframAlpha to fit a formula to empirical measures of time of flight.
             // Raw data: https://docs.google.com/spreadsheets/d/1soxpyImFWBpTkXsz01xsferNdRXlu_cC-2IQG3SakfE
             // Wolfram Code: Fit[{{0, 0, 0}, {1, 0, 1}, {0, 1, 1}, {1, 1, 4}, {2, 0, 4}, {0, 2, 4}, {2, 2, 12}}, {1, x, y, x^2, y^2, x y}, {x, y}]
-            double flightTime = -0.000772833*Math.pow(wheelVelocity, 2) + 0.00465107*wheelVelocity*hoodangle + 0.0621835*wheelVelocity - 0.00218423*Math.pow(hoodangle, 2) - 0.136261*hoodangle - 0.149612;
+            double flightTime = -0.000772833 * Math.pow(wheelVelocity, 2)
+                              + 0.00465107 * wheelVelocity * hoodangle
+                              + 0.0621835 * wheelVelocity
+                              - 0.00218423 * Math.pow(hoodangle, 2)
+                              - 0.136261 * hoodangle
+                              - 0.149612;
+
             double hoodangle = RobotMap.ShooterConstants.kShootingPositionMap.get(distToGoal);
             double wheelVelocity = ShooterConstants.kShootingVelocityMap.get(distToGoal);
 
