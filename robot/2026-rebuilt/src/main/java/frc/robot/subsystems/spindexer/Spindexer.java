@@ -26,13 +26,17 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 import frc.robot.RobotMap.SpindexerConstants;
 import frc.robot.RobotMap.indexingConstants;
+import frc.robot.subsystems.feeder.Feeder;
+import frc.robot.subsystems.feeder.Feeder.feeder_state;
 import frc.robot.utils.DeviceTempReporter;
 import frc.robot.utils.SubsystemStatusManager;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+
 
 
 
@@ -45,7 +49,9 @@ public class Spindexer extends SubsystemBase {
     REVERSE(Volts.of(-5)),
     PREVERSE(Volts.of(-5)),
     PFORWARD(Volts.of(8)),
-    STOP(Volts.of(0));
+    STOP(Volts.of(0)),
+    REVERSE_SHORT(Volts.of(-5));
+    
 
     private final Voltage targetPosition;
 
@@ -57,6 +63,7 @@ public class Spindexer extends SubsystemBase {
       return targetPosition;
     }
   }
+  
 
 
 
@@ -68,6 +75,7 @@ public class Spindexer extends SubsystemBase {
   private final SysIdRoutine m_spindexerSysId;
   //Timer to switch between forward and reverse during indexing
   private Timer washingMachineTimer = new Timer();
+  private Timer reverseTimer = new Timer();
   private final ShuffleboardTab pitTab;
   private final ShuffleboardLayout spindexerLayout;
   private final GenericEntry spindexerConnectedEntry;
@@ -147,6 +155,15 @@ public class Spindexer extends SubsystemBase {
           washingMachineTimer.reset();
         }
         break;
+       case REVERSE_SHORT:
+        reverseTimer.start();
+        if(reverseTimer.hasElapsed(0.1)){
+          setState(spindexer_state.STOP);
+          reverseTimer.stop();
+          reverseTimer.reset();
+        }
+        break;
+      
 
 
       case STOP, PREVERSE:
@@ -206,4 +223,12 @@ public void setState(spindexer_state state)
 public Command setStateCommand(spindexer_state state) {
     return runOnce(() -> setState(state));
 }
+  
+  //    public final Command spindexerAimingMode(double seconds){
+  // return runOnce(() ->{
+  //     setStateCommand(spindexer_state.REVERSE);})
+  //     .withTimeout(seconds);
+  // };
+
 }
+

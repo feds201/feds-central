@@ -1,12 +1,12 @@
 package frc.robot.subsystems.intake;
 import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.fasterxml.jackson.databind.ser.std.StdKeySerializers.Default;
 
-import frc.robot.commands.intake.AgitateWhileHeldTimeCommand;
-import frc.robot.commands.intake.AgitateWhileHeldRotationsCommand;
 import static edu.wpi.first.units.Units.Rotations;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -50,15 +50,18 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+
+
 public class IntakeSubsystem extends SubsystemBase {
 
   private final TalonFX motor;
   private final TalonFX rollerMotor;
+ 
   private final DigitalInput limit_switch_r;
   private final DigitalInput limit_switch_l;
   private final SysIdRoutine sysID;
   private final LedsSubsystem leds = LedsSubsystem.getInstance();
-  private final double extendedRotations = 18.0; //TUNE on new intake
+  private final double extendedRotations = 18.0; 
   private final double retractedRotations = 0.39;
   public final double burstAgitation = extendedRotations / 2.0;
   // Desired motion timing: target to complete extend/retract in under 1s
@@ -67,6 +70,8 @@ public class IntakeSubsystem extends SubsystemBase {
   private static final double MOTION_MAGIC_ACCEL_MULTIPLIER = 40.0;
   private static final double ROLLER_OUTPUT = 0.90; //90% for rollers, 70% originally;
   private final Timer timer = new Timer();
+  private final double resistanceVoltage = 10; // tune
+  
 
   private final ShuffleboardTab pitTab;
   private final ShuffleboardLayout intakeLayout;
@@ -108,7 +113,10 @@ public class IntakeSubsystem extends SubsystemBase {
 
     //State loop 3: Dither Agitation (experimental, may not be used)
     DITHERIN_AGITATION, //Inwards portion of dithering state-loop, intake will toggle between the dithers on a timer when set to one of these states
-    DITHEROUT_AGITATION //Dithering causes the intake to move inwards, then outwards half as much in order to slowly bring in the intake while also agitating
+    DITHEROUT_AGITATION, //Dithering causes the intake to move inwards, then outwards half as much in order to slowly bring in the intake while also agitating
+  
+    DETECT_RESISTANCE,
+    DETECTED_RESISTANCE 
   }
 
   public enum RollerState {
@@ -125,11 +133,17 @@ public class IntakeSubsystem extends SubsystemBase {
   
 
   public void setState(IntakeState targetState) {
+    if (this.currentState != targetState) {
+      timer.stop();
+      timer.reset();
+    }
+
     this.currentState = targetState;
     switch (targetState) {
       case DEFAULT -> {
         moveIntakeWithPosition(retractedRotations);
       }
+      
       case EXTENDED -> {
         moveIntakeWithPosition(extendedRotations);
         setRollerState(RollerState.OFF);
@@ -145,16 +159,26 @@ public class IntakeSubsystem extends SubsystemBase {
       case AGITATE_IN -> {
         moveIntakeWithPosition(retractedRotations);
       }
+
       case AGITATE_OUT -> {
         moveIntakeWithPosition(extendedRotations);
       }
       case CLOSE_AGITATION_OUT -> {
         moveIntakeWithPosition(burstAgitation);
       }
-    }
+      case DETECT_RESISTANCE -> {
+        moveIntakeWithPosition(retractedRotations);
+        setRollerState(RollerState.ON);
+      }
+      case DETECTED_RESISTANCE -> {
+        moveIntakeWithPosition(extendedRotations);
+        setRollerState(RollerState.REVERSE);
+      }
 
+
+  }
     }
-  
+      // Hi Clifford
 
   public Command extendIntake(){
     return Commands.runOnce(() -> setState(IntakeState.EXTENDED));
@@ -192,16 +216,11 @@ public class IntakeSubsystem extends SubsystemBase {
       // }
       this.currentRollerState = desiredState;
     }
-    public void agitateTimed() {
-  
-  
-      for(int i = 0; i < 20; i++){
-        extendIntake().withTimeout(2);
-        retractIntake().withTimeout(2);
-      } 
-            setState(IntakeState.DEFAULT);
-  
-    }
+ 
+    public void retractSlowly(){
+     setMotorVoltage(0.5);
+    moveIntakeWithPosition(0);
+    };
   
     /**
      * Build a non-blocking Command that pulses the intake between EXTENDED and DEFAULT.
@@ -224,26 +243,6 @@ public class IntakeSubsystem extends SubsystemBase {
   // ensure we finish in DEFAULT state
   steps.add(Commands.runOnce(() -> setState(IntakeState.DEFAULT)));
       return Commands.sequence(steps.toArray(new Command[steps.size()]));
-    }
-  
-    /**
-     * Pulse the intake (extend -> run roller -> retract -> pause) repeatedly until the Command
-     * is canceled. Use this with button.whileTrue(...).
-     * This variant uses time durations for each phase.
-     * @param extendSeconds seconds to hold EXTENDED while rollers run
-     * @param retractSeconds seconds to hold DEFAULT between pulses
-     */
-    public Command agitateWhileHeldTime(double extendSeconds, double retractSeconds) {
-      return new AgitateWhileHeldTimeCommand(this, extendSeconds, retractSeconds);
-    }
-  
-    /**
-     * Pulse the intake repeatedly until the Command is canceled. Each extend phase runs the
-     * roller for a target number of rotations before retracting.
-     * @param rotationsPerPulse roller rotations to run during each extend phase
-     */
-    /*public Command agitateWhileHeldRotations(double rotationsPerPulse) {
-      return new AgitateWhileHeldRotationsCommand(this, rotationsPerPulse);
     }
   
     /**
@@ -327,6 +326,9 @@ public class IntakeSubsystem extends SubsystemBase {
     public double getRollerPosition() {
       return rollerMotor.getPosition().getValue().in(Units.Rotations);
     }
+    public double getMotorPosition() {
+      return motor.getPosition().getValue().in(Units.Rotations);
+    }
   
   
     public Command emergencyStop() {
@@ -347,15 +349,17 @@ public class IntakeSubsystem extends SubsystemBase {
     public Command resetIntakeEncoder() {
         return Commands.runOnce(() -> motor.setPosition(0));
       }
-  
-  
-  
-  
+
+
     public IntakeSubsystem() {
       motor = new TalonFX(RobotMap.IntakeSubsystemConstants.kMotorID);
       rollerMotor = new TalonFX(RobotMap.IntakeSubsystemConstants.kRollerMotorID);
       limit_switch_r = new DigitalInput(RobotMap.IntakeSubsystemConstants.kLimit_switch_rID);
       limit_switch_l = new DigitalInput(RobotMap.IntakeSubsystemConstants.kLimit_switch_lID);
+
+    
+
+
 
       var rollerConfig = new TalonFXConfiguration();
     rollerConfig.CurrentLimits.StatorCurrentLimit = 40.0;
@@ -368,14 +372,18 @@ public class IntakeSubsystem extends SubsystemBase {
 
       var config = new TalonFXConfiguration();
       config.Slot0.kP = 4;
-    config.Slot0.kS = 0.42; //TUNE on new intake
+    config.Slot0.kS = 0.42; 
     config.Slot0.kI = 0.0;
     config.Slot0.kD = 0.0;
       // config.CurrentLimits.SupplyCurrentLimit = 40.0;
       config.CurrentLimits.StatorCurrentLimit = 45.0;
       config.CurrentLimits.SupplyCurrentLimitEnable = true;
-  
-  
+
+      config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = extendedRotations; 
+      config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+      config.SoftwareLimitSwitch. ReverseSoftLimitThreshold = retractedRotations; 
+      config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+    
       // Configure MotionMagic cruise velocity and acceleration so moves complete
       // near our desired MOVE_TARGET_SECONDS. Units: motor rotations / sec and
       // rotations / sec^2 respectively.
@@ -422,6 +430,8 @@ public class IntakeSubsystem extends SubsystemBase {
       rollerMotorSim = new DCMotorSim(rollerPlant, DCMotor.getKrakenX60(1));
       limitSwitchRSim = new DIOSim(limit_switch_r);
       limitSwitchLSim = new DIOSim(limit_switch_l);
+
+     
   
       // Default limit switch state (True = Not Pressed for most switches)
       limitSwitchRSim.setValue(true);
@@ -451,8 +461,6 @@ public class IntakeSubsystem extends SubsystemBase {
        }
        if(timer.hasElapsed(IntakeSubsystemConstants.agitateCycleConstant)){
         setState(IntakeState.AGITATE_OUT);
-        timer.stop();
-        timer.reset();
        }
         break;
 
@@ -462,8 +470,6 @@ public class IntakeSubsystem extends SubsystemBase {
        }
         if(timer.hasElapsed(IntakeSubsystemConstants.agitateCycleConstant)){
         setState(IntakeState.AGITATE_IN);
-        timer.stop();
-        timer.reset();
       }
       break;
 
@@ -473,8 +479,6 @@ public class IntakeSubsystem extends SubsystemBase {
           }
           if(timer.hasElapsed(0.2)){
             setState(IntakeState.CLOSE_AGITATION_IN); // really close to default
-            timer.stop();
-            timer.reset();
           }
           break;
 
@@ -485,8 +489,6 @@ public class IntakeSubsystem extends SubsystemBase {
 
           if(timer.hasElapsed(0.2)){
             setState(IntakeState.CLOSE_AGITATION_OUT); // about halfway from bumper to extended
-            timer.stop();
-            timer.reset();
         }
           break;
 
@@ -498,8 +500,6 @@ public class IntakeSubsystem extends SubsystemBase {
 
         if(timer.hasElapsed(0.3)){
             setState(IntakeState.DITHEROUT_AGITATION);
-            timer.stop();
-            timer.reset();
         }
           break;
 
@@ -511,14 +511,33 @@ public class IntakeSubsystem extends SubsystemBase {
 
         if(timer.hasElapsed(0.1)){
             setState(IntakeState.DITHERIN_AGITATION); // small retract from extended
-            timer.stop();
-            timer.reset();
-         
-
         }
          break;
       }
+    
 
+        switch(currentState){
+
+        case DETECT_RESISTANCE:
+          if(motor.getStatorCurrent().getValueAsDouble() > 10){ // tune
+            if (getMotorPosition()< 12.5){ // tune
+              setState(IntakeState.DETECTED_RESISTANCE);
+            }
+            else {
+              setState(IntakeState.AGITATE_IN);
+            }
+          }
+        break;
+
+        case DETECTED_RESISTANCE:
+          if (!timer.isRunning()) {
+            timer.start();
+          }
+          if(timer.hasElapsed(0.5)){
+            setState(IntakeState.DETECT_RESISTANCE);
+          }
+        break;
+      }
     switch (currentRollerState) {
       case ON:
         rollerMotor.set(ROLLER_OUTPUT);
@@ -613,4 +632,5 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
 }
+
 
