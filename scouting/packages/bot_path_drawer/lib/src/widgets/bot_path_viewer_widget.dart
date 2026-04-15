@@ -62,10 +62,7 @@ class BotPathViewer extends StatefulWidget {
     required this.config,
     this.pathData,
     this.paths,
-  }) : assert(
-          pathData != null || paths != null,
-          'Either pathData or paths must be provided',
-        );
+  });
 
   @override
   State<BotPathViewer> createState() => _BotPathViewerState();
@@ -211,7 +208,6 @@ class _BotPathViewerState extends State<BotPathViewer>
   /// Called on each animation frame during playback.
   void _onPlaybackTick() {
     final t = _playbackController.value;
-    final baseDuration = _baseDurationMs;
 
     var changed = false;
 
@@ -220,10 +216,8 @@ class _BotPathViewerState extends State<BotPathViewer>
       if (data == null || data.curves.isEmpty) continue;
 
       final pathDuration = data.timestamps.last;
-      // Map the global animation t to this path's local progress
-      final pathT = baseDuration > 0
-          ? (t * baseDuration / pathDuration).clamp(0.0, 1.0)
-          : 1.0;
+      // Every path is normalized to the full animation duration
+      final pathT = t;
 
       if (pathT >= 1.0) {
         // This path has finished — park robot at end
@@ -512,6 +506,8 @@ class _BotPathViewerState extends State<BotPathViewer>
                                       _scaledPlaybackPos(i, canvasSize),
                                   playbackRobotRot: _playbackRotations[i],
                                   showHighlight: false,
+                                  alliance: _effectivePaths[i].alliance,
+                                  mirrored: _effectivePaths[i].mirrored,
                                 ),
                               ),
                             ),

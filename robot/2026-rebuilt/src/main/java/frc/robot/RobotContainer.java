@@ -159,8 +159,7 @@ public class RobotContainer extends ControllerBindings {
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
     //Adds a mirrored-to-the-right version of the LeftMidfieldDoublePass path
-    autoChooser.addOption("Comp-LeftMidfieldDoublePass", new PathPlannerAuto("Comp-RightMidfieldDoublepass", true)); 
-    autoChooser.addOption("Dev-MidIntakeToRightBump", new PathPlannerAuto("Comp-MidIntakeToLeftBump", true)); //TESTING - DO NOT USE
+    autoChooser.addOption("LeftMidfieldDoublePass", new PathPlannerAuto("RightMidfieldDoublePass", true)); 
     drivetrain.registerTelemetry(telemetry::telemeterize);
   }
   
