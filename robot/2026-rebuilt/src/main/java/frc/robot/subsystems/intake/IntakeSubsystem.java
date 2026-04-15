@@ -50,6 +50,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+
 public class IntakeSubsystem extends SubsystemBase {
 
   private final TalonFX motor;
@@ -57,7 +58,6 @@ public class IntakeSubsystem extends SubsystemBase {
   private final DigitalInput limit_switch_r;
   private final DigitalInput limit_switch_l;
   private final SysIdRoutine sysID;
-  private final LedsSubsystem leds = LedsSubsystem.getInstance();
   private final double extendedRotations = 18.0; //TUNE on new intake
   private final double retractedRotations = 0.39;
   public final double burstAgitation = extendedRotations / 2.0;

@@ -24,15 +24,6 @@ public class LedsSubsystem extends SubsystemBase {
   public static shooter_state m_shooterstate = shooter_state.IDLE;
   public static driveMode m_driveMode = driveMode.NORMALDRIVE;
 
-
-  public static LedsSubsystem getInstance() {
-    if (instance == null) {
-      instance = new LedsSubsystem();
-
-    }
-    return instance;
-  }
-
   public enum RobotLEDState {
     IDLE, // Handles Disabled/Auto/Teleop colors
     SHOOTING, // Shooting should be blue coment kinda fast
