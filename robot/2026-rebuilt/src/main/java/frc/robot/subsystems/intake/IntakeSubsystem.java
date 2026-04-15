@@ -122,7 +122,9 @@ public class IntakeSubsystem extends SubsystemBase {
   private IntakeState currentState = IntakeState.DEFAULT;
   private RollerState currentRollerState = RollerState.OFF;
  
-  
+  public IntakeState getCurrentState() {
+    return currentState;
+  }
 
   public void setState(IntakeState targetState) {
     this.currentState = targetState;
