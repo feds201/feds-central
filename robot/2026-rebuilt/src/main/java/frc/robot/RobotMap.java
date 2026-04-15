@@ -168,36 +168,47 @@ public final class RobotMap {
         // This map is used to determine the velocity of the shooter based on the distance to the target. 
         //The key is the distance to the target in meters, and the value is the velocity of the shooter in rotations per second.`
         public static final InterpolatingDoubleTreeMap kShootingVelocityMap = InterpolatingDoubleTreeMap.ofEntries(
-            Map.entry(1.44, 26.5),//done
-            Map.entry(1.7, 26.5),//done
-            Map.entry(2.01, 27.5),//done
-            Map.entry(2.56, 29.5),//done
-            Map.entry(2.89, 29.5),//done
-             Map.entry(3.08, 31.5),//done --- AUTON SHOOTING POSITION
-            Map.entry(3.37, 33.5),
-            Map.entry(3.97,34.5), //done
-            Map.entry(4.75, 37.5),//done
-            Map.entry(100.0, 40.0)//far off top limit to prevent unwanted scaling past this distance 
+            Map.entry(1.44, 28.0),//done 
+            Map.entry(1.7, 28.0),//done 
+            Map.entry(2.01, 28.0),//done
+            Map.entry(2.56, 30.0),//done
+            Map.entry(2.89, 31.0),//done
+             Map.entry(3.08, 33.5),//done 
+            Map.entry(3.37, 34.5),//done
+            Map.entry(3.97,38.0), //done 
+            Map.entry(4.75, 39.5),//done
+            Map.entry(5.36, 40.0), // done
+            Map.entry(6.02, 42.0),//done 
+            Map.entry(6.85,43.0), // Done
+            Map.entry(7.6, 45.5), // done   
+            Map.entry(100.0, 45.5)//far off top limit to prevent unwanted scaling past this distance 
         );
 
         public static final InterpolatingDoubleTreeMap kShootingPositionMap = InterpolatingDoubleTreeMap.ofEntries(
             Map.entry(1.44, 0.0),//done
             Map.entry(1.77, 0.0),//done
-            Map.entry(2.01, 3.8),//done
-            Map.entry(2.56, 8.8),//done
-            Map.entry(2.89, 8.8),//done
-             Map.entry(3.08, 7.3),// -- AUTON SHOOTING POSITION
-            Map.entry(3.37, 7.4),
-            Map.entry(3.97,7.3),//done
-            Map.entry(4.75, 8.3), //done
-            Map.entry(100.0, 9.8) //far off top limit to prevent unwanted scaling past this distance 
+            Map.entry(2.01, 3.8),//done 
+            Map.entry(2.56, 9.0),//done 
+            Map.entry(2.89, 9.0),//done
+            Map.entry(3.08, 8.0),//done
+            Map.entry(3.37, 8.0),//done
+            Map.entry(3.97,10.0),//done
+            Map.entry(4.75, 14.0),//done
+            Map.entry(5.36,15.0), // done
+            Map.entry(6.02, 22.0), //done 
+            Map.entry(6.85, 25.0), // done
+            Map.entry(7.6, 29.0), // done
+            Map.entry(100.0, 29.0) //far off top limit to prevent unwanted scaling past this distance 
         );
 
         public static final InterpolatingDoubleTreeMap kPassingVelocityMap = InterpolatingDoubleTreeMap.ofEntries(
            Map.entry(5.07, 26.0),
            Map.entry(6.5, 30.0),
            Map.entry(8.53, 35.0),
-           Map.entry(11.12, 44.0)
+           Map.entry(11.12, 44.0),
+           Map.entry(13.0,75.0),
+           Map.entry(14.0, 80.0)
+
         );
 
 
@@ -205,19 +216,24 @@ public final class RobotMap {
             Map.entry(5.07, 29.0),
             Map.entry(6.5,29.0),
             Map.entry(8.53, 29.0),
-            Map.entry(11.12, 29.0)
+            Map.entry(11.12, 29.0),
+            Map.entry(13.0,30.0),
+            Map.entry(14.0, 30.0)
         );
 
          
 
         public static final InterpolatingDoubleTreeMap kFlightTimeMap =
         InterpolatingDoubleTreeMap.ofEntries(
-            Map.entry(1.5, .87),
-            Map.entry(2.0, 0.93),
-            Map.entry(2.5, 1.03),
-            Map.entry(3.0, 1.09),
-            Map.entry(3.5, 1.27),
-            Map.entry(4.0, 1.8)
+            Map.entry(1.44, (8.2-7.21)),
+            Map.entry(2.11, (2.2-1.25)),
+            Map.entry(2.24, (19.75-18.79)),
+            Map.entry(2.96, (18.91-17.84)),
+            Map.entry(3.39, (4.15-3.34)),
+            Map.entry(4.07, (7.01-5.69)),
+            Map.entry(4.6, (13.03-11.59)),
+            Map.entry(5.23, (1.42-0.07)),
+            Map.entry(7.6, 1.43)
         );
 
         
