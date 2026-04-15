@@ -522,7 +522,6 @@ public class IntakeSubsystem extends SubsystemBase {
     switch (currentRollerState) {
       case ON:
         rollerMotor.set(ROLLER_OUTPUT);
-        leds.intakeSignal();
         break;
       case REVERSE:
         rollerMotor.set(-ROLLER_OUTPUT);

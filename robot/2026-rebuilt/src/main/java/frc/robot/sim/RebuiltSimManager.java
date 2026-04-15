@@ -40,6 +40,7 @@ import frc.robot.subsystems.spindexer.Spindexer;
 import frc.robot.subsystems.spindexer.Spindexer.spindexer_state;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
+import frc.robot.subsystems.led.LedsSubsystem;
 import frc.sim.chassis.ChassisConfig;
 import frc.sim.chassis.ChassisSimulation;
 import frc.sim.core.PhysicsWorld;
@@ -191,6 +192,7 @@ public class RebuiltSimManager {
     private final ScoringTracker scoringTracker;
     private final GroundClearance groundClearance;
     private final SimTelemetry telemetry;
+    private final LedsSim ledsSim;
 
     // MapleSim swerve simulation
     private final SwerveDriveSimulation mapleSimDrive;
@@ -203,6 +205,7 @@ public class RebuiltSimManager {
     private final ShooterWheels shooterWheels;
     private final ShooterHood shooterHood;
     private final Spindexer spindexer;
+    private final LedsSubsystem ledsSubsystem;
 
     // CTRE sim state (for gyro only — MapleSim handles motor/encoder sim state)
     private final Pigeon2SimState pigeonSimState;
@@ -229,17 +232,19 @@ public class RebuiltSimManager {
      * @param shooterWheels   the shooter wheels subsystem (flywheel state)
      * @param shooterHood     the shooter hood subsystem (aiming state)
      * @param spindexer       the spindexer subsystem (run/stop state)
+     * @param ledsSubsystem   the LED subsystem (for simulating LED states)
      */
         public RebuiltSimManager(CommandSwerveDrivetrain drivetrain,
                                                          IntakeSubsystem intakeSubsystem, Feeder feeder,
                              ShooterWheels shooterWheels, ShooterHood shooterHood,
-                             Spindexer spindexer) {
+                             Spindexer spindexer, LedsSubsystem ledsSubsystem) {
         this.drivetrain = drivetrain;
         this.intakeSubsystem = intakeSubsystem;
         this.feeder = feeder;
         this.shooterWheels = shooterWheels;
         this.shooterHood = shooterHood;
         this.spindexer = spindexer;
+        this.ledsSubsystem = ledsSubsystem;
 
         // --- MapleSim timing ---
         // Use AddRampCollider=false so MapleSim only blocks on the hub (47x47),
@@ -354,6 +359,8 @@ public class RebuiltSimManager {
         scoringTracker = new ScoringTracker();
         groundClearance = new GroundClearance(chassis.getBody(), chassisConfig.getBumperHeight());
         telemetry = new SimTelemetry(chassis);
+        Logger.recordOutput("Sim/State", "Loading LEDs");
+        ledsSim = new LedsSim(ledsSubsystem.m_leds);
 
         // --- Vision sim (writes true pose to NT in Limelight format) ---
         Logger.recordOutput("Sim/State", "Loading vision");
@@ -478,6 +485,9 @@ public class RebuiltSimManager {
 
         // 12. Update shooter
         shooterSim.update(DT);
+
+        // 12b. Update LEDs
+        ledsSim.update(DT);
 
         // 13. Update animation accumulators
                 if (intakeSubsystem.getRollerState() == RollerState.ON) {
