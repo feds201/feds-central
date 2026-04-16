@@ -437,7 +437,7 @@ class Recording {
         eventKey: json['eventKey'] as String? ?? '',
         matchKey: json['matchKey'] as String? ?? '',
         allianceSide: json['allianceSide'] as String? ?? '',
-        fileExtension: json['fileExtension'] as String? ?? '.mp4',
+        fileExtension: json['fileExtension'] as String? ?? '',
         recordingStartTime: json['recordingStartTime'] != null
             ? DateTime.parse(json['recordingStartTime'] as String)
             : null,

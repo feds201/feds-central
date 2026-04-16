@@ -45,7 +45,6 @@ class VideoMetadata {
   final DateTime? recordingStartTime;
 
   /// File extension extracted from the original filename (e.g. ".mp4", ".mov").
-  /// Defaults to ".mp4" if the filename has no extension.
   final String fileExtension;
 
   const VideoMetadata._({
@@ -87,7 +86,7 @@ class VideoMetadata {
     // 1. Extract file extension
     final dotIndex = originalFilename.lastIndexOf('.');
     final fileExtension = dotIndex < 0
-        ? '.mp4'
+        ? ''
         : originalFilename.substring(dotIndex).toLowerCase();
 
     // 2. Determine iOS vs Android
@@ -222,7 +221,7 @@ Duration? _parseSamsungUtcOffset(String offset) {
 
 /// Service for extracting video metadata.
 /// On Android: uses platform channel with MediaMetadataRetriever + ftyp header reading.
-/// Falls back to synthetic estimation when the platform channel is unavailable (e.g. tests).
+/// Returns null-filled metadata when the platform channel is unavailable.
 class VideoMetadataService {
   static const _channel = MethodChannel('com.feds201.match_record/native');
 
@@ -243,7 +242,12 @@ class VideoMetadataService {
     } catch (_) {
       // Any other error
     }
-    return _generateSyntheticMetadata(file);
+    // No fake data — return only what we actually know from the DriveFile.
+    return VideoMetadata(
+      sourceUri: file.uri,
+      originalFilename: file.name,
+      fileSize: file.sizeBytes,
+    );
   }
 
   /// Batch extraction. Returns list in same order as input.
@@ -276,7 +280,9 @@ class VideoMetadataService {
       orientation: (result['orientation'] as num?)?.toInt(),
       framerate: (result['framerate'] as num?)?.toDouble(),
       ftypBrand: result['ftypBrand'] as String?,
-      fileSize: (result['fileSize'] as num?)?.toInt() ?? file.sizeBytes,
+      fileSize: (result['fileSize'] as num?)?.toInt(),
+      hasAppleQuicktimeCreationDate: result['hasAppleQuicktimeCreationDate'] as bool? ?? false,
+      samsungUtcOffset: result['samsungUtcOffset'] as String?,
     );
   }
 
@@ -319,49 +325,5 @@ class VideoMetadataService {
     if (parsed != null) return parsed.toUtc();
 
     return null;
-  }
-
-  /// Fallback: generate synthetic metadata from filename and file size.
-  /// Used when platform channel is unavailable (desktop/tests).
-  /// Passes raw/estimated data to the VideoMetadata factory, which handles
-  /// all filename-dependent inference (iOS detection, start time, extension).
-  VideoMetadata _generateSyntheticMetadata(DriveFile file) {
-    final durationMs = _estimateDuration(file);
-    final date = _syntheticDate(file, durationMs);
-
-    return VideoMetadata(
-      sourceUri: file.uri,
-      originalFilename: file.name,
-      durationMs: durationMs,
-      date: date,
-      width: 1920,
-      height: 1080,
-      orientation: 0,
-      framerate: 30.0,
-      fileSize: file.sizeBytes,
-    );
-  }
-
-  /// Estimate duration from file size (~200KB/s for compressed video).
-  int _estimateDuration(DriveFile file) {
-    final seconds = (file.sizeBytes / (200 * 1024)).round();
-    return (seconds.clamp(10, 120)) * 1000;
-  }
-
-  /// Build a synthetic creation_time for the VideoMetadata factory.
-  /// For Android filenames with parseable timestamps, constructs an end-time
-  /// (start + duration) so the factory's start-time logic can work backwards.
-  /// For iOS (.mov) files, uses lastModified as the creation_time (= start).
-  DateTime? _syntheticDate(DriveFile file, int durationMs) {
-    // For non-.mov files, try to parse a start time from the filename and
-    // convert to an end-time (creation_time) by adding duration.
-    if (!file.name.toLowerCase().endsWith('.mov')) {
-      final startTime = parseRecordingStartFromFilename(file.name);
-      if (startTime != null) {
-        return startTime.add(Duration(milliseconds: durationMs));
-      }
-    }
-
-    return file.lastModified;
   }
 }

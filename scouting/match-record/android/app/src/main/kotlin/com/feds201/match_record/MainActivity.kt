@@ -109,12 +109,118 @@ class MainActivity : FlutterActivity() {
             metadata["fileSize"] = File(filePath).length()
         } catch (_: Exception) {}
 
-        // DO NOT SUBMIT — uncomment to force null metadata for testing nullable fields
-        // metadata.remove("date")
-        // metadata.remove("durationMs")
-        // metadata.remove("fileSize")
+        // Custom MP4/MOV metadata tags (requires parsing moov/udta atoms)
+        val customTags = readCustomMetadataTags(filePath)
+        metadata["hasAppleQuicktimeCreationDate"] = customTags.containsKey("com.apple.quicktime.creationdate")
+        metadata["samsungUtcOffset"] = customTags["com.samsung.android.utc_offset"]
 
         return metadata
+    }
+
+    /// Read custom metadata tags from MP4/MOV moov/udta/meta atoms.
+    /// Looks for: com.apple.quicktime.creationdate, com.samsung.android.utc_offset.
+    /// These are stored in the mdta-based metadata (ilst inside meta inside udta inside moov).
+    /// Returns a map of tag name -> string value for any found tags.
+    private fun readCustomMetadataTags(filePath: String): Map<String, String> {
+        val tags = mutableMapOf<String, String>()
+        val targetTags = setOf("com.apple.quicktime.creationdate", "com.samsung.android.utc_offset")
+
+        try {
+            val raf = RandomAccessFile(filePath, "r")
+            raf.use {
+                // Find moov box at top level
+                val moovOffset = findBox(raf, 0, raf.length(), "moov") ?: return tags
+                val moovSize = readBoxSize(raf, moovOffset)
+
+                // Find udta inside moov
+                val udtaOffset = findBox(raf, moovOffset + 8, moovOffset + moovSize, "udta") ?: return tags
+                val udtaSize = readBoxSize(raf, udtaOffset)
+
+                // Find meta inside udta
+                val metaOffset = findBox(raf, udtaOffset + 8, udtaOffset + udtaSize, "meta") ?: return tags
+                val metaSize = readBoxSize(raf, metaOffset)
+
+                // meta box has a 4-byte version/flags field after the header
+                val metaDataStart = metaOffset + 12
+
+                // Find keys box inside meta
+                val keysOffset = findBox(raf, metaDataStart, metaOffset + metaSize, "keys") ?: return tags
+                val keysSize = readBoxSize(raf, keysOffset)
+
+                // Parse keys: 4 bytes version/flags, 4 bytes entry_count, then entries
+                raf.seek(keysOffset + 8) // skip box header
+                raf.skipBytes(4) // version/flags
+                val entryCount = raf.readInt()
+
+                val keyNames = mutableListOf<String>()
+                for (i in 0 until entryCount) {
+                    val keySize = raf.readInt()
+                    raf.skipBytes(4) // key namespace (4 bytes, e.g. "mdta")
+                    val nameBytes = ByteArray(keySize - 8)
+                    raf.readFully(nameBytes)
+                    keyNames.add(String(nameBytes, Charsets.UTF_8))
+                }
+
+                // Find ilst inside meta
+                val ilstOffset = findBox(raf, metaDataStart, metaOffset + metaSize, "ilst") ?: return tags
+                val ilstSize = readBoxSize(raf, ilstOffset)
+
+                // Parse ilst entries: each is a box with a 1-based key index as the box type
+                var pos = ilstOffset + 8
+                val ilstEnd = ilstOffset + ilstSize
+                while (pos < ilstEnd) {
+                    val itemSize = readBoxSize(raf, pos)
+                    if (itemSize < 8) break
+
+                    // The box type is a big-endian int representing the 1-based key index
+                    raf.seek(pos + 4)
+                    val keyIndex = raf.readInt() - 1 // convert to 0-based
+
+                    if (keyIndex in keyNames.indices && keyNames[keyIndex] in targetTags) {
+                        // Find data box inside this item
+                        val dataOffset = findBox(raf, pos + 8, pos + itemSize, "data")
+                        if (dataOffset != null) {
+                            val dataSize = readBoxSize(raf, dataOffset)
+                            // data box: 8 byte header + 4 byte type + 4 byte locale = 16 byte overhead
+                            if (dataSize > 16) {
+                                raf.seek(dataOffset + 16)
+                                val valueBytes = ByteArray((dataSize - 16).toInt())
+                                raf.readFully(valueBytes)
+                                tags[keyNames[keyIndex]] = String(valueBytes, Charsets.UTF_8)
+                            }
+                        }
+                    }
+
+                    pos += itemSize
+                }
+            }
+        } catch (_: Exception) {}
+        return tags
+    }
+
+    /// Find a box with the given 4-char type within [start, end) range.
+    /// Returns the offset of the box, or null if not found.
+    private fun findBox(raf: RandomAccessFile, start: Long, end: Long, type: String): Long? {
+        var pos = start
+        val typeBytes = type.toByteArray(Charsets.US_ASCII)
+        while (pos < end - 8) {
+            val size = readBoxSize(raf, pos)
+            if (size < 8) return null
+
+            raf.seek(pos + 4)
+            val boxType = ByteArray(4)
+            raf.readFully(boxType)
+
+            if (boxType.contentEquals(typeBytes)) return pos
+            pos += size
+        }
+        return null
+    }
+
+    /// Read the 32-bit box size at the given offset.
+    private fun readBoxSize(raf: RandomAccessFile, offset: Long): Long {
+        raf.seek(offset)
+        return raf.readInt().toLong() and 0xFFFFFFFFL
     }
 
     /// Read the ftyp major brand from an MP4/MOV file header.

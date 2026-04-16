@@ -306,7 +306,7 @@ void main() {
     test('fromJson with missing fields uses defaults', () {
       final recording = Recording.fromJson({});
       expect(recording.id, '');
-      expect(recording.fileExtension, '.mp4');
+      expect(recording.fileExtension, '');
       expect(recording.durationMs, isNull);
       expect(recording.fileSizeBytes, isNull);
       expect(recording.team1, 0);

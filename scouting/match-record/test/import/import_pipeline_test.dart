@@ -21,6 +21,36 @@ class FakeJsonPersistence implements JsonPersistence {
   }
 }
 
+/// Fake metadata service for tests.
+/// Constructs VideoMetadata via the real factory constructor using values
+/// from the DriveFile. No synthetic/estimated data — uses the same inference
+/// the factory constructor provides (extension, iOS detection, start time).
+///
+/// [durationOverrides] maps filename -> durationMs for tests that need
+/// specific durations (e.g. short video auto-skip tests).
+class FakeVideoMetadataService extends VideoMetadataService {
+  final Map<String, int> durationOverrides;
+
+  FakeVideoMetadataService({this.durationOverrides = const {}});
+
+  @override
+  Future<VideoMetadata> getMetadata(DriveFile file) async {
+    final ext = file.name.contains('.')
+        ? '.${file.name.split('.').last}'.toLowerCase()
+        : '';
+    final isIOS = ext == '.mov';
+    final durationMs = durationOverrides[file.name] ?? 150000;
+    return VideoMetadata(
+      sourceUri: file.uri,
+      originalFilename: file.name,
+      durationMs: durationMs,
+      date: file.lastModified,
+      fileSize: file.sizeBytes,
+      ftypBrand: isIOS ? 'qt  ' : 'isom',
+    );
+  }
+}
+
 /// Fake drive access for tests
 class FakeDriveAccess implements DriveAccess {
   final List<DriveFile> files;
@@ -126,7 +156,7 @@ void main() {
       ),
     ]);
 
-    metadataService = VideoMetadataService();
+    metadataService = FakeVideoMetadataService();
   });
 
   group('ImportPipeline.scanDrive', () {
@@ -205,15 +235,19 @@ void main() {
           DriveFile(
             uri: 'test://drive/short.MOV',
             name: 'short.MOV',
-            sizeBytes: 500000, // ~500KB -> very short duration
+            sizeBytes: 500000,
             lastModified: baseTime,
           ),
         ],
       );
 
+      final shortMetadataService = FakeVideoMetadataService(
+        durationOverrides: {'short.MOV': 5000}, // 5 seconds — under 30s threshold
+      );
+
       pipeline = ImportPipeline(
         driveAccess: driveAccess,
-        metadataService: metadataService,
+        metadataService: shortMetadataService,
         dataStore: dataStore,
         storageDir: '/tmp/test_storage',
       );
@@ -221,17 +255,17 @@ void main() {
       final result = await pipeline.scanDrive('test://drive');
       final state = (result as Ok<ImportSessionState>).value;
 
-      // The duration will be estimated from file size
-      // 500000 / (200 * 1024) ~= 2.4 seconds -> way under 30s threshold
       expect(state.rows.first.isAutoSkipped, isTrue);
       expect(state.rows.first.isSelected, isFalse);
     });
 
     test('previously skipped videos are auto-skipped', () async {
-      // First, mark a video identity as skipped
+      // Mark a video identity as skipped (must match what FakeVideoMetadataService produces)
+      // FakeVideoMetadataService returns durationMs=150000 and for .MOV (iOS),
+      // recordingStartTime = date = lastModified = baseTime.
       final identity = VideoIdentity(
         recordingStartTime: baseTime,
-        durationMs: 82000, // 16MB / (200KB/s) ~= 80s -> clamped to 82s estimated
+        durationMs: 150000,
         fileSizeBytes: 16000000,
       );
       await dataStore.markAsSkipped(identity, 'user_unchecked');
@@ -257,11 +291,9 @@ void main() {
       final result = await pipeline.scanDrive('test://drive');
       final state = (result as Ok<ImportSessionState>).value;
 
-      // Check if the row is auto-skipped. The exact behavior depends on whether
-      // the synthetic metadata generates a matching identity. If the metadata
-      // service generates different values, the skip check may not match.
-      // This test verifies the skip-checking logic exists and runs.
       expect(state.rows.length, 1);
+      expect(state.rows.first.isAutoSkipped, isTrue);
+      expect(state.rows.first.autoSkipReason, 'This video was skipped before');
     });
   });
 
