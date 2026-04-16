@@ -1,9 +1,14 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 import '../models/bot_path_config.dart';
 import '../models/bot_viewer_path.dart';
 import '../models/team_paths.dart';
 import 'bot_path_viewer_widget.dart';
+
+/// Width threshold below which the sidebar floats over the viewer.
+const _compactBreakpoint = 600.0;
 
 /// Hard-coded base team colors (fully saturated).
 ///
@@ -441,51 +446,62 @@ class _BotPathViewerWithSelectorState
                   top: 4,
                   left: 4,
                   child: IconButton(
-                    icon: const Icon(Icons.chevron_left, size: 20),
+                    icon: const Icon(Icons.chevron_right, size: 20),
                     onPressed: () =>
-                        setState(() => _sidebarVisible = false),
-                    tooltip: 'Hide sidebar',
+                        setState(() => _sidebarVisible = true),
+                    tooltip: 'Show sidebar',
                   ),
                 ),
-                // Team list
-                Expanded(
-                  child: ListView(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    children: [
-                      for (var i = 0;
-                          i < widget.teams.length;
-                          i++)
-                        _buildTeamSection(
-                          widget.teams.keys.elementAt(i),
-                          i,
-                          theme,
-                          isDark,
-                        ),
-                    ],
+              // Scrim + floating sidebar
+              if (sidebarVisible) ...[
+                Positioned.fill(
+                  child: GestureDetector(
+                    onTap: () =>
+                        setState(() => _sidebarVisible = false),
+                    child: ColoredBox(
+                      color: Colors.black54,
+                    ),
+                  ),
+                ),
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  bottom: 0,
+                  child: Material(
+                    elevation: 8,
+                    color: theme.colorScheme.surface,
+                    child: _buildSidebarContent(
+                      sidebarWidth,
+                      theme,
+                      isDark,
+                    ),
                   ),
                 ),
               ],
-            ),
-          ),
-        // Expand button when sidebar is hidden
-        if (!_sidebarVisible)
-          Padding(
-            padding: const EdgeInsets.only(left: 4),
-            child: IconButton(
-              icon: const Icon(Icons.chevron_right, size: 20),
-              onPressed: () =>
-                  setState(() => _sidebarVisible = true),
-              tooltip: 'Show sidebar',
-            ),
-          ),
-        // Viewer
-        Expanded(
-          child: BotPathViewer(
-            config: widget.config,
-            paths: viewerPaths,
-          ),
-        ),
-      ],
+            ],
+          );
+        }
+
+        // Wide: inline sidebar in a Row.
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (sidebarVisible)
+              _buildSidebarContent(220, theme, isDark),
+            if (!sidebarVisible)
+              Padding(
+                padding: const EdgeInsets.only(left: 4),
+                child: IconButton(
+                  icon: const Icon(Icons.chevron_right, size: 20),
+                  onPressed: () =>
+                      setState(() => _sidebarVisible = true),
+                  tooltip: 'Show sidebar',
+                ),
+              ),
+            Expanded(child: viewer),
+          ],
+        );
+      },
     );
   }
 
