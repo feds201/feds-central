@@ -70,7 +70,7 @@ void main() {
       expect(find.byIcon(Icons.edit), findsOneWidget);
     });
 
-    testWidgets('fires onDrawStart on pointer down and onDrawEnd on pointer up', (tester) async {
+    testWidgets('fires onDrawStart on long press and onDrawEnd on release', (tester) async {
       var startCalled = false;
       var endCalled = false;
       await tester.pumpWidget(wrapInApp(buildSidebar(
@@ -78,11 +78,11 @@ void main() {
         onDrawEnd: () => endCalled = true,
       )));
 
-      // A full tap triggers both onTapDown and onTapUp
-      await tester.tap(find.byIcon(Icons.edit_off));
+      // Long press triggers onLongPressStart / onLongPressEnd
+      await tester.longPress(find.byIcon(Icons.edit_off));
       await tester.pump();
-      expect(startCalled, isTrue, reason: 'onDrawStart should fire on tap down');
-      expect(endCalled, isTrue, reason: 'onDrawEnd should fire on tap up');
+      expect(startCalled, isTrue, reason: 'onDrawStart should fire on long press');
+      expect(endCalled, isTrue, reason: 'onDrawEnd should fire on long press release');
     });
 
     testWidgets('draw button is always enabled regardless of play state', (tester) async {
@@ -92,7 +92,7 @@ void main() {
         onDrawStart: () => startCalled = true,
       )));
 
-      await tester.tap(find.byIcon(Icons.edit_off));
+      await tester.longPress(find.byIcon(Icons.edit_off));
       await tester.pump();
       expect(startCalled, isTrue, reason: 'Draw button should work while playing');
     });

@@ -251,7 +251,7 @@ class _VideoViewerState extends State<VideoViewer> {
           if (mounted) {
             setState(() {
               _isPlaying = playing;
-              _drawingController.setOpacity(playing ? 0.4 : 1.0);
+              _updateDrawingOpacity();
             });
           }
         }),
@@ -582,10 +582,16 @@ class _VideoViewerState extends State<VideoViewer> {
   void _onDrawStart() {
     setState(() => _drawButtonHeld = true);
     _drawingController.setColor(DrawingColor.red);
+    _updateDrawingOpacity();
   }
 
   void _onDrawEnd() {
     setState(() => _drawButtonHeld = false);
+    _updateDrawingOpacity();
+  }
+
+  void _updateDrawingOpacity() {
+    _drawingController.setOpacity((_isPlaying && !_drawButtonHeld) ? 0.4 : 1.0);
   }
 
   // --- Rotation ---
@@ -856,6 +862,14 @@ class _VideoViewerState extends State<VideoViewer> {
               onRestart: _restart,
               onDrawStart: _onDrawStart,
               onDrawEnd: _onDrawEnd,
+              onDrawTap: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Hold the draw button and draw with your other hand'),
+                    duration: Duration(seconds: 2),
+                  ),
+                );
+              },
               onUndo: _drawingController.undo,
               onRedo: _drawingController.redo,
               onClearDrawing: _drawingController.clear,

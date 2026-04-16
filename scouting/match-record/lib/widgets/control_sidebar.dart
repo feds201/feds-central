@@ -35,6 +35,7 @@ class ControlSidebar extends StatelessWidget {
   final VoidCallback onRestart;
   final VoidCallback onDrawStart;
   final VoidCallback onDrawEnd;
+  final VoidCallback? onDrawTap;
   final VoidCallback onUndo;
   final VoidCallback onRedo;
   final VoidCallback onClearDrawing;
@@ -59,6 +60,7 @@ class ControlSidebar extends StatelessWidget {
     required this.onRestart,
     required this.onDrawStart,
     required this.onDrawEnd,
+    this.onDrawTap,
     required this.onUndo,
     required this.onRedo,
     required this.onClearDrawing,
@@ -441,6 +443,7 @@ class ControlSidebar extends StatelessWidget {
 
   Widget _buildDrawItem() {
     // Hold-to-draw: button is always enabled, shows active state when held.
+    // Quick tap triggers onDrawTap (snackbar hint).
     final icon = isDrawing ? Icons.edit : Icons.edit_off;
     const label = 'Draw';
     final color = isDrawing ? AppColors.redAlliance : Colors.white;
@@ -449,9 +452,11 @@ class ControlSidebar extends StatelessWidget {
       return Tooltip(
         message: label,
         child: GestureDetector(
-          onTapDown: (_) => onDrawStart(),
-          onTapUp: (_) => onDrawEnd(),
-          onTapCancel: onDrawEnd,
+          behavior: HitTestBehavior.opaque,
+          onTap: onDrawTap,
+          onLongPressStart: (_) => onDrawStart(),
+          onLongPressEnd: (_) => onDrawEnd(),
+          onLongPressCancel: onDrawEnd,
           child: Center(
             child: Icon(icon, color: color, size: 28),
           ),
@@ -460,9 +465,11 @@ class ControlSidebar extends StatelessWidget {
     }
 
     return GestureDetector(
-      onTapDown: (_) => onDrawStart(),
-      onTapUp: (_) => onDrawEnd(),
-      onTapCancel: onDrawEnd,
+      behavior: HitTestBehavior.opaque,
+      onTap: onDrawTap,
+      onLongPressStart: (_) => onDrawStart(),
+      onLongPressEnd: (_) => onDrawEnd(),
+      onLongPressCancel: onDrawEnd,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12),
         child: Align(
