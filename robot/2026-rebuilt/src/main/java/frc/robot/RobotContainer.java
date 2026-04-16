@@ -164,11 +164,12 @@ public class RobotContainer extends ControllerBindings {
             .andThen(AutoBuilder.buildAuto("FD-MidIntakeToLeftBump-Part2"))));
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
-     autoChooser.addOption("FD-MidIntakeToLeftBump", new SequentialCommandGroup(
-            AutoBuilder.buildAuto("FD-MidIntakeToLeftBump-Part1")
+     autoChooser.addOption("FD-RightSneakDoublepass", new SequentialCommandGroup(
+            AutoBuilder.buildAuto("FD-RightSneakDoublepass-Part1")
             .andThen(NamedCommands.getCommand("Ball Track And Return"))
-            .andThen(AutoBuilder.buildAuto("FD-MidIntakeToLeftBump-Part2"))));
-    SmartDashboard.putData("Auto Chooser", autoChooser);
+            .andThen(AutoBuilder.buildAuto("FD-RightSneakDoublepass-Part2"))
+            .andThen(NamedCommands.getCommand("Ball Track And Return"))
+            .andThen(AutoBuilder.buildAuto("FD-RightSneakDoublepass-Part3"))));
     drivetrain.registerTelemetry(telemetry::telemeterize);
   }
 
