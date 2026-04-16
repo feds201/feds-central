@@ -1,7 +1,14 @@
 import 'dart:convert';
-import 'package:postgres/postgres.dart';
+import 'package:http/http.dart' as http;
 
-/// Queries a Neon PostgreSQL database using a native Dart Postgres client.
+/// Queries Neon via the Neon serverless HTTP API.
+/// Docs: https://neon.tech/docs/serverless/serverless-driver#fetch-function
+///
+/// POST https://<host>/sql
+/// Headers:
+///   Content-Type: application/json
+///   Neon-Connection-String: postgresql://user:pass@host/db
+/// Body: { "query": "SELECT ...", "params": [] }
 class NeonService {
   NeonService(this.connectionString);
   final String connectionString;
@@ -10,40 +17,61 @@ class NeonService {
 
   Future<List<Map<String, dynamic>>> query(String sql,
       [List<dynamic> params = const []]) async {
-    final parsed = _parseConnectionString(connectionString);
-    if (parsed == null) {
-      throw NeonException(
-          'Could not parse connection string. Expected format:\n'
-              'postgresql://user:password@host/database');
+    final host = _extractHost(connectionString);
+    if (host == null) {
+      throw NeonException('Could not parse host from connection string');
     }
 
-    print('[Neon] Connecting to ${parsed.host} as ${parsed.user}');
+    print('[Neon] POST https://$host/sql — $sql');
 
-    final conn = await Connection.open(
-      Endpoint(
-        host: parsed.host,
-        port: parsed.port,
-        database: parsed.database,
-        username: parsed.user,
-        password: parsed.password,
-      ),
-      settings: const ConnectionSettings(
-        sslMode: SslMode.require,
-      ),
-    );
+    final response = await http
+        .post(
+      Uri.parse('https://$host/sql'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Neon-Connection-String': connectionString.trim(),
+      },
+      body: jsonEncode({'query': sql, 'params': params}),
+    )
+        .timeout(const Duration(seconds: 20));
 
-    try {
-      final result = await conn.execute(
-        Sql.named(sql),
-        parameters: params.isEmpty
-            ? {}
-            : {for (var i = 0; i < params.length; i++) '${i + 1}': params[i]},
-      );
+    print('[Neon] Status: ${response.statusCode}');
 
-      return result.map((row) => row.toColumnMap()).toList();
-    } finally {
-      await conn.close();
+    if (response.statusCode != 200) {
+      print('[Neon] Error body: ${response.body}');
+      throw NeonException('HTTP ${response.statusCode}: ${response.body}');
     }
+
+    final decoded = jsonDecode(response.body) as Map<String, dynamic>;
+
+    if (decoded.containsKey('error')) {
+      throw NeonException(decoded['error'].toString());
+    }
+
+    // Neon HTTP API returns { fields: [{name, dataTypeID}], rows: [...] }
+    final rawFields = decoded['fields'] as List<dynamic>? ?? [];
+    final fields = rawFields
+        .map((f) => f is Map ? (f['name'] ?? f.toString()) : f.toString())
+        .toList();
+
+    final rows = decoded['rows'] as List<dynamic>? ?? [];
+
+    if (fields.isEmpty) return [];
+
+    return rows.map<Map<String, dynamic>>((row) {
+      final map = <String, dynamic>{};
+      if (row is Map) {
+        // Neon HTTP returns rows as objects keyed by column name
+        for (final col in fields) {
+          map[col.toString()] = row[col];
+        }
+      } else if (row is List) {
+        for (int i = 0; i < fields.length && i < row.length; i++) {
+          map[fields[i].toString()] = row[i];
+        }
+      }
+      return map;
+    }).toList();
   }
 
   Future<List<Map<String, dynamic>>> fetchAll(String table) async {
@@ -53,92 +81,41 @@ class NeonService {
   Future<List<String>> columns(String table) async {
     final rows = await query(
       "SELECT column_name FROM information_schema.columns "
-          "WHERE table_name = @1 ORDER BY ordinal_position",
-      [table],
+          "WHERE table_name = '$table' ORDER BY ordinal_position",
     );
-    return rows.map((r) => r['column_name'] as String).toList();
+    return rows.map((r) => r['column_name'].toString()).toList();
   }
 
-  // ── Connection string parser ────────────────────────────────────────
+  // ── Host extraction ─────────────────────────────────────────────────
 
-  _NeonConfig? _parseConnectionString(String connStr) {
+  String? _extractHost(String connStr) {
     try {
       connStr = connStr.trim();
+      // Remove scheme
+      var rest = connStr;
+      if (rest.startsWith('postgresql://')) rest = rest.substring(13);
+      else if (rest.startsWith('postgres://')) rest = rest.substring(11);
 
-      String rest = connStr;
-      if (rest.startsWith('postgresql://')) {
-        rest = rest.substring('postgresql://'.length);
-      } else if (rest.startsWith('postgres://')) {
-        rest = rest.substring('postgres://'.length);
-      }
+      // Strip query params
+      final qi = rest.indexOf('?');
+      if (qi != -1) rest = rest.substring(0, qi);
 
-      // Strip query params (?sslmode=require&...)
-      final queryIndex = rest.indexOf('?');
-      if (queryIndex != -1) {
-        rest = rest.substring(0, queryIndex);
-      }
+      // Find @ to split credentials from host
+      final ai = rest.lastIndexOf('@');
+      if (ai == -1) return null;
+      final hostAndDb = rest.substring(ai + 1);
 
-      // Split credentials from host: user:password@host/database
-      final atIndex = rest.lastIndexOf('@');
-      if (atIndex == -1) throw Exception('No @ found');
+      // Strip database path
+      final si = hostAndDb.indexOf('/');
+      final host = si != -1 ? hostAndDb.substring(0, si) : hostAndDb;
 
-      final credentials = rest.substring(0, atIndex);
-      final hostAndDb = rest.substring(atIndex + 1);
-
-      // Extract user and password
-      final colonIndex = credentials.indexOf(':');
-      final user = colonIndex != -1
-          ? credentials.substring(0, colonIndex)
-          : credentials;
-      final password = colonIndex != -1
-          ? Uri.decodeComponent(credentials.substring(colonIndex + 1))
-          : '';
-
-      // Extract host, port, database
-      final slashIndex = hostAndDb.indexOf('/');
-      final hostPart = slashIndex != -1
-          ? hostAndDb.substring(0, slashIndex)
-          : hostAndDb;
-      final database = slashIndex != -1
-          ? hostAndDb.substring(slashIndex + 1)
-          : 'postgres';
-
-      // Check for port
-      final portColon = hostPart.lastIndexOf(':');
-      final host = portColon != -1
-          ? hostPart.substring(0, portColon)
-          : hostPart;
-      final port = portColon != -1
-          ? int.tryParse(hostPart.substring(portColon + 1)) ?? 5432
-          : 5432;
-
-      print('[Neon] Parsed — host: $host, port: $port, db: $database, user: $user, pass length: ${password.length}');
-      return _NeonConfig(
-          host: host,
-          port: port,
-          database: database,
-          user: user,
-          password: password);
+      print('[Neon] Host: $host');
+      return host.isEmpty ? null : host;
     } catch (e) {
-      print('[Neon] Failed to parse connection string: $e');
+      print('[Neon] _extractHost failed: $e');
       return null;
     }
   }
-}
-
-class _NeonConfig {
-  final String host;
-  final int port;
-  final String database;
-  final String user;
-  final String password;
-  _NeonConfig({
-    required this.host,
-    required this.port,
-    required this.database,
-    required this.user,
-    required this.password,
-  });
 }
 
 class NeonException implements Exception {

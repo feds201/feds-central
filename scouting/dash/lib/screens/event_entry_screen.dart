@@ -267,7 +267,8 @@ class _EventEntryScreenState extends State<EventEntryScreen>
                                   decoration: BoxDecoration(
                                     color: AppTheme.surfaceHi,
                                     borderRadius: BorderRadius.circular(8),
-                                    border: Border.all(color: AppTheme.border),
+                                    border:
+                                    Border.all(color: AppTheme.border),
                                   ),
                                   child: Text(
                                     _csvFileName ?? 'No file selected',
@@ -288,8 +289,8 @@ class _EventEntryScreenState extends State<EventEntryScreen>
                                   onPressed: _pickCsv,
                                   style: OutlinedButton.styleFrom(
                                     side: BorderSide(
-                                        color:
-                                        AppTheme.accent.withOpacity(0.4)),
+                                        color: AppTheme.accent
+                                            .withOpacity(0.4)),
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 14),
                                   ),

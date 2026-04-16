@@ -31,7 +31,7 @@ class DataService extends ChangeNotifier {
   // ── State ──────────────────────────────────────────────────────────
   bool loading = false;
   String? error;
-  String _dataSource = ''; // 'neon', 'csv', or 'cache'
+  String _dataSource = '';
   DateTime? lastUpdated;
 
   String get dataSource => _dataSource;
@@ -117,12 +117,9 @@ class DataService extends ChangeNotifier {
       final errors = <String>[];
 
       try {
-        final results = await Future.wait([
-          neon.fetchAll(_tableName),
-          neon.columns(_tableName),
-        ]);
-        final rows = results[0] as List<Map<String, dynamic>>;
-        scoutingColumns = results[1] as List<String>;
+        final rows = await neon.fetchAll(_tableName);
+        final cols = await neon.columns(_tableName);
+        scoutingColumns = cols;
 
         scoutingByTeam = {};
         for (final row in rows) {

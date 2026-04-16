@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// Persists config and cached scouting data using SharedPreferences (Android).
+/// Persists config, cached scouting data, and locally drawn paths.
 class LocalPrefs {
   static const _kEventKey = 'scout_ops.eventKey';
   static const _kTableName = 'scout_ops.tableName';
@@ -10,14 +10,21 @@ class LocalPrefs {
   static const _kCachedEvent = 'scout_ops.cachedEvent';
   static const _kCachedData = 'scout_ops.cachedData';
   static const _kLastUpdated = 'scout_ops.lastUpdated';
+  static const _kLocalPaths = 'scout_ops.localPaths';
 
-  // ── Config ──────────────────────────────────────────────────────────
+  // ── JSON-safe value helper ───────────────────────────────────────────
+
   static dynamic _toJsonSafe(dynamic value) {
     if (value is DateTime) return value.toIso8601String();
-    if (value is Map) return value.map((k, v) => MapEntry(k.toString(), _toJsonSafe(v)));
+    if (value is Map) {
+      return value.map((k, v) => MapEntry(k.toString(), _toJsonSafe(v)));
+    }
     if (value is List) return value.map(_toJsonSafe).toList();
     return value;
   }
+
+  // ── Config ──────────────────────────────────────────────────────────
+
   static Future<void> saveConfig({
     required String eventKey,
     required String tableName,
@@ -71,11 +78,11 @@ class LocalPrefs {
     final teamData = scoutingByTeam.map(
           (k, v) => MapEntry(
         k.toString(),
-            v.map((row) => Map.fromEntries(
-              row.entries
-                  .where((e) => !dropCols.contains(e.key))
-                  .map((e) => MapEntry(e.key, _toJsonSafe(e.value))),
-            )).toList(),
+        v.map((row) => Map.fromEntries(
+          row.entries
+              .where((e) => !dropCols.contains(e.key))
+              .map((e) => MapEntry(e.key, _toJsonSafe(e.value))),
+        )).toList(),
       ),
     );
     final opr = oprByTeam.map((k, v) => MapEntry(k.toString(), v));
@@ -124,7 +131,8 @@ class LocalPrefs {
           (v as List).map((e) => Map<String, dynamic>.from(e as Map)).toList(),
         ),
       );
-      final columns = (decoded['scoutingColumns'] as List).cast<String>().toList();
+      final columns =
+      (decoded['scoutingColumns'] as List).cast<String>().toList();
       final opr = (decoded['oprByTeam'] as Map<String, dynamic>).map(
             (k, v) => MapEntry(int.parse(k), (v as num).toDouble()),
       );
@@ -147,6 +155,42 @@ class LocalPrefs {
     }
   }
 
+  // ── Locally drawn paths ─────────────────────────────────────────────
+  // Stored as: { "201": { "Left Start": "v2:M...", "Center": "v2:M..." }, ... }
+
+  static Future<Map<String, Map<String, String>>> loadLocalPaths() async {
+    final prefs = await SharedPreferences.getInstance();
+    final raw = prefs.getString(_kLocalPaths);
+    if (raw == null || raw.isEmpty) return {};
+
+    try {
+      final decoded = json.decode(raw) as Map<String, dynamic>;
+      return decoded.map((teamKey, paths) => MapEntry(
+        teamKey,
+        (paths as Map<String, dynamic>)
+            .map((k, v) => MapEntry(k, v.toString())),
+      ));
+    } catch (e) {
+      print('[LocalPrefs] loadLocalPaths FAILED: $e');
+      return {};
+    }
+  }
+
+  static Future<void> saveLocalPaths(
+      Map<String, Map<String, String>> paths) async {
+    final prefs = await SharedPreferences.getInstance();
+    final encoded = json.encode(paths);
+    await prefs.setString(_kLocalPaths, encoded);
+    print('[LocalPrefs] saveLocalPaths OK — ${paths.length} teams');
+  }
+
+  static Future<void> deleteLocalPath(String teamKey, String pathName) async {
+    final all = await loadLocalPaths();
+    all[teamKey]?.remove(pathName);
+    if (all[teamKey]?.isEmpty ?? false) all.remove(teamKey);
+    await saveLocalPaths(all);
+  }
+
   // ── Last updated ────────────────────────────────────────────────────
 
   static Future<DateTime?> get lastUpdated async {
@@ -167,7 +211,6 @@ class LocalPrefs {
     await prefs.remove(_kCachedData);
     await prefs.remove(_kCachedEvent);
     await prefs.remove(_kLastUpdated);
+    // Note: local paths are NOT cleared on config reset — intentional
   }
 }
-
-// ---------------
