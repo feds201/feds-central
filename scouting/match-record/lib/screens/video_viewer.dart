@@ -1357,6 +1357,20 @@ class _EditMetadataSheetState extends State<_EditMetadataSheet> {
     super.dispose();
   }
 
+  /// Whether the current match + alliance side already has a recording,
+  /// excluding the recording being edited. Suppressed when values haven't
+  /// changed from the original.
+  bool _hasConflictingRecording() {
+    if (_selectedMatchKey == null) return false;
+    if (_selectedMatchKey == _editingRecording?.matchKey &&
+        _allianceSide == _editingRecording?.allianceSide) return false;
+    return widget.dataStore.hasRecordingForSide(
+      _selectedMatchKey!,
+      _allianceSide,
+      excludeId: _editingRecording?.id,
+    );
+  }
+
   Future<void> _save() async {
     if (_editingRecording == null) return;
 
@@ -1480,6 +1494,33 @@ class _EditMetadataSheetState extends State<_EditMetadataSheet> {
                 ),
               ],
             ),
+            if (_hasConflictingRecording()) ...[
+              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.amber.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                      color: Colors.amber.withValues(alpha: 0.5)),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.warning_amber,
+                        color: Colors.amber, size: 18),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        'Recording exists for this side',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Colors.amber,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
             const SizedBox(height: 12),
             // Row 1: Teams 1-3 (red alliance teams, or first 3 for full)
             Row(

@@ -132,6 +132,26 @@ class ImportPreviewRowWidget extends StatelessWidget {
                         fontStyle: FontStyle.italic,
                       ),
                     ),
+                  if (row.isSelected &&
+                      row.matchKey != null &&
+                      dataStore.hasRecordingForSide(
+                          row.matchKey!, row.allianceSide))
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.warning_amber,
+                            size: 14, color: Colors.amber),
+                        const SizedBox(width: 4),
+                        Text(
+                          'Recording exists for this side',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: Colors.amber,
+                            fontStyle: FontStyle.italic,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
                 ],
               ),
             ),
