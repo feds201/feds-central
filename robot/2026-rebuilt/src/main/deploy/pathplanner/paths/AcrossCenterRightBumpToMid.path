@@ -32,6 +32,7 @@
     {
       "waypointRelativePos": 0.1767554479418867,
       "rotationDegrees": -90.0
+      "rotationDegrees": -90.0
     }
   ],
   "constraintZones": [],
@@ -53,6 +54,7 @@
   "folder": "MidIntakeToRightBump",
   "idealStartingState": {
     "velocity": 0,
+    "rotation": -90.0
     "rotation": -90.0
   },
   "useDefaultConstraints": false

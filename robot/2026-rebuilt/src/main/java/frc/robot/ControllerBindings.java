@@ -228,13 +228,13 @@ public class ControllerBindings {
                 .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.AGITATE_IN).alongWith(intakeSubsystem.setRollerStateCommand(RollerState.ON)))
                 .onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT).alongWith(intakeSubsystem.setRollerStateCommand(RollerState.OFF)));
 
-        operator.a()
+       operator.a()
                 .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.CLOSE_AGITATION_OUT).alongWith(intakeSubsystem.setRollerStateCommand(RollerState.ON)))
                 .onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT).alongWith(intakeSubsystem.setRollerStateCommand(RollerState.OFF)));
         
         operator.b()
                 .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.FAR_AGITATION_IN).alongWith(intakeSubsystem.setRollerStateCommand(RollerState.ON)))
-                .onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT).alongWith(intakeSubsystem.setRollerStateCommand(RollerState.OFF)));
+                 .onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT).alongWith(intakeSubsystem.setRollerStateCommand(RollerState.OFF)));
 
         operator.rightTrigger()
                 .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.DITHERIN_AGITATION)).onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED));

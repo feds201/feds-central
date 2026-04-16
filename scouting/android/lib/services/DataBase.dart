@@ -161,7 +161,7 @@ class PitRecord {
   final String botImage3;
 
   // New FRC 2026 Fields
-  final List<String> autoRoutes;
+  final String autoRoutes;
   final int autoFuel;
   final bool gameData;
   final double weight;
@@ -197,7 +197,7 @@ class PitRecord {
       required this.botImage1,
       required this.botImage2,
       required this.botImage3,
-      this.autoRoutes =  const [],
+      this.autoRoutes =  '',
       this.autoFuel = 0,
       this.gameData = false,
       this.weight = 0.0,
@@ -312,9 +312,7 @@ class PitRecord {
       botImage2: json['botImage2'] ?? '',
       botImage3: json['botImage3'] ?? '',
 
-      autoRoutes: json['autoRoutes'] != null
-          ? List<String>.from(json['autoRoutes'])
-          : [],
+      autoRoutes: json['autoRoutes'] ?? '',
       autoFuel: json['autoFuel'] ?? 0,
       gameData: json['gameData'] ?? false,
       weight: (json['weight'] ?? 0.0).toDouble(),
