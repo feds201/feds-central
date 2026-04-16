@@ -148,6 +148,17 @@ class DataStore extends ChangeNotifier {
     return _data.recordings.where((r) => r.matchKey == matchKey).toList();
   }
 
+  /// Whether a recording already exists for the given match + alliance side.
+  /// Optionally excludes a specific recording by [excludeId] (useful when
+  /// editing an existing recording's metadata).
+  bool hasRecordingForSide(String matchKey, String allianceSide,
+      {String? excludeId}) {
+    return _data.recordings.any((r) =>
+        r.matchKey == matchKey &&
+        r.allianceSide == allianceSide &&
+        (excludeId == null || r.id != excludeId));
+  }
+
   Recording? getRecordingByIdentity(VideoIdentity identity) {
     for (final r in _data.recordings) {
       if (r.recordingStartTime == identity.recordingStartTime &&

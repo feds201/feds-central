@@ -507,7 +507,7 @@ void main() {
       }
     });
 
-    test('falls back to synthetic when channel throws PlatformException', () async {
+    test('returns null-filled metadata when channel throws PlatformException', () async {
       final binding = TestDefaultBinaryMessengerBinding.instance;
       binding.defaultBinaryMessenger.setMockMethodCallHandler(
         const MethodChannel('com.feds201.match_record/native'),
@@ -520,11 +520,15 @@ void main() {
         final service = VideoMetadataService();
         final meta = await service.getMetadata(testFile);
 
-        // Should get synthetic data, not crash
+        // Should return only DriveFile data, no fake values
         expect(meta.originalFilename, 'video.mp4');
         expect(meta.sourceUri, '/storage/USB/video.mp4');
-        expect(meta.durationMs, isNotNull);
         expect(meta.fileSize, 50000000);
+        expect(meta.durationMs, isNull);
+        expect(meta.date, isNull);
+        expect(meta.width, isNull);
+        expect(meta.height, isNull);
+        expect(meta.framerate, isNull);
       } finally {
         binding.defaultBinaryMessenger.setMockMethodCallHandler(
           const MethodChannel('com.feds201.match_record/native'),
@@ -533,7 +537,7 @@ void main() {
       }
     });
 
-    test('falls back to synthetic when channel is not available', () async {
+    test('returns null-filled metadata when channel is not available', () async {
       // Don't register any mock — simulates MissingPluginException
       final binding = TestDefaultBinaryMessengerBinding.instance;
       binding.defaultBinaryMessenger.setMockMethodCallHandler(
@@ -544,9 +548,11 @@ void main() {
       final service = VideoMetadataService();
       final meta = await service.getMetadata(testFile);
 
-      // Should get synthetic data
+      // Should return only DriveFile data, no fake values
       expect(meta.originalFilename, 'video.mp4');
-      expect(meta.durationMs, isNotNull);
+      expect(meta.fileSize, 50000000);
+      expect(meta.durationMs, isNull);
+      expect(meta.date, isNull);
     });
 
     test('handles partial channel results gracefully', () async {
@@ -580,8 +586,8 @@ void main() {
         expect(meta.ftypBrand, 'mp42');
         expect(meta.date, isNull);
         expect(meta.width, isNull);
-        // fileSize should fall back to DriveFile.sizeBytes
-        expect(meta.fileSize, 50000000);
+        // fileSize is null when native returns null (no fallback)
+        expect(meta.fileSize, isNull);
       } finally {
         binding.defaultBinaryMessenger.setMockMethodCallHandler(
           const MethodChannel('com.feds201.match_record/native'),

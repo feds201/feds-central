@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../util/constants.dart';
-import '../viewer/drawing_controller.dart';
 
 /// Mute state for the video viewer audio.
 enum MuteState { muted, redAudio, blueAudio, fullAudio }
@@ -18,14 +17,13 @@ class ControlSidebar extends StatelessWidget {
   final bool isPlaying;
   final MuteState muteState;
   final ViewMode viewMode;
-  /// Current drawing color, or null if drawing mode is off.
-  final DrawingColor? drawingColor;
+  /// Whether the draw button is currently being held down.
+  final bool isDrawing;
   final bool canUndo;
   final bool canRedo;
   final bool hasDrawings;
   /// Whether the view mode toggle button is active (more than one view mode available).
   final bool canToggleViewMode;
-  final bool isPaused;
 
   final VoidCallback onBack;
   final VoidCallback onSwapSides;
@@ -35,7 +33,9 @@ class ControlSidebar extends StatelessWidget {
   final VoidCallback onRewind10;
   final VoidCallback onForward10;
   final VoidCallback onRestart;
-  final VoidCallback onToggleDrawing;
+  final VoidCallback onDrawStart;
+  final VoidCallback onDrawEnd;
+  final VoidCallback? onDrawTap;
   final VoidCallback onUndo;
   final VoidCallback onRedo;
   final VoidCallback onClearDrawing;
@@ -45,12 +45,11 @@ class ControlSidebar extends StatelessWidget {
     required this.isPlaying,
     required this.muteState,
     required this.viewMode,
-    required this.drawingColor,
+    required this.isDrawing,
     required this.canUndo,
     required this.canRedo,
     required this.hasDrawings,
     required this.canToggleViewMode,
-    required this.isPaused,
     required this.onBack,
     required this.onSwapSides,
     required this.onToggleMute,
@@ -59,7 +58,9 @@ class ControlSidebar extends StatelessWidget {
     required this.onRewind10,
     required this.onForward10,
     required this.onRestart,
-    required this.onToggleDrawing,
+    required this.onDrawStart,
+    required this.onDrawEnd,
+    this.onDrawTap,
     required this.onUndo,
     required this.onRedo,
     required this.onClearDrawing,
@@ -116,17 +117,17 @@ class ControlSidebar extends StatelessWidget {
       _buildItem(
         icon: Icons.undo,
         label: 'Undo',
-        onPressed: drawingColor != null && canUndo ? onUndo : null,
+        onPressed: canUndo ? onUndo : null,
       ),
       _buildItem(
         icon: Icons.redo,
         label: 'Redo',
-        onPressed: drawingColor != null && canRedo ? onRedo : null,
+        onPressed: canRedo ? onRedo : null,
       ),
       _buildItem(
         icon: Icons.cleaning_services,
         label: 'Clear',
-        onPressed: drawingColor != null && hasDrawings ? onClearDrawing : null,
+        onPressed: hasDrawings ? onClearDrawing : null,
       ),
     ]);
 
@@ -441,35 +442,21 @@ class ControlSidebar extends StatelessWidget {
   }
 
   Widget _buildDrawItem() {
-    // Drawing is always active when paused (no "off" state).
-    // drawingColor is null only while playing (drawing disabled).
-    final IconData icon;
-    final String label;
-    final Color activeColor;
-
-    switch (drawingColor) {
-      case null:
-      case DrawingColor.red:
-        icon = isPaused ? Icons.edit : Icons.edit_off;
-        label = 'Red draw';
-        activeColor = AppColors.redAlliance;
-      case DrawingColor.blue:
-        icon = Icons.edit;
-        label = 'Blue draw';
-        activeColor = AppColors.blueAlliance;
-    }
-
-    final isEnabled = isPaused;
-
-    final color = !isEnabled
-        ? Colors.white38
-        : activeColor;
+    // Hold-to-draw: button is always enabled, shows active state when held.
+    // Quick tap triggers onDrawTap (snackbar hint).
+    final icon = isDrawing ? Icons.edit : Icons.edit_off;
+    const label = 'Draw';
+    final color = isDrawing ? AppColors.redAlliance : Colors.white;
 
     if (!_expanded) {
       return Tooltip(
         message: label,
-        child: InkWell(
-          onTap: isEnabled ? onToggleDrawing : null,
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: onDrawTap,
+          onLongPressStart: (_) => onDrawStart(),
+          onLongPressEnd: (_) => onDrawEnd(),
+          onLongPressCancel: onDrawEnd,
           child: Center(
             child: Icon(icon, color: color, size: 28),
           ),
@@ -477,8 +464,12 @@ class ControlSidebar extends StatelessWidget {
       );
     }
 
-    return InkWell(
-      onTap: isEnabled ? onToggleDrawing : null,
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onDrawTap,
+      onLongPressStart: (_) => onDrawStart(),
+      onLongPressEnd: (_) => onDrawEnd(),
+      onLongPressCancel: onDrawEnd,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12),
         child: Align(

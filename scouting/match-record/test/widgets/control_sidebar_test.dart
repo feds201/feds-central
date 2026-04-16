@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:match_record/viewer/drawing_controller.dart';
 import 'package:match_record/widgets/control_sidebar.dart';
 
 void main() {
@@ -11,13 +10,13 @@ void main() {
     bool isPlaying = false,
     MuteState muteState = MuteState.muted,
     ViewMode viewMode = ViewMode.both,
-    DrawingColor? drawingColor,
+    bool isDrawing = false,
     bool canUndo = false,
     bool canRedo = false,
     bool hasDrawings = false,
     bool canToggleViewMode = true,
-    bool isPaused = true,
-    VoidCallback? onToggleDrawing,
+    VoidCallback? onDrawStart,
+    VoidCallback? onDrawEnd,
     VoidCallback? onUndo,
     VoidCallback? onRedo,
     VoidCallback? onClearDrawing,
@@ -26,12 +25,11 @@ void main() {
       isPlaying: isPlaying,
       muteState: muteState,
       viewMode: viewMode,
-      drawingColor: drawingColor,
+      isDrawing: isDrawing,
       canUndo: canUndo,
       canRedo: canRedo,
       hasDrawings: hasDrawings,
       canToggleViewMode: canToggleViewMode,
-      isPaused: isPaused,
       onBack: noop,
       onSwapSides: noop,
       onToggleMute: noop,
@@ -40,7 +38,8 @@ void main() {
       onRewind10: noop,
       onForward10: noop,
       onRestart: noop,
-      onToggleDrawing: onToggleDrawing ?? noop,
+      onDrawStart: onDrawStart ?? noop,
+      onDrawEnd: onDrawEnd ?? noop,
       onUndo: onUndo ?? noop,
       onRedo: onRedo ?? noop,
       onClearDrawing: onClearDrawing ?? noop,
@@ -60,53 +59,49 @@ void main() {
     );
   }
 
-  group('v3: Draw buttons always visible', () {
-    testWidgets('draw button is visible when playing (not paused)', (tester) async {
+  group('Hold-to-draw button', () {
+    testWidgets('shows edit_off icon when not drawing', (tester) async {
+      await tester.pumpWidget(wrapInApp(buildSidebar(isDrawing: false)));
+      expect(find.byIcon(Icons.edit_off), findsOneWidget);
+    });
+
+    testWidgets('shows edit icon when drawing', (tester) async {
+      await tester.pumpWidget(wrapInApp(buildSidebar(isDrawing: true)));
+      expect(find.byIcon(Icons.edit), findsOneWidget);
+    });
+
+    testWidgets('fires onDrawStart on long press and onDrawEnd on release', (tester) async {
+      var startCalled = false;
+      var endCalled = false;
+      await tester.pumpWidget(wrapInApp(buildSidebar(
+        onDrawStart: () => startCalled = true,
+        onDrawEnd: () => endCalled = true,
+      )));
+
+      // Long press triggers onLongPressStart / onLongPressEnd
+      await tester.longPress(find.byIcon(Icons.edit_off));
+      await tester.pump();
+      expect(startCalled, isTrue, reason: 'onDrawStart should fire on long press');
+      expect(endCalled, isTrue, reason: 'onDrawEnd should fire on long press release');
+    });
+
+    testWidgets('draw button is always enabled regardless of play state', (tester) async {
+      var startCalled = false;
       await tester.pumpWidget(wrapInApp(buildSidebar(
         isPlaying: true,
-        isPaused: false,
-        drawingColor: null,
+        onDrawStart: () => startCalled = true,
       )));
 
-      // The draw button should exist (visible) but be disabled.
-      // When drawing is off, the icon is edit_off.
-      final drawIcon = find.byIcon(Icons.edit_off);
-      expect(drawIcon, findsOneWidget);
-    });
-
-    testWidgets('draw button is disabled when not paused', (tester) async {
-      var drawPressed = false;
-      await tester.pumpWidget(wrapInApp(buildSidebar(
-        isPlaying: true,
-        isPaused: false,
-        drawingColor: null,
-        onToggleDrawing: () => drawPressed = true,
-      )));
-
-      await tester.tap(find.byIcon(Icons.edit_off));
+      await tester.longPress(find.byIcon(Icons.edit_off));
       await tester.pump();
-      expect(drawPressed, isFalse, reason: 'Draw button should be disabled when not paused');
+      expect(startCalled, isTrue, reason: 'Draw button should work while playing');
     });
+  });
 
-    testWidgets('draw button is enabled when paused', (tester) async {
-      var drawPressed = false;
-      await tester.pumpWidget(wrapInApp(buildSidebar(
-        isPaused: true,
-        drawingColor: null,
-        onToggleDrawing: () => drawPressed = true,
-      )));
-
-      // When paused, drawing auto-enables — icon is edit (not edit_off)
-      await tester.tap(find.byIcon(Icons.edit));
-      await tester.pump();
-      expect(drawPressed, isTrue, reason: 'Draw button should be enabled when paused');
-    });
-
+  group('Undo/redo/clear buttons', () {
     testWidgets('undo/redo/clear are always visible', (tester) async {
       await tester.pumpWidget(wrapInApp(buildSidebar(
-        isPaused: false,
         isPlaying: true,
-        drawingColor: null,
         hasDrawings: false,
       )));
 
@@ -115,52 +110,13 @@ void main() {
       expect(find.byIcon(Icons.cleaning_services), findsOneWidget);
     });
 
-    testWidgets('undo/redo/clear are disabled when not in drawing mode', (tester) async {
+    testWidgets('undo/redo/clear enabled when applicable, regardless of drawing state', (tester) async {
       var undoPressed = false;
       var redoPressed = false;
       var clearPressed = false;
 
       await tester.pumpWidget(wrapInApp(buildSidebar(
-        isPaused: true,
-        drawingColor: null,
-        canUndo: true,
-        canRedo: true,
-        hasDrawings: true,
-        onUndo: () => undoPressed = true,
-        onRedo: () => redoPressed = true,
-        onClearDrawing: () => clearPressed = true,
-      )));
-
-      final undoFinder = find.byIcon(Icons.undo);
-      await tester.ensureVisible(undoFinder);
-      await tester.pumpAndSettle();
-      await tester.tap(undoFinder);
-      await tester.pump();
-      expect(undoPressed, isFalse, reason: 'Undo should be disabled outside drawing mode');
-
-      final redoFinder = find.byIcon(Icons.redo);
-      await tester.ensureVisible(redoFinder);
-      await tester.pumpAndSettle();
-      await tester.tap(redoFinder);
-      await tester.pump();
-      expect(redoPressed, isFalse, reason: 'Redo should be disabled outside drawing mode');
-
-      final clearFinder = find.byIcon(Icons.cleaning_services);
-      await tester.ensureVisible(clearFinder);
-      await tester.pumpAndSettle();
-      await tester.tap(clearFinder);
-      await tester.pump();
-      expect(clearPressed, isFalse, reason: 'Clear should be disabled outside drawing mode');
-    });
-
-    testWidgets('undo/redo/clear are enabled in drawing mode when applicable', (tester) async {
-      var undoPressed = false;
-      var redoPressed = false;
-      var clearPressed = false;
-
-      await tester.pumpWidget(wrapInApp(buildSidebar(
-        isPaused: true,
-        drawingColor: DrawingColor.red,
+        isDrawing: false,
         canUndo: true,
         canRedo: true,
         hasDrawings: true,
@@ -191,11 +147,9 @@ void main() {
       expect(clearPressed, isTrue);
     });
 
-    testWidgets('undo disabled in drawing mode when canUndo is false', (tester) async {
+    testWidgets('undo disabled when canUndo is false', (tester) async {
       var undoPressed = false;
       await tester.pumpWidget(wrapInApp(buildSidebar(
-        isPaused: true,
-        drawingColor: DrawingColor.red,
         canUndo: false,
         onUndo: () => undoPressed = true,
       )));
@@ -208,11 +162,9 @@ void main() {
       expect(undoPressed, isFalse);
     });
 
-    testWidgets('redo disabled in drawing mode when canRedo is false', (tester) async {
+    testWidgets('redo disabled when canRedo is false', (tester) async {
       var redoPressed = false;
       await tester.pumpWidget(wrapInApp(buildSidebar(
-        isPaused: true,
-        drawingColor: DrawingColor.red,
         canRedo: false,
         onRedo: () => redoPressed = true,
       )));
@@ -225,11 +177,9 @@ void main() {
       expect(redoPressed, isFalse);
     });
 
-    testWidgets('clear disabled in drawing mode when no drawings', (tester) async {
+    testWidgets('clear disabled when no drawings', (tester) async {
       var clearPressed = false;
       await tester.pumpWidget(wrapInApp(buildSidebar(
-        isPaused: true,
-        drawingColor: DrawingColor.red,
         hasDrawings: false,
         onClearDrawing: () => clearPressed = true,
       )));
@@ -243,7 +193,7 @@ void main() {
     });
   });
 
-  group('v4: Sidebar full-height layout', () {
+  group('Sidebar full-height layout', () {
     testWidgets('sidebar fills available height', (tester) async {
       await tester.pumpWidget(wrapInApp(buildSidebar()));
 

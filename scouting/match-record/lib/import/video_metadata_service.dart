@@ -3,6 +3,10 @@ import 'package:flutter/services.dart';
 import 'drive_access.dart';
 
 /// Metadata extracted from a video file.
+///
+/// All filename-dependent inference (iOS detection, recording start time,
+/// file extension) is computed once at construction in the factory constructor.
+/// No downstream code should parse [originalFilename] for semantic data.
 class VideoMetadata {
   final String sourceUri;
   final String originalFilename;
@@ -25,7 +29,25 @@ class VideoMetadata {
   /// Used to convert local-time filenames (VID_/YYYYMMDD_HHMMSS) to UTC.
   final String? samsungUtcOffset;
 
-  const VideoMetadata({
+  // --- Derived fields, computed once at construction ---
+
+  /// iOS detection: Apple QuickTime creationdate tag is the definitive signal,
+  /// then ftyp brand, then file extension as fallback.
+  final bool isIOSRecording;
+
+  /// Platform-aware recording start time, computed using a priority chain:
+  ///
+  /// 1. iOS (has QuickTime creationdate or ftyp "qt"): creation_time IS the start.
+  /// 2. Filename parsing (PXL_, VID_, YYYYMMDD_HHMMSS): extract start directly.
+  /// 3. Fallback: creation_time - duration.
+  ///
+  /// Null when start time cannot be determined.
+  final DateTime? recordingStartTime;
+
+  /// File extension extracted from the original filename (e.g. ".mp4", ".mov").
+  final String fileExtension;
+
+  const VideoMetadata._({
     required this.sourceUri,
     required this.originalFilename,
     this.durationMs,
@@ -39,44 +61,77 @@ class VideoMetadata {
     this.fileSize,
     this.hasAppleQuicktimeCreationDate = false,
     this.samsungUtcOffset,
+    required this.isIOSRecording,
+    required this.recordingStartTime,
+    required this.fileExtension,
   });
 
-  /// iOS detection: Apple QuickTime creationdate tag is the definitive signal,
-  /// then ftyp brand, then file extension as fallback.
-  bool get isIOSRecording {
-    if (hasAppleQuicktimeCreationDate) return true;
-    if (ftypBrand != null && ftypBrand!.trim() == 'qt') return true;
-    return originalFilename.toLowerCase().endsWith('.mov');
-  }
+  /// Factory constructor — THE ONE PLACE where all filename-dependent
+  /// inference happens (iOS detection, recording start time, file extension).
+  factory VideoMetadata({
+    required String sourceUri,
+    required String originalFilename,
+    int? durationMs,
+    DateTime? date,
+    String? mimetype,
+    int? width,
+    int? height,
+    int? orientation,
+    double? framerate,
+    String? ftypBrand,
+    int? fileSize,
+    bool hasAppleQuicktimeCreationDate = false,
+    String? samsungUtcOffset,
+  }) {
+    // 1. Extract file extension
+    final dotIndex = originalFilename.lastIndexOf('.');
+    final fileExtension = dotIndex < 0
+        ? ''
+        : originalFilename.substring(dotIndex).toLowerCase();
 
-  /// Platform-aware recording start time, computed using a priority chain:
-  ///
-  /// 1. iOS (has QuickTime creationdate or ftyp "qt"): creation_time IS the start.
-  /// 2. Filename parsing (PXL_, VID_, YYYYMMDD_HHMMSS): extract start directly.
-  /// 3. Fallback: creation_time - duration.
-  ///
-  /// Returns null when start time cannot be determined. For Android, returning
-  /// date directly would give the END time (wrong), so we require duration.
-  DateTime? get recordingStartTime {
-    // Priority 1: iOS — creation_time is already the start time
-    if (isIOSRecording) return date;
+    // 2. Determine iOS vs Android
+    final isIOS = hasAppleQuicktimeCreationDate ||
+        (ftypBrand != null && ftypBrand.trim() == 'qt') ||
+        fileExtension == '.mov';
 
-    // Priority 2: Parse recording start from filename
-    final fromFilename = parseRecordingStartFromFilename(
-      originalFilename,
-      samsungUtcOffset: samsungUtcOffset,
-      creationTime: date,
-      durationMs: durationMs,
-    );
-    if (fromFilename != null) return fromFilename;
-
-    // Priority 3: Fallback — creation_time - duration
-    // Without duration we cannot convert Android's end-time creation_time
-    // to a start time, so we return null rather than a wrong value.
-    if (date != null && durationMs != null && durationMs! > 0) {
-      return date!.subtract(Duration(milliseconds: durationMs!));
+    // 3. Compute recording start time
+    DateTime? recordingStartTime;
+    if (isIOS) {
+      // iOS — creation_time is already the start time
+      recordingStartTime = date;
+    } else {
+      // Try filename parsing (PXL_, VID_, YYYYMMDD_HHMMSS)
+      recordingStartTime = parseRecordingStartFromFilename(
+        originalFilename,
+        samsungUtcOffset: samsungUtcOffset,
+        creationTime: date,
+        durationMs: durationMs,
+      );
+      // Fallback — creation_time - duration (Android creation_time = end time)
+      if (recordingStartTime == null &&
+          date != null && durationMs != null && durationMs > 0) {
+        recordingStartTime = date.subtract(Duration(milliseconds: durationMs));
+      }
     }
-    return null;
+
+    return VideoMetadata._(
+      sourceUri: sourceUri,
+      originalFilename: originalFilename,
+      durationMs: durationMs,
+      date: date,
+      mimetype: mimetype,
+      width: width,
+      height: height,
+      orientation: orientation,
+      framerate: framerate,
+      ftypBrand: ftypBrand,
+      fileSize: fileSize,
+      hasAppleQuicktimeCreationDate: hasAppleQuicktimeCreationDate,
+      samsungUtcOffset: samsungUtcOffset,
+      isIOSRecording: isIOS,
+      recordingStartTime: recordingStartTime,
+      fileExtension: fileExtension,
+    );
   }
 }
 
@@ -166,7 +221,7 @@ Duration? _parseSamsungUtcOffset(String offset) {
 
 /// Service for extracting video metadata.
 /// On Android: uses platform channel with MediaMetadataRetriever + ftyp header reading.
-/// Falls back to synthetic estimation when the platform channel is unavailable (e.g. tests).
+/// Returns null-filled metadata when the platform channel is unavailable.
 class VideoMetadataService {
   static const _channel = MethodChannel('com.feds201.match_record/native');
 
@@ -187,7 +242,12 @@ class VideoMetadataService {
     } catch (_) {
       // Any other error
     }
-    return _generateSyntheticMetadata(file);
+    // No fake data — return only what we actually know from the DriveFile.
+    return VideoMetadata(
+      sourceUri: file.uri,
+      originalFilename: file.name,
+      fileSize: file.sizeBytes,
+    );
   }
 
   /// Batch extraction. Returns list in same order as input.
@@ -220,7 +280,9 @@ class VideoMetadataService {
       orientation: (result['orientation'] as num?)?.toInt(),
       framerate: (result['framerate'] as num?)?.toDouble(),
       ftypBrand: result['ftypBrand'] as String?,
-      fileSize: (result['fileSize'] as num?)?.toInt() ?? file.sizeBytes,
+      fileSize: (result['fileSize'] as num?)?.toInt(),
+      hasAppleQuicktimeCreationDate: result['hasAppleQuicktimeCreationDate'] as bool? ?? false,
+      samsungUtcOffset: result['samsungUtcOffset'] as String?,
     );
   }
 
@@ -261,50 +323,6 @@ class VideoMetadataService {
     // Fall back to standard ISO parse for other formats
     final parsed = DateTime.tryParse(dateStr);
     if (parsed != null) return parsed.toUtc();
-
-    return null;
-  }
-
-  /// Fallback: generate synthetic metadata from filename and file size.
-  /// Used when platform channel is unavailable.
-  VideoMetadata _generateSyntheticMetadata(DriveFile file) {
-    final isIOS = file.name.toLowerCase().endsWith('.mov');
-    final durationMs = _estimateDuration(file);
-    final date = _extractDate(file, isIOS, durationMs);
-
-    return VideoMetadata(
-      sourceUri: file.uri,
-      originalFilename: file.name,
-      durationMs: durationMs,
-      date: date,
-      mimetype: isIOS ? 'video/quicktime' : 'video/mp4',
-      width: 1920,
-      height: 1080,
-      orientation: 0,
-      framerate: 30.0,
-      ftypBrand: isIOS ? 'qt  ' : 'isom',
-      fileSize: file.sizeBytes,
-    );
-  }
-
-  /// Estimate duration from file size (~200KB/s for compressed video).
-  int _estimateDuration(DriveFile file) {
-    final seconds = (file.sizeBytes / (200 * 1024)).round();
-    return (seconds.clamp(10, 120)) * 1000;
-  }
-
-  /// Extract or generate a synthetic creation_time from filename.
-  DateTime? _extractDate(DriveFile file, bool isIOS, int durationMs) {
-    if (!isIOS) {
-      final startTime = parseRecordingStartFromFilename(file.name);
-      if (startTime != null) {
-        return startTime.add(Duration(milliseconds: durationMs));
-      }
-    }
-
-    if (file.lastModified != null) {
-      return file.lastModified;
-    }
 
     return null;
   }

@@ -156,7 +156,7 @@ void main() {
 
     test('null recording start time returns none confidence', () {
       final videos = [
-        const VideoMetadata(
+        VideoMetadata(
           sourceUri: 'test://file',
           originalFilename: 'broken.mp4',
           durationMs: null,

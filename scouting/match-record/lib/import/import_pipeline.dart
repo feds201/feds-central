@@ -155,14 +155,14 @@ class ImportPipeline {
         fileSizeBytes: meta.fileSize,
       );
 
-      // Check auto-skip conditions
+      // Check auto-skip conditions (order = display priority: first match wins)
       bool isAutoSkipped = false;
       String? autoSkipReason;
 
-      // Recording time check — highest priority error
-      if (meta.recordingStartTime == null) {
+      // Already imported — highest priority (user already dealt with this video)
+      if (dataStore.getRecordingByIdentity(identity) != null) {
         isAutoSkipped = true;
-        autoSkipReason = 'Could not determine recording time';
+        autoSkipReason = 'Already imported';
       }
 
       // Short video check
@@ -179,11 +179,10 @@ class ImportPipeline {
         autoSkipReason = 'This video was skipped before';
       }
 
-      // Check if already imported (reimport prevention)
-      if (!isAutoSkipped &&
-          dataStore.getRecordingByIdentity(identity) != null) {
+      // Recording time check
+      if (!isAutoSkipped && meta.recordingStartTime == null) {
         isAutoSkipped = true;
-        autoSkipReason = 'Already imported';
+        autoSkipReason = 'Could not determine recording time';
       }
 
       // Determine event key and teams from match assignment
@@ -289,7 +288,7 @@ class ImportPipeline {
 
       // Generate UUID for filename
       final recordingId = uuid.v4();
-      final ext = _getExtension(row.metadata.originalFilename);
+      final ext = row.metadata.fileExtension;
       final destPath = '$storageDir/recordings/$recordingId$ext';
 
       // Copy file
@@ -477,10 +476,4 @@ class ImportPipeline {
         .toList();
   }
 
-  /// Get file extension from filename.
-  String _getExtension(String filename) {
-    final dotIndex = filename.lastIndexOf('.');
-    if (dotIndex < 0) return '.mp4';
-    return filename.substring(dotIndex).toLowerCase();
-  }
 }

@@ -670,12 +670,12 @@ class _ImportTabState extends State<ImportTab>
 
             // Refresh button
             const SizedBox(height: 8),
-            IconButton(
+            TextButton.icon(
               onPressed: _isDetectingDrives ? null : () {
                 _checkPermissionAndDetectDrives();
               },
-              icon: const Icon(Icons.refresh, size: 20),
-              tooltip: 'Refresh USB drives',
+              icon: const Icon(Icons.refresh, size: 24),
+              label: const Text('Refresh Sources'),
             ),
           ],
         ),

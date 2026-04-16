@@ -8,15 +8,12 @@ import '../util/constants.dart';
 
 /// Color for a drawing stroke.
 enum DrawingColor {
-  red,
-  blue;
+  red;
 
   Color get color {
     switch (this) {
       case DrawingColor.red:
         return AppColors.redAlliance;
-      case DrawingColor.blue:
-        return AppColors.blueAlliance;
     }
   }
 }
