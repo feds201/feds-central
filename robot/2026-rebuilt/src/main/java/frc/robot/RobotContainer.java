@@ -83,6 +83,7 @@ public class RobotContainer extends ControllerBindings {
 
   private final SendableChooser<Command> autoChooser;
 
+
     public static RobotContainer getInstance() {
         return instance;
     }
@@ -137,6 +138,8 @@ public class RobotContainer extends ControllerBindings {
     //Adds a mirrored-to-the-right version of the LeftMidfieldDoublePass path
     autoChooser.addOption("LeftMidfieldDoublePass", new PathPlannerAuto("RightMidfieldDoublePass", true)); 
     drivetrain.registerTelemetry(telemetry::telemeterize);
+
+    SmartDashboard.putBoolean("Limelight-Four", true);
   }
   
     // --- APIs used by the diagnostic server / UI to command shooter/hood ---
@@ -236,7 +239,7 @@ public class RobotContainer extends ControllerBindings {
   
 
     public void updateLocalization() {
-        if (ll4.isConnected()) {
+        if (ll4.isConnected()){// && SmartDashboard.getBoolean("Limelight-Four", true)) {
             ll4.updateLocalizationLimelight(drivetrain);
         } else {
             ll3.updateLocalizationLimelight(drivetrain);
@@ -307,7 +310,7 @@ public void registerNamedCommands() {
   NamedCommands.registerCommand("Extend Intake", intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED));
   NamedCommands.registerCommand("Retract Intake", intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT));
   NamedCommands.registerCommand("Run Rollers", intakeSubsystem.setRollerStateCommand(RollerState.ON));
-  NamedCommands.registerCommand("Stop Rollers", intakeSubsystem.setRollerStateCommand(RollerState.OFF));
+  NamedCommands.registerCommand("Stop Rollers", intakeSubsystateCommand(RollerState.OFF));
   NamedCommands.registerCommand("Start Shooter Spin", shooterWheels.setStateCommand(shooter_state.SHOOTING).alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
   NamedCommands.registerCommand("Stop Shooter Spin", shooterWheels.setStateCommand(shooter_state.IDLE).alongWith(shooterHood.setStateCommand(shooterhood_state.IN)).alongWith(spinDexer.setStateCommand(spindexer_state.STOP)).alongWith(feederSubsystem.setStateCommand(feeder_state.STOP)));
   NamedCommands.registerCommand("End Shooter Spin", shooterWheels.setStateCommand(shooter_state.IDLE).alongWith(shooterHood.setStateCommand(shooterhood_state.IN)).alongWith(spinDexer.setStateCommand(spindexer_state.STOP)).alongWith(feederSubsystem.setStateCommand(feeder_state.STOP)));

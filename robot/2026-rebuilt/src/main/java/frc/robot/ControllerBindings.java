@@ -48,8 +48,8 @@ public class ControllerBindings {
                 .whileTrue(Commands.sequence(
                         shooterWheels.setStateCommand(shooter_state.SHOOTING),
                         shooterHood.setStateCommand(shooterhood_state.SHOOTING),
-                        feederSubsystem.setStateCommand(feeder_state.RUN),
-                        spinDexer.setStateCommand(spindexer_state.RUN)
+                        feederSubsystem.setStateCommand(feeder_state.PRUN),
+                        spinDexer.setStateCommand(spindexer_state.PFORWARD)
                 ))
                 .onFalse(Commands.sequence(
                         feederSubsystem.setStateCommand(feeder_state.STOP),
@@ -106,8 +106,8 @@ public class ControllerBindings {
 
         driver.y()
                 .onTrue(Commands.sequence(
-                        feederSubsystem.setStateCommand(feeder_state.RUN),
-                        spinDexer.setStateCommand(spindexer_state.RUN),
+                        feederSubsystem.setStateCommand(feeder_state.PRUN),
+                        spinDexer.setStateCommand(spindexer_state.PFORWARD),
                         shooterHood.setStateCommand(shooterhood_state.HALFCOURT),
                         shooterWheels.setStateCommand(shooter_state.HALFCOURT)))
                 .onFalse(Commands.sequence(
@@ -120,7 +120,7 @@ public class ControllerBindings {
         driver.x()
                 .whileTrue(Commands.sequence(
                   intakeSubsystem.setRollerStateCommand(RollerState.ON),
-                        feederSubsystem.setStateCommand(feeder_state.RUN),
+                        feederSubsystem.setStateCommand(feeder_state.PRUN),
                         spinDexer.setStateCommand(spindexer_state.PFORWARD),
                         // Pulse intake extend/retract while held (5 roller rotations per pulse, 0.3s retract dwell)
                         shooterWheels.setStateCommand(shooter_state.TEST),
@@ -167,7 +167,7 @@ public class ControllerBindings {
         // Button to fire, if swerve is aimed and shooter is at speed.
         driver.rightTrigger().and(HubDrive::pidAtSetpoint).and(shooterWheels::atSetpoint).whileTrue(
                 Commands.sequence(
-                        feederSubsystem.setStateCommand(feeder_state.RUN),
+                        feederSubsystem.setStateCommand(feeder_state.PRUN),
                         spinDexer.setStateCommand(spindexer_state.PFORWARD),
                         intakeSubsystem.setRollerStateCommand(RollerState.ON)
                 )
@@ -181,7 +181,7 @@ public class ControllerBindings {
 
         driver.rightTrigger().and(PassingDrive::pidAtSetpoint).whileTrue(
                 Commands.sequence(
-                        feederSubsystem.setStateCommand(feeder_state.RUN),
+                        feederSubsystem.setStateCommand(feeder_state.PRUN),
                         spinDexer.setStateCommand(spindexer_state.PFORWARD)
                         // Pulse the intake while firing (run until release). 5 rotations per pulse.
                         // intakeSubsystem.agitateWhileHeldRotations(15.0)
