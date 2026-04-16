@@ -181,8 +181,8 @@ public class ControllerBindings {
 
         driver.rightTrigger().and(PassingDrive::pidAtSetpoint).whileTrue(
                 Commands.sequence(
-                        feederSubsystem.setStateCommand(feeder_state.RUN),
-                        spinDexer.setStateCommand(spindexer_state.RUN)
+                        feederSubsystem.setStateCommand(feeder_state.PRUN),
+                        spinDexer.setStateCommand(spindexer_state.PFORWARD)
                         // Pulse the intake while firing (run until release). 5 rotations per pulse.
                         // intakeSubsystem.agitateWhileHeldRotations(15.0)
                 )
