@@ -67,7 +67,6 @@ public class Robot extends LoggedRobot {
         DataLogManager.start();
         // NetworkTableInstance.getDefault().startEntryDataLog(DataLogManager.getLog(), "", "");
         }
-        Logger.addDataReceiver(new WPILOGWriter("log"));
         Logger.addDataReceiver(new NT4Publisher());
         break;
 
