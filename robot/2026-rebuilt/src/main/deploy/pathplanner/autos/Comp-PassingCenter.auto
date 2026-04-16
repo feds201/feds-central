@@ -17,7 +17,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 5.0
+                  "waitTime": 2.0
                 }
               },
               {
@@ -54,19 +54,19 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Start Shooter Spin"
+                  "name": "Start Passing Spin"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Passing"
                 }
               },
               {
                 "type": "wait",
                 "data": {
                   "waitTime": 7.0
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Stop Shooter Spin"
                 }
               },
               {
@@ -103,7 +103,13 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Start Shooter Spin"
+                  "name": "Start Passing Spin"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Passing"
                 }
               }
             ]
