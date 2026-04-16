@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems.shooter;
 
-import static edu.wpi.first.units.Units.Degree;
-import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Rotations;
 
@@ -15,7 +13,6 @@ import java.util.function.DoubleSupplier;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveRequest.Idle;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
@@ -24,8 +21,10 @@ import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -69,7 +68,11 @@ public class ShooterHood extends SubsystemBase {
   private final CommandSwerveDrivetrain dt;
   private double HoodAngleMultiplier = 1;
   private ShuffleboardTab tab = Shuffleboard.getTab("testing");
-    public DoubleSupplier pos = ()->0.0;
+  public DoubleSupplier pos = ()->0.0;
+  private final ShuffleboardTab pitTab;
+  private final ShuffleboardLayout shooterHoodLayout;
+  private final GenericEntry shooterHoodConnectedEntry;
+  private final GenericEntry shooterHoodPoweredEntry;
 
   /** Creates a new Shooter. */
   public ShooterHood(CommandSwerveDrivetrain dt) {
@@ -99,6 +102,10 @@ public class ShooterHood extends SubsystemBase {
                 .withProperties(Map.of("min", 0, "max", .2))
                 .getEntry();
                 pos = () -> swanNeckPivotSpeedSetter.getDouble(0);
+    pitTab = Shuffleboard.getTab("Pit Testing");
+    shooterHoodLayout = pitTab.getLayout("Shooter Hood Health", BuiltInLayouts.kList).withSize(2,1).withPosition(4, 4);
+    shooterHoodConnectedEntry = shooterHoodLayout.add("shooter Hood Motor is Connected", false).getEntry();
+    shooterHoodPoweredEntry = shooterHoodLayout.add("shooter Hood Motor is Powered", false).getEntry();
   }
 
   @Override
@@ -133,6 +140,8 @@ public class ShooterHood extends SubsystemBase {
     }
     Logger.recordOutput("Robot/Shooter/HoodAngleRotations", getPosition().in(Rotations));
     // This method will be called once per scheduler run
+    shooterHoodConnectedEntry.setBoolean(hoodMotor.isConnected());
+  shooterHoodPoweredEntry.setBoolean(hoodMotor.getSupplyVoltage().getValueAsDouble() > RobotMap.PitConstants.kPoweredThresholdVolts);
   }
 
   public void setAngle(Angle targetAngle){

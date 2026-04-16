@@ -7,9 +7,12 @@ package frc.robot;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -36,7 +39,7 @@ import org.littletonrobotics.junction.Logger;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.utils.LimelightWrapper;
-import frc.robot.utils.RTU.RootTestingUtility;
+import frc.robot.utils.PitTesting;
 import frc.robot.rtu.RTUManager;
 import frc.robot.utils.AutoSweeper;
 import limelight.networktables.LimelightSettings.ImuMode;
@@ -55,6 +58,9 @@ public class RobotContainer extends ControllerBindings {
     // limelights respectively.
     private final LimelightWrapper ll4 = new LimelightWrapper("limelight-two", true);
     private final LimelightWrapper ll3 = new LimelightWrapper("limelight-five", false);
+
+    private static java.io.File usb = RobotMap.PitConstants.usb;
+     
 
     private final CommandXboxController controller = new CommandXboxController(0);
     private final CommandXboxController operaterController = new CommandXboxController(1);
@@ -119,12 +125,17 @@ public class RobotContainer extends ControllerBindings {
     setupDriveBindings(controller);
     setupOperatorBindings(operaterController);
     configureRootTests();
-    new Trigger(drivetrain::withinTrench).and(DriverStation::isTeleop).onTrue(shooterHood.setStateCommand(shooterhood_state.IN).andThen(intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED)));
-
+    PitTesting.addCommands();
+    new Trigger(drivetrain::withinTrench).and(DriverStation::isTeleop).onTrue(shooterHood.setStateCommand(shooterhood_state.IN));
     // TODO: migrate to LoggedDashboardChooser from AdvantageKit
     registerNamedCommands();
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
+    //Adds a mirrored-to-the-right version of the LeftMidfieldDoublePass path
+    autoChooser.addOption("Comp-LeftMidfieldDoublePass", new PathPlannerAuto("Comp-RightMidfieldDoublepass", true)); 
+    autoChooser.addOption("Dev-MidIntakeToRightBump", new PathPlannerAuto("Comp-MidIntakeToLeftBump", true)); //TESTING - DO NOT USE
+    //Adds a mirrored-to-the-right version of the LeftMidfieldDoublePass path
+    autoChooser.addOption("LeftMidfieldDoublePass", new PathPlannerAuto("RightMidfieldDoublePass", true)); 
     drivetrain.registerTelemetry(telemetry::telemeterize);
   }
   
@@ -225,7 +236,7 @@ public class RobotContainer extends ControllerBindings {
   
 
     public void updateLocalization() {
-        if (ll4.getNTTable().containsKey("tv")) {
+        if (ll4.isConnected()) {
             ll4.updateLocalizationLimelight(drivetrain);
         } else {
             ll3.updateLocalizationLimelight(drivetrain);
@@ -300,13 +311,39 @@ public void registerNamedCommands() {
   NamedCommands.registerCommand("Start Shooter Spin", shooterWheels.setStateCommand(shooter_state.SHOOTING).alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
   NamedCommands.registerCommand("Stop Shooter Spin", shooterWheels.setStateCommand(shooter_state.IDLE).alongWith(shooterHood.setStateCommand(shooterhood_state.IN)).alongWith(spinDexer.setStateCommand(spindexer_state.STOP)).alongWith(feederSubsystem.setStateCommand(feeder_state.STOP)));
   NamedCommands.registerCommand("End Shooter Spin", shooterWheels.setStateCommand(shooter_state.IDLE).alongWith(shooterHood.setStateCommand(shooterhood_state.IN)).alongWith(spinDexer.setStateCommand(spindexer_state.STOP)).alongWith(feederSubsystem.setStateCommand(feeder_state.STOP)));
-  NamedCommands.registerCommand("Run Shooter", shooterWheels.setStateCommand(shooter_state.SHOOTING).alongWith(feederSubsystem.setStateCommand(feeder_state.PRUN)).alongWith(spinDexer.setStateCommand(spindexer_state.PFORWARD)).alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
-  NamedCommands.registerCommand("Shooting", shooterWheels.setStateCommand(shooter_state.SHOOTING).alongWith(feederSubsystem.setStateCommand(feeder_state.PRUN)).alongWith(spinDexer.setStateCommand(spindexer_state.PFORWARD)).alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
+  NamedCommands.registerCommand("Run Shooter", shooterWheels.setStateCommand(shooter_state.SHOOTING).alongWith(feederSubsystem.setStateCommand(feeder_state.RUN)).alongWith(spinDexer.setStateCommand(spindexer_state.RUN)).alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
+  NamedCommands.registerCommand("Shooting", shooterWheels.setStateCommand(shooter_state.SHOOTING).alongWith(feederSubsystem.setStateCommand(feeder_state.RUN)).alongWith(spinDexer.setStateCommand(spindexer_state.RUN)).alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
+  NamedCommands.registerCommand("Start Passing Spin", shooterWheels.setStateCommand(shooter_state.PASSING).alongWith(shooterHood.setStateCommand(shooterhood_state.PASSING)));
+  NamedCommands.registerCommand("Passing", shooterWheels.setStateCommand(shooter_state.PASSING).alongWith(feederSubsystem.setStateCommand(feeder_state.RUN)).alongWith(spinDexer.setStateCommand(spindexer_state.RUN)).alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
+
 
 
 }
 
+private final ShuffleboardLayout llLayout = Shuffleboard.getTab("Pit Testing").getLayout("Limelight Health", BuiltInLayouts.kList).withSize(2,1).withPosition(4, 5);
+private GenericEntry ll3conect = llLayout.add("ll3 isConnected", false).getEntry();
+private GenericEntry ll4conect = llLayout.add("ll4 isConnected", false).getEntry();       
 
 
+public void limelightConnection(){
+    ll3conect.setBoolean(ll3.isConnected());
+    ll4conect.setBoolean(ll4.isConnected());
+}
 
+private final GenericEntry testLayout = Shuffleboard.getTab("Pit Testing").add("storage", false).getEntry();
+private final GenericEntry displayLayout = Shuffleboard.getTab("Pit Testing").add("storage info", "").getEntry();
+
+public void usbStorage() {                                                                                                                                                                                                                                                     
+                                                                                                           
+  boolean mounted = usb.exists() && usb.isDirectory();                                                                                                         
+  long totalBytes = usb.getTotalSpace();                                   
+  long freeBytes  = usb.getUsableSpace();  
+                                                                                                                                                               
+  boolean storageOk = mounted && freeBytes >= RobotMap.PitConstants.STORAGE_ACCEPTABLE_BYTES;
+  String label = !mounted ? "NO DRIVE"                                                                                                                         
+      : String.format("%.1f GB free / %.1f GB total", freeBytes / 1e9, totalBytes / 1e9);                                                                      
+   
+  displayLayout.setString("Logs Flash Drive: " + label);
+  testLayout.setBoolean(storageOk);
+}
 }

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base href="$FLUTTER_BASE_HREF">
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="Scout-Ops Dash — FRC 201 scouting dashboard">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Scout-Ops Dash">
+  <link rel="manifest" href="manifest.json">
+  <title>Scout-Ops Dash</title>
+  <style>
+    body { margin: 0; background-color: #0B0F19; }
+  </style>
+</head>
+<body>
+  <!-- Neon serverless driver (browser bundle) -->
+  <script type="module">
+    import { neon } from 'https://esm.sh/@neondatabase/serverless@1';
+
+    // Expose a global function Dart can call via JS interop.
+    // neonQuery(connString, sql, paramsJson) → Promise<string>
+    //   paramsJson is a JSON-encoded array of params.
+    //   Returns a JSON string: { "fields": [...], "rows": [...] }
+    window.neonQuery = async function(connString, sql, paramsJson) {
+      try {
+        const sqlFn = neon(connString, { fullResults: true });
+        const params = JSON.parse(paramsJson || '[]');
+        const result = await sqlFn.query(sql, params);
+        return JSON.stringify({
+          fields: result.fields.map(f => f.name),
+          rows: result.rows,
+          rowCount: result.rowCount,
+        });
+      } catch (e) {
+        return JSON.stringify({ error: e.message || String(e) });
+      }
+    };
+
+    // Signal to Dart that the driver is ready.
+    window._neonReady = true;
+    console.log('[Scout-Ops] Neon serverless driver loaded.');
+  </script>
+
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>

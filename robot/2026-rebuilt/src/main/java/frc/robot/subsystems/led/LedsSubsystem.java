@@ -57,7 +57,7 @@ public class LedsSubsystem extends SubsystemBase {
   /** Creates a new LedsSubsystem. */
   public LedsSubsystem() {
     // Connect to the device on USB port 1
-    boolean connected = m_leds.Connect(USBPort.kUSB1);
+    boolean connected = m_leds.Connect(USBPort.kUSB2);
     System.out.println("ConnectorX connected: " + connected);
     
     // Initial State application will happen in periodic loop or manually here

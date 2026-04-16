@@ -14,6 +14,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Timer;
 import frc.robot.RobotMap.VisionConstants;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import limelight.Limelight;
@@ -206,5 +207,19 @@ public class LimelightWrapper extends Limelight {
             });
         }
     }
+
+    //should be run periodically, tells you if the limelight has been disconnected for more than 0.5 seconds
+
+    private double lastHeartBeat = -1;
+    private double lastHeartBeatTime = Timer.getFPGATimestamp();
+    public boolean isConnected(){
+            double heartbeat = LimelightHelpers.getHeartbeat(limelightName);
+            if(heartbeat != lastHeartBeat){
+                lastHeartBeat = heartbeat;
+                lastHeartBeatTime = Timer.getFPGATimestamp();
+            }
+
+            return (Timer.getFPGATimestamp() - lastHeartBeatTime < 0.5);
+        }
 
 }

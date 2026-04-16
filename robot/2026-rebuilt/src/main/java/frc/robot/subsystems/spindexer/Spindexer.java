@@ -16,12 +16,18 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotMap;
 import frc.robot.RobotMap.SpindexerConstants;
 import frc.robot.RobotMap.indexingConstants;
 import frc.robot.utils.DeviceTempReporter;
@@ -35,10 +41,10 @@ public class Spindexer extends SubsystemBase {
 
   //subsystem states 
   public enum spindexer_state {
-    RUN(Volts.of(5)),
-    REVERSE(Volts.of(-5)),
+    RUN(Volts.of(3)),
+    REVERSE(Volts.of(-8)),
     PREVERSE(Volts.of(-5)),
-    PFORWARD(Volts.of(8)),
+    PFORWARD(Volts.of(3)),
     STOP(Volts.of(0));
 
     private final Voltage targetPosition;
@@ -62,6 +68,10 @@ public class Spindexer extends SubsystemBase {
   private final SysIdRoutine m_spindexerSysId;
   //Timer to switch between forward and reverse during indexing
   private Timer washingMachineTimer = new Timer();
+  private final ShuffleboardTab pitTab;
+  private final ShuffleboardLayout spindexerLayout;
+  private final GenericEntry spindexerConnectedEntry;
+  private final GenericEntry spindexerPoweredEntry;
 
   // private final SysIdRoutine m_SpindexerSysId;
 
@@ -104,7 +114,10 @@ public class Spindexer extends SubsystemBase {
       this // subsystem for command requirements
     )
   );
-
+    pitTab = Shuffleboard.getTab("Pit Testing");
+    spindexerLayout = pitTab.getLayout("Spindexer Health", BuiltInLayouts.kList).withSize(2,1).withPosition(4, 3);
+    spindexerConnectedEntry = spindexerLayout.add("spindexer Motor is Connected", false).getEntry();
+    spindexerPoweredEntry = spindexerLayout.add("spindexer Motor is Powered", false).getEntry();
   }
 
    
@@ -139,6 +152,9 @@ public class Spindexer extends SubsystemBase {
       case STOP, PREVERSE:
         break;
     }
+    
+    spindexerConnectedEntry.setBoolean(spindexerMotor.isConnected());
+  spindexerPoweredEntry.setBoolean(spindexerMotor.getSupplyVoltage().getValueAsDouble() > RobotMap.PitConstants.kPoweredThresholdVolts);
   }
 
   // subsystem getters

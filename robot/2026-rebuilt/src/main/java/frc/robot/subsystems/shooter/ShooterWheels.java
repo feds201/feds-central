@@ -5,7 +5,6 @@
 package frc.robot.subsystems.shooter;
 
 import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.Rotation;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
@@ -30,11 +29,12 @@ import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.RobotMap;
@@ -75,7 +75,17 @@ public class ShooterWheels extends SubsystemBase {
     private final SysIdRoutine m_flywheelSysId;
     private ShuffleboardTab tab = Shuffleboard.getTab("testing");
     private DoubleSupplier speed = ()->0.0;
-  
+
+    private final ShuffleboardTab pitTab;
+    private final ShuffleboardLayout shooterLayout;
+    private final GenericEntry shooter1ConnectedEntry;
+    private final GenericEntry shooter1PoweredEntry;
+    private final GenericEntry shooter2ConnectedEntry;
+    private final GenericEntry shooter2PoweredEntry;
+    private final GenericEntry shooter3ConnectedEntry;
+    private final GenericEntry shooter3PoweredEntry;
+    private final GenericEntry shooter4ConnectedEntry;
+    private final GenericEntry shooter4PoweredEntry;
   /** Creates a new Shooter. */
   public ShooterWheels(CommandSwerveDrivetrain dt) {
     this.dt = dt;
@@ -135,7 +145,16 @@ public class ShooterWheels extends SubsystemBase {
                 .withProperties(Map.of("min", 0, "max", .2))
                 .getEntry();
                 speed = () -> swanNeckPivotSpeedSetter.getDouble(0);
-
+    pitTab = Shuffleboard.getTab("Pit Testing");
+    shooterLayout = pitTab.getLayout("Shooter Wheel Health", BuiltInLayouts.kList).withSize(2,4).withPosition(6, 2);
+    shooter1ConnectedEntry = shooterLayout.add("Top Right Motor is Connected", false).getEntry();
+    shooter1PoweredEntry = shooterLayout.add("Top Right Motor is Powered", false).getEntry();
+    shooter2ConnectedEntry = shooterLayout.add("Bottom Left Motor is Connected", false).getEntry();
+    shooter2PoweredEntry = shooterLayout.add("Bottom Left Motor is Powered", false).getEntry();
+    shooter3ConnectedEntry = shooterLayout.add("Bottom Right Motor is Connected", false).getEntry();
+    shooter3PoweredEntry = shooterLayout.add("Bottom Right Motor is Powered", false).getEntry();
+    shooter4ConnectedEntry = shooterLayout.add("Top Left Motor is Connected", false).getEntry();
+    shooter4PoweredEntry = shooterLayout.add("Top Left Motor is Powered", false).getEntry();
   }
 
   @Override
@@ -163,6 +182,15 @@ public class ShooterWheels extends SubsystemBase {
       setVelocity(RotationsPerSecond.of(speed.getAsDouble()));
       break;
     }
+
+    shooter1ConnectedEntry.setBoolean(shooterLeader.isConnected());
+    shooter1PoweredEntry.setBoolean(shooterLeader.getSupplyVoltage().getValueAsDouble() > RobotMap.PitConstants.kPoweredThresholdVolts);
+    shooter2ConnectedEntry.setBoolean(shooterFollower1.isConnected());
+    shooter2PoweredEntry.setBoolean(shooterFollower1.getSupplyVoltage().getValueAsDouble() > RobotMap.PitConstants.kPoweredThresholdVolts);
+    shooter3ConnectedEntry.setBoolean(shooterFollower2.isConnected());
+    shooter3PoweredEntry.setBoolean(shooterFollower2.getSupplyVoltage().getValueAsDouble() > RobotMap.PitConstants.kPoweredThresholdVolts);
+    shooter4ConnectedEntry.setBoolean(shooterFollower3.isConnected());
+    shooter4PoweredEntry.setBoolean(shooterFollower3.getSupplyVoltage().getValueAsDouble() > RobotMap.PitConstants.kPoweredThresholdVolts);
   }
 
   public void setVelocity(AngularVelocity velocity){

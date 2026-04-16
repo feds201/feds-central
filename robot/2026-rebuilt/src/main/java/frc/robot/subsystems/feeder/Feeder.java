@@ -17,13 +17,19 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.RobotMap;
 import frc.robot.RobotMap.FeederConstants;
 import frc.robot.RobotMap.indexingConstants;
 import frc.robot.utils.DeviceTempReporter;
@@ -34,10 +40,10 @@ public class Feeder extends SubsystemBase {
 
   // subsystem states
   public enum feeder_state {
-    RUN(Volts.of(7)),
-    PRUN(Volts.of(7)),
-    REVERSE(Volts.of(-7)),
-    PREVERSE(Volts.of(-6)),
+    RUN(Volts.of(12)),
+    PRUN(Volts.of(12)),
+    REVERSE(Volts.of(-8.5)),
+    PREVERSE(Volts.of(-8.5)),
     STOP(Volts.of(0));
 
     private final Voltage targetVoltage;
@@ -61,6 +67,10 @@ public class Feeder extends SubsystemBase {
   private final SysIdRoutine m_feederSysId;
   //Timer to switch between forward and reverse during indexing
   private Timer washingMachineTimer = new Timer();
+  private final ShuffleboardTab pitTab;
+  private final GenericEntry feederConnectedEntry;
+  private final GenericEntry feederPoweredEntry;
+  private final ShuffleboardLayout feederLayout;
 
     public Feeder() {
     feederMotor = new TalonFX(FeederConstants.kFeederKickerMotorId);
@@ -104,10 +114,17 @@ public class Feeder extends SubsystemBase {
             null,
             this // subsystem for command requirements
         ));
+        pitTab = Shuffleboard.getTab("Pit Testing");
+        feederLayout = pitTab.getLayout("feeder Health", BuiltInLayouts.kList).withSize(2, 1).withPosition(4, 2);
+        feederConnectedEntry = feederLayout.add("feeder Motor is Connected", false).getEntry();
+        feederPoweredEntry = feederLayout.add("feeder Motor is Powered", false).getEntry();
   }
 
   @Override
   public void periodic() {
+    feederConnectedEntry.setBoolean(feederMotor.isConnected());
+  feederPoweredEntry.setBoolean(feederMotor.getSupplyVoltage().getValueAsDouble() > RobotMap.PitConstants.kPoweredThresholdVolts);
+
     Logger.recordOutput("Robot/Shooter/FeederOn", currentState == feeder_state.RUN);
     Logger.recordOutput("Robot/Shooter/FeederState", currentState.toString());
      switch (currentState) {
