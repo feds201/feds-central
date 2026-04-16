@@ -40,8 +40,8 @@ public class Feeder extends SubsystemBase {
 
   // subsystem states
   public enum feeder_state {
-    RUN(Volts.of(8.5)),
-    PRUN(Volts.of(8.5)),
+    RUN(Volts.of(12)),
+    PRUN(Volts.of(12)),
     REVERSE(Volts.of(-8.5)),
     PREVERSE(Volts.of(-8.5)),
     STOP(Volts.of(0));
