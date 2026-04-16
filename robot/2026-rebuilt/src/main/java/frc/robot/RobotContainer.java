@@ -317,8 +317,7 @@ public void registerNamedCommands() {
   NamedCommands.registerCommand("Run Shooter", shooterWheels.setStateCommand(shooter_state.SHOOTING).alongWith(feederSubsystem.setStateCommand(feeder_state.RUN)).alongWith(spinDexer.setStateCommand(spindexer_state.RUN)).alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
   NamedCommands.registerCommand("Shooting", shooterWheels.setStateCommand(shooter_state.SHOOTING).alongWith(feederSubsystem.setStateCommand(feeder_state.RUN)).alongWith(spinDexer.setStateCommand(spindexer_state.RUN)).alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
   NamedCommands.registerCommand("Start Passing Spin", shooterWheels.setStateCommand(shooter_state.PASSING).alongWith(shooterHood.setStateCommand(shooterhood_state.PASSING)));
-  NamedCommands.registerCommand("Passing", shooterWheels.setStateCommand(shooter_state.PASSING).alongWith(feederSubsystem.setStateCommand(feeder_state.RUN)).alongWith(spinDexer.setStateCommand(spindexer_state.RUN)).alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
-
+  NamedCommands.registerCommand("Passing", shooterWheels.setStateCommand(shooter_state.PASSING).alongWith(feederSubsystem.setStateCommand(feeder_state.RUN)).alongWith(spinDexer.setStateCommand(spindexer_state.RUN)).alongWith(shooterHood.setStateCommand(shooterhood_state.PASSING)));
 
 
 }
