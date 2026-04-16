@@ -308,9 +308,10 @@ class _RecordVideoPageState extends State<RecordVideoPage> {
 
   /// Check if a recording already exists for the current match + alliance side.
   bool _hasExistingRecording() {
-    final recordings = widget.dataStore
-        .getRecordingsForMatch(widget.matchWithVideos.match.matchKey);
-    return recordings.any((r) => r.allianceSide == _allianceSide);
+    return widget.dataStore.hasRecordingForSide(
+      widget.matchWithVideos.match.matchKey,
+      _allianceSide,
+    );
   }
 
   String _formatElapsed(Duration d) {
