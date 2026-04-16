@@ -507,14 +507,12 @@ public class IntakeSubsystem extends SubsystemBase {
           }
           if(timer.hasElapsed(0.2)){
             setState(IntakeState.CLOSE_AGITATION_IN); // really close to default
-            setState(IntakeState.CLOSE_AGITATION_IN); // really close to default
             timer.stop();
             timer.reset();
           }
           break;
 
-          case CLOSE_AGITATION_IN  : 
-          case CLOSE_AGITATION_IN  : 
+          case CLOSE_AGITATION_IN: 
           if(!timer.isRunning()){
             timer.start();
           }
@@ -534,20 +532,6 @@ public class IntakeSubsystem extends SubsystemBase {
 
         if(timer.hasElapsed(0.3)){
             setState(IntakeState.DITHEROUT_AGITATION);
-            setState(IntakeState.CLOSE_AGITATION_OUT); // about halfway from bumper to extended
-            timer.stop();
-            timer.reset();
-        }
-          break;
-
-        case DITHERIN_AGITATION:
-        if(!timer.isRunning()){
-          timer.start();
-      }
-        motor.set(-0.3); 
-
-        if(timer.hasElapsed(0.3)){
-            setState(IntakeState.DITHEROUT_AGITATION);
             timer.stop();
             timer.reset();
         }
@@ -567,22 +551,6 @@ public class IntakeSubsystem extends SubsystemBase {
 
         }
           break;
-
-        case DITHEROUT_AGITATION:
-        if(!timer.isRunning()){
-          timer.start();
-      }
-        motor.set(0.3); 
-
-        if(timer.hasElapsed(0.1)){
-            setState(IntakeState.DITHERIN_AGITATION); // small retract from extended
-            timer.stop();
-            timer.reset();
-         
-
-        }
-         break;
-         break;
       }
 
 
