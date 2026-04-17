@@ -15,10 +15,7 @@ dependencies:
   shared_preferences: ^2.2.0
   file_picker: ^8.0.0
   bot_path_drawer:
-    git:
-      url: https://github.com/feds201/feds-central.git
-      ref: main
-      path: scouting/packages/bot_path_drawer
+    path: ../packages/bot_path_drawer
 dev_dependencies:
   flutter_test:
     sdk: flutter

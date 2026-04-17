@@ -31,6 +31,8 @@ void main() async {
         oprByTeam: cached.oprByTeam,
         epaByTeam: cached.epaByTeam,
         matchEntries: cached.matchEntries,
+        playoffAlliances: cached.playoffAlliances,
+        teamNames: cached.teamNames,
         lastUpdated: await LocalPrefs.lastUpdated,
       );
       initialRoute = '/compare';
@@ -53,7 +55,7 @@ class ScoutOpsApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Scout-Ops Dash',
+      title: 'Match Dash',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.dark,
       initialRoute: initialRoute,
@@ -61,7 +63,11 @@ class ScoutOpsApp extends StatelessWidget {
         if (settings.name == '/') {
           final args = settings.arguments as Map<String, dynamic>?;
           final autoLoad = args?['autoLoad'] ?? true;
-          return _fade(EventEntryScreen(autoLoad: autoLoad));
+          final dismissible = args?['dismissible'] ?? false;
+          return _fade(EventEntryScreen(
+            autoLoad: autoLoad,
+            dismissible: dismissible,
+          ));
         }
         if (settings.name == '/compare') {
           return _fade(const ComparisonScreen());

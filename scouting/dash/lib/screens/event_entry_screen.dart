@@ -6,9 +6,14 @@ import '../services/local_prefs.dart';
 import '../theme.dart';
 
 class EventEntryScreen extends StatefulWidget {
-  const EventEntryScreen({super.key, this.autoLoad = true});
+  const EventEntryScreen({
+    super.key,
+    this.autoLoad = true,
+    this.dismissible = false,
+  });
 
   final bool autoLoad;
+  final bool dismissible;
 
   @override
   State<EventEntryScreen> createState() => _EventEntryScreenState();
@@ -116,7 +121,7 @@ class _EventEntryScreenState extends State<EventEntryScreen>
         tbaKey: _tbaCtl.text.trim(),
       );
       if (!mounted) return;
-      Navigator.of(context).pushReplacementNamed('/compare');
+      _goToCompare();
     }
   }
 
@@ -151,8 +156,18 @@ class _EventEntryScreenState extends State<EventEntryScreen>
         oprByTeam: svc.oprByTeam,
         epaByTeam: svc.epaByTeam,
         matchEntries: svc.matchEntries,
+        playoffAlliances: svc.playoffAlliances,
+        teamNames: svc.teamNames,
       );
       if (!mounted) return;
+      _goToCompare();
+    }
+  }
+
+  void _goToCompare() {
+    if (widget.dismissible) {
+      Navigator.of(context).pop();
+    } else {
       Navigator.of(context).pushReplacementNamed('/compare');
     }
   }
@@ -179,23 +194,25 @@ class _EventEntryScreenState extends State<EventEntryScreen>
     final loading = context.select<DataService, bool>((s) => s.loading);
 
     return Scaffold(
-      body: Center(
-        child: FadeTransition(
-          opacity: _fadeAnim,
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(32),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 460),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    // ── Logo ──────────────────────────────────────────
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+      body: Stack(
+        children: [
+          Center(
+            child: FadeTransition(
+              opacity: _fadeAnim,
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(32),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 460),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
+                        // ── Logo ──────────────────────────────────────────
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
                         Container(
                           width: 44,
                           height: 44,
@@ -207,7 +224,7 @@ class _EventEntryScreenState extends State<EventEntryScreen>
                               color: AppTheme.accent, size: 26),
                         ),
                         const SizedBox(width: 12),
-                        Text('Scout-Ops Dash',
+                        Text('Match Dash',
                             style: Theme.of(context)
                                 .textTheme
                                 .headlineMedium!
@@ -386,6 +403,21 @@ class _EventEntryScreenState extends State<EventEntryScreen>
             ),
           ),
         ),
+          ),
+          if (widget.dismissible)
+            Positioned(
+              top: 8,
+              right: 8,
+              child: SafeArea(
+                child: IconButton(
+                  icon: const Icon(Icons.close_rounded, size: 22),
+                  tooltip: 'Close',
+                  color: AppTheme.muted,
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

@@ -1,17 +1,20 @@
-import 'dart:convert';
-
+import 'package:bot_path_drawer/bot_path_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:bot_path_drawer/bot_path_drawer.dart';
+
 import '../models/auto_path_data.dart';
+import '../models/match_entry.dart';
+import '../models/playoff_alliance.dart';
 import '../services/data_service.dart';
 import '../services/local_prefs.dart';
 import '../theme.dart';
+import '../widgets/alliance_selector.dart';
 import '../widgets/match_selector.dart';
+import '../widgets/neon_data_tabs.dart';
 import '../widgets/team_selector.dart';
-import '../widgets/team_data_column.dart';
 
-/// Main screen: 3 team slots, one big shared field with paths, data below.
+/// Main strategy screen: match + alliance pickers, 3 red vs 3 blue team grid,
+/// shared field viewer, and alliance data tabs.
 class ComparisonScreen extends StatefulWidget {
   const ComparisonScreen({super.key});
 
@@ -20,12 +23,12 @@ class ComparisonScreen extends StatefulWidget {
 }
 
 class _ComparisonScreenState extends State<ComparisonScreen> {
-  final List<int?> _selectedTeams = [null, null, null];
+  final List<int?> _redTeams = [null, null, null];
+  final List<int?> _blueTeams = [null, null, null];
+  MatchEntry? _selectedMatch;
+  PlayoffAlliance? _selectedRedAlliance;
+  PlayoffAlliance? _selectedBlueAlliance;
 
-  // Alliance assignments per slot: null = unassigned, red, or blue
-  final List<Alliance?> _alliances = [null, null, null];
-
-  // Locally saved paths per team: { teamNumber: { pathName: pathData } }
   Map<String, Map<String, String>> _localPaths = {};
 
   @override
@@ -47,15 +50,14 @@ class _ComparisonScreenState extends State<ComparisonScreen> {
     if (mounted) setState(() => _localPaths = saved);
   }
 
-  Future<void> _saveLocalPath(String teamKey, String pathName, String pathData) async {
+  Future<void> _saveLocalPath(
+      String teamKey, String pathName, String pathData) async {
     final teamPaths = Map<String, String>.from(_localPaths[teamKey] ?? {});
     teamPaths[pathName] = pathData;
     _localPaths = Map.from(_localPaths)..[teamKey] = teamPaths;
     await LocalPrefs.saveLocalPaths(_localPaths);
     if (mounted) setState(() {});
   }
-
-  // ── Open BotPathDrawer to add a path for a team ────────────────────
 
   Future<void> _addPathForTeam(String teamKey) async {
     final config = BotPathConfig(
@@ -100,7 +102,6 @@ class _ComparisonScreenState extends State<ComparisonScreen> {
     );
 
     if (result != null && result.isNotEmpty) {
-      // Ask for a name
       final nameController = TextEditingController(
         text: 'Path ${(_localPaths[teamKey]?.length ?? 0) + 1}',
       );
@@ -119,7 +120,8 @@ class _ComparisonScreenState extends State<ComparisonScreen> {
               child: const Text('Cancel'),
             ),
             TextButton(
-              onPressed: () => Navigator.of(ctx).pop(nameController.text.trim()),
+              onPressed: () =>
+                  Navigator.of(ctx).pop(nameController.text.trim()),
               child: const Text('Save'),
             ),
           ],
@@ -145,28 +147,70 @@ class _ComparisonScreenState extends State<ComparisonScreen> {
         oprByTeam: svc.oprByTeam,
         epaByTeam: svc.epaByTeam,
         matchEntries: svc.matchEntries,
+        playoffAlliances: svc.playoffAlliances,
+        teamNames: svc.teamNames,
       );
     }
   }
 
-  void _onTeamChanged(int slot, int? team) {
+  // ── Selection handlers ─────────────────────────────────────────────
+
+  void _onMatchSelected(MatchEntry match) {
     setState(() {
-      _selectedTeams[slot] = team;
+      _selectedMatch = match;
+      _selectedRedAlliance = null;
+      _selectedBlueAlliance = null;
+      _fillSlots(_redTeams, match.redTeams);
+      _fillSlots(_blueTeams, match.blueTeams);
     });
   }
 
-  void _onAllianceChanged(int slot, Alliance? alliance) {
+  void _onMatchCleared() {
     setState(() {
-      _alliances[slot] = alliance;
+      _selectedMatch = null;
+      _selectedRedAlliance = null;
+      _selectedBlueAlliance = null;
+      _fillSlots(_redTeams, const []);
+      _fillSlots(_blueTeams, const []);
     });
   }
 
-  void _onMatchSelected(List<int> teams) {
+  void _onAllianceSelected(Alliance alliance, PlayoffAlliance pa) {
     setState(() {
-      for (int i = 0; i < 3 && i < teams.length; i++) {
-        _selectedTeams[i] = teams[i];
+      _selectedMatch = null;
+      if (alliance == Alliance.red) {
+        _selectedRedAlliance = pa;
+        _fillSlots(_redTeams, pa.teams);
+      } else {
+        _selectedBlueAlliance = pa;
+        _fillSlots(_blueTeams, pa.teams);
       }
     });
+  }
+
+  void _onAllianceCleared(Alliance alliance) {
+    setState(() {
+      if (alliance == Alliance.red) {
+        _selectedRedAlliance = null;
+        _fillSlots(_redTeams, const []);
+      } else {
+        _selectedBlueAlliance = null;
+        _fillSlots(_blueTeams, const []);
+      }
+    });
+  }
+
+  void _onTeamChanged(Alliance alliance, int slot, int? team) {
+    setState(() {
+      final list = alliance == Alliance.red ? _redTeams : _blueTeams;
+      list[slot] = team;
+    });
+  }
+
+  void _fillSlots(List<int?> slots, List<int> teams) {
+    for (int i = 0; i < slots.length; i++) {
+      slots[i] = i < teams.length ? teams[i] : null;
+    }
   }
 
   // ── Build teams map for BotPathViewerWithSelector ──────────────────
@@ -174,14 +218,13 @@ class _ComparisonScreenState extends State<ComparisonScreen> {
   Map<String, TeamPaths> _buildTeamsMap(DataService svc) {
     final teamsMap = <String, TeamPaths>{};
 
-    for (int i = 0; i < 3; i++) {
-      final team = _selectedTeams[i];
-      if (team == null) continue;
-
+    void addTeam(int? team, Alliance alliance, int slot) {
+      if (team == null) return;
       final teamKey = '$team';
+      if (teamsMap.containsKey(teamKey)) return;
+
       final pathsMap = <String, String>{};
 
-      // Paths from database
       final rows = svc.scoutingByTeam[team];
       if (rows != null && rows.isNotEmpty) {
         final pathRaw = rows.first['pathdraw'];
@@ -193,7 +236,6 @@ class _ComparisonScreenState extends State<ComparisonScreen> {
         }
       }
 
-      // Locally saved paths (prefixed so they don't collide with DB paths)
       final local = _localPaths[teamKey] ?? {};
       for (final entry in local.entries) {
         var key = '📍 ${entry.key}';
@@ -201,52 +243,51 @@ class _ComparisonScreenState extends State<ComparisonScreen> {
         pathsMap[key] = entry.value;
       }
 
-      if (pathsMap.isEmpty && _localPaths[teamKey] == null) continue;
+      if (pathsMap.isEmpty && _localPaths[teamKey] == null) return;
 
+      // Pin color to the dash's slot palette so the drawer doesn't re-derive
+      // it from alliance-group index (which shifts when a slot is empty).
       teamsMap[teamKey] = TeamPaths(
         paths: pathsMap,
-        color: AppTheme.slotColors[i],
-        alliance: _alliances[i],
+        alliance: alliance,
+        color: AppTheme.allianceTeamColors[alliance]![slot],
       );
+    }
+
+    for (int i = 0; i < _redTeams.length; i++) {
+      addTeam(_redTeams[i], Alliance.red, i);
+    }
+    for (int i = 0; i < _blueTeams.length; i++) {
+      addTeam(_blueTeams[i], Alliance.blue, i);
     }
 
     return teamsMap;
   }
 
-  // ── Check if all assigned slots have an alliance set ───────────────
-  bool get _allianceModeActive {
-    final filledSlots = _selectedTeams
-        .asMap()
-        .entries
-        .where((e) => e.value != null)
-        .toList();
-    if (filledSlots.isEmpty) return false;
-    return filledSlots.every((e) => _alliances[e.key] != null);
-  }
+  int get _filledCount =>
+      _redTeams.where((t) => t != null).length +
+      _blueTeams.where((t) => t != null).length;
 
   @override
   Widget build(BuildContext context) {
     final svc = context.watch<DataService>();
-    final filledCount = _selectedTeams.where((t) => t != null).length;
     final teamsMap = _buildTeamsMap(svc);
+    final showAllianceRow = svc.playoffAlliances.isNotEmpty;
 
     final config = BotPathConfig(
       backgroundImage: const AssetImage('assets/Aerna2026.png'),
       brightness: Brightness.dark,
-      // cropFraction forced to 1.0 by the package when alliance mode is active
     );
 
     return Scaffold(
       body: Column(
         children: [
-          // ── Top Bar ────────────────────────────────────────────────
           _TopBar(onRefresh: _refresh),
-
-          // ── Error banner ───────────────────────────────────────────
           if (svc.error != null)
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               color: AppTheme.red.withOpacity(0.10),
               child: Text(
                 svc.error!,
@@ -255,109 +296,105 @@ class _ComparisonScreenState extends State<ComparisonScreen> {
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-
-          // ── Body ───────────────────────────────────────────────────
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // ── Selectors ──────────────────────────────────────
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-                    child: Column(
+                  MatchSelector(
+                    value: _selectedMatch,
+                    onSelected: _onMatchSelected,
+                    onCleared: _onMatchCleared,
+                  ),
+                  if (showAllianceRow) ...[
+                    const SizedBox(height: 8),
+                    Row(
                       children: [
-                        MatchSelector(onSelected: _onMatchSelected),
-                        const SizedBox(height: 8),
-                        for (int i = 0; i < 3; i++) ...[
-                          if (i > 0) const SizedBox(height: 8),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: TeamSelector(
-                                  slotIndex: i,
-                                  value: _selectedTeams[i],
-                                  onChanged: (team) => _onTeamChanged(i, team),
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              // Alliance picker
-                              _AlliancePicker(
-                                value: _alliances[i],
-                                onChanged: _selectedTeams[i] != null
-                                    ? (a) => _onAllianceChanged(i, a)
-                                    : null,
-                              ),
-                            ],
+                        Expanded(
+                          child: AllianceSelector(
+                            label: 'Red alliance',
+                            accent: AppTheme
+                                .allianceTeamColors[Alliance.red]!.first,
+                            value: _selectedRedAlliance,
+                            onSelected: (pa) =>
+                                _onAllianceSelected(Alliance.red, pa),
+                            onCleared: () =>
+                                _onAllianceCleared(Alliance.red),
                           ),
-                        ],
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: AllianceSelector(
+                            label: 'Blue alliance',
+                            accent: AppTheme
+                                .allianceTeamColors[Alliance.blue]!.first,
+                            value: _selectedBlueAlliance,
+                            onSelected: (pa) =>
+                                _onAllianceSelected(Alliance.blue, pa),
+                            onCleared: () =>
+                                _onAllianceCleared(Alliance.blue),
+                          ),
+                        ),
                       ],
                     ),
-                  ),
-
-                  // ── Alliance mode hint ────────────────────────────
-                  if (filledCount > 0 && !_allianceModeActive)
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                      child: Row(
-                        children: [
-                          Icon(Icons.info_outline,
-                              size: 13, color: AppTheme.muted),
-                          const SizedBox(width: 6),
-                          Text(
-                            'Assign alliances to all teams to enable full-field mode',
-                            style: AppTheme.mono(11, color: AppTheme.muted),
-                          ),
-                        ],
-                      ),
-                    ),
-
+                  ],
                   const SizedBox(height: 12),
-
-                  // ── Field viewer ──────────────────────────────────
-                  if (filledCount == 0)
+                  for (int i = 0; i < 3; i++) ...[
+                    if (i > 0) const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TeamSelector(
+                            alliance: Alliance.red,
+                            slot: i,
+                            value: _redTeams[i],
+                            onChanged: (t) =>
+                                _onTeamChanged(Alliance.red, i, t),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: TeamSelector(
+                            alliance: Alliance.blue,
+                            slot: i,
+                            value: _blueTeams[i],
+                            onChanged: (t) =>
+                                _onTeamChanged(Alliance.blue, i, t),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                  const SizedBox(height: 16),
+                  if (_filledCount == 0)
                     _EmptyState()
                   else ...[
                     Card(
                       child: SizedBox(
-                        height: _allianceModeActive ? 520 : 450,
+                        height: 520,
                         child: teamsMap.isEmpty
-                            ? Center(
-                          child: Text(
-                            'No path data for selected teams.\nUse the + button to add a path locally.',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                color: AppTheme.muted, fontSize: 13),
-                          ),
-                        )
+                            ? const Center(
+                                child: Text(
+                                  'No path data for selected teams.\n'
+                                  'Use the + button to add a path locally.',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      color: AppTheme.muted, fontSize: 13),
+                                ),
+                              )
                             : BotPathViewerWithSelector(
-                          config: config,
-                          teams: teamsMap,
-                          onAddPath: (teamKey) =>
-                              _addPathForTeam(teamKey),
-                        ),
+                                config: config,
+                                teams: teamsMap,
+                                onAddPath: (teamKey) =>
+                                    _addPathForTeam(teamKey),
+                              ),
                       ),
                     ),
                     const SizedBox(height: 16),
-
-                    // ── Data columns ──────────────────────────────
-                    IntrinsicHeight(
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          for (int i = 0; i < 3; i++) ...[
-                            if (i > 0) const SizedBox(width: 10),
-                            Expanded(
-                              child: _selectedTeams[i] != null
-                                  ? TeamDataColumn(
-                                teamNumber: _selectedTeams[i]!,
-                                slotIndex: i,
-                              )
-                                  : const SizedBox.shrink(),
-                            ),
-                          ],
-                        ],
-                      ),
+                    NeonDataTabs(
+                      redTeams: _redTeams,
+                      blueTeams: _blueTeams,
                     ),
                   ],
                 ],
@@ -365,91 +402,6 @@ class _ComparisonScreenState extends State<ComparisonScreen> {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-// ═══════════════════════════════════════════════════════════════════════
-// Alliance Picker
-// ═══════════════════════════════════════════════════════════════════════
-
-class _AlliancePicker extends StatelessWidget {
-  const _AlliancePicker({required this.value, required this.onChanged});
-
-  final Alliance? value;
-  final ValueChanged<Alliance?>? onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        _AllianceBtn(
-          label: 'R',
-          color: Colors.red,
-          selected: value == Alliance.red,
-          onTap: onChanged == null
-              ? null
-              : () => onChanged!(
-            value == Alliance.red ? null : Alliance.red,
-          ),
-        ),
-        const SizedBox(width: 4),
-        _AllianceBtn(
-          label: 'B',
-          color: Colors.blue,
-          selected: value == Alliance.blue,
-          onTap: onChanged == null
-              ? null
-              : () => onChanged!(
-            value == Alliance.blue ? null : Alliance.blue,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _AllianceBtn extends StatelessWidget {
-  const _AllianceBtn({
-    required this.label,
-    required this.color,
-    required this.selected,
-    required this.onTap,
-  });
-
-  final String label;
-  final Color color;
-  final bool selected;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 150),
-        width: 32,
-        height: 32,
-        decoration: BoxDecoration(
-          color: selected ? color.withOpacity(0.85) : color.withOpacity(0.12),
-          borderRadius: BorderRadius.circular(6),
-          border: Border.all(
-            color: selected ? color : color.withOpacity(0.3),
-            width: selected ? 2 : 1,
-          ),
-        ),
-        child: Center(
-          child: Text(
-            label,
-            style: TextStyle(
-              color: selected ? Colors.white : color,
-              fontWeight: FontWeight.bold,
-              fontSize: 13,
-            ),
-          ),
-        ),
       ),
     );
   }
@@ -500,15 +452,15 @@ class _TopBar extends StatelessWidget {
             IconButton(
               icon: const Icon(Icons.settings_rounded, size: 20),
               tooltip: 'Settings',
-              onPressed: () => Navigator.of(context)
-                  .pushReplacementNamed('/', arguments: {'autoLoad': false}),
+              onPressed: () => Navigator.of(context).pushNamed(
+                '/',
+                arguments: {'autoLoad': false, 'dismissible': true},
+              ),
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
             ),
             const SizedBox(width: 8),
-            const Icon(Icons.radar_rounded, color: AppTheme.accent, size: 20),
-            const SizedBox(width: 8),
-            Text('Scout-Ops', style: Theme.of(context).textTheme.titleLarge),
+            Text('Match Dash', style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(width: 8),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
@@ -536,13 +488,13 @@ class _TopBar extends StatelessWidget {
                 ),
                 icon: svc.loading
                     ? const SizedBox(
-                  width: 14,
-                  height: 14,
-                  child: CircularProgressIndicator(
-                      strokeWidth: 2, color: AppTheme.accent),
-                )
+                        width: 14,
+                        height: 14,
+                        child: CircularProgressIndicator(
+                            strokeWidth: 2, color: AppTheme.accent),
+                      )
                     : Icon(Icons.refresh_rounded,
-                    size: 16, color: AppTheme.accent),
+                        size: 16, color: AppTheme.accent),
                 label: Text(
                   svc.loading ? 'Refreshing...' : 'Refresh Data',
                   style: TextStyle(
@@ -582,7 +534,7 @@ class _EmptyState extends StatelessWidget {
               size: 48, color: AppTheme.muted.withOpacity(0.4)),
           const SizedBox(height: 16),
           Text(
-            'Select up to 3 teams to compare',
+            'Pick a match or alliance above',
             style: Theme.of(context)
                 .textTheme
                 .bodyLarge!
@@ -590,7 +542,7 @@ class _EmptyState extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           Text(
-            'Use the dropdowns above to pick teams',
+            'Or choose teams manually in the red/blue grid',
             style: Theme.of(context).textTheme.bodySmall,
           ),
         ],

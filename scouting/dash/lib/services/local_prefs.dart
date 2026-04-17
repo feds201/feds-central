@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/match_entry.dart';
+import '../models/playoff_alliance.dart';
 
 /// Persists config, cached scouting data, and locally drawn paths.
 class LocalPrefs {
@@ -20,9 +21,9 @@ class LocalPrefs {
         'compLevel': m.compLevel,
         'matchNumber': m.matchNumber,
         'setNumber': m.setNumber,
-        'alliance': m.alliance,
-        'isOurAlliance': m.isOurAlliance,
-        'teamNumbers': m.teamNumbers,
+        'redTeams': m.redTeams,
+        'blueTeams': m.blueTeams,
+        'hasOurTeam': m.hasOurTeam,
       };
 
   static MatchEntry _matchFromJson(Map<String, dynamic> j) => MatchEntry(
@@ -30,9 +31,20 @@ class LocalPrefs {
         compLevel: j['compLevel'] as String,
         matchNumber: j['matchNumber'] as int,
         setNumber: j['setNumber'] as int,
-        alliance: j['alliance'] as String,
-        isOurAlliance: j['isOurAlliance'] as bool,
-        teamNumbers: (j['teamNumbers'] as List).cast<int>().toList(),
+        redTeams: (j['redTeams'] as List).cast<int>().toList(),
+        blueTeams: (j['blueTeams'] as List).cast<int>().toList(),
+        hasOurTeam: j['hasOurTeam'] as bool,
+      );
+
+  static Map<String, dynamic> _allianceToJson(PlayoffAlliance a) => {
+        'name': a.name,
+        'teams': a.teams,
+      };
+
+  static PlayoffAlliance _allianceFromJson(Map<String, dynamic> j) =>
+      PlayoffAlliance(
+        name: j['name'] as String,
+        teams: (j['teams'] as List).cast<int>().toList(),
       );
 
   static dynamic _toJsonSafe(dynamic value) {
@@ -91,6 +103,8 @@ class LocalPrefs {
     required Map<int, double> oprByTeam,
     required Map<int, double> epaByTeam,
     required List<MatchEntry> matchEntries,
+    required List<PlayoffAlliance> playoffAlliances,
+    required Map<int, String> teamNames,
   }) async {
     if (scoutingByTeam.isEmpty) {
       print('[LocalPrefs] saveData SKIPPED: empty scouting data');
@@ -118,6 +132,8 @@ class LocalPrefs {
     final opr = oprByTeam.map((k, v) => MapEntry(k.toString(), v));
     final epa = epaByTeam.map((k, v) => MapEntry(k.toString(), v));
     final matches = matchEntries.map(_matchToJson).toList();
+    final alliances = playoffAlliances.map(_allianceToJson).toList();
+    final names = teamNames.map((k, v) => MapEntry(k.toString(), v));
 
     final encoded = json.encode({
       'scoutingByTeam': teamData,
@@ -125,6 +141,8 @@ class LocalPrefs {
       'oprByTeam': opr,
       'epaByTeam': epa,
       'matchEntries': matches,
+      'playoffAlliances': alliances,
+      'teamNames': names,
     });
 
     final sizeKb = (encoded.length / 1024).toStringAsFixed(1);
@@ -159,6 +177,8 @@ class LocalPrefs {
   Map<int, double> oprByTeam,
   Map<int, double> epaByTeam,
   List<MatchEntry> matchEntries,
+  List<PlayoffAlliance> playoffAlliances,
+  Map<int, String> teamNames,
   })?> loadData(String eventKey) async {
     final prefs = await SharedPreferences.getInstance();
     if (prefs.getString(_kCachedEvent) != eventKey) return null;
@@ -186,6 +206,11 @@ class LocalPrefs {
       final matches = ((decoded['matchEntries'] as List?) ?? const [])
           .map((e) => _matchFromJson(e as Map<String, dynamic>))
           .toList();
+      final alliances = ((decoded['playoffAlliances'] as List?) ?? const [])
+          .map((e) => _allianceFromJson(e as Map<String, dynamic>))
+          .toList();
+      final names = ((decoded['teamNames'] as Map<String, dynamic>?) ?? const {})
+          .map((k, v) => MapEntry(int.parse(k), v as String));
 
       return (
       scoutingByTeam: teamMap,
@@ -193,8 +218,10 @@ class LocalPrefs {
       oprByTeam: opr,
       epaByTeam: epa,
       matchEntries: matches,
+      playoffAlliances: alliances,
+      teamNames: names,
       );
-    } on Exception {
+    } catch (_) {
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove(_kCachedData);
       await prefs.remove(_kCachedEvent);

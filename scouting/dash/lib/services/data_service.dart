@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import '../models/match_entry.dart';
+import '../models/playoff_alliance.dart';
 import 'neon_service.dart';
 import 'tba_service.dart';
 import 'statbotics_service.dart';
@@ -41,6 +42,8 @@ class DataService extends ChangeNotifier {
   Map<int, double> oprByTeam = {};
   Map<int, double> epaByTeam = {};
   List<MatchEntry> matchEntries = [];
+  List<PlayoffAlliance> playoffAlliances = [];
+  Map<int, String> teamNames = {};
 
   List<int> get teamNumbers {
     final nums = scoutingByTeam.keys.toList()..sort();
@@ -62,6 +65,8 @@ class DataService extends ChangeNotifier {
     required Map<int, double> oprByTeam,
     required Map<int, double> epaByTeam,
     required List<MatchEntry> matchEntries,
+    required List<PlayoffAlliance> playoffAlliances,
+    required Map<int, String> teamNames,
     DateTime? lastUpdated,
   }) {
     this.scoutingByTeam = scoutingByTeam;
@@ -69,6 +74,8 @@ class DataService extends ChangeNotifier {
     this.oprByTeam = oprByTeam;
     this.epaByTeam = epaByTeam;
     this.matchEntries = matchEntries;
+    this.playoffAlliances = playoffAlliances;
+    this.teamNames = teamNames;
     this.lastUpdated = lastUpdated;
     _dataSource = 'cache';
     notifyListeners();
@@ -159,6 +166,21 @@ class DataService extends ChangeNotifier {
       }
 
       try {
+        final rawAlliances = await tba.fetchPlayoffAlliances(_eventKey);
+        final parsed = parsePlayoffAlliances(rawAlliances);
+        if (parsed.isNotEmpty) playoffAlliances = parsed;
+      } catch (e) {
+        errors.add('TBA alliances: $e');
+      }
+
+      try {
+        final names = await tba.fetchTeamNames(_eventKey);
+        if (names.isNotEmpty) teamNames = names;
+      } catch (e) {
+        errors.add('TBA team names: $e');
+      }
+
+      try {
         final epa = await statbotics.fetchEpas(_eventKey);
         if (epa.isNotEmpty) epaByTeam = epa;
       } catch (e) {
@@ -198,6 +220,21 @@ class DataService extends ChangeNotifier {
       if (parsed.isNotEmpty) matchEntries = parsed;
     } catch (e) {
       errors.add('TBA matches: $e');
+    }
+
+    try {
+      final rawAlliances = await tba.fetchPlayoffAlliances(_eventKey);
+      final parsed = parsePlayoffAlliances(rawAlliances);
+      if (parsed.isNotEmpty) playoffAlliances = parsed;
+    } catch (e) {
+      errors.add('TBA alliances: $e');
+    }
+
+    try {
+      final names = await tba.fetchTeamNames(_eventKey);
+      if (names.isNotEmpty) teamNames = names;
+    } catch (e) {
+      errors.add('TBA team names: $e');
     }
 
     try {
