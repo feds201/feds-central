@@ -30,6 +30,7 @@ void main() async {
         scoutingColumns: cached.scoutingColumns,
         oprByTeam: cached.oprByTeam,
         epaByTeam: cached.epaByTeam,
+        matchEntries: cached.matchEntries,
         lastUpdated: await LocalPrefs.lastUpdated,
       );
       initialRoute = '/compare';

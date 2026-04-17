@@ -144,6 +144,7 @@ class _ComparisonScreenState extends State<ComparisonScreen> {
         scoutingColumns: svc.scoutingColumns,
         oprByTeam: svc.oprByTeam,
         epaByTeam: svc.epaByTeam,
+        matchEntries: svc.matchEntries,
       );
     }
   }

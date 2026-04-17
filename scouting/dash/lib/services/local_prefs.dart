@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../models/match_entry.dart';
 
 /// Persists config, cached scouting data, and locally drawn paths.
 class LocalPrefs {
@@ -13,6 +14,26 @@ class LocalPrefs {
   static const _kLocalPaths = 'scout_ops.localPaths';
 
   // ── JSON-safe value helper ───────────────────────────────────────────
+
+  static Map<String, dynamic> _matchToJson(MatchEntry m) => {
+        'matchKey': m.matchKey,
+        'compLevel': m.compLevel,
+        'matchNumber': m.matchNumber,
+        'setNumber': m.setNumber,
+        'alliance': m.alliance,
+        'isOurAlliance': m.isOurAlliance,
+        'teamNumbers': m.teamNumbers,
+      };
+
+  static MatchEntry _matchFromJson(Map<String, dynamic> j) => MatchEntry(
+        matchKey: j['matchKey'] as String,
+        compLevel: j['compLevel'] as String,
+        matchNumber: j['matchNumber'] as int,
+        setNumber: j['setNumber'] as int,
+        alliance: j['alliance'] as String,
+        isOurAlliance: j['isOurAlliance'] as bool,
+        teamNumbers: (j['teamNumbers'] as List).cast<int>().toList(),
+      );
 
   static dynamic _toJsonSafe(dynamic value) {
     if (value is DateTime) return value.toIso8601String();
@@ -69,10 +90,19 @@ class LocalPrefs {
     required List<String> scoutingColumns,
     required Map<int, double> oprByTeam,
     required Map<int, double> epaByTeam,
+    required List<MatchEntry> matchEntries,
   }) async {
+    if (scoutingByTeam.isEmpty) {
+      print('[LocalPrefs] saveData SKIPPED: empty scouting data');
+      return;
+    }
+
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_kCachedEvent, eventKey);
-    await prefs.setString(_kLastUpdated, DateTime.now().toIso8601String());
+
+    // Snapshot prior values for rollback if the write fails partway through.
+    final oldData = prefs.getString(_kCachedData);
+    final oldEvent = prefs.getString(_kCachedEvent);
+    final oldUpdated = prefs.getString(_kLastUpdated);
 
     const dropCols = {'botimage1', 'botimage2', 'botimage3'};
     final teamData = scoutingByTeam.map(
@@ -87,12 +117,14 @@ class LocalPrefs {
     );
     final opr = oprByTeam.map((k, v) => MapEntry(k.toString(), v));
     final epa = epaByTeam.map((k, v) => MapEntry(k.toString(), v));
+    final matches = matchEntries.map(_matchToJson).toList();
 
     final encoded = json.encode({
       'scoutingByTeam': teamData,
       'scoutingColumns': scoutingColumns,
       'oprByTeam': opr,
       'epaByTeam': epa,
+      'matchEntries': matches,
     });
 
     final sizeKb = (encoded.length / 1024).toStringAsFixed(1);
@@ -102,11 +134,22 @@ class LocalPrefs {
 
     try {
       await prefs.setString(_kCachedData, encoded);
+      await prefs.setString(_kCachedEvent, eventKey);
+      await prefs.setString(_kLastUpdated, DateTime.now().toIso8601String());
     } catch (e) {
-      print('[LocalPrefs] saveData FAILED: $e');
-      await prefs.remove(_kCachedData);
-      await prefs.remove(_kCachedEvent);
-      await prefs.remove(_kLastUpdated);
+      print('[LocalPrefs] saveData FAILED, rolling back: $e');
+      await _restore(prefs, _kCachedData, oldData);
+      await _restore(prefs, _kCachedEvent, oldEvent);
+      await _restore(prefs, _kLastUpdated, oldUpdated);
+    }
+  }
+
+  static Future<void> _restore(
+      SharedPreferences prefs, String key, String? oldValue) async {
+    if (oldValue != null) {
+      await prefs.setString(key, oldValue);
+    } else {
+      await prefs.remove(key);
     }
   }
 
@@ -115,6 +158,7 @@ class LocalPrefs {
   List<String> scoutingColumns,
   Map<int, double> oprByTeam,
   Map<int, double> epaByTeam,
+  List<MatchEntry> matchEntries,
   })?> loadData(String eventKey) async {
     final prefs = await SharedPreferences.getInstance();
     if (prefs.getString(_kCachedEvent) != eventKey) return null;
@@ -139,12 +183,16 @@ class LocalPrefs {
       final epa = (decoded['epaByTeam'] as Map<String, dynamic>).map(
             (k, v) => MapEntry(int.parse(k), (v as num).toDouble()),
       );
+      final matches = ((decoded['matchEntries'] as List?) ?? const [])
+          .map((e) => _matchFromJson(e as Map<String, dynamic>))
+          .toList();
 
       return (
       scoutingByTeam: teamMap,
       scoutingColumns: columns,
       oprByTeam: opr,
       epaByTeam: epa,
+      matchEntries: matches,
       );
     } on Exception {
       final prefs = await SharedPreferences.getInstance();

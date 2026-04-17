@@ -150,6 +150,7 @@ class _EventEntryScreenState extends State<EventEntryScreen>
         scoutingColumns: svc.scoutingColumns,
         oprByTeam: svc.oprByTeam,
         epaByTeam: svc.epaByTeam,
+        matchEntries: svc.matchEntries,
       );
       if (!mounted) return;
       Navigator.of(context).pushReplacementNamed('/compare');

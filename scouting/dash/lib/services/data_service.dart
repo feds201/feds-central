@@ -61,12 +61,14 @@ class DataService extends ChangeNotifier {
     required List<String> scoutingColumns,
     required Map<int, double> oprByTeam,
     required Map<int, double> epaByTeam,
+    required List<MatchEntry> matchEntries,
     DateTime? lastUpdated,
   }) {
     this.scoutingByTeam = scoutingByTeam;
     this.scoutingColumns = scoutingColumns;
     this.oprByTeam = oprByTeam;
     this.epaByTeam = epaByTeam;
+    this.matchEntries = matchEntries;
     this.lastUpdated = lastUpdated;
     _dataSource = 'cache';
     notifyListeners();
@@ -81,17 +83,21 @@ class DataService extends ChangeNotifier {
 
     try {
       final rows = CsvLoader.parse(csvText);
-      scoutingColumns = CsvLoader.columns(csvText);
+      final cols = CsvLoader.columns(csvText);
 
-      scoutingByTeam = {};
+      final next = <int, List<Map<String, dynamic>>>{};
       for (final row in rows) {
         final raw = row['team'];
         final teamNum = raw is int ? raw : int.tryParse(raw.toString());
         if (teamNum == null) continue;
-        scoutingByTeam.putIfAbsent(teamNum, () => []).add(row);
+        next.putIfAbsent(teamNum, () => []).add(row);
       }
 
-      _dataSource = 'csv';
+      if (next.isNotEmpty) {
+        scoutingByTeam = next;
+        scoutingColumns = cols;
+        _dataSource = 'csv';
+      }
       error = null;
     } catch (e) {
       error = 'CSV parse error: $e';
@@ -119,35 +125,42 @@ class DataService extends ChangeNotifier {
       try {
         final rows = await neon.fetchAll(_tableName);
         final cols = await neon.columns(_tableName);
-        scoutingColumns = cols;
 
-        scoutingByTeam = {};
+        final next = <int, List<Map<String, dynamic>>>{};
         for (final row in rows) {
           final raw = row['team'];
           final teamNum = raw is int ? raw : int.tryParse(raw.toString());
           if (teamNum == null) continue;
-          scoutingByTeam.putIfAbsent(teamNum, () => []).add(row);
+          next.putIfAbsent(teamNum, () => []).add(row);
         }
-        _dataSource = 'neon';
+
+        if (next.isNotEmpty) {
+          scoutingByTeam = next;
+          scoutingColumns = cols;
+          _dataSource = 'neon';
+        }
       } catch (e) {
         errors.add('Neon: $e');
       }
 
       try {
-        oprByTeam = await tba.fetchOprs(_eventKey);
+        final opr = await tba.fetchOprs(_eventKey);
+        if (opr.isNotEmpty) oprByTeam = opr;
       } catch (e) {
         errors.add('TBA OPR: $e');
       }
 
       try {
         final rawMatches = await tba.fetchMatches(_eventKey);
-        matchEntries = parseMatches(rawMatches, ourTeamKey: 'frc201');
+        final parsed = parseMatches(rawMatches, ourTeamKey: 'frc201');
+        if (parsed.isNotEmpty) matchEntries = parsed;
       } catch (e) {
         errors.add('TBA matches: $e');
       }
 
       try {
-        epaByTeam = await statbotics.fetchEpas(_eventKey);
+        final epa = await statbotics.fetchEpas(_eventKey);
+        if (epa.isNotEmpty) epaByTeam = epa;
       } catch (e) {
         errors.add('Statbotics: $e');
       }
@@ -173,20 +186,23 @@ class DataService extends ChangeNotifier {
     final statbotics = StatboticsService();
 
     try {
-      oprByTeam = await tba.fetchOprs(_eventKey);
+      final opr = await tba.fetchOprs(_eventKey);
+      if (opr.isNotEmpty) oprByTeam = opr;
     } catch (e) {
       errors.add('TBA OPR: $e');
     }
 
     try {
       final rawMatches = await tba.fetchMatches(_eventKey);
-      matchEntries = parseMatches(rawMatches, ourTeamKey: 'frc201');
+      final parsed = parseMatches(rawMatches, ourTeamKey: 'frc201');
+      if (parsed.isNotEmpty) matchEntries = parsed;
     } catch (e) {
       errors.add('TBA matches: $e');
     }
 
     try {
-      epaByTeam = await statbotics.fetchEpas(_eventKey);
+      final epa = await statbotics.fetchEpas(_eventKey);
+      if (epa.isNotEmpty) epaByTeam = epa;
     } catch (e) {
       errors.add('Statbotics: $e');
     }
