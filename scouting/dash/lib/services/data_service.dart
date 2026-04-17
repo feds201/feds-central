@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import '../models/match_entry.dart';
 import '../models/playoff_alliance.dart';
@@ -34,6 +36,35 @@ class DataService extends ChangeNotifier {
   String? error;
   String _dataSource = '';
   DateTime? lastUpdated;
+  Timer? _errorDismissTimer;
+
+  /// Returns true iff every error in [errors] looks like a network-offline
+  /// failure (DNS lookup / socket). Empty list → false.
+  static bool _allOffline(List<String> errors) {
+    if (errors.isEmpty) return false;
+    return errors.every((e) =>
+        e.contains('SocketException') || e.contains('Failed host lookup'));
+  }
+
+  /// If [errors] are all offline-style, sets a friendly one-liner and
+  /// schedules it to auto-dismiss after 5s. Otherwise returns false so the
+  /// caller can fall back to the detailed message.
+  bool _applyOfflineErrorIfAllOffline(List<String> errors) {
+    if (!_allOffline(errors)) return false;
+    error = 'No internet connection — showing last-loaded data.';
+    _errorDismissTimer?.cancel();
+    _errorDismissTimer = Timer(const Duration(seconds: 5), () {
+      error = null;
+      notifyListeners();
+    });
+    return true;
+  }
+
+  @override
+  void dispose() {
+    _errorDismissTimer?.cancel();
+    super.dispose();
+  }
 
   String get dataSource => _dataSource;
 
@@ -118,6 +149,7 @@ class DataService extends ChangeNotifier {
   // ── Fetch from Neon + TBA + Statbotics ─────────────────────────────
 
   Future<void> fetchAll() async {
+    _errorDismissTimer?.cancel();
     loading = true;
     error = null;
     notifyListeners();
@@ -187,7 +219,9 @@ class DataService extends ChangeNotifier {
         errors.add('Statbotics: $e');
       }
 
-      error = errors.isEmpty ? null : errors.join('\n');
+      if (!_applyOfflineErrorIfAllOffline(errors)) {
+        error = errors.isEmpty ? null : errors.join('\n');
+      }
     } catch (e) {
       error = e.toString();
     } finally {
@@ -200,6 +234,7 @@ class DataService extends ChangeNotifier {
   // ── Fetch TBA/Statbotics only (for CSV mode) ──────────────────────
 
   Future<void> fetchExternalOnly() async {
+    _errorDismissTimer?.cancel();
     loading = true;
     notifyListeners();
 
@@ -245,7 +280,9 @@ class DataService extends ChangeNotifier {
     }
 
     if (errors.isNotEmpty) {
-      error = (error != null ? '$error\n' : '') + errors.join('\n');
+      if (!_applyOfflineErrorIfAllOffline(errors)) {
+        error = (error != null ? '$error\n' : '') + errors.join('\n');
+      }
     }
 
     loading = false;
