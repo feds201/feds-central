@@ -134,9 +134,17 @@ public class ControllerBindings {
                         intakeSubsystem.setRollerStateCommand(RollerState.OFF)
                 ));
 
-                // driver.a()
-                // .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.AGITATE_IN))
-                // .onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT));
+                driver.a()
+                .onTrue(Commands.sequence(
+                        feederSubsystem.setStateCommand(feeder_state.PRUN),
+                        spinDexer.setStateCommand(spindexer_state.PFORWARD),
+                        shooterHood.setStateCommand(shooterhood_state.LAYUP),
+                        shooterWheels.setStateCommand(shooter_state.LAYUP)))
+                .onFalse(Commands.sequence(
+                        feederSubsystem.setStateCommand(feeder_state.STOP),
+                        spinDexer.setStateCommand(spindexer_state.STOP),
+                        shooterWheels.setStateCommand(shooter_state.IDLE),
+                        shooterHood.setStateCommand(shooterhood_state.IN)));
 
         
 
@@ -155,8 +163,8 @@ public class ControllerBindings {
         // If in neutral zone, face outpost and ready shoot (passing shot)
         driver.povRight().and(() -> ShooterConstants.neutralZone.contains(drivetrain.getState().Pose.getTranslation())).whileTrue(
                 Commands.sequence(
-                        shooterHood.setStateCommand(shooterhood_state.OUT),
-                        shooterWheels.setStateCommand(shooter_state.LAYUP)
+                        shooterHood.setStateCommand(shooterhood_state.PASSING),
+                        shooterWheels.setStateCommand(shooter_state.PASSING)
                 ).alongWith(new PassingDrive(drivetrain, driver)))
                 .onFalse(
                         Commands.sequence(
