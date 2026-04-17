@@ -1,29 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../models/match_entry.dart';
+import '../models/playoff_alliance.dart';
 import '../services/data_service.dart';
 import '../theme.dart';
 
-/// Dropdown for picking a match from the TBA schedule.
-/// Calls [onSelected] with the [MatchEntry] so the parent can grab both
-/// red and blue team lists.
-class MatchSelector extends StatefulWidget {
-  const MatchSelector({
+/// Dropdown for picking a playoff alliance. Only useful at elims events.
+/// Reads alliance list from [DataService.playoffAlliances].
+class AllianceSelector extends StatefulWidget {
+  const AllianceSelector({
     super.key,
+    required this.label,
+    required this.accent,
     required this.value,
     required this.onSelected,
     required this.onCleared,
   });
 
-  final MatchEntry? value;
-  final ValueChanged<MatchEntry> onSelected;
+  final String label;
+  final Color accent;
+  final PlayoffAlliance? value;
+  final ValueChanged<PlayoffAlliance> onSelected;
   final VoidCallback onCleared;
 
   @override
-  State<MatchSelector> createState() => _MatchSelectorState();
+  State<AllianceSelector> createState() => _AllianceSelectorState();
 }
 
-class _MatchSelectorState extends State<MatchSelector> {
+class _AllianceSelectorState extends State<AllianceSelector> {
   OverlayEntry? _overlay;
   final _linkKey = GlobalKey();
 
@@ -48,7 +51,7 @@ class _MatchSelectorState extends State<MatchSelector> {
     final size = renderBox.size;
 
     _overlay = OverlayEntry(builder: (_) {
-      final entries = context.read<DataService>().matchEntries;
+      final entries = context.read<DataService>().playoffAlliances;
 
       return Stack(
         children: [
@@ -67,11 +70,11 @@ class _MatchSelectorState extends State<MatchSelector> {
               borderRadius: BorderRadius.circular(8),
               elevation: 8,
               child: ConstrainedBox(
-                constraints: const BoxConstraints(maxHeight: 360),
+                constraints: const BoxConstraints(maxHeight: 320),
                 child: entries.isEmpty
                     ? const Padding(
                         padding: EdgeInsets.all(12),
-                        child: Text('No matches',
+                        child: Text('No alliances',
                             style:
                                 TextStyle(color: AppTheme.muted, fontSize: 12)),
                       )
@@ -91,9 +94,8 @@ class _MatchSelectorState extends State<MatchSelector> {
     Overlay.of(context).insert(_overlay!);
   }
 
-  Widget _buildItem(MatchEntry entry) {
-    final isSelected = widget.value?.matchKey == entry.matchKey;
-
+  Widget _buildItem(PlayoffAlliance entry) {
+    final isSelected = widget.value?.name == entry.name;
     return InkWell(
       onTap: () {
         widget.onSelected(entry);
@@ -101,28 +103,23 @@ class _MatchSelectorState extends State<MatchSelector> {
       },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        color: isSelected ? AppTheme.gold.withOpacity(0.10) : null,
+        color: isSelected ? widget.accent.withOpacity(0.10) : null,
         child: Text(
           _formatLabel(entry),
           style: AppTheme.mono(
             11,
-            color: isSelected ? AppTheme.gold : AppTheme.text,
+            color: isSelected ? widget.accent : AppTheme.text,
           ),
+          overflow: TextOverflow.ellipsis,
         ),
       ),
     );
   }
 
-  String _formatLabel(MatchEntry entry) {
-    final star = entry.hasOurTeam ? '⭐ ' : '';
-    final red = _formatTeamList(entry.redTeams);
-    final blue = _formatTeamList(entry.blueTeams);
-    return '$star[${entry.shortLabel}] $red vs $blue';
-  }
-
-  String _formatTeamList(List<int> teams) {
-    if (teams.isEmpty) return '(—)';
-    return '(${teams.join(', ')})';
+  String _formatLabel(PlayoffAlliance entry) {
+    final hasOurTeam = entry.teams.contains(201);
+    final star = hasOurTeam ? '⭐ ' : '';
+    return '$star[${entry.name}] (${entry.teams.join(', ')})';
   }
 
   void _removeOverlay() {
@@ -132,13 +129,13 @@ class _MatchSelectorState extends State<MatchSelector> {
 
   @override
   Widget build(BuildContext context) {
-    final hasMatches =
-        context.select<DataService, bool>((s) => s.matchEntries.isNotEmpty);
+    final hasAlliances = context
+        .select<DataService, bool>((s) => s.playoffAlliances.isNotEmpty);
     final label =
-        widget.value != null ? _formatLabel(widget.value!) : 'Match';
+        widget.value != null ? _formatLabel(widget.value!) : widget.label;
 
     return GestureDetector(
-      onTap: hasMatches ? _toggle : null,
+      onTap: hasAlliances ? _toggle : null,
       child: Container(
         key: _linkKey,
         height: 38,
@@ -148,22 +145,22 @@ class _MatchSelectorState extends State<MatchSelector> {
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
             color: widget.value != null
-                ? AppTheme.gold.withOpacity(0.5)
+                ? widget.accent.withOpacity(0.6)
                 : AppTheme.border,
           ),
         ),
         child: Row(
           children: [
-            Icon(Icons.list_alt_rounded,
+            Icon(Icons.groups_rounded,
                 size: 14,
-                color: hasMatches ? AppTheme.gold : AppTheme.muted),
+                color: hasAlliances ? widget.accent : AppTheme.muted),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
                 label,
                 style: AppTheme.mono(
                   11,
-                  color: widget.value != null ? AppTheme.gold : AppTheme.muted,
+                  color: widget.value != null ? widget.accent : AppTheme.muted,
                 ),
                 overflow: TextOverflow.ellipsis,
               ),
@@ -177,7 +174,7 @@ class _MatchSelectorState extends State<MatchSelector> {
             else
               Icon(Icons.expand_more_rounded,
                   size: 16,
-                  color: hasMatches ? AppTheme.muted : AppTheme.border),
+                  color: hasAlliances ? AppTheme.muted : AppTheme.border),
           ],
         ),
       ),

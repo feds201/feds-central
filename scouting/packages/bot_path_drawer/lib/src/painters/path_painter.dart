@@ -119,7 +119,7 @@ class PathPainter extends CustomPainter {
     final flipV = (alliance == Alliance.blue) != mirrored;
 
     final robotPixels = size.width * config.robotSizeFraction;
-    const lineWidth = 4.0;
+    const lineWidth = 3.0;
     final dotRadius = lineWidth * 2;
     // For raw trail (semi-transparent path color)
     final trailPaint = Paint()

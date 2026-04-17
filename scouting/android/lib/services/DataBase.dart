@@ -6,6 +6,7 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/painting.dart';
 import 'package:hive/hive.dart';
+import 'package:csv/csv.dart';
 
 int _toInt(dynamic value) {
   if (value == null) return 0;

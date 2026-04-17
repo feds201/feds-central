@@ -703,7 +703,7 @@ class _RecordState extends State<Record> {
 
   void _recordData() {
     String deviceName = Hive.box('settings')
-        .get('deviceName', defaultValue: 'Ritesh Raj Arul Selvan');
+        .get('deviceName', defaultValue: '(unknown)');
     String eventKey =
         Hive.box('userData').get('eventKey', defaultValue: 'test');
 
