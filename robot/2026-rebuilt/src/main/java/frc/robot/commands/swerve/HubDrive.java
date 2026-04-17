@@ -4,7 +4,6 @@
 
 package frc.robot.commands.swerve;
 
-import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
@@ -20,22 +19,19 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 // import frc.robot.RobotMap.SafetyMap.SwerveConstants;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import frc.robot.utils.ShootOnTheMove;
-import frc.robot.subsystems.swerve.generated.TunerConstants;
 
 public class HubDrive extends Command {
  
 
-  public static final double MAX_SPEED = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+  public static final double MAX_SPEED = 1.0;
   public static final double MAX_ANGULAR_RATE = RotationsPerSecond.of(2).in(RadiansPerSecond);
   // PID tuned for smoother response (lower P, small I). Units: degrees.
-  private static final PIDController hubRotPID = new PIDController(6.7, 0.00, 0.2);
+  private static final PIDController hubRotPID = new PIDController(8.5, 0.00, 0);
   private CommandSwerveDrivetrain dt;
   private CommandXboxController controller;
   
   // Slew rate limiters to smooth joystick and rotation commands
-  private final SlewRateLimiter xLimiter = new SlewRateLimiter(3.0); // m/s per second
-  private final SlewRateLimiter yLimiter = new SlewRateLimiter(3.0); // m/s per second
-  private final SlewRateLimiter rotLimiter = new SlewRateLimiter(2000.0); // deg/s per second
+  private final SlewRateLimiter rotLimiter = new SlewRateLimiter(3000.0); // deg/s per second
 
   private SwerveRequest.FieldCentric driveNormal;
 
@@ -49,7 +45,7 @@ public class HubDrive extends Command {
     .withDeadband(MAX_SPEED*.07)
     .withRotationalDeadband(MAX_ANGULAR_RATE*.07);
     hubRotPID.enableContinuousInput(-180, 180);
-  hubRotPID.setTolerance(3);
+    hubRotPID.setTolerance(5.0);
     
     addRequirements(this.dt);
   }
@@ -88,8 +84,6 @@ public class HubDrive extends Command {
           // Scale joystick velocities to robot MAX_SPEED and smooth them
           double targetVelX = -controller.getLeftY() * MAX_SPEED;
           double targetVelY = -controller.getLeftX() * MAX_SPEED;
-          double smoothVelX = xLimiter.calculate(targetVelX);
-          double smoothVelY = yLimiter.calculate(targetVelY);
 
           if(smoothRotation > 0){
             smoothRotation+= 20;
@@ -98,13 +92,13 @@ public class HubDrive extends Command {
           }
 
           dt.setControl(driveNormal
-              .withVelocityX(smoothVelX)
-              .withVelocityY(smoothVelY)
+              .withVelocityX(targetVelX)
+              .withVelocityY(targetVelY)
               .withRotationalRate(DegreesPerSecond.of(smoothRotation)));
 
          Logger.recordOutput("angular velocity (deg/s)", smoothRotation);
-         Logger.recordOutput("targetVelX", smoothVelX);
-         Logger.recordOutput("targetVelY", smoothVelY);
+         Logger.recordOutput("targetVelX", targetVelX);
+         Logger.recordOutput("targetVelY", targetVelY);
          Logger.recordOutput("angular velocity (deg/Error", hubRotPID.getError());
           
     }

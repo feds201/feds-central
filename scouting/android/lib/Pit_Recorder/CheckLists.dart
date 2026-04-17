@@ -272,7 +272,7 @@ class _RecordState extends State<Record> {
             [
               Container(
                 width: double.infinity,
-                height: 600,
+                height: 650 ,
                 child: Column(
                   children: [
                     Text("Auton Path", textAlign: TextAlign.center,

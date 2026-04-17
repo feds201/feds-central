@@ -24,26 +24,54 @@ public class ShootOnTheMove {
      * @return The distance to the target goal
      */
     public static Translation2d calculateVirtualGoal(Pose2d robotPose, ChassisSpeeds chassisSpeeds) {
-        // Get shooter field position
         Translation2d hubCenter = RobotMap.ShooterConstants.hubCenter;
-         if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
-                hubCenter = FlippingUtil.flipFieldPosition(RobotMap.ShooterConstants.hubCenter);
-            }
-        
+        if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
+            hubCenter = FlippingUtil.flipFieldPosition(RobotMap.ShooterConstants.hubCenter);
+        }
+
+        // Get shooter field position
         Translation2d shooterFieldPosition = getShooterFieldPosition(robotPose);
 
         // Compute shooter field velocity
         Translation2d shooterVelocity = getShooterFieldVelocity(robotPose, chassisSpeeds);
 
         // Compute approximate flight time
-        double distToGoal = shooterFieldPosition.getDistance(hubCenter);
+        double previousDistToGoal = 0;
 
         // Adjust goal position for motion
-        double flightTime = ShooterConstants.kFlightTimeMap.get(distToGoal);
-        Translation2d virtualGoal = hubCenter.minus(shooterVelocity.times(flightTime));
+        Translation2d virtualGoal = hubCenter;
+        for(int i = 0; i <= 10; i++) { 
+            double distToGoal = shooterFieldPosition.getDistance(virtualGoal);
+            double hoodAngle = ShooterConstants.kShootingPositionMap.get(distToGoal);
+            double wheelVelocity = ShooterConstants.kShootingVelocityMap.get(distToGoal);
+
+            // Used WolframAlpha to fit a formula to empirical measures of time of flight.
+            // Raw ToF  data: https://docs.google.com/spreadsheets/d/1soxpyImFWBpTkXsz01xsferNdRXlu_cC-2IQG3SakfE
+            // Wolfram Code:
+            //   Fit[
+            //     {{0,0,0}, {1,0,1}, {0,1,1}, {1,1,4}, {2,0,4}, {0,2,4}, {2,2,12}},
+            //     {1, x, y, x^2, y^2, x*y},
+            //     {x, y}
+            //   ]
+            double flightTime = -0.000772833 * Math.pow(wheelVelocity, 2)
+                              + 0.00465107 * wheelVelocity * hoodAngle
+                              + 0.0621835 * wheelVelocity
+                              - 0.00218423 * Math.pow(hoodAngle, 2)
+                              - 0.136261 * hoodAngle
+                              - 0.149612;
+
+            virtualGoal = hubCenter.minus(shooterVelocity.times(flightTime));
+
+            if(Math.abs(previousDistToGoal - distToGoal) <= 0.1) {
+                return virtualGoal;
+            }
+
+            previousDistToGoal = distToGoal;
+        }
+
+        Logger.recordOutput("ShootOnTheMove", new Pose2d(hubCenter, new Rotation2d()));
 
         return virtualGoal;
-
     }
 
     /**
@@ -58,12 +86,12 @@ public class ShootOnTheMove {
             ChassisSpeeds chassisSpeeds) {
         // Get shooter field position
         Translation2d shooterFieldPosition = getShooterFieldPosition(robotPose);
-
         // Compute field-relative angle shooter must point
         Translation2d virtualGoal = calculateVirtualGoal(robotPose, chassisSpeeds);
         Translation2d shooterToGoal = virtualGoal.minus(shooterFieldPosition);
         Logger.recordOutput("VirtualGoal", new Pose2d(virtualGoal.getX(), virtualGoal.getY(), virtualGoal.getAngle()));
-        
+  
+
         Rotation2d shooterFieldAngle = new Rotation2d(
                 shooterToGoal.getX(),
                 shooterToGoal.getY());

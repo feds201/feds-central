@@ -121,7 +121,7 @@ public class ControllerBindings {
                 .whileTrue(Commands.sequence(
                   intakeSubsystem.setRollerStateCommand(RollerState.ON),
                         feederSubsystem.setStateCommand(feeder_state.RUN),
-                        spinDexer.setStateCommand(spindexer_state.RUN),
+                        spinDexer.setStateCommand(spindexer_state.PFORWARD),
                         // Pulse intake extend/retract while held (5 roller rotations per pulse, 0.3s retract dwell)
                         shooterWheels.setStateCommand(shooter_state.TEST),
                         shooterHood.setStateCommand(shooterhood_state.TEST)
@@ -167,7 +167,7 @@ public class ControllerBindings {
         // Button to fire, if swerve is aimed and shooter is at speed.
         driver.rightTrigger().and(HubDrive::pidAtSetpoint).and(shooterWheels::atSetpoint).whileTrue(
                 Commands.sequence(
-                        feederSubsystem.setStateCommand(feeder_state.PRUN),
+                        feederSubsystem.setStateCommand(feeder_state.RUN),
                         spinDexer.setStateCommand(spindexer_state.PFORWARD),
                         intakeSubsystem.setRollerStateCommand(RollerState.ON)
                 )
@@ -182,7 +182,7 @@ public class ControllerBindings {
         driver.rightTrigger().and(PassingDrive::pidAtSetpoint).whileTrue(
                 Commands.sequence(
                         feederSubsystem.setStateCommand(feeder_state.RUN),
-                        spinDexer.setStateCommand(spindexer_state.RUN)
+                        spinDexer.setStateCommand(spindexer_state.PFORWARD)
                         // Pulse the intake while firing (run until release). 5 rotations per pulse.
                         // intakeSubsystem.agitateWhileHeldRotations(15.0)
                 )
@@ -213,25 +213,31 @@ public class ControllerBindings {
                 .onTrue(shooterHood.setMotorPower(-0.1))
                 .onFalse(shooterHood.setMotorPower(0.0));
 
-        operator.rightTrigger().onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED));
         operator.rightBumper().onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT));
 
         operator.start().onTrue(feederSubsystem.setStateCommand(feeder_state.PREVERSE).alongWith(spindexerSubsystem.setStateCommand(spindexer_state.PREVERSE))).
         onFalse(feederSubsystem.setStateCommand(feeder_state.STOP).alongWith(spindexerSubsystem.setStateCommand(spindexer_state.STOP)));
         
         //Add multiplier to hood angle
-        operator.a()
+        operator.povUp()
                 .onTrue(new InstantCommand(() -> shooterHood.updateHoodAngleMultiplier(.01)));
-        operator.b()
+        operator.povDown()
                 .onTrue(new InstantCommand(() -> shooterHood.updateHoodAngleMultiplier(-.01)));
 
          operator.y()
                 .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.AGITATE_IN).alongWith(intakeSubsystem.setRollerStateCommand(RollerState.ON)))
                 .onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT).alongWith(intakeSubsystem.setRollerStateCommand(RollerState.OFF)));
 
-        operator.x()
-                .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.CLOSE_AGITATION).alongWith(intakeSubsystem.setRollerStateCommand(RollerState.ON)))
+       operator.a()
+                .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.CLOSE_AGITATION_OUT).alongWith(intakeSubsystem.setRollerStateCommand(RollerState.ON)))
                 .onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT).alongWith(intakeSubsystem.setRollerStateCommand(RollerState.OFF)));
+        
+        operator.b()
+                .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.FAR_AGITATION_IN).alongWith(intakeSubsystem.setRollerStateCommand(RollerState.ON)))
+                 .onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT).alongWith(intakeSubsystem.setRollerStateCommand(RollerState.OFF)));
+
+        operator.rightTrigger()
+                .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.DITHERIN_AGITATION)).onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED));
     }
 
 }

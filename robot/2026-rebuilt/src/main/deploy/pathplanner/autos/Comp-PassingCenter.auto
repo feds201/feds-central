@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "FirstCircleMid"
+            "pathName": "CenterHubToBack"
           }
         },
         {
@@ -15,15 +15,21 @@
           "data": {
             "commands": [
               {
-                "type": "named",
+                "type": "wait",
                 "data": {
-                  "name": "Run Rollers"
+                  "waitTime": 2.0
                 }
               },
               {
                 "type": "named",
                 "data": {
                   "name": "Extend Intake"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Run Rollers"
                 }
               }
             ]
@@ -32,13 +38,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "FirstCircleIntake"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "FirstCircleLeftBumpToShoot"
+            "pathName": "1stCurve"
           }
         },
         {
@@ -48,25 +48,37 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Run Shooter"
+                  "name": "Stop Rollers"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Extend Hopper"
+                  "name": "Start Passing Spin"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Passing"
                 }
               },
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 0.5
+                  "waitTime": 7.0
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Retract Intake"
+                  "name": "Extend Intake"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Run Rollers"
                 }
               }
             ]
@@ -75,7 +87,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "ShootToSecondMid"
+            "pathName": "TransitionToSecondCurve"
           }
         },
         {
@@ -85,28 +97,22 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Run Rollers"
+                  "name": "Stop Rollers"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Extend Intake"
+                  "name": "Start Passing Spin"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Passing"
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "SecondCircleIntake"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "SecondCircleShoot"
           }
         }
       ]

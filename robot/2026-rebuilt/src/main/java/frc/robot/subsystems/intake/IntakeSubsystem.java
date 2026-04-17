@@ -59,7 +59,9 @@ public class IntakeSubsystem extends SubsystemBase {
   private final SysIdRoutine sysID;
   private final LedsSubsystem leds = LedsSubsystem.getInstance();
   private final double extendedRotations = 18.0; //TUNE on new intake
-  private final double retractedRotations = 0.1;
+  private final double retractedRotations = 0.39;
+  private final double closeAgitationRotations = 9.0; // about halfway from bumper to extended, used for agitating the close half of the hopper
+  private final double farAgitationRotations = 13.5; // about three-quarters from bumper to extended, used for agitating the far half of the hopper
   public final double burstAgitation = extendedRotations / 2.0;
   // Desired motion timing: target to complete extend/retract in under 1s
   private static final double MOVE_TARGET_SECONDS = .45;
@@ -94,14 +96,24 @@ public class IntakeSubsystem extends SubsystemBase {
   private MechanismLigament2d rollerLigament;
 
   public enum IntakeState {
-    DEFAULT,
-    EXTENDED,
-    CLOSE_RETRACTED, // 2
-    INTAKING,
-    AGITATE_IN,
-    AGITATE_OUT,
-    CLOSE_AGITATION, //35
-   
+    DEFAULT, //Retracted, assumed to be starting state
+    EXTENDED, //Fully extended
+    INTAKING, //Fully extended with rollers on, used for actively intaking fuel
+
+    //State loop 1: Agitate
+    AGITATE_IN, //Inwards portion of the agitate state-loop, intake will toggle between the agitates on a timer when set to one of these states
+    AGITATE_OUT, //Agitation causes the intake to move outwards, then inwards back to default in order to agitate the fuel in the full hopper
+
+    //State loop 2: Close Agitation
+    CLOSE_AGITATION_IN, //Inwards portion of the close agitation state-loop, intake will toggle between the close agitates on a timer when set to one of these states
+    CLOSE_AGITATION_OUT, //Close agitation causes the intake to move outwards, then inwards about halfway to extended in order to agitate the close half of the hopper
+
+    FAR_AGITATION_IN, //Inwards portion of the far agitation state-loop, intake will toggle between the far agitates on a timer when set to one of these states
+    FAR_AGITATION_OUT, //Far agitation causes the intake to move outwards
+
+    //State loop 3: Dither Agitation (experimental, may not be used)
+    DITHERIN_AGITATION, //Inwards portion of dithering state-loop, intake will toggle between the dithers on a timer when set to one of these states
+    DITHEROUT_AGITATION //Dithering causes the intake to move inwards, then outwards half as much in order to slowly bring in the intake while also agitating
   }
 
   public enum RollerState {
@@ -127,7 +139,7 @@ public class IntakeSubsystem extends SubsystemBase {
         moveIntakeWithPosition(extendedRotations);
         setRollerState(RollerState.OFF);
       }
-      case CLOSE_RETRACTED -> {
+      case CLOSE_AGITATION_IN -> {
         moveIntakeWithPosition(0.0);
         
       }
@@ -141,8 +153,14 @@ public class IntakeSubsystem extends SubsystemBase {
       case AGITATE_OUT -> {
         moveIntakeWithPosition(extendedRotations);
       }
-      case CLOSE_AGITATION -> {
+      case CLOSE_AGITATION_OUT -> {
         moveIntakeWithPosition(burstAgitation);
+      }
+      case FAR_AGITATION_IN -> {
+        moveIntakeWithPosition(burstAgitation);
+      }
+      case FAR_AGITATION_OUT -> {
+        moveIntakeWithPosition(extendedRotations);
       }
     }
 
@@ -460,29 +478,82 @@ public class IntakeSubsystem extends SubsystemBase {
       }
       break;
 
-        case CLOSE_AGITATION: 
+      case FAR_AGITATION_IN:
+       if(! timer.isRunning()){
+          timer.start();  
+       }
+       if(timer.hasElapsed(.2)){
+        setState(IntakeState.FAR_AGITATION_OUT);
+        timer.stop();
+        timer.reset();
+       }
+        break;
+
+        case FAR_AGITATION_OUT:
+           if(! timer.isRunning()){
+          timer.start();  
+       }
+        if(timer.hasElapsed(.2)){
+        setState(IntakeState.FAR_AGITATION_IN);
+        timer.stop();
+        timer.reset();
+      }
+      break;
+
+
+        case CLOSE_AGITATION_OUT: 
           if(!timer.isRunning()){
             timer.start();
           }
           if(timer.hasElapsed(0.2)){
-            setState(IntakeState.CLOSE_RETRACTED); // really close to default
+            setState(IntakeState.CLOSE_AGITATION_IN); // really close to default
             timer.stop();
             timer.reset();
           }
           break;
 
-          case CLOSE_RETRACTED  : 
+          case CLOSE_AGITATION_IN: 
           if(!timer.isRunning()){
             timer.start();
           }
 
           if(timer.hasElapsed(0.2)){
-            setState(IntakeState.CLOSE_AGITATION); // about halfway from bumper to extended
+            setState(IntakeState.CLOSE_AGITATION_OUT); // about halfway from bumper to extended
             timer.stop();
             timer.reset();
         }
           break;
+
+        case DITHERIN_AGITATION:
+        if(!timer.isRunning()){
+          timer.start();
       }
+        motor.set(-0.3); 
+
+        if(timer.hasElapsed(0.3)){
+            setState(IntakeState.DITHEROUT_AGITATION);
+            timer.stop();
+            timer.reset();
+        }
+          break;
+
+        case DITHEROUT_AGITATION:
+        if(!timer.isRunning()){
+          timer.start();
+      }
+        motor.set(0.3); 
+
+        if(timer.hasElapsed(0.1)){
+            setState(IntakeState.DITHERIN_AGITATION); // small retract from extended
+            timer.stop();
+            timer.reset();
+         
+
+        }
+          break;
+      }
+
+
     switch (currentRollerState) {
       case ON:
         rollerMotor.set(ROLLER_OUTPUT);
@@ -513,6 +584,8 @@ public class IntakeSubsystem extends SubsystemBase {
   rollerConnectedEntry.setBoolean(rollerMotor.isConnected());
   rollerPoweredEntry.setBoolean(rollerMotor.getSupplyVoltage().getValueAsDouble() > RobotMap.PitConstants.kPoweredThresholdVolts);
   }
+  
+  
   
 
   @Override

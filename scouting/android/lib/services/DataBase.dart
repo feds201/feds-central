@@ -764,7 +764,7 @@ class MatchRecord {
   }
 
   String toCsv() {
-    return '${batteryPercentage},${teamNumber},${scouterName},${matchKey},${allianceColor},${eventKey},${station},${matchNumber}, ${autonPoints.toCsv()}, ${teleOpPoints.toCsv()}, ${endPoints.toCsv()}';
+    return '${teamNumber},${matchKey},${matchNumber},${scouterName},${allianceColor},${eventKey},${station},${batteryPercentage},${autonPoints.toCsv()},${teleOpPoints.toCsv()},${endPoints.toCsv()}';
   }
 
   static MatchRecord fromJson(Map<String, dynamic> json) {
@@ -1013,7 +1013,7 @@ class EndPoints {
   }
 
   String toCsv() {
-    return '$ClimbStatus,${Park ? 1 : 0},${PushBallsEnd},$Passing,$EndNeutralTrips,$ShootingAccuracy,$endgameTime,$endgameshootingCycles,$robotBroken, "${Comments.replaceAll('"', '""')}"';
+    return '$ClimbStatus,${Park ? 1 : 0},${PushBallsEnd},$Passing,$robotBroken,$EndNeutralTrips,$ShootingAccuracy,$endgameTime,$endgameshootingCycles,"${Comments.replaceAll('"', '""')}"';
   }
 
   @override
