@@ -19,7 +19,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "AcrossCenterRightBumpToMid"
+            "pathName": "UnderTrenchStart"
           }
         },
         {
@@ -297,12 +297,6 @@
                 "type": "named",
                 "data": {
                   "name": "Retract Intake"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 0.45
                 }
               },
               {
