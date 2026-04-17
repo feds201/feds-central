@@ -189,15 +189,15 @@ public final class RobotMap {
             Map.entry(2.01, 3.8),//done 
             Map.entry(2.56, 9.0),//done 
             Map.entry(2.89, 9.0),//done
-            Map.entry(3.08, 8.2),//done //bumped all past this point by .2 up
-            Map.entry(3.37, 8.2),//done
-            Map.entry(3.97,10.2),//done
-            Map.entry(4.75, 14.2),
-            Map.entry(5.0, 15.2),// done
-            Map.entry(6.02, 22.2), //done 
-            Map.entry(6.85, 25.2), // done
-            Map.entry(7.6, 29.2), // done
-            Map.entry(100.0, 29.2) //far off top limit to prevent unwanted scaling past this distance 
+            Map.entry(3.08, 8.5),//done //bumped all past this point by .2 up
+            Map.entry(3.37, 8.5),//done
+            Map.entry(3.97,10.5),//done
+            Map.entry(4.75, 14.5),
+            Map.entry(5.0, 15.5),// done
+            Map.entry(6.02, 22.5), //done 
+            Map.entry(6.85, 25.5), // done
+            Map.entry(7.6, 29.5), // done
+            Map.entry(100.0, 29.5) //far off top limit to prevent unwanted scaling past this distance 
         );
 
         public static final InterpolatingDoubleTreeMap kPassingVelocityMap = InterpolatingDoubleTreeMap.ofEntries(
