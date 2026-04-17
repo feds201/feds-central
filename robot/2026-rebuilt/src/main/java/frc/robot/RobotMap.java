@@ -205,8 +205,8 @@ public final class RobotMap {
            Map.entry(6.5, 30.0),
            Map.entry(8.53, 35.0),
            Map.entry(11.12, 44.0),
-           Map.entry(13.0,75.0),
-           Map.entry(14.0, 80.0)
+           Map.entry(12.0,80.0),
+           Map.entry(14.0, 90.0)
 
         );
 
@@ -216,7 +216,7 @@ public final class RobotMap {
             Map.entry(6.5,29.0),
             Map.entry(8.53, 29.0),
             Map.entry(11.12, 29.0),
-            Map.entry(13.0,30.0),
+            Map.entry(12.0,30.0),
             Map.entry(14.0, 30.0)
         );
 
