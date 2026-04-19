@@ -1,0 +1,48 @@
+# =============================================================================
+# Scout Ops Scan — Android Release
+# =============================================================================
+#
+# Manually triggered via workflow_dispatch.
+# Builds a release APK and uploads it to a GitHub Release.
+#
+# =============================================================================
+
+name: Scout Ops Scan — Android Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-android:
+    name: Android APK Build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - run: flutter pub get
+        working-directory: scouting/scan
+
+      - name: Generate Android app icons
+        run: flutter pub run flutter_launcher_icons
+        working-directory: scouting/scan
+
+      - run: flutter build apk --release
+        working-directory: scouting/scan
+
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: scouting/scan/build/app/outputs/flutter-apk/app-release.apk
+          asset_name: "ScoutOps Scan v5.7.2-pre.apk"
+          tag: scan/v5.7.2-pre
+          overwrite: true
+          prerelease: true
+          body: "v5.7.2-pre - Android dual-platform launch, station dot highlight fix (columns[2] match number)"

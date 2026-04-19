@@ -72,7 +72,7 @@ class ScoutOpsApp extends StatelessWidget {
         if (settings.name == '/compare') {
           return _fade(const ComparisonScreen());
         }
-        return _fade(EventEntryScreen());
+        return _fade(const EventEntryScreen());
       },
     );
   }

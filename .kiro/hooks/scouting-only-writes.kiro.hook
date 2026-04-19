@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "Scouting Files Only",
+  "description": "Blocks any write operations to files outside the scouting/scan directory",
+  "version": "1",
+  "when": {
+    "type": "preToolUse",
+    "toolTypes": [
+      "write"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Check the file path being written. If it is NOT inside the scouting/scan/ directory, deny the operation and explain that only scouting/scan files may be modified. If it IS inside scouting/scan/, allow it."
+  }
+}

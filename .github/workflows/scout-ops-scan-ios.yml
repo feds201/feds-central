@@ -1,0 +1,61 @@
+# =============================================================================
+# Scout Ops Scan — iOS Release
+# =============================================================================
+#
+# Manually triggered via workflow_dispatch.
+# Builds a release IPA and uploads it to a GitHub Release.
+#
+# =============================================================================
+
+name: Scout Ops Scan — iOS Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-ios:
+    name: iOS App Build
+    runs-on: macos-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          architecture: x64
+
+      - run: flutter pub get
+        working-directory: scouting/scan
+
+      - name: Generate iOS app icons
+        run: flutter pub run flutter_launcher_icons
+        working-directory: scouting/scan
+
+      - run: pod repo update
+        working-directory: scouting/scan/ios
+
+      - run: flutter build ios --release --no-codesign
+        working-directory: scouting/scan
+
+      - run: mkdir Payload
+        working-directory: scouting/scan/build/ios/iphoneos
+
+      - run: mv Runner.app/ Payload
+        working-directory: scouting/scan/build/ios/iphoneos
+
+      - name: Zip output
+        run: zip -qq -r -9 "ScoutOps Scan v5.7.2-pre.ipa" Payload
+        working-directory: scouting/scan/build/ios/iphoneos
+
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: "scouting/scan/build/ios/iphoneos/ScoutOps Scan v5.7.2-pre.ipa"
+          tag: scan/v5.7.2-pre
+          overwrite: true
+          prerelease: true
+          body: "v5.7.2-pre - iOS dual-platform launch, station dot highlight fix (columns[2] match number)"

@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "Block Git Commits",
+  "description": "Blocks any git commit commands from running without explicit user permission",
+  "version": "1",
+  "when": {
+    "type": "preToolUse",
+    "toolTypes": [
+      "shell"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Check if the shell command contains \"git commit\". If it does, deny the operation and tell the user that commits require their explicit permission. Do not proceed with the command."
+  }
+}

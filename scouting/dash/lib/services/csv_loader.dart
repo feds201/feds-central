@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 /// Parses a pit scouting CSV string into a list of row maps.
 ///

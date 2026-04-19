@@ -89,7 +89,7 @@ class UsbDriveService {
     final access = LocalDriveAccess(dirPath: drive.path, label: drive.label);
     final configResult = await access.readTextFile(drive.path, 'config.json');
     if (configResult is Ok<String?>) {
-      final content = (configResult as Ok<String?>).value;
+      final content = (configResult).value;
       if (content != null) {
         final suggestion = AllianceSuggester.suggest(configJsonContent: content);
         if (suggestion.side != null) {
