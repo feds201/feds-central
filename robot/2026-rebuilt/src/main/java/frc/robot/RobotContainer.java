@@ -304,6 +304,15 @@ public class RobotContainer extends ControllerBindings {
         rtumanager.periodic();
     }
 
+public void idleSubsystems() {
+    intakeSubsystem.setState(IntakeState.DEFAULT);
+    intakeSubsystem.setRollerState(RollerState.OFF);
+    shooterWheels.setState(shooter_state.IDLE);
+    shooterHood.setState(shooterhood_state.IN);
+    spinDexer.setState(spindexer_state.STOP);
+    feederSubsystem.setState(feeder_state.STOP);
+}
+
 
 public void registerNamedCommands() {
   NamedCommands.registerCommand("Extend Hopper", intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED));

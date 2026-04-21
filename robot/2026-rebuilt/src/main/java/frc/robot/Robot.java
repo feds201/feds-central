@@ -162,7 +162,7 @@ public class Robot extends LoggedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-    new InstantCommand(() -> CommandScheduler.getInstance().cancelAll());
+    m_robotContainer.idleSubsystems();
     HubShiftUtil.initialize();
   }
 
