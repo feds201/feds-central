@@ -1,38 +1,32 @@
-/// One selectable row in the match dropdown.
-/// Each TBA match produces TWO entries (one per alliance).
+/// One row in the match dropdown — a single match with both alliances.
 class MatchEntry {
   final String matchKey;
   final String compLevel; // "qm", "sf", "f"
   final int matchNumber;
   final int setNumber;
-  final String alliance; // "red" or "blue"
-  final bool isOurAlliance;
-  final List<int> teamNumbers; // the 3 teams on this alliance
+  final List<int> redTeams;
+  final List<int> blueTeams;
+  final bool hasOurTeam;
 
   MatchEntry({
     required this.matchKey,
     required this.compLevel,
     required this.matchNumber,
     required this.setNumber,
-    required this.alliance,
-    required this.isOurAlliance,
-    required this.teamNumbers,
+    required this.redTeams,
+    required this.blueTeams,
+    required this.hasOurTeam,
   });
 
-  /// Display label, e.g. "Q7: Red (us)" or "SF1-2: Blue (them)"
-  String get label {
-    final prefix = switch (compLevel) {
-      'qm' => 'Q$matchNumber',
-      'sf' => 'SF$setNumber-$matchNumber',
-      'f' => 'F$matchNumber',
-      _ => '$compLevel$matchNumber',
-    };
-    final color = alliance == 'red' ? 'red' : 'blue';
-    final tag = isOurAlliance ? 'us' : 'them';
-    return '$prefix: $tag ($color)';
-  }
+  /// Short identifier, e.g. "Q7", "SF1-2", "F1".
+  String get shortLabel => switch (compLevel) {
+        'qm' => 'Q$matchNumber',
+        'sf' => 'SF$setNumber-$matchNumber',
+        'f' => 'F$matchNumber',
+        _ => '$compLevel$matchNumber',
+      };
 
-  /// Sort key: qm < sf < f, then set, then match, then red before blue.
+  /// Sort key: qm < sf < f, then set, then match.
   int get sortKey {
     final levelWeight = switch (compLevel) {
       'qm' => 0,
@@ -40,15 +34,14 @@ class MatchEntry {
       'f' => 2000000,
       _ => 3000000,
     };
-    return levelWeight +
-        setNumber * 10000 +
-        matchNumber * 10 +
-        (alliance == 'red' ? 0 : 1);
+    return levelWeight + setNumber * 10000 + matchNumber;
   }
 }
 
 /// Parse TBA /event/{key}/matches JSON into a sorted list of [MatchEntry].
-/// Only includes matches where [ourTeamKey] is on one of the alliances.
+/// One entry per match; both alliances retained.
+/// Placeholder team keys like "frc0" (used in unresolved playoff brackets)
+/// are filtered out.
 List<MatchEntry> parseMatches(
   List<dynamic> json, {
   String ourTeamKey = 'frc201',
@@ -61,43 +54,28 @@ List<MatchEntry> parseMatches(
 
     final redKeys =
         (alliances['red']?['team_keys'] as List<dynamic>?)?.cast<String>() ??
-            [];
+            const [];
     final blueKeys =
         (alliances['blue']?['team_keys'] as List<dynamic>?)?.cast<String>() ??
-            [];
+            const [];
 
-    final onRed = redKeys.contains(ourTeamKey);
-    final onBlue = blueKeys.contains(ourTeamKey);
-    if (!onRed && !onBlue) continue;
+    final hasOurTeam =
+        redKeys.contains(ourTeamKey) || blueKeys.contains(ourTeamKey);
 
     List<int> parseTeamKeys(List<String> keys) => keys
         .map((k) => int.tryParse(k.replaceFirst('frc', '')))
         .whereType<int>()
+        .where((n) => n > 0)
         .toList();
 
-    final compLevel = match['comp_level'] as String? ?? '';
-    final matchNumber = match['match_number'] as int? ?? 0;
-    final setNumber = match['set_number'] as int? ?? 0;
-    final matchKey = match['key'] as String? ?? '';
-
     entries.add(MatchEntry(
-      matchKey: matchKey,
-      compLevel: compLevel,
-      matchNumber: matchNumber,
-      setNumber: setNumber,
-      alliance: 'red',
-      isOurAlliance: onRed,
-      teamNumbers: parseTeamKeys(redKeys),
-    ));
-
-    entries.add(MatchEntry(
-      matchKey: matchKey,
-      compLevel: compLevel,
-      matchNumber: matchNumber,
-      setNumber: setNumber,
-      alliance: 'blue',
-      isOurAlliance: onBlue,
-      teamNumbers: parseTeamKeys(blueKeys),
+      matchKey: match['key'] as String? ?? '',
+      compLevel: match['comp_level'] as String? ?? '',
+      matchNumber: match['match_number'] as int? ?? 0,
+      setNumber: match['set_number'] as int? ?? 0,
+      redTeams: parseTeamKeys(redKeys),
+      blueTeams: parseTeamKeys(blueKeys),
+      hasOurTeam: hasOurTeam,
     ));
   }
 

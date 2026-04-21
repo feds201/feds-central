@@ -1,14 +1,19 @@
-import 'dart:html' as html;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:file_picker/file_picker.dart';
 import '../services/data_service.dart';
 import '../services/local_prefs.dart';
 import '../theme.dart';
 
 class EventEntryScreen extends StatefulWidget {
-  const EventEntryScreen({super.key, this.autoLoad = true});
+  const EventEntryScreen({
+    super.key,
+    this.autoLoad = true,
+    this.dismissible = false,
+  });
 
   final bool autoLoad;
+  final bool dismissible;
 
   @override
   State<EventEntryScreen> createState() => _EventEntryScreenState();
@@ -44,13 +49,15 @@ class _EventEntryScreenState extends State<EventEntryScreen>
     }
   }
 
-  void _restoreFromStorage() {
-    final saved = LocalPrefs.resolveConfig();
-    if (saved == null) return;
-    if (saved.eventKey.isNotEmpty) _eventKeyCtl.text = saved.eventKey;
-    if (saved.tableName.isNotEmpty) _tableCtl.text = saved.tableName;
-    if (saved.neonConn.isNotEmpty) _neonCtl.text = saved.neonConn;
-    if (saved.tbaKey.isNotEmpty) _tbaCtl.text = saved.tbaKey;
+  Future<void> _restoreFromStorage() async {
+    final saved = await LocalPrefs.resolveConfig();
+    if (saved == null || !mounted) return;
+    setState(() {
+      if (saved.eventKey.isNotEmpty) _eventKeyCtl.text = saved.eventKey;
+      if (saved.tableName.isNotEmpty) _tableCtl.text = saved.tableName;
+      if (saved.neonConn.isNotEmpty) _neonCtl.text = saved.neonConn;
+      if (saved.tbaKey.isNotEmpty) _tbaCtl.text = saved.tbaKey;
+    });
   }
 
   Future<void> _tryAutoLoad() async {
@@ -69,20 +76,20 @@ class _EventEntryScreenState extends State<EventEntryScreen>
     super.dispose();
   }
 
-  void _pickCsv() {
-    final input = html.FileUploadInputElement()..accept = '.csv';
-    input.click();
-    input.onChange.listen((_) {
-      final file = input.files?.first;
-      if (file == null) return;
-      final reader = html.FileReader();
-      reader.readAsText(file);
-      reader.onLoadEnd.listen((_) {
-        setState(() {
-          _csvFileName = file.name;
-          _csvContent = reader.result as String?;
-        });
-      });
+  Future<void> _pickCsv() async {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['csv'],
+      withData: true,
+    );
+
+    if (result == null || result.files.isEmpty) return;
+    final file = result.files.first;
+    if (file.bytes == null) return;
+
+    setState(() {
+      _csvFileName = file.name;
+      _csvContent = String.fromCharCodes(file.bytes!);
     });
   }
 
@@ -107,13 +114,14 @@ class _EventEntryScreenState extends State<EventEntryScreen>
     if (svc.scoutingByTeam.isEmpty) {
       _showError('No teams found in CSV');
     } else {
-      LocalPrefs.saveConfig(
+      await LocalPrefs.saveConfig(
         eventKey: _eventKeyCtl.text.trim(),
         tableName: _tableCtl.text.trim(),
         neonConn: _neonCtl.text.trim(),
         tbaKey: _tbaCtl.text.trim(),
       );
-      Navigator.of(context).pushReplacementNamed('/compare');
+      if (!mounted) return;
+      _goToCompare();
     }
   }
 
@@ -135,19 +143,31 @@ class _EventEntryScreenState extends State<EventEntryScreen>
     if (svc.error != null && svc.scoutingByTeam.isEmpty) {
       _showError(svc.error!);
     } else {
-      LocalPrefs.saveConfig(
+      await LocalPrefs.saveConfig(
         eventKey: _eventKeyCtl.text.trim(),
         tableName: _tableCtl.text.trim(),
         neonConn: _neonCtl.text.trim(),
         tbaKey: _tbaCtl.text.trim(),
       );
-      LocalPrefs.saveData(
+      await LocalPrefs.saveData(
         eventKey: _eventKeyCtl.text.trim(),
         scoutingByTeam: svc.scoutingByTeam,
         scoutingColumns: svc.scoutingColumns,
         oprByTeam: svc.oprByTeam,
         epaByTeam: svc.epaByTeam,
+        matchEntries: svc.matchEntries,
+        playoffAlliances: svc.playoffAlliances,
+        teamNames: svc.teamNames,
       );
+      if (!mounted) return;
+      _goToCompare();
+    }
+  }
+
+  void _goToCompare() {
+    if (widget.dismissible) {
+      Navigator.of(context).pop();
+    } else {
       Navigator.of(context).pushReplacementNamed('/compare');
     }
   }
@@ -174,25 +194,28 @@ class _EventEntryScreenState extends State<EventEntryScreen>
     final loading = context.select<DataService, bool>((s) => s.loading);
 
     return Scaffold(
-      body: Center(
-        child: FadeTransition(
-          opacity: _fadeAnim,
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(32),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 460),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    // ── Logo ──────────────────────────────────────────
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+      body: Stack(
+        children: [
+          Center(
+            child: FadeTransition(
+              opacity: _fadeAnim,
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(32),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 460),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
+                        // ── Logo ──────────────────────────────────────────
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
                         Container(
-                          width: 44, height: 44,
+                          width: 44,
+                          height: 44,
                           decoration: BoxDecoration(
                             color: AppTheme.accent.withOpacity(0.12),
                             borderRadius: BorderRadius.circular(12),
@@ -201,7 +224,7 @@ class _EventEntryScreenState extends State<EventEntryScreen>
                               color: AppTheme.accent, size: 26),
                         ),
                         const SizedBox(width: 12),
-                        Text('Scout-Ops Dash',
+                        Text('Match Dash',
                             style: Theme.of(context)
                                 .textTheme
                                 .headlineMedium!
@@ -228,11 +251,9 @@ class _EventEntryScreenState extends State<EventEntryScreen>
                       children: [
                         const Expanded(child: Divider()),
                         Padding(
-                          padding:
-                              const EdgeInsets.symmetric(horizontal: 12),
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
                           child: Text('Load scouting data from',
-                              style:
-                                  Theme.of(context).textTheme.bodySmall),
+                              style: Theme.of(context).textTheme.bodySmall),
                         ),
                         const Expanded(child: Divider()),
                       ],
@@ -265,7 +286,7 @@ class _EventEntryScreenState extends State<EventEntryScreen>
                                     color: AppTheme.surfaceHi,
                                     borderRadius: BorderRadius.circular(8),
                                     border:
-                                        Border.all(color: AppTheme.border),
+                                    Border.all(color: AppTheme.border),
                                   ),
                                   child: Text(
                                     _csvFileName ?? 'No file selected',
@@ -302,18 +323,18 @@ class _EventEntryScreenState extends State<EventEntryScreen>
                             SizedBox(
                               height: 44,
                               child: ElevatedButton.icon(
-                                onPressed:
-                                    (loading || _csvContent == null)
-                                        ? null
-                                        : _loadCsv,
+                                onPressed: (loading || _csvContent == null)
+                                    ? null
+                                    : _loadCsv,
                                 icon: loading
                                     ? const SizedBox(
-                                        width: 18, height: 18,
-                                        child: CircularProgressIndicator(
-                                            strokeWidth: 2,
-                                            color: AppTheme.bg))
+                                    width: 18,
+                                    height: 18,
+                                    child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: AppTheme.bg))
                                     : const Icon(Icons.upload_rounded,
-                                        size: 18),
+                                    size: 18),
                                 label: const Text('Load CSV'),
                               ),
                             ),
@@ -361,13 +382,14 @@ class _EventEntryScreenState extends State<EventEntryScreen>
                                     backgroundColor: AppTheme.gold),
                                 icon: loading
                                     ? const SizedBox(
-                                        width: 18, height: 18,
-                                        child: CircularProgressIndicator(
-                                            strokeWidth: 2,
-                                            color: AppTheme.bg))
+                                    width: 18,
+                                    height: 18,
+                                    child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: AppTheme.bg))
                                     : const Icon(
-                                        Icons.cloud_download_rounded,
-                                        size: 18),
+                                    Icons.cloud_download_rounded,
+                                    size: 18),
                                 label: const Text('Load from Neon'),
                               ),
                             ),
@@ -381,6 +403,21 @@ class _EventEntryScreenState extends State<EventEntryScreen>
             ),
           ),
         ),
+          ),
+          if (widget.dismissible)
+            Positioned(
+              top: 8,
+              right: 8,
+              child: SafeArea(
+                child: IconButton(
+                  icon: const Icon(Icons.close_rounded, size: 22),
+                  tooltip: 'Close',
+                  color: AppTheme.muted,
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }
