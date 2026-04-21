@@ -3,6 +3,7 @@ import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.fasterxml.jackson.databind.ser.std.StdKeySerializers.Default;
 
@@ -71,7 +72,7 @@ public class IntakeSubsystem extends SubsystemBase {
   private static final double MOVE_TARGET_SECONDS = .45;
   // Aggressive acceleration multiplier requested (20x faster than default)
   private static final double MOTION_MAGIC_ACCEL_MULTIPLIER = 40.0;
-  private static final double ROLLER_OUTPUT = 0.90; //90% for rollers, 70% originally;
+  private static final double ROLLER_OUTPUT = 1.0; //90% for rollers, 70% originally;
   private final Timer timer = new Timer();
 
   private final ShuffleboardTab pitTab;
@@ -375,8 +376,9 @@ public class IntakeSubsystem extends SubsystemBase {
       limit_switch_l = new DigitalInput(RobotMap.IntakeSubsystemConstants.kLimit_switch_lID);
 
       var rollerConfig = new TalonFXConfiguration();
-    rollerConfig.CurrentLimits.StatorCurrentLimit = 40.0;
+    rollerConfig.CurrentLimits.StatorCurrentLimit = 55.0;
     rollerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+    rollerConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
     for (int i = 0; i < 2; ++i) {
       var status = rollerMotor.getConfigurator().apply(rollerConfig);
