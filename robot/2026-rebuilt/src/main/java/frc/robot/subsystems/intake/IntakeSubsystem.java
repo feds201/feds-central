@@ -3,6 +3,7 @@ import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.fasterxml.jackson.databind.ser.std.StdKeySerializers.Default;
 
 import frc.robot.commands.intake.AgitateWhileHeldTimeCommand;
@@ -18,6 +19,7 @@ import java.util.List;
 
 import org.littletonrobotics.junction.Logger;
 
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVelocityDutyCycle;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 
@@ -39,6 +41,7 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
@@ -54,6 +57,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
   private final TalonFX motor;
   private final TalonFX rollerMotor;
+  private final TalonFX rollerMotorFollower;
   private final DigitalInput limit_switch_r;
   private final DigitalInput limit_switch_l;
   private final SysIdRoutine sysID;
@@ -365,6 +369,8 @@ public class IntakeSubsystem extends SubsystemBase {
     public IntakeSubsystem() {
       motor = new TalonFX(RobotMap.IntakeSubsystemConstants.kMotorID);
       rollerMotor = new TalonFX(RobotMap.IntakeSubsystemConstants.kRollerMotorID);
+      rollerMotorFollower = new TalonFX(RobotMap.IntakeSubsystemConstants.kRollerMotorFollowerID);
+      rollerMotorFollower.setControl(new Follower(rollerMotor.getDeviceID(), MotorAlignmentValue.Opposed));
       limit_switch_r = new DigitalInput(RobotMap.IntakeSubsystemConstants.kLimit_switch_rID);
       limit_switch_l = new DigitalInput(RobotMap.IntakeSubsystemConstants.kLimit_switch_lID);
 
@@ -373,7 +379,11 @@ public class IntakeSubsystem extends SubsystemBase {
     rollerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
 
     for (int i = 0; i < 2; ++i) {
-      var status = motor.getConfigurator().apply(rollerConfig);
+      var status = rollerMotor.getConfigurator().apply(rollerConfig);
+      if (status.isOK()) break;
+    }
+    for (int i = 0; i < 2; ++i) {
+      var status = rollerMotorFollower.getConfigurator().apply(rollerConfig);
       if (status.isOK()) break;
     }
 
