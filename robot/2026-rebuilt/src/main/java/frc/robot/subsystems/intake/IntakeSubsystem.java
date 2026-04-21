@@ -577,6 +577,7 @@ public class IntakeSubsystem extends SubsystemBase {
     Logger.recordOutput("Robot/Limelights/limelight-one/TX", LimelightHelpers.getTX("limelight-one"));
     Logger.recordOutput("Robot/Limelights/limelight-one/TY", LimelightHelpers.getTY("limelight-one"));
     Logger.recordOutput("Robot/Limelights/limelight-one/TA", LimelightHelpers.getTA("limelight-one"));
+    Logger.recordOutput("Robot/Intake/Intake Stator Current", motor.getStatorCurrent().getValue());
     super.periodic();
 
     intakeConnectedEntry.setBoolean(motor.isConnected());

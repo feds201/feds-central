@@ -146,20 +146,20 @@ public final class RobotMap {
         public static final Rectangle2d trench = new Rectangle2d(robotShooterOffset, hubCenter);
         public static final Translation2d passingRight = FieldConstants.Outpost.centerPoint.plus(new Translation2d(0, 2));
         public static final Translation2d passingLeft = new Translation2d(0, 7.44).minus(new Translation2d(0, 2));
-        public static final Translation2d BlueLeftTopLeft = new Translation2d(4.0, 8.208);
+        public static final Translation2d BlueLeftTopLeft = new Translation2d(4.0, 11.208);
         public static final Translation2d BlueLeftBottomRight = new Translation2d(5.17, 6.75);
         public static final Rectangle2d BlueLeftTrench = new Rectangle2d(BlueLeftTopLeft, BlueLeftBottomRight);
 
         public static final Translation2d RedLeftTopLeft = new Translation2d(11.375, 1.221);
-        public static final Translation2d RedLeftBottomRight = new Translation2d(12.6, 0.082);
+        public static final Translation2d RedLeftBottomRight = new Translation2d(12.6, -3);
         public static final Rectangle2d RedLeftTrench = new Rectangle2d(RedLeftTopLeft, RedLeftBottomRight);
 
-        public static final Translation2d BlueRightTopLeft = new Translation2d(5.2, 0.018);
+        public static final Translation2d BlueRightTopLeft = new Translation2d(5.2, -3);
         public static final Translation2d BlueRightBottomRight = new Translation2d(4, 1.26);
         public static final Rectangle2d BlueRightTrench = new Rectangle2d(BlueRightTopLeft, BlueRightBottomRight);
 
         public static final Translation2d RedRightTopRight = new Translation2d(12.56, 6.88);
-        public static final Translation2d RedRightBottomRight = new Translation2d(11.181, 8.104);
+        public static final Translation2d RedRightBottomRight = new Translation2d(11.181, 11);
         public static final Rectangle2d RedRightTrench = new Rectangle2d(RedRightTopRight, RedRightBottomRight);
 
         public static final Rectangle2d neutralZone = new Rectangle2d(FieldConstants.LeftTrench.openingTopLeft.toTranslation2d(), FieldConstants.RightTrench.oppOpeningTopRight.toTranslation2d());
@@ -172,10 +172,10 @@ public final class RobotMap {
             Map.entry(2.01, 28.0),//done
             Map.entry(2.56, 30.0),//done
             Map.entry(2.89, 31.0),//done
-             Map.entry(3.08, 33.5),//done 
+            Map.entry(3.08, 33.5),//done 
             Map.entry(3.37, 34.5),//done
             Map.entry(3.97,38.0), //done 
-            Map.entry(4.75, 39.5),
+            Map.entry(4.75, 39.0),
             Map.entry(5.0,42.0),// done
             Map.entry(6.02, 42.0),//done 
             Map.entry(6.85,43.0), // Done
@@ -189,15 +189,15 @@ public final class RobotMap {
             Map.entry(2.01, 3.8),//done 
             Map.entry(2.56, 9.0),//done 
             Map.entry(2.89, 9.0),//done
-            Map.entry(3.08, 8.0),//done
-            Map.entry(3.37, 8.0),//done
-            Map.entry(3.97,10.0),//done
-            Map.entry(4.75, 14.0),
-            Map.entry(5.0, 15.0),// done
-            Map.entry(6.02, 22.0), //done 
-            Map.entry(6.85, 25.0), // done
-            Map.entry(7.6, 29.0), // done
-            Map.entry(100.0, 29.0) //far off top limit to prevent unwanted scaling past this distance 
+            Map.entry(3.08, 8.5),//done //bumped all past this point by .2 up
+            Map.entry(3.37, 8.5),//done
+            Map.entry(3.97,10.5),//done
+            Map.entry(4.75, 14.5),
+            Map.entry(5.0, 15.5),// done
+            Map.entry(6.02, 22.5), //done 
+            Map.entry(6.85, 25.5), // done
+            Map.entry(7.6, 29.5), // done
+            Map.entry(100.0, 29.5) //far off top limit to prevent unwanted scaling past this distance 
         );
 
         public static final InterpolatingDoubleTreeMap kPassingVelocityMap = InterpolatingDoubleTreeMap.ofEntries(
@@ -205,8 +205,8 @@ public final class RobotMap {
            Map.entry(6.5, 30.0),
            Map.entry(8.53, 35.0),
            Map.entry(11.12, 44.0),
-           Map.entry(13.0,75.0),
-           Map.entry(14.0, 80.0)
+           Map.entry(12.0,80.0),
+           Map.entry(14.0, 90.0)
 
         );
 
@@ -216,7 +216,7 @@ public final class RobotMap {
             Map.entry(6.5,29.0),
             Map.entry(8.53, 29.0),
             Map.entry(11.12, 29.0),
-            Map.entry(13.0,30.0),
+            Map.entry(12.0,30.0),
             Map.entry(14.0, 30.0)
         );
 

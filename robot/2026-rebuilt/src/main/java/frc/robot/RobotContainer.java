@@ -83,6 +83,7 @@ public class RobotContainer extends ControllerBindings {
 
   private final SendableChooser<Command> autoChooser;
 
+
     public static RobotContainer getInstance() {
         return instance;
     }
@@ -137,6 +138,8 @@ public class RobotContainer extends ControllerBindings {
     //Adds a mirrored-to-the-right version of the LeftMidfieldDoublePass path
     autoChooser.addOption("LeftMidfieldDoublePass", new PathPlannerAuto("RightMidfieldDoublePass", true)); 
     drivetrain.registerTelemetry(telemetry::telemeterize);
+
+    SmartDashboard.putBoolean("Limelight-Four", true);
   }
   
     // --- APIs used by the diagnostic server / UI to command shooter/hood ---
@@ -236,7 +239,7 @@ public class RobotContainer extends ControllerBindings {
   
 
     public void updateLocalization() {
-        if (ll4.isConnected()) {
+        if (ll4.isConnected()){// && SmartDashboard.getBoolean("Limelight-Four", true)) {
             ll4.updateLocalizationLimelight(drivetrain);
         } else {
             ll3.updateLocalizationLimelight(drivetrain);
@@ -301,6 +304,15 @@ public class RobotContainer extends ControllerBindings {
         rtumanager.periodic();
     }
 
+public void idleSubsystems() {
+    intakeSubsystem.setState(IntakeState.DEFAULT);
+    intakeSubsystem.setRollerState(RollerState.OFF);
+    shooterWheels.setState(shooter_state.IDLE);
+    shooterHood.setState(shooterhood_state.IN);
+    spinDexer.setState(spindexer_state.STOP);
+    feederSubsystem.setState(feeder_state.STOP);
+}
+
 
 public void registerNamedCommands() {
   NamedCommands.registerCommand("Extend Hopper", intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED));
@@ -314,8 +326,7 @@ public void registerNamedCommands() {
   NamedCommands.registerCommand("Run Shooter", shooterWheels.setStateCommand(shooter_state.SHOOTING).alongWith(feederSubsystem.setStateCommand(feeder_state.RUN)).alongWith(spinDexer.setStateCommand(spindexer_state.RUN)).alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
   NamedCommands.registerCommand("Shooting", shooterWheels.setStateCommand(shooter_state.SHOOTING).alongWith(feederSubsystem.setStateCommand(feeder_state.RUN)).alongWith(spinDexer.setStateCommand(spindexer_state.RUN)).alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
   NamedCommands.registerCommand("Start Passing Spin", shooterWheels.setStateCommand(shooter_state.PASSING).alongWith(shooterHood.setStateCommand(shooterhood_state.PASSING)));
-  NamedCommands.registerCommand("Passing", shooterWheels.setStateCommand(shooter_state.PASSING).alongWith(feederSubsystem.setStateCommand(feeder_state.RUN)).alongWith(spinDexer.setStateCommand(spindexer_state.RUN)).alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
-
+  NamedCommands.registerCommand("Passing", shooterWheels.setStateCommand(shooter_state.PASSING).alongWith(feederSubsystem.setStateCommand(feeder_state.RUN)).alongWith(spinDexer.setStateCommand(spindexer_state.RUN)).alongWith(shooterHood.setStateCommand(shooterhood_state.PASSING)));
 
 
 }
