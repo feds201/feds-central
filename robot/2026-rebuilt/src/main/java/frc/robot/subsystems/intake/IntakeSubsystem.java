@@ -118,7 +118,6 @@ public class IntakeSubsystem extends SubsystemBase {
       }
       case CLOSE_AGITATION_IN -> {
         moveIntakeWithPosition(0.0);
-        
       }
       case INTAKING -> {
         moveIntakeWithPosition(EXTENDED_ROTATIONS);
@@ -138,6 +137,9 @@ public class IntakeSubsystem extends SubsystemBase {
       }
       case FAR_AGITATION_OUT -> {
         moveIntakeWithPosition(EXTENDED_ROTATIONS);
+      }
+      case DITHERIN_AGITATION, DITHEROUT_AGITATION -> {
+        // No position command — dither uses duty-cycle motor.set() in periodic
       }
     }
 
@@ -406,7 +408,7 @@ public class IntakeSubsystem extends SubsystemBase {
     switch (currentState) {
       case AGITATE_IN:
        if(! timer.isRunning()){
-          timer.start();  
+          timer.start();
        }
        if(timer.hasElapsed(IntakeSubsystemConstants.agitateCycleConstant)){
         setState(IntakeState.AGITATE_OUT);
@@ -417,7 +419,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
         case AGITATE_OUT:
            if(! timer.isRunning()){
-          timer.start();  
+          timer.start();
        }
         if(timer.hasElapsed(IntakeSubsystemConstants.agitateCycleConstant)){
         setState(IntakeState.AGITATE_IN);
@@ -428,7 +430,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
       case FAR_AGITATION_IN:
        if(! timer.isRunning()){
-          timer.start();  
+          timer.start();
        }
        if(timer.hasElapsed(.2)){
         setState(IntakeState.FAR_AGITATION_OUT);
@@ -439,7 +441,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
         case FAR_AGITATION_OUT:
            if(! timer.isRunning()){
-          timer.start();  
+          timer.start();
        }
         if(timer.hasElapsed(.2)){
         setState(IntakeState.FAR_AGITATION_IN);
@@ -449,7 +451,7 @@ public class IntakeSubsystem extends SubsystemBase {
       break;
 
 
-        case CLOSE_AGITATION_OUT: 
+        case CLOSE_AGITATION_OUT:
           if(!timer.isRunning()){
             timer.start();
           }
@@ -460,7 +462,7 @@ public class IntakeSubsystem extends SubsystemBase {
           }
           break;
 
-          case CLOSE_AGITATION_IN: 
+          case CLOSE_AGITATION_IN:
           if(!timer.isRunning()){
             timer.start();
           }
@@ -476,7 +478,7 @@ public class IntakeSubsystem extends SubsystemBase {
         if(!timer.isRunning()){
           timer.start();
       }
-        motor.set(-0.3); 
+        motor.set(-0.3);
 
         if(timer.hasElapsed(0.3)){
             setState(IntakeState.DITHEROUT_AGITATION);
@@ -489,15 +491,20 @@ public class IntakeSubsystem extends SubsystemBase {
         if(!timer.isRunning()){
           timer.start();
       }
-        motor.set(0.3); 
+        motor.set(0.3);
 
         if(timer.hasElapsed(0.1)){
-            setState(IntakeState.DITHERIN_AGITATION); // small retract from extended
+            setState(IntakeState.DITHERIN_AGITATION);
             timer.stop();
             timer.reset();
-         
-
         }
+          break;
+
+        case DEFAULT, EXTENDED, INTAKING:
+          if(timer.isRunning()){
+            timer.stop();
+            timer.reset();
+          }
           break;
       }
 
@@ -518,8 +525,18 @@ public class IntakeSubsystem extends SubsystemBase {
 
     boolean fuelDetected = LimelightHelpers.getTV("limelight-one");
 
+    Logger.recordOutput("Robot/Intake/Extended", currentState != IntakeState.DEFAULT);
     Logger.recordOutput("Robot/Intake/ExtensionPct", Math.min(100.0, Math.max(0.0, motor.getPosition().getValue().in(Units.Rotations) / EXTENDED_ROTATIONS * 100.0)));
-    Logger.recordOutput("Robot/Intake/RollerState", currentRollerState.toString());
+    Logger.recordOutput("Robot/IntakeRoller/State", currentRollerState.toString());
+
+    Logger.recordOutput("Robot/Intake/PositionRotations", motor.getPosition().getValueAsDouble());
+    Logger.recordOutput("Robot/Intake/TargetPositionRotations", motor.getClosedLoopReference().getValueAsDouble());
+    Logger.recordOutput("Robot/Intake/AppliedVolts", motor.getMotorVoltage().getValueAsDouble());
+    Logger.recordOutput("Robot/Intake/StatorAmps", motor.getStatorCurrent().getValueAsDouble());
+
+    Logger.recordOutput("Robot/IntakeRoller/VelocityRPS", rollerMotor.getVelocity().getValueAsDouble());
+    Logger.recordOutput("Robot/IntakeRoller/AppliedVolts", rollerMotor.getMotorVoltage().getValueAsDouble());
+    Logger.recordOutput("Robot/IntakeRoller/StatorAmps", rollerMotor.getStatorCurrent().getValueAsDouble());
     Logger.recordOutput("Robot/Intake/FuelDetected", fuelDetected);
     Logger.recordOutput("Robot/Limelights/limelight-one/TV", fuelDetected);
     Logger.recordOutput("Robot/Limelights/limelight-one/TX", LimelightHelpers.getTX("limelight-one"));
@@ -574,7 +591,7 @@ public class IntakeSubsystem extends SubsystemBase {
    * to activate the intake zone (compared against IntakeSubsystem.EXTENDED_ROTATIONS).
    * Sim use only.
    */
-  public double getDeployMotorPositionRotations() {
+  public double getSimDeployMotorPositionRotations() {
       return motor.getPosition().getValue().in(Units.Rotations);
   }
 
@@ -584,7 +601,7 @@ public class IntakeSubsystem extends SubsystemBase {
    * to count as actively intaking (compared against INTAKE_ROLLER_VELOCITY_THRESHOLD_RPS).
    * Sim use only.
    */
-  public double getRollerMotorVelocityRPS() {
+  public double getSimRollerMotorVelocityRPS() {
       return rollerMotor.getVelocity().getValue().in(Units.RotationsPerSecond);
   }
 
@@ -593,7 +610,7 @@ public class IntakeSubsystem extends SubsystemBase {
    * Used by RebuiltSimManager to drive the roller wheel animation in AdvantageScope.
    * Sim use only.
    */
-  public double getRollerMotorPositionRotations() {
+  public double getSimRollerMotorPositionRotations() {
       return rollerMotor.getPosition().getValue().in(Units.Rotations);
   }
 

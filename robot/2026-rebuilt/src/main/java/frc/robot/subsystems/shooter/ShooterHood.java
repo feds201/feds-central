@@ -108,6 +108,16 @@ public class ShooterHood extends SubsystemBase {
     shooterHoodPoweredEntry = shooterHoodLayout.add("shooter Hood Motor is Powered", false).getEntry();
   }
 
+  /** Converts hood motor rotor rotations to physical hood angle in degrees, assuming linear mapping between 0 rot → HOOD_MIN_ANGLE_DEG and HOOD_FORWARD_SOFT_LIMIT_ROT → HOOD_MAX_ANGLE_DEG. */
+  public static double rotationsToAngleDegrees(double rotations) {
+    double range = ShooterConstants.HOOD_MAX_ANGLE_DEG - ShooterConstants.HOOD_MIN_ANGLE_DEG;
+    return ShooterConstants.HOOD_MIN_ANGLE_DEG + (rotations / ShooterConstants.HOOD_FORWARD_SOFT_LIMIT_ROT) * range;
+  }
+
+  public double getPositionDegrees() {
+    return rotationsToAngleDegrees(getPosition().in(Rotations));
+  }
+
   @Override
   public void periodic() {
     Logger.recordOutput("Robot/Shooter/Shooter Hood State", currentState.toString());
@@ -139,6 +149,15 @@ public class ShooterHood extends SubsystemBase {
       break;
     }
     Logger.recordOutput("Robot/Shooter/HoodAngleRotations", getPosition().in(Rotations));
+
+    double targetRot = hoodMotor.getClosedLoopReference().getValueAsDouble();
+    Logger.recordOutput("Robot/ShooterHood/PositionRotations", getPosition().in(Rotations));
+    Logger.recordOutput("Robot/ShooterHood/PositionDegrees", getPositionDegrees());
+    Logger.recordOutput("Robot/ShooterHood/TargetPositionRotations", targetRot);
+    Logger.recordOutput("Robot/ShooterHood/TargetPositionDegrees", rotationsToAngleDegrees(targetRot));
+    Logger.recordOutput("Robot/ShooterHood/AppliedVolts", hoodMotor.getMotorVoltage().getValueAsDouble());
+    Logger.recordOutput("Robot/ShooterHood/StatorAmps", hoodMotor.getStatorCurrent().getValueAsDouble());
+
     // This method will be called once per scheduler run
     shooterHoodConnectedEntry.setBoolean(hoodMotor.isConnected());
   shooterHoodPoweredEntry.setBoolean(hoodMotor.getSupplyVoltage().getValueAsDouble() > RobotMap.PitConstants.kPoweredThresholdVolts);

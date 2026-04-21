@@ -161,7 +161,13 @@ public class ShooterWheels extends SubsystemBase {
   public void periodic() {
         Logger.recordOutput("Robot/Shooter/ShooterVelocity", getVelocity().in(RotationsPerSecond));
 
+    Logger.recordOutput("Robot/Shooter/IsShooting", currentState != shooter_state.IDLE);
     Logger.recordOutput("Robot/Shooter/ShooterState", currentState.toString());
+
+    Logger.recordOutput("Robot/ShooterWheels/VelocityRPS", shooterLeader.getVelocity().getValueAsDouble());
+    Logger.recordOutput("Robot/ShooterWheels/TargetVelocityRPS", shooterLeader.getClosedLoopReference().getValueAsDouble());
+    Logger.recordOutput("Robot/ShooterWheels/AppliedVolts", shooterLeader.getMotorVoltage().getValueAsDouble());
+    Logger.recordOutput("Robot/ShooterWheels/StatorAmps", shooterLeader.getStatorCurrent().getValueAsDouble());
     switch (currentState) {
       case SHOOTING:
       shooterLeader.setControl(velocityVoltageControl.withVelocity(getTargetVelocityShooting()));

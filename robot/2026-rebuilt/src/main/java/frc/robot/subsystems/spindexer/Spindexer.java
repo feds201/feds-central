@@ -123,32 +123,41 @@ public class Spindexer extends SubsystemBase {
    
   @Override
   public void periodic() {
+    Logger.recordOutput("Robot/Shooter/SpindexerOn", currentState != spindexer_state.STOP);
     Logger.recordOutput("Robot/Shooter/SpindexerState", currentState.toString());
+
+    Logger.recordOutput("Robot/Spindexer/VelocityRPS", spindexerMotor.getVelocity().getValueAsDouble());
+    Logger.recordOutput("Robot/Spindexer/TargetVolts", currentState.getVoltage().in(Volts));
+    Logger.recordOutput("Robot/Spindexer/AppliedVolts", spindexerMotor.getMotorVoltage().getValueAsDouble());
+    Logger.recordOutput("Robot/Spindexer/StatorAmps", spindexerMotor.getStatorCurrent().getValueAsDouble());
 
     switch (currentState) {
       case RUN:
         if(!washingMachineTimer.isRunning()){
           washingMachineTimer.start();
         }
-        if(washingMachineTimer.hasElapsed(indexingConstants.forwardTime)){ // 2 sec(Needs to be tuned)
+        if(washingMachineTimer.hasElapsed(indexingConstants.forwardTime)){
           setState(spindexer_state.REVERSE);
           washingMachineTimer.stop();
           washingMachineTimer.reset();
         }
         break;
       case REVERSE:
-        if(!washingMachineTimer.isRunning()){  
+        if(!washingMachineTimer.isRunning()){
           washingMachineTimer.start();
         }
-        if(washingMachineTimer.hasElapsed(indexingConstants.reverseTime)){  // 0.5 sec(Needs to be tuned)
+        if(washingMachineTimer.hasElapsed(indexingConstants.reverseTime)){
           setState(spindexer_state.RUN);
           washingMachineTimer.stop();
           washingMachineTimer.reset();
         }
         break;
 
-
-      case STOP, PREVERSE:
+      case STOP, PREVERSE, PFORWARD:
+        if(washingMachineTimer.isRunning()){
+          washingMachineTimer.stop();
+          washingMachineTimer.reset();
+        }
         break;
     }
     
@@ -222,7 +231,7 @@ public com.ctre.phoenix6.sim.TalonFXSimState getSpindexerMotorSimState() {
  * Returns spindexer motor velocity in RPS. Used by RebuiltSimManager to drive the
  * spindexer animation accumulator each tick. Sim use only.
  */
-public double getMotorVelocityRPS() {
+public double getSimSpindexerMotorVelocityRPS() {
     return spindexerMotor.getVelocity().getValue().in(edu.wpi.first.units.Units.RotationsPerSecond);
 }
 

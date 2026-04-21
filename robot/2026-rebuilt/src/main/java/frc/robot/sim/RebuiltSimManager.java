@@ -186,11 +186,11 @@ public class RebuiltSimManager {
     /** Hood arm effective length for SingleJointedArmSim (m). TODO update placeholder */
     private static final double HOOD_ARM_LENGTH_M = 0.15;
 
-    /** Hood minimum angle (degrees from horizontal) — motor position = 0. 35.5° from spec. */
-    private static final double HOOD_MIN_ANGLE_DEG = 35.5;
+    /** Hood minimum angle (degrees from horizontal) — motor position = 0. */
+    private static final double HOOD_MIN_ANGLE_DEG = RobotMap.ShooterConstants.HOOD_MIN_ANGLE_DEG;
 
-    /** Hood maximum angle (degrees from horizontal) — motor position = 30 rotations. 67.4° from spec. */
-    private static final double HOOD_MAX_ANGLE_DEG = 67.4;
+    /** Hood maximum angle (degrees from horizontal) — motor position = HOOD_FORWARD_SOFT_LIMIT_ROT. */
+    private static final double HOOD_MAX_ANGLE_DEG = RobotMap.ShooterConstants.HOOD_MAX_ANGLE_DEG;
 
     /** Feeder motor moment of inertia (kg·m²). TODO update placeholder */
     private static final double FEEDER_MOI = 4 * 0.5 * 0.75 * 0.025 * 0.025; // 4 axles × 0.5 × mass(0.75kg) × radius²(0.025m) — TODO update placeholder
@@ -381,8 +381,8 @@ public class RebuiltSimManager {
         // --- Intake Zone ---
         Logger.recordOutput("Sim/State", "Loading intake");
         intakeZone = new IntakeZone(INTAKE_X_MIN, INTAKE_X_MAX, INTAKE_Y_MIN, INTAKE_Y_MAX, INTAKE_Z_MAX,
-                () -> intakeSubsystem.getDeployMotorPositionRotations() > IntakeSubsystem.EXTENDED_ROTATIONS
-                                && intakeSubsystem.getRollerMotorVelocityRPS() > INTAKE_ROLLER_VELOCITY_THRESHOLD_RPS,
+                () -> intakeSubsystem.getSimDeployMotorPositionRotations() > IntakeSubsystem.EXTENDED_ROTATIONS
+                                && intakeSubsystem.getSimRollerMotorVelocityRPS() > INTAKE_ROLLER_VELOCITY_THRESHOLD_RPS,
                 () -> chassis.getPose2d());
 
         // --- Mechanism physics sims (non-drivetrain) ---
@@ -670,12 +670,12 @@ public class RebuiltSimManager {
         Logger.recordOutput("Sim/Debug/HoodVoltageIn", hoodMotorSimState.getMotorVoltage());
         Logger.recordOutput("Sim/Debug/HoodPositionRot",
             (hoodArmSim.getAngleRads() - Math.toRadians(HOOD_MIN_ANGLE_DEG)) / angleRange * RobotMap.ShooterConstants.HOOD_FORWARD_SOFT_LIMIT_ROT);
-        Logger.recordOutput("Sim/Debug/IntakeDeployPositionRot", intakeSubsystem.getDeployMotorPositionRotations());
-        Logger.recordOutput("Sim/Debug/IntakeDeployExtendedPct", Math.min(100.0, Math.max(0.0, intakeSubsystem.getDeployMotorPositionRotations() / IntakeSubsystem.EXTENDED_ROTATIONS * 100.0)));
-        Logger.recordOutput("Sim/Debug/IntakeRollerVelocityRPS", intakeSubsystem.getRollerMotorVelocityRPS());
+        Logger.recordOutput("Sim/Debug/IntakeDeployPositionRot", intakeSubsystem.getSimDeployMotorPositionRotations());
+        Logger.recordOutput("Sim/Debug/IntakeDeployExtendedPct", Math.min(100.0, Math.max(0.0, intakeSubsystem.getSimDeployMotorPositionRotations() / IntakeSubsystem.EXTENDED_ROTATIONS * 100.0)));
+        Logger.recordOutput("Sim/Debug/IntakeRollerVelocityRPS", intakeSubsystem.getSimRollerMotorVelocityRPS());
         Logger.recordOutput("Sim/Debug/IntakeZoneActive",
-            intakeSubsystem.getDeployMotorPositionRotations() > IntakeSubsystem.EXTENDED_ROTATIONS
-            && intakeSubsystem.getRollerMotorVelocityRPS() > INTAKE_ROLLER_VELOCITY_THRESHOLD_RPS);
+            intakeSubsystem.getSimDeployMotorPositionRotations() > IntakeSubsystem.EXTENDED_ROTATIONS
+            && intakeSubsystem.getSimRollerMotorVelocityRPS() > INTAKE_ROLLER_VELOCITY_THRESHOLD_RPS);
         Logger.recordOutput("Sim/Debug/ShootingGateOpen",
             shooterMotorSim.getAngularVelocityRPM() / 60.0 > SHOOTER_VELOCITY_THRESHOLD_RPS
             && feederMotorSim.getAngularVelocityRPM() / 60.0 > FEEDER_VELOCITY_THRESHOLD_RPS);
@@ -739,11 +739,11 @@ public class RebuiltSimManager {
 
         // Intake extension: scale deploy position [0, EXTENDED_ROTATIONS] → [0, 1] fraction
         double deployFraction = Math.min(1.0,
-            Math.max(0.0, intakeSubsystem.getDeployMotorPositionRotations() / IntakeSubsystem.EXTENDED_ROTATIONS));
+            Math.max(0.0, intakeSubsystem.getSimDeployMotorPositionRotations() / IntakeSubsystem.EXTENDED_ROTATIONS));
         Translation3d intakeExtension = new Translation3d(
             INTAKE_EXTEND_X * deployFraction, 0, INTAKE_EXTEND_Z * deployFraction);
 
-        double rollerAngle = -(intakeSubsystem.getRollerMotorPositionRotations() * 2 * Math.PI) % (2 * Math.PI);
+        double rollerAngle = -(intakeSubsystem.getSimRollerMotorPositionRotations() * 2 * Math.PI) % (2 * Math.PI);
         double spindexerAngle = (spindexerMotorSim.getAngularPositionRotations() * 2 * Math.PI) % (2 * Math.PI);
         double feederAngle = (feederMotorSim.getAngularPositionRotations() * 2 * Math.PI) % (2 * Math.PI);
         double shooterAngle = (shooterMotorSim.getAngularPositionRotations() * 2 * Math.PI) % (2 * Math.PI);
