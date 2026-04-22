@@ -146,23 +146,25 @@ public class RobotContainer extends ControllerBindings {
     configureRootTests();
     PitTesting.addCommands();
     new Trigger(drivetrain::withinTrench).and(DriverStation::isTeleop).onTrue(shooterHood.setStateCommand(shooterhood_state.IN));
-    // TODO: migrate to LoggedDashboardChooser from AdvantageKit
     registerNamedCommands();
+    SmartDashboard.putBoolean("Limelight-Four", true);
+    drivetrain.registerTelemetry(telemetry::telemeterize);
+
+    // Set up auto chooser
     autoChooser = AutoBuilder.buildAutoChooser();
-    autoChooser.addOption("FD-RightMidFieldDoublepass", new SequentialCommandGroup(
+    SmartDashboard.putData("Auto Chooser", autoChooser);
+
+    // Ball tracking autos
+    autoChooser.addOption("Dev-FD-RightMidFieldDoublepass", new SequentialCommandGroup(
             AutoBuilder.buildAuto("Internal-FD-RightMidFieldDoublepass-Part1")
             .andThen(NamedCommands.getCommand("Ball Track And Return"))
             .andThen(AutoBuilder.buildAuto("Internal-FD-RightMidFieldDoublepass-Part2"))
             .andThen(AutoBuilder.buildAuto("Internal-FD-RightMidFieldDoublepass-Part3"))));
-
-    autoChooser.addOption("FD-MidIntakeToLeftBump", new SequentialCommandGroup(
+    autoChooser.addOption("Dev-FD-MidIntakeToLeftBump", new SequentialCommandGroup(
             AutoBuilder.buildAuto("Internal-FD-MidIntakeToLeftBump-Part1")
             .andThen(NamedCommands.getCommand("Ball Track And Return"))
             .andThen(AutoBuilder.buildAuto("Internal-FD-MidIntakeToLeftBump-Part2"))));
-    SmartDashboard.putData("Auto Chooser", autoChooser);
-
-    // Ball tracking autos
-    autoChooser.addOption("FD-RightSneakDoublepass", new SequentialCommandGroup(
+    autoChooser.addOption("Dev-FD-RightSneakDoublepass", new SequentialCommandGroup(
             AutoBuilder.buildAuto("Internal-FD-RightSneakDoublepass-Part1")
             .andThen(NamedCommands.getCommand("Ball Track And Return"))
             .andThen(AutoBuilder.buildAuto("Internal-FD-RightSneakDoublepass-Part2"))
@@ -171,11 +173,7 @@ public class RobotContainer extends ControllerBindings {
 
     // Mirrored autons
     autoChooser.addOption("Comp-LeftMidfieldDoublePass", new PathPlannerAuto("Comp-RightMidfieldDoublepass", true));
-    autoChooser.addOption("Dev-MidIntakeToRightBump", new PathPlannerAuto("Comp-MidIntakeToLeftBump", true)); //TESTING - DO NOT USE
-    autoChooser.addOption("LeftMidfieldDoublePass", new PathPlannerAuto("RightMidfieldDoublePass", true));
-    drivetrain.registerTelemetry(telemetry::telemeterize);
-
-    SmartDashboard.putBoolean("Limelight-Four", true);
+    autoChooser.addOption("Dev-MidIntakeToRightBump", new PathPlannerAuto("Comp-MidIntakeToLeftBump", true)); // TESTING - DO NOT USE
   }
 
     // --- APIs used by the diagnostic server / UI to command shooter/hood ---
