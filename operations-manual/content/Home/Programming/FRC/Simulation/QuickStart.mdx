@@ -137,49 +137,31 @@ You should now see the field, robot, and game pieces rendered in 3D.
 ## Drive!
 
 <Callout type="info">
-**2026 REBUILT Keyboard Controls**
+**2026 REBUILT Driver Controls**
 
 The keyboard maps to the **driver controller (port 0) only**. If you need operator functions (manual hood angle adjust, agitation modes), you must plug in a physical Xbox controller on port 1.
 
-Keys are grouped by row — each row maps to a part of the robot's ball path. Further right = more automation.
+Left-hand keys (`WASD` + `QE`) drive the robot. Right-hand keys (`O P [ ]`, `K L ; '`, `M , . /`) are the action controls — roughly arranged so "shooting" keys sit on the top row, "feeder/aim" on the home row, and "intake" on the bottom row.
 
-| Key | Xbox Equivalent | Action |
-|-----|----------------|--------|
-| **Driving (left side)** | | |
+| Keyboard | Xbox | Action |
+|----------|------|--------|
+| **Movement (left side)** | | |
 | `W` / `S` | Left Stick Y | Drive forward / back |
 | `A` / `D` | Left Stick X | Strafe left / right |
-| `Q` / `E` | Right Stick X | Rotate left / right |
-| `X` | Start | Reset field-centric heading |
+| `Q` / `E` | Right Stick X | Rotate CCW / CW (spin left / right) |
+| **Shooting (top row — `O P [ ]`)** | | |
+| `P` (hold) | `X` | Hub shot — feeder + spindexer + shooter wheels + hood |
+| `O` (hold) | `Y` | Halfcourt / passing shot |
+| `[` (hold) | `D-pad Right` | Aim hub + spin up shooter (passing shot aim when in neutral zone) |
+| `]` (hold) | `Right Trigger` | Gated fire (only fires when aimed + at speed; use with `[`) |
+| **Feeder / reset (home row — `L ; '`)** | | |
+| `L` (hold) | `A` | Layup — shoot from against hub |
+| `;` (hold) | `B` | Reverse feeder + spindexer |
+| `'` | `Start` | Reset field-centric heading |
 | **Intake (bottom row — `, . /`)** | | |
-| `,` (hold) | Left Trigger | Extend intake + run intake rollers |
-| `.` | Left Bumper | Retract intake |
-| `/` (hold) | Right Bumper | Reverse intake rollers |
-| **Feeder (middle row — `;`)** | | |
-| `;` (hold) | B | Reverse feeder + spindexer |
-| **Shooting (top row — `P O [ ]`)** | | |
-| `P` (hold) | X | Layup — shoot from against hub |
-| `O` (hold) | Y | Halfcourt / passing shot |
-| `[` (hold) | D-pad Right | Aim hub + spin up shooter |
-| `]` (hold) | Right Trigger | Gated fire (only when aimed + at speed; use with `[`) |
-
-</Callout>
-
-<Callout type="info">
-**2026 REBUILT Xbox Controls (Driver — port 0)**
-
-| Button | Action |
-|--------|--------|
-| `Left Stick` | Drive (field-relative — forward/strafe) |
-| `Right Stick X` | Rotate left / right |
-| `Start` | Reset field-centric heading |
-| `D-pad Right` | Hub aim + shooter spin-up (hold; fires when out of neutral zone) or passing shot aim (hold; fires when in neutral zone) |
-| `Left Trigger` | Extend intake + run intake rollers (hold) |
-| `Left Bumper` | Retract intake |
-| `Right Bumper` | Reverse intake rollers |
-| `Right Trigger` | Fire (gated — only fires when swerve is aimed at hub AND shooter at speed; use with D-pad Right) |
-| `B` | Reverse feeder + spindexer (hold) |
-| `X` | Shoot from hub (feeder + spindexer + shooter wheels + hood, hold) |
-| `Y` | Halfcourt/passing shot (hold) |
+| `,` (hold) | `Left Trigger` | Extend intake + run intake rollers |
+| `.` | `Left Bumper` | Retract intake |
+| `/` (hold) | `Right Bumper` | Reverse intake rollers |
 
 </Callout>
 
