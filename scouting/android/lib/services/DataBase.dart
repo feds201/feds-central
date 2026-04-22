@@ -6,7 +6,6 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/painting.dart';
 import 'package:hive/hive.dart';
-import 'package:csv/csv.dart';
 
 int _toInt(dynamic value) {
   if (value == null) return 0;
@@ -188,39 +187,39 @@ class PitRecord {
 
   PitRecord(
       {required this.teamNumber,
-      required this.scouterName,
-      required this.eventKey,
-      required this.driveTrainType,
-      required this.autonType,
-      required this.scoreObject,
-      required this.scoreType,
-      required this.climbType,
-      required this.botImage1,
-      required this.botImage2,
-      required this.botImage3,
-      this.autoRoutes =  '',
-      this.autoFuel = 0,
-      this.gameData = false,
-      this.weight = 0.0,
-      this.speed = 0.0,
-      this.driveMotorType = '',
-      this.groundClearance = 0.0,
-      this.maxFuelCapacity = 0,
-      this.avgCycleTime = 0.0,
-      this.climbSuccessProb = 0.0,
-      this.batteries = 0,
-      this.framePerimeter = '',
-      this.shootingRate = 0.0,
-      this.hopperSealed = false,
-      this.trenchUnder = '',
-      this.bumpOver = false,
-      this.driverYear = 0,
-      this.interviewerName = '',
-      this.interviewerRole = '',
-      this.attitude = true,
-      this.scoutingAccuracy = '',
-      this.notCooperativeReason = '',
-      this.pathDraw = const []});
+        required this.scouterName,
+        required this.eventKey,
+        required this.driveTrainType,
+        required this.autonType,
+        required this.scoreObject,
+        required this.scoreType,
+        required this.climbType,
+        required this.botImage1,
+        required this.botImage2,
+        required this.botImage3,
+        this.autoRoutes =  '',
+        this.autoFuel = 0,
+        this.gameData = false,
+        this.weight = 0.0,
+        this.speed = 0.0,
+        this.driveMotorType = '',
+        this.groundClearance = 0.0,
+        this.maxFuelCapacity = 0,
+        this.avgCycleTime = 0.0,
+        this.climbSuccessProb = 0.0,
+        this.batteries = 0,
+        this.framePerimeter = '',
+        this.shootingRate = 0.0,
+        this.hopperSealed = false,
+        this.trenchUnder = '',
+        this.bumpOver = false,
+        this.driverYear = 0,
+        this.interviewerName = '',
+        this.interviewerRole = '',
+        this.attitude = true,
+        this.scoutingAccuracy = '',
+        this.notCooperativeReason = '',
+        this.pathDraw = const []});
 
   Map<String, dynamic> toJson() {
     return {
@@ -304,10 +303,10 @@ class PitRecord {
       driveTrainType: json['driveTrain'] ?? '',
       autonType: json['auton'] ?? '',
       scoreType:
-          json['scoreType'] is List ? List<String>.from(json['scoreType']) : [],
+      json['scoreType'] is List ? List<String>.from(json['scoreType']) : [],
       scoreObject: List<String>.from(parseScoreObject()),
       climbType:
-          json['climbType'] is List ? List<String>.from(json['climbType']) : [],
+      json['climbType'] is List ? List<String>.from(json['climbType']) : [],
 
       botImage1: json['botImage1'] ?? '',
       botImage2: json['botImage2'] ?? '',
@@ -421,13 +420,13 @@ class QualitativeRecord {
 
   QualitativeRecord(
       {required this.scouterName,
-      required this.matchKey,
-      required this.matchNumber,
-      required this.alliance,
-      required this.q1,
-      required this.q2,
-      required this.q3,
-      required this.q4});
+        required this.matchKey,
+        required this.matchNumber,
+        required this.alliance,
+        required this.q1,
+        required this.q2,
+        required this.q3,
+        required this.q4});
 
   Map<String, dynamic> toJson() {
     return {
@@ -478,13 +477,13 @@ class QualitativeRecord {
   @override
   int get hashCode {
     return scouterName.hashCode ^
-        matchKey.hashCode ^
-        matchNumber.hashCode ^
-        alliance.hashCode ^
-        q1.hashCode ^
-        q2.hashCode ^
-        q3.hashCode ^
-        q4.hashCode;
+    matchKey.hashCode ^
+    matchNumber.hashCode ^
+    alliance.hashCode ^
+    q1.hashCode ^
+    q2.hashCode ^
+    q3.hashCode ^
+    q4.hashCode;
   }
 
   static QualitativeRecord fromMap(Map<String, dynamic> map) {
@@ -734,18 +733,18 @@ class MatchRecord {
   final int batteryPercentage;
 
   MatchRecord(
-    this.autonPoints,
-    this.teleOpPoints,
-    this.endPoints, {
-    required this.teamNumber,
-    required this.scouterName,
-    required this.matchKey,
-    required this.allianceColor,
-    required this.eventKey,
-    required this.station,
-    required this.matchNumber,
-    required this.batteryPercentage,
-  });
+      this.autonPoints,
+      this.teleOpPoints,
+      this.endPoints, {
+        required this.teamNumber,
+        required this.scouterName,
+        required this.matchKey,
+        required this.allianceColor,
+        required this.eventKey,
+        required this.station,
+        required this.matchNumber,
+        required this.batteryPercentage,
+      });
 
   Map<String, dynamic> toJson() {
     return {
@@ -808,12 +807,12 @@ class MatchRecord {
   @override
   int get hashCode {
     return teamNumber.hashCode ^
-        scouterName.hashCode ^
-        matchKey.hashCode ^
-        autonPoints.hashCode ^
-        teleOpPoints.hashCode ^
-        endPoints.hashCode ^
-        batteryPercentage.hashCode;
+    scouterName.hashCode ^
+    matchKey.hashCode ^
+    autonPoints.hashCode ^
+    teleOpPoints.hashCode ^
+    endPoints.hashCode ^
+    batteryPercentage.hashCode;
   }
 }
 
@@ -825,11 +824,11 @@ class AutonPoints {
   int passing = 0;
 
   AutonPoints(
-    this.total_shooting_time,
-    this.amountOfShooting,
-    this.climb,
-    this.passing,
-  );
+      this.total_shooting_time,
+      this.amountOfShooting,
+      this.climb,
+      this.passing,
+      );
 
   Map<String, dynamic> toJson() {
     return {
@@ -964,17 +963,17 @@ class EndPoints {
   String Comments = '';
 
   EndPoints(
-    this.ClimbStatus,
-    this.Park,
-    this.PushBallsEnd,
-    this.Passing,
-    this.robotBroken,
-    this.EndNeutralTrips,
-    this.ShootingAccuracy,
-    this.endgameTime,
-    this.endgameshootingCycles,
+      this.ClimbStatus,
+      this.Park,
+      this.PushBallsEnd,
+      this.Passing,
+      this.robotBroken,
+      this.EndNeutralTrips,
+      this.ShootingAccuracy,
+      this.endgameTime,
+      this.endgameshootingCycles,
       this.Comments,
-  );
+      );
 
   Map<String, dynamic> toJson() {
     return {
@@ -1013,7 +1012,25 @@ class EndPoints {
   }
 
   String toCsv() {
-    return '$ClimbStatus,${Park ? 1 : 0},${PushBallsEnd},$Passing,$robotBroken,$EndNeutralTrips,$ShootingAccuracy,$endgameTime,$endgameshootingCycles,"${Comments.replaceAll('"', '""')}"';
+    final escapedComments = Comments
+        .replaceAll('"', '""') // escape quotes inside comments (otherwise csv thinks comment is over)
+        .replaceAll('\r', '') // strip carriage returns (otherwise csv thinks it's a new row)
+        .replaceAll('\n', ' '); // strip new lines (otherwise csv thinks it's a new row)
+
+    final fields = [
+      ClimbStatus,
+      Park ? 1 : 0,
+      PushBallsEnd,
+      Passing,
+      robotBroken,
+      EndNeutralTrips,
+      ShootingAccuracy,
+      endgameTime,
+      endgameshootingCycles,
+      '"$escapedComments"', // wrap in quotes to handle commas in comments (otherwise csv would think it's the next col)
+    ];
+
+    return fields.join(',');
   }
 
   @override
@@ -1036,15 +1053,15 @@ class EndPoints {
   @override
   int get hashCode {
     return ClimbStatus.hashCode ^
-        Park.hashCode ^
-        EndNeutralTrips.hashCode ^
-        PushBallsEnd.hashCode ^
-        Passing.hashCode ^
-        ShootingAccuracy.hashCode ^
-        endgameTime.hashCode ^
-        endgameshootingCycles.hashCode ^
-        robotBroken.hashCode^
-        Comments.hashCode;
+    Park.hashCode ^
+    EndNeutralTrips.hashCode ^
+    PushBallsEnd.hashCode ^
+    Passing.hashCode ^
+    ShootingAccuracy.hashCode ^
+    endgameTime.hashCode ^
+    endgameshootingCycles.hashCode ^
+    robotBroken.hashCode^
+    Comments.hashCode;
   }
 
   setClimbStatus(int value) {
@@ -1195,17 +1212,17 @@ class LocalDataBase {
 
   static PitRecord mapToPitRecord(Map<dynamic, dynamic> data) {
     return PitRecord(
-        teamNumber: data['teamNumber'] ?? 0,
-        eventKey: data['eventKey'] ?? "",
-        scouterName: data['scouterName'] ?? "",
-        driveTrainType: data['driveTrainType'] ?? "",
-        autonType: data['auton'] ?? "",
-        scoreObject: List<String>.from(data['scoreObject'] ?? []),
-        climbType: List<String>.from(data['climbType'] ?? []),
-        scoreType: List<String>.from(data['scoreType'] ?? []),
-        botImage1: data['botImage1'] ?? "",
-        botImage2: data['botImage2'] ?? "",
-        botImage3: data['botImage3'] ?? "",);
+      teamNumber: data['teamNumber'] ?? 0,
+      eventKey: data['eventKey'] ?? "",
+      scouterName: data['scouterName'] ?? "",
+      driveTrainType: data['driveTrainType'] ?? "",
+      autonType: data['auton'] ?? "",
+      scoreObject: List<String>.from(data['scoreObject'] ?? []),
+      climbType: List<String>.from(data['climbType'] ?? []),
+      scoreType: List<String>.from(data['scoreType'] ?? []),
+      botImage1: data['botImage1'] ?? "",
+      botImage2: data['botImage2'] ?? "",
+      botImage3: data['botImage3'] ?? "",);
   }
 }
 
@@ -1392,17 +1409,17 @@ class PitChecklistItem {
     return '$matchkey,'
         '$returning_battery_voltage,$returning_battery_cca,$returning_number,'
         '$outgoing_battery_voltage,$outgoing_battery_cca,$outgoing_number,$outgoing_battery_replaced,'
-        //drivetrain
+    //drivetrain
         '$drive_motors,$drive_wheels,$drive_gearboxes,$drive_encoders,$drive_wires,$drive_lime_lights,$drive_nuts_and_bolts,$drive_steer_motors,'
-        //structure
+    //structure
         '$structure_frame,$structure_hopper_panels,$structure_brain_pan,$structure_belly_pan,$structure_nuts_and_bolts'
-        //intake
+    //intake
         '$intake_rack,$intake_pinion,$intake_belts,$intake_roller,$intake_boot,$intake_motors,$intake_limit_switches,$intake_lime_lights,$intake_nuts_and_bolts,$intake_wires,'
-        //spindexer
+    //spindexer
         '$spindexer_panel,$spindexer_churros,$spindexer_3d_prints,$spindexer_motor,$spindexer_wheels,$spindexer_nuts_and_bolts'
-        //kicker
+    //kicker
         '$kicker_plates,$kicker_roller,$kicker_belts,$kicker_gears,$kicker_motor,$kicker_radio,$kicker_ethernet_switch,$kicker_nuts_and_bolts,$kicker_wires,'
-        //shooter
+    //shooter
         '$shooter_flywheels,$shooter_hood,$shooter_hood_gears,$shooter_gears,$shooter_motors,$shooter_nuts_and_bolts,$shooter_wires,'
         '$alliance_color';
   }
@@ -1487,12 +1504,12 @@ class PitChecklistItem {
         matchkey: json['matchkey'] ?? " ",
 
         returning_battery_voltage:
-            (json['returning_battery_voltage'] ?? 0.0).toDouble(),
+        (json['returning_battery_voltage'] ?? 0.0).toDouble(),
         returning_battery_cca:
-            (json['returning_battery_cca'] ?? 0.0).toDouble(),
+        (json['returning_battery_cca'] ?? 0.0).toDouble(),
         returning_number: (json['returning_number'] ?? 0.0).toDouble(),
         outgoing_battery_voltage:
-            (json['outgoing_battery_voltage'] ?? 0.0).toDouble(),
+        (json['outgoing_battery_voltage'] ?? 0.0).toDouble(),
         outgoing_battery_cca: (json['outgoing_battery_cca'] ?? 0.0).toDouble(),
         outgoing_number: (json['outgoing_number'] ?? 0.0).toDouble(),
         outgoing_battery_replaced: json['outgoing_battery_replaced'] ?? false,
