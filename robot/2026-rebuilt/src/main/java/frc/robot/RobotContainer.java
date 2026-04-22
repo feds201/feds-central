@@ -144,7 +144,7 @@ public class RobotContainer extends ControllerBindings {
     setupDriveBindings(controller);
     setupOperatorBindings(operaterController);
     configureRootTests();
-    PitTesting.addCommands();
+    PitTesting.createDashboard();
     new Trigger(drivetrain::withinTrench).and(DriverStation::isTeleop).onTrue(shooterHood.setStateCommand(shooterhood_state.IN));
     registerNamedCommands();
     SmartDashboard.putBoolean("Limelight-Four", true);

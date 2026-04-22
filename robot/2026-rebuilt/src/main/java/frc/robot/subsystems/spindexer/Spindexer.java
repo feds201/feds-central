@@ -68,10 +68,6 @@ public class Spindexer extends SubsystemBase {
   private final SysIdRoutine m_spindexerSysId;
   //Timer to switch between forward and reverse during indexing
   private Timer washingMachineTimer = new Timer();
-  private final ShuffleboardTab pitTab;
-  private final ShuffleboardLayout spindexerLayout;
-  private final GenericEntry spindexerConnectedEntry;
-  private final GenericEntry spindexerPoweredEntry;
 
   // private final SysIdRoutine m_SpindexerSysId;
 
@@ -114,10 +110,6 @@ public class Spindexer extends SubsystemBase {
       this // subsystem for command requirements
     )
   );
-    pitTab = Shuffleboard.getTab("Pit Testing");
-    spindexerLayout = pitTab.getLayout("Spindexer Health", BuiltInLayouts.kList).withSize(2,1).withPosition(4, 3);
-    spindexerConnectedEntry = spindexerLayout.add("spindexer Motor is Connected", false).getEntry();
-    spindexerPoweredEntry = spindexerLayout.add("spindexer Motor is Powered", false).getEntry();
   }
 
    
@@ -152,9 +144,7 @@ public class Spindexer extends SubsystemBase {
       case STOP, PREVERSE:
         break;
     }
-    
-    spindexerConnectedEntry.setBoolean(spindexerMotor.isConnected());
-  spindexerPoweredEntry.setBoolean(spindexerMotor.getSupplyVoltage().getValueAsDouble() > RobotMap.PitConstants.kPoweredThresholdVolts);
+
   }
 
   // subsystem getters
@@ -206,4 +196,7 @@ public void setState(spindexer_state state)
 public Command setStateCommand(spindexer_state state) {
     return runOnce(() -> setState(state));
 }
+  public TalonFX getSpindexerMotor() {
+    return spindexerMotor;
+  }
 }
