@@ -1013,7 +1013,12 @@ class EndPoints {
   }
 
   String toCsv() {
-    return '$ClimbStatus,${Park ? 1 : 0},$PushBallsEnd,$Passing,$robotBroken,$EndNeutralTrips,$ShootingAccuracy,$endgameTime,$endgameshootingCycles,${Comments.replaceAll('"', '""').replaceAll('\r', '').replaceAll('\n', ' ')}';
+    String cleanedComments = Comments
+        .replaceAll('"', '""') // required so quotes in cmnt is escaped
+        .replaceAll('\r', '') // no new lines allowed for csv!
+        .replaceAll('\n', ' '); // no new lines allowed for csv!
+    cleanedComments = '"${cleanedComments}"'; // must wrap in quotes since it can contain commas, which would make csv think we're on the next col
+    return '$ClimbStatus,${Park ? 1 : 0},$PushBallsEnd,$Passing,$robotBroken,$EndNeutralTrips,$ShootingAccuracy,$endgameTime,$endgameshootingCycles,${cleanedComments}';
   }
 
   @override
