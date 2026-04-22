@@ -176,7 +176,7 @@ public class ControllerBindings {
                         ));
 
           driver.povDown()
-                 .onTrue((ballTracking.setStateCommand(BallTrackingState.ON)))
+                 .whileTrue((ballTracking.setStateCommand(BallTrackingState.ON)).andThen(new BallTracking(drivetrain)))
                  .onFalse(ballTracking.setStateCommand(BallTrackingState.OFF));
 
         // driver.povDown()

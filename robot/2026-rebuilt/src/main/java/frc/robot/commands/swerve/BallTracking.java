@@ -26,7 +26,7 @@ public class BallTracking extends Command {
   private final double velocityCapX = 3.0; // velocity that robot will move when fuel is detected, max velocity when detected 
   private final double rotationalRate = 3.2; // amount of rotation the robot preforms when searching for fuel, in radians per second
   private final double tyOffset = 23.0; // used to scale foward velocity based on ty  
-  private final double tyCutOff = -5.0; // limit to ty, if ty is less then num robot will stop and look for ball
+  private final double tyCutOff = -15.0; // limit to ty, if ty is less then num robot will stop and look for ball
   private final double txDeadband = 1.5; // tx for which robot will stop (when robot is too close)
 
   public enum BallTrackingState { 
@@ -106,14 +106,14 @@ public class BallTracking extends Command {
       );
     }
 
-    if (withinBlueAlliance()) {
-      if (withinTransition()) {
-        dt.setControl(driveNormal
-            .withVelocityX(velocityCapX)
-            .withVelocityY(0)
-            .withRotationalRate(rotationalRate) 
-        );
-      }
+    if (true) {
+      // if (withinTransition()) {
+      //   dt.setControl(driveNormal
+      //       .withVelocityX(velocityCapX)
+      //       .withVelocityY(0)
+      //       .withRotationalRate(rotationalRate) 
+      //   );
+      // }
 
       if (hasTarget) {
         double tx = LimelightHelpers.getTX("limelight-one");
@@ -126,7 +126,7 @@ public class BallTracking extends Command {
         double rotationOutput = -hubRotPID.calculate(tx);
         rotationOutput = Math.max(-2.0, Math.min(2.0, rotationOutput));
 
-        double forwardVelocity = Math.abs((ty - tyOffset) * 0.1);
+        double forwardVelocity = -1.2; //Math.abs((ty - tyOffset) * 0.1);
 
         if (forwardVelocity >= maxVelocity){
           forwardVelocity = averageTy; 
@@ -148,7 +148,7 @@ public class BallTracking extends Command {
       }
     }
 
-    if (withinRedAlliance()) {
+    if (false) {
       if (withinTransition()) {
         dt.setControl(driveNormal
             .withVelocityX(velocityCapX)
