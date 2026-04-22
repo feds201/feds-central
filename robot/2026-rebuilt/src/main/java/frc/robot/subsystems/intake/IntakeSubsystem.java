@@ -3,7 +3,6 @@ import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.fasterxml.jackson.databind.ser.std.StdKeySerializers.Default;
 
 import frc.robot.commands.intake.AgitateWhileHeldTimeCommand;
 import frc.robot.commands.intake.AgitateWhileHeldRotationsCommand;
@@ -11,7 +10,6 @@ import static edu.wpi.first.units.Units.Rotations;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
 
-import java.io.ObjectInputFilter.Config;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.List;
@@ -24,7 +22,6 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import frc.robot.RobotMap;
 import frc.robot.RobotMap.IntakeSubsystemConstants;
 import frc.robot.subsystems.led.LedsSubsystem;
-import frc.robot.subsystems.shooter.ShooterWheels.shooter_state;
 import frc.robot.utils.LimelightHelpers;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.Timer;
@@ -99,6 +96,7 @@ public class IntakeSubsystem extends SubsystemBase {
   
 
   public void setState(IntakeState targetState) {
+    Logger.recordOutput("Robot/Intake/DeployStateTransition", targetState.toString());
     this.currentState = targetState;
     switch (targetState) {
       case DEFAULT -> {
@@ -385,12 +383,6 @@ public class IntakeSubsystem extends SubsystemBase {
   
   
   
-    pitTab = Shuffleboard.getTab("Pit Testing");
-    intakeLayout = pitTab.getLayout("intake Health", BuiltInLayouts.kList).withSize(2,2).withPosition(4, 0);
-    intakeConnectedEntry = intakeLayout.add("intake Motor is Connected", false).getEntry();
-    intakePoweredEntry = intakeLayout.add("intake Motor is Powered", false).getEntry();
-    rollerConnectedEntry = intakeLayout.add("roller Motor is Connected", false).getEntry();
-    rollerPoweredEntry = intakeLayout.add("roller Motor is Powered", false).getEntry();
     }
   
   @Override
@@ -517,6 +509,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
     boolean fuelDetected = LimelightHelpers.getTV("limelight-one");
 
+    Logger.recordOutput("Robot/Intake/DeployState", currentState.toString());
     Logger.recordOutput("Robot/Intake/Extended", currentState != IntakeState.DEFAULT);
     Logger.recordOutput("Robot/Intake/ExtensionPct", Math.min(100.0, Math.max(0.0, motor.getPosition().getValue().in(Units.Rotations) / EXTENDED_ROTATIONS * 100.0)));
     Logger.recordOutput("Robot/IntakeRoller/State", currentRollerState.toString());
@@ -550,8 +543,21 @@ public class IntakeSubsystem extends SubsystemBase {
     return motor.getVelocity().getValue().in(Units.RotationsPerSecond);
   }
 
+  public boolean testIntakeExtend() {
+     setState(IntakeState.EXTENDED);
+     return limit_switch_l.get();
+    }
+
+    public TalonFX getIntakeMotor() {
+      return motor;
+    }
+
+    public TalonFX getRollerMotor() {
+      return rollerMotor;
+    }
+
   // ////////////////////////////////////////////////////////////////////////
-  // SIMULATION SUPPORT — Code below is used only by the simulator
+  // SIMULATION SUPPORT — sim-only methods below this line
   // ////////////////////////////////////////////////////////////////////////
 
   /**
@@ -604,18 +610,5 @@ public class IntakeSubsystem extends SubsystemBase {
   // ////////////////////////////////////////////////////////////////////////
   // END SIMULATION SUPPORT
   // ////////////////////////////////////////////////////////////////////////
-
-  public boolean testIntakeExtend() {
-     setState(IntakeState.EXTENDED);
-     return limit_switch_l.get();
-    }
-
-    public TalonFX getIntakeMotor() {
-      return motor;
-    }
-
-    public TalonFX getRollerMotor() {
-      return rollerMotor;
-    }
 }
 

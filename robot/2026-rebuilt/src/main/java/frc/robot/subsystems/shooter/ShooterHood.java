@@ -43,11 +43,8 @@ public class ShooterHood extends SubsystemBase {
       SHOOTING(Rotations.of(30)),
       LAYUP(Rotations.of(7.8)), // ~3m (midway between hub+tower)
       HALFCOURT(Rotations.of(18.5)), // ~5.5m (corner)
-      MANUAL(Rotations.of(0)),
-      //Sim states
-      AIMING_UP(Rotations.of(0)),
-      AIMING_DOWN(Rotations.of(0));
-      
+      MANUAL(Rotations.of(0));
+
 
     private final Angle angleTarget;
 
@@ -130,8 +127,7 @@ public class ShooterHood extends SubsystemBase {
       hoodMotor.setControl(positionVoltage.withPosition(getTargetPositionPassing()));
         break;
 
-      case MANUAL, AIMING_UP,AIMING_DOWN:
-        // Sim-only: hood angle managed by ShooterSim, not the motor
+      case MANUAL:
         break;
       
       case LAYUP, HALFCOURT:
@@ -189,10 +185,6 @@ public class ShooterHood extends SubsystemBase {
       return Rotations.of(RobotMap.ShooterConstants.kPassingPositionMap.get(d.in(Meters)));
   }
 
-  public void setSimPosition(double rotations) {
-    hoodMotor.getSimState().setRawRotorPosition(rotations);
-  }
-
   /**
    * Update the hood angle multiplier, capped in the range of 0.9 to 1.1.
    * @param toAdd Positive or negative double value to add to the multiplier 
@@ -226,7 +218,7 @@ public class ShooterHood extends SubsystemBase {
   }
 
   // ////////////////////////////////////////////////////////////////////////
-  // SIMULATION SUPPORT — Code below is used only by the simulator
+  // SIMULATION SUPPORT — sim-only methods below this line
   // ////////////////////////////////////////////////////////////////////////
 
   /**

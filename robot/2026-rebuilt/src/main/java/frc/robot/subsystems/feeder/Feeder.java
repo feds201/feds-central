@@ -205,7 +205,7 @@ public class Feeder extends SubsystemBase {
   public Command feederSysIdDynamic(SysIdRoutine.Direction dir) { return m_feederSysId.dynamic(dir); }
 
   // ////////////////////////////////////////////////////////////////////////
-  // SIMULATION SUPPORT — Code below is used only by the simulator
+  // SIMULATION SUPPORT — sim-only methods below this line
   // ////////////////////////////////////////////////////////////////////////
 
   /**

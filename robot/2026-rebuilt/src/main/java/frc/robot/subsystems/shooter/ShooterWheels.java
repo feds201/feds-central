@@ -229,14 +229,14 @@ public class ShooterWheels extends SubsystemBase {
   }
 
   // ////////////////////////////////////////////////////////////////////////
-  // SIMULATION SUPPORT — Code below is used only by the simulator
+  // SIMULATION SUPPORT — sim-only methods below this line
   // ////////////////////////////////////////////////////////////////////////
 
   /**
    * Returns the leader TalonFX sim state so RebuiltSimManager can drive flywheel physics
    * (FlywheelSim voltage input and velocity write-back). Sim use only.
    */
-  public com.ctre.phoenix6.sim.TalonFXSimState getLeaderSimState() {
+  public com.ctre.phoenix6.sim.TalonFXSimState getShooterLeaderMotorSimState() {
       return shooterLeader.getSimState();
   }
 

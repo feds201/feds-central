@@ -208,27 +208,27 @@ public Command setStateCommand(spindexer_state state) {
     return spindexerMotor;
   }
 
-// ////////////////////////////////////////////////////////////////////////
-// SIMULATION SUPPORT — Code below is used only by the simulator
-// ////////////////////////////////////////////////////////////////////////
+  // ////////////////////////////////////////////////////////////////////////
+  // SIMULATION SUPPORT — sim-only methods below this line
+  // ////////////////////////////////////////////////////////////////////////
 
-/**
- * Returns the spindexer motor sim state so RebuiltSimManager can drive spindexer physics
- * (DCMotorSim voltage input and position/velocity write-back). Sim use only.
- */
-public com.ctre.phoenix6.sim.TalonFXSimState getSpindexerMotorSimState() {
-    return spindexerMotor.getSimState();
-}
+  /**
+   * Returns the spindexer motor sim state so RebuiltSimManager can drive spindexer physics
+   * (DCMotorSim voltage input and position/velocity write-back). Sim use only.
+   */
+  public com.ctre.phoenix6.sim.TalonFXSimState getSpindexerMotorSimState() {
+      return spindexerMotor.getSimState();
+  }
 
-/**
- * Returns spindexer motor velocity in RPS. Used by RebuiltSimManager to drive the
- * spindexer animation accumulator each tick. Sim use only.
- */
-public double getSimSpindexerMotorVelocityRPS() {
-    return spindexerMotor.getVelocity().getValue().in(edu.wpi.first.units.Units.RotationsPerSecond);
-}
+  /**
+   * Returns spindexer motor velocity in RPS. Used by RebuiltSimManager to drive the
+   * spindexer animation accumulator each tick. Sim use only.
+   */
+  public double getSimSpindexerMotorVelocityRPS() {
+      return spindexerMotor.getVelocity().getValue().in(edu.wpi.first.units.Units.RotationsPerSecond);
+  }
 
-// ////////////////////////////////////////////////////////////////////////
-// END SIMULATION SUPPORT
-// ////////////////////////////////////////////////////////////////////////
+  // ////////////////////////////////////////////////////////////////////////
+  // END SIMULATION SUPPORT
+  // ////////////////////////////////////////////////////////////////////////
 }
