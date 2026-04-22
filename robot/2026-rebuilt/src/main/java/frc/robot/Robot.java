@@ -29,7 +29,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.utils.HubShiftUtil;
-
+import frc.robot.utils.PitTesting;
 
 //comment out the above line if you don't have a LedsSubsystem, and comment out the line in RobotContainer that creates the LedsSubsystem, and comment out the line in RobotContainer that sets the default command for the LedsSubsystem. You can also delete the LedsSubsystem class if you don't have it, but it's easier to just comment out those lines.
 public class Robot extends LoggedRobot {
@@ -120,6 +120,8 @@ public class Robot extends LoggedRobot {
     CommandScheduler.getInstance().run();
     // Publish a small set of live telemetry for the RTU dashboard
     m_robotContainer.publishTelemetry();
+
+    PitTesting.updateDashboard();
     m_robotContainer.limelightConnection();
     m_robotContainer.usbStorage();
     //Log Hub shift times
@@ -127,6 +129,7 @@ public class Robot extends LoggedRobot {
     Logger.recordOutput("Robot/HubShift/ElapsedTime", HubShiftUtil.getOfficialShiftInfo().elapsedTime());
     Logger.recordOutput("Robot/HubShift/Active", HubShiftUtil.getOfficialShiftInfo().active());
     Logger.recordOutput("Robot/HubShift/CurrentShift", HubShiftUtil.getOfficialShiftInfo().currentShift().toString());
+    
     // DeviceTempReporter.pollAll();
     // SubsystemStatusManager.pollAll();
   }
