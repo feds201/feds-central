@@ -1231,7 +1231,7 @@
         "containers": [
           {
             "title": "storage info",
-            "x": 960.0,
+            "x": 1280.0,
             "y": 0.0,
             "width": 256.0,
             "height": 128.0,
@@ -1245,7 +1245,7 @@
           },
           {
             "title": "storage",
-            "x": 960.0,
+            "x": 1280.0,
             "y": 128.0,
             "width": 128.0,
             "height": 128.0,
@@ -1258,6 +1258,32 @@
               "false_color": 4294198070,
               "true_icon": "None",
               "false_icon": "None"
+            }
+          },
+          {
+            "title": "limelight-five",
+            "x": 960.0,
+            "y": 0.0,
+            "width": 320.0,
+            "height": 320.0,
+            "type": "Camera Stream",
+            "properties": {
+              "topic": "/CameraPublisher/limelight-five",
+              "period": 0.06,
+              "rotation_turns": 0
+            }
+          },
+          {
+            "title": "limelight-two",
+            "x": 960.0,
+            "y": 320.0,
+            "width": 320.0,
+            "height": 320.0,
+            "type": "Camera Stream",
+            "properties": {
+              "topic": "/CameraPublisher/limelight-two",
+              "period": 0.06,
+              "rotation_turns": 0
             }
           }
         ]

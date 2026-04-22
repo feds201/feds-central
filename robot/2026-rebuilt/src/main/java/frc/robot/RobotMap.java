@@ -122,9 +122,9 @@ public final class RobotMap {
     public static class PitConstants {
         public static final double kPoweredThresholdVolts = 4.0;
 
-        final static long STORAGE_PER_MATCH_BYTES = 2_000_000_000L;  // confirmed with laney for 2 gigabytes per match, which is more than enough
+        final static long STORAGE_PER_MATCH_BYTES = 100_000_000L;  // updated value
         final static long STORAGE_ACCEPTABLE_BYTES = 4 * STORAGE_PER_MATCH_BYTES; 
-        static java.io.File usb = new java.io.File("/media/sda1"); 
+        static java.io.File usb = new java.io.File("/u/"); 
     }
 
     public static class ShooterConstants {
