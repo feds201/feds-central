@@ -127,6 +127,7 @@ public class Robot extends LoggedRobot {
     Logger.recordOutput("Robot/HubShift/ElapsedTime", HubShiftUtil.getOfficialShiftInfo().elapsedTime());
     Logger.recordOutput("Robot/HubShift/Active", HubShiftUtil.getOfficialShiftInfo().active());
     Logger.recordOutput("Robot/HubShift/CurrentShift", HubShiftUtil.getOfficialShiftInfo().currentShift().toString());
+    
     // DeviceTempReporter.pollAll();
     // SubsystemStatusManager.pollAll();
   }
