@@ -1,6 +1,6 @@
 package frc.robot.sim;
-
 import frc.sim.gamepiece.GamePieceConfig;
+
 
 /**
  * Game piece configuration for REBUILT 2026 fuel balls.

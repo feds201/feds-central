@@ -9,13 +9,10 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -43,7 +40,6 @@ import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.utils.LimelightWrapper;
 import frc.robot.utils.PitTesting;
-import frc.robot.utils.RTU.RootTestingUtility;
 import frc.robot.rtu.RTUManager;
 import frc.robot.utils.AutoSweeper;
 import limelight.networktables.LimelightSettings.ImuMode;
@@ -86,6 +82,7 @@ public class RobotContainer extends ControllerBindings {
 
 
   private final SendableChooser<Command> autoChooser;
+
 
     public static RobotContainer getInstance() {
         return instance;
@@ -130,15 +127,19 @@ public class RobotContainer extends ControllerBindings {
     setupOperatorBindings(operaterController);
     configureRootTests();
     PitTesting.createDashboard();
-    new Trigger(drivetrain::withinTrench).and(DriverStation::isTeleop).onTrue(shooterHood.setStateCommand(shooterhood_state.IN).andThen(intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED)));
-
+    new Trigger(drivetrain::withinTrench).and(DriverStation::isTeleop).onTrue(shooterHood.setStateCommand(shooterhood_state.IN));
     // TODO: migrate to LoggedDashboardChooser from AdvantageKit
     registerNamedCommands();
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
     //Adds a mirrored-to-the-right version of the LeftMidfieldDoublePass path
+    autoChooser.addOption("Comp-LeftMidfieldDoublePass", new PathPlannerAuto("Comp-RightMidfieldDoublepass", true)); 
+    autoChooser.addOption("Dev-MidIntakeToRightBump", new PathPlannerAuto("Comp-MidIntakeToLeftBump", true)); //TESTING - DO NOT USE
+    //Adds a mirrored-to-the-right version of the LeftMidfieldDoublePass path
     autoChooser.addOption("LeftMidfieldDoublePass", new PathPlannerAuto("RightMidfieldDoublePass", true)); 
     drivetrain.registerTelemetry(telemetry::telemeterize);
+
+    SmartDashboard.putBoolean("Limelight-Four", true);
   }
   
     // --- APIs used by the diagnostic server / UI to command shooter/hood ---
@@ -238,7 +239,7 @@ public class RobotContainer extends ControllerBindings {
   
 
     public void updateLocalization() {
-        if (ll4.isConnected()) {
+        if (ll4.isConnected()){// && SmartDashboard.getBoolean("Limelight-Four", true)) {
             ll4.updateLocalizationLimelight(drivetrain);
         } else {
             ll3.updateLocalizationLimelight(drivetrain);
@@ -303,6 +304,15 @@ public class RobotContainer extends ControllerBindings {
         rtumanager.periodic();
     }
 
+public void idleSubsystems() {
+    intakeSubsystem.setState(IntakeState.DEFAULT);
+    intakeSubsystem.setRollerState(RollerState.OFF);
+    shooterWheels.setState(shooter_state.IDLE);
+    shooterHood.setState(shooterhood_state.IN);
+    spinDexer.setState(spindexer_state.STOP);
+    feederSubsystem.setState(feeder_state.STOP);
+}
+
 
 public void registerNamedCommands() {
   NamedCommands.registerCommand("Extend Hopper", intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED));
@@ -313,8 +323,10 @@ public void registerNamedCommands() {
   NamedCommands.registerCommand("Start Shooter Spin", shooterWheels.setStateCommand(shooter_state.SHOOTING).alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
   NamedCommands.registerCommand("Stop Shooter Spin", shooterWheels.setStateCommand(shooter_state.IDLE).alongWith(shooterHood.setStateCommand(shooterhood_state.IN)).alongWith(spinDexer.setStateCommand(spindexer_state.STOP)).alongWith(feederSubsystem.setStateCommand(feeder_state.STOP)));
   NamedCommands.registerCommand("End Shooter Spin", shooterWheels.setStateCommand(shooter_state.IDLE).alongWith(shooterHood.setStateCommand(shooterhood_state.IN)).alongWith(spinDexer.setStateCommand(spindexer_state.STOP)).alongWith(feederSubsystem.setStateCommand(feeder_state.STOP)));
-  NamedCommands.registerCommand("Run Shooter", shooterWheels.setStateCommand(shooter_state.SHOOTING).alongWith(feederSubsystem.setStateCommand(feeder_state.PRUN)).alongWith(spinDexer.setStateCommand(spindexer_state.PFORWARD)).alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
-  NamedCommands.registerCommand("Shooting", shooterWheels.setStateCommand(shooter_state.SHOOTING).alongWith(feederSubsystem.setStateCommand(feeder_state.PRUN)).alongWith(spinDexer.setStateCommand(spindexer_state.PFORWARD)).alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
+  NamedCommands.registerCommand("Run Shooter", shooterWheels.setStateCommand(shooter_state.SHOOTING).alongWith(feederSubsystem.setStateCommand(feeder_state.RUN)).alongWith(spinDexer.setStateCommand(spindexer_state.RUN)).alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
+  NamedCommands.registerCommand("Shooting", shooterWheels.setStateCommand(shooter_state.SHOOTING).alongWith(feederSubsystem.setStateCommand(feeder_state.RUN)).alongWith(spinDexer.setStateCommand(spindexer_state.RUN)).alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
+  NamedCommands.registerCommand("Start Passing Spin", shooterWheels.setStateCommand(shooter_state.PASSING).alongWith(shooterHood.setStateCommand(shooterhood_state.PASSING)));
+  NamedCommands.registerCommand("Passing", shooterWheels.setStateCommand(shooter_state.PASSING).alongWith(feederSubsystem.setStateCommand(feeder_state.RUN)).alongWith(spinDexer.setStateCommand(spindexer_state.RUN)).alongWith(shooterHood.setStateCommand(shooterhood_state.PASSING)));
 
 
 }

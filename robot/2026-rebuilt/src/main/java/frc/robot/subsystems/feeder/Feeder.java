@@ -43,7 +43,7 @@ public class Feeder extends SubsystemBase {
     RUN(Volts.of(7)),
     PRUN(Volts.of(7)),
     REVERSE(Volts.of(-7)),
-    PREVERSE(Volts.of(-6)),
+    PREVERSE(Volts.of(-7)),
     STOP(Volts.of(0));
 
     private final Voltage targetVoltage;
