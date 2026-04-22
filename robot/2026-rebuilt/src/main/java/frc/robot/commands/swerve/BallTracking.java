@@ -51,6 +51,7 @@ public class BallTracking extends Command {
     return Commands.runOnce(() -> setState(targState));
   }
 
+  // TODO: never called. Either wire into execute() for alliance-aware behavior or delete.
   public boolean withinBlueAlliance() {
     Translation2d blueAllianceTranslation2d = new Pose2d(7.7, 7.5, new Rotation2d(0)).getTranslation();
     Rectangle2d blueRectangle2d = new Rectangle2d(blueAllianceTranslation2d, new Translation2d(0.72, 0.56));
@@ -63,6 +64,7 @@ public class BallTracking extends Command {
     }
   }
 
+  // TODO: never called. Also the rectangle width is 9.0, probably meant 0.72 to match blue.
   public boolean withinRedAlliance() {
     Translation2d redAllianceTranslation2d = new Pose2d(16.0, 7.5, new Rotation2d(0)).getTranslation();
     Rectangle2d redRectangle2d = new Rectangle2d(redAllianceTranslation2d, new Translation2d(9.0, 0.56));
@@ -75,6 +77,7 @@ public class BallTracking extends Command {
     }
   }
 
+  // TODO: only called inside the unreachable if(false) block. Either wire in or delete.
   public boolean withinTransition() {
     Translation2d TransitionTranslation2d = new Pose2d(8.0, 7.55, new Rotation2d(0)).getTranslation();
     Rectangle2d TransitionRectangle2d = new Rectangle2d(TransitionTranslation2d, new Translation2d(8.0, 0.5));
@@ -102,10 +105,14 @@ public class BallTracking extends Command {
       dt.setControl(driveNormal
           .withVelocityX(0)
           .withVelocityY(0)
-          .withRotationalRate(0) 
+          .withRotationalRate(0)
       );
+      return;
     }
 
+    // TODO: pick one approach and delete the other. Currently the if(false) block
+    //   below is unreachable, and this if(true) block is a "drive backward until
+    //   target" crawl. Probably also want to wire in withinRed/Blue/Transition.
     if (true) {
       // if (withinTransition()) {
       //   dt.setControl(driveNormal
@@ -126,6 +133,8 @@ public class BallTracking extends Command {
         double rotationOutput = -hubRotPID.calculate(tx);
         rotationOutput = Math.max(-2.0, Math.min(2.0, rotationOutput));
 
+        // TODO: forwardVelocity is hardcoded to a backward crawl. The commented
+        //   formula was ty-scaled. Decide which, and drop the dead maxVelocity check below.
         double forwardVelocity = -1.2; //Math.abs((ty - tyOffset) * 0.1);
 
         if (forwardVelocity >= maxVelocity){
@@ -139,6 +148,8 @@ public class BallTracking extends Command {
               .withRotationalRate(rotationOutput)
           );
         }
+        // TODO: if ty <= tyCutOff and we still have a target, we issue no drive
+        //   command and the robot coasts on the last one. Add an explicit stop.
       } else {
         dt.setControl(driveNormal
             .withVelocityX(0)
@@ -191,6 +202,8 @@ public class BallTracking extends Command {
     }
   }
 
+  // TODO: never called. If you wire it up, two bugs: nothing ever appends to
+  //   tyHistory, and averageTy uses += without resetting so it drifts over time.
   public void AverageTy() {
     if (hasTarget) {
       if (tyHistory.size() > 5) {
