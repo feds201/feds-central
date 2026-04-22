@@ -128,7 +128,7 @@ public class Spindexer extends SubsystemBase {
         if(!washingMachineTimer.isRunning()){
           washingMachineTimer.start();
         }
-        if(washingMachineTimer.hasElapsed(indexingConstants.forwardTime)){
+        if(washingMachineTimer.hasElapsed(indexingConstants.forwardTime)){ // 2 sec (Needs to be tuned)
           setState(spindexer_state.REVERSE);
           washingMachineTimer.stop();
           washingMachineTimer.reset();
@@ -138,7 +138,7 @@ public class Spindexer extends SubsystemBase {
         if(!washingMachineTimer.isRunning()){
           washingMachineTimer.start();
         }
-        if(washingMachineTimer.hasElapsed(indexingConstants.reverseTime)){
+        if(washingMachineTimer.hasElapsed(indexingConstants.reverseTime)){ // 0.5 sec (Needs to be tuned)
           setState(spindexer_state.RUN);
           washingMachineTimer.stop();
           washingMachineTimer.reset();
