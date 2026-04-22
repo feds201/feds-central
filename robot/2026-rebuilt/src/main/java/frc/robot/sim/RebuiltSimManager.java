@@ -377,7 +377,7 @@ public class RebuiltSimManager {
         // --- Intake Zone ---
         Logger.recordOutput("Sim/State", "Loading intake");
         intakeZone = new IntakeZone(INTAKE_X_MIN, INTAKE_X_MAX, INTAKE_Y_MIN, INTAKE_Y_MAX, INTAKE_Z_MAX,
-                () -> intakeSubsystem.getSimDeployMotorPositionRotations() > IntakeSubsystem.EXTENDED_ROTATIONS
+                () -> intakeSubsystem.getSimDeployMotorPositionRotations() > IntakeSubsystem.extendedRotations
                                 && intakeSubsystem.getSimRollerMotorVelocityRPS() > INTAKE_ROLLER_VELOCITY_THRESHOLD_RPS,
                 () -> chassis.getPose2d());
 
@@ -612,10 +612,10 @@ public class RebuiltSimManager {
         Logger.recordOutput("Sim/Debug/SpindexerVelocityRPS", spindexerMotorSim.getAngularVelocityRPS());
         Logger.recordOutput("Sim/Debug/HoodAngleDeg", Math.toDegrees(hoodArmSim.getAngleRads()));
         Logger.recordOutput("Sim/Debug/IntakeDeployPositionRot", intakeSubsystem.getSimDeployMotorPositionRotations());
-        Logger.recordOutput("Sim/Debug/IntakeDeployExtendedPct", Math.min(100.0, Math.max(0.0, intakeSubsystem.getSimDeployMotorPositionRotations() / IntakeSubsystem.EXTENDED_ROTATIONS * 100.0)));
+        Logger.recordOutput("Sim/Debug/IntakeDeployExtendedPct", Math.min(100.0, Math.max(0.0, intakeSubsystem.getSimDeployMotorPositionRotations() / IntakeSubsystem.extendedRotations * 100.0)));
         Logger.recordOutput("Sim/Debug/IntakeRollerVelocityRPS", intakeSubsystem.getSimRollerMotorVelocityRPS());
         Logger.recordOutput("Sim/Debug/IntakeZoneActive",
-            intakeSubsystem.getSimDeployMotorPositionRotations() > IntakeSubsystem.EXTENDED_ROTATIONS
+            intakeSubsystem.getSimDeployMotorPositionRotations() > IntakeSubsystem.extendedRotations
             && intakeSubsystem.getSimRollerMotorVelocityRPS() > INTAKE_ROLLER_VELOCITY_THRESHOLD_RPS);
         Logger.recordOutput("Sim/Debug/ShootingGateOpen",
             shooterMotorSim.getAngularVelocityRPS() > SHOOTER_VELOCITY_THRESHOLD_RPS
@@ -679,9 +679,9 @@ public class RebuiltSimManager {
         // 14: Shooter - Hood               (Y rotation, hood angle)
         // 15: Shooter - Wheels             (Y rotation)
 
-        // Intake extension: scale deploy position [0, EXTENDED_ROTATIONS] → [0, 1] fraction
+        // Intake extension: scale deploy position [0, extendedRotations] → [0, 1] fraction
         double deployFraction = Math.min(1.0,
-            Math.max(0.0, intakeSubsystem.getSimDeployMotorPositionRotations() / IntakeSubsystem.EXTENDED_ROTATIONS));
+            Math.max(0.0, intakeSubsystem.getSimDeployMotorPositionRotations() / IntakeSubsystem.extendedRotations));
         Translation3d intakeExtension = new Translation3d(
             INTAKE_EXTEND_X * deployFraction, 0, INTAKE_EXTEND_Z * deployFraction);
 

@@ -44,11 +44,11 @@ public class IntakeSubsystem extends SubsystemBase {
   private final DigitalInput limit_switch_l;
   private final SysIdRoutine sysID;
   private final LedsSubsystem leds = LedsSubsystem.getInstance();
-  public static final double EXTENDED_ROTATIONS = 18.0; //TUNE on new intake
-  private final double retractedRotations = 0.39;
-  private final double closeAgitationRotations = 9.0; // about halfway from bumper to extended, used for agitating the close half of the hopper
-  private final double farAgitationRotations = 13.5; // about three-quarters from bumper to extended, used for agitating the far half of the hopper
-  public final double burstAgitation = EXTENDED_ROTATIONS / 2.0;
+  public static final double extendedRotations = 18.0; //TUNE on new intake
+  private static final double retractedRotations = 0.39;
+  private static final double closeAgitationRotations = 9.0; // about halfway from bumper to extended, used for agitating the close half of the hopper
+  private static final double farAgitationRotations = 13.5; // about three-quarters from bumper to extended, used for agitating the far half of the hopper
+  public static final double burstAgitation = extendedRotations / 2.0;
   // Desired motion timing: target to complete extend/retract in under 1s
   private static final double MOVE_TARGET_SECONDS = .45;
   // Aggressive acceleration multiplier requested (20x faster than default)
@@ -96,28 +96,28 @@ public class IntakeSubsystem extends SubsystemBase {
   
 
   public void setState(IntakeState targetState) {
-    Logger.recordOutput("Robot/Intake/DeployStateTransition", targetState.toString());
+    Logger.recordOutput("Robot/Intake/StateTransition", targetState.toString());
     this.currentState = targetState;
     switch (targetState) {
       case DEFAULT -> {
         moveIntakeWithPosition(retractedRotations);
       }
       case EXTENDED -> {
-        moveIntakeWithPosition(EXTENDED_ROTATIONS);
+        moveIntakeWithPosition(extendedRotations);
         setRollerState(RollerState.OFF);
       }
       case CLOSE_AGITATION_IN -> {
         moveIntakeWithPosition(0.0);
       }
       case INTAKING -> {
-        moveIntakeWithPosition(EXTENDED_ROTATIONS);
+        moveIntakeWithPosition(extendedRotations);
         setRollerState(RollerState.ON);
       }
       case AGITATE_IN -> {
         moveIntakeWithPosition(retractedRotations);
       }
       case AGITATE_OUT -> {
-        moveIntakeWithPosition(EXTENDED_ROTATIONS);
+        moveIntakeWithPosition(extendedRotations);
       }
       case CLOSE_AGITATION_OUT -> {
         moveIntakeWithPosition(burstAgitation);
@@ -126,7 +126,7 @@ public class IntakeSubsystem extends SubsystemBase {
         moveIntakeWithPosition(burstAgitation);
       }
       case FAR_AGITATION_OUT -> {
-        moveIntakeWithPosition(EXTENDED_ROTATIONS);
+        moveIntakeWithPosition(extendedRotations);
       }
       case DITHERIN_AGITATION, DITHEROUT_AGITATION -> {
         // No position command — dither uses duty-cycle motor.set() in periodic
@@ -359,7 +359,7 @@ public class IntakeSubsystem extends SubsystemBase {
       // Configure MotionMagic cruise velocity and acceleration so moves complete
       // near our desired MOVE_TARGET_SECONDS. Units: motor rotations / sec and
       // rotations / sec^2 respectively.
-      double delta = Math.abs(EXTENDED_ROTATIONS - retractedRotations);
+      double delta = Math.abs(extendedRotations - retractedRotations);
       double cruise = delta / MOVE_TARGET_SECONDS; // rotations per second
     double accel = cruise * 4.0; // base accel to reach cruise quickly
     // Apply user-requested multiplier to increase acceleration aggressively
@@ -478,7 +478,7 @@ public class IntakeSubsystem extends SubsystemBase {
         motor.set(0.3);
 
         if(timer.hasElapsed(0.1)){
-            setState(IntakeState.DITHERIN_AGITATION);
+            setState(IntakeState.DITHERIN_AGITATION); // small retract from extended
             timer.stop();
             timer.reset();
         }
@@ -509,9 +509,9 @@ public class IntakeSubsystem extends SubsystemBase {
 
     boolean fuelDetected = LimelightHelpers.getTV("limelight-one");
 
-    Logger.recordOutput("Robot/Intake/DeployState", currentState.toString());
+    Logger.recordOutput("Robot/Intake/State", currentState.toString());
     Logger.recordOutput("Robot/Intake/Extended", currentState != IntakeState.DEFAULT);
-    Logger.recordOutput("Robot/Intake/ExtensionPct", Math.min(100.0, Math.max(0.0, motor.getPosition().getValue().in(Units.Rotations) / EXTENDED_ROTATIONS * 100.0)));
+    Logger.recordOutput("Robot/Intake/ExtensionPct", Math.min(100.0, Math.max(0.0, motor.getPosition().getValue().in(Units.Rotations) / extendedRotations * 100.0)));
     Logger.recordOutput("Robot/IntakeRoller/State", currentRollerState.toString());
 
     Logger.recordOutput("Robot/Intake/PositionRotations", motor.getPosition().getValueAsDouble());
@@ -581,7 +581,7 @@ public class IntakeSubsystem extends SubsystemBase {
   /**
    * Returns the deployment motor rotor position in rotations.
    * Used by RebuiltSimManager to determine whether the intake is extended far enough
-   * to activate the intake zone (compared against IntakeSubsystem.EXTENDED_ROTATIONS).
+   * to activate the intake zone (compared against IntakeSubsystem.extendedRotations).
    * Sim use only.
    */
   public double getSimDeployMotorPositionRotations() {
