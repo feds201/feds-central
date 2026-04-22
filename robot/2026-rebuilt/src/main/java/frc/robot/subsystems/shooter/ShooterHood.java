@@ -41,8 +41,8 @@ public class ShooterHood extends SubsystemBase {
       OUT(ShooterConstants.maxHoodAngle),
       PASSING(Rotations.of(0)),
       SHOOTING(Rotations.of(30)),
-      LAYUP(ShooterConstants.maxHoodAngle),
-      HALFCOURT(ShooterConstants.minHoodAngle),
+      LAYUP(Rotations.of(7.8)), // ~3m (midway between hub+tower)
+      HALFCOURT(Rotations.of(18.5)), // ~5.5m (corner)
       MANUAL(Rotations.of(0)),
       //Sim states
       AIMING_UP(Rotations.of(0)),
