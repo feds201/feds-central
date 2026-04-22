@@ -379,7 +379,7 @@ class _BotPathViewerState extends State<BotPathViewer>
       _cachedScaledCurves = List.filled(_effectivePaths.length, const []);
       _lastScaledSize = canvasSize;
     }
-    _cachedScaledCurves[index] = data.scaledCurves(canvasSize);
+    _cachedScaledCurves[index] = data.scaledCurves(canvasSize, cropFraction: widget.config.cropFraction);
     return _cachedScaledCurves[index];
   }
 
@@ -387,7 +387,7 @@ class _BotPathViewerState extends State<BotPathViewer>
   Offset? _endRobotPos(int index, Size canvasSize) {
     final data = _parsedPaths[index];
     if (data == null || data.curves.isEmpty) return null;
-    final endpoints = data.scaledEndpoints(canvasSize);
+    final endpoints = data.scaledEndpoints(canvasSize, cropFraction: widget.config.cropFraction);
     return endpoints.last;
   }
 
@@ -402,7 +402,11 @@ class _BotPathViewerState extends State<BotPathViewer>
   Offset? _scaledPlaybackPos(int index, Size canvasSize) {
     final pos = _playbackPositions[index];
     if (pos == null) return null;
-    final scale = max(canvasSize.width, canvasSize.height);
+    final data = _parsedPaths[index];
+    if (data == null) return null;
+    final scale = BotPathData.scaleFactor(
+      data.formatVersion, canvasSize, widget.config.cropFraction,
+    );
     return Offset(pos.dx * scale, pos.dy * scale);
   }
 
@@ -509,8 +513,8 @@ class _BotPathViewerState extends State<BotPathViewer>
                             ),
                         // Play/Stop toggle + speed controls
                         Positioned(
-                          top: 8,
-                          left: 8,
+                          bottom: 20,
+                          left: 20,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -586,14 +590,16 @@ class _ControlButton extends StatelessWidget {
 
     return TextButton.icon(
       onPressed: onPressed,
-      icon: Icon(icon, color: effectiveColor, size: 18),
+      icon: Icon(icon, color: effectiveColor, size: 16),
       label: Text(
         label,
-        style: TextStyle(color: effectiveColor, fontSize: 13),
+        style: TextStyle(color: effectiveColor, fontSize: 12),
       ),
       style: TextButton.styleFrom(
         backgroundColor: bgColor,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        minimumSize: Size.zero,
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
@@ -626,7 +632,7 @@ class _SpeedControl extends StatelessWidget {
   Widget build(BuildContext context) {
     final disabledColor = textColor.withAlpha(77);
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         color: bgColor,
         borderRadius: BorderRadius.circular(20),
@@ -639,7 +645,7 @@ class _SpeedControl extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             child: Icon(
               Icons.remove,
-              size: 18,
+              size: 16,
               color: canDecrement ? textColor : disabledColor,
             ),
           ),
@@ -647,7 +653,7 @@ class _SpeedControl extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 8),
             child: Text(
               speedLabel,
-              style: TextStyle(color: textColor, fontSize: 13),
+              style: TextStyle(color: textColor, fontSize: 12),
             ),
           ),
           InkWell(
@@ -655,7 +661,7 @@ class _SpeedControl extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             child: Icon(
               Icons.add,
-              size: 18,
+              size: 16,
               color: canIncrement ? textColor : disabledColor,
             ),
           ),

@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import '../models/match_entry.dart';
+import '../models/playoff_alliance.dart';
 import 'neon_service.dart';
 import 'tba_service.dart';
 import 'statbotics_service.dart';
@@ -31,8 +34,37 @@ class DataService extends ChangeNotifier {
   // ── State ──────────────────────────────────────────────────────────
   bool loading = false;
   String? error;
-  String _dataSource = ''; // 'neon', 'csv', or 'cache'
+  String _dataSource = '';
   DateTime? lastUpdated;
+  Timer? _errorDismissTimer;
+
+  /// Returns true iff every error in [errors] looks like a network-offline
+  /// failure (DNS lookup / socket). Empty list → false.
+  static bool _allOffline(List<String> errors) {
+    if (errors.isEmpty) return false;
+    return errors.every((e) =>
+        e.contains('SocketException') || e.contains('Failed host lookup'));
+  }
+
+  /// If [errors] are all offline-style, sets a friendly one-liner and
+  /// schedules it to auto-dismiss after 5s. Otherwise returns false so the
+  /// caller can fall back to the detailed message.
+  bool _applyOfflineErrorIfAllOffline(List<String> errors) {
+    if (!_allOffline(errors)) return false;
+    error = 'No internet connection — showing last-loaded data.';
+    _errorDismissTimer?.cancel();
+    _errorDismissTimer = Timer(const Duration(seconds: 5), () {
+      error = null;
+      notifyListeners();
+    });
+    return true;
+  }
+
+  @override
+  void dispose() {
+    _errorDismissTimer?.cancel();
+    super.dispose();
+  }
 
   String get dataSource => _dataSource;
 
@@ -41,6 +73,8 @@ class DataService extends ChangeNotifier {
   Map<int, double> oprByTeam = {};
   Map<int, double> epaByTeam = {};
   List<MatchEntry> matchEntries = [];
+  List<PlayoffAlliance> playoffAlliances = [];
+  Map<int, String> teamNames = {};
 
   List<int> get teamNumbers {
     final nums = scoutingByTeam.keys.toList()..sort();
@@ -61,12 +95,18 @@ class DataService extends ChangeNotifier {
     required List<String> scoutingColumns,
     required Map<int, double> oprByTeam,
     required Map<int, double> epaByTeam,
+    required List<MatchEntry> matchEntries,
+    required List<PlayoffAlliance> playoffAlliances,
+    required Map<int, String> teamNames,
     DateTime? lastUpdated,
   }) {
     this.scoutingByTeam = scoutingByTeam;
     this.scoutingColumns = scoutingColumns;
     this.oprByTeam = oprByTeam;
     this.epaByTeam = epaByTeam;
+    this.matchEntries = matchEntries;
+    this.playoffAlliances = playoffAlliances;
+    this.teamNames = teamNames;
     this.lastUpdated = lastUpdated;
     _dataSource = 'cache';
     notifyListeners();
@@ -81,17 +121,21 @@ class DataService extends ChangeNotifier {
 
     try {
       final rows = CsvLoader.parse(csvText);
-      scoutingColumns = CsvLoader.columns(csvText);
+      final cols = CsvLoader.columns(csvText);
 
-      scoutingByTeam = {};
+      final next = <int, List<Map<String, dynamic>>>{};
       for (final row in rows) {
         final raw = row['team'];
         final teamNum = raw is int ? raw : int.tryParse(raw.toString());
         if (teamNum == null) continue;
-        scoutingByTeam.putIfAbsent(teamNum, () => []).add(row);
+        next.putIfAbsent(teamNum, () => []).add(row);
       }
 
-      _dataSource = 'csv';
+      if (next.isNotEmpty) {
+        scoutingByTeam = next;
+        scoutingColumns = cols;
+        _dataSource = 'csv';
+      }
       error = null;
     } catch (e) {
       error = 'CSV parse error: $e';
@@ -105,6 +149,7 @@ class DataService extends ChangeNotifier {
   // ── Fetch from Neon + TBA + Statbotics ─────────────────────────────
 
   Future<void> fetchAll() async {
+    _errorDismissTimer?.cancel();
     loading = true;
     error = null;
     notifyListeners();
@@ -117,45 +162,66 @@ class DataService extends ChangeNotifier {
       final errors = <String>[];
 
       try {
-        final results = await Future.wait([
-          neon.fetchAll(_tableName),
-          neon.columns(_tableName),
-        ]);
-        final rows = results[0] as List<Map<String, dynamic>>;
-        scoutingColumns = results[1] as List<String>;
+        final rows = await neon.fetchAll(_tableName);
+        final cols = await neon.columns(_tableName);
 
-        scoutingByTeam = {};
+        final next = <int, List<Map<String, dynamic>>>{};
         for (final row in rows) {
           final raw = row['team'];
           final teamNum = raw is int ? raw : int.tryParse(raw.toString());
           if (teamNum == null) continue;
-          scoutingByTeam.putIfAbsent(teamNum, () => []).add(row);
+          next.putIfAbsent(teamNum, () => []).add(row);
         }
-        _dataSource = 'neon';
+
+        if (next.isNotEmpty) {
+          scoutingByTeam = next;
+          scoutingColumns = cols;
+          _dataSource = 'neon';
+        }
       } catch (e) {
         errors.add('Neon: $e');
       }
 
       try {
-        oprByTeam = await tba.fetchOprs(_eventKey);
+        final opr = await tba.fetchOprs(_eventKey);
+        if (opr.isNotEmpty) oprByTeam = opr;
       } catch (e) {
         errors.add('TBA OPR: $e');
       }
 
       try {
         final rawMatches = await tba.fetchMatches(_eventKey);
-        matchEntries = parseMatches(rawMatches, ourTeamKey: 'frc201');
+        final parsed = parseMatches(rawMatches, ourTeamKey: 'frc201');
+        if (parsed.isNotEmpty) matchEntries = parsed;
       } catch (e) {
         errors.add('TBA matches: $e');
       }
 
       try {
-        epaByTeam = await statbotics.fetchEpas(_eventKey);
+        final rawAlliances = await tba.fetchPlayoffAlliances(_eventKey);
+        final parsed = parsePlayoffAlliances(rawAlliances);
+        if (parsed.isNotEmpty) playoffAlliances = parsed;
+      } catch (e) {
+        errors.add('TBA alliances: $e');
+      }
+
+      try {
+        final names = await tba.fetchTeamNames(_eventKey);
+        if (names.isNotEmpty) teamNames = names;
+      } catch (e) {
+        errors.add('TBA team names: $e');
+      }
+
+      try {
+        final epa = await statbotics.fetchEpas(_eventKey);
+        if (epa.isNotEmpty) epaByTeam = epa;
       } catch (e) {
         errors.add('Statbotics: $e');
       }
 
-      error = errors.isEmpty ? null : errors.join('\n');
+      if (!_applyOfflineErrorIfAllOffline(errors)) {
+        error = errors.isEmpty ? null : errors.join('\n');
+      }
     } catch (e) {
       error = e.toString();
     } finally {
@@ -168,6 +234,7 @@ class DataService extends ChangeNotifier {
   // ── Fetch TBA/Statbotics only (for CSV mode) ──────────────────────
 
   Future<void> fetchExternalOnly() async {
+    _errorDismissTimer?.cancel();
     loading = true;
     notifyListeners();
 
@@ -176,26 +243,46 @@ class DataService extends ChangeNotifier {
     final statbotics = StatboticsService();
 
     try {
-      oprByTeam = await tba.fetchOprs(_eventKey);
+      final opr = await tba.fetchOprs(_eventKey);
+      if (opr.isNotEmpty) oprByTeam = opr;
     } catch (e) {
       errors.add('TBA OPR: $e');
     }
 
     try {
       final rawMatches = await tba.fetchMatches(_eventKey);
-      matchEntries = parseMatches(rawMatches, ourTeamKey: 'frc201');
+      final parsed = parseMatches(rawMatches, ourTeamKey: 'frc201');
+      if (parsed.isNotEmpty) matchEntries = parsed;
     } catch (e) {
       errors.add('TBA matches: $e');
     }
 
     try {
-      epaByTeam = await statbotics.fetchEpas(_eventKey);
+      final rawAlliances = await tba.fetchPlayoffAlliances(_eventKey);
+      final parsed = parsePlayoffAlliances(rawAlliances);
+      if (parsed.isNotEmpty) playoffAlliances = parsed;
+    } catch (e) {
+      errors.add('TBA alliances: $e');
+    }
+
+    try {
+      final names = await tba.fetchTeamNames(_eventKey);
+      if (names.isNotEmpty) teamNames = names;
+    } catch (e) {
+      errors.add('TBA team names: $e');
+    }
+
+    try {
+      final epa = await statbotics.fetchEpas(_eventKey);
+      if (epa.isNotEmpty) epaByTeam = epa;
     } catch (e) {
       errors.add('Statbotics: $e');
     }
 
     if (errors.isNotEmpty) {
-      error = (error != null ? '$error\n' : '') + errors.join('\n');
+      if (!_applyOfflineErrorIfAllOffline(errors)) {
+        error = (error != null ? '$error\n' : '') + errors.join('\n');
+      }
     }
 
     loading = false;
