@@ -295,8 +295,6 @@ public com.ctre.phoenix6.sim.TalonFXSimState getDeployMotorSimState() {
 
 `RebuiltSimManager` caches these states in its constructor and wraps each one in a `TalonFXMotorSim` / `TalonFXArmSim`. No subsystem owns or steps a `DCMotorSim` — that all lives in `RebuiltSimManager`. Subsystems expose only the state handle; `RebuiltSimManager` does the physics.
 
-**No sim leaks in robot code:** The previous iteration leaked sim concepts into robot code (e.g. `AIMING_UP` / `AIMING_DOWN` enum values and `setSimPosition()` on `ShooterHood`). These have been deleted — sim positions are now driven entirely by the motor sim, and the hood state enum only carries real robot states.
-
 **Battery simulation:** `BatterySimUtil.updateBatteryVoltage(...)` wraps `BatterySim.calculateDefaultBatteryLoadedVoltage()` and aggregates current draws from all six motors each tick (shooter counted ×4 for leader + 3 followers). It writes `RoboRioSim.setVInVoltage()` first so `setInputVoltage`'s internal voltage clamp uses the correct value.
 
 See the motor physics constants (`SHOOTER_MOI`, `HOOD_GEAR_RATIO`, etc.) at the top of `RebuiltSimManager.java` for the current tuning values.

@@ -32,7 +32,7 @@ Ball-scoring robot for the REBUILT game. Collects fuel (balls) from the floor, s
 - Single set of flywheel rollers (shared between barrels)
 - Adjustable hood controls vertical angle of release
 - No horizontal turret - robot rotation aims left/right
-- Limelight 4 detects APRIL tags to aims us towards the target
+- Limelight 4 with Hailo 8 coprocessor detects APRIL tags to aims us towards the target
 
 ### Climber (cut from the robot, do not need to sim it at all!)
 
