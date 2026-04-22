@@ -150,24 +150,24 @@ public class RobotContainer extends ControllerBindings {
     registerNamedCommands();
     autoChooser = AutoBuilder.buildAutoChooser();
     autoChooser.addOption("FD-RightMidFieldDoublepass", new SequentialCommandGroup(
-            AutoBuilder.buildAuto("FD-RightMidFieldDoublepass-Part1")
+            AutoBuilder.buildAuto("Internal-FD-RightMidFieldDoublepass-Part1")
             .andThen(NamedCommands.getCommand("Ball Track And Return"))
-            .andThen(AutoBuilder.buildAuto("FD-RightMidFieldDoublepass-Part2"))
-            .andThen(AutoBuilder.buildAuto("FD-RightMidFieldDoublepass-Part3"))));
+            .andThen(AutoBuilder.buildAuto("Internal-FD-RightMidFieldDoublepass-Part2"))
+            .andThen(AutoBuilder.buildAuto("Internal-FD-RightMidFieldDoublepass-Part3"))));
 
     autoChooser.addOption("FD-MidIntakeToLeftBump", new SequentialCommandGroup(
-            AutoBuilder.buildAuto("FD-MidIntakeToLeftBump-Part1")
+            AutoBuilder.buildAuto("Internal-FD-MidIntakeToLeftBump-Part1")
             .andThen(NamedCommands.getCommand("Ball Track And Return"))
-            .andThen(AutoBuilder.buildAuto("FD-MidIntakeToLeftBump-Part2"))));
+            .andThen(AutoBuilder.buildAuto("Internal-FD-MidIntakeToLeftBump-Part2"))));
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
     // Ball tracking autos
     autoChooser.addOption("FD-RightSneakDoublepass", new SequentialCommandGroup(
-            AutoBuilder.buildAuto("FD-RightSneakDoublepass-Part1")
+            AutoBuilder.buildAuto("Internal-FD-RightSneakDoublepass-Part1")
             .andThen(NamedCommands.getCommand("Ball Track And Return"))
-            .andThen(AutoBuilder.buildAuto("FD-RightSneakDoublepass-Part2"))
+            .andThen(AutoBuilder.buildAuto("Internal-FD-RightSneakDoublepass-Part2"))
             .andThen(NamedCommands.getCommand("Ball Track And Return"))
-            .andThen(AutoBuilder.buildAuto("FD-RightSneakDoublepass-Part3"))));
+            .andThen(AutoBuilder.buildAuto("Internal-FD-RightSneakDoublepass-Part3"))));
 
     // Mirrored autons
     autoChooser.addOption("Comp-LeftMidfieldDoublePass", new PathPlannerAuto("Comp-RightMidfieldDoublepass", true));
