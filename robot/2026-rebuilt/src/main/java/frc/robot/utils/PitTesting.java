@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem.IntakeState;
+import frc.robot.subsystems.intake.IntakeSubsystem.RollerState;
 import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.subsystems.feeder.Feeder.feeder_state;
 import frc.robot.subsystems.shooter.ShooterHood;
@@ -65,7 +66,7 @@ public class PitTesting {
 
     private static double testTime = 1.5;
     private static double drivetrainTestTime = 0.75;
-    private static double musicTime = 5.0;
+    private static double musicTime = 1.0;
 
 
     private static Orchestra orchestra = new Orchestra();
@@ -163,7 +164,11 @@ public class PitTesting {
             new InstantCommand(() -> orchestra.play()),
             Commands.waitSeconds(musicTime),
             new InstantCommand(() -> orchestra.stop()) ,
-            intake.setIntakeStateCommand(IntakeState.EXTENDED),
+            intake.setIntakeStateCommand(IntakeState.INTAKING),
+            Commands.waitSeconds(testTime),
+            intake.setRollerStateCommand(RollerState.ON),
+            Commands.waitSeconds(testTime),
+            intake.setRollerStateCommand(RollerState.OFF),
             Commands.waitSeconds(testTime),
             intake.setIntakeStateCommand(IntakeState.DEFAULT)));
 

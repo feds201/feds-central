@@ -56,8 +56,10 @@ public class Testing extends SubsystemBase {
     switch (currentMotorState) {
       case ON:
         motor.set(0.2);
+        break;
       case OFF:
         motor.set(0);
+        break;
     }
   }
 }
