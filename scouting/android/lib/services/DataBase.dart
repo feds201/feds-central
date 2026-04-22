@@ -1013,12 +1013,25 @@ class EndPoints {
   }
 
   String toCsv() {
-    String cleanedComments = Comments
-        .replaceAll('"', '""') // required so quotes in cmnt is escaped
-        .replaceAll('\r', '') // no new lines allowed for csv!
-        .replaceAll('\n', ' '); // no new lines allowed for csv!
-    cleanedComments = '"${cleanedComments}"'; // must wrap in quotes since it can contain commas, which would make csv think we're on the next col
-    return '$ClimbStatus,${Park ? 1 : 0},$PushBallsEnd,$Passing,$robotBroken,$EndNeutralTrips,$ShootingAccuracy,$endgameTime,$endgameshootingCycles,${cleanedComments}';
+    final escapedComments = Comments
+        .replaceAll('"', '""') // escape quotes inside comments (otherwise csv thinks comment is over)
+        .replaceAll('\r', '') // strip carriage returns (otherwise csv thinks it's a new row)
+        .replaceAll('\n', ' '); // strip new lines (otherwise csv thinks it's a new row)
+
+    final fields = [
+      ClimbStatus,
+      Park ? 1 : 0,
+      PushBallsEnd,
+      Passing,
+      robotBroken,
+      EndNeutralTrips,
+      ShootingAccuracy,
+      endgameTime,
+      endgameshootingCycles,
+      '"$escapedComments"', // wrap in quotes to handle commas in comments (otherwise csv would think it's the next col)
+    ];
+
+    return fields.join(',');
   }
 
   @override
