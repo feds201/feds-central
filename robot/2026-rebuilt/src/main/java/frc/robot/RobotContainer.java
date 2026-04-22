@@ -10,9 +10,6 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -100,6 +97,7 @@ public class RobotContainer extends ControllerBindings {
 
   private final SendableChooser<Command> autoChooser;
 
+
     public static RobotContainer getInstance() {
         return instance;
     }
@@ -147,8 +145,7 @@ public class RobotContainer extends ControllerBindings {
     setupOperatorBindings(operaterController);
     configureRootTests();
     PitTesting.addCommands();
-    new Trigger(drivetrain::withinTrench).and(DriverStation::isTeleop).onTrue(shooterHood.setStateCommand(shooterhood_state.IN).andThen(intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED)));
-
+    new Trigger(drivetrain::withinTrench).and(DriverStation::isTeleop).onTrue(shooterHood.setStateCommand(shooterhood_state.IN));
     // TODO: migrate to LoggedDashboardChooser from AdvantageKit
     registerNamedCommands();
     autoChooser = AutoBuilder.buildAutoChooser();
@@ -164,13 +161,21 @@ public class RobotContainer extends ControllerBindings {
             .andThen(AutoBuilder.buildAuto("FD-MidIntakeToLeftBump-Part2"))));
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
-     autoChooser.addOption("FD-RightSneakDoublepass", new SequentialCommandGroup(
+    // Ball tracking autos
+    autoChooser.addOption("FD-RightSneakDoublepass", new SequentialCommandGroup(
             AutoBuilder.buildAuto("FD-RightSneakDoublepass-Part1")
             .andThen(NamedCommands.getCommand("Ball Track And Return"))
             .andThen(AutoBuilder.buildAuto("FD-RightSneakDoublepass-Part2"))
             .andThen(NamedCommands.getCommand("Ball Track And Return"))
             .andThen(AutoBuilder.buildAuto("FD-RightSneakDoublepass-Part3"))));
+
+    // Mirrored autons
+    autoChooser.addOption("Comp-LeftMidfieldDoublePass", new PathPlannerAuto("Comp-RightMidfieldDoublepass", true));
+    autoChooser.addOption("Dev-MidIntakeToRightBump", new PathPlannerAuto("Comp-MidIntakeToLeftBump", true)); //TESTING - DO NOT USE
+    autoChooser.addOption("LeftMidfieldDoublePass", new PathPlannerAuto("RightMidfieldDoublePass", true));
     drivetrain.registerTelemetry(telemetry::telemeterize);
+
+    SmartDashboard.putBoolean("Limelight-Four", true);
   }
 
     // --- APIs used by the diagnostic server / UI to command shooter/hood ---
@@ -270,7 +275,7 @@ public class RobotContainer extends ControllerBindings {
 
 
     public void updateLocalization() {
-        if (ll4.isConnected()) {
+        if (ll4.isConnected()){// && SmartDashboard.getBoolean("Limelight-Four", true)) {
             ll4.updateLocalizationLimelight(drivetrain);
         } else {
             ll3.updateLocalizationLimelight(drivetrain);
@@ -335,7 +340,15 @@ public class RobotContainer extends ControllerBindings {
         rtumanager.periodic();
     }
 
-    
+public void idleSubsystems() {
+    intakeSubsystem.setState(IntakeState.DEFAULT);
+    intakeSubsystem.setRollerState(RollerState.OFF);
+    shooterWheels.setState(shooter_state.IDLE);
+    shooterHood.setState(shooterhood_state.IN);
+    spinDexer.setState(spindexer_state.STOP);
+    feederSubsystem.setState(feeder_state.STOP);
+}
+
 
 public void registerNamedCommands() {
   NamedCommands.registerCommand("Extend Hopper", intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED));
@@ -346,20 +359,22 @@ public void registerNamedCommands() {
   NamedCommands.registerCommand("Start Shooter Spin", shooterWheels.setStateCommand(shooter_state.SHOOTING).alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
   NamedCommands.registerCommand("Stop Shooter Spin", shooterWheels.setStateCommand(shooter_state.IDLE).alongWith(shooterHood.setStateCommand(shooterhood_state.IN)).alongWith(spinDexer.setStateCommand(spindexer_state.STOP)).alongWith(feederSubsystem.setStateCommand(feeder_state.STOP)));
   NamedCommands.registerCommand("End Shooter Spin", shooterWheels.setStateCommand(shooter_state.IDLE).alongWith(shooterHood.setStateCommand(shooterhood_state.IN)).alongWith(spinDexer.setStateCommand(spindexer_state.STOP)).alongWith(feederSubsystem.setStateCommand(feeder_state.STOP)));
-  NamedCommands.registerCommand("Run Shooter", shooterWheels.setStateCommand(shooter_state.SHOOTING).alongWith(feederSubsystem.setStateCommand(feeder_state.PRUN)).alongWith(spinDexer.setStateCommand(spindexer_state.PFORWARD)).alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
-  NamedCommands.registerCommand("Shooting", shooterWheels.setStateCommand(shooter_state.SHOOTING).alongWith(feederSubsystem.setStateCommand(feeder_state.PRUN)).alongWith(spinDexer.setStateCommand(spindexer_state.PFORWARD)).alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
+  NamedCommands.registerCommand("Run Shooter", shooterWheels.setStateCommand(shooter_state.SHOOTING).alongWith(feederSubsystem.setStateCommand(feeder_state.RUN)).alongWith(spinDexer.setStateCommand(spindexer_state.RUN)).alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
+  NamedCommands.registerCommand("Shooting", shooterWheels.setStateCommand(shooter_state.SHOOTING).alongWith(feederSubsystem.setStateCommand(feeder_state.RUN)).alongWith(spinDexer.setStateCommand(spindexer_state.RUN)).alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
+  NamedCommands.registerCommand("Start Passing Spin", shooterWheels.setStateCommand(shooter_state.PASSING).alongWith(shooterHood.setStateCommand(shooterhood_state.PASSING)));
+  NamedCommands.registerCommand("Passing", shooterWheels.setStateCommand(shooter_state.PASSING).alongWith(feederSubsystem.setStateCommand(feeder_state.RUN)).alongWith(spinDexer.setStateCommand(spindexer_state.RUN)).alongWith(shooterHood.setStateCommand(shooterhood_state.PASSING)));
   NamedCommands.registerCommand("Ball Track And Return",
     Commands.defer(() -> {
         Pose2d startPose = drivetrain.getState().Pose;
         return Commands.sequence(
             new BallTracking(drivetrain).withTimeout(3.0),
             AutoBuilder.pathfindToPose(
-                startPose, /* target pose to drive to */                               
-                new PathConstraints(                                                                                                                                     
-                    5.0,   /* max velocity (m/s) */                                                                                                                      
-                    4.0,   /* max acceleration (m/s²) */                                                                                                                 
-                    540.0, /* max angular velocity (deg/s) */                                                                                                            
-                    360.0  /* max angular acceleration (deg/s²) */            
+                startPose, /* target pose to drive to */
+                new PathConstraints(
+                    5.0,   /* max velocity (m/s) */
+                    4.0,   /* max acceleration (m/s²) */
+                    540.0, /* max angular velocity (deg/s) */
+                    360.0  /* max angular acceleration (deg/s²) */
                 )
             ));
     }, Set.of(drivetrain)));

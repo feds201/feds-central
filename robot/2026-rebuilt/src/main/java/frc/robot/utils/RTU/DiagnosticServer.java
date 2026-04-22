@@ -12,7 +12,6 @@ import java.util.UUID;
 
 import com.sun.net.httpserver.HttpServer;
 
-import edu.wpi.first.wpilibj.RobotState;
 import frc.robot.utils.RTU.TestResult.Alert;
 import frc.robot.utils.RTU.TestResult.DataSample;
 

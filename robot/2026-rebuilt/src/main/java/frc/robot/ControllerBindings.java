@@ -1,11 +1,5 @@
 package frc.robot;
 
-import java.util.Set;
-
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.path.PathPlannerPath;
-
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -15,9 +9,6 @@ import frc.robot.subsystems.feeder.Feeder.feeder_state;
 import frc.robot.subsystems.shooter.ShooterHood.shooterhood_state;
 import frc.robot.subsystems.shooter.ShooterWheels.shooter_state;
 import frc.robot.subsystems.spindexer.Spindexer.spindexer_state;
-import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
-import frc.robot.commands.swerve.BallTracking;
-import frc.robot.commands.swerve.BallTracking.BallTrackingState;
 import frc.robot.commands.swerve.HubDrive;
 import frc.robot.commands.swerve.PassingDrive;
 import frc.robot.commands.swerve.TeleopSwerve;
@@ -42,7 +33,6 @@ public class ControllerBindings {
         var spinDexer = container.getSpindexer();
         var shooterHood = container.getShooterHood();
         var shooterWheels = container.getShooterWheels();
-       
 
         drivetrain.setDefaultCommand(new TeleopSwerve(drivetrain, test, 0.2));
 
@@ -58,8 +48,8 @@ public class ControllerBindings {
                 .whileTrue(Commands.sequence(
                         shooterWheels.setStateCommand(shooter_state.SHOOTING),
                         shooterHood.setStateCommand(shooterhood_state.SHOOTING),
-                        feederSubsystem.setStateCommand(feeder_state.RUN),
-                        spinDexer.setStateCommand(spindexer_state.RUN)
+                        feederSubsystem.setStateCommand(feeder_state.PRUN),
+                        spinDexer.setStateCommand(spindexer_state.PFORWARD)
                 ))
                 .onFalse(Commands.sequence(
                         feederSubsystem.setStateCommand(feeder_state.STOP),
@@ -90,7 +80,6 @@ public class ControllerBindings {
         var spinDexer = container.getSpindexer();
         var shooterHood = container.getShooterHood();
         var shooterWheels = container.getShooterWheels();
-        var ballTracking = container.getBallTracking();
 
         // Button to reset field centric direction (backup if vision fails)
         driver.start()
@@ -117,8 +106,8 @@ public class ControllerBindings {
 
         driver.y()
                 .onTrue(Commands.sequence(
-                        feederSubsystem.setStateCommand(feeder_state.RUN),
-                        spinDexer.setStateCommand(spindexer_state.RUN),
+                        feederSubsystem.setStateCommand(feeder_state.PRUN),
+                        spinDexer.setStateCommand(spindexer_state.PFORWARD),
                         shooterHood.setStateCommand(shooterhood_state.HALFCOURT),
                         shooterWheels.setStateCommand(shooter_state.HALFCOURT)))
                 .onFalse(Commands.sequence(
@@ -131,8 +120,8 @@ public class ControllerBindings {
         driver.x()
                 .whileTrue(Commands.sequence(
                   intakeSubsystem.setRollerStateCommand(RollerState.ON),
-                        feederSubsystem.setStateCommand(feeder_state.RUN),
-                        spinDexer.setStateCommand(spindexer_state.RUN),
+                        feederSubsystem.setStateCommand(feeder_state.PRUN),
+                        spinDexer.setStateCommand(spindexer_state.PFORWARD),
                         // Pulse intake extend/retract while held (5 roller rotations per pulse, 0.3s retract dwell)
                         shooterWheels.setStateCommand(shooter_state.TEST),
                         shooterHood.setStateCommand(shooterhood_state.TEST)
@@ -145,9 +134,17 @@ public class ControllerBindings {
                         intakeSubsystem.setRollerStateCommand(RollerState.OFF)
                 ));
 
-                // driver.a()
-                // .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.AGITATE_IN))
-                // .onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT));
+                driver.a()
+                .onTrue(Commands.sequence(
+                        feederSubsystem.setStateCommand(feeder_state.PRUN),
+                        spinDexer.setStateCommand(spindexer_state.PFORWARD),
+                        shooterHood.setStateCommand(shooterhood_state.LAYUP),
+                        shooterWheels.setStateCommand(shooter_state.LAYUP)))
+                .onFalse(Commands.sequence(
+                        feederSubsystem.setStateCommand(feeder_state.STOP),
+                        spinDexer.setStateCommand(spindexer_state.STOP),
+                        shooterWheels.setStateCommand(shooter_state.IDLE),
+                        shooterHood.setStateCommand(shooterhood_state.IN)));
 
         
 
@@ -166,22 +163,14 @@ public class ControllerBindings {
         // If in neutral zone, face outpost and ready shoot (passing shot)
         driver.povRight().and(() -> ShooterConstants.neutralZone.contains(drivetrain.getState().Pose.getTranslation())).whileTrue(
                 Commands.sequence(
-                        shooterHood.setStateCommand(shooterhood_state.OUT),
-                        shooterWheels.setStateCommand(shooter_state.LAYUP)
+                        shooterHood.setStateCommand(shooterhood_state.PASSING),
+                        shooterWheels.setStateCommand(shooter_state.PASSING)
                 ).alongWith(new PassingDrive(drivetrain, driver)))
                 .onFalse(
                         Commands.sequence(
                                 shooterHood.setStateCommand(shooterhood_state.IN),
                                 shooterWheels.setStateCommand(shooter_state.IDLE)
                         ));
-
-          driver.povDown()
-                 .whileTrue((ballTracking.setStateCommand(BallTrackingState.ON)).andThen(new BallTracking(drivetrain)))
-                 .onFalse(ballTracking.setStateCommand(BallTrackingState.OFF));
-
-        // driver.povDown()
-        //          .onTrue((ballTracking.setStateCommand(BallTrackingState.ON)))
-        //          .onFalse(ballTracking.setStateCommand(BallTrackingState.OFF));
 
         // Button to fire, if swerve is aimed and shooter is at speed.
         driver.rightTrigger().and(HubDrive::pidAtSetpoint).and(shooterWheels::atSetpoint).whileTrue(
@@ -200,8 +189,8 @@ public class ControllerBindings {
 
         driver.rightTrigger().and(PassingDrive::pidAtSetpoint).whileTrue(
                 Commands.sequence(
-                        feederSubsystem.setStateCommand(feeder_state.RUN),
-                        spinDexer.setStateCommand(spindexer_state.RUN)
+                        feederSubsystem.setStateCommand(feeder_state.PRUN),
+                        spinDexer.setStateCommand(spindexer_state.PFORWARD)
                         // Pulse the intake while firing (run until release). 5 rotations per pulse.
                         // intakeSubsystem.agitateWhileHeldRotations(15.0)
                 )
@@ -222,10 +211,8 @@ public class ControllerBindings {
 
         var feederSubsystem = container.getFeederSubsystem();
         var intakeSubsystem = container.getIntakeSubsystem();
-        var ballTracking = container.getBallTracking();
         var shooterHood = container.getShooterHood();
         var spindexerSubsystem = container.getSpindexer();
-        var RobotContainer = container; 
         // Manual way to change the angle of the shooter hood
         operator.leftTrigger()
                 .onTrue(shooterHood.setMotorPower(0.1))
@@ -234,27 +221,31 @@ public class ControllerBindings {
                 .onTrue(shooterHood.setMotorPower(-0.1))
                 .onFalse(shooterHood.setMotorPower(0.0));
 
-        operator.rightTrigger().onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED));
         operator.rightBumper().onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT));
 
         operator.start().onTrue(feederSubsystem.setStateCommand(feeder_state.PREVERSE).alongWith(spindexerSubsystem.setStateCommand(spindexer_state.PREVERSE))).
         onFalse(feederSubsystem.setStateCommand(feeder_state.STOP).alongWith(spindexerSubsystem.setStateCommand(spindexer_state.STOP)));
         
         //Add multiplier to hood angle
-        operator.a()
+        operator.povUp()
                 .onTrue(new InstantCommand(() -> shooterHood.updateHoodAngleMultiplier(.01)));
-        operator.b()
+        operator.povDown()
                 .onTrue(new InstantCommand(() -> shooterHood.updateHoodAngleMultiplier(-.01)));
 
          operator.y()
                 .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.AGITATE_IN).alongWith(intakeSubsystem.setRollerStateCommand(RollerState.ON)))
-                .onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT).alongWith(intakeSubsystem.setRollerStateCommand(RollerState.OFF)));
+                .onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.INTAKING));
 
-        operator.x()
-                .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.CLOSE_AGITATION).alongWith(intakeSubsystem.setRollerStateCommand(RollerState.ON)))
-                .onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT).alongWith(intakeSubsystem.setRollerStateCommand(RollerState.OFF)));
-       
+       operator.a()
+                .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.CLOSE_AGITATION_OUT).alongWith(intakeSubsystem.setRollerStateCommand(RollerState.ON)))
+                .onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.INTAKING));
+        
+        operator.b()
+                .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.FAR_AGITATION_IN).alongWith(intakeSubsystem.setRollerStateCommand(RollerState.ON)))
+                 .onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.INTAKING));
+
+        operator.rightTrigger()
+                .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.DITHERIN_AGITATION)).onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED));
     }
-
 
 }

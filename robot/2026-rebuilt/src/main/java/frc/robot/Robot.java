@@ -20,17 +20,16 @@ import com.ctre.phoenix6.SignalLogger;
 
 import edu.wpi.first.hal.AllianceStationID;
 import edu.wpi.first.net.WebServer;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.utils.DeviceTempReporter;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.utils.HubShiftUtil;
-import frc.robot.utils.SubsystemStatusManager;
-import frc.robot.utils.DeviceTempReporter;
-import frc.robot.utils.SubsystemStatusManager;
+
 
 //comment out the above line if you don't have a LedsSubsystem, and comment out the line in RobotContainer that creates the LedsSubsystem, and comment out the line in RobotContainer that sets the default command for the LedsSubsystem. You can also delete the LedsSubsystem class if you don't have it, but it's easier to just comment out those lines.
 public class Robot extends LoggedRobot {
@@ -56,6 +55,8 @@ public class Robot extends LoggedRobot {
       switch (RobotMap.getRobotMode()) {
       case REAL:
         Logger.addDataReceiver(new WPILOGWriter()); // Saves logs to RoboRIO
+        DataLogManager.start();
+        // NetworkTableInstance.getDefault().startEntryDataLog(DataLogManager.getLog(), "", "");
         Logger.addDataReceiver(new NT4Publisher()); // Publishes logs to network tables
         break;
 
@@ -64,8 +65,9 @@ public class Robot extends LoggedRobot {
         //   ./gradlew simulateJava -PsimLogging=true
         if (Boolean.getBoolean("simLogging")) {
           Logger.addDataReceiver(new WPILOGWriter("logs"));
+        DataLogManager.start();
+        // NetworkTableInstance.getDefault().startEntryDataLog(DataLogManager.getLog(), "", "");
         }
-        //Logger.addDataReceiver(new WPILOGWriter("log"));
         Logger.addDataReceiver(new NT4Publisher());
         break;
 
@@ -161,6 +163,7 @@ public class Robot extends LoggedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    m_robotContainer.idleSubsystems();
     HubShiftUtil.initialize();
   }
 

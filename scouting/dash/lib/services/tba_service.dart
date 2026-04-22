@@ -73,6 +73,48 @@ class TbaService {
         .toList()
       ..sort();
   }
+
+  /// Fetch playoff alliances for an event.
+  /// Returns raw JSON list. Events without elims return `null` from TBA —
+  /// this method normalizes that to `[]`.
+  Future<List<dynamic>> fetchPlayoffAlliances(String eventKey) async {
+    final uri = Uri.parse('$_base/event/$eventKey/alliances');
+    final resp = await http.get(uri, headers: {'X-TBA-Auth-Key': apiKey});
+
+    if (resp.statusCode == 404) return const [];
+    if (resp.statusCode != 200) {
+      throw TbaException('TBA ${resp.statusCode}: ${resp.body}');
+    }
+
+    final body = resp.body.isEmpty ? null : jsonDecode(resp.body);
+    if (body is! List) return const [];
+    return body;
+  }
+
+  /// Fetch team number → nickname for every team at an event.
+  /// Returns `{}` on error or empty response.
+  Future<Map<int, String>> fetchTeamNames(String eventKey) async {
+    final uri = Uri.parse('$_base/event/$eventKey/teams/simple');
+    final resp = await http.get(uri, headers: {'X-TBA-Auth-Key': apiKey});
+
+    if (resp.statusCode != 200) {
+      throw TbaException('TBA ${resp.statusCode}: ${resp.body}');
+    }
+
+    final list = jsonDecode(resp.body);
+    if (list is! List) return const {};
+
+    final result = <int, String>{};
+    for (final item in list) {
+      if (item is! Map) continue;
+      final num = item['team_number'];
+      final nick = item['nickname'];
+      if (num is int && nick is String && nick.isNotEmpty) {
+        result[num] = nick;
+      }
+    }
+    return result;
+  }
 }
 
 class TbaException implements Exception {

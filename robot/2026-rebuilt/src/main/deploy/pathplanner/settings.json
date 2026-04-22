@@ -3,14 +3,15 @@
   "robotLength": 0.86,
   "holonomicMode": true,
   "pathFolders": [
+    "CenterDepotOutpost",
     "CenterOverBump",
     "CircleCenter",
     "DoublePassTest",
     "GriefAuto",
+    "LeftTrenchBumpShoot",
     "MidIntakeToLeftBump",
     "MidIntakeToRightBump",
-    "CenterDepotOutpost",
-    "LeftTrenchBumpShoot",
+    "CenterWait",
     "RightBumpToOutpost",
     "TestAutos",
     "Trenches"

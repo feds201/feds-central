@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems.shooter;
 
-import static edu.wpi.first.units.Units.Degree;
-import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Rotations;
 
@@ -15,7 +13,6 @@ import java.util.function.DoubleSupplier;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveRequest.Idle;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
@@ -44,8 +41,8 @@ public class ShooterHood extends SubsystemBase {
       OUT(ShooterConstants.maxHoodAngle),
       PASSING(Rotations.of(0)),
       SHOOTING(Rotations.of(30)),
-      LAYUP(ShooterConstants.maxHoodAngle),
-      HALFCOURT(ShooterConstants.minHoodAngle),
+      LAYUP(Rotations.of(7.8)), // ~3m (midway between hub+tower)
+      HALFCOURT(Rotations.of(18.5)), // ~5.5m (corner)
       MANUAL(Rotations.of(0)),
       //Sim states
       AIMING_UP(Rotations.of(0)),

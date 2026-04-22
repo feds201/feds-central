@@ -6,6 +6,7 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/painting.dart';
 import 'package:hive/hive.dart';
+import 'package:csv/csv.dart';
 
 int _toInt(dynamic value) {
   if (value == null) return 0;
@@ -161,7 +162,7 @@ class PitRecord {
   final String botImage3;
 
   // New FRC 2026 Fields
-  final List<String> autoRoutes;
+  final String autoRoutes;
   final int autoFuel;
   final bool gameData;
   final double weight;
@@ -197,7 +198,7 @@ class PitRecord {
       required this.botImage1,
       required this.botImage2,
       required this.botImage3,
-      this.autoRoutes =  const [],
+      this.autoRoutes =  '',
       this.autoFuel = 0,
       this.gameData = false,
       this.weight = 0.0,
@@ -312,9 +313,7 @@ class PitRecord {
       botImage2: json['botImage2'] ?? '',
       botImage3: json['botImage3'] ?? '',
 
-      autoRoutes: json['autoRoutes'] != null
-          ? List<String>.from(json['autoRoutes'])
-          : [],
+      autoRoutes: json['autoRoutes'] ?? '',
       autoFuel: json['autoFuel'] ?? 0,
       gameData: json['gameData'] ?? false,
       weight: (json['weight'] ?? 0.0).toDouble(),
@@ -765,7 +764,7 @@ class MatchRecord {
   }
 
   String toCsv() {
-    return '${batteryPercentage},${teamNumber},${scouterName},${matchKey},${allianceColor},${eventKey},${station},${matchNumber}, ${autonPoints.toCsv()}, ${teleOpPoints.toCsv()}, ${endPoints.toCsv()}';
+    return '${teamNumber},${matchKey},${matchNumber},${scouterName},${allianceColor},${eventKey},${station},${batteryPercentage},${autonPoints.toCsv()},${teleOpPoints.toCsv()},${endPoints.toCsv()}';
   }
 
   static MatchRecord fromJson(Map<String, dynamic> json) {
@@ -1014,7 +1013,7 @@ class EndPoints {
   }
 
   String toCsv() {
-    return '$ClimbStatus,${Park ? 1 : 0},${PushBallsEnd},$Passing,$EndNeutralTrips,$ShootingAccuracy,$endgameTime,$endgameshootingCycles,$robotBroken, "${Comments.replaceAll('"', '""')}"';
+    return '$ClimbStatus,${Park ? 1 : 0},${PushBallsEnd},$Passing,$robotBroken,$EndNeutralTrips,$ShootingAccuracy,$endgameTime,$endgameshootingCycles,"${Comments.replaceAll('"', '""')}"';
   }
 
   @override
