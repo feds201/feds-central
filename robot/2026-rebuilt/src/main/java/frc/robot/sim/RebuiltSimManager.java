@@ -7,6 +7,10 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.sim.CANcoderSimState;
 import com.ctre.phoenix6.sim.Pigeon2SimState;
 import com.ctre.phoenix6.sim.TalonFXSimState;
+import frc.sim.motor.BatterySimUtil;
+import frc.sim.motor.TalonFXArmSim;
+import frc.sim.motor.TalonFXMotorSim;
+import frc.sim.gamepiece.ShooterSim;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -27,8 +31,6 @@ import org.ironmaple.simulation.motorsims.SimulatedMotorController;
 import org.littletonrobotics.junction.Logger;
 import org.ode4j.ode.DBody;
 import org.ode4j.ode.DGeom;
-import edu.wpi.first.wpilibj.simulation.BatterySim;
-import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.math.system.plant.LinearSystemId;
@@ -71,6 +73,7 @@ import java.util.Set;
 public class RebuiltSimManager {
     // All distances in meters, angles in radians (unless noted otherwise).
 
+    // TODO(ai-idea)?: move DT to a sim-core default? it's not 2026-specific.
     /** Simulation timestep — 50 Hz to match robot periodic. */
     private static final double DT = 0.02;
 
@@ -115,11 +118,13 @@ public class RebuiltSimManager {
 
     // ── Proximity activation radii ─────────────────────────────────────────
 
+    // TODO(ai-idea)?: move proximity wake/sleep radii to sim-core? generic dual-engine knobs.
     /** Wake sleeping game pieces within this distance of the robot. */
     private static final double PROXIMITY_WAKE_RADIUS = 1.5;
     /** Put game pieces to sleep beyond this distance from all wake zones. */
     private static final double PROXIMITY_SLEEP_RADIUS = 3.0;
 
+    // TODO(ai-idea)?: move POSITION_CORRECTION_KP to sim-core? it's a generic ODE4J-follows-MapleSim tuning default.
     /** ODE4J→MapleSim position correction gain (1cm error → 0.5 m/s correction). */
     private static final double POSITION_CORRECTION_KP = 50.0;
 
@@ -149,11 +154,11 @@ public class RebuiltSimManager {
 
     // ── Motor physics constants (TODO: update with real measured values) ───────
 
-    /** Shooter wheel moment of inertia (kg·m²). TODO update placeholder */
-    private static final double SHOOTER_MOI = 0.5 * 3.0 * 0.05 * 0.05; // 0.5 × mass(3kg) × radius²(0.05m) — TODO update placeholder
+    /** Shooter wheel MOI (kg·m²). 0.5 × mass × radius² for a solid cylinder. */
+    private static final double SHOOTER_MOI = 0.5 * 2.0 * 0.05 * 0.05;
 
-    /** Shooter gear ratio (motor rotations / wheel rotations). TODO update placeholder */
-    private static final double SHOOTER_GEAR_RATIO = 1.0;
+    /** Shooter gear ratio (motor rot / wheel rot). 36T motor gear -> 24T axle gear (overdrive). */
+    private static final double SHOOTER_GEAR_RATIO = 24.0 / 36.0;
 
     /** Shooter velocity threshold (RPS) above which wheels count as spinning. TODO update placeholder */
     private static final double SHOOTER_VELOCITY_THRESHOLD_RPS = 5.0;
@@ -161,23 +166,21 @@ public class RebuiltSimManager {
     /** Shooter wheel radius (m) — used to convert flywheel RPS to launch speed (m/s). TODO update placeholder */
     private static final double SHOOTER_WHEEL_RADIUS_M = 0.05;
 
-    /** Wheel-to-ball friction efficiency — accounts for slip at contact. TODO update placeholder */
-    private static final double SLIP_FACTOR = 0.8;
+    // TODO(ai-idea)?: move these flywheel-ball physics defaults into sim-core? applies to any flywheel shooter, not just 2026.
+    /** Wheel-to-ball friction efficiency — accounts for slip at contact. */
+    private static final double SLIP_FACTOR = 0.9;
 
-    /** Fraction of contact energy that goes to translation vs backspin.
-     *  For a hollow sphere (I = 2/3 mr²) with single-sided roller + static hood:
-     *  translational = I / (I + mr²) = (2/3) / (2/3 + 1) = 2/5 = 0.4.
-     *  TODO update placeholder — real value depends on ball compression and contact geometry. */
-    private static final double BALL_TRANSLATIONAL_FRACTION = 0.4;
+    /** Fraction of contact energy that goes to translation vs backspin. */
+    private static final double BALL_TRANSLATIONAL_FRACTION = 0.55;
 
-    /** Magnus effect coefficient for spinning balls in flight.
-     *  F_magnus = MAGNUS_K * cross(angularVel, linearVel).
-     *  Rough estimate from: 0.5 * rho_air(1.225) * Cl(0.5) * pi * r²(0.075²).
-     *  NOT YET USED — placeholder for future Magnus flight physics. TODO update placeholder */
-    private static final double MAGNUS_COEFFICIENT = 0.5 * 1.225 * 0.5 * Math.PI * 0.075 * 0.075;
+    /** Additional pitch (deg) added to the hood angle when computing ball launch angle. */
+    private static final double BALL_ANGLE_OFFSET_DEG = 15.0;
 
-    /** Hood motor gear ratio (motor rotations / mechanism rotations). TODO update placeholder */
-    private static final double HOOD_GEAR_RATIO = 30.0;
+    /** Magnus effect coefficient. F = coeff * cross(angularVel, linearVel). */
+    private static final double MAGNUS_COEFFICIENT = 0.001;
+
+    /** Hood gear ratio (motor rot / mechanism rot). Derived from soft limit and angle range. */
+    private static final double HOOD_GEAR_RATIO = 30.0 * 2 * Math.PI / Math.toRadians(67.4 - 35.5);
 
     /** Hood mechanism moment of inertia (kg·m²), estimated via WPILib uniform-rod approximation.
      *  TODO update placeholder: measure arm length and mass from CAD. */
@@ -210,17 +213,17 @@ public class RebuiltSimManager {
     /** Intake roller velocity threshold (motor RPS) above which roller counts as spinning. TODO update placeholder */
     private static final double INTAKE_ROLLER_VELOCITY_THRESHOLD_RPS = 1.0;
 
-    /** Intake deploy motor moment of inertia (kg·m²). Gear ratio 1.0 — position tracked in motor encoder rotations. TODO update placeholder */
-    private static final double INTAKE_DEPLOY_MOI = 0.0005;
+    /** Intake deploy MOI (kg·m²). Sim tuning knob, not measured from CAD yet. May need retuning now that the gear ratio is physical. */
+    private static final double INTAKE_DEPLOY_MOI = 0.01;
 
-    /** Intake deploy gear ratio (motor rotations / mechanism rotations). */
-    private static final double INTAKE_DEPLOY_GEAR_RATIO = 1.0;
+    /** Intake deploy gear ratio (motor rotations / mechanism rotations). Two 3:1 stages in series = 9:1. */
+    private static final double INTAKE_DEPLOY_GEAR_RATIO = 9.0;
 
-    /** Intake roller motor moment of inertia (kg·m²). TODO update placeholder */
+    /** Intake roller MOI (kg·m²). TODO update placeholder */
     private static final double INTAKE_ROLLER_MOI = 0.001;
 
-    /** Intake roller gear ratio (motor rotations / mechanism rotations). */
-    private static final double INTAKE_ROLLER_GEAR_RATIO = 1.0;
+    /** Intake roller gear ratio (motor rotations / mechanism rotations). 3:1 on each of two motors in parallel. */
+    private static final double INTAKE_ROLLER_GEAR_RATIO = 3.0;
 
     // Intake extension translation (delta from retracted position)
     private static final double INTAKE_EXTEND_X = -0.302;
@@ -251,6 +254,7 @@ public class RebuiltSimManager {
 
     // MapleSim swerve simulation
     private final SwerveDriveSimulation mapleSimDrive;
+    // TODO: remove or use? field is written once and never read.
     private final SwerveModuleSimulation[] moduleSimulations;
 
     // References to robot subsystems
@@ -259,21 +263,13 @@ public class RebuiltSimManager {
     // CTRE sim state (for gyro only — MapleSim handles motor/encoder sim state)
     private final Pigeon2SimState pigeonSimState;
 
-    // WPILib physics sims for non-drivetrain mechanisms.
-    private final DCMotorSim shooterMotorSim;
-    private final SingleJointedArmSim hoodArmSim;
-    private final DCMotorSim feederMotorSim;
-    private final DCMotorSim spindexerMotorSim;
-    private final DCMotorSim intakeDeployMotorSim;
-    private final DCMotorSim intakeRollerMotorSim;
-
-    // CTRE sim states for the motors we simulate
-    private final TalonFXSimState shooterLeaderSimState;
-    private final TalonFXSimState hoodMotorSimState;
-    private final TalonFXSimState feederMotorSimState;
-    private final TalonFXSimState spindexerMotorSimState;
-    private final TalonFXSimState intakeDeploySimState;
-    private final TalonFXSimState intakeRollerSimState;
+    // Mechanism physics sims (non-drivetrain) — wrap DCMotorSim/SingleJointedArmSim + TalonFXSimState.
+    private final TalonFXMotorSim shooterMotorSim;
+    private final TalonFXArmSim hoodArmSim;
+    private final TalonFXMotorSim feederMotorSim;
+    private final TalonFXMotorSim spindexerMotorSim;
+    private final TalonFXMotorSim intakeDeployMotorSim;
+    private final TalonFXMotorSim intakeRollerMotorSim;
 
     // Last known pose and speeds from MapleSim (used for virtual goal telemetry)
     private Pose2d lastSimPose = STARTING_POSE;
@@ -388,44 +384,57 @@ public class RebuiltSimManager {
         // --- Mechanism physics sims (non-drivetrain) ---
         Logger.recordOutput("Sim/State", "Loading mechanism sims");
 
-        shooterMotorSim = new DCMotorSim(
-            LinearSystemId.createDCMotorSystem(
-                DCMotor.getKrakenX60(1), SHOOTER_MOI, SHOOTER_GEAR_RATIO),
-            DCMotor.getKrakenX60(1));
+        shooterMotorSim = new TalonFXMotorSim(
+            shooterWheels.getShooterLeaderMotorSimState(),
+            new DCMotorSim(
+                LinearSystemId.createDCMotorSystem(
+                    DCMotor.getKrakenX60(1), SHOOTER_MOI, SHOOTER_GEAR_RATIO),
+                DCMotor.getKrakenX60(1)),
+            SHOOTER_GEAR_RATIO, true);
 
-        hoodArmSim = new SingleJointedArmSim(
-            DCMotor.getKrakenX60(1),
-            HOOD_GEAR_RATIO,
-            HOOD_MOI_KGM2,
-            HOOD_ARM_LENGTH_M,
-            Math.toRadians(HOOD_MIN_ANGLE_DEG),   // minAngleRads
-            Math.toRadians(HOOD_MAX_ANGLE_DEG),   // maxAngleRads
-            true,               // gravity = true: realistic hood droop behavior
-            Math.toRadians(HOOD_MIN_ANGLE_DEG));  // startingAngleRads
+        hoodArmSim = new TalonFXArmSim(
+            shooterHood.getHoodMotorSimState(),
+            new SingleJointedArmSim(
+                DCMotor.getKrakenX60(1),
+                HOOD_GEAR_RATIO,
+                HOOD_MOI_KGM2,
+                HOOD_ARM_LENGTH_M,
+                Math.toRadians(HOOD_MIN_ANGLE_DEG),
+                Math.toRadians(HOOD_MAX_ANGLE_DEG),
+                true,
+                Math.toRadians(HOOD_MIN_ANGLE_DEG)),
+            Math.toRadians(HOOD_MIN_ANGLE_DEG),
+            Math.toRadians(HOOD_MAX_ANGLE_DEG),
+            RobotMap.ShooterConstants.HOOD_FORWARD_SOFT_LIMIT_ROT, true);
 
-        feederMotorSim = new DCMotorSim(
-            LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60(1), FEEDER_MOI, FEEDER_GEAR_RATIO),
-            DCMotor.getKrakenX60(1));
+        feederMotorSim = new TalonFXMotorSim(
+            feeder.getFeederMotorSimState(),
+            new DCMotorSim(
+                LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60(1), FEEDER_MOI, FEEDER_GEAR_RATIO),
+                DCMotor.getKrakenX60(1)),
+            FEEDER_GEAR_RATIO, true);
 
-        spindexerMotorSim = new DCMotorSim(
-            LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60(1), SPINDEXER_MOI, SPINDEXER_GEAR_RATIO),
-            DCMotor.getKrakenX60(1));
+        spindexerMotorSim = new TalonFXMotorSim(
+            spindexer.getSpindexerMotorSimState(),
+            new DCMotorSim(
+                LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60(1), SPINDEXER_MOI, SPINDEXER_GEAR_RATIO),
+                DCMotor.getKrakenX60(1)),
+            SPINDEXER_GEAR_RATIO, true);
 
-        intakeDeployMotorSim = new DCMotorSim(
-            LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60(1), INTAKE_DEPLOY_MOI, INTAKE_DEPLOY_GEAR_RATIO),
-            DCMotor.getKrakenX60(1));
+        intakeDeployMotorSim = new TalonFXMotorSim(
+            intakeSubsystem.getDeployMotorSimState(),
+            new DCMotorSim(
+                LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60(1), INTAKE_DEPLOY_MOI, INTAKE_DEPLOY_GEAR_RATIO),
+                DCMotor.getKrakenX60(1)),
+            INTAKE_DEPLOY_GEAR_RATIO, false);
 
-        intakeRollerMotorSim = new DCMotorSim(
-            LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60(1), INTAKE_ROLLER_MOI, INTAKE_ROLLER_GEAR_RATIO),
-            DCMotor.getKrakenX60(1));
-
-        // Cache CTRE sim states
-        shooterLeaderSimState = shooterWheels.getLeaderSimState();
-        hoodMotorSimState = shooterHood.getHoodMotorSimState();
-        feederMotorSimState = feeder.getFeederMotorSimState();
-        spindexerMotorSimState = spindexer.getSpindexerMotorSimState();
-        intakeDeploySimState = intakeSubsystem.getDeployMotorSimState();
-        intakeRollerSimState = intakeSubsystem.getRollerMotorSimState();
+        // Two Krakens in parallel drive the rollers (one each side).
+        intakeRollerMotorSim = new TalonFXMotorSim(
+            intakeSubsystem.getRollerMotorSimState(),
+            new DCMotorSim(
+                LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60(2), INTAKE_ROLLER_MOI, INTAKE_ROLLER_GEAR_RATIO),
+                DCMotor.getKrakenX60(2)),
+            INTAKE_ROLLER_GEAR_RATIO, false);
 
         // --- Shooter ---
         Logger.recordOutput("Sim/State", "Loading shooter");
@@ -433,14 +442,15 @@ public class RebuiltSimManager {
         // - Hood angle: live from SingleJointedArmSim
         // - Launch velocity: flywheel angular velocity (rad/s) × wheel radius (m/s)
         // - Shooting gate: velocity-based (feeder forward-only check handles washing machine reverse phase)
+        // TODO(ai-idea)?: pull this (flywheelRadPerSec, wheelRadius, ballRadius, slip, fraction) into a FlywheelBallPhysics helper so callers don't wire the formula by hand?
         shooterSim = new ShooterSim(
                 gamePieceManager,
                 RebuiltGamePieces.FUEL,
                 () -> chassis.getPose2d(),
-                () -> hoodArmSim.getAngleRads(),
+                () -> hoodArmSim.getAngleRads() + Math.toRadians(BALL_ANGLE_OFFSET_DEG),
                 () -> shooterMotorSim.getAngularVelocityRadPerSec() * SHOOTER_WHEEL_RADIUS_M * SLIP_FACTOR * BALL_TRANSLATIONAL_FRACTION,
-                () -> shooterMotorSim.getAngularVelocityRPM() / 60.0 > SHOOTER_VELOCITY_THRESHOLD_RPS
-                        && feederMotorSim.getAngularVelocityRPM() / 60.0 > FEEDER_VELOCITY_THRESHOLD_RPS,
+                () -> shooterMotorSim.getAngularVelocityRPS() > SHOOTER_VELOCITY_THRESHOLD_RPS
+                        && feederMotorSim.getAngularVelocityRPS() > FEEDER_VELOCITY_THRESHOLD_RPS,
                 () -> chassis.getBody().getLinearVel().get0(),
                 () -> chassis.getBody().getLinearVel().get1(),
                 () -> {
@@ -494,6 +504,7 @@ public class RebuiltSimManager {
      * → gyro sync → piece state update → scoring check → shooter update → telemetry.
      */
     public void periodic() {
+        // TODO(ai-idea)?: extract this periodic() scaffold into a sim-core SimOrchestrator base class? might be reusable year over year.
         // 1. MapleSim steps the drivetrain (motor physics, tire model, encoder feedback)
         SimulatedArena.getInstance().simulationPeriodic();
 
@@ -575,101 +586,31 @@ public class RebuiltSimManager {
 
         // 11. Step mechanism physics sims and write back to CTRE sim states.
         //
-        // ORDERING NOTE: RoboRioSim.setVInVoltage MUST come first.
-        // FlywheelSim/DCMotorSim.setInputVoltage() internally clamps to RobotController.getBatteryVoltage(),
-        // which reads from RoboRioSim. Setting it first ensures the clamp uses our computed voltage.
-
-        double batteryVoltage = BatterySim.calculateDefaultBatteryLoadedVoltage(
+        // ORDERING NOTE: battery voltage MUST be computed first.
+        // DCMotorSim.setInputVoltage() internally clamps to RobotController.getBatteryVoltage(),
+        // which reads from RoboRioSim. BatterySimUtil sets it before motor updates.
+        // TODO(ai-idea)?: have TalonFXMotorSim self-report current so this collapses to one call? would remove the easy-to-miss *4 multiplier for shooter followers.
+        double batteryVoltage = BatterySimUtil.updateBatteryVoltage(7.0, 12.5,
             shooterMotorSim.getCurrentDrawAmps() * 4,  // leader + 3 followers, all share the same flywheel load
             hoodArmSim.getCurrentDrawAmps(),
             feederMotorSim.getCurrentDrawAmps(),
             spindexerMotorSim.getCurrentDrawAmps(),
             intakeDeployMotorSim.getCurrentDrawAmps(),
-            intakeRollerMotorSim.getCurrentDrawAmps()
-        );
-        batteryVoltage = Math.max(7.0, Math.min(12.5, batteryVoltage));
-        // Set RoboRioSim voltage first so setInputVoltage's internal clamp uses the correct value.
-        RoboRioSim.setVInVoltage(batteryVoltage);
+            intakeRollerMotorSim.getCurrentDrawAmps());
 
-        // ── Shooter flywheel ────────────────────────────────────────────────────
-        shooterLeaderSimState.setSupplyVoltage(batteryVoltage);
-        shooterMotorSim.setInputVoltage(-shooterLeaderSimState.getMotorVoltage());
-        shooterMotorSim.update(DT);
-        // DCMotorSim outputs CCW-positive; negate to CW-positive for Clockwise_Positive CTRE motor.
-        shooterLeaderSimState.setRawRotorPosition(
-            Rotations.of(-SHOOTER_GEAR_RATIO * shooterMotorSim.getAngularPositionRotations()));
-        shooterLeaderSimState.setRotorVelocity(
-            RotationsPerSecond.of(-SHOOTER_GEAR_RATIO * shooterMotorSim.getAngularVelocityRPM() / 60.0));
-
-        // ── Hood (SingleJointedArmSim) ─────────────────────────────────────────
-        // Hood convention: CW motor rotation = increasing angle (min→max), which maps to
-        // SingleJointedArmSim's CCW-positive convention (positive voltage = increasing angle).
-        // So no voltage negation and no writeback negation for the hood.
-        hoodMotorSimState.setSupplyVoltage(batteryVoltage);
-        hoodArmSim.setInputVoltage(hoodMotorSimState.getMotorVoltage());
-        hoodArmSim.update(DT);
-        // Map mechanism angle [HOOD_MIN_ANGLE_DEG, HOOD_MAX_ANGLE_DEG] to motor rotations [0, RobotMap.ShooterConstants.HOOD_FORWARD_SOFT_LIMIT_ROT].
-        // This matches ShooterHood's ForwardSoftLimitThreshold and position lookup map (0–29 rot).
-        // Note: this is independent of HOOD_GEAR_RATIO used for SingleJointedArmSim physics.
-        double hoodAngleRad = hoodArmSim.getAngleRads();
-        double hoodVelRadPerSec = hoodArmSim.getVelocityRadPerSec();
-        double angleRange = Math.toRadians(HOOD_MAX_ANGLE_DEG) - Math.toRadians(HOOD_MIN_ANGLE_DEG);
-        double hoodPositionRot = (hoodAngleRad - Math.toRadians(HOOD_MIN_ANGLE_DEG)) / angleRange * RobotMap.ShooterConstants.HOOD_FORWARD_SOFT_LIMIT_ROT;
-        // (rad/s) / (rad) * rot = rot/s
-        double hoodVelRotPerSec = hoodVelRadPerSec / angleRange * RobotMap.ShooterConstants.HOOD_FORWARD_SOFT_LIMIT_ROT;
-        hoodMotorSimState.setRawRotorPosition(Rotations.of(hoodPositionRot));
-        hoodMotorSimState.setRotorVelocity(RotationsPerSecond.of(hoodVelRotPerSec));
-
-        // ── Feeder ────────────────────────────────────────────────────────────────
-        feederMotorSimState.setSupplyVoltage(batteryVoltage);
-        feederMotorSim.setInputVoltage(-feederMotorSimState.getMotorVoltage());
-        feederMotorSim.update(DT);
-        // DCMotorSim outputs CCW-positive; negate to CW-positive for Clockwise_Positive CTRE motor.
-        feederMotorSimState.setRawRotorPosition(
-            Rotations.of(-FEEDER_GEAR_RATIO * feederMotorSim.getAngularPositionRotations()));
-        feederMotorSimState.setRotorVelocity(
-            RotationsPerSecond.of(-FEEDER_GEAR_RATIO * feederMotorSim.getAngularVelocityRPM() / 60.0));
-
-        // ── Spindexer ─────────────────────────────────────────────────────────────
-        spindexerMotorSimState.setSupplyVoltage(batteryVoltage);
-        spindexerMotorSim.setInputVoltage(-spindexerMotorSimState.getMotorVoltage());
-        spindexerMotorSim.update(DT);
-        // DCMotorSim outputs CCW-positive; negate to CW-positive for Clockwise_Positive CTRE motor.
-        spindexerMotorSimState.setRawRotorPosition(
-            Rotations.of(-SPINDEXER_GEAR_RATIO * spindexerMotorSim.getAngularPositionRotations()));
-        spindexerMotorSimState.setRotorVelocity(
-            RotationsPerSecond.of(-SPINDEXER_GEAR_RATIO * spindexerMotorSim.getAngularVelocityRPM() / 60.0));
-
-        // ── Intake Deploy (CounterClockwise_Positive — no voltage negation) ──────
-        intakeDeploySimState.setSupplyVoltage(batteryVoltage);
-        intakeDeployMotorSim.setInputVoltage(intakeDeploySimState.getMotorVoltage());
-        intakeDeployMotorSim.update(DT);
-        intakeDeploySimState.setRawRotorPosition(
-            Rotations.of(INTAKE_DEPLOY_GEAR_RATIO * intakeDeployMotorSim.getAngularPositionRotations()));
-        intakeDeploySimState.setRotorVelocity(
-            RotationsPerSecond.of(INTAKE_DEPLOY_GEAR_RATIO * intakeDeployMotorSim.getAngularVelocityRPM() / 60.0));
-
-        // ── Intake Roller (CounterClockwise_Positive — no voltage negation) ──────
-        intakeRollerSimState.setSupplyVoltage(batteryVoltage);
-        intakeRollerMotorSim.setInputVoltage(intakeRollerSimState.getMotorVoltage());
-        intakeRollerMotorSim.update(DT);
-        intakeRollerSimState.setRawRotorPosition(
-            Rotations.of(INTAKE_ROLLER_GEAR_RATIO * intakeRollerMotorSim.getAngularPositionRotations()));
-        intakeRollerSimState.setRotorVelocity(
-            RotationsPerSecond.of(INTAKE_ROLLER_GEAR_RATIO * intakeRollerMotorSim.getAngularVelocityRPM() / 60.0));
+        shooterMotorSim.update(DT, batteryVoltage);
+        hoodArmSim.update(DT, batteryVoltage);
+        feederMotorSim.update(DT, batteryVoltage);
+        spindexerMotorSim.update(DT, batteryVoltage);
+        intakeDeployMotorSim.update(DT, batteryVoltage);
+        intakeRollerMotorSim.update(DT, batteryVoltage);
 
         // 12. Update shooter (unchanged)
         // ── Debug telemetry ──────────────────────────────────────────────────────
-        Logger.recordOutput("Sim/Debug/ShooterVelocityRPS", shooterMotorSim.getAngularVelocityRPM() / 60.0);
-        Logger.recordOutput("Sim/Debug/ShooterVoltageIn", shooterLeaderSimState.getMotorVoltage());
-        Logger.recordOutput("Sim/Debug/FeederVelocityRPS", feederMotorSim.getAngularVelocityRPM() / 60.0);
-        Logger.recordOutput("Sim/Debug/FeederVoltageIn", feederMotorSimState.getMotorVoltage());
-        Logger.recordOutput("Sim/Debug/SpindexerVelocityRPS", spindexerMotorSim.getAngularVelocityRPM() / 60.0);
-        Logger.recordOutput("Sim/Debug/SpindexerVoltageIn", spindexerMotorSimState.getMotorVoltage());
+        Logger.recordOutput("Sim/Debug/ShooterVelocityRPS", shooterMotorSim.getAngularVelocityRPS());
+        Logger.recordOutput("Sim/Debug/FeederVelocityRPS", feederMotorSim.getAngularVelocityRPS());
+        Logger.recordOutput("Sim/Debug/SpindexerVelocityRPS", spindexerMotorSim.getAngularVelocityRPS());
         Logger.recordOutput("Sim/Debug/HoodAngleDeg", Math.toDegrees(hoodArmSim.getAngleRads()));
-        Logger.recordOutput("Sim/Debug/HoodVoltageIn", hoodMotorSimState.getMotorVoltage());
-        Logger.recordOutput("Sim/Debug/HoodPositionRot",
-            (hoodArmSim.getAngleRads() - Math.toRadians(HOOD_MIN_ANGLE_DEG)) / angleRange * RobotMap.ShooterConstants.HOOD_FORWARD_SOFT_LIMIT_ROT);
         Logger.recordOutput("Sim/Debug/IntakeDeployPositionRot", intakeSubsystem.getSimDeployMotorPositionRotations());
         Logger.recordOutput("Sim/Debug/IntakeDeployExtendedPct", Math.min(100.0, Math.max(0.0, intakeSubsystem.getSimDeployMotorPositionRotations() / IntakeSubsystem.EXTENDED_ROTATIONS * 100.0)));
         Logger.recordOutput("Sim/Debug/IntakeRollerVelocityRPS", intakeSubsystem.getSimRollerMotorVelocityRPS());
@@ -677,8 +618,8 @@ public class RebuiltSimManager {
             intakeSubsystem.getSimDeployMotorPositionRotations() > IntakeSubsystem.EXTENDED_ROTATIONS
             && intakeSubsystem.getSimRollerMotorVelocityRPS() > INTAKE_ROLLER_VELOCITY_THRESHOLD_RPS);
         Logger.recordOutput("Sim/Debug/ShootingGateOpen",
-            shooterMotorSim.getAngularVelocityRPM() / 60.0 > SHOOTER_VELOCITY_THRESHOLD_RPS
-            && feederMotorSim.getAngularVelocityRPM() / 60.0 > FEEDER_VELOCITY_THRESHOLD_RPS);
+            shooterMotorSim.getAngularVelocityRPS() > SHOOTER_VELOCITY_THRESHOLD_RPS
+            && feederMotorSim.getAngularVelocityRPS() > FEEDER_VELOCITY_THRESHOLD_RPS);
         Logger.recordOutput("Sim/Debug/BatteryVoltage", batteryVoltage);
         Logger.recordOutput("Sim/Debug/FuelHeld", (double) gamePieceManager.getHeldCount());
         shooterSim.update(DT);
@@ -687,6 +628,7 @@ public class RebuiltSimManager {
         publishTelemetry();
     }
 
+    // TODO(ai-idea)?: split publishTelemetry into a RebuiltComponentPoseTelemetry class and invoke via hook?
     private void publishTelemetry() {
         Pose3d robotPose = chassis.getPose3d();
         Logger.recordOutput("Sim/RobotPose", robotPose);
@@ -769,8 +711,8 @@ public class RebuiltSimManager {
                     new Pose3d(new Translation3d(0.270, 0, 0.360), new Rotation3d(0, feederAngle, 0)),           // 12: Feeder - Top Back
                     new Pose3d(),                                                                                // 13: Shooter - Stationary Base
                     new Pose3d(
-                        new Translation3d(SHOOTER_HOOD_FORWARD_X, 0.0, 0.500), 
-                        new Rotation3d(0, -hoodAngle, 0)),                                                       // 14: Shooter - Hood
+                        new Translation3d(SHOOTER_HOOD_FORWARD_X, 0.0, 0.500),
+                        new Rotation3d(0, hoodAngle, 0)),                                                        // 14: Shooter - Hood
                     new Pose3d(new Translation3d(0.286, 0, 0.558), new Rotation3d(0, shooterAngle, 0)),          // 15: Shooter - Wheels
                 });
     }
@@ -808,6 +750,7 @@ public class RebuiltSimManager {
      * <p>Battery voltage is sourced from {@link SimulatedBattery} so brownout effects
      * propagate through to the motor controller.
      */
+    // TODO(ai-idea)?: move these CTRE/MapleSim adapter classes to sim-core? no 2026-specific content.
     private static class TalonFXMotorControllerSim implements SimulatedMotorController {
         private final TalonFXSimState talonFXSimState;
 
