@@ -14,6 +14,10 @@ class LocalPrefs {
   static const _kLastUpdated = 'scout_ops.lastUpdated';
   static const _kLocalPaths = 'scout_ops.localPaths';
 
+  // Read-only key for public TBA data — safe to commit.
+  static const _defaultTbaKey =
+      'nfgL68cGRgoKXYWT0D4JcGxv6lPYuWkWVz4TcYPN9VlFQ6vHoLrQjJRwjFKRcJu8';
+
   // ── JSON-safe value helper ───────────────────────────────────────────
 
   static Map<String, dynamic> _matchToJson(MatchEntry m) => {
@@ -90,7 +94,7 @@ class LocalPrefs {
     eventKey: prefs.getString(_kEventKey) ?? '',
     tableName: prefs.getString(_kTableName) ?? 'scouting_data',
     neonConn: neonConn,
-    tbaKey: prefs.getString(_kTbaKey) ?? '',
+    tbaKey: prefs.getString(_kTbaKey) ?? _defaultTbaKey,
     );
   }
 
