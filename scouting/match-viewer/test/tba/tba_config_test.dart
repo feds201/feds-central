@@ -8,27 +8,14 @@ void main() {
       expect(result, 'my-custom-key');
     });
 
-    test('returns null when settings override is null and dotenv not loaded', () {
-      // dotenv is not loaded in tests, so dotenvApiKey returns null
+    test('returns default when settings override is null', () {
       final result = TbaConfig.resolveApiKey(null);
-      expect(result, isNull);
+      expect(result, TbaConfig.defaultApiKey);
     });
 
-    test('returns null when settings override is empty string', () {
+    test('returns default when settings override is empty string', () {
       final result = TbaConfig.resolveApiKey('');
-      expect(result, isNull);
-    });
-
-    test('prefers settings override over dotenv', () {
-      // Even if dotenv has a value, settings override takes priority
-      final result = TbaConfig.resolveApiKey('override-key');
-      expect(result, 'override-key');
-    });
-  });
-
-  group('TbaConfig.dotenvApiKey', () {
-    test('returns null when dotenv not loaded', () {
-      expect(TbaConfig.dotenvApiKey, isNull);
+      expect(result, TbaConfig.defaultApiKey);
     });
   });
 }

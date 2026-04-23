@@ -15,6 +15,10 @@ int _toInt(dynamic value) {
 }
 
 class Settings {
+  // Read-only key for public TBA data — safe to commit.
+  static const String defaultApiKey =
+      'nfgL68cGRgoKXYWT0D4JcGxv6lPYuWkWVz4TcYPN9VlFQ6vHoLrQjJRwjFKRcJu8';
+
   static void setApiKey(String key) {
     LocalDataBase.putData('Settings.apiKey', key);
   }
@@ -24,7 +28,9 @@ class Settings {
   }
 
   static String getApiKey() {
-    return LocalDataBase.getData('Settings.apiKey') ?? '';
+    final key = LocalDataBase.getData('Settings.apiKey') as String?;
+    if (key == null || key.isEmpty) return defaultApiKey;
+    return key;
   }
 
   static String getPitKey() {
