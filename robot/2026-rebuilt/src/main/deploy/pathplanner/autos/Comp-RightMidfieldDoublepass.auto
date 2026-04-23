@@ -35,6 +35,12 @@
               {
                 "type": "named",
                 "data": {
+                  "name": "Run Rollers"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
                   "name": "Start Shooter Spin"
                 }
               }
@@ -212,13 +218,13 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Run Shooter"
+                  "name": "Run Rollers"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Run Rollers"
+                  "name": "Run Shooter"
                 }
               },
               {
