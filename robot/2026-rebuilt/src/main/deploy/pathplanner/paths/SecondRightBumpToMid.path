@@ -123,7 +123,7 @@
   },
   "goalEndState": {
     "velocity": 2.0,
-    "rotation": 180.0
+    "rotation": 150.52298474784126
   },
   "reversed": false,
   "folder": "MidIntakeToRightBump",

@@ -49,8 +49,8 @@ public class ShooterWheels extends SubsystemBase {
     SHOOTING(RotationsPerSecond.of(0)),
     IDLE(RotationsPerSecond.of(0)),
     PASSING(RotationsPerSecond.of(0)),
-    LAYUP(RotationsPerSecond.of(35)), // ~3m (midway between hub+tower)
-    HALFCOURT (RotationsPerSecond.of(43)); // ~5.5m (corner) 
+    LAYUP(RotationsPerSecond.of(34.11)), // ~3.278m (midway between hub+tower) TODO add link to doc
+    HALFCOURT (RotationsPerSecond.of(40.86)); // ~5.23m (corner) 
 
     private final AngularVelocity targetVelocity;
 

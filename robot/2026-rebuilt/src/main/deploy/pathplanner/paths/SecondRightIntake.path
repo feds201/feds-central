@@ -28,7 +28,12 @@
       "linkedName": "SecondRightIntakeEnd"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5863539445628921,
+      "rotationDegrees": 90.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -48,7 +53,7 @@
   "folder": "MidIntakeToRightBump",
   "idealStartingState": {
     "velocity": 2.0,
-    "rotation": 180.0
+    "rotation": 150.52298474784126
   },
   "useDefaultConstraints": true
 }

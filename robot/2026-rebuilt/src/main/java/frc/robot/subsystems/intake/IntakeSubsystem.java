@@ -61,79 +61,91 @@ public class IntakeSubsystem extends SubsystemBase {
   private final TalonFX rollerMotorFollower;
   private final DigitalInput limit_switch_r;
   private final DigitalInput limit_switch_l;
+  private final DigitalInput limit_switch;
+  private boolean hasMotorBeenPosResetThisCycle = false; // Track if we've reset the motor position during this command cycle
   private final SysIdRoutine sysID;
-  private final LedsSubsystem leds = LedsSubsystem.getInstance();
-  private final double extendedRotations = 18.0; //TUNE on new intake
-  private final double retractedRotations = 0.39;
-  private final double closeAgitationRotations = 9.0; // about halfway from bumper to extended, used for agitating the close half of the hopper
-  private final double farAgitationRotations = 13.5; // about three-quarters from bumper to extended, used for agitating the far half of the hopper
-  public final double burstAgitation = extendedRotations / 2.0;
-  // Desired motion timing: target to complete extend/retract in under 1s
-  private static final double MOVE_TARGET_SECONDS = .45;
-  // Aggressive acceleration multiplier requested (20x faster than default)
-  private static final double MOTION_MAGIC_ACCEL_MULTIPLIER = 40.0;
-  private static final double ROLLER_OUTPUT = 1.0; //90% for rollers, 70% originally;
-  private final Timer timer = new Timer();
-
-
-  // MotionMagic helper (create once and reuse)
-  private final MotionMagicVoltage positionOut = new MotionMagicVoltage(Rotations.of(0));
-
-
-  // Simulation + Visualization values (only initialized when running in sim, can't be final)
-  private DCMotorSim motorSim;
-  private DCMotorSim rollerMotorSim;
-  private DIOSim limitSwitchRSim;
-  private DIOSim limitSwitchLSim;
-  private Mechanism2d intakeMech2d;
-  private MechanismRoot2d intakeMechRoot;
-  private MechanismLigament2d intakeLigament;
-  private Mechanism2d rollerMech2d;
-  private MechanismRoot2d rollerMechRoot;
-  private MechanismLigament2d rollerLigament;
-
-  public enum IntakeState {
-    DEFAULT, //Retracted, assumed to be starting state
-    EXTENDED, //Fully extended
-    INTAKING, //Fully extended with rollers on, used for actively intaking fuel
-
-    //State loop 1: Agitate
-    AGITATE_IN, //Inwards portion of the agitate state-loop, intake will toggle between the agitates on a timer when set to one of these states
-    AGITATE_OUT, //Agitation causes the intake to move outwards, then inwards back to default in order to agitate the fuel in the full hopper
-
-    //State loop 2: Close Agitation
-    CLOSE_AGITATION_IN, //Inwards portion of the close agitation state-loop, intake will toggle between the close agitates on a timer when set to one of these states
-    CLOSE_AGITATION_OUT, //Close agitation causes the intake to move outwards, then inwards about halfway to extended in order to agitate the close half of the hopper
-
-    FAR_AGITATION_IN, //Inwards portion of the far agitation state-loop, intake will toggle between the far agitates on a timer when set to one of these states
-    FAR_AGITATION_OUT, //Far agitation causes the intake to move outwards
-
-    //State loop 3: Dither Agitation (experimental, may not be used)
-    DITHERIN_AGITATION, //Inwards portion of dithering state-loop, intake will toggle between the dithers on a timer when set to one of these states
-    DITHEROUT_AGITATION //Dithering causes the intake to move inwards, then outwards half as much in order to slowly bring in the intake while also agitating
-  }
-
-  public enum RollerState {
-    ON,
-    OFF,
-    REVERSE,
-  }
-
+    private final LedsSubsystem leds = LedsSubsystem.getInstance();
+    private final double extendedRotations = 18.0; //TUNE on new intake
+    private final double retractedRotations = 0.39;
+    private final double closeAgitationRotations = 9.0; // about halfway from bumper to extended, used for agitating the close half of the hopper
+    private final double farAgitationRotations = 13.5; // about three-quarters from bumper to extended, used for agitating the far half of the hopper
+    public final double burstAgitation = extendedRotations / 2.0;
+    // Desired motion timing: target to complete extend/retract in under 1s
+    private static final double MOVE_TARGET_SECONDS = .45;
+    // Aggressive acceleration multiplier requested (20x faster than default)
+    private static final double MOTION_MAGIC_ACCEL_MULTIPLIER = 40.0;
+    private static final double ROLLER_OUTPUT = 1.0; //90% for rollers, 70% originally;
+    private final Timer timer = new Timer();
   
-
-  private IntakeState currentState = IntakeState.DEFAULT;
-  private RollerState currentRollerState = RollerState.OFF;
- 
   
+    // MotionMagic helper (create once and reuse)
+    private final MotionMagicVoltage positionOut = new MotionMagicVoltage(Rotations.of(0));
+  
+  
+    // Simulation + Visualization values (only initialized when running in sim, can't be final)
+    private DCMotorSim motorSim;
+    private DCMotorSim rollerMotorSim;
+    private DIOSim limitSwitchRSim;
+    private DIOSim limitSwitchLSim;
+    private Mechanism2d intakeMech2d;
+    private MechanismRoot2d intakeMechRoot;
+    private MechanismLigament2d intakeLigament;
+    private Mechanism2d rollerMech2d;
+    private MechanismRoot2d rollerMechRoot;
+    private MechanismLigament2d rollerLigament;
+  
+    public enum IntakeState {
+      DEFAULT, //Retracted, assumed to be starting state
+      EXTENDED, //Fully extended
+      INTAKING, //Fully extended with rollers on, used for actively intaking fuel
+  
+      //State loop 1: Agitate
+      AGITATE_IN, //Inwards portion of the agitate state-loop, intake will toggle between the agitates on a timer when set to one of these states
+      AGITATE_OUT, //Agitation causes the intake to move outwards, then inwards back to default in order to agitate the fuel in the full hopper
+  
+      //State loop 2: Close Agitation
+      CLOSE_AGITATION_IN, //Inwards portion of the close agitation state-loop, intake will toggle between the close agitates on a timer when set to one of these states
+      CLOSE_AGITATION_OUT, //Close agitation causes the intake to move outwards, then inwards about halfway to extended in order to agitate the close half of the hopper
+  
+      FAR_AGITATION_IN, //Inwards portion of the far agitation state-loop, intake will toggle between the far agitates on a timer when set to one of these states
+      FAR_AGITATION_OUT, //Far agitation causes the intake to move outwards
+  
+      //State loop 3: Dither Agitation (experimental, may not be used)
+      DITHERIN_AGITATION, //Inwards portion of dithering state-loop, intake will toggle between the dithers on a timer when set to one of these states
+      DITHEROUT_AGITATION //Dithering causes the intake to move inwards, then outwards half as much in order to slowly bring in the intake while also agitating
+    }
+  
+    public enum RollerState {
+      ON,
+      OFF,
+      REVERSE,
+    }
+  
+    
+  
+    private IntakeState currentState = IntakeState.DEFAULT;
+    private RollerState currentRollerState = RollerState.OFF;
+   
+    
+  
+    public void setState(IntakeState targetState) {
+      this.currentState = targetState;
+      switch (targetState) {
+        case DEFAULT -> {
+          moveIntakeWithPosition(retractedRotations);
+        }
+        case EXTENDED -> {
+          if (!limit_switch.get()) {
+            motor.setControl(new VoltageOut(0));
 
-  public void setState(IntakeState targetState) {
-    this.currentState = targetState;
-    switch (targetState) {
-      case DEFAULT -> {
-        moveIntakeWithPosition(retractedRotations);
-      }
-      case EXTENDED -> {
-        moveIntakeWithPosition(extendedRotations);
+            if(!hasMotorBeenPosResetThisCycle){
+              motor.setPosition(extendedRotations);
+              hasMotorBeenPosResetThisCycle = true;
+            }
+          } else {
+          motor.setControl(new VoltageOut(-7));
+        }
+
         setRollerState(RollerState.OFF);
       }
       case CLOSE_AGITATION_IN -> {
@@ -141,7 +153,15 @@ public class IntakeSubsystem extends SubsystemBase {
         
       }
       case INTAKING -> {
-        moveIntakeWithPosition(extendedRotations);
+        if (!limit_switch.get()) {
+            motor.setControl(new VoltageOut(0));
+            if(!hasMotorBeenPosResetThisCycle){
+              motor.setPosition(extendedRotations);
+              hasMotorBeenPosResetThisCycle = true;
+            }
+          } else {
+          motor.setControl(new VoltageOut(-7));
+        }
         setRollerState(RollerState.ON);
       }
       case AGITATE_IN -> {
@@ -366,6 +386,7 @@ public class IntakeSubsystem extends SubsystemBase {
       rollerMotorFollower.setControl(new Follower(rollerMotor.getDeviceID(), MotorAlignmentValue.Opposed));
       limit_switch_r = new DigitalInput(RobotMap.IntakeSubsystemConstants.kLimit_switch_rID);
       limit_switch_l = new DigitalInput(RobotMap.IntakeSubsystemConstants.kLimit_switch_lID);
+      limit_switch = new DigitalInput(RobotMap.IntakeSubsystemConstants.klimit_switchID);
 
       var rollerConfig = new TalonFXConfiguration();
     rollerConfig.CurrentLimits.StatorCurrentLimit = 55.0;
@@ -548,6 +569,31 @@ public class IntakeSubsystem extends SubsystemBase {
 
         }
           break;
+
+      case INTAKING:
+        if (!limit_switch.get()) {
+            motor.setControl(new VoltageOut(0));
+            if(!hasMotorBeenPosResetThisCycle){
+              motor.setPosition(extendedRotations);
+              hasMotorBeenPosResetThisCycle = true;
+            }
+          } else {
+          motor.setControl(new VoltageOut(7));
+           hasMotorBeenPosResetThisCycle = false;
+        }
+      break;
+      case EXTENDED:
+        if (!limit_switch.get()) {
+            motor.setControl(new VoltageOut(0));
+            if(!hasMotorBeenPosResetThisCycle){
+              motor.setPosition(extendedRotations);
+              hasMotorBeenPosResetThisCycle = true;
+            }
+          } else {
+          motor.setControl(new VoltageOut(7));
+           hasMotorBeenPosResetThisCycle = false;
+        }
+      break;
       }
 
 
@@ -567,7 +613,8 @@ public class IntakeSubsystem extends SubsystemBase {
 
     boolean fuelDetected = LimelightHelpers.getTV("limelight-one");
 
-    Logger.recordOutput("Robot/Intake/Extended", currentState != IntakeState.DEFAULT);
+    Logger.recordOutput("Robot/Intake/CurrentState", currentState.toString());
+    Logger.recordOutput("Robot/Intake/LimitSwitch", !limit_switch.get());
     Logger.recordOutput("Robot/Intake/RollerState", currentRollerState.toString());
     Logger.recordOutput("Robot/Intake/FuelDetected", fuelDetected);
     Logger.recordOutput("Robot/Limelights/limelight-one/TV", fuelDetected);
