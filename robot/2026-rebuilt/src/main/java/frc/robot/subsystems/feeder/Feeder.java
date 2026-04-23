@@ -67,10 +67,6 @@ public class Feeder extends SubsystemBase {
   private final SysIdRoutine m_feederSysId;
   //Timer to switch between forward and reverse during indexing
   private Timer washingMachineTimer = new Timer();
-  private final ShuffleboardTab pitTab;
-  private final GenericEntry feederConnectedEntry;
-  private final GenericEntry feederPoweredEntry;
-  private final ShuffleboardLayout feederLayout;
 
     public Feeder() {
     feederMotor = new TalonFX(FeederConstants.kFeederKickerMotorId);
@@ -114,16 +110,10 @@ public class Feeder extends SubsystemBase {
             null,
             this // subsystem for command requirements
         ));
-        pitTab = Shuffleboard.getTab("Pit Testing");
-        feederLayout = pitTab.getLayout("feeder Health", BuiltInLayouts.kList).withSize(2, 1).withPosition(4, 2);
-        feederConnectedEntry = feederLayout.add("feeder Motor is Connected", false).getEntry();
-        feederPoweredEntry = feederLayout.add("feeder Motor is Powered", false).getEntry();
   }
 
   @Override
   public void periodic() {
-    feederConnectedEntry.setBoolean(feederMotor.isConnected());
-  feederPoweredEntry.setBoolean(feederMotor.getSupplyVoltage().getValueAsDouble() > RobotMap.PitConstants.kPoweredThresholdVolts);
 
     Logger.recordOutput("Robot/Shooter/FeederOn", currentState == feeder_state.RUN);
     Logger.recordOutput("Robot/Shooter/FeederState", currentState.toString());
@@ -160,6 +150,10 @@ public class Feeder extends SubsystemBase {
   }
 
   // subsystem getters
+  public TalonFX getFeederMotor(){
+    return feederMotor;
+  }
+
   public Angle getPosition() {
     return feederMotor.getPosition().getValue();
   }
