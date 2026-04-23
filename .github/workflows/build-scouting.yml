@@ -12,7 +12,6 @@ on:
       scan_notes:
         description: "What's new in Scout Ops Scan (blank = no changes)"
         required: false
-  push:
 jobs:
   build:
     name: Build & Release APKs
