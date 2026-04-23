@@ -127,6 +127,12 @@ public final class RobotMap {
     }
 
     public static class ShooterConstants {
+        /** Hood motor forward soft limit in rotor rotations — the maximum travel position. */
+        public static final double HOOD_FORWARD_SOFT_LIMIT_ROT = 30.0;
+        /** Physical hood angle in degrees when the motor is at 0 rotor rotations (fully retracted). */
+        public static final double HOOD_MIN_ANGLE_DEG = 35.5;
+        /** Physical hood angle in degrees when the motor is at HOOD_FORWARD_SOFT_LIMIT_ROT (fully extended). */
+        public static final double HOOD_MAX_ANGLE_DEG = 67.4;
         public static final int ShooterRightTop = 53;
         public static final int ShooterRightBottom = 52;
         public static final int ShooterBottomLeft = 51;
@@ -222,18 +228,19 @@ public final class RobotMap {
 
          
 
-        public static final InterpolatingDoubleTreeMap kFlightTimeMap =
-        InterpolatingDoubleTreeMap.ofEntries(
-            Map.entry(1.44, (8.2-7.21)),
-            Map.entry(2.11, (2.2-1.25)),
-            Map.entry(2.24, (19.75-18.79)),
-            Map.entry(2.96, (18.91-17.84)),
-            // Map.entry(3.39, (4.15-3.34)),
-            Map.entry(4.07, (7.01-5.69)),
-            Map.entry(4.6, (13.03-11.59)),
-            Map.entry(5.23, (1.42-0.07)),
-            Map.entry(7.6, 1.43)
-        );
+        // Dead code — ShootOnTheMove now uses a polynomial formula instead of this lookup table.
+        // public static final InterpolatingDoubleTreeMap kFlightTimeMap =
+        // InterpolatingDoubleTreeMap.ofEntries(
+        //     Map.entry(1.44, (8.2-7.21)),
+        //     Map.entry(2.11, (2.2-1.25)),
+        //     Map.entry(2.24, (19.75-18.79)),
+        //     Map.entry(2.96, (18.91-17.84)),
+        //     // Map.entry(3.39, (4.15-3.34)), // weird outlier, ignoring
+        //     Map.entry(4.07, (7.01-5.69)),
+        //     Map.entry(4.6, (13.03-11.59)),
+        //     Map.entry(5.23, (1.42-0.07)),
+        //     Map.entry(7.6, 1.43)
+        // );
 
         
     }

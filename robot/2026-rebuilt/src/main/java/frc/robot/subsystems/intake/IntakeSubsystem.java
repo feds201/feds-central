@@ -3,7 +3,6 @@ import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.fasterxml.jackson.databind.ser.std.StdKeySerializers.Default;
 
 import frc.robot.commands.intake.AgitateWhileHeldTimeCommand;
 import frc.robot.commands.intake.AgitateWhileHeldRotationsCommand;
@@ -11,7 +10,6 @@ import static edu.wpi.first.units.Units.Rotations;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
 
-import java.io.ObjectInputFilter.Config;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.List;
@@ -24,20 +22,7 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import frc.robot.RobotMap;
 import frc.robot.RobotMap.IntakeSubsystemConstants;
 import frc.robot.subsystems.led.LedsSubsystem;
-import frc.robot.subsystems.shooter.ShooterWheels.shooter_state;
-import frc.robot.utils.LimelightHelpers;
-import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.wpilibj.simulation.DCMotorSim;
-import edu.wpi.first.wpilibj.simulation.DIOSim;
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj.util.Color8Bit;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -58,11 +43,11 @@ public class IntakeSubsystem extends SubsystemBase {
   private final DigitalInput limit_switch_l;
   private final SysIdRoutine sysID;
   private final LedsSubsystem leds = LedsSubsystem.getInstance();
-  private final double extendedRotations = 18.0; //TUNE on new intake
-  private final double retractedRotations = 0.39;
-  private final double closeAgitationRotations = 9.0; // about halfway from bumper to extended, used for agitating the close half of the hopper
-  private final double farAgitationRotations = 13.5; // about three-quarters from bumper to extended, used for agitating the far half of the hopper
-  public final double burstAgitation = extendedRotations / 2.0;
+  public static final double extendedRotations = 18.0; //TUNE on new intake
+  private static final double retractedRotations = 0.39;
+  private static final double closeAgitationRotations = 9.0; // about halfway from bumper to extended, used for agitating the close half of the hopper
+  private static final double farAgitationRotations = 13.5; // about three-quarters from bumper to extended, used for agitating the far half of the hopper
+  public static final double burstAgitation = extendedRotations / 2.0;
   // Desired motion timing: target to complete extend/retract in under 1s
   private static final double MOVE_TARGET_SECONDS = .45;
   // Aggressive acceleration multiplier requested (20x faster than default)
@@ -74,18 +59,6 @@ public class IntakeSubsystem extends SubsystemBase {
   // MotionMagic helper (create once and reuse)
   private final MotionMagicVoltage positionOut = new MotionMagicVoltage(Rotations.of(0));
 
-
-  // Simulation + Visualization values (only initialized when running in sim, can't be final)
-  private DCMotorSim motorSim;
-  private DCMotorSim rollerMotorSim;
-  private DIOSim limitSwitchRSim;
-  private DIOSim limitSwitchLSim;
-  private Mechanism2d intakeMech2d;
-  private MechanismRoot2d intakeMechRoot;
-  private MechanismLigament2d intakeLigament;
-  private Mechanism2d rollerMech2d;
-  private MechanismRoot2d rollerMechRoot;
-  private MechanismLigament2d rollerLigament;
 
   public enum IntakeState {
     DEFAULT, //Retracted, assumed to be starting state
@@ -122,6 +95,7 @@ public class IntakeSubsystem extends SubsystemBase {
   
 
   public void setState(IntakeState targetState) {
+    Logger.recordOutput("Robot/Intake/StateTransition", targetState.toString());
     this.currentState = targetState;
     switch (targetState) {
       case DEFAULT -> {
@@ -133,7 +107,6 @@ public class IntakeSubsystem extends SubsystemBase {
       }
       case CLOSE_AGITATION_IN -> {
         moveIntakeWithPosition(0.0);
-        
       }
       case INTAKING -> {
         moveIntakeWithPosition(extendedRotations);
@@ -153,6 +126,9 @@ public class IntakeSubsystem extends SubsystemBase {
       }
       case FAR_AGITATION_OUT -> {
         moveIntakeWithPosition(extendedRotations);
+      }
+      case DITHERIN_AGITATION, DITHEROUT_AGITATION -> {
+        // No position command — dither uses duty-cycle motor.set() in periodic
       }
     }
 
@@ -406,36 +382,8 @@ public class IntakeSubsystem extends SubsystemBase {
   
   
   
-      if (RobotBase.isSimulation()) {
-        initSimulation();
-      }
     }
   
-    private void initSimulation() {
-      var intakePlant = LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60(1), 0.004, 100.0);
-      motorSim = new DCMotorSim(intakePlant, DCMotor.getKrakenX60(1));
-      var rollerPlant = LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60(1), 0.001, 1.0);
-      rollerMotorSim = new DCMotorSim(rollerPlant, DCMotor.getKrakenX60(1));
-      limitSwitchRSim = new DIOSim(limit_switch_r);
-      limitSwitchLSim = new DIOSim(limit_switch_l);
-  
-      // Default limit switch state (True = Not Pressed for most switches)
-      limitSwitchRSim.setValue(true);
-      limitSwitchLSim.setValue(true);
-  
-    intakeMech2d = new Mechanism2d(3, 3);
-    intakeMechRoot = intakeMech2d.getRoot("IntakeRoot", 1.5, 1.5);
-    intakeLigament = intakeMechRoot.append(
-      new MechanismLigament2d("Intake", 1, 90, 6, new Color8Bit(Color.kOrange)));
-  
-    rollerMech2d = new Mechanism2d(3, 3);
-    rollerMechRoot = rollerMech2d.getRoot("RollerRoot", 1.5, 1.5);
-    rollerLigament = rollerMechRoot.append(
-      new MechanismLigament2d("Roller", 1, 0, 6, new Color8Bit(Color.kBlue)));
-    }
-    
-  
-
   @Override
   public void periodic() {
 
@@ -443,7 +391,7 @@ public class IntakeSubsystem extends SubsystemBase {
     switch (currentState) {
       case AGITATE_IN:
        if(! timer.isRunning()){
-          timer.start();  
+          timer.start();
        }
        if(timer.hasElapsed(IntakeSubsystemConstants.agitateCycleConstant)){
         setState(IntakeState.AGITATE_OUT);
@@ -454,7 +402,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
         case AGITATE_OUT:
            if(! timer.isRunning()){
-          timer.start();  
+          timer.start();
        }
         if(timer.hasElapsed(IntakeSubsystemConstants.agitateCycleConstant)){
         setState(IntakeState.AGITATE_IN);
@@ -465,7 +413,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
       case FAR_AGITATION_IN:
        if(! timer.isRunning()){
-          timer.start();  
+          timer.start();
        }
        if(timer.hasElapsed(.2)){
         setState(IntakeState.FAR_AGITATION_OUT);
@@ -476,7 +424,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
         case FAR_AGITATION_OUT:
            if(! timer.isRunning()){
-          timer.start();  
+          timer.start();
        }
         if(timer.hasElapsed(.2)){
         setState(IntakeState.FAR_AGITATION_IN);
@@ -486,7 +434,7 @@ public class IntakeSubsystem extends SubsystemBase {
       break;
 
 
-        case CLOSE_AGITATION_OUT: 
+        case CLOSE_AGITATION_OUT:
           if(!timer.isRunning()){
             timer.start();
           }
@@ -497,7 +445,7 @@ public class IntakeSubsystem extends SubsystemBase {
           }
           break;
 
-          case CLOSE_AGITATION_IN: 
+          case CLOSE_AGITATION_IN:
           if(!timer.isRunning()){
             timer.start();
           }
@@ -513,7 +461,7 @@ public class IntakeSubsystem extends SubsystemBase {
         if(!timer.isRunning()){
           timer.start();
       }
-        motor.set(-0.3); 
+        motor.set(-0.3);
 
         if(timer.hasElapsed(0.3)){
             setState(IntakeState.DITHEROUT_AGITATION);
@@ -526,15 +474,20 @@ public class IntakeSubsystem extends SubsystemBase {
         if(!timer.isRunning()){
           timer.start();
       }
-        motor.set(0.3); 
+        motor.set(0.3);
 
         if(timer.hasElapsed(0.1)){
             setState(IntakeState.DITHERIN_AGITATION); // small retract from extended
             timer.stop();
             timer.reset();
-         
-
         }
+          break;
+
+        case DEFAULT, EXTENDED, INTAKING:
+          if(timer.isRunning()){
+            timer.stop();
+            timer.reset();
+          }
           break;
       }
 
@@ -553,67 +506,25 @@ public class IntakeSubsystem extends SubsystemBase {
         break;
     }
 
-    boolean fuelDetected = LimelightHelpers.getTV("limelight-one");
-
+    Logger.recordOutput("Robot/Intake/State", currentState.toString());
     Logger.recordOutput("Robot/Intake/Extended", currentState != IntakeState.DEFAULT);
-    Logger.recordOutput("Robot/Intake/RollerState", currentRollerState.toString());
-    Logger.recordOutput("Robot/Intake/FuelDetected", fuelDetected);
-    Logger.recordOutput("Robot/Limelights/limelight-one/TV", fuelDetected);
-    Logger.recordOutput("Robot/Limelights/limelight-one/TX", LimelightHelpers.getTX("limelight-one"));
-    Logger.recordOutput("Robot/Limelights/limelight-one/TY", LimelightHelpers.getTY("limelight-one"));
-    Logger.recordOutput("Robot/Limelights/limelight-one/TA", LimelightHelpers.getTA("limelight-one"));
+    Logger.recordOutput("Robot/Intake/ExtensionPct", Math.min(100.0, Math.max(0.0, motor.getPosition().getValue().in(Units.Rotations) / extendedRotations * 100.0)));
+    Logger.recordOutput("Robot/IntakeRoller/State", currentRollerState.toString());
+
+    Logger.recordOutput("Robot/Intake/PositionRotations", motor.getPosition().getValueAsDouble());
+    Logger.recordOutput("Robot/Intake/TargetPositionRotations", motor.getClosedLoopReference().getValueAsDouble());
+    Logger.recordOutput("Robot/Intake/AppliedVolts", motor.getMotorVoltage().getValueAsDouble());
+    Logger.recordOutput("Robot/Intake/StatorAmps", motor.getStatorCurrent().getValueAsDouble());
+
+    Logger.recordOutput("Robot/IntakeRoller/VelocityRPS", rollerMotor.getVelocity().getValueAsDouble());
+    Logger.recordOutput("Robot/IntakeRoller/AppliedVolts", rollerMotor.getMotorVoltage().getValueAsDouble());
+    Logger.recordOutput("Robot/IntakeRoller/StatorAmps", rollerMotor.getStatorCurrent().getValueAsDouble());
     Logger.recordOutput("Robot/Intake/Intake Stator Current", motor.getStatorCurrent().getValue());
     super.periodic();
   }
   
   
   
-
-  @Override
-  public void simulationPeriodic() {
-    // 1. Physics: Apply motor voltage to simulation
-    motorSim.setInput(motor.get() * 12.0);
-    motorSim.update(0.02);
-
-    // 2. Update CTRE device from physics
-    motor.getSimState().setRawRotorPosition(motorSim.getAngularPosition().in(Units.Rotations));
-    motor.getSimState().setRotorVelocity(motorSim.getAngularVelocity().in(Units.RotationsPerSecond));
-
-    // 3. Visualization
-    // Assume 0 is stowed (90 degrees up) and rotating moves it down
-    double angleDegrees = motorSim.getAngularPosition().in(Units.Degrees);
-    intakeLigament.setAngle(90 - angleDegrees);
-
-    // 4. Limit Switch Simulation
-    // Logic extracted from extendIntake/retractIntake usage:
-    // limit_switch_l seems to be the "Extended" limit.
-    // When > 45 degrees, we press limit_switch_l (make it false)
-    if (angleDegrees > 45) {
-      limitSwitchLSim.setValue(false); // Pressing switch
-    } else {
-      limitSwitchLSim.setValue(true);  // Released
-    }
-    
-    // Assume limit_switch_r is "Retracted" (stowed) limit
-    if (angleDegrees < 0) {
-      limitSwitchRSim.setValue(false);
-    } else {
-      limitSwitchRSim.setValue(true);
-    }
-
-    if (rollerMotorSim != null) {
-      rollerMotorSim.setInput(rollerMotor.get() * 12.0);
-      rollerMotorSim.update(0.02);
-      rollerMotor.getSimState().setRawRotorPosition(rollerMotorSim.getAngularPosition().in(Units.Rotations));
-      rollerMotor.getSimState().setRotorVelocity(rollerMotorSim.getAngularVelocity().in(Units.RotationsPerSecond));
-      rollerLigament.setAngle(rollerMotorSim.getAngularPosition().in(Units.Degrees));
-    }
-
-    SmartDashboard.putData(rollerMech2d);
-    SmartDashboard.putData(intakeMech2d);
-  }
-
-
 
   public void stopmotor() {
     motor.stopMotor();
@@ -636,5 +547,60 @@ public class IntakeSubsystem extends SubsystemBase {
     public TalonFX getRollerMotor() {
       return rollerMotor;
     }
+
+  // ////////////////////////////////////////////////////////////////////////
+  // SIMULATION SUPPORT — sim-only methods below this line
+  // ////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Returns the TalonFX sim state for the deployment motor.
+   * Used by RebuiltSimManager to drive the deploy DCMotorSim.
+   * Sim use only.
+   */
+  public com.ctre.phoenix6.sim.TalonFXSimState getDeployMotorSimState() {
+      return motor.getSimState();
+  }
+
+  /**
+   * Returns the TalonFX sim state for the roller motor.
+   * Used by RebuiltSimManager to drive the roller DCMotorSim.
+   * Sim use only.
+   */
+  public com.ctre.phoenix6.sim.TalonFXSimState getRollerMotorSimState() {
+      return rollerMotor.getSimState();
+  }
+
+  /**
+   * Returns the deployment motor rotor position in rotations.
+   * Used by RebuiltSimManager to determine whether the intake is extended far enough
+   * to activate the intake zone (compared against IntakeSubsystem.extendedRotations).
+   * Sim use only.
+   */
+  public double getSimDeployMotorPositionRotations() {
+      return motor.getPosition().getValue().in(Units.Rotations);
+  }
+
+  /**
+   * Returns the roller motor velocity in rotations per second.
+   * Used by RebuiltSimManager to determine whether the roller is spinning fast enough
+   * to count as actively intaking (compared against INTAKE_ROLLER_VELOCITY_THRESHOLD_RPS).
+   * Sim use only.
+   */
+  public double getSimRollerMotorVelocityRPS() {
+      return rollerMotor.getVelocity().getValue().in(Units.RotationsPerSecond);
+  }
+
+  /**
+   * Returns the roller motor rotor position in rotations.
+   * Used by RebuiltSimManager to drive the roller wheel animation in AdvantageScope.
+   * Sim use only.
+   */
+  public double getSimRollerMotorPositionRotations() {
+      return rollerMotor.getPosition().getValue().in(Units.Rotations);
+  }
+
+  // ////////////////////////////////////////////////////////////////////////
+  // END SIMULATION SUPPORT
+  // ////////////////////////////////////////////////////////////////////////
 }
 

@@ -2,6 +2,7 @@ package frc.robot.commands.swerve;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.controller.PIDController;
@@ -11,10 +12,16 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import org.littletonrobotics.junction.Logger;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import frc.robot.utils.LimelightHelpers;
 
 public class BallTracking extends Command {
+  // True while any BallTracking command is scheduled. Read by the sim to gate
+  // vision work (the fuel-detection frustum test is only useful when tracking).
+  private static final AtomicBoolean ACTIVE = new AtomicBoolean(false);
+  public static boolean isActive() { return ACTIVE.get(); }
+
   private CommandSwerveDrivetrain dt;
   private SwerveRequest.RobotCentric driveNormal;
   private double maxVelocity;
@@ -95,11 +102,15 @@ public class BallTracking extends Command {
   public void initialize() {
     hubRotPID.setSetpoint(0.0);
     state = BallTrackingState.ON;
+    ACTIVE.set(true);
+    Logger.recordOutput("Robot/Intake/BallFinder/Active", true);
   }
 
   @Override
   public void execute() {
     hasTarget = LimelightHelpers.getTV("limelight-one");
+    Logger.recordOutput("Robot/Intake/BallFinder/HasTarget", hasTarget);
+    Logger.recordOutput("Robot/Intake/BallFinder/State", state.toString());
 
     if (state == BallTrackingState.OFF) {
       dt.setControl(driveNormal
@@ -107,6 +118,8 @@ public class BallTracking extends Command {
           .withVelocityY(0)
           .withRotationalRate(0)
       );
+      Logger.recordOutput("Robot/Intake/BallFinder/CommandedVx", 0.0);
+      Logger.recordOutput("Robot/Intake/BallFinder/CommandedRotRate", 0.0);
       return;
     }
 
@@ -126,12 +139,15 @@ public class BallTracking extends Command {
         double tx = LimelightHelpers.getTX("limelight-one");
         double ty = LimelightHelpers.getTY("limelight-one");
 
+        Logger.recordOutput("Robot/Intake/BallFinder/InDeadband", Math.abs(tx) < txDeadband);
         if (Math.abs(tx) < txDeadband) {
           tx = 0.0;
         }
+        Logger.recordOutput("Robot/Intake/BallFinder/HubRotPIDError", tx);
 
         double rotationOutput = -hubRotPID.calculate(tx);
         rotationOutput = Math.max(-2.0, Math.min(2.0, rotationOutput));
+        Logger.recordOutput("Robot/Intake/BallFinder/HubRotPIDOutput", rotationOutput);
 
         // TODO: forwardVelocity is hardcoded to a backward crawl. The commented
         //   formula was ty-scaled. Decide which, and drop the dead maxVelocity check below.
@@ -147,6 +163,8 @@ public class BallTracking extends Command {
               .withVelocityY(0)
               .withRotationalRate(rotationOutput)
           );
+          Logger.recordOutput("Robot/Intake/BallFinder/CommandedVx", forwardVelocity);
+          Logger.recordOutput("Robot/Intake/BallFinder/CommandedRotRate", rotationOutput);
         }
         // TODO: if ty <= tyCutOff and we still have a target, we issue no drive
         //   command and the robot coasts on the last one. Add an explicit stop.
@@ -156,6 +174,8 @@ public class BallTracking extends Command {
             .withVelocityY(0)
             .withRotationalRate(rotationalRate)
         );
+        Logger.recordOutput("Robot/Intake/BallFinder/CommandedVx", 0.0);
+        Logger.recordOutput("Robot/Intake/BallFinder/CommandedRotRate", rotationalRate);
       }
     }
 
@@ -224,6 +244,8 @@ public class BallTracking extends Command {
   @Override
   public void end(boolean interrupted) {
     state = BallTrackingState.OFF;
+    ACTIVE.set(false);
+    Logger.recordOutput("Robot/Intake/BallFinder/Active", false);
   }
 
   // Returns true when the command should end.

@@ -32,7 +32,7 @@
             "height": 128.0,
             "type": "Large Text Display",
             "properties": {
-              "topic": "/AdvantageKit/RealOutputs/Robot/Intake/RollerState",
+              "topic": "/AdvantageKit/RealOutputs/Robot/IntakeRoller/State",
               "period": 0.06,
               "data_type": "string"
             }
