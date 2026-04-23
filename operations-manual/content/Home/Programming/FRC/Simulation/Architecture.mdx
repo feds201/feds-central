@@ -299,20 +299,6 @@ public com.ctre.phoenix6.sim.TalonFXSimState getDeployMotorSimState() {
 
 See the motor physics constants (`SHOOTER_MOI`, `HOOD_GEAR_RATIO`, etc.) at the top of `RebuiltSimManager.java` for the current tuning values.
 
-### Tuned Physics Constants (2026)
-
-After real-robot characterization passes, several constants were tuned away from placeholders:
-
-| Constant | Value | Notes |
-|----------|-------|-------|
-| `SHOOTER_GEAR_RATIO` | `24/36` | Overdrive (motor spins faster than flywheel). |
-| `HOOD_GEAR_RATIO` | derived | Computed from the motor soft-limit geometry (`HOOD_FORWARD_SOFT_LIMIT_ROT` across `HOOD_MIN_ANGLE_DEG`→`HOOD_MAX_ANGLE_DEG`) rather than a hand-picked number. |
-| `INTAKE_DEPLOY_MOI` | `0.01` (was `0.0005`) | Raised to damp out intake deploy oscillation. |
-| `SLIP_FACTOR` | `0.9` (was `0.8`) | Shooter wheel → ball velocity transfer. |
-| `BALL_TRANSLATIONAL_FRACTION` | `0.55` (was `0.4`) | Fraction of wheel tangential speed imparted to the ball's translation. |
-| `MAGNUS_COEFFICIENT` | `0.001` | Tuned for realistic ball flight curvature. |
-| `BALL_ANGLE_OFFSET_DEG` | `15` | Extra launch pitch — the drum shooter exits steeper than the commanded hood angle. |
-
 ---
 
 ## Component Animation

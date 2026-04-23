@@ -35,6 +35,7 @@ import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import frc.robot.RobotMap;
+import frc.robot.commands.swerve.BallTracking;
 import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.shooter.ShooterHood;
@@ -124,11 +125,35 @@ public class RebuiltSimManager {
     /** Put game pieces to sleep beyond this distance from all wake zones. */
     private static final double PROXIMITY_SLEEP_RADIUS = 3.0;
 
-    // TODO(ai-idea)?: move POSITION_CORRECTION_KP to sim-core? it's a generic ODE4J-follows-MapleSim tuning default.
-    /** ODE4J→MapleSim position correction gain (1cm error → 0.5 m/s correction). */
-    private static final double POSITION_CORRECTION_KP = 50.0;
-
-    // ── Sim hood parameters ────────────────────────────────────────────────
+    // ── Hood angle conventions ─────────────────────────────────────────────
+    //
+    // There are TWO separate hood-angle fudge factors. Both exist because the
+    // "hood angle" reported by hoodArmSim (which tracks the robot's hood motor
+    // position) does not directly equal either the rendered model's angle or
+    // the ball's exit angle. They are independent — changing one doesn't
+    // affect the other.
+    //
+    //   HOOD_VISUAL_OFFSET_RAD  — subtracted from the hood angle when posing
+    //       the 3D hood component. Pure visual; exists because the CAD model's
+    //       zero orientation doesn't match the mechanism's zero. Does NOT
+    //       affect ball physics.
+    //
+    //   BALL_ANGLE_OFFSET_DEG   — added to the hood angle (AFTER the convention
+    //       flip below) when computing the ball's launch direction. This
+    //       captures the fact that the ball doesn't exit tangent to the hood
+    //       surface — it gets squeezed between wheel and hood and pops out
+    //       along a slightly steeper line. Pure physics; does NOT affect the
+    //       rendered hood.
+    //
+    // Hood convention flip (in the ShooterSim hoodAngleSupplier lambda):
+    //   The robot's mechanism is built such that a HIGHER physical hood angle
+    //   means a FLATTER ball launch (hood raises out of the way, ball passes
+    //   more forward). But LaunchParameters expects 0 = horizontal, π/2 =
+    //   vertical. So we pass (π/2 − hood_physical) into the launch math.
+    //
+    //   If you change the mechanism orientation, flip this in RebuiltSimManager
+    //   where the supplier is defined — not in LaunchParameters (which is
+    //   generic sim-core code).
 
     /** Angle changes by this much to visually match ball path */
     private static final double HOOD_VISUAL_OFFSET_RAD = Math.toRadians(70);
@@ -167,17 +192,11 @@ public class RebuiltSimManager {
     private static final double SHOOTER_WHEEL_RADIUS_M = 0.05;
 
     // TODO(ai-idea)?: move these flywheel-ball physics defaults into sim-core? applies to any flywheel shooter, not just 2026.
-    /** Wheel-to-ball friction efficiency — accounts for slip at contact. */
-    private static final double SLIP_FACTOR = 0.9;
+    /** How much to reduce force put into ball translation based on slipping of shooter wheels AND energy put into backspinning the ball */
+    private static final double SHOOTER_EFFICIENCY_FACTOR = 0.49;
 
-    /** Fraction of contact energy that goes to translation vs backspin. */
-    private static final double BALL_TRANSLATIONAL_FRACTION = 0.55;
-
-    /** Additional pitch (deg) added to the hood angle when computing ball launch angle. */
-    private static final double BALL_ANGLE_OFFSET_DEG = 15.0;
-
-    /** Magnus effect coefficient. F = coeff * cross(angularVel, linearVel). */
-    private static final double MAGNUS_COEFFICIENT = 0.001;
+    /** Additional pitch (deg) added to the hood angle when computing ball launch angle (makes balls launch more vertical). */
+    private static final double BALL_ANGLE_OFFSET_DEG = 20.0;
 
     /** Hood gear ratio (motor rot / mechanism rot). Derived from soft limit and angle range. */
     private static final double HOOD_GEAR_RATIO = 30.0 * 2 * Math.PI / Math.toRadians(67.4 - 35.5);
@@ -377,7 +396,7 @@ public class RebuiltSimManager {
         // --- Intake Zone ---
         Logger.recordOutput("Sim/State", "Loading intake");
         intakeZone = new IntakeZone(INTAKE_X_MIN, INTAKE_X_MAX, INTAKE_Y_MIN, INTAKE_Y_MAX, INTAKE_Z_MAX,
-                () -> intakeSubsystem.getSimDeployMotorPositionRotations() > IntakeSubsystem.extendedRotations
+                () -> intakeSubsystem.getSimDeployMotorPositionRotations() > IntakeSubsystem.extendedRotations - 0.5
                                 && intakeSubsystem.getSimRollerMotorVelocityRPS() > INTAKE_ROLLER_VELOCITY_THRESHOLD_RPS,
                 () -> chassis.getPose2d());
 
@@ -447,22 +466,19 @@ public class RebuiltSimManager {
                 gamePieceManager,
                 RebuiltGamePieces.FUEL,
                 () -> chassis.getPose2d(),
-                () -> hoodArmSim.getAngleRads() + Math.toRadians(BALL_ANGLE_OFFSET_DEG),
-                () -> shooterMotorSim.getAngularVelocityRadPerSec() * SHOOTER_WHEEL_RADIUS_M * SLIP_FACTOR * BALL_TRANSLATIONAL_FRACTION,
+                // Hood convention: higher hood physical angle = FLATTER ball launch (hood deflector raises out of
+                // the way → ball passes more forward). LaunchParameters expects 0 = horizontal, π/2 = vertical,
+                // so invert the hood angle via (π/2 − hood). Offset is then added to the inverted angle.
+                () -> (Math.PI / 2.0) - hoodArmSim.getAngleRads() + Math.toRadians(BALL_ANGLE_OFFSET_DEG),
+                () -> shooterMotorSim.getAngularVelocityRadPerSec() * SHOOTER_WHEEL_RADIUS_M * SHOOTER_EFFICIENCY_FACTOR,
                 () -> shooterMotorSim.getAngularVelocityRPS() > SHOOTER_VELOCITY_THRESHOLD_RPS
                         && feederMotorSim.getAngularVelocityRPS() > FEEDER_VELOCITY_THRESHOLD_RPS,
                 () -> chassis.getBody().getLinearVel().get0(),
                 () -> chassis.getBody().getLinearVel().get1(),
-                () -> {
-                    double vContact = shooterMotorSim.getAngularVelocityRadPerSec() * SHOOTER_WHEEL_RADIUS_M * SLIP_FACTOR;
-                    return vContact * (1.0 - BALL_TRANSLATIONAL_FRACTION) / RebuiltGamePieces.FUEL.getRadius();
-                },
                 LAUNCH_HEIGHT,
                 MUZZLE_FORWARD_OFFSET,
                 BARREL_LATERAL_OFFSET,
                 SHOTS_PER_SECOND);
-
-        gamePieceManager.setMagnusCoefficient(MAGNUS_COEFFICIENT);
 
         // --- Scoring & Telemetry ---
         Logger.recordOutput("Sim/State", "Loading scoring");
@@ -483,12 +499,11 @@ public class RebuiltSimManager {
                 new CameraConfig("limelight-five", LimelightType.LL3, ll3Mount));
         LimelightSim fuelCam = new LimelightSim(
                 new CameraConfig(FUEL_LL_NAME, LimelightType.LL3, FUEL_LL_MOUNT),
-                physicsWorld,
-                chassis.getBody(),
                 FUEL_LL_NEAR,
                 FUEL_LL_FAR,
                 RebuiltGamePieces.FUEL.getRadius(),
-                FUEL_LL_FPS);
+                FUEL_LL_FPS,
+                BallTracking::isActive);
         visionSimManager = new VisionSimManager(ll4Cam, ll3Cam, fuelCam);
 
         // --- Cache gyro sim state ---
@@ -499,77 +514,72 @@ public class RebuiltSimManager {
     /**
      * Run one simulation tick. Called from {@code Robot.simulationPeriodic()}.
      *
-     * <p>Sequence: MapleSim steps drivetrain → read pose/speeds → convert to world frame
-     * → set ODE4J chassis velocity → proximity activation → intake check → physics step
-     * → gyro sync → piece state update → scoring check → shooter update → telemetry.
+     * <p>Sequence: MapleSim steps drivetrain → read pose/speeds → hard-sync planar state
+     * into ODE4J → proximity activation → intake check → physics step → gyro sync →
+     * piece state update → scoring check → shooter update → telemetry.
      */
     public void periodic() {
         // TODO(ai-idea)?: extract this periodic() scaffold into a sim-core SimOrchestrator base class? might be reusable year over year.
-        // 1. MapleSim steps the drivetrain (motor physics, tire model, encoder feedback)
+        // MapleSim steps the drivetrain (motor physics, tire model, encoder feedback)
         SimulatedArena.getInstance().simulationPeriodic();
 
-        // 2. Read pose and speeds from MapleSim
+        // Read pose and speeds from MapleSim
         Pose2d pose = mapleSimDrive.getSimulatedDriveTrainPose();
         ChassisSpeeds robotSpeeds = mapleSimDrive.getDriveTrainSimulatedChassisSpeedsRobotRelative();
         lastSimPose = pose;
         lastSimSpeeds = robotSpeeds;
 
-        // 3. Convert robot-relative chassis speeds to world-frame velocities for ODE4J.
-        // MapleSim reports speeds in the robot's local frame (+X = forward, +Y = left).
-        // ODE4J needs world-frame velocities, so we rotate by the robot's heading:
-        //   worldVx = vx*cos(θ) - vy*sin(θ)
-        //   worldVy = vx*sin(θ) + vy*cos(θ)
+        // Hard-sync ODE4J's planar state (X/Y/yaw + their velocities) to MapleSim.
+        // MapleSim owns the 2D planar DOFs authoritatively; ODE4J owns Z/pitch/roll
+        // (bump bounce, ramp tilt) which MapleSim can't represent. setPlanarState
+        // overwrites only the planar half and preserves the vertical half, keeping
+        // the rendered chassis perfectly aligned with MapleSim (and thus the gyro /
+        // robot odometry) while leaving 3D bump physics intact.
+        //
+        // MapleSim reports chassis speeds robot-relative (+X forward, +Y left), so
+        // rotate into the world frame:  worldVx = vx·cosθ − vy·sinθ,  worldVy = vx·sinθ + vy·cosθ
         double yaw = pose.getRotation().getRadians();
         double cos = Math.cos(yaw);
         double sin = Math.sin(yaw);
         double worldVx = robotSpeeds.vxMetersPerSecond * cos - robotSpeeds.vyMetersPerSecond * sin;
         double worldVy = robotSpeeds.vxMetersPerSecond * sin + robotSpeeds.vyMetersPerSecond * cos;
+        chassis.setPlanarState(pose, worldVx, worldVy, robotSpeeds.omegaRadiansPerSecond);
 
-        // 4. Set velocity with position correction to prevent ODE4J drift from MapleSim.
-        // Pure velocity-following drifts over time because ODE4J and MapleSim integrate
-        // independently. Adding a proportional position correction keeps them synced
-        // while still allowing the contact solver to deflect the chassis on ramps
-        // (the correction is a force, not a position override, so the solver can oppose it).
-        double odeX = chassis.getPose2d().getX();
-        double odeY = chassis.getPose2d().getY();
-        double correctedVx = worldVx + POSITION_CORRECTION_KP * (pose.getX() - odeX);
-        double correctedVy = worldVy + POSITION_CORRECTION_KP * (pose.getY() - odeY);
-        chassis.setVelocity(correctedVx, correctedVy, robotSpeeds.omegaRadiansPerSecond, DT);
-
-        // 5. Proximity activation — only wake balls near the robot
+        // Proximity activation — only wake balls near the robot
         gamePieceManager.updateProximity(
                 chassis.getPose2d().getTranslation(),
                 PROXIMITY_WAKE_RADIUS, PROXIMITY_SLEEP_RADIUS);
 
-        // 6. Check intake BEFORE physics step — if we step first, launched balls
+        // Check intake BEFORE physics step — if we step first, launched balls
         // that are still inside the robot's intake zone would get re-consumed
         // on the same tick they were shot. Checking before step ensures only
         // balls that were already in the zone from the previous frame are intaked.
         intakeZone.checkIntake(gamePieceManager, gamePieceManager.getPieces());
 
-        // 6b. Enable/disable game piece sensors for this tick's collision pass
-        visionSimManager.prepareGamePieces();
-
-        // 7. Step physics world — ODE4J integrates position from velocity,
-        // handles ramp/bump contacts (Z changes), game piece collisions
-
+        // Step physics world — ODE4J integrates Z/pitch/roll from gravity and
+        // ramp/bump contacts, and updates game-piece collisions. X/Y/yaw are
+        // re-synced from MapleSim at the top of the next tick.
         physicsWorld.step(DT);
 
-        // 8. Sync gyro from MapleSim pose (not ODE4J)
+        // Sync gyro from MapleSim (MapleSim is authoritative for yaw)
         pigeonSimState.setSupplyVoltage(SimulatedBattery.getBatteryVoltage().in(Volts));
         pigeonSimState.setRawYaw(Math.toDegrees(pose.getRotation().getRadians()));
         pigeonSimState.setAngularVelocityZ(Math.toDegrees(robotSpeeds.omegaRadiansPerSecond));
 
-        // 8b. Write true pose to simulated Limelight NT entries
+        // Write true pose to simulated Limelight NT entries
         visionSimManager.update(pose);
 
-        // 8c. Update game piece detection cameras (reads sensor contacts from step above)
-        visionSimManager.updateGamePieces();
+        // Update game piece detection cameras (pure-Java frustum test,
+        // only runs when the activation gate allows — e.g. BallTracking scheduled)
+        visionSimManager.updateGamePieces(pose,
+                () -> gamePieceManager.getActivePieces().stream()
+                        .map(GamePiece::getPosition3d)
+                        .toList());
 
-        // 9. Update game piece states
+        // Update game piece states
         gamePieceManager.update();
 
-        // 10. Check scoring zones
+        // Check scoring zones
         List<GamePiece> activePieces = gamePieceManager.getActivePieces();
         for (DGeom zone : field.getScoringZones()) {
             Set<DBody> contacts = physicsWorld.getSensorContacts(zone);
@@ -584,7 +594,7 @@ public class RebuiltSimManager {
             }
         }
 
-        // 11. Step mechanism physics sims and write back to CTRE sim states.
+        // Step mechanism physics sims and write back to CTRE sim states.
         //
         // ORDERING NOTE: battery voltage MUST be computed first.
         // DCMotorSim.setInputVoltage() internally clamps to RobotController.getBatteryVoltage(),
@@ -605,7 +615,7 @@ public class RebuiltSimManager {
         intakeDeployMotorSim.update(DT, batteryVoltage);
         intakeRollerMotorSim.update(DT, batteryVoltage);
 
-        // 12. Update shooter (unchanged)
+        // Update shooter (unchanged)
         // ── Debug telemetry ──────────────────────────────────────────────────────
         Logger.recordOutput("Sim/Debug/ShooterVelocityRPS", shooterMotorSim.getAngularVelocityRPS());
         Logger.recordOutput("Sim/Debug/FeederVelocityRPS", feederMotorSim.getAngularVelocityRPS());
@@ -615,7 +625,7 @@ public class RebuiltSimManager {
         Logger.recordOutput("Sim/Debug/IntakeDeployExtendedPct", Math.min(100.0, Math.max(0.0, intakeSubsystem.getSimDeployMotorPositionRotations() / IntakeSubsystem.extendedRotations * 100.0)));
         Logger.recordOutput("Sim/Debug/IntakeRollerVelocityRPS", intakeSubsystem.getSimRollerMotorVelocityRPS());
         Logger.recordOutput("Sim/Debug/IntakeZoneActive",
-            intakeSubsystem.getSimDeployMotorPositionRotations() > IntakeSubsystem.extendedRotations
+            intakeSubsystem.getSimDeployMotorPositionRotations() > IntakeSubsystem.extendedRotations - 0.5
             && intakeSubsystem.getSimRollerMotorVelocityRPS() > INTAKE_ROLLER_VELOCITY_THRESHOLD_RPS);
         Logger.recordOutput("Sim/Debug/ShootingGateOpen",
             shooterMotorSim.getAngularVelocityRPS() > SHOOTER_VELOCITY_THRESHOLD_RPS
@@ -624,7 +634,7 @@ public class RebuiltSimManager {
         Logger.recordOutput("Sim/Debug/FuelHeld", (double) gamePieceManager.getHeldCount());
         shooterSim.update(DT);
 
-        // 13. Publish telemetry to NetworkTables
+        // Publish telemetry to NetworkTables
         publishTelemetry();
     }
 
@@ -697,7 +707,7 @@ public class RebuiltSimManager {
                     new Pose3d(),                                                                                //  0: Intake - Stationary
                     new Pose3d(intakeExtension, new Rotation3d()),                                               //  1: Intake - Hopper
                     new Pose3d(intakeExtension.plus(
-                        new Translation3d(-0.2812, 0, 0.2627)), 
+                        new Translation3d(-0.2812, 0, 0.2627)),
                         new Rotation3d(0, rollerAngle, 0)),                                                      //  2: Intake - Rollers
                     new Pose3d(),                                                                                //  3: Spindexer - Assembly
                     new Pose3d(new Translation3d(0.002, 0.0635, 0.184), new Rotation3d(0, 0, spindexerAngle)),   //  4: Spindexer - Omni 1

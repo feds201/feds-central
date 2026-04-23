@@ -22,7 +22,6 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import frc.robot.RobotMap;
 import frc.robot.RobotMap.IntakeSubsystemConstants;
 import frc.robot.subsystems.led.LedsSubsystem;
-import frc.robot.utils.LimelightHelpers;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
@@ -507,8 +506,6 @@ public class IntakeSubsystem extends SubsystemBase {
         break;
     }
 
-    boolean fuelDetected = LimelightHelpers.getTV("limelight-one");
-
     Logger.recordOutput("Robot/Intake/State", currentState.toString());
     Logger.recordOutput("Robot/Intake/Extended", currentState != IntakeState.DEFAULT);
     Logger.recordOutput("Robot/Intake/ExtensionPct", Math.min(100.0, Math.max(0.0, motor.getPosition().getValue().in(Units.Rotations) / extendedRotations * 100.0)));
@@ -522,11 +519,6 @@ public class IntakeSubsystem extends SubsystemBase {
     Logger.recordOutput("Robot/IntakeRoller/VelocityRPS", rollerMotor.getVelocity().getValueAsDouble());
     Logger.recordOutput("Robot/IntakeRoller/AppliedVolts", rollerMotor.getMotorVoltage().getValueAsDouble());
     Logger.recordOutput("Robot/IntakeRoller/StatorAmps", rollerMotor.getStatorCurrent().getValueAsDouble());
-    Logger.recordOutput("Robot/Intake/FuelDetected", fuelDetected);
-    Logger.recordOutput("Robot/Limelights/limelight-one/TV", fuelDetected);
-    Logger.recordOutput("Robot/Limelights/limelight-one/TX", LimelightHelpers.getTX("limelight-one"));
-    Logger.recordOutput("Robot/Limelights/limelight-one/TY", LimelightHelpers.getTY("limelight-one"));
-    Logger.recordOutput("Robot/Limelights/limelight-one/TA", LimelightHelpers.getTA("limelight-one"));
     Logger.recordOutput("Robot/Intake/Intake Stator Current", motor.getStatorCurrent().getValue());
     super.periodic();
   }

@@ -80,11 +80,15 @@ public class PhysicsWorld {
         world.setAutoDisableSteps(10);
         world.setAutoDisableTime(0.3);
 
-        // Per-step velocity damping — bleeds energy between collisions
-        // so pieces don't bounce/slide forever (rolling friction + air drag analog)
+        // World-default linear damping — acts as a fallback for bodies that don't set
+        // their own. Per-body overrides (GamePiece AIR/GROUND_LINEAR_DAMPING) work correctly.
         world.setLinearDamping(0.05);
-        world.setAngularDamping(0.1);
         world.setLinearDampingThreshold(0.01);
+
+        // Angular damping at the world level was leaking past per-body overrides and
+        // decaying the spin of airborne shots. Chassis has its own stability torque;
+        // grounded balls set their own angular damping. No fallback needed.
+        world.setAngularDamping(0);
         world.setAngularDampingThreshold(0.01);
 
         // Stability parameters
