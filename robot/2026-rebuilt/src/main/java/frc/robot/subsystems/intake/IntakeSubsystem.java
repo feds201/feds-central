@@ -548,6 +548,31 @@ public class IntakeSubsystem extends SubsystemBase {
       return rollerMotor;
     }
 
+    public DigitalInput getLimitSwitchL() {
+      return limit_switch_l;
+    }
+
+    public DigitalInput getLimitSwitchR() {
+      return limit_switch_r;
+    }
+    
+    
+
+    // String hit = "none";
+    // boolean running = true;
+    // while(running){
+    //   if(!limit_switch_l.get() && !limit_switch_r.get()){
+    //     hit = "both";
+    //     break;
+    //   }
+    //   else if(!limit_switch_l.get()){
+    //     hit = "left";
+    //   }
+    //   else if(!limit_switch_r.get()){
+    //     hit = "right";
+    //   }
+    // }
+
   // ////////////////////////////////////////////////////////////////////////
   // SIMULATION SUPPORT — sim-only methods below this line
   // ////////////////////////////////////////////////////////////////////////
