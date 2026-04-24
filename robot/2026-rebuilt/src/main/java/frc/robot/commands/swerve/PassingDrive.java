@@ -28,7 +28,7 @@ import org.littletonrobotics.junction.Logger;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class PassingDrive extends Command {
-  private static final double MAX_SPEED = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+  private static final double MAX_SPEED = 2.5;
   private static final double MAX_ANGULAR_RATE = RotationsPerSecond.of(2).in(RadiansPerSecond);
   private static Translation2d aimLeft = RobotMap.ShooterConstants.passingLeft;
   private static Translation2d aimRight = RobotMap.ShooterConstants.passingRight;
