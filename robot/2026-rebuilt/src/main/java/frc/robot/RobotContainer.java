@@ -138,6 +138,14 @@ public class RobotContainer extends ControllerBindings {
         return drivetrain;
     }
 
+    public LimelightWrapper getLl3() {
+        return ll3;
+    }
+
+    public LimelightWrapper getLl4() {
+        return ll4;
+    }
+
     public RobotContainer() {
     instance = this;
     ll4.getSettings().withImuMode(ImuMode.ExternalImu).save();
