@@ -5,9 +5,9 @@ import static edu.wpi.first.units.Units.RadiansPerSecond;
 
 import java.util.Optional;
 
-import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -24,7 +24,7 @@ import limelight.networktables.AngularVelocity3d;
 import limelight.networktables.Orientation3d;
 import limelight.networktables.PoseEstimate;
 
-@AutoLog
+@Logged
 public class LimelightWrapper extends Limelight {
     private double roboRioHeartbeat = 0;
     private int totalTags = 0;

@@ -13,13 +13,14 @@ import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
-import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import com.pathplanner.lib.commands.FollowPathCommand;
 import com.ctre.phoenix6.SignalLogger;
 
+import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.hal.AllianceStationID;
 import edu.wpi.first.net.WebServer;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
@@ -41,6 +42,7 @@ public class Robot extends LoggedRobot {
 
   public Robot() {
     WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
+
     // DO NOT COMMENT THIS OUT!
     // If build fails the 1st time because no BuildConstant:
     //  1. clean your workspace cache
@@ -52,23 +54,33 @@ public class Robot extends LoggedRobot {
     Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
     Logger.recordMetadata("ProjectName", "2026-Rebuilt");
 
-      switch (RobotMap.getRobotMode()) {
+    // SET UP LOGGING!
+    // How logging works:
+    // - ALL logs get published to NetworkTables, ie:
+    //   - via AdvantageKit Logger.recordOutput OR
+    //   - via @Logged annotation OR
+    //   - via SmartDashboard OR
+    //   - via Shuffleboard OR
+    //   - by the DriverStation (automatic) OR
+    //   - by WPILib and other parties (eg Limelight)
+    // - All those NetworkTable logs then get saved to a file IF:
+    //   - On the real robot (logs saved to /U/logs) OR
+    //   - In sim if EXPLICITLY requested logging: `./gradlew simulateJava -PsimLogging=true`, then logs saved to ./logs)
+    switch (RobotMap.getRobotMode()) {
       case REAL:
-        Logger.addDataReceiver(new WPILOGWriter()); // Saves logs to RoboRIO
-        DataLogManager.start();
-        // NetworkTableInstance.getDefault().startEntryDataLog(DataLogManager.getLog(), "", "");
-        Logger.addDataReceiver(new NT4Publisher()); // Publishes logs to network tables
+        Logger.addDataReceiver(new NT4Publisher()); // Publishes all Logger logs to NetworkTables
+        DataLogManager.start(); // Starts saving logs to /U/logs
+        NetworkTableInstance.getDefault() // Saves all NetworkTable logs to /U/logs
+            .startEntryDataLog(DataLogManager.getLog(), "", "");
         break;
 
       case SIM:
-        // To save .wpilog files during sim (e.g. for SysID characterization), run:
-        //   ./gradlew simulateJava -PsimLogging=true
+        Logger.addDataReceiver(new NT4Publisher()); // Publishes all Logger logs to NetworkTables
         if (Boolean.getBoolean("simLogging")) {
-          Logger.addDataReceiver(new WPILOGWriter("logs"));
-        DataLogManager.start();
-        // NetworkTableInstance.getDefault().startEntryDataLog(DataLogManager.getLog(), "", "");
+          DataLogManager.start("logs"); // Starts saving logs to ./logs
+          NetworkTableInstance.getDefault() // Saves all NetworkTable logs to ./logs
+              .startEntryDataLog(DataLogManager.getLog(), "", "");
         }
-        Logger.addDataReceiver(new NT4Publisher());
         break;
 
       case REPLAY:
@@ -77,9 +89,7 @@ public class Robot extends LoggedRobot {
         Logger.addDataReceiver(new NT4Publisher()); // Publishes logs to network tables
         break;
     }
-
     SignalLogger.setPath("/media/sda1/CTRElogs/");
-    
     Logger.start();
 
      // Silence joystick alerts
@@ -118,6 +128,16 @@ public class Robot extends LoggedRobot {
   public void robotPeriodic() {
     m_robotContainer.updateLocalization();
     CommandScheduler.getInstance().run();
+
+    // Tick Epilogue so @Logged fields publish to NetworkTables
+    var backend = Epilogue.getConfig().backend;
+    Epilogue.feederLogger.update(backend.getNested("Feeder"), m_robotContainer.getFeederSubsystem());
+    Epilogue.spindexerLogger.update(backend.getNested("Spindexer"), m_robotContainer.getSpindexer());
+    Epilogue.shooterHoodLogger.update(backend.getNested("ShooterHood"), m_robotContainer.getShooterHood());
+    Epilogue.shooterWheelsLogger.update(backend.getNested("ShooterWheels"), m_robotContainer.getShooterWheels());
+    Epilogue.limelightWrapperLogger.update(backend.getNested("Limelight3"), m_robotContainer.getLl3());
+    Epilogue.limelightWrapperLogger.update(backend.getNested("Limelight4"), m_robotContainer.getLl4());
+
     // Publish a small set of live telemetry for the RTU dashboard
     m_robotContainer.publishTelemetry();
 
