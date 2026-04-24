@@ -446,37 +446,26 @@ class _SettingsPageState extends State<SettingsPage> {
           // TBA API Key
           Text('TBA API Key', style: theme.textTheme.titleMedium),
           const SizedBox(height: 8),
-          if (!widget.tbaClient.hasApiKey)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: Text(
-                'No API key configured. Set one below or add TBA_API_KEY to .env file.',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.error,
-                ),
-              ),
-            ),
           TextField(
             controller: _tbaApiKeyController,
             decoration: InputDecoration(
-              hintText: TbaConfig.dotenvApiKey != null
-                  ? 'Using default from .env'
+              hintText: settings.tbaApiKey == null
+                  ? 'Using default key'
                   : 'Enter your TBA API key',
               border: const OutlineInputBorder(),
               suffixIcon: IconButton(
                 icon: const Icon(Icons.restore),
-                tooltip: 'Reset to default (.env)',
+                tooltip: 'Reset to default',
                 onPressed: _resetTbaApiKey,
               ),
             ),
             onChanged: (_) => _saveTbaApiKey(),
           ),
-          if (TbaConfig.dotenvApiKey != null &&
-              settings.tbaApiKey == null)
+          if (settings.tbaApiKey == null)
             Padding(
               padding: const EdgeInsets.only(top: 4),
               child: Text(
-                'Using default key from .env file',
+                'Using default key',
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                 ),

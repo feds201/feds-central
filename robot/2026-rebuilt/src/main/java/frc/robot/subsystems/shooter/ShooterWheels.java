@@ -141,8 +141,13 @@ public class ShooterWheels extends SubsystemBase {
   public void periodic() {
         Logger.recordOutput("Robot/Shooter/ShooterVelocity", getVelocity().in(RotationsPerSecond));
 
-    Logger.recordOutput("Robot/Shooter/IsShooting", currentState == shooter_state.SHOOTING);
+    Logger.recordOutput("Robot/Shooter/IsShooting", currentState != shooter_state.IDLE);
     Logger.recordOutput("Robot/Shooter/ShooterState", currentState.toString());
+
+    Logger.recordOutput("Robot/ShooterWheels/VelocityRPS", shooterLeader.getVelocity().getValueAsDouble());
+    Logger.recordOutput("Robot/ShooterWheels/TargetVelocityRPS", shooterLeader.getClosedLoopReference().getValueAsDouble());
+    Logger.recordOutput("Robot/ShooterWheels/AppliedVolts", shooterLeader.getMotorVoltage().getValueAsDouble());
+    Logger.recordOutput("Robot/ShooterWheels/StatorAmps", shooterLeader.getStatorCurrent().getValueAsDouble());
     switch (currentState) {
       case SHOOTING:
       shooterLeader.setControl(velocityVoltageControl.withVelocity(getTargetVelocityShooting()));
@@ -205,21 +210,37 @@ public class ShooterWheels extends SubsystemBase {
 
   public Command setStateCommand(shooter_state state) {
     return runOnce(() -> setState(state));
-  } 
+  }
 
   public TalonFX getShooterLeader() {
       return shooterLeader;
   }
-  
+
   public TalonFX getShooterFollower1() {
       return shooterFollower1;
   }
-  
+
   public TalonFX getShooterFollower2() {
       return shooterFollower2;
   }
-  
+
   public TalonFX getShooterFollower3() {
       return shooterFollower3;
   }
+
+  // ////////////////////////////////////////////////////////////////////////
+  // SIMULATION SUPPORT — sim-only methods below this line
+  // ////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Returns the leader TalonFX sim state so RebuiltSimManager can drive flywheel physics
+   * (FlywheelSim voltage input and velocity write-back). Sim use only.
+   */
+  public com.ctre.phoenix6.sim.TalonFXSimState getShooterLeaderMotorSimState() {
+      return shooterLeader.getSimState();
+  }
+
+  // ////////////////////////////////////////////////////////////////////////
+  // END SIMULATION SUPPORT
+  // ////////////////////////////////////////////////////////////////////////
 }

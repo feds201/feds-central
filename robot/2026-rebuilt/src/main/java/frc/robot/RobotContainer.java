@@ -68,8 +68,8 @@ public class RobotContainer extends ControllerBindings {
     // Limelight naming conventions are based on physical inventory system, hence
     // "limelight-two" and "limelight-five" represent our second and fifth
     // limelights respectively.
-    private final LimelightWrapper ll4 = new LimelightWrapper("limelight-two", true);
-    private final LimelightWrapper ll3 = new LimelightWrapper("limelight-five", false);
+    private final LimelightWrapper llMain = new LimelightWrapper("limelight-two", true);
+    private final LimelightWrapper llBackup = new LimelightWrapper("limelight-five", false);
 
     private static java.io.File usb = RobotMap.PitConstants.usb;
 
@@ -138,9 +138,17 @@ public class RobotContainer extends ControllerBindings {
         return drivetrain;
     }
 
+    public LimelightWrapper getLimelightBackup() {
+        return llBackup;
+    }
+
+    public LimelightWrapper getLimelightMain() {
+        return llMain;
+    }
+
     public RobotContainer() {
     instance = this;
-    ll4.getSettings().withImuMode(ImuMode.ExternalImu).save();
+    llMain.getSettings().withImuMode(ImuMode.ExternalImu).save();
     setupDriveBindings(controller);
     setupOperatorBindings(operaterController);
     configureRootTests();
@@ -273,10 +281,10 @@ public class RobotContainer extends ControllerBindings {
 
 
     public void updateLocalization() {
-        if (ll4.isConnected()){// && SmartDashboard.getBoolean("Limelight-Four", true)) {
-            ll4.updateLocalizationLimelight(drivetrain);
+        if (llMain.isConnected()){// && SmartDashboard.getBoolean("Limelight-Four", true)) {
+            llMain.updateLocalizationLimelight(drivetrain);
         } else {
-            ll3.updateLocalizationLimelight(drivetrain);
+            llBackup.updateLocalizationLimelight(drivetrain);
         }
     }
 
@@ -381,13 +389,13 @@ public void registerNamedCommands() {
 
 
 private final ShuffleboardLayout llLayout = Shuffleboard.getTab("Pit Testing").getLayout("Limelight Health", BuiltInLayouts.kList).withSize(2,1).withPosition(4, 5);
-private GenericEntry ll3conect = llLayout.add("ll3 isConnected", false).getEntry();
-private GenericEntry ll4conect = llLayout.add("ll4 isConnected", false).getEntry();
+private GenericEntry llBackupConnect = llLayout.add("LL Backup Connected", false).getEntry();
+private GenericEntry llMainConnect = llLayout.add("LL Main Connected", false).getEntry();
 
 
 public void limelightConnection(){
-    ll3conect.setBoolean(ll3.isConnected());
-    ll4conect.setBoolean(ll4.isConnected());
+    llMainConnect.setBoolean(llMain.isConnected());
+    llBackupConnect.setBoolean(llBackup.isConnected());
 }
 
 private final GenericEntry testLayout = Shuffleboard.getTab("Pit Testing").add("storage", false).getEntry();

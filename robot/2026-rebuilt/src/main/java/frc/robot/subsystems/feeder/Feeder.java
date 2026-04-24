@@ -115,8 +115,13 @@ public class Feeder extends SubsystemBase {
   @Override
   public void periodic() {
 
-    Logger.recordOutput("Robot/Shooter/FeederOn", currentState == feeder_state.RUN);
+    Logger.recordOutput("Robot/Shooter/FeederOn", currentState != feeder_state.STOP);
     Logger.recordOutput("Robot/Shooter/FeederState", currentState.toString());
+
+    Logger.recordOutput("Robot/Feeder/VelocityRPS", feederMotor.getVelocity().getValueAsDouble());
+    Logger.recordOutput("Robot/Feeder/TargetVolts", currentState.getVoltage().in(Volts));
+    Logger.recordOutput("Robot/Feeder/AppliedVolts", feederMotor.getMotorVoltage().getValueAsDouble());
+    Logger.recordOutput("Robot/Feeder/StatorAmps", feederMotor.getStatorCurrent().getValueAsDouble());
      switch (currentState) {
       case RUN:
         if(!washingMachineTimer.isRunning()){
@@ -137,7 +142,6 @@ public class Feeder extends SubsystemBase {
           washingMachineTimer.stop();
           washingMachineTimer.reset();
         }
-        
         break;
 
        case STOP, PRUN, PREVERSE:
@@ -199,4 +203,28 @@ public class Feeder extends SubsystemBase {
 
   public Command feederSysIdQuasistatic(SysIdRoutine.Direction dir) { return m_feederSysId.quasistatic(dir); }
   public Command feederSysIdDynamic(SysIdRoutine.Direction dir) { return m_feederSysId.dynamic(dir); }
+
+  // ////////////////////////////////////////////////////////////////////////
+  // SIMULATION SUPPORT — sim-only methods below this line
+  // ////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Returns the feeder motor sim state so RebuiltSimManager can drive feeder physics
+   * (DCMotorSim voltage input and position/velocity write-back). Sim use only.
+   */
+  public com.ctre.phoenix6.sim.TalonFXSimState getFeederMotorSimState() {
+      return feederMotor.getSimState();
+  }
+
+  /**
+   * Returns feeder motor velocity in RPS. Used by RebuiltSimManager to gate ball launches
+   * (feeder must be spinning forward above threshold). Sim use only.
+   */
+  public double getSimFeederMotorVelocityRPS() {
+      return feederMotor.getVelocity().getValue().in(edu.wpi.first.units.Units.RotationsPerSecond);
+  }
+
+  // ////////////////////////////////////////////////////////////////////////
+  // END SIMULATION SUPPORT
+  // ////////////////////////////////////////////////////////////////////////
 }
