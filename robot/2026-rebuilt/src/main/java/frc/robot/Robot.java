@@ -85,6 +85,7 @@ public class Robot extends LoggedRobot {
 
       case SIM:
         Logger.addDataReceiver(new NT4Publisher()); // Publishes all Logger logs to NetworkTables
+        Logger.addDataReceiver(new NT4Publisher()); // Publishes all Logger logs to NetworkTables
         if (Boolean.getBoolean("simLogging")) {
           new File("logs/main/").mkdirs(); // Create folders for logs
           new File("logs/ctre/").mkdirs();
