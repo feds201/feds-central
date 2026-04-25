@@ -21,7 +21,6 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 
 import frc.robot.RobotMap;
 import frc.robot.RobotMap.IntakeSubsystemConstants;
-import frc.robot.subsystems.led.LedsSubsystem;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
@@ -35,6 +34,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+
 public class IntakeSubsystem extends SubsystemBase {
 
   private final TalonFX motor;
@@ -42,7 +42,6 @@ public class IntakeSubsystem extends SubsystemBase {
   private final DigitalInput limit_switch_r;
   private final DigitalInput limit_switch_l;
   private final SysIdRoutine sysID;
-  private final LedsSubsystem leds = LedsSubsystem.getInstance();
   public static final double extendedRotations = 18.0; //TUNE on new intake
   private static final double retractedRotations = 0.39;
   private static final double closeAgitationRotations = 9.0; // about halfway from bumper to extended, used for agitating the close half of the hopper
@@ -92,7 +91,9 @@ public class IntakeSubsystem extends SubsystemBase {
   private IntakeState currentState = IntakeState.DEFAULT;
   private RollerState currentRollerState = RollerState.OFF;
  
-  
+  public IntakeState getCurrentState() {
+    return currentState;
+  }
 
   public void setState(IntakeState targetState) {
     Logger.recordOutput("Robot/Intake/StateTransition", targetState.toString());
@@ -495,7 +496,6 @@ public class IntakeSubsystem extends SubsystemBase {
     switch (currentRollerState) {
       case ON:
         rollerMotor.set(ROLLER_OUTPUT);
-        leds.intakeSignal();
         break;
       case REVERSE:
         rollerMotor.set(-ROLLER_OUTPUT);

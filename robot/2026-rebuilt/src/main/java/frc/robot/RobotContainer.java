@@ -28,6 +28,7 @@ import frc.robot.commands.swerve.BallTracking.BallTrackingState;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem.IntakeState;
 import frc.robot.subsystems.intake.IntakeSubsystem.RollerState;
+import frc.robot.subsystems.led.LedsSubsystem;
 import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.subsystems.feeder.Feeder.feeder_state;
 import frc.robot.subsystems.shooter.ShooterHood;
@@ -36,6 +37,8 @@ import frc.robot.subsystems.shooter.ShooterWheels;
 import frc.robot.subsystems.shooter.ShooterWheels.shooter_state;
 import frc.robot.subsystems.spindexer.Spindexer;
 import frc.robot.subsystems.spindexer.Spindexer.spindexer_state;
+import frc.robot.commands.swerve.TeleopSwerve;
+import frc.robot.commands.swerve.TeleopSwerve.driveMode;
 import frc.robot.sim.RebuiltSimManager;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.GoalEndState;
@@ -84,6 +87,7 @@ public class RobotContainer extends ControllerBindings {
     private final ShooterHood shooterHood = new ShooterHood(drivetrain);
     private final ShooterWheels shooterWheels = new ShooterWheels(drivetrain);
     private final Spindexer spinDexer = new Spindexer();
+    private final LedsSubsystem ledsSubsystem = new LedsSubsystem();
     private final BallTracking ball = new BallTracking(drivetrain);
     
 
@@ -145,6 +149,13 @@ public class RobotContainer extends ControllerBindings {
     public LimelightWrapper getLimelightMain() {
         return llMain;
     }
+      public driveMode getDriveMode() {
+        return TeleopSwerve.getDriveMode();
+    }
+    public shooter_state getShooterWheelsState() {
+        return shooterWheels.getCurrentState();
+    }
+
 
     public RobotContainer() {
     instance = this;
@@ -301,7 +312,7 @@ public class RobotContainer extends ControllerBindings {
 
     public void initSimulation() {
         simManager = new RebuiltSimManager(drivetrain,
-                intakeSubsystem, feederSubsystem, shooterWheels, shooterHood, spinDexer);
+                intakeSubsystem, feederSubsystem, shooterWheels, shooterHood, spinDexer, ledsSubsystem);
         Logger.recordOutput("Sim/State", "Ready");
         drivetrain.resetPose(RebuiltSimManager.STARTING_POSE);
     }
