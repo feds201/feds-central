@@ -5,13 +5,14 @@
   "pathFolders": [
     "CenterDepotOutpost",
     "CenterOverBump",
+    "CenterWait",
     "CircleCenter",
     "DoublePassTest",
     "GriefAuto",
     "LeftTrenchBumpShoot",
     "MidIntakeToLeftBump",
     "MidIntakeToRightBump",
-    "CenterWait",
+    "FollowCenter",
     "RightBumpToOutpost",
     "TestAutos",
     "Trenches"

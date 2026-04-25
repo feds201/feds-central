@@ -1,10 +1,7 @@
-package frc.robot.sim;
+package frc.sim.gamepiece;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation3d;
-import frc.sim.gamepiece.GamePieceConfig;
-import frc.sim.gamepiece.GamePieceManager;
-import frc.sim.gamepiece.LaunchParameters;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -14,9 +11,6 @@ import java.util.function.Supplier;
  * Connects the shooter subsystem state to the sim game piece system.
  * When the shooter fires, spawns a ball with velocity based on
  * flywheel speed + hood angle.
- *
- * Note: backspin/topspin on launched balls is a stretch goal.
- * Currently balls are launched with pure translational velocity.
  */
 public class ShooterSim {
     private final GamePieceManager gamePieceManager;
@@ -91,7 +85,7 @@ public class ShooterSim {
                     launchVelocitySupplier.getAsDouble(),
                     hoodAngleSupplier.getAsDouble(),
                     launchHeight,
-                    0,  // no turret offset (turretless robot)
+                    0,  // no turret offset
                     muzzleForwardOffset,
                     barrelLateralOffset
             );

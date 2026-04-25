@@ -83,7 +83,7 @@ public class ShooterHood extends SubsystemBase {
     config.Slot0.kS = .235; // Constant applied for friction compensation (static gain)
     config.Slot0.kP = 1; // Proportional gain 
     config.Slot0.kD = 0.0; // Derivative gain
-    config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 30; 
+    config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = ShooterConstants.HOOD_FORWARD_SOFT_LIMIT_ROT;
     config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0.0; 
     config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
     config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
@@ -98,6 +98,16 @@ public class ShooterHood extends SubsystemBase {
                 .withProperties(Map.of("min", 0, "max", .2))
                 .getEntry();
                 pos = () -> swanNeckPivotSpeedSetter.getDouble(0);
+  }
+
+  /** Converts hood motor rotor rotations to physical hood angle in degrees, assuming linear mapping between 0 rot → HOOD_MIN_ANGLE_DEG and HOOD_FORWARD_SOFT_LIMIT_ROT → HOOD_MAX_ANGLE_DEG. */
+  public static double rotationsToAngleDegrees(double rotations) {
+    double range = ShooterConstants.HOOD_MAX_ANGLE_DEG - ShooterConstants.HOOD_MIN_ANGLE_DEG;
+    return ShooterConstants.HOOD_MIN_ANGLE_DEG + (rotations / ShooterConstants.HOOD_FORWARD_SOFT_LIMIT_ROT) * range;
+  }
+
+  public double getPositionDegrees() {
+    return rotationsToAngleDegrees(getPosition().in(Rotations));
   }
 
   @Override
@@ -120,8 +130,7 @@ public class ShooterHood extends SubsystemBase {
       hoodMotor.setControl(positionVoltage.withPosition(getTargetPositionPassing()));
         break;
 
-      case MANUAL, AIMING_UP,AIMING_DOWN:
-        // Sim-only: hood angle managed by ShooterSim, not the motor
+      case MANUAL:
         break;
       
       case LAYUP, HALFCOURT:
@@ -131,6 +140,15 @@ public class ShooterHood extends SubsystemBase {
       break;
     }
     Logger.recordOutput("Robot/Shooter/HoodAngleRotations", getPosition().in(Rotations));
+
+    double targetRot = hoodMotor.getClosedLoopReference().getValueAsDouble();
+    Logger.recordOutput("Robot/ShooterHood/PositionRotations", getPosition().in(Rotations));
+    Logger.recordOutput("Robot/ShooterHood/PositionDegrees", getPositionDegrees());
+    Logger.recordOutput("Robot/ShooterHood/TargetPositionRotations", targetRot);
+    Logger.recordOutput("Robot/ShooterHood/TargetPositionDegrees", rotationsToAngleDegrees(targetRot));
+    Logger.recordOutput("Robot/ShooterHood/AppliedVolts", hoodMotor.getMotorVoltage().getValueAsDouble());
+    Logger.recordOutput("Robot/ShooterHood/StatorAmps", hoodMotor.getStatorCurrent().getValueAsDouble());
+
     // This method will be called once per scheduler run
   }
 
@@ -170,10 +188,6 @@ public class ShooterHood extends SubsystemBase {
       return Rotations.of(RobotMap.ShooterConstants.kPassingPositionMap.get(d.in(Meters)));
   }
 
-  public void setSimPosition(double rotations) {
-    hoodMotor.getSimState().setRawRotorPosition(rotations);
-  }
-
   /**
    * Update the hood angle multiplier, capped in the range of 0.9 to 1.1.
    * @param toAdd Positive or negative double value to add to the multiplier 
@@ -205,4 +219,20 @@ public class ShooterHood extends SubsystemBase {
   public TalonFX getShooterHoodMotor() {
     return hoodMotor;
   }
+
+  // ////////////////////////////////////////////////////////////////////////
+  // SIMULATION SUPPORT — sim-only methods below this line
+  // ////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Returns the hood motor sim state so RebuiltSimManager can drive hood arm physics
+   * (SingleJointedArmSim voltage input and position/velocity write-back). Sim use only.
+   */
+  public com.ctre.phoenix6.sim.TalonFXSimState getHoodMotorSimState() {
+      return hoodMotor.getSimState();
+  }
+
+  // ////////////////////////////////////////////////////////////////////////
+  // END SIMULATION SUPPORT
+  // ////////////////////////////////////////////////////////////////////////
 }

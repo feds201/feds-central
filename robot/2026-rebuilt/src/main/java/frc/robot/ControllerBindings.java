@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.intake.IntakeSubsystem.IntakeState;
 import frc.robot.subsystems.intake.IntakeSubsystem.RollerState;
 import frc.robot.subsystems.feeder.Feeder.feeder_state;
+import frc.robot.subsystems.shooter.ShooterWheels;
 import frc.robot.subsystems.shooter.ShooterHood.shooterhood_state;
 import frc.robot.subsystems.shooter.ShooterWheels.shooter_state;
 import frc.robot.subsystems.spindexer.Spindexer.spindexer_state;
@@ -213,6 +214,7 @@ public class ControllerBindings {
         var intakeSubsystem = container.getIntakeSubsystem();
         var shooterHood = container.getShooterHood();
         var spindexerSubsystem = container.getSpindexer();
+        var shooterWheels = container.getShooterWheels();
         // Manual way to change the angle of the shooter hood
         operator.leftTrigger()
                 .onTrue(shooterHood.setMotorPower(0.1))
@@ -243,6 +245,9 @@ public class ControllerBindings {
         operator.b()
                 .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.FAR_AGITATION_IN).alongWith(intakeSubsystem.setRollerStateCommand(RollerState.ON)))
                  .onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.INTAKING));
+
+        operator.x()
+                .onTrue(intakeSubsystem.setIntakeStateCommand((IntakeState.EXTENDED)).alongWith(feederSubsystem.setStateCommand(feeder_state.PREVERSE).alongWith(shooterWheels.setStateCommand(shooter_state.TEST))).alongWith(spindexerSubsystem.setStateCommand(spindexer_state.PREVERSE)));
 
         operator.rightTrigger()
                 .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.DITHERIN_AGITATION)).onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED));

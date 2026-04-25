@@ -45,11 +45,11 @@ import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 public class ShooterWheels extends SubsystemBase {
 
     public enum shooter_state {
-    TEST(RotationsPerSecond.of(0)),
+    TEST(RotationsPerSecond.of(9.0)),
     SHOOTING(RotationsPerSecond.of(0)),
     IDLE(RotationsPerSecond.of(0)),
     PASSING(RotationsPerSecond.of(0)),
-    LAYUP(RotationsPerSecond.of(34.11)), // ~3.278m (midway between hub+tower) TODO add link to doc
+    LAYUP(RotationsPerSecond.of(34.47)), // ~3.278m (midway between hub+tower) TODO add link to doc
     HALFCOURT (RotationsPerSecond.of(40.86)); // ~5.23m (corner) 
 
     private final AngularVelocity targetVelocity;
@@ -141,18 +141,20 @@ public class ShooterWheels extends SubsystemBase {
   public void periodic() {
         Logger.recordOutput("Robot/Shooter/ShooterVelocity", getVelocity().in(RotationsPerSecond));
 
-    Logger.recordOutput("Robot/Shooter/IsShooting", currentState == shooter_state.SHOOTING);
+    Logger.recordOutput("Robot/Shooter/IsShooting", currentState != shooter_state.IDLE);
     Logger.recordOutput("Robot/Shooter/ShooterState", currentState.toString());
+
+    Logger.recordOutput("Robot/ShooterWheels/VelocityRPS", shooterLeader.getVelocity().getValueAsDouble());
+    Logger.recordOutput("Robot/ShooterWheels/TargetVelocityRPS", shooterLeader.getClosedLoopReference().getValueAsDouble());
+    Logger.recordOutput("Robot/ShooterWheels/AppliedVolts", shooterLeader.getMotorVoltage().getValueAsDouble());
+    Logger.recordOutput("Robot/ShooterWheels/StatorAmps", shooterLeader.getStatorCurrent().getValueAsDouble());
     switch (currentState) {
       case SHOOTING:
       shooterLeader.setControl(velocityVoltageControl.withVelocity(getTargetVelocityShooting()));
              Logger.recordOutput("Robot/Shooter/ExpectedVelocity", getTargetVelocityShooting().in(RotationsPerSecond));
-
         break;
-
       case IDLE:
         break;
-
       case PASSING:
       shooterLeader.setControl(velocityVoltageControl.withVelocity(getTargetVelocityPassing())); //from passing table
         break;
@@ -160,6 +162,8 @@ public class ShooterWheels extends SubsystemBase {
       break;
       case TEST:
       setVelocity(RotationsPerSecond.of(speed.getAsDouble()));
+      // case KICKER:
+      // shooterLeader.setControl(velocityVoltageControl.withVelocity(shooter_state.KICKER.getVelocity().in(RotationsPerSecond)));
       break;
     }
   }
@@ -205,21 +209,37 @@ public class ShooterWheels extends SubsystemBase {
 
   public Command setStateCommand(shooter_state state) {
     return runOnce(() -> setState(state));
-  } 
+  }
 
   public TalonFX getShooterLeader() {
       return shooterLeader;
   }
-  
+
   public TalonFX getShooterFollower1() {
       return shooterFollower1;
   }
-  
+
   public TalonFX getShooterFollower2() {
       return shooterFollower2;
   }
-  
+
   public TalonFX getShooterFollower3() {
       return shooterFollower3;
   }
+
+  // ////////////////////////////////////////////////////////////////////////
+  // SIMULATION SUPPORT — sim-only methods below this line
+  // ////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Returns the leader TalonFX sim state so RebuiltSimManager can drive flywheel physics
+   * (FlywheelSim voltage input and velocity write-back). Sim use only.
+   */
+  public com.ctre.phoenix6.sim.TalonFXSimState getShooterLeaderMotorSimState() {
+      return shooterLeader.getSimState();
+  }
+
+  // ////////////////////////////////////////////////////////////////////////
+  // END SIMULATION SUPPORT
+  // ////////////////////////////////////////////////////////////////////////
 }

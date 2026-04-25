@@ -20,12 +20,12 @@
         "y": 0.554400948991697
       },
       "prevControl": {
-        "x": 2.423947475988192,
-        "y": 0.5544009489916972
+        "x": 3.1592296718972896,
+        "y": 0.5480313837375184
       },
       "nextControl": {
-        "x": 4.4289679715302475,
-        "y": 0.554400948991697
+        "x": 4.428952057303723,
+        "y": 0.5583264971529821
       },
       "isLocked": false,
       "linkedName": null
@@ -74,21 +74,7 @@
       "rotationDegrees": -90.0
     }
   ],
-  "constraintZones": [
-    {
-      "name": "Constraints Zone",
-      "minWaypointRelativePos": 0.6310756972111495,
-      "maxWaypointRelativePos": 1.2334661354581693,
-      "constraints": {
-        "maxVelocity": 2.0,
-        "maxAcceleration": 4.0,
-        "maxAngularVelocity": 540.0,
-        "maxAngularAcceleration": 360.0,
-        "nominalVoltage": 11.8,
-        "unlimited": false
-      }
-    }
-  ],
+  "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
@@ -101,7 +87,7 @@
   },
   "goalEndState": {
     "velocity": 2.0,
-    "rotation": 150.52298474784126
+    "rotation": 150.0
   },
   "reversed": false,
   "folder": "MidIntakeToRightBump",

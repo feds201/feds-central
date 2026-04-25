@@ -13,16 +13,18 @@ import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
-import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import com.pathplanner.lib.commands.FollowPathCommand;
 import com.ctre.phoenix6.SignalLogger;
 
+import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.hal.AllianceStationID;
 import edu.wpi.first.net.WebServer;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
+import java.io.File;
 import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -41,6 +43,7 @@ public class Robot extends LoggedRobot {
 
   public Robot() {
     WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
+
     // DO NOT COMMENT THIS OUT!
     // If build fails the 1st time because no BuildConstant:
     //  1. clean your workspace cache
@@ -52,34 +55,57 @@ public class Robot extends LoggedRobot {
     Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
     Logger.recordMetadata("ProjectName", "2026-Rebuilt");
 
-      switch (RobotMap.getRobotMode()) {
+    // SET UP LOGGING!
+    // How logging works:
+    // - ALL logs get published to NetworkTables, ie:
+    //   - via AdvantageKit Logger.recordOutput OR
+    //   - via @Logged annotation OR
+    //   - via SmartDashboard OR
+    //   - via Shuffleboard OR
+    //   - by the DriverStation (automatic) OR
+    //   - by WPILib and other parties (eg Limelight)
+    // - All those NetworkTable logs then get saved to a .wpilog file IF:
+    //   - On the real robot
+    //   - In sim if EXPLICITLY requested logging: `./gradlew simulateJava -PsimLogging=true`)
+    // - Separately, CTRE Phoenix's SignalLogger captures every CAN signal from Phoenix devices
+    //   (TalonFX, CANcoder, Pigeon2, etc) to a .hoot file (opened with Tuner X):
+    //   - On the real robot: always on
+    //   - In sim: only when -PsimLogging=true
+    switch (RobotMap.getRobotMode()) {
       case REAL:
-        Logger.addDataReceiver(new WPILOGWriter()); // Saves logs to RoboRIO
-        DataLogManager.start();
-        // NetworkTableInstance.getDefault().startEntryDataLog(DataLogManager.getLog(), "", "");
-        Logger.addDataReceiver(new NT4Publisher()); // Publishes logs to network tables
+        Logger.addDataReceiver(new NT4Publisher()); // Publishes all Logger logs to NetworkTables
+        new File("/U/logs/main/").mkdirs(); // Create folders for logs
+        new File("/U/logs/ctre/").mkdirs();
+        DataLogManager.start("/U/logs/main/"); // Starts saving logs to USB stick
+        NetworkTableInstance.getDefault() // Saves all NetworkTable logs to USB stick
+            .startEntryDataLog(DataLogManager.getLog(), "", "");
+        SignalLogger.setPath("/U/logs/ctre/"); // Puts .hoot files alongside our main/wpilog logs on the USB stick
+        SignalLogger.enableAutoLogging(true); // Phoenix writes a .hoot file
         break;
 
       case SIM:
-        // To save .wpilog files during sim (e.g. for SysID characterization), run:
-        //   ./gradlew simulateJava -PsimLogging=true
+        Logger.addDataReceiver(new NT4Publisher()); // Publishes all Logger logs to NetworkTables
+        Logger.addDataReceiver(new NT4Publisher()); // Publishes all Logger logs to NetworkTables
         if (Boolean.getBoolean("simLogging")) {
-          Logger.addDataReceiver(new WPILOGWriter("logs"));
-        DataLogManager.start();
-        // NetworkTableInstance.getDefault().startEntryDataLog(DataLogManager.getLog(), "", "");
+          new File("logs/main/").mkdirs(); // Create folders for logs
+          new File("logs/ctre/").mkdirs();
+          DataLogManager.start("logs/main/"); // Starts saving logs
+          NetworkTableInstance.getDefault() // Saves all NetworkTable logs
+              .startEntryDataLog(DataLogManager.getLog(), "", "");
+          SignalLogger.setPath("logs/ctre/"); // Overrides the real-robot path so .hoot files go where we want
+          SignalLogger.enableAutoLogging(true); // Phoenix writes a .hoot file
+        } else {
+          SignalLogger.enableAutoLogging(false); // Stops Phoenix from writing a .hoot file in sim
         }
-        Logger.addDataReceiver(new NT4Publisher());
         break;
 
       case REPLAY:
         String inPath = LogFileUtil.findReplayLog();
         Logger.setReplaySource(new WPILOGReader(inPath)); // Sets the log file to replay
         Logger.addDataReceiver(new NT4Publisher()); // Publishes logs to network tables
+        SignalLogger.enableAutoLogging(false); // No live devices in replay, so no Phoenix logs to capture
         break;
     }
-
-    SignalLogger.setPath("/media/sda1/CTRElogs/");
-    
     Logger.start();
 
      // Silence joystick alerts
@@ -118,12 +144,23 @@ public class Robot extends LoggedRobot {
   public void robotPeriodic() {
     m_robotContainer.updateLocalization();
     CommandScheduler.getInstance().run();
+
+    // Tick Epilogue so @Logged fields publish to NetworkTables
+    var backend = Epilogue.getConfig().backend;
+    Epilogue.feederLogger.update(backend.getNested("@Logged/Feeder"), m_robotContainer.getFeederSubsystem());
+    Epilogue.spindexerLogger.update(backend.getNested("@Logged/Spindexer"), m_robotContainer.getSpindexer());
+    Epilogue.shooterHoodLogger.update(backend.getNested("@Logged/ShooterHood"), m_robotContainer.getShooterHood());
+    Epilogue.shooterWheelsLogger.update(backend.getNested("@Logged/ShooterWheels"), m_robotContainer.getShooterWheels());
+    Epilogue.limelightWrapperLogger.update(backend.getNested("@Logged/Limelights/Main"), m_robotContainer.getLimelightMain());
+    Epilogue.limelightWrapperLogger.update(backend.getNested("@Logged/Limelights/Backup"), m_robotContainer.getLimelightBackup());
+
     // Publish a small set of live telemetry for the RTU dashboard
     m_robotContainer.publishTelemetry();
 
     PitTesting.updateDashboard();
     m_robotContainer.limelightConnection();
     m_robotContainer.usbStorage();
+
     //Log Hub shift times
     Logger.recordOutput("Robot/HubShift/RemainingTime", HubShiftUtil.getOfficialShiftInfo().remainingTime());
     Logger.recordOutput("Robot/HubShift/ElapsedTime", HubShiftUtil.getOfficialShiftInfo().elapsedTime());
