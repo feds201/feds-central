@@ -21,7 +21,6 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 
 import frc.robot.RobotMap;
 import frc.robot.RobotMap.IntakeSubsystemConstants;
-import frc.robot.subsystems.led.LedsSubsystem;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
@@ -43,7 +42,6 @@ public class IntakeSubsystem extends SubsystemBase {
   private final DigitalInput limit_switch_r;
   private final DigitalInput limit_switch_l;
   private final SysIdRoutine sysID;
-  private final LedsSubsystem leds = LedsSubsystem.getInstance();
   public static final double extendedRotations = 18.0; //TUNE on new intake
   private static final double retractedRotations = 0.39;
   private static final double closeAgitationRotations = 9.0; // about halfway from bumper to extended, used for agitating the close half of the hopper
