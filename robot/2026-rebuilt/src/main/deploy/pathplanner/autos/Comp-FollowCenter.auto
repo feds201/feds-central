@@ -17,13 +17,13 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Run Rollers"
+                  "name": "Extend Intake"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Extend Intake"
+                  "name": "Run Rollers"
                 }
               }
             ]
@@ -133,6 +133,12 @@
                 "type": "named",
                 "data": {
                   "name": "Extend Intake"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Stop Shooter Spin"
                 }
               }
             ]

@@ -2,6 +2,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.intake.IntakeSubsystem.IntakeState;
 import frc.robot.subsystems.intake.IntakeSubsystem.RollerState;
@@ -107,10 +108,12 @@ public class ControllerBindings {
 
         driver.a()
                 .onTrue(Commands.sequence(
-                        feederSubsystem.setStateCommand(feeder_state.PRUN),
-                        spinDexer.setStateCommand(spindexer_state.PFORWARD),
                         shooterHood.setStateCommand(shooterhood_state.HALFCOURT),
-                        shooterWheels.setStateCommand(shooter_state.HALFCOURT)))
+                        shooterWheels.setStateCommand(shooter_state.HALFCOURT))
+                        .andThen( new WaitCommand(.5)).andThen(
+                        feederSubsystem.setStateCommand(feeder_state.PRUN),
+                        spinDexer.setStateCommand(spindexer_state.PFORWARD)))
+                        
                 .onFalse(Commands.sequence(
                         feederSubsystem.setStateCommand(feeder_state.STOP),
                         spinDexer.setStateCommand(spindexer_state.STOP),
@@ -137,10 +140,11 @@ public class ControllerBindings {
 
                 driver.y()
                 .onTrue(Commands.sequence(
-                        feederSubsystem.setStateCommand(feeder_state.PRUN),
-                        spinDexer.setStateCommand(spindexer_state.PFORWARD),
                         shooterHood.setStateCommand(shooterhood_state.LAYUP),
-                        shooterWheels.setStateCommand(shooter_state.LAYUP)))
+                        shooterWheels.setStateCommand(shooter_state.LAYUP))
+                        .andThen( new WaitCommand(.5)).andThen(
+                        feederSubsystem.setStateCommand(feeder_state.PRUN),
+                        spinDexer.setStateCommand(spindexer_state.PFORWARD)))
                 .onFalse(Commands.sequence(
                         feederSubsystem.setStateCommand(feeder_state.STOP),
                         spinDexer.setStateCommand(spindexer_state.STOP),

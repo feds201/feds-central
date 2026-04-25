@@ -385,7 +385,7 @@ public void registerNamedCommands() {
                 "Internal-FD-RightMidFieldDoublepass-Part2")
                 .getStartingHolonomicPose().get();
             return Commands.sequence(
-                ball.withTimeout(3.0),
+                new BallTracking(drivetrain).withTimeout(3.0),
                 AutoBuilder.pathfindToPose(returnPose,
                     new PathConstraints(2.0, 2.0, 360.0, 360.0)));
         } catch (Exception e) { return Commands.none(); }
@@ -398,7 +398,7 @@ public void registerNamedCommands() {
                 "Internal-FD-MidIntakeToLeftBump-Part2")
                 .getStartingHolonomicPose().get();
             return Commands.sequence(
-                ball.withTimeout(3.0),
+                new BallTracking(drivetrain).withTimeout(3.0),
                 AutoBuilder.pathfindToPose(returnPose,
                     new PathConstraints(2.0, 2.0, 360.0, 360.0)));
         } catch (Exception e) { return Commands.none(); }
@@ -411,7 +411,7 @@ public void registerNamedCommands() {
                 "Internal-FD-RightSneakDoublepass-Part2")
                 .getStartingHolonomicPose().get();
             return Commands.sequence(
-                ball.withTimeout(3.0),
+                new BallTracking(drivetrain).withTimeout(3.0),
                 AutoBuilder.pathfindToPose(returnPose,
                     new PathConstraints(2.0, 2.0, 360.0, 360.0)));
         } catch (Exception e) { return Commands.none(); }
@@ -424,7 +424,7 @@ public void registerNamedCommands() {
                 "Internal-FD-RightSneakDoublepass-Part3")
                 .getStartingHolonomicPose().get();
             return Commands.sequence(
-                ball.withTimeout(3.0),
+                new BallTracking(drivetrain).withTimeout(3.0),
                 AutoBuilder.pathfindToPose(returnPose,
                     new PathConstraints(2.0, 2.0, 360.0, 360.0)));
         } catch (Exception e) { return Commands.none(); }
