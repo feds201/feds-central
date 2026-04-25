@@ -2,10 +2,12 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.intake.IntakeSubsystem.IntakeState;
 import frc.robot.subsystems.intake.IntakeSubsystem.RollerState;
 import frc.robot.subsystems.feeder.Feeder.feeder_state;
+import frc.robot.subsystems.shooter.ShooterWheels;
 import frc.robot.subsystems.shooter.ShooterHood.shooterhood_state;
 import frc.robot.subsystems.shooter.ShooterWheels.shooter_state;
 import frc.robot.subsystems.spindexer.Spindexer.spindexer_state;
@@ -104,12 +106,14 @@ public class ControllerBindings {
                 .whileTrue(intakeSubsystem.setRollerStateCommand(RollerState.REVERSE))
                 .onFalse(intakeSubsystem.setRollerStateCommand(RollerState.OFF));
 
-        driver.y()
+        driver.a()
                 .onTrue(Commands.sequence(
-                        feederSubsystem.setStateCommand(feeder_state.PRUN),
-                        spinDexer.setStateCommand(spindexer_state.PFORWARD),
                         shooterHood.setStateCommand(shooterhood_state.HALFCOURT),
-                        shooterWheels.setStateCommand(shooter_state.HALFCOURT)))
+                        shooterWheels.setStateCommand(shooter_state.HALFCOURT))
+                        .andThen( new WaitCommand(.5)).andThen(
+                        feederSubsystem.setStateCommand(feeder_state.PRUN),
+                        spinDexer.setStateCommand(spindexer_state.PFORWARD)))
+                        
                 .onFalse(Commands.sequence(
                         feederSubsystem.setStateCommand(feeder_state.STOP),
                         spinDexer.setStateCommand(spindexer_state.STOP),
@@ -134,12 +138,13 @@ public class ControllerBindings {
                         intakeSubsystem.setRollerStateCommand(RollerState.OFF)
                 ));
 
-                driver.a()
+                driver.y()
                 .onTrue(Commands.sequence(
-                        feederSubsystem.setStateCommand(feeder_state.PRUN),
-                        spinDexer.setStateCommand(spindexer_state.PFORWARD),
                         shooterHood.setStateCommand(shooterhood_state.LAYUP),
-                        shooterWheels.setStateCommand(shooter_state.LAYUP)))
+                        shooterWheels.setStateCommand(shooter_state.LAYUP))
+                        .andThen( new WaitCommand(.5)).andThen(
+                        feederSubsystem.setStateCommand(feeder_state.PRUN),
+                        spinDexer.setStateCommand(spindexer_state.PFORWARD)))
                 .onFalse(Commands.sequence(
                         feederSubsystem.setStateCommand(feeder_state.STOP),
                         spinDexer.setStateCommand(spindexer_state.STOP),
@@ -213,6 +218,7 @@ public class ControllerBindings {
         var intakeSubsystem = container.getIntakeSubsystem();
         var shooterHood = container.getShooterHood();
         var spindexerSubsystem = container.getSpindexer();
+        var shooterWheels = container.getShooterWheels();
         // Manual way to change the angle of the shooter hood
         operator.leftTrigger()
                 .onTrue(shooterHood.setMotorPower(0.1))
@@ -243,6 +249,9 @@ public class ControllerBindings {
         operator.b()
                 .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.FAR_AGITATION_IN).alongWith(intakeSubsystem.setRollerStateCommand(RollerState.ON)))
                  .onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.INTAKING));
+
+        operator.x()
+                .onTrue(intakeSubsystem.setIntakeStateCommand((IntakeState.EXTENDED)).alongWith(feederSubsystem.setStateCommand(feeder_state.PREVERSE).alongWith(shooterWheels.setStateCommand(shooter_state.TEST))).alongWith(spindexerSubsystem.setStateCommand(spindexer_state.PREVERSE)));
 
         operator.rightTrigger()
                 .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.DITHERIN_AGITATION)).onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED));

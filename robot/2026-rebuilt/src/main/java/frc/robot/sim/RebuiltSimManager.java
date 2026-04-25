@@ -100,7 +100,7 @@ public class RebuiltSimManager {
     private static final double BUMPER_HEIGHT_M = 0.25;
 
     /** Starting pose for simulation. */
-    public static final Pose2d STARTING_POSE = new Pose2d(0.5, 0.5, Rotation2d.kZero);
+    public static final Pose2d STARTING_POSE = new Pose2d(4.434, 7.532, Rotation2d.fromDegrees(0.));
 
     /** Maximum fuel balls the hopper can hold (placeholder). */
     private static final int HOPPER_CAPACITY = 50;  // was 70; spec: hopper holds 50 balls
@@ -487,16 +487,16 @@ public class RebuiltSimManager {
 
         // --- Vision sim (writes true pose to NT in Limelight format) ---
         Logger.recordOutput("Sim/State", "Loading vision");
-        Transform3d ll4Mount = new Transform3d(
+        Transform3d llMainMount = new Transform3d(
                 new Translation3d(0.31, -0.284, 0.193),
                 new Rotation3d(0, Math.toRadians(-25), Math.toRadians(22)));
-        Transform3d ll3Mount = new Transform3d(
+        Transform3d llBackupMount = new Transform3d(
                 new Translation3d(0.31, 0.284, 0.193),
                 new Rotation3d(0, Math.toRadians(-25), Math.toRadians(-22)));
-        LimelightSim ll4Cam = new LimelightSim(
-                new CameraConfig("limelight-two", LimelightType.LL4, ll4Mount));
-        LimelightSim ll3Cam = new LimelightSim(
-                new CameraConfig("limelight-five", LimelightType.LL3, ll3Mount));
+        LimelightSim llMainCam = new LimelightSim(
+                new CameraConfig("limelight-two", LimelightType.LL4, llMainMount));
+        LimelightSim llBackupCam = new LimelightSim(
+                new CameraConfig("limelight-five", LimelightType.LL3, llBackupMount));
         LimelightSim fuelCam = new LimelightSim(
                 new CameraConfig(FUEL_LL_NAME, LimelightType.LL3, FUEL_LL_MOUNT),
                 FUEL_LL_NEAR,
@@ -504,7 +504,7 @@ public class RebuiltSimManager {
                 RebuiltGamePieces.FUEL.getRadius(),
                 FUEL_LL_FPS,
                 BallTracking::isActive);
-        visionSimManager = new VisionSimManager(ll4Cam, ll3Cam, fuelCam);
+        visionSimManager = new VisionSimManager(llMainCam, llBackupCam, fuelCam);
 
         // --- Cache gyro sim state ---
         Logger.recordOutput("Sim/State", "Syncing gyro");

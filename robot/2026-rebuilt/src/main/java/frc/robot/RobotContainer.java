@@ -24,7 +24,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.RobotMap.DrivetrainConstants;
 import frc.robot.commands.swerve.BallTracking;
-import frc.robot.commands.swerve.BallTracking.BallTrackingState;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem.IntakeState;
 import frc.robot.subsystems.intake.IntakeSubsystem.RollerState;
@@ -38,8 +37,8 @@ import frc.robot.subsystems.spindexer.Spindexer;
 import frc.robot.subsystems.spindexer.Spindexer.spindexer_state;
 import frc.robot.sim.RebuiltSimManager;
 import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
+
 
 import org.littletonrobotics.junction.Logger;
 
@@ -52,9 +51,9 @@ import frc.robot.utils.AutoSweeper;
 import limelight.networktables.LimelightSettings.ImuMode;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
-import java.util.List;
+
 import java.util.Set;
-import java.util.stream.Collectors;
+
 
 import static edu.wpi.first.units.Units.Rotations;
 
@@ -68,8 +67,8 @@ public class RobotContainer extends ControllerBindings {
     // Limelight naming conventions are based on physical inventory system, hence
     // "limelight-two" and "limelight-five" represent our second and fifth
     // limelights respectively.
-    private final LimelightWrapper ll4 = new LimelightWrapper("limelight-two", true);
-    private final LimelightWrapper ll3 = new LimelightWrapper("limelight-five", false);
+    private final LimelightWrapper llMain = new LimelightWrapper("limelight-two", true);
+    private final LimelightWrapper llBackup = new LimelightWrapper("limelight-five", true);
 
     private static java.io.File usb = RobotMap.PitConstants.usb;
 
@@ -138,24 +137,24 @@ public class RobotContainer extends ControllerBindings {
         return drivetrain;
     }
 
-    public LimelightWrapper getLl3() {
-        return ll3;
+    public LimelightWrapper getLimelightBackup() {
+        return llBackup;
     }
 
-    public LimelightWrapper getLl4() {
-        return ll4;
+    public LimelightWrapper getLimelightMain() {
+        return llMain;
     }
 
     public RobotContainer() {
     instance = this;
-    ll4.getSettings().withImuMode(ImuMode.ExternalImu).save();
+    llMain.getSettings().withImuMode(ImuMode.ExternalImu).save();
     setupDriveBindings(controller);
     setupOperatorBindings(operaterController);
     configureRootTests();
     PitTesting.createDashboard();
     new Trigger(drivetrain::withinTrench).and(DriverStation::isTeleop).onTrue(shooterHood.setStateCommand(shooterhood_state.IN));
     registerNamedCommands();
-    SmartDashboard.putBoolean("Limelight-Four", true);
+    SmartDashboard.putBoolean("UseMainLL", true);
     drivetrain.registerTelemetry(telemetry::telemeterize);
 
     // Set up auto chooser
@@ -163,25 +162,31 @@ public class RobotContainer extends ControllerBindings {
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
     // Ball tracking autos
+
+    
+    try {
     autoChooser.addOption("Dev-FD-RightMidFieldDoublepass", new SequentialCommandGroup(
-            AutoBuilder.buildAuto("Internal-FD-RightMidFieldDoublepass-Part1")
-            .andThen(NamedCommands.getCommand("Ball Track And Return"))
-            .andThen(AutoBuilder.buildAuto("Internal-FD-RightMidFieldDoublepass-Part2"))
-            .andThen(AutoBuilder.buildAuto("Internal-FD-RightMidFieldDoublepass-Part3"))));
+                AutoBuilder.buildAuto("Internal-FD-RightMidFieldDoublepass-Part1")
+                .andThen(NamedCommands.getCommand("Ball Track And Return for RightMidFieldDoublePass"))
+                .andThen(AutoBuilder.buildAuto("Internal-FD-RightMidFieldDoublepass-Part2"))
+                .andThen(AutoBuilder.buildAuto("Internal-FD-RightMidFieldDoublepass-Part3"))));
     autoChooser.addOption("Dev-FD-MidIntakeToLeftBump", new SequentialCommandGroup(
             AutoBuilder.buildAuto("Internal-FD-MidIntakeToLeftBump-Part1")
-            .andThen(NamedCommands.getCommand("Ball Track And Return"))
+            .andThen(NamedCommands.getCommand("Ball Track And Return for MidIntakeToLeftBump"))
             .andThen(AutoBuilder.buildAuto("Internal-FD-MidIntakeToLeftBump-Part2"))));
     autoChooser.addOption("Dev-FD-RightSneakDoublepass", new SequentialCommandGroup(
             AutoBuilder.buildAuto("Internal-FD-RightSneakDoublepass-Part1")
-            .andThen(NamedCommands.getCommand("Ball Track And Return"))
+            .andThen(NamedCommands.getCommand("Ball Track And Return for RightSneakDoublePassPart2"))
             .andThen(AutoBuilder.buildAuto("Internal-FD-RightSneakDoublepass-Part2"))
-            .andThen(NamedCommands.getCommand("Ball Track And Return"))
+            .andThen(NamedCommands.getCommand("Ball Track And Return for RightSneakDoublePassPart3"))
             .andThen(AutoBuilder.buildAuto("Internal-FD-RightSneakDoublepass-Part3"))));
+    autoChooser.addOption("Test-Part1-Only", AutoBuilder.buildAuto("Internal-FD-RightMidFieldDoublepass-Part1"));
 
     // Mirrored autons
     autoChooser.addOption("Comp-LeftMidfieldDoublePass", new PathPlannerAuto("Comp-RightMidfieldDoublepass", true));
     autoChooser.addOption("Dev-MidIntakeToRightBump", new PathPlannerAuto("Comp-MidIntakeToLeftBump", true)); // TESTING - DO NOT USE
+
+    } catch (Exception e) { e.printStackTrace();}
   }
 
     // --- APIs used by the diagnostic server / UI to command shooter/hood ---
@@ -191,6 +196,7 @@ public class RobotContainer extends ControllerBindings {
                     shooterWheels.setStateCommand(ShooterWheels.shooter_state.TEST).execute();
                     shooterWheels.setVelocity(RotationsPerSecond.of(rps));
                 } catch (Exception e) {
+                    e.printStackTrace();
                 }
             },
             pos -> {
@@ -198,14 +204,15 @@ public class RobotContainer extends ControllerBindings {
                     shooterHood.setStateCommand(ShooterHood.shooterhood_state.TEST).execute();
                     shooterHood.setAngle(Rotations.of(pos)); // pos is already in rotations (0-30)
                 } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            });
+        });
 
     public synchronized void setShooterVelocityRps(double rps) {
         try {
             shooterWheels.setVelocity(RotationsPerSecond.of(rps));
         } catch (Exception e) {
-            // best-effort
+            e.printStackTrace();
         }
     }
 
@@ -214,7 +221,7 @@ public class RobotContainer extends ControllerBindings {
             // position is in rotations (0 to 30 rotations)
             shooterHood.setAngle(Rotations.of(position));
         } catch (Exception e) {
-            // best-effort
+            e.printStackTrace();
         }
     }
 
@@ -223,7 +230,7 @@ public class RobotContainer extends ControllerBindings {
         try {
             shooterHood.setAngle(Rotations.of(deg / 360.0));
         } catch (Exception e) {
-            // best-effort
+            e.printStackTrace();
         }
     }
 
@@ -281,10 +288,12 @@ public class RobotContainer extends ControllerBindings {
 
 
     public void updateLocalization() {
-        if (ll4.isConnected()){// && SmartDashboard.getBoolean("Limelight-Four", true)) {
-            ll4.updateLocalizationLimelight(drivetrain);
+        if (llMain.isConnected() && SmartDashboard.getBoolean("UseMainLL", true)) {
+            llMain.updateLocalizationLimelight(drivetrain);
+            SmartDashboard.putString("Active Limelight", "MAIN");
         } else {
-            ll3.updateLocalizationLimelight(drivetrain);
+            llBackup.updateLocalizationLimelight(drivetrain);
+            SmartDashboard.putString("Active Limelight", "BACKUP");
         }
     }
 
@@ -295,7 +304,7 @@ public class RobotContainer extends ControllerBindings {
             var dist = drivetrain.getDistanceToVirtualHub();
             frc.robot.utils.RTU.TelemetryPublisher.publish(vel, hood, dist);
         } catch (Exception e) {
-            // swallow — telemetry is best-effort
+            e.printStackTrace(); 
         }
     }
 
@@ -369,33 +378,68 @@ public void registerNamedCommands() {
   NamedCommands.registerCommand("Shooting", shooterWheels.setStateCommand(shooter_state.SHOOTING).alongWith(feederSubsystem.setStateCommand(feeder_state.RUN)).alongWith(spinDexer.setStateCommand(spindexer_state.RUN)).alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
   NamedCommands.registerCommand("Start Passing Spin", shooterWheels.setStateCommand(shooter_state.PASSING).alongWith(shooterHood.setStateCommand(shooterhood_state.PASSING)));
   NamedCommands.registerCommand("Passing", shooterWheels.setStateCommand(shooter_state.PASSING).alongWith(feederSubsystem.setStateCommand(feeder_state.RUN)).alongWith(spinDexer.setStateCommand(spindexer_state.RUN)).alongWith(shooterHood.setStateCommand(shooterhood_state.PASSING)));
-  NamedCommands.registerCommand("Ball Track And Return",
+  NamedCommands.registerCommand("Ball Track And Return for RightMidFieldDoublePass",
     Commands.defer(() -> {
-        Pose2d startPose = drivetrain.getState().Pose;
-        return Commands.sequence(
-            new BallTracking(drivetrain).withTimeout(3.0),
-            AutoBuilder.pathfindToPose(
-                startPose, /* target pose to drive to */
-                new PathConstraints(
-                    5.0,   /* max velocity (m/s) */
-                    4.0,   /* max acceleration (m/s²) */
-                    540.0, /* max angular velocity (deg/s) */
-                    360.0  /* max angular acceleration (deg/s²) */
-                )
-            ));
+        try {
+            Pose2d returnPose = PathPlannerPath.fromPathFile(
+                "Internal-FD-RightMidFieldDoublepass-Part2")
+                .getStartingHolonomicPose().get();
+            return Commands.sequence(
+                new BallTracking(drivetrain).withTimeout(3.0),
+                AutoBuilder.pathfindToPose(returnPose,
+                    new PathConstraints(2.0, 2.0, 360.0, 360.0)));
+        } catch (Exception e) { return Commands.none(); }
+    }, Set.of(drivetrain)));
+  
+    NamedCommands.registerCommand("Ball Track And Return for MidIntakeToLeftBump",
+    Commands.defer(() -> {
+        try {
+            Pose2d returnPose = PathPlannerPath.fromPathFile(
+                "Internal-FD-MidIntakeToLeftBump-Part2")
+                .getStartingHolonomicPose().get();
+            return Commands.sequence(
+                new BallTracking(drivetrain).withTimeout(3.0),
+                AutoBuilder.pathfindToPose(returnPose,
+                    new PathConstraints(2.0, 2.0, 360.0, 360.0)));
+        } catch (Exception e) { return Commands.none(); }
+    }, Set.of(drivetrain)));
+  
+    NamedCommands.registerCommand("Ball Track And Return for RightSneakDoublePassPart2",
+    Commands.defer(() -> {
+        try {
+            Pose2d returnPose = PathPlannerPath.fromPathFile(
+                "Internal-FD-RightSneakDoublepass-Part2")
+                .getStartingHolonomicPose().get();
+            return Commands.sequence(
+                new BallTracking(drivetrain).withTimeout(3.0),
+                AutoBuilder.pathfindToPose(returnPose,
+                    new PathConstraints(2.0, 2.0, 360.0, 360.0)));
+        } catch (Exception e) { return Commands.none(); }
+    }, Set.of(drivetrain)));
+ 
+    NamedCommands.registerCommand("Ball Track And Return for RightSneakDoublePassPart3",
+    Commands.defer(() -> {
+        try {
+            Pose2d returnPose = PathPlannerPath.fromPathFile(
+                "Internal-FD-RightSneakDoublepass-Part3")
+                .getStartingHolonomicPose().get();
+            return Commands.sequence(
+                new BallTracking(drivetrain).withTimeout(3.0),
+                AutoBuilder.pathfindToPose(returnPose,
+                    new PathConstraints(2.0, 2.0, 360.0, 360.0)));
+        } catch (Exception e) { return Commands.none(); }
     }, Set.of(drivetrain)));
 }
 
 
-
 private final ShuffleboardLayout llLayout = Shuffleboard.getTab("Pit Testing").getLayout("Limelight Health", BuiltInLayouts.kList).withSize(2,1).withPosition(4, 5);
-private GenericEntry ll3conect = llLayout.add("ll3 isConnected", false).getEntry();
-private GenericEntry ll4conect = llLayout.add("ll4 isConnected", false).getEntry();
+private GenericEntry llBackupConnect = llLayout.add("LL Backup Connected", false).getEntry();
+private GenericEntry llMainConnect = llLayout.add("LL Main Connected", false).getEntry();
 
 
 public void limelightConnection(){
-    ll3conect.setBoolean(ll3.isConnected());
-    ll4conect.setBoolean(ll4.isConnected());
+    llMainConnect.setBoolean(llMain.isConnected());
+    llBackupConnect.setBoolean(llBackup.isConnected());
 }
 
 private final GenericEntry testLayout = Shuffleboard.getTab("Pit Testing").add("storage", false).getEntry();

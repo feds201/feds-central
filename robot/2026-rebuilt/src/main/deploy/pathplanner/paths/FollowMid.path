@@ -1,0 +1,70 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.667201986754967,
+        "y": 7.6141473509933775
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 4.667201986754965,
+        "y": 7.6141473509933775
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.732764900662252,
+        "y": 7.43990894039735
+      },
+      "prevControl": {
+        "x": 6.513096026490066,
+        "y": 7.461688741721854
+      },
+      "nextControl": {
+        "x": 8.270110511710236,
+        "y": 7.4303134830572075
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.58217715231788,
+        "y": 6.968013245033112
+      },
+      "prevControl": {
+        "x": 8.593529067547543,
+        "y": 7.217755380085687
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "FollowMidEnd"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 4.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 360.0,
+    "nominalVoltage": 11.8,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 2.0,
+    "rotation": 90.0
+  },
+  "reversed": false,
+  "folder": "FollowCenter",
+  "idealStartingState": {
+    "velocity": 0.0,
+    "rotation": 90.0
+  },
+  "useDefaultConstraints": true
+}
