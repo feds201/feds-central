@@ -96,7 +96,7 @@ public class RebuiltSimManager {
     private static final double BUMPER_HEIGHT_M = 0.25;
 
     /** Starting pose for simulation. */
-    public static final Pose2d STARTING_POSE = new Pose2d(0.5, 0.5, Rotation2d.kZero);
+    public static final Pose2d STARTING_POSE = new Pose2d(4.434, 7.532, Rotation2d.fromDegrees(0.));
 
     /** Maximum fuel balls the hopper can hold (placeholder). */
     private static final int HOPPER_CAPACITY = 70;

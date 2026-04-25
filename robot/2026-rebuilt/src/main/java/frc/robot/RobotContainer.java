@@ -23,9 +23,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.RobotMap.DrivetrainConstants;
-import frc.robot.RobotMap.PathfindConstants;
 import frc.robot.commands.swerve.BallTracking;
-import frc.robot.commands.swerve.BallTracking.BallTrackingState;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem.IntakeState;
 import frc.robot.subsystems.intake.IntakeSubsystem.RollerState;
@@ -39,11 +37,9 @@ import frc.robot.subsystems.spindexer.Spindexer;
 import frc.robot.subsystems.spindexer.Spindexer.spindexer_state;
 import frc.robot.sim.RebuiltSimManager;
 import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.util.FileVersionException;
-import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
 
-import org.json.simple.parser.ParseException;
+
 import org.littletonrobotics.junction.Logger;
 
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
@@ -55,11 +51,9 @@ import frc.robot.utils.AutoSweeper;
 import limelight.networktables.LimelightSettings.ImuMode;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.List;
+
 import java.util.Set;
-import java.util.stream.Collectors;
+
 
 import static edu.wpi.first.units.Units.Rotations;
 
@@ -184,7 +178,7 @@ public class RobotContainer extends ControllerBindings {
     autoChooser.addOption("Comp-LeftMidfieldDoublePass", new PathPlannerAuto("Comp-RightMidfieldDoublepass", true));
     autoChooser.addOption("Dev-MidIntakeToRightBump", new PathPlannerAuto("Comp-MidIntakeToLeftBump", true)); // TESTING - DO NOT USE
 
-    } catch (Exception e) {}
+    } catch (Exception e) { e.printStackTrace();}
   }
 
     // --- APIs used by the diagnostic server / UI to command shooter/hood ---
@@ -194,6 +188,7 @@ public class RobotContainer extends ControllerBindings {
                     shooterWheels.setStateCommand(ShooterWheels.shooter_state.TEST).execute();
                     shooterWheels.setVelocity(RotationsPerSecond.of(rps));
                 } catch (Exception e) {
+                    e.printStackTrace();
                 }
             },
             pos -> {
@@ -201,6 +196,7 @@ public class RobotContainer extends ControllerBindings {
                     shooterHood.setStateCommand(ShooterHood.shooterhood_state.TEST).execute();
                     shooterHood.setAngle(Rotations.of(pos)); // pos is already in rotations (0-30)
                 } catch (Exception e) {
+                    e.printStackTrace();
                 }
         });
 
@@ -208,7 +204,7 @@ public class RobotContainer extends ControllerBindings {
         try {
             shooterWheels.setVelocity(RotationsPerSecond.of(rps));
         } catch (Exception e) {
-            // best-effort
+            e.printStackTrace();
         }
     }
 
@@ -217,7 +213,7 @@ public class RobotContainer extends ControllerBindings {
             // position is in rotations (0 to 30 rotations)
             shooterHood.setAngle(Rotations.of(position));
         } catch (Exception e) {
-            // best-effort
+            e.printStackTrace();
         }
     }
 
@@ -226,7 +222,7 @@ public class RobotContainer extends ControllerBindings {
         try {
             shooterHood.setAngle(Rotations.of(deg / 360.0));
         } catch (Exception e) {
-            // best-effort
+            e.printStackTrace();
         }
     }
 
@@ -298,7 +294,7 @@ public class RobotContainer extends ControllerBindings {
             var dist = drivetrain.getDistanceToVirtualHub();
             frc.robot.utils.RTU.TelemetryPublisher.publish(vel, hood, dist);
         } catch (Exception e) {
-            // swallow — telemetry is best-effort
+            e.printStackTrace(); 
         }
     }
 
