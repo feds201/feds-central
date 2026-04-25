@@ -665,33 +665,39 @@ class _BotPathViewerWithSelectorState
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            // Mirror toggle button (only shown when path is checked)
-            if (isChecked)
-              IconButton(
-                icon: Icon(
-                  Icons.swap_vert,
-                  size: 18,
-                  color: isMirrored
-                      ? theme.colorScheme.primary
-                      : theme.colorScheme.onSurface.withAlpha(100),
-                ),
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(
-                  minWidth: 28,
-                  minHeight: 28,
-                ),
-                onPressed: () {
-                  setState(() {
-                    final set = _mirrored[teamKey] ??= {};
-                    if (set.contains(pathName)) {
-                      set.remove(pathName);
-                    } else {
-                      set.add(pathName);
-                    }
-                  });
-                },
-                tooltip: isMirrored ? 'Unmirror path' : 'Mirror path',
-              ),
+            // Mirror toggle button slot — always reserved so row height
+            // doesn't change when a path is (un)checked.
+            SizedBox(
+              width: 28,
+              height: 24,
+              child: isChecked
+                  ? IconButton(
+                      icon: Icon(
+                        Icons.swap_vert,
+                        size: 18,
+                        color: isMirrored
+                            ? theme.colorScheme.primary
+                            : theme.colorScheme.onSurface.withAlpha(100),
+                      ),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(
+                        minWidth: 28,
+                        minHeight: 24,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          final set = _mirrored[teamKey] ??= {};
+                          if (set.contains(pathName)) {
+                            set.remove(pathName);
+                          } else {
+                            set.add(pathName);
+                          }
+                        });
+                      },
+                      tooltip: isMirrored ? 'Unmirror path' : 'Mirror path',
+                    )
+                  : null,
+            ),
           ],
         ),
       ),

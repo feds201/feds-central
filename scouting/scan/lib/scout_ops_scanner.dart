@@ -154,7 +154,7 @@ class _ScoutOpsScannerState extends State<ScoutOpsScanner>
                       final record = data.scannedRecords[
                           data.scannedRecords.length - 1 - index];
                       final cols = record.split(',');
-                      final matchNum = cols.length > 7 ? cols[7].trim() : '?';
+                      final matchNum = cols.length > 7 ? cols[2].trim() : '?';
                       final alliance = cols.length > 4 ? cols[4].trim() : '';
                       final station = cols.length > 6 ? cols[6].trim() : '';
                       final isRed = alliance.toLowerCase().contains('red');
@@ -360,7 +360,7 @@ class _ScoutOpsScannerState extends State<ScoutOpsScanner>
                   Icon(Icons.radar, color: theme.colorScheme.primary, size: 18),
                   const SizedBox(width: 8),
                   const Text(
-                    'SCOUT-UP',
+                    'SCOUT-OP',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 13,

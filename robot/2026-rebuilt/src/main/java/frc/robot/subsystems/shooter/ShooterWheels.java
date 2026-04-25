@@ -5,7 +5,6 @@
 package frc.robot.subsystems.shooter;
 
 import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.Rotation;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
@@ -36,7 +35,6 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.RobotMap;
@@ -51,8 +49,8 @@ public class ShooterWheels extends SubsystemBase {
     SHOOTING(RotationsPerSecond.of(0)),
     IDLE(RotationsPerSecond.of(0)),
     PASSING(RotationsPerSecond.of(0)),
-    LAYUP(RotationsPerSecond.of(33)), // 30
-    HALFCOURT (RotationsPerSecond.of(35)); // 85 
+    LAYUP(RotationsPerSecond.of(35)), // ~3m (midway between hub+tower)
+    HALFCOURT (RotationsPerSecond.of(43)); // ~5.5m (corner) 
 
     private final AngularVelocity targetVelocity;
 
@@ -78,16 +76,6 @@ public class ShooterWheels extends SubsystemBase {
     private ShuffleboardTab tab = Shuffleboard.getTab("testing");
     private DoubleSupplier speed = ()->0.0;
 
-    private final ShuffleboardTab pitTab;
-    private final ShuffleboardLayout shooterLayout;
-    private final GenericEntry shooter1ConnectedEntry;
-    private final GenericEntry shooter1PoweredEntry;
-    private final GenericEntry shooter2ConnectedEntry;
-    private final GenericEntry shooter2PoweredEntry;
-    private final GenericEntry shooter3ConnectedEntry;
-    private final GenericEntry shooter3PoweredEntry;
-    private final GenericEntry shooter4ConnectedEntry;
-    private final GenericEntry shooter4PoweredEntry;
   /** Creates a new Shooter. */
   public ShooterWheels(CommandSwerveDrivetrain dt) {
     this.dt = dt;
@@ -147,24 +135,19 @@ public class ShooterWheels extends SubsystemBase {
                 .withProperties(Map.of("min", 0, "max", .2))
                 .getEntry();
                 speed = () -> swanNeckPivotSpeedSetter.getDouble(0);
-    pitTab = Shuffleboard.getTab("Pit Testing");
-    shooterLayout = pitTab.getLayout("Shooter Wheel Health", BuiltInLayouts.kList).withSize(2,4).withPosition(6, 2);
-    shooter1ConnectedEntry = shooterLayout.add("Top Right Motor is Connected", false).getEntry();
-    shooter1PoweredEntry = shooterLayout.add("Top Right Motor is Powered", false).getEntry();
-    shooter2ConnectedEntry = shooterLayout.add("Bottom Left Motor is Connected", false).getEntry();
-    shooter2PoweredEntry = shooterLayout.add("Bottom Left Motor is Powered", false).getEntry();
-    shooter3ConnectedEntry = shooterLayout.add("Bottom Right Motor is Connected", false).getEntry();
-    shooter3PoweredEntry = shooterLayout.add("Bottom Right Motor is Powered", false).getEntry();
-    shooter4ConnectedEntry = shooterLayout.add("Top Left Motor is Connected", false).getEntry();
-    shooter4PoweredEntry = shooterLayout.add("Top Left Motor is Powered", false).getEntry();
   }
 
   @Override
   public void periodic() {
         Logger.recordOutput("Robot/Shooter/ShooterVelocity", getVelocity().in(RotationsPerSecond));
 
-    Logger.recordOutput("Robot/Shooter/IsShooting", currentState == shooter_state.SHOOTING);
+    Logger.recordOutput("Robot/Shooter/IsShooting", currentState != shooter_state.IDLE);
     Logger.recordOutput("Robot/Shooter/ShooterState", currentState.toString());
+
+    Logger.recordOutput("Robot/ShooterWheels/VelocityRPS", shooterLeader.getVelocity().getValueAsDouble());
+    Logger.recordOutput("Robot/ShooterWheels/TargetVelocityRPS", shooterLeader.getClosedLoopReference().getValueAsDouble());
+    Logger.recordOutput("Robot/ShooterWheels/AppliedVolts", shooterLeader.getMotorVoltage().getValueAsDouble());
+    Logger.recordOutput("Robot/ShooterWheels/StatorAmps", shooterLeader.getStatorCurrent().getValueAsDouble());
     switch (currentState) {
       case SHOOTING:
       shooterLeader.setControl(velocityVoltageControl.withVelocity(getTargetVelocityShooting()));
@@ -184,15 +167,6 @@ public class ShooterWheels extends SubsystemBase {
       setVelocity(RotationsPerSecond.of(speed.getAsDouble()));
       break;
     }
-
-    shooter1ConnectedEntry.setBoolean(shooterLeader.isConnected());
-    shooter1PoweredEntry.setBoolean(shooterLeader.getSupplyVoltage().getValueAsDouble() > RobotMap.PitConstants.kPoweredThresholdVolts);
-    shooter2ConnectedEntry.setBoolean(shooterFollower1.isConnected());
-    shooter2PoweredEntry.setBoolean(shooterFollower1.getSupplyVoltage().getValueAsDouble() > RobotMap.PitConstants.kPoweredThresholdVolts);
-    shooter3ConnectedEntry.setBoolean(shooterFollower2.isConnected());
-    shooter3PoweredEntry.setBoolean(shooterFollower2.getSupplyVoltage().getValueAsDouble() > RobotMap.PitConstants.kPoweredThresholdVolts);
-    shooter4ConnectedEntry.setBoolean(shooterFollower3.isConnected());
-    shooter4PoweredEntry.setBoolean(shooterFollower3.getSupplyVoltage().getValueAsDouble() > RobotMap.PitConstants.kPoweredThresholdVolts);
   }
 
   public void setVelocity(AngularVelocity velocity){
@@ -236,5 +210,37 @@ public class ShooterWheels extends SubsystemBase {
 
   public Command setStateCommand(shooter_state state) {
     return runOnce(() -> setState(state));
-  } 
+  }
+
+  public TalonFX getShooterLeader() {
+      return shooterLeader;
+  }
+
+  public TalonFX getShooterFollower1() {
+      return shooterFollower1;
+  }
+
+  public TalonFX getShooterFollower2() {
+      return shooterFollower2;
+  }
+
+  public TalonFX getShooterFollower3() {
+      return shooterFollower3;
+  }
+
+  // ////////////////////////////////////////////////////////////////////////
+  // SIMULATION SUPPORT — sim-only methods below this line
+  // ////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Returns the leader TalonFX sim state so RebuiltSimManager can drive flywheel physics
+   * (FlywheelSim voltage input and velocity write-back). Sim use only.
+   */
+  public com.ctre.phoenix6.sim.TalonFXSimState getShooterLeaderMotorSimState() {
+      return shooterLeader.getSimState();
+  }
+
+  // ////////////////////////////////////////////////////////////////////////
+  // END SIMULATION SUPPORT
+  // ////////////////////////////////////////////////////////////////////////
 }

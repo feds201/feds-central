@@ -68,7 +68,7 @@ class ScoutOpsData {
       if (columns.length > 7) {
         final alliance = columns[4].trim();
         final station = columns[6].trim();
-        final matchNum = columns[7].trim();
+        final matchNum = columns[2].trim();
         if (matchNum == currentMatchNumber) {
           set.add('$alliance $station');
         }

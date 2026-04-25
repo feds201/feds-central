@@ -1,6 +1,6 @@
 {
-  "name": "Scout-Ops Dash",
-  "short_name": "ScoutOps",
+  "name": "Match Dash",
+  "short_name": "Match Dash",
   "start_url": ".",
   "display": "standalone",
   "background_color": "#0B0F19",
