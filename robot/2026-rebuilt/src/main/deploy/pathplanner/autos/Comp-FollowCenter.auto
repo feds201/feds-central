@@ -23,7 +23,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Extend Hopper"
+                  "name": "Extend Intake"
                 }
               }
             ]
@@ -42,88 +42,9 @@
           }
         },
         {
-          "type": "sequential",
+          "type": "named",
           "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Start Shooter Spin"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Run Rollers"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Retract Intake"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 0.5
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Extend Intake"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 0.5
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Retract Intake"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 0.5
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Extend Intake"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 0.5
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Retract Intake"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 0.5
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Extend Intake"
-                }
-              }
-            ]
+            "name": "Start Shooter Spin"
           }
         },
         {
@@ -141,6 +62,97 @@
                 "data": {
                   "name": "Run Rollers"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Run Shooter"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Retract Intake"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.5
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Extend Intake"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.5
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Retract Intake"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.5
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Extend Intake"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.5
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Retract Intake"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.5
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Extend Intake"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Run Rollers"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Start Shooter Spin"
+                }
               }
             ]
           }
@@ -152,19 +164,13 @@
           }
         },
         {
-          "type": "path",
-          "data": {
-            "pathName": "FollowDepotToShoot"
-          }
-        },
-        {
           "type": "sequential",
           "data": {
             "commands": [
               {
                 "type": "named",
                 "data": {
-                  "name": "Start Shooter Spin"
+                  "name": "Run Shooter"
                 }
               },
               {

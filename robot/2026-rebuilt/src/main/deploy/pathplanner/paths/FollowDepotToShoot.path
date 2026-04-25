@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.6543294701986755,
-        "y": 5.0296109271523175
+        "x": 0.5744701986754965,
+        "y": 6.779254966887416
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.5763410596026488,
-        "y": 5.11673013245033
+        "x": 1.4964817880794696,
+        "y": 6.866374172185429
       },
       "isLocked": false,
       "linkedName": "FollowDepotEnd"
@@ -48,7 +48,7 @@
   "folder": "FollowCenter",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 89.66197572406246
+    "rotation": -90.0
   },
   "useDefaultConstraints": true
 }
