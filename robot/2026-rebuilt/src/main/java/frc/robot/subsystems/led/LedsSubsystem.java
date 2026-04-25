@@ -109,8 +109,6 @@ public class LedsSubsystem extends SubsystemBase {
     m_currentStateRight = desiredDriveMode();
     m_currentStateLeft = getShootingleds();
     m_shooterstate = RobotContainer.getInstance().getShooterWheelsState();
-
-    // Determine current DS Mode as an integer
     int currentDSMode = -1;
     if (DriverStation.isDisabled())
       currentDSMode = 0;

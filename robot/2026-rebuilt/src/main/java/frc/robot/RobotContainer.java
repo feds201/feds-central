@@ -149,6 +149,13 @@ public class RobotContainer extends ControllerBindings {
     public LimelightWrapper getLimelightMain() {
         return llMain;
     }
+      public driveMode getDriveMode() {
+        return TeleopSwerve.getDriveMode();
+    }
+    public shooter_state getShooterWheelsState() {
+        return shooterWheels.getCurrentState();
+    }
+
 
     public RobotContainer() {
     instance = this;
@@ -305,7 +312,7 @@ public class RobotContainer extends ControllerBindings {
 
     public void initSimulation() {
         simManager = new RebuiltSimManager(drivetrain,
-                intakeSubsystem, feederSubsystem, shooterWheels, shooterHood, spinDexer, ledsSubsystem);
+                intakeSubsystem, feederSubsystem, shooterWheels, shooterHood, spinDexer);
         Logger.recordOutput("Sim/State", "Ready");
         drivetrain.resetPose(RebuiltSimManager.STARTING_POSE);
     }
