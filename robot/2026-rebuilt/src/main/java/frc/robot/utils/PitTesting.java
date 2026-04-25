@@ -53,8 +53,7 @@ public class PitTesting {
     static ShooterWheels shooterWheels = container.getShooterWheels();
     static Testing testing = new Testing();
 
-    static DigitalInput limit_switch_r = intake.getLimitSwitchR();
-    static DigitalInput limit_switch_l = intake.getLimitSwitchL();
+    static DigitalInput limit_switch = intake.getLimitSwitch();
 
     private static String[] moduleNames = {"Front Left", "Front Right", "Back Left", "Back Right"};
 
@@ -118,8 +117,7 @@ public class PitTesting {
         registerEntry("spindexer");
         registerEntry("testing");
         
-        entryMap.put("limit switchl", pitTab.add("left pressed", false).getEntry());
-        entryMap.put("limit switchr", pitTab.add("right pressed", false).getEntry());
+        entryMap.put("limit switch", pitTab.add("switch pressed", false).getEntry());
 
         //drivetrain
         for (int i = 0; i < 4; ++i) {
@@ -240,8 +238,7 @@ public class PitTesting {
         updateEntry("spindexer", spindexer.getSpindexerMotor());
         updateEntry("testing", testing.getMotor());
 
-        entryMap.get("limit switchl").setBoolean(!limit_switch_l.get());
-        entryMap.get("limit switchr").setBoolean(!limit_switch_r.get());
+        entryMap.get("limit switch").setBoolean(!limit_switch.get());
  
         tent.setBoolean(testing.getState() == MotorState.ON);
 

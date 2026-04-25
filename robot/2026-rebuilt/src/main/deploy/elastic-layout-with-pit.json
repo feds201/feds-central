@@ -574,14 +574,14 @@
             },
             "children": [
               {
-                "title": "LL Backup Connected",
+                "title": "ll3 isConnected",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Limelight Health/LL Backup Connected",
+                  "topic": "/Shuffleboard/Pit Testing/Limelight Health/ll3 isConnected",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -591,14 +591,14 @@
                 }
               },
               {
-                "title": "LL Main Connected",
+                "title": "ll4 isConnected",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Limelight Health/LL Main Connected",
+                  "topic": "/Shuffleboard/Pit Testing/Limelight Health/ll4 isConnected",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -1390,53 +1390,6 @@
             ]
           },
           {
-            "title": "limit switches(for intake)",
-            "x": 320.0,
-            "y": 384.0,
-            "width": 256.0,
-            "height": 192.0,
-            "type": "List Layout",
-            "properties": {
-              "label_position": "TOP"
-            },
-            "children": [
-              {
-                "title": "left pressed",
-                "x": 768.0,
-                "y": 384.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Boolean Box",
-                "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/left pressed",
-                  "period": 0.06,
-                  "data_type": "boolean",
-                  "true_color": 4283215696,
-                  "false_color": 4294198070,
-                  "true_icon": "None",
-                  "false_icon": "None"
-                }
-              },
-              {
-                "title": "right pressed",
-                "x": 704.0,
-                "y": 448.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Boolean Box",
-                "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/right pressed",
-                  "period": 0.06,
-                  "data_type": "boolean",
-                  "true_color": 4283215696,
-                  "false_color": 4294198070,
-                  "true_icon": "None",
-                  "false_icon": "None"
-                }
-              }
-            ]
-          },
-          {
             "title": "drivetrain",
             "x": 320.0,
             "y": 0.0,
@@ -1478,7 +1431,25 @@
             ]
           }
         ],
-        "containers": []
+        "containers": [
+          {
+            "title": "switch pressed",
+            "x": 320.0,
+            "y": 448.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/Shuffleboard/Pit Testing/switch pressed",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          }
+        ]
       }
     }
   ]

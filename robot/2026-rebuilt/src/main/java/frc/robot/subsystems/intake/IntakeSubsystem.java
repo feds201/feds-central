@@ -594,12 +594,8 @@ public class IntakeSubsystem extends SubsystemBase {
       return rollerMotor;
     }
 
-    public DigitalInput getLimitSwitchL() {
-      return limit_switch_l;
-    }
-
-    public DigitalInput getLimitSwitchR() {
-      return limit_switch_r;
+    public DigitalInput getLimitSwitch() {
+      return limit_switch;
     }
     
     
