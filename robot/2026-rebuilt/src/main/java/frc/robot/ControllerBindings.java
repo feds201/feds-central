@@ -105,7 +105,7 @@ public class ControllerBindings {
                 .whileTrue(intakeSubsystem.setRollerStateCommand(RollerState.REVERSE))
                 .onFalse(intakeSubsystem.setRollerStateCommand(RollerState.OFF));
 
-        driver.y()
+        driver.a()
                 .onTrue(Commands.sequence(
                         feederSubsystem.setStateCommand(feeder_state.PRUN),
                         spinDexer.setStateCommand(spindexer_state.PFORWARD),
@@ -135,7 +135,7 @@ public class ControllerBindings {
                         intakeSubsystem.setRollerStateCommand(RollerState.OFF)
                 ));
 
-                driver.a()
+                driver.y()
                 .onTrue(Commands.sequence(
                         feederSubsystem.setStateCommand(feeder_state.PRUN),
                         spinDexer.setStateCommand(spindexer_state.PFORWARD),

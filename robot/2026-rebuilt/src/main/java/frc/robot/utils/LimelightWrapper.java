@@ -5,24 +5,26 @@ import static edu.wpi.first.units.Units.RadiansPerSecond;
 
 import java.util.Optional;
 
-import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.RobotMap.VisionConstants;
+import frc.robot.utils.FieldConstants.AprilTagLayoutType;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import limelight.Limelight;
 import limelight.networktables.AngularVelocity3d;
 import limelight.networktables.Orientation3d;
 import limelight.networktables.PoseEstimate;
 
-@AutoLog
+@Logged
 public class LimelightWrapper extends Limelight {
     private double roboRioHeartbeat = 0;
     private int totalTags = 0;
@@ -181,6 +183,15 @@ public class LimelightWrapper extends Limelight {
             totalTags += visionEstimateMt2.get().tagCount;
             roboRioHeartbeat++;
             Logger.recordOutput("Robot/Limelights/" + limelightName + "/AvgTagCount", totalTags / roboRioHeartbeat);
+
+            // Publish the field pose of each detected AprilTag
+            Pose3d[] tagPoses = new Pose3d[poseEstimate.rawFiducials.length];
+            int idx = 0;
+            for (var f : poseEstimate.rawFiducials) {
+                var p = AprilTagLayoutType.OFFICIAL.getLayout().getTagPose(f.id);
+                tagPoses[idx++] = p.orElse(new Pose3d());
+            }
+            Logger.recordOutput("Robot/AprilTags/" + limelightName, tagPoses);
 
             // If we see >0 tags and robot rotates <2 rotations per second
             if (poseEstimate.tagCount > 0

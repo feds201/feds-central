@@ -1,0 +1,99 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.965717674970344,
+        "y": 2.265112692763938
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.180296559912613,
+        "y": 0.6619928825650279
+      },
+      "isLocked": false,
+      "linkedName": "RightFirstShootPosition"
+    },
+    {
+      "anchor": {
+        "x": 3.944804270462635,
+        "y": 0.554400948991697
+      },
+      "prevControl": {
+        "x": 3.1592296718972896,
+        "y": 0.5480313837375184
+      },
+      "nextControl": {
+        "x": 4.428952057303723,
+        "y": 0.5583264971529821
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.838422301304864,
+        "y": 0.554400948991697
+      },
+      "prevControl": {
+        "x": 4.80660164892337,
+        "y": 0.6037481000647519
+      },
+      "nextControl": {
+        "x": 7.053766048502139,
+        "y": 0.4962767475035662
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.9,
+        "y": 3.5
+      },
+      "prevControl": {
+        "x": 7.016447931526392,
+        "y": 2.9177603423680467
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "SecondRightIntakePosition"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.8847184986595117,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 2.05,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 2.3,
+      "rotationDegrees": -90.0
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 4.0,
+    "maxAcceleration": 4.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 360.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 2.0,
+    "rotation": 150.0
+  },
+  "reversed": false,
+  "folder": "MidIntakeToRightBump",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 47.444068057635405
+  },
+  "useDefaultConstraints": false
+}

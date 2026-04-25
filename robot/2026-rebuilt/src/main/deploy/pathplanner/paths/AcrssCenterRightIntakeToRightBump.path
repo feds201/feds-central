@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.1,
-        "y": 2.65
+        "x": 8.32175463623395,
+        "y": 2.825235378031384
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.968742586002373,
-        "y": 4.266322657176749
+        "x": 8.27,
+        "y": 3.769757489300999
       },
       "isLocked": false,
       "linkedName": "AcrossBumpMidintakeEnd"

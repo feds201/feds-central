@@ -4,6 +4,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import frc.sim.core.PhysicsWorld;
+import org.ode4j.math.DVector3;
 import org.ode4j.math.DVector3C;
 
 import java.util.*;
@@ -14,8 +15,6 @@ import java.util.function.BiConsumer;
  * lifecycle, intake consumption, launching, and NT publishing.
  */
 public class GamePieceManager {
-    public static final double CHUNK_SIZE = 2.0;
-
     private final PhysicsWorld physicsWorld;
     private final List<GamePiece> pieces = new ArrayList<>();
     private final Map<String, List<GamePiece>> piecesByType = new HashMap<>();
@@ -25,7 +24,6 @@ public class GamePieceManager {
     // Counter-based intake tracking
     private int heldCount = 0;
     private int maxCapacity = 70; // hopper capacity
-
 
     public GamePieceManager(PhysicsWorld physicsWorld) {
         this.physicsWorld = physicsWorld;
@@ -79,12 +77,24 @@ public class GamePieceManager {
      * @return the launched piece, or null if nothing to launch
      */
     public GamePiece launchPiece(GamePieceConfig config, Translation3d position, Translation3d velocity) {
+        return launchPiece(config, position, velocity, new DVector3(0, 0, 0));
+    }
+
+    /**
+     * Launch a piece from the robot with initial angular velocity (e.g., backspin).
+     * @param config          piece type to launch
+     * @param position        launch position (world frame)
+     * @param velocity        launch velocity (world frame)
+     * @param angularVelocity initial angular velocity (rad/s, world frame)
+     * @return the launched piece, or null if nothing to launch
+     */
+    public GamePiece launchPiece(GamePieceConfig config, Translation3d position, Translation3d velocity, DVector3 angularVelocity) {
         if (heldCount <= 0) return null;
 
         heldCount--;
         String name = config.getName();
         GamePiece piece = new GamePiece(physicsWorld, config, position.getX(), position.getY(), position.getZ());
-        piece.launch(position, velocity);
+        piece.launch(position, velocity, angularVelocity);
         pieces.add(piece);
         piecesByType.computeIfAbsent(name, k -> new ArrayList<>()).add(piece);
         publishKeys.computeIfAbsent(name, k -> "Sim/GamePieces/" + k);
@@ -92,7 +102,7 @@ public class GamePieceManager {
         return piece;
     }
 
-    /** Update all piece states (check for auto-disable / at rest). */
+    /** Update all piece states */
     public void update() {
         for (GamePiece piece : pieces) {
             if (piece.isActive()) {
@@ -145,7 +155,7 @@ public class GamePieceManager {
     }
 
     /** Speed above which a ball is considered "moving" and becomes a wake zone (m/s). */
-    private static final double MOVING_SPEED_THRESHOLD = 0.5;
+    private static final double MOVING_SPEED_THRESHOLD = 1.0;
     /** Speed below which a ball is considered "settled" and eligible for sleep (m/s). */
     private static final double SLEEP_SPEED_THRESHOLD = 0.1;
 
@@ -153,77 +163,114 @@ public class GamePieceManager {
     private static final double SLEEP_SPEED_THRESHOLD_SQ = SLEEP_SPEED_THRESHOLD * SLEEP_SPEED_THRESHOLD;
 
     /**
-     * Proximity-based body activation for performance using a Minecraft-style chunk system.
+     * Tight wake radius around fast-moving pieces — much smaller than the robot wake radius.
+     * A flying ball only needs enough lookahead to not tunnel through its next neighbor.
+     * Tuned just above (max-ball-speed × tick-dt) with a little slack.
+     */
+    private static final double MOVER_WAKE_RADIUS = 0.3;
+    private static final double MOVER_SLEEP_RADIUS = 0.5;
+    private static final double MOVER_WAKE_RADIUS_SQ = MOVER_WAKE_RADIUS * MOVER_WAKE_RADIUS;
+    private static final double MOVER_SLEEP_RADIUS_SQ = MOVER_SLEEP_RADIUS * MOVER_SLEEP_RADIUS;
+
+    /**
+     * Proximity-based body activation for performance using a squared-distance wake radius.
      *
-     * <p>The field is divided into chunks (e.g., 2x2 meters). Active chunks include
-     * the chunk the robot is in, chunks containing any fast-moving piece, and the
-     * 8 neighbors of all those chunks. Pieces in active chunks have their physics
-     * initialized (if needed) and enabled. Pieces in inactive chunks that have
-     * settled are disabled to save CPU.
+     * <p>A piece is kept awake (physics enabled) if its 2D position is within
+     * {@code robotWakeRadius} of the robot, OR within the much tighter {@link #MOVER_WAKE_RADIUS}
+     * of any currently-awake fast-moving piece. The asymmetry is deliberate: the robot needs
+     * a predictable intake/collision volume, but a flying ball only needs enough lookahead
+     * to not tunnel through its next neighbor — without the split, every collision-knocked
+     * ball becomes its own big wake source and you get a chain reaction across a cluster.
+     *
+     * <p>Pieces outside BOTH sleep radii that have settled (speed below threshold) get
+     * their ODE body disabled to save CPU. The wake/sleep bands form a hysteresis gap
+     * to prevent flicker at the boundary.
+     *
+     * <p>Lazy physics init is preserved: {@link GamePiece#getPosition3d()} returns the
+     * piece's spawn position when no body has been created yet, so distance checks on
+     * never-initialized pieces are free. {@link GamePiece#initializePhysics()} is only
+     * called the first time a piece enters the wake band.
      *
      * <p>Call this each tick BEFORE {@link frc.sim.core.PhysicsWorld#step(double)}.
      *
-     * @param robotPos    robot position on the field (2D)
-     * @param wakeRadius  (ignored, using chunk logic)
-     * @param sleepRadius (ignored, using chunk logic)
+     * <p>Note: we compare squared distances against squared radii to avoid a per-piece
+     * {@code sqrt()} — same circle, cheaper check.
+     *
+     * @param robotPos         robot position on the field (2D)
+     * @param robotWakeRadius  pieces within this distance of the robot are enabled (meters)
+     * @param robotSleepRadius pieces farther than this from the robot (and from any
+     *                         fast-mover's sleep radius) that are settled get disabled
      */
-    public void updateProximity(Translation2d robotPos, double wakeRadius, double sleepRadius) {
-        Set<Long> activeChunks = new HashSet<>();
+    public void updateProximity(Translation2d robotPos, double robotWakeRadius, double robotSleepRadius) {
+        final double robotWakeSq = robotWakeRadius * robotWakeRadius;
+        final double robotSleepSq = robotSleepRadius * robotSleepRadius;
+        final double robotX = robotPos.getX();
+        final double robotY = robotPos.getY();
 
-        // Add robot chunk and its neighbors
-        int robotCx = (int) Math.floor(robotPos.getX() / CHUNK_SIZE);
-        int robotCy = (int) Math.floor(robotPos.getY() / CHUNK_SIZE);
-        addChunkAndNeighbors(activeChunks, robotCx, robotCy);
+        // Gather fast-mover wake points: currently-awake pieces moving above the threshold.
+        // Stored as flat (x, y) pairs to avoid per-point allocations. These get a MUCH tighter
+        // wake radius than the robot (see MOVER_WAKE_RADIUS) — a flying ball only needs enough
+        // lookahead to not tunnel through its nearest neighbor, not to wake the whole region.
+        double[] moverXs = new double[pieces.size()];
+        double[] moverYs = new double[pieces.size()];
+        int moverCount = 0;
 
-        // Add fast-moving pieces' chunks
         for (GamePiece piece : pieces) {
             if (!piece.isActive() || !piece.hasPhysics() || !piece.getBody().isEnabled()) continue;
             DVector3C vel = piece.getBody().getLinearVel();
             double speed2 = vel.get0() * vel.get0() + vel.get1() * vel.get1() + vel.get2() * vel.get2();
             if (speed2 >= MOVING_SPEED_THRESHOLD_SQ) {
                 Translation3d pos = piece.getPosition3d();
-                int cx = (int) Math.floor(pos.getX() / CHUNK_SIZE);
-                int cy = (int) Math.floor(pos.getY() / CHUNK_SIZE);
-                addChunkAndNeighbors(activeChunks, cx, cy);
+                moverXs[moverCount] = pos.getX();
+                moverYs[moverCount] = pos.getY();
+                moverCount++;
             }
         }
 
-        // Enable/disable pieces based on active chunks
+        // Apply wake/sleep/hysteresis to every active piece.
         for (GamePiece piece : pieces) {
             if (!piece.isActive()) continue;
 
             Translation3d pos = piece.getPosition3d();
-            int cx = (int) Math.floor(pos.getX() / CHUNK_SIZE);
-            int cy = (int) Math.floor(pos.getY() / CHUNK_SIZE);
-            long chunkKey = packChunk(cx, cy);
+            double px = pos.getX();
+            double py = pos.getY();
 
-            if (activeChunks.contains(chunkKey)) {
+            // Squared-distance to robot.
+            double rdx = px - robotX;
+            double rdy = py - robotY;
+            double robotDistSq = rdx * rdx + rdy * rdy;
+
+            // Squared-distance to nearest fast-mover.
+            double moverDistSq = Double.POSITIVE_INFINITY;
+            for (int i = 0; i < moverCount; i++) {
+                double dx = px - moverXs[i];
+                double dy = py - moverYs[i];
+                double d2 = dx * dx + dy * dy;
+                if (d2 < moverDistSq) moverDistSq = d2;
+            }
+
+            // Wake band: within robot's radius OR within mover's (much tighter) radius.
+            boolean inWakeBand = robotDistSq < robotWakeSq || moverDistSq < MOVER_WAKE_RADIUS_SQ;
+            // Sleep band: outside BOTH radii.
+            boolean outsideSleepBand = robotDistSq > robotSleepSq && moverDistSq > MOVER_SLEEP_RADIUS_SQ;
+
+            if (inWakeBand) {
+                // Lazy-init physics on first entry.
                 if (!piece.hasPhysics()) {
                     piece.initializePhysics();
                 }
                 if (!piece.getBody().isEnabled()) {
                     piece.getBody().enable();
                 }
-            } else if (piece.hasPhysics() && piece.getBody().isEnabled()) {
+            } else if (outsideSleepBand && piece.hasPhysics() && piece.getBody().isEnabled()) {
                 DVector3C vel = piece.getBody().getLinearVel();
                 double speed2 = vel.get0() * vel.get0() + vel.get1() * vel.get1() + vel.get2() * vel.get2();
                 if (speed2 < SLEEP_SPEED_THRESHOLD_SQ) {
                     piece.getBody().disable();
                 }
             }
+            // Hysteresis band (wakeSq <= minSq <= sleepSq): keep current state.
         }
-    }
-
-    private void addChunkAndNeighbors(Set<Long> chunks, int cx, int cy) {
-        for (int i = -1; i <= 1; i++) {
-            for (int j = -1; j <= 1; j++) {
-                chunks.add(packChunk(cx + i, cy + j));
-            }
-        }
-    }
-
-    private long packChunk(int cx, int cy) {
-        return ((long) cx << 32) | (cy & 0xFFFFFFFFL);
     }
 
     /**

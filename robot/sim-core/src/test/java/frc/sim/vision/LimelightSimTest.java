@@ -2,24 +2,17 @@ package frc.sim.vision;
 
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
-import frc.sim.core.PhysicsWorld;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.ode4j.ode.*;
-
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.ode4j.ode.OdeHelper.*;
 
 /**
  * Tests for LimelightSim application logic: angle computation (tx/ty/ta),
- * closest-piece selection, and FPS gating.
+ * frustum inclusion, and FPS gating.
  *
- * <p>These tests call extracted package-private methods directly with
- * synthetic ODE4J bodies at known positions. They do NOT use HAL,
- * NetworkTables, or Timer — keep it that way.
+ * <p>These tests call extracted package-private static helpers directly with
+ * camera-frame {@link Translation3d} inputs. They do NOT use HAL,
+ * NetworkTables, Timer, or ODE4J — keep it that way.
  *
  * <p><b>DO NOT modify sim-core's build.gradle to support these tests.</b>
  * The test infrastructure was carefully designed to avoid HAL/NT native
@@ -35,51 +28,12 @@ class LimelightSimTest {
     // Matches the private constant in LimelightSim
     private static final double AREA_SCALE = 100.0;
 
-    private PhysicsWorld physicsWorld;
-    private DBody chassisBody;
-
-    @BeforeEach
-    void setUp() {
-        physicsWorld = new PhysicsWorld();
-
-        chassisBody = createBody(physicsWorld.getWorld());
-        chassisBody.setPosition(0, 0, 0);
-        chassisBody.setAutoDisableFlag(false);
-        chassisBody.setGravityMode(false);
-
-        DMass chassisMass = createMass();
-        chassisMass.setBoxTotal(50.0, 0.8, 0.8, 0.2);
-        chassisBody.setMass(chassisMass);
-    }
-
-    // -- Helpers ---------------------------------------------------------------
-
-    /** Create a body at a known position (no geom needed — only used for coordinates). */
-    private DBody createPieceAt(double x, double y, double z) {
-        DBody body = createBody(physicsWorld.getWorld());
-        body.setPosition(x, y, z);
-        body.setAutoDisableFlag(false);
-        body.setGravityMode(false);
-
-        DMass mass = createMass();
-        mass.setSphereTotal(0.2, OBJECT_RADIUS);
-        body.setMass(mass);
-
-        return body;
-    }
-
-    /** Identity camera: at chassis center, no rotation. */
-    private static final Translation3d NO_OFFSET = new Translation3d();
-    private static final Rotation3d NO_ROTATION = new Rotation3d();
-
     // -- Angle computation tests -----------------------------------------------
 
     @Test
     void testPieceDirectlyAheadProducesTxZeroTyZero() {
-        DBody piece = createPieceAt(2.0, 0, 0);
-
-        LimelightSim.DetectionResult result = LimelightSim.computeDetection(
-                Set.of(piece), chassisBody, NO_OFFSET, NO_ROTATION, OBJECT_RADIUS);
+        LimelightSim.DetectionResult result = LimelightSim.computeDetectionFromCameraFrame(
+                new Translation3d(2.0, 0, 0), OBJECT_RADIUS);
 
         assertEquals(0.0, result.tx(), ANGLE_EPSILON,
                 "tx should be ~0 for piece directly ahead");
@@ -90,10 +44,8 @@ class LimelightSimTest {
     @Test
     void testPieceToTheRightProducesPositiveTx() {
         // Negative Y = right in WPILib convention
-        DBody piece = createPieceAt(2.0, -1.0, 0);
-
-        LimelightSim.DetectionResult result = LimelightSim.computeDetection(
-                Set.of(piece), chassisBody, NO_OFFSET, NO_ROTATION, OBJECT_RADIUS);
+        LimelightSim.DetectionResult result = LimelightSim.computeDetectionFromCameraFrame(
+                new Translation3d(2.0, -1.0, 0), OBJECT_RADIUS);
 
         // tx = atan2(-(-1), 2) = atan2(1, 2) ≈ 26.57°
         double expectedTx = Math.toDegrees(Math.atan2(1.0, 2.0));
@@ -105,12 +57,9 @@ class LimelightSimTest {
 
     @Test
     void testPieceAboveCameraProducesPositiveTy() {
-        DBody piece = createPieceAt(2.0, 0, 1.0);
+        LimelightSim.DetectionResult result = LimelightSim.computeDetectionFromCameraFrame(
+                new Translation3d(2.0, 0, 1.0), OBJECT_RADIUS);
 
-        LimelightSim.DetectionResult result = LimelightSim.computeDetection(
-                Set.of(piece), chassisBody, NO_OFFSET, NO_ROTATION, OBJECT_RADIUS);
-
-        // ty = atan2(1, 2) ≈ 26.57°
         double expectedTy = Math.toDegrees(Math.atan2(1.0, 2.0));
         assertEquals(0.0, result.tx(), ANGLE_EPSILON,
                 "tx should be ~0 when piece is directly above");
@@ -120,10 +69,8 @@ class LimelightSimTest {
 
     @Test
     void testTaFormulaAtKnownDistance() {
-        DBody piece = createPieceAt(2.0, 0, 0);
-
-        LimelightSim.DetectionResult result = LimelightSim.computeDetection(
-                Set.of(piece), chassisBody, NO_OFFSET, NO_ROTATION, OBJECT_RADIUS);
+        LimelightSim.DetectionResult result = LimelightSim.computeDetectionFromCameraFrame(
+                new Translation3d(2.0, 0, 0), OBJECT_RADIUS);
 
         double distSq = 4.0; // 2^2
         double expectedTa = Math.PI * OBJECT_RADIUS * OBJECT_RADIUS / distSq * AREA_SCALE;
@@ -131,26 +78,85 @@ class LimelightSimTest {
                 "ta should follow pi * r^2 / dist^2 * 100");
     }
 
-    // -- Closest-piece selection tests -----------------------------------------
+    // -- Frustum inclusion tests -----------------------------------------------
+
+    private static final double NEAR = 0.3;
+    private static final double FAR = 3.0;
+    private static final double HFOV_HALF = Math.toRadians(31.65); // LL3 horizontal, halved
+    private static final double VFOV_HALF = Math.toRadians(24.85); // LL3 vertical, halved
 
     @Test
-    void testClosestPieceIsSelected() {
-        // Close piece to the right, far piece to the left
-        DBody closePiece = createPieceAt(1.0, -0.5, 0);
-        DBody farPiece = createPieceAt(3.0, 0.5, 0);
+    void testFrustumIncludesPieceDirectlyAhead() {
+        assertTrue(LimelightSim.inFrustum(
+                new Translation3d(1.0, 0, 0), NEAR, FAR, HFOV_HALF, VFOV_HALF));
+    }
 
-        // Add far piece first so iteration order doesn't accidentally match distance order
-        Set<DBody> contacts = new LinkedHashSet<>();
-        contacts.add(farPiece);
-        contacts.add(closePiece);
+    @Test
+    void testFrustumExcludesPieceBehindCamera() {
+        assertFalse(LimelightSim.inFrustum(
+                new Translation3d(-1.0, 0, 0), NEAR, FAR, HFOV_HALF, VFOV_HALF));
+    }
 
-        LimelightSim.DetectionResult result = LimelightSim.computeDetection(
-                contacts, chassisBody, NO_OFFSET, NO_ROTATION, OBJECT_RADIUS);
+    @Test
+    void testFrustumExcludesPieceCloserThanNear() {
+        assertFalse(LimelightSim.inFrustum(
+                new Translation3d(0.1, 0, 0), NEAR, FAR, HFOV_HALF, VFOV_HALF));
+    }
 
-        // Close piece at negative Y → tx should be positive (right of crosshair).
-        // Far piece at positive Y → tx would be negative if selected.
-        assertTrue(result.tx() > 0,
-                "Should select closest piece (to the right), got tx=" + result.tx());
+    @Test
+    void testFrustumExcludesPieceFartherThanFar() {
+        assertFalse(LimelightSim.inFrustum(
+                new Translation3d(5.0, 0, 0), NEAR, FAR, HFOV_HALF, VFOV_HALF));
+    }
+
+    @Test
+    void testFrustumExcludesPieceOutsideHorizontalFov() {
+        // 2m forward, 5m to the left → angle ≈ 68° → way beyond HFov/2
+        assertFalse(LimelightSim.inFrustum(
+                new Translation3d(2.0, 5.0, 0), NEAR, FAR, HFOV_HALF, VFOV_HALF));
+    }
+
+    @Test
+    void testFrustumExcludesPieceOutsideVerticalFov() {
+        assertFalse(LimelightSim.inFrustum(
+                new Translation3d(2.0, 0, 5.0), NEAR, FAR, HFOV_HALF, VFOV_HALF));
+    }
+
+    // -- World → camera-frame transform tests ----------------------------------
+
+    @Test
+    void testWorldToCameraFrameIdentityChassis() {
+        // Chassis at origin facing +X, no camera offset. Piece at (2,0,0) world.
+        Translation3d camDelta = LimelightSim.worldToCameraFrame(
+                new Translation3d(2.0, 0, 0),
+                0.0, 0.0, 1.0, 0.0,
+                new Translation3d(), new Rotation3d());
+        assertEquals(2.0, camDelta.getX(), 1e-9);
+        assertEquals(0.0, camDelta.getY(), 1e-9);
+        assertEquals(0.0, camDelta.getZ(), 1e-9);
+    }
+
+    @Test
+    void testWorldToCameraFrameChassisRotated90() {
+        // Chassis at origin facing +Y (90°). Piece at (0, 2, 0) world → chassis-local (2, 0, 0).
+        double theta = Math.PI / 2.0;
+        Translation3d camDelta = LimelightSim.worldToCameraFrame(
+                new Translation3d(0, 2.0, 0),
+                0.0, 0.0, Math.cos(theta), Math.sin(theta),
+                new Translation3d(), new Rotation3d());
+        assertEquals(2.0, camDelta.getX(), 1e-9);
+        assertEquals(0.0, camDelta.getY(), 1e-9);
+    }
+
+    @Test
+    void testWorldToCameraFrameChassisTranslated() {
+        // Chassis at (1,1) facing +X. Piece at (3,1) → camDelta (2,0,0).
+        Translation3d camDelta = LimelightSim.worldToCameraFrame(
+                new Translation3d(3.0, 1.0, 0),
+                1.0, 1.0, 1.0, 0.0,
+                new Translation3d(), new Rotation3d());
+        assertEquals(2.0, camDelta.getX(), 1e-9);
+        assertEquals(0.0, camDelta.getY(), 1e-9);
     }
 
     // -- FPS gating tests ------------------------------------------------------
