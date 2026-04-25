@@ -155,7 +155,7 @@ public class RobotContainer extends ControllerBindings {
     PitTesting.createDashboard();
     new Trigger(drivetrain::withinTrench).and(DriverStation::isTeleop).onTrue(shooterHood.setStateCommand(shooterhood_state.IN));
     registerNamedCommands();
-    SmartDashboard.putBoolean("Limelight-Four", true);
+    SmartDashboard.putBoolean("Use Main LL", true);
     drivetrain.registerTelemetry(telemetry::telemeterize);
 
     // Set up auto chooser
@@ -281,7 +281,7 @@ public class RobotContainer extends ControllerBindings {
 
 
     public void updateLocalization() {
-        if (llMain.isConnected()){// && SmartDashboard.getBoolean("Limelight-Four", true)) {
+        if (llMain.isConnected() && SmartDashboard.getBoolean("Use Main LL", true)) {
             llMain.updateLocalizationLimelight(drivetrain);
         } else {
             llBackup.updateLocalizationLimelight(drivetrain);
