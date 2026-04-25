@@ -15,6 +15,9 @@ on:
       dash_notes:
         description: "What's new in Scout Ops Dash (blank = no changes)"
         required: false
+      match-viewer_notes:
+        description: "What's new in Scout Ops Match Viewer (blank = no changes)"
+        required: false
 jobs:
   build:
     name: Build & Release APKs
@@ -31,6 +34,7 @@ jobs:
           sed -i "s/^version: .*/version: ${{ inputs.version }}+1/" scouting/android/pubspec.yaml
           sed -i "s/^version: .*/version: ${{ inputs.version }}+1/" scouting/scan/pubspec.yaml
           sed -i "s/^version: .*/version: ${{ inputs.version }}+1/" scouting/dash/pubspec.yaml
+          sed -i "s/^version: .*/version: ${{ inputs.version }}+1/" scouting/match-viewer/pubspec.yaml
 
       - name: Set up Java 17
         uses: actions/setup-java@v4
@@ -60,6 +64,12 @@ jobs:
         run: |
           flutter pub get
           flutter build apk --debug
+      
+      - name: Build scout-ops-match-viewer
+        working-directory: scouting/match-viewer
+        run: |
+          flutter pub get
+          flutter build apk --debug
 
       - name: Rename APKs
         run: |
@@ -67,6 +77,7 @@ jobs:
           mv scouting/android/build/app/outputs/flutter-apk/app-debug.apk "scout_ops_android_${VERSION}.apk"
           mv scouting/scan/build/app/outputs/flutter-apk/app-debug.apk "scout_ops_scan_${VERSION}.apk"
           mv scouting/dash/build/app/outputs/flutter-apk/app-debug.apk "scout_ops_dash_${VERSION}.apk"
+          mv scouting/match-viewer/build/app/outputs/flutter-apk/app-debug.apk "scout_ops_match-viewer_${VERSION}.apk"
 
       - name: Create GitHub Release
         env:
@@ -76,6 +87,7 @@ jobs:
           ANDROID="${{ inputs.android_notes }}"
           SCAN="${{ inputs.scan_notes }}"
           DASH="${{ inputs.dash_notes }}"
+          VIEW="${{ inputs.match-viewer_notes }}"
 
           cat > release_notes.md <<EOF
           ## Scout Ops Android
@@ -86,10 +98,14 @@ jobs:
           
           ## Scout Ops Dash
           ${DASH:-No changes.}
+
+          ## Scout Ops Match Viewer
+          ${VIEW:-No changes.}
           EOF
           gh release create "scouting-v${VERSION}" \
             "scout_ops_android_${VERSION}.apk" \
             "scout_ops_scan_${VERSION}.apk" \
             "scout_ops_dash_${VERSION}.apk" \
+            "scout_ops_match-viewer_${VERSION}.apk" \
             --title "[SCOUTING SUITE v${VERSION}]" \
             --notes-file release_notes.md
