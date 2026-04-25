@@ -83,11 +83,10 @@ jobs:
 
           ## Scout Ops Scan
           ${SCAN:-No changes.}
-          EOF
-
+          
           ## Scout Ops Dash
           ${DASH:-No changes.}
-
+          EOF
           gh release create "scouting-v${VERSION}" \
             "scout_ops_android_${VERSION}.apk" \
             "scout_ops_scan_${VERSION}.apk" \
