@@ -163,36 +163,28 @@ public class RobotContainer extends ControllerBindings {
 
     
     try {
-        autoChooser.addOption("Dev-FD-RightMidFieldDoublepass", new SequentialCommandGroup(
+    autoChooser.addOption("Dev-FD-RightMidFieldDoublepass", new SequentialCommandGroup(
                 AutoBuilder.buildAuto("Internal-FD-RightMidFieldDoublepass-Part1")
-                .andThen(NamedCommands.getCommand("Ball Track And Return"))
-                .andThen(AutoBuilder.pathfindThenFollowPath(PathPlannerPath.fromPathFile("Internal-FD-RightMidFieldDoublepass-Part2"), new PathConstraints(1.5, 1.5, 360.0, 360.0)))
+                .andThen(NamedCommands.getCommand("Ball Track And Return for RightMidFieldDoublePass"))
                 .andThen(AutoBuilder.buildAuto("Internal-FD-RightMidFieldDoublepass-Part2"))
                 .andThen(AutoBuilder.buildAuto("Internal-FD-RightMidFieldDoublepass-Part3"))));
-    } catch (FileVersionException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-    } catch (IOException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-    } catch (ParseException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-    }
     autoChooser.addOption("Dev-FD-MidIntakeToLeftBump", new SequentialCommandGroup(
             AutoBuilder.buildAuto("Internal-FD-MidIntakeToLeftBump-Part1")
-            .andThen(NamedCommands.getCommand("Ball Track And Return"))
+            .andThen(NamedCommands.getCommand("Ball Track And Return for MidIntakeToLeftBump"))
             .andThen(AutoBuilder.buildAuto("Internal-FD-MidIntakeToLeftBump-Part2"))));
     autoChooser.addOption("Dev-FD-RightSneakDoublepass", new SequentialCommandGroup(
             AutoBuilder.buildAuto("Internal-FD-RightSneakDoublepass-Part1")
-            .andThen(NamedCommands.getCommand("Ball Track And Return"))
+            .andThen(NamedCommands.getCommand("Ball Track And Return for RightSneakDoublePassPart2"))
             .andThen(AutoBuilder.buildAuto("Internal-FD-RightSneakDoublepass-Part2"))
-            .andThen(NamedCommands.getCommand("Ball Track And Return"))
+            .andThen(NamedCommands.getCommand("Ball Track And Return for RightSneakDoublePassPart3"))
             .andThen(AutoBuilder.buildAuto("Internal-FD-RightSneakDoublepass-Part3"))));
+    autoChooser.addOption("Test-Part1-Only", AutoBuilder.buildAuto("Internal-FD-RightMidFieldDoublepass-Part1"));
 
     // Mirrored autons
     autoChooser.addOption("Comp-LeftMidfieldDoublePass", new PathPlannerAuto("Comp-RightMidfieldDoublepass", true));
     autoChooser.addOption("Dev-MidIntakeToRightBump", new PathPlannerAuto("Comp-MidIntakeToLeftBump", true)); // TESTING - DO NOT USE
+
+    } catch (Exception e) {}
   }
 
     // --- APIs used by the diagnostic server / UI to command shooter/hood ---
@@ -210,7 +202,7 @@ public class RobotContainer extends ControllerBindings {
                     shooterHood.setAngle(Rotations.of(pos)); // pos is already in rotations (0-30)
                 } catch (Exception e) {
                 }
-            });
+        });
 
     public synchronized void setShooterVelocityRps(double rps) {
         try {
@@ -380,20 +372,56 @@ public void registerNamedCommands() {
   NamedCommands.registerCommand("Shooting", shooterWheels.setStateCommand(shooter_state.SHOOTING).alongWith(feederSubsystem.setStateCommand(feeder_state.RUN)).alongWith(spinDexer.setStateCommand(spindexer_state.RUN)).alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
   NamedCommands.registerCommand("Start Passing Spin", shooterWheels.setStateCommand(shooter_state.PASSING).alongWith(shooterHood.setStateCommand(shooterhood_state.PASSING)));
   NamedCommands.registerCommand("Passing", shooterWheels.setStateCommand(shooter_state.PASSING).alongWith(feederSubsystem.setStateCommand(feeder_state.RUN)).alongWith(spinDexer.setStateCommand(spindexer_state.RUN)).alongWith(shooterHood.setStateCommand(shooterhood_state.PASSING)));
-  NamedCommands.registerCommand("Ball Track And Return",
+  NamedCommands.registerCommand("Ball Track And Return for RightMidFieldDoublePass",
     Commands.defer(() -> {
-        Pose2d startPose = drivetrain.getState().Pose;
-        return Commands.sequence(
-            new BallTracking(drivetrain).withTimeout(3.0),
-            AutoBuilder.pathfindToPose(
-                startPose, /* target pose to drive to */
-                new PathConstraints(
-                    5.0,   /* max velocity (m/s) */
-                    4.0,   /* max acceleration (m/s²) */
-                    540.0, /* max angular velocity (deg/s) */
-                    360.0  /* max angular acceleration (deg/s²) */
-                )
-            ));
+        try {
+            Pose2d returnPose = PathPlannerPath.fromPathFile(
+                "Internal-FD-RightMidFieldDoublepass-Part2")
+                .getStartingHolonomicPose().get();
+            return Commands.sequence(
+                ball.withTimeout(3.0),
+                AutoBuilder.pathfindToPose(returnPose,
+                    new PathConstraints(2.0, 2.0, 360.0, 360.0)));
+        } catch (Exception e) { return Commands.none(); }
+    }, Set.of(drivetrain)));
+  
+    NamedCommands.registerCommand("Ball Track And Return for MidIntakeToLeftBump",
+    Commands.defer(() -> {
+        try {
+            Pose2d returnPose = PathPlannerPath.fromPathFile(
+                "Internal-FD-MidIntakeToLeftBump-Part2")
+                .getStartingHolonomicPose().get();
+            return Commands.sequence(
+                ball.withTimeout(3.0),
+                AutoBuilder.pathfindToPose(returnPose,
+                    new PathConstraints(2.0, 2.0, 360.0, 360.0)));
+        } catch (Exception e) { return Commands.none(); }
+    }, Set.of(drivetrain)));
+  
+    NamedCommands.registerCommand("Ball Track And Return for RightSneakDoublePassPart2",
+    Commands.defer(() -> {
+        try {
+            Pose2d returnPose = PathPlannerPath.fromPathFile(
+                "Internal-FD-RightSneakDoublepass-Part2")
+                .getStartingHolonomicPose().get();
+            return Commands.sequence(
+                ball.withTimeout(3.0),
+                AutoBuilder.pathfindToPose(returnPose,
+                    new PathConstraints(2.0, 2.0, 360.0, 360.0)));
+        } catch (Exception e) { return Commands.none(); }
+    }, Set.of(drivetrain)));
+ 
+    NamedCommands.registerCommand("Ball Track And Return for RightSneakDoublePassPart3",
+    Commands.defer(() -> {
+        try {
+            Pose2d returnPose = PathPlannerPath.fromPathFile(
+                "Internal-FD-RightSneakDoublepass-Part3")
+                .getStartingHolonomicPose().get();
+            return Commands.sequence(
+                ball.withTimeout(3.0),
+                AutoBuilder.pathfindToPose(returnPose,
+                    new PathConstraints(2.0, 2.0, 360.0, 360.0)));
+        } catch (Exception e) { return Commands.none(); }
     }, Set.of(drivetrain)));
 }
 
