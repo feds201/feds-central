@@ -45,11 +45,12 @@ import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 public class ShooterWheels extends SubsystemBase {
 
     public enum shooter_state {
-    TEST(RotationsPerSecond.of(0)),
+    TEST(RotationsPerSecond.of(9.0)),
     SHOOTING(RotationsPerSecond.of(0)),
     IDLE(RotationsPerSecond.of(0)),
     PASSING(RotationsPerSecond.of(0)),
     LAYUP(RotationsPerSecond.of(35)), // ~3m (midway between hub+tower)
+    // KICKER(Volts.of(1.5)),
     HALFCOURT (RotationsPerSecond.of(43)); // ~5.5m (corner) 
 
     private final AngularVelocity targetVelocity;
@@ -167,12 +168,9 @@ public class ShooterWheels extends SubsystemBase {
       case SHOOTING:
       shooterLeader.setControl(velocityVoltageControl.withVelocity(getTargetVelocityShooting()));
              Logger.recordOutput("Robot/Shooter/ExpectedVelocity", getTargetVelocityShooting().in(RotationsPerSecond));
-
         break;
-
       case IDLE:
         break;
-
       case PASSING:
       shooterLeader.setControl(velocityVoltageControl.withVelocity(getTargetVelocityPassing())); //from passing table
         break;
@@ -180,6 +178,8 @@ public class ShooterWheels extends SubsystemBase {
       break;
       case TEST:
       setVelocity(RotationsPerSecond.of(speed.getAsDouble()));
+      // case KICKER:
+      // shooterLeader.setControl(velocityVoltageControl.withVelocity(shooter_state.KICKER.getVelocity().in(RotationsPerSecond)));
       break;
     }
 

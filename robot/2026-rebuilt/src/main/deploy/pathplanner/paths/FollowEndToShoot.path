@@ -1,0 +1,93 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 6.1863990066225165,
+        "y": 4.209238410596026
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.983120860927153,
+        "y": 5.915322847682119
+      },
+      "isLocked": false,
+      "linkedName": "FollowIntakeEnd2"
+    },
+    {
+      "anchor": {
+        "x": 4.567433774834438,
+        "y": 5.886283112582781
+      },
+      "prevControl": {
+        "x": 5.567405509878736,
+        "y": 5.878764528108764
+      },
+      "nextControl": {
+        "x": 3.6018625827814574,
+        "y": 5.893543046357615
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.75783940397351,
+        "y": 5.428907284768211
+      },
+      "prevControl": {
+        "x": 1.9030380794701989,
+        "y": 5.75560430463576
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "FollowEndToShoot"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.7142857142857093,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 1.300242130750609,
+      "rotationDegrees": -1.2170606974735418
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.6671378091872787,
+      "maxWaypointRelativePos": 1.306007067137809,
+      "constraints": {
+        "maxVelocity": 2.5,
+        "maxAcceleration": 4.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 360.0,
+        "nominalVoltage": 11.8,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 4.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 360.0,
+    "nominalVoltage": 11.8,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -32.94921511659064
+  },
+  "reversed": false,
+  "folder": "FollowCenter",
+  "idealStartingState": {
+    "velocity": 2.0,
+    "rotation": -48.81407483429031
+  },
+  "useDefaultConstraints": true
+}

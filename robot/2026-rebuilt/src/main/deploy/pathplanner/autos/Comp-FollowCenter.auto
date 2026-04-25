@@ -1,0 +1,251 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.5
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Run Rollers"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Extend Hopper"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "FollowMid"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "FollowIntakeEnd"
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Start Shooter Spin"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Run Rollers"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Retract Intake"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.5
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Extend Intake"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.5
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Retract Intake"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.5
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Extend Intake"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.5
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Retract Intake"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.5
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Extend Intake"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "FollowEndToShoot"
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Run Rollers"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "FollowCenterDepot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "FollowDepotToShoot"
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Start Shooter Spin"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Run Rollers"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Retract Intake"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.5
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Extend Intake"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.5
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Retract Intake"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.5
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Extend Intake"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.5
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Retract Intake"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.5
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Extend Intake"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}
