@@ -69,7 +69,7 @@ public class RobotContainer extends ControllerBindings {
     // "limelight-two" and "limelight-five" represent our second and fifth
     // limelights respectively.
     private final LimelightWrapper llMain = new LimelightWrapper("limelight-two", true);
-    private final LimelightWrapper llBackup = new LimelightWrapper("limelight-five", false);
+    private final LimelightWrapper llBackup = new LimelightWrapper("limelight-five", true);
 
     private static java.io.File usb = RobotMap.PitConstants.usb;
 
@@ -155,7 +155,7 @@ public class RobotContainer extends ControllerBindings {
     PitTesting.createDashboard();
     new Trigger(drivetrain::withinTrench).and(DriverStation::isTeleop).onTrue(shooterHood.setStateCommand(shooterhood_state.IN));
     registerNamedCommands();
-    SmartDashboard.putBoolean("Use Main LL", true);
+    SmartDashboard.putBoolean("UseMainLL", true);
     drivetrain.registerTelemetry(telemetry::telemeterize);
 
     // Set up auto chooser
@@ -281,10 +281,12 @@ public class RobotContainer extends ControllerBindings {
 
 
     public void updateLocalization() {
-        if (llMain.isConnected() && SmartDashboard.getBoolean("Use Main LL", true)) {
+        if (llMain.isConnected() && SmartDashboard.getBoolean("UseMainLL", true)) {
             llMain.updateLocalizationLimelight(drivetrain);
+            SmartDashboard.putString("Active Limelight", "MAIN");
         } else {
             llBackup.updateLocalizationLimelight(drivetrain);
+            SmartDashboard.putString("Active Limelight", "BACKUP");
         }
     }
 
