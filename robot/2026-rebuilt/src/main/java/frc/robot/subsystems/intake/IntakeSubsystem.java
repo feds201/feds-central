@@ -1,11 +1,12 @@
 package frc.robot.subsystems.intake;
-import com.ctre.phoenix6.controls.PositionVoltage;
+
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
 import frc.robot.commands.intake.AgitateWhileHeldTimeCommand;
-import frc.robot.commands.intake.AgitateWhileHeldRotationsCommand;
 import static edu.wpi.first.units.Units.Rotations;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -16,49 +17,48 @@ import java.util.List;
 
 import org.littletonrobotics.junction.Logger;
 
-import com.ctre.phoenix6.controls.MotionMagicVelocityDutyCycle;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 
 import frc.robot.RobotMap;
 import frc.robot.RobotMap.IntakeSubsystemConstants;
 import frc.robot.subsystems.led.LedsSubsystem;
-import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 public class IntakeSubsystem extends SubsystemBase {
 
   private final TalonFX motor;
   private final TalonFX rollerMotor;
+  private final TalonFX rollerMotorFollower;
   private final DigitalInput limit_switch_r;
   private final DigitalInput limit_switch_l;
+  private final DigitalInput limit_switch;
+  private boolean hasMotorBeenPosResetThisCycle = false; // Track if we've reset the motor position during this command cycle
   private final SysIdRoutine sysID;
   private final LedsSubsystem leds = LedsSubsystem.getInstance();
   public static final double extendedRotations = 18.0; //TUNE on new intake
-  private static final double retractedRotations = 0.39;
-  private static final double closeAgitationRotations = 9.0; // about halfway from bumper to extended, used for agitating the close half of the hopper
-  private static final double farAgitationRotations = 13.5; // about three-quarters from bumper to extended, used for agitating the far half of the hopper
-  public static final double burstAgitation = extendedRotations / 2.0;
+  public final double retractedRotations = 0.39;
+  private final double closeAgitationRotations = 9.0; // about halfway from bumper to extended, used for agitating the close half of the hopper
+  private final double farAgitationRotations = 13.5; // about three-quarters from bumper to extended, used for agitating the far half of the hopper
+  public final double burstAgitation = extendedRotations / 2.0;
   // Desired motion timing: target to complete extend/retract in under 1s
   private static final double MOVE_TARGET_SECONDS = .45;
   // Aggressive acceleration multiplier requested (20x faster than default)
   private static final double MOTION_MAGIC_ACCEL_MULTIPLIER = 40.0;
-  private static final double ROLLER_OUTPUT = 0.90; //90% for rollers, 70% originally;
+  private static final double ROLLER_OUTPUT = 1.0; //90% for rollers, 70% originally;
   private final Timer timer = new Timer();
 
 
   // MotionMagic helper (create once and reuse)
   private final MotionMagicVoltage positionOut = new MotionMagicVoltage(Rotations.of(0));
 
+
+  // Simulation + Visualization values (only initialized when running in sim, can't be final)
 
   public enum IntakeState {
     DEFAULT, //Retracted, assumed to be starting state
@@ -95,21 +95,36 @@ public class IntakeSubsystem extends SubsystemBase {
   
 
   public void setState(IntakeState targetState) {
-    Logger.recordOutput("Robot/Intake/StateTransition", targetState.toString());
     this.currentState = targetState;
     switch (targetState) {
       case DEFAULT -> {
         moveIntakeWithPosition(retractedRotations);
       }
       case EXTENDED -> {
-        moveIntakeWithPosition(extendedRotations);
+        if (!limit_switch.get()) {
+          motor.setControl(new VoltageOut(0));
+          if(!hasMotorBeenPosResetThisCycle){
+            motor.setPosition(extendedRotations);
+            hasMotorBeenPosResetThisCycle = true;
+          }
+        } else {
+          motor.setControl(new VoltageOut(-7));
+        }
         setRollerState(RollerState.OFF);
       }
       case CLOSE_AGITATION_IN -> {
         moveIntakeWithPosition(0.0);
       }
       case INTAKING -> {
-        moveIntakeWithPosition(extendedRotations);
+        if (!limit_switch.get()) {
+          motor.setControl(new VoltageOut(0));
+          if(!hasMotorBeenPosResetThisCycle){
+            motor.setPosition(extendedRotations);
+            hasMotorBeenPosResetThisCycle = true;
+          }
+        } else {
+          motor.setControl(new VoltageOut(-7));
+        }
         setRollerState(RollerState.ON);
       }
       case AGITATE_IN -> {
@@ -333,15 +348,23 @@ public class IntakeSubsystem extends SubsystemBase {
     public IntakeSubsystem() {
       motor = new TalonFX(RobotMap.IntakeSubsystemConstants.kMotorID);
       rollerMotor = new TalonFX(RobotMap.IntakeSubsystemConstants.kRollerMotorID);
+      rollerMotorFollower = new TalonFX(RobotMap.IntakeSubsystemConstants.kRollerMotorFollowerID);
+      rollerMotorFollower.setControl(new Follower(rollerMotor.getDeviceID(), MotorAlignmentValue.Opposed));
       limit_switch_r = new DigitalInput(RobotMap.IntakeSubsystemConstants.kLimit_switch_rID);
       limit_switch_l = new DigitalInput(RobotMap.IntakeSubsystemConstants.kLimit_switch_lID);
+      limit_switch = new DigitalInput(RobotMap.IntakeSubsystemConstants.klimit_switchID);
 
       var rollerConfig = new TalonFXConfiguration();
-    rollerConfig.CurrentLimits.StatorCurrentLimit = 40.0;
+    rollerConfig.CurrentLimits.StatorCurrentLimit = 55.0;
     rollerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+    rollerConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
     for (int i = 0; i < 2; ++i) {
-      var status = motor.getConfigurator().apply(rollerConfig);
+      var status = rollerMotor.getConfigurator().apply(rollerConfig);
+      if (status.isOK()) break;
+    }
+    for (int i = 0; i < 2; ++i) {
+      var status = rollerMotorFollower.getConfigurator().apply(rollerConfig);
       if (status.isOK()) break;
     }
 
@@ -483,12 +506,30 @@ public class IntakeSubsystem extends SubsystemBase {
         }
           break;
 
-        case DEFAULT, EXTENDED, INTAKING:
-          if(timer.isRunning()){
-            timer.stop();
-            timer.reset();
+      case INTAKING:
+        if (!limit_switch.get()) {
+          motor.setControl(new VoltageOut(0));
+          if(!hasMotorBeenPosResetThisCycle){
+            motor.setPosition(extendedRotations);
+            hasMotorBeenPosResetThisCycle = true;
           }
-          break;
+        } else {
+          motor.setControl(new VoltageOut(7));
+          hasMotorBeenPosResetThisCycle = false;
+        }
+        break;
+      case EXTENDED:
+        if (!limit_switch.get()) {
+          motor.setControl(new VoltageOut(0));
+          if(!hasMotorBeenPosResetThisCycle){
+            motor.setPosition(extendedRotations);
+            hasMotorBeenPosResetThisCycle = true;
+          }
+        } else {
+          motor.setControl(new VoltageOut(7));
+          hasMotorBeenPosResetThisCycle = false;
+        }
+        break;
       }
 
 
@@ -508,18 +549,17 @@ public class IntakeSubsystem extends SubsystemBase {
 
     Logger.recordOutput("Robot/Intake/State", currentState.toString());
     Logger.recordOutput("Robot/Intake/Extended", currentState != IntakeState.DEFAULT);
-    Logger.recordOutput("Robot/Intake/ExtensionPct", Math.min(100.0, Math.max(0.0, motor.getPosition().getValue().in(Units.Rotations) / extendedRotations * 100.0)));
-    Logger.recordOutput("Robot/IntakeRoller/State", currentRollerState.toString());
-
+    Logger.recordOutput("Robot/Intake/ExtensionPct", Math.round(100.0 * motor.getPosition().getValue().in(Units.Rotations) / extendedRotations));
     Logger.recordOutput("Robot/Intake/PositionRotations", motor.getPosition().getValueAsDouble());
     Logger.recordOutput("Robot/Intake/TargetPositionRotations", motor.getClosedLoopReference().getValueAsDouble());
     Logger.recordOutput("Robot/Intake/AppliedVolts", motor.getMotorVoltage().getValueAsDouble());
     Logger.recordOutput("Robot/Intake/StatorAmps", motor.getStatorCurrent().getValueAsDouble());
 
+    Logger.recordOutput("Robot/IntakeRoller/State", currentRollerState.toString());
     Logger.recordOutput("Robot/IntakeRoller/VelocityRPS", rollerMotor.getVelocity().getValueAsDouble());
     Logger.recordOutput("Robot/IntakeRoller/AppliedVolts", rollerMotor.getMotorVoltage().getValueAsDouble());
     Logger.recordOutput("Robot/IntakeRoller/StatorAmps", rollerMotor.getStatorCurrent().getValueAsDouble());
-    Logger.recordOutput("Robot/Intake/Intake Stator Current", motor.getStatorCurrent().getValue());
+
     super.periodic();
   }
   

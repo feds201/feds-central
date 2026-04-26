@@ -86,6 +86,8 @@ public class LimelightSim {
 
     private final DoubleArrayEntry botposeMt1;
     private final DoubleArrayEntry botposeMt2;
+    private final DoubleEntry hbEntry;
+    private double heartbeat = 0.0;
     private final double latencyMs;
 
     // ── Game piece mode fields ──────────────────────────────────────────────
@@ -123,6 +125,7 @@ public class LimelightSim {
         NetworkTable table = NetworkTableInstance.getDefault().getTable(config.name());
         botposeMt1 = table.getDoubleArrayTopic("botpose_wpiblue").getEntry(new double[0]);
         botposeMt2 = table.getDoubleArrayTopic("botpose_orb_wpiblue").getEntry(new double[0]);
+        hbEntry = table.getDoubleTopic("hb").getEntry(0.0);
         tvEntry = table.getDoubleTopic("tv").getEntry(0.0);
 
         publishPeriodSec = 1.0 / config.type().fps;
@@ -186,6 +189,7 @@ public class LimelightSim {
         // AprilTag fields unused in this mode
         botposeMt1 = null;
         botposeMt2 = null;
+        hbEntry = null;
     }
 
     // ── Public accessors ────────────────────────────────────────────────────
@@ -238,6 +242,11 @@ public class LimelightSim {
             return;
         }
         lastPublishTimeSec = nowSec;
+
+        // Heartbeat ticks at camera FPS regardless of whether we have a pose to publish —
+        // real Limelights bump hb every frame whether or not tags are visible.
+        heartbeat += 1.0;
+        hbEntry.set(heartbeat);
 
         double lookbackSec = nowSec - latencyMs / 1000.0;
         Optional<Pose2d> maybePose = poseHistory.getSample(lookbackSec);

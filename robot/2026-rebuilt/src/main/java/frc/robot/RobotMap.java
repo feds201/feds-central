@@ -55,7 +55,9 @@ public final class RobotMap {
         public static final int kMotorID = 61;
         public static final int kLimit_switch_rID = 2;
         public static final int kLimit_switch_lID = 3; 
+        public static final int klimit_switchID=9;
         public static final int kRollerMotorID = 62;
+        public static final int kRollerMotorFollowerID = 60;
         public static final double agitateCycleConstant = 0.5;
 
     }
@@ -168,7 +170,7 @@ public final class RobotMap {
         public static final Translation2d RedRightBottomRight = new Translation2d(11.181, 11);
         public static final Rectangle2d RedRightTrench = new Rectangle2d(RedRightTopRight, RedRightBottomRight);
 
-        public static final Rectangle2d neutralZone = new Rectangle2d(FieldConstants.LeftTrench.openingTopLeft.toTranslation2d(), FieldConstants.RightTrench.oppOpeningTopRight.toTranslation2d());
+        public static final Rectangle2d neutralZone = new Rectangle2d(new Translation2d(5.618, 8.0), new Translation2d(10.922, 0.0) );
     
         // This map is used to determine the velocity of the shooter based on the distance to the target. 
         //The key is the distance to the target in meters, and the value is the velocity of the shooter in rotations per second.`
