@@ -487,16 +487,17 @@ public class RebuiltSimManager {
 
         // --- Vision sim (writes true pose to NT in Limelight format) ---
         Logger.recordOutput("Sim/State", "Loading vision");
+
         Transform3d llMainMount = new Transform3d(
-                new Translation3d(0.31, -0.284, 0.193),
-                new Rotation3d(0, Math.toRadians(-25), Math.toRadians(22)));
+                new Translation3d(0.2329, 0.2332, 0.5173),
+                new Rotation3d(0, Math.toRadians(-24.31), Math.toRadians(-20)));
         Transform3d llBackupMount = new Transform3d(
-                new Translation3d(0.31, 0.284, 0.193),
-                new Rotation3d(0, Math.toRadians(-25), Math.toRadians(-22)));
+                new Translation3d(0.31, -0.284, 0.193),
+                new Rotation3d(0, Math.toRadians(-25), Math.toRadians(20)));
         LimelightSim llMainCam = new LimelightSim(
                 new CameraConfig("limelight-two", LimelightType.LL4, llMainMount));
         LimelightSim llBackupCam = new LimelightSim(
-                new CameraConfig("limelight-five", LimelightType.LL3, llBackupMount));
+                new CameraConfig("limelight-five", LimelightType.LL4, llBackupMount));
         LimelightSim fuelCam = new LimelightSim(
                 new CameraConfig(FUEL_LL_NAME, LimelightType.LL3, FUEL_LL_MOUNT),
                 FUEL_LL_NEAR,
