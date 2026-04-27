@@ -574,7 +574,7 @@
             },
             "children": [
               {
-                "title": "ll3 isConnected",
+                "title": "LL Backup Connected",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
@@ -591,7 +591,7 @@
                 }
               },
               {
-                "title": "ll4 isConnected",
+                "title": "LL Main Connected",
                 "x": 0.0,
                 "y": 0.0,
                 "width": 128.0,
