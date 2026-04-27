@@ -33,17 +33,24 @@ See [`_config` in the example](example/lib/main.dart) (line 99) for a version wi
 
 ### 3. Let the user draw a path
 
-Drop a `BotPathDrawer` into your UI. It gives you a serialized path string via `onSave`:
+Drop a `BotPathDrawer` into your UI. `onSave` hands back the serialized string and a suggested name:
 
 ```dart
 BotPathDrawer(
   config: config,
-  onSave: (String? pathData) {
+  onSave: (String? pathData, String? suggestedName) {
     // pathData is the compact string, or null if empty.
-    // Store it, send it to your server, etc.
+    // suggestedName is a geometry-based label like "Left Trench Mid",
+    // or null if there's no path. Use it as a default in your naming UI
+    // or ignore it entirely.
   },
 )
 ```
+
+Two more optional callbacks let you sync parent state:
+
+- `onPathUpdated: (pathData, suggestedName)` fires every time the user lifts their finger and the path is curve-fitted. Use it to preview the suggested name in a text field before the user hits Save.
+- `onClear: () { ... }` fires when the user presses Clear, so you can reset your own fields alongside the canvas.
 
 The example opens it in a dialog -- see [`_openDrawer()`](example/lib/main.dart) (line 129). That function also shows how to lock orientation to landscape while drawing.
 
@@ -140,7 +147,14 @@ Shared configuration for both widgets. Only `backgroundImage` is required.
 
 ### BotPathDrawer
 
-The drawing widget. Props: `config` and `onSave`.
+The drawing widget.
+
+| Prop | Type | Description |
+|------|------|-------------|
+| `config` | `BotPathConfig` (required) | Configuration. |
+| `onSave` | `void Function(String? pathData, String? suggestedName)` (required) | Called when Save is tapped. `pathData` is the serialized string (or null if empty); `suggestedName` is a geometry-based label like `"Left Trench Mid"` (or null). |
+| `onPathUpdated` | `void Function(String? pathData, String? suggestedName)?` | Fires after every pointer-up where a path was finalized. Same shape as `onSave`. Useful for previewing the suggested name before save. |
+| `onClear` | `VoidCallback?` | Fires when the user presses Clear. |
 
 **Controls (all platforms):**
 - Single row: [info] [Play/Stop] [-] speed [+] [Clear] [Save]
@@ -231,6 +245,26 @@ The serialization model (also exported if you need to inspect or manipulate path
 - `BotPathData.fromPixelCurves(...)` -- normalizes pixel-coordinate curves from a recording session
 
 **Format versions:** v1 (legacy) normalized coordinates relative to the cropped canvas size, making paths crop-dependent. v2 (current) normalizes relative to the full uncropped image, so paths display correctly at any crop fraction. New paths are always written as v2. Both versions are parsed transparently.
+
+### suggestedPathName
+
+```dart
+String? suggestedPathName({
+  required BotPathData path,
+  required Size backgroundImageSize,
+});
+```
+
+Returns a geometry-based label like `"Left Trench Mid"` or `"Center Depot"`. The drawer calls this internally and surfaces the result through `onSave` / `onPathUpdated`, but it's exported so you can also call it on already-stored paths (parse with `BotPathData.tryParse` first).
+
+**Tokens (in the order they're emitted):**
+- Start: `Left` / `Center` / `Right` based on the first waypoint's y, by thirds of bg image height.
+- `Trench` / `Bump`: at every left-to-right crossing of x = 28% of bg image width, the y picks a band. `[0, 0.2)` and `[0.8, 1.0]` are Trench, `[0.2, 0.4)` and `[0.6, 0.8)` are Bump, `[0.4, 0.6)` is omitted.
+- `Mid`: any left-to-right crossing of x = 28%.
+- `Depot`: any sample with x < 7% in the top half.
+- `Outpost`: any sample with x < 7% in the bottom half.
+
+Each token fires at most once. The thresholds are tuned for the FRC 2026 "REBUILT" field. Returns `null` for empty paths or v1-format paths (v1 can't be interpreted without crop fraction information).
 
 ### Serialization format
 
