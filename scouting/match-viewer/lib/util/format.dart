@@ -48,3 +48,7 @@ String formatStopwatch(Duration d) {
   final tenths = (totalMs % 1000) ~/ 100;
   return '$minutes:${seconds.toString().padLeft(2, '0')}.$tenths';
 }
+
+/// Format a playback rate as `N.NNx` (always two decimals for stable text
+/// width in the sidebar).
+String formatPlaybackSpeed(double rate) => '${rate.toStringAsFixed(2)}x';

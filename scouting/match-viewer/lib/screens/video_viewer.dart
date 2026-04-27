@@ -99,6 +99,12 @@ class _VideoViewerState extends State<VideoViewer> {
   /// screen (no disk persistence).
   Duration? _markedStartPosition;
 
+  /// Current playback rate. Resets to 1.0 when leaving the viewer.
+  double _playbackSpeed = 1.0;
+  static const double _minSpeed = 0.25;
+  static const double _maxSpeed = 3.0;
+  static const double _speedStep = 0.25;
+
   // Single drawing controller — strokes are in screen space, not per-pane
   final _drawingController = DrawingController();
 
@@ -359,6 +365,21 @@ class _VideoViewerState extends State<VideoViewer> {
     final t = _timeline;
     if (t == null) return;
     setState(() => _markedStartPosition = t.unifiedPosition);
+  }
+
+  // --- Playback speed ---
+
+  void _changeSpeed(double delta) {
+    final next = (_playbackSpeed + delta).clamp(_minSpeed, _maxSpeed);
+    if (next == _playbackSpeed) return;
+    setState(() => _playbackSpeed = next);
+    _timeline?.setRate(next);
+  }
+
+  void _resetSpeed() {
+    if (_playbackSpeed == 1.0) return;
+    setState(() => _playbackSpeed = 1.0);
+    _timeline?.setRate(1.0);
   }
 
   // --- Unified Pointer Handling (Scrub + Draw) ---
@@ -678,12 +699,18 @@ class _VideoViewerState extends State<VideoViewer> {
               canToggleViewMode: _availableViewModes.length > 1,
               markedStartPosition: _markedStartPosition,
               currentPosition: _position,
+              playbackSpeed: _playbackSpeed,
               onBack: () => Navigator.of(context).pop(),
               onSwapSides: _swapSides,
               onToggleMute: _toggleMute,
               onToggleViewMode: _toggleViewMode,
               onPlayPause: _togglePlayPause,
               onMarkStart: _markStart,
+              onSpeedDown:
+                  _playbackSpeed > _minSpeed ? () => _changeSpeed(-_speedStep) : null,
+              onSpeedUp:
+                  _playbackSpeed < _maxSpeed ? () => _changeSpeed(_speedStep) : null,
+              onSpeedReset: _resetSpeed,
               onRewind10: _rewind10,
               onForward10: _forward10,
               onRestart: _restart,

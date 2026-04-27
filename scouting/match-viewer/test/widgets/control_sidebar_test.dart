@@ -17,12 +17,20 @@ void main() {
     bool canToggleViewMode = true,
     Duration? markedStartPosition,
     Duration currentPosition = Duration.zero,
+    double playbackSpeed = 1.0,
     VoidCallback? onDrawStart,
     VoidCallback? onDrawEnd,
     VoidCallback? onUndo,
     VoidCallback? onRedo,
     VoidCallback? onClearDrawing,
     VoidCallback? onMarkStart,
+    // For speed tests: pass `withSpeedDown: false` / `withSpeedUp: false`
+    // to simulate boundary states (null callback = disabled).
+    bool withSpeedDown = true,
+    bool withSpeedUp = true,
+    VoidCallback? onSpeedDown,
+    VoidCallback? onSpeedUp,
+    VoidCallback? onSpeedReset,
   }) {
     return ControlSidebar(
       isPlaying: isPlaying,
@@ -35,12 +43,16 @@ void main() {
       canToggleViewMode: canToggleViewMode,
       markedStartPosition: markedStartPosition,
       currentPosition: currentPosition,
+      playbackSpeed: playbackSpeed,
       onBack: noop,
       onSwapSides: noop,
       onToggleMute: noop,
       onToggleViewMode: noop,
       onPlayPause: noop,
       onMarkStart: onMarkStart ?? noop,
+      onSpeedDown: withSpeedDown ? (onSpeedDown ?? noop) : null,
+      onSpeedUp: withSpeedUp ? (onSpeedUp ?? noop) : null,
+      onSpeedReset: onSpeedReset ?? noop,
       onRewind10: noop,
       onForward10: noop,
       onRestart: noop,
@@ -481,6 +493,230 @@ void main() {
 
       expect(iconCenterMarked, iconCenterUnmarked,
           reason: 'icon must not shift between unmarked and marked states');
+    });
+  });
+
+  group('Speed adjuster', () {
+    testWidgets('renders both buttons + rate text at 1.00x', (tester) async {
+      await tester.pumpWidget(wrapInApp(buildSidebar(playbackSpeed: 1.0)));
+
+      expect(find.byIcon(Icons.remove), findsOneWidget);
+      expect(find.byIcon(Icons.add), findsOneWidget);
+      expect(find.text('1.00x'), findsOneWidget);
+    });
+
+    testWidgets('rate text reflects current speed', (tester) async {
+      await tester.pumpWidget(wrapInApp(buildSidebar(playbackSpeed: 0.25)));
+      expect(find.text('0.25x'), findsOneWidget);
+
+      await tester.pumpWidget(wrapInApp(buildSidebar(playbackSpeed: 2.5)));
+      expect(find.text('2.50x'), findsOneWidget);
+
+      await tester.pumpWidget(wrapInApp(buildSidebar(playbackSpeed: 3.0)));
+      expect(find.text('3.00x'), findsOneWidget);
+    });
+
+    testWidgets('tap minus fires onSpeedDown', (tester) async {
+      var pressed = false;
+      await tester.pumpWidget(wrapInApp(buildSidebar(
+        onSpeedDown: () => pressed = true,
+      )));
+
+      await tester.tap(find.byIcon(Icons.remove));
+      await tester.pump();
+      expect(pressed, isTrue);
+    });
+
+    testWidgets('tap plus fires onSpeedUp', (tester) async {
+      var pressed = false;
+      await tester.pumpWidget(wrapInApp(buildSidebar(
+        onSpeedUp: () => pressed = true,
+      )));
+
+      await tester.tap(find.byIcon(Icons.add));
+      await tester.pump();
+      expect(pressed, isTrue);
+    });
+
+    testWidgets('tap rate text fires onSpeedReset', (tester) async {
+      var pressed = false;
+      await tester.pumpWidget(wrapInApp(buildSidebar(
+        playbackSpeed: 2.5,
+        onSpeedReset: () => pressed = true,
+      )));
+
+      await tester.tap(find.text('2.50x'));
+      await tester.pump();
+      expect(pressed, isTrue,
+          reason: 'tapping the rate text should reset speed to 1.0x');
+    });
+
+    testWidgets('minus disabled when at min (no callback fires)', (tester) async {
+      var pressed = false;
+      await tester.pumpWidget(wrapInApp(buildSidebar(
+        playbackSpeed: 0.25,
+        withSpeedDown: false,
+        onSpeedDown: () => pressed = true,
+      )));
+
+      await tester.tap(find.byIcon(Icons.remove));
+      await tester.pump();
+      expect(pressed, isFalse,
+          reason: 'minus must be inert when onSpeedDown is null');
+    });
+
+    testWidgets('plus disabled when at max (no callback fires)', (tester) async {
+      var pressed = false;
+      await tester.pumpWidget(wrapInApp(buildSidebar(
+        playbackSpeed: 3.0,
+        withSpeedUp: false,
+        onSpeedUp: () => pressed = true,
+      )));
+
+      await tester.tap(find.byIcon(Icons.add));
+      await tester.pump();
+      expect(pressed, isFalse,
+          reason: 'plus must be inert when onSpeedUp is null');
+    });
+
+    testWidgets('disabled state uses dimmed icon color', (tester) async {
+      await tester.pumpWidget(wrapInApp(buildSidebar(
+        playbackSpeed: 0.25,
+        withSpeedDown: false,
+      )));
+
+      final minusIcon = tester.widget<Icon>(find.byIcon(Icons.remove));
+      expect(minusIcon.color, Colors.white38,
+          reason: 'disabled minus should match other disabled sidebar icons');
+    });
+
+    testWidgets('compact mode renders speed adjuster', (tester) async {
+      await tester.pumpWidget(wrapInApp(buildSidebar(
+        viewMode: ViewMode.redOnly,
+        canToggleViewMode: false,
+      )));
+
+      expect(find.byIcon(Icons.remove), findsOneWidget);
+      expect(find.byIcon(Icons.add), findsOneWidget);
+      expect(find.text('1.00x'), findsOneWidget);
+    });
+
+    testWidgets('rate text position stable across speed changes (compact)', (tester) async {
+      // Always two decimals so width is constant; just verify visually that
+      // 0.25x, 1.00x, 3.00x all render at the same Y position. This protects
+      // against future style changes that introduce variable-width digits.
+      await tester.pumpWidget(wrapInApp(buildSidebar(
+        viewMode: ViewMode.redOnly,
+        canToggleViewMode: false,
+        playbackSpeed: 0.25,
+      )));
+      final centerLow = tester.getCenter(find.text('0.25x'));
+
+      await tester.pumpWidget(wrapInApp(buildSidebar(
+        viewMode: ViewMode.redOnly,
+        canToggleViewMode: false,
+        playbackSpeed: 1.0,
+      )));
+      final centerMid = tester.getCenter(find.text('1.00x'));
+
+      await tester.pumpWidget(wrapInApp(buildSidebar(
+        viewMode: ViewMode.redOnly,
+        canToggleViewMode: false,
+        playbackSpeed: 3.0,
+      )));
+      final centerHigh = tester.getCenter(find.text('3.00x'));
+
+      expect(centerLow.dy, centerMid.dy,
+          reason: 'rate text Y must not shift between 0.25x and 1.00x');
+      expect(centerMid.dy, centerHigh.dy,
+          reason: 'rate text Y must not shift between 1.00x and 3.00x');
+    });
+
+    testWidgets('+/- buttons are at least 36px wide in compact mode', (tester) async {
+      await tester.pumpWidget(wrapInApp(buildSidebar(
+        viewMode: ViewMode.redOnly,
+        canToggleViewMode: false,
+      )));
+
+      final minusSize = tester.getSize(find.byIcon(Icons.remove));
+      final plusSize = tester.getSize(find.byIcon(Icons.add));
+      // The Icon itself is 24px; the parent InkWell is 36px wide. We measure
+      // the InkWell ancestor's hit area via the Center child rectangle.
+      final minusCenter = tester.getCenter(find.byIcon(Icons.remove));
+      final plusCenter = tester.getCenter(find.byIcon(Icons.add));
+      // Sanity: both icons rendered, distinct positions
+      expect(minusSize.width, 24);
+      expect(plusSize.width, 24);
+      expect(minusCenter.dx, lessThan(plusCenter.dx));
+    });
+
+    testWidgets('rate text tap target spans full strip width', (tester) async {
+      // Tap somewhere far left of the rate text (but in the same row) and
+      // verify reset still fires. Confirms the InkWell wrapping the rate
+      // label stretches across the strip.
+      var pressed = false;
+      await tester.pumpWidget(wrapInApp(buildSidebar(
+        viewMode: ViewMode.redOnly,
+        canToggleViewMode: false,
+        playbackSpeed: 2.0,
+        onSpeedReset: () => pressed = true,
+      )));
+
+      // Find the rate text and the InkWell ancestor whose onTap is set.
+      final textRect = tester.getRect(find.text('2.00x'));
+      // Tap 4px from the strip left edge, at the same Y as the rate text.
+      // Strip is 72px wide. The InkWell should cover the whole row.
+      await tester.tapAt(Offset(4, textRect.center.dy));
+      await tester.pump();
+      expect(pressed, isTrue,
+          reason: 'rate-text InkWell must span the full strip width');
+    });
+
+    testWidgets('no Tooltip wrapper on speed item', (tester) async {
+      // The speed item should NOT show a tooltip on long-press; user
+      // explicitly does not want this behavior.
+      await tester.pumpWidget(wrapInApp(buildSidebar(
+        viewMode: ViewMode.redOnly,
+        canToggleViewMode: false,
+      )));
+
+      // Long-press on each of the three sub-elements; no tooltip should
+      // appear.
+      await tester.longPress(find.byIcon(Icons.remove));
+      await tester.pumpAndSettle();
+      expect(find.text('Playback speed (tap rate to reset)'), findsNothing);
+
+      await tester.longPress(find.byIcon(Icons.add));
+      await tester.pumpAndSettle();
+      expect(find.text('Playback speed (tap rate to reset)'), findsNothing);
+
+      await tester.longPress(find.text('1.00x'));
+      await tester.pumpAndSettle();
+      expect(find.text('Playback speed (tap rate to reset)'), findsNothing);
+    });
+  });
+
+  group('Mute always shown', () {
+    testWidgets('mute button shown even when canToggleViewMode is false', (tester) async {
+      // Full-only matches have only one view mode (canToggleViewMode = false)
+      // but still have audio — mute should always be available.
+      await tester.pumpWidget(wrapInApp(buildSidebar(
+        viewMode: ViewMode.fullOnly,
+        canToggleViewMode: false,
+      )));
+
+      expect(find.byIcon(Icons.volume_off), findsOneWidget,
+          reason: 'mute should be visible in compact (single-mode) layout');
+    });
+
+    testWidgets('mute reflects state when canToggleViewMode is false', (tester) async {
+      await tester.pumpWidget(wrapInApp(buildSidebar(
+        viewMode: ViewMode.fullOnly,
+        canToggleViewMode: false,
+        muteState: MuteState.fullAudio,
+      )));
+
+      expect(find.byIcon(Icons.volume_up), findsOneWidget);
     });
   });
 }

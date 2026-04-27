@@ -17,6 +17,7 @@ class FakeSource implements TimelineSource {
   bool _isPlaying = false;
   Duration currentPosition = Duration.zero;
   double currentVolume = 0;
+  double currentRate = 1.0;
   bool disposed = false;
 
   // Test introspection
@@ -24,6 +25,7 @@ class FakeSource implements TimelineSource {
   int pauseCalls = 0;
   final List<Duration> seekCalls = [];
   final List<double> volumeCalls = [];
+  final List<double> rateCalls = [];
 
   @override
   Stream<Duration> get positionStream => _positionController.stream;
@@ -55,6 +57,12 @@ class FakeSource implements TimelineSource {
   Future<void> seek(Duration position) async {
     seekCalls.add(position);
     currentPosition = position;
+  }
+
+  @override
+  Future<void> setRate(double rate) async {
+    currentRate = rate;
+    rateCalls.add(rate);
   }
 
   @override
@@ -772,6 +780,119 @@ void main() {
       full.emitDuration(const Duration(seconds: 18)); // ends at 22
       await pumpStreams();
       expect(t.unifiedDuration, const Duration(seconds: 22));
+      t.dispose();
+    });
+  });
+
+  group('Timeline behavior — playback rate', () {
+    test('default rate is 1.0', () {
+      final src = FakeSource();
+      final t = buildTimeline(sources: {
+        PlayerRole.red: (startOffset: Duration.zero, source: src),
+      });
+      expect(t.rate, 1.0);
+      t.dispose();
+    });
+
+    test('setRate forwards to every slot', () async {
+      final red = FakeSource();
+      final blue = FakeSource();
+      final full = FakeSource();
+      final t = buildTimeline(sources: {
+        PlayerRole.red: (startOffset: Duration.zero, source: red),
+        PlayerRole.blue: (
+          startOffset: const Duration(seconds: 5),
+          source: blue,
+        ),
+        PlayerRole.full: (startOffset: Duration.zero, source: full),
+      });
+
+      await t.setRate(1.5);
+
+      expect(red.currentRate, 1.5);
+      expect(blue.currentRate, 1.5);
+      expect(full.currentRate, 1.5);
+      expect(t.rate, 1.5);
+
+      t.dispose();
+    });
+
+    test('setRate clamps to [0.25, 3.0]', () async {
+      final src = FakeSource();
+      final t = buildTimeline(sources: {
+        PlayerRole.red: (startOffset: Duration.zero, source: src),
+      });
+
+      await t.setRate(0.1);
+      expect(t.rate, 0.25);
+      expect(src.currentRate, 0.25);
+
+      await t.setRate(10.0);
+      expect(t.rate, 3.0);
+      expect(src.currentRate, 3.0);
+
+      await t.setRate(-1.0);
+      expect(t.rate, 0.25);
+
+      t.dispose();
+    });
+
+    test('newly-woken slot inherits current rate (Period 1 -> 2)', () async {
+      // Earlier starts at 0; later at 5s offset. Set rate to 0.5 before
+      // later wakes. When unified time crosses 5s and later wakes via
+      // _maybeWakeOrPark, it should be told setRate(0.5).
+      final earlier = FakeSource();
+      final later = FakeSource();
+      final t = buildTimeline(sources: {
+        PlayerRole.red: (startOffset: Duration.zero, source: earlier),
+        PlayerRole.blue: (
+          startOffset: const Duration(seconds: 5),
+          source: later,
+        ),
+      });
+      earlier.emitDuration(const Duration(seconds: 30));
+      later.emitDuration(const Duration(seconds: 30));
+      await pumpStreams();
+
+      // Set rate while later is still waiting
+      await t.setRate(0.5);
+      expect(later.currentRate, 0.5,
+          reason: 'setRate should propagate to all slots immediately');
+
+      // Start playback. Earlier in window -> plays. Later out of window -> stays paused.
+      await t.play();
+      // Reset call log AFTER play() so we can check the wake-up specifically
+      // (play() also re-applies rate to in-window slots).
+      later.rateCalls.clear();
+      expect(earlier.isPlaying, isTrue);
+      expect(later.isPlaying, isFalse);
+
+      // Drive earlier forward; eventually unified crosses 5s and later wakes.
+      earlier.emitPosition(const Duration(seconds: 6));
+      await pumpStreams();
+
+      expect(later.isPlaying, isTrue, reason: 'later should wake at offset');
+      expect(later.rateCalls, contains(0.5),
+          reason: 'wake-up must apply current rate, not default 1.0x');
+
+      t.dispose();
+    });
+
+    test('play() re-applies current rate to slots in window', () async {
+      final src = FakeSource();
+      final t = buildTimeline(sources: {
+        PlayerRole.red: (startOffset: Duration.zero, source: src),
+      });
+      src.emitDuration(const Duration(seconds: 30));
+      await pumpStreams();
+
+      await t.setRate(2.0);
+      src.rateCalls.clear();
+
+      await t.play();
+      expect(src.rateCalls, contains(2.0),
+          reason: 'play() must re-apply current rate');
+
       t.dispose();
     });
   });

@@ -62,4 +62,22 @@ void main() {
       );
     });
   });
+
+  group('formatPlaybackSpeed', () {
+    test('1.0x', () {
+      expect(formatPlaybackSpeed(1.0), '1.00x');
+    });
+
+    test('0.25x', () {
+      expect(formatPlaybackSpeed(0.25), '0.25x');
+    });
+
+    test('2.5x', () {
+      expect(formatPlaybackSpeed(2.5), '2.50x');
+    });
+
+    test('3.0x', () {
+      expect(formatPlaybackSpeed(3.0), '3.00x');
+    });
+  });
 }

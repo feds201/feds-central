@@ -22,6 +22,7 @@ abstract class TimelineSource {
   Future<void> play();
   Future<void> pause();
   Future<void> seek(Duration position);
+  Future<void> setRate(double rate);
   void setVolume(double volume);
   void dispose();
 
@@ -64,6 +65,7 @@ class Timeline {
   /// naturally at end-of-video, but the timeline stays "playing" if another
   /// source is still running.
   bool _isPlaying = false;
+  double _currentRate = 1.0;
   Duration _unifiedPosition = Duration.zero;
   Duration _unifiedDuration = Duration.zero;
 
@@ -177,6 +179,9 @@ class Timeline {
   bool get isPlaying => _isPlaying;
   Stream<bool> get isPlayingStream => _playingController.stream;
 
+  /// Current playback rate. 1.0 = normal speed.
+  double get rate => _currentRate;
+
   // --- Coordinated commands ---
 
   /// Plays each slot whose unified-time window contains [unifiedPosition].
@@ -189,6 +194,11 @@ class Timeline {
     final pos = unifiedPosition;
     await Future.wait(_slots.map((slot) async {
       if (_isInWindow(slot, pos)) {
+        // Fire-and-forget setRate so the body runs synchronously up to play().
+        // If we awaited it, the event loop would yield and the duration/position
+        // listeners' _maybeWakeOrPark could see slot.isPlaying still false and
+        // call play() again, causing a double-trigger.
+        slot.source.setRate(_currentRate);
         await slot.source.play();
       } else {
         await slot.source.pause();
@@ -206,6 +216,15 @@ class Timeline {
     await pause();
     await seek(Duration.zero);
     await play();
+  }
+
+  /// Set the playback rate for all sources. Clamps to [0.25, 3.0]. The rate
+  /// is also re-applied to slots when they're (re)woken inside [_maybeWakeOrPark]
+  /// and [play], so newly-active sources don't snap back to 1.0x mid-session.
+  Future<void> setRate(double rate) async {
+    final clamped = rate.clamp(0.25, 3.0);
+    _currentRate = clamped;
+    await Future.wait(_slots.map((s) => s.source.setRate(clamped)));
   }
 
   /// Seek every slot to its corresponding local position. Slots outside
@@ -459,6 +478,9 @@ class Timeline {
           if (localTarget >= Duration.zero) {
             slot.source.seek(localTarget);
           }
+          // Apply current rate to the newly-woken slot so a Period 1->2
+          // (or scrub-to-Period-3) wake-up keeps the user's chosen speed.
+          slot.source.setRate(_currentRate);
           slot.source.play();
         }
       } else {
@@ -520,6 +542,9 @@ class _PlayerSource implements TimelineSource {
 
   @override
   Future<void> seek(Duration position) => _player.seek(position);
+
+  @override
+  Future<void> setRate(double rate) => _player.setRate(rate);
 
   @override
   void setVolume(double volume) => _player.setVolume(volume);
