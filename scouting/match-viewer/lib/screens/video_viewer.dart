@@ -139,6 +139,29 @@ class _VideoViewerState extends State<VideoViewer> {
     _initPlayers();
   }
 
+  // Hacky workaround: users have reported finger-scrubbing stops responding
+  // permanently mid-session. We have not been able to reproduce it. We tried
+  // multiple hypotheses (multi-touch state corruption, leaked pointer IDs from
+  // PointerCancelEvent, draw-button stuck held, scrub-bar drag flag stuck,
+  // unawaited-pause leaving the player half-paused) — none reproduced. Rather
+  // than guess at a fix, we drop every gesture-layer flag back to a neutral
+  // state on play/pause press, so any stuck flag gets healed before the next
+  // finger touch. Intentionally does NOT touch the players, position, view
+  // mode, drawn strokes, mute state, or _drawButtonHeld — only gesture
+  // interpretation. Remove once the root cause is found and fixed.
+  void _resetGestureState() {
+    _activePointers.clear();
+    _primaryPointer = null;
+    _primaryPointerIsScrub = false;
+    _isFingerScrubbing = false;
+    _multiTouchDetected = false;
+    _isScrubBarDragging = false;
+    _scrubStartX = null;
+    _wasPlayingBeforeScrub = false;
+    _scrubController.reset();
+    _drawingController.cancelStroke();
+  }
+
   void _onDrawingChanged() {
     if (mounted) setState(() {});
   }
@@ -354,6 +377,11 @@ class _VideoViewerState extends State<VideoViewer> {
   // --- Playback ---
 
   Future<void> _togglePlayPause() async {
+    // Hacky workaround: see _resetGestureState declaration. Pressing play/pause
+    // is a natural "I'm done with what I was doing" moment — proactively wipe
+    // gesture state so any stuck flag from the unreproducible scrub-broken
+    // bug gets healed before the next finger touch.
+    _resetGestureState();
     if (_isPlaying) {
       if (_syncEngine != null) {
         await _syncEngine!.pauseBoth();
