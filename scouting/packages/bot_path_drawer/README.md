@@ -246,7 +246,10 @@ The serialization model (also exported if you need to inspect or manipulate path
 
 **Format versions:** v1 (legacy) normalized coordinates relative to the cropped canvas size, making paths crop-dependent. v2 (current) normalizes relative to the full uncropped image, so paths display correctly at any crop fraction. New paths are always written as v2. Both versions are parsed transparently.
 
-### suggestedPathName
+### Path naming
+
+> **⚠️ GAME-SPECIFIC: TUNED FOR FRC 2026 "REBUILT".**
+> The token vocabulary (Mid, Trench, Bump, Depot, Outpost) and every threshold (28% mid line, 7% depot/outpost dip, the band fractions) are specific to this year's field. Every FRC season replaces the field, so every season you'll need to write a new `PathNamer` implementation and update `activePathNamer`. **Do not edit the existing 2026 namer in place** when the game changes -- keep it around so old paths can still be re-named retroactively.
 
 ```dart
 String? suggestedPathName({
@@ -257,14 +260,16 @@ String? suggestedPathName({
 
 Returns a geometry-based label like `"Left Trench Mid"` or `"Center Depot"`. The drawer calls this internally and surfaces the result through `onSave` / `onPathUpdated`, but it's exported so you can also call it on already-stored paths (parse with `BotPathData.tryParse` first).
 
-**Tokens (in the order they're emitted):**
+It's a thin wrapper around `activePathNamer.name(...)`. The package ships with `Rebuilt2026PathNamer` (the current implementation) and the abstract base `PathNamer`. To support a new game, write a new `PathNamer` subclass and update `activePathNamer` in `lib/src/utils/path_naming.dart`.
+
+**2026 token rules (in the order they're emitted):**
 - Start: `Left` / `Center` / `Right` based on the first waypoint's y, by thirds of bg image height.
 - `Trench` / `Bump`: at every left-to-right crossing of x = 28% of bg image width, the y picks a band. `[0, 0.2)` and `[0.8, 1.0]` are Trench, `[0.2, 0.4)` and `[0.6, 0.8)` are Bump, `[0.4, 0.6)` is omitted.
 - `Mid`: any left-to-right crossing of x = 28%.
 - `Depot`: any sample with x < 7% in the top half.
 - `Outpost`: any sample with x < 7% in the bottom half.
 
-Each token fires at most once. The thresholds are tuned for the FRC 2026 "REBUILT" field. Returns `null` for empty paths or v1-format paths (v1 can't be interpreted without crop fraction information).
+Each token fires at most once. Returns `null` for empty paths or v1-format paths (v1 can't be interpreted without crop fraction information).
 
 ### Serialization format
 
