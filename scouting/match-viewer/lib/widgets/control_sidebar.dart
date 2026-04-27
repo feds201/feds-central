@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../util/constants.dart';
+import '../util/format.dart';
 
 /// Mute state for the video viewer audio.
 enum MuteState { muted, redAudio, blueAudio, fullAudio }
@@ -25,11 +26,20 @@ class ControlSidebar extends StatelessWidget {
   /// Whether the view mode toggle button is active (more than one view mode available).
   final bool canToggleViewMode;
 
+  /// Unified-timeline position when the user marked the match start, or null
+  /// if the user hasn't marked it yet.
+  final Duration? markedStartPosition;
+
+  /// Current unified-timeline position; drives the live elapsed display on
+  /// the Mark Start button after the user has marked.
+  final Duration currentPosition;
+
   final VoidCallback onBack;
   final VoidCallback onSwapSides;
   final VoidCallback onToggleMute;
   final VoidCallback onToggleViewMode;
   final VoidCallback onPlayPause;
+  final VoidCallback onMarkStart;
   final VoidCallback onRewind10;
   final VoidCallback onForward10;
   final VoidCallback onRestart;
@@ -50,11 +60,14 @@ class ControlSidebar extends StatelessWidget {
     required this.canRedo,
     required this.hasDrawings,
     required this.canToggleViewMode,
+    required this.markedStartPosition,
+    required this.currentPosition,
     required this.onBack,
     required this.onSwapSides,
     required this.onToggleMute,
     required this.onToggleViewMode,
     required this.onPlayPause,
+    required this.onMarkStart,
     required this.onRewind10,
     required this.onForward10,
     required this.onRestart,
@@ -95,6 +108,7 @@ class ControlSidebar extends StatelessWidget {
 
     buttons.addAll([
       _buildPlayPauseItem(),
+      _buildMarkStartItem(),
       _buildItem(
         icon: Icons.replay_10,
         label: '-10s',
@@ -136,7 +150,7 @@ class ControlSidebar extends StatelessWidget {
     final children = <Widget>[];
     final navCount = canToggleViewMode ? 4 : 1; // back + (swap, mute, view)
     final playbackStart = navCount;
-    final playbackEnd = playbackStart + 4; // play, -10s, +10s, restart
+    final playbackEnd = playbackStart + 5; // play, mark-start, -10s, +10s, restart
 
     for (int i = 0; i < buttons.length; i++) {
       // Insert dividers between groups
@@ -435,6 +449,71 @@ class ControlSidebar extends StatelessWidget {
                 ),
               ],
             ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMarkStartItem() {
+    final isMarked = markedStartPosition != null;
+    final elapsed = isMarked
+        ? (currentPosition - markedStartPosition!)
+        : Duration.zero;
+    final elapsedText = formatStopwatch(elapsed);
+    // Placeholder reserves the same visual space as a real `M:SS.t` value so
+    // the icon doesn't jump when the user first taps Mark Start.
+    const placeholder = '-:--.-';
+    const icon = Icons.timer;
+    final timeText = isMarked ? elapsedText : placeholder;
+    final timeColor = isMarked ? Colors.white : Colors.white54;
+
+    if (!_expanded) {
+      return Tooltip(
+        message: isMarked ? 'Started at $elapsedText' : 'Mark start',
+        child: InkWell(
+          onTap: onMarkStart,
+          // FittedBox shrinks the icon+text column if the slot is too short
+          // to fit both at full size — keeps the layout intact in cramped
+          // compact-mode rows without us hand-tuning sizes.
+          child: Center(
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(icon, color: Colors.white, size: 28),
+                  const SizedBox(height: 2),
+                  Text(
+                    timeText,
+                    style: TextStyle(color: timeColor, fontSize: 11),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return InkWell(
+      onTap: onMarkStart,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: Row(
+            children: [
+              const Icon(icon, color: Colors.white, size: 24),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  timeText,
+                  style: TextStyle(color: timeColor, fontSize: 14),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
           ),
         ),
       ),

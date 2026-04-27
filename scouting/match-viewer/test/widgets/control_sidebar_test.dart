@@ -15,11 +15,14 @@ void main() {
     bool canRedo = false,
     bool hasDrawings = false,
     bool canToggleViewMode = true,
+    Duration? markedStartPosition,
+    Duration currentPosition = Duration.zero,
     VoidCallback? onDrawStart,
     VoidCallback? onDrawEnd,
     VoidCallback? onUndo,
     VoidCallback? onRedo,
     VoidCallback? onClearDrawing,
+    VoidCallback? onMarkStart,
   }) {
     return ControlSidebar(
       isPlaying: isPlaying,
@@ -30,11 +33,14 @@ void main() {
       canRedo: canRedo,
       hasDrawings: hasDrawings,
       canToggleViewMode: canToggleViewMode,
+      markedStartPosition: markedStartPosition,
+      currentPosition: currentPosition,
       onBack: noop,
       onSwapSides: noop,
       onToggleMute: noop,
       onToggleViewMode: noop,
       onPlayPause: noop,
+      onMarkStart: onMarkStart ?? noop,
       onRewind10: noop,
       onForward10: noop,
       onRestart: noop,
@@ -294,6 +300,187 @@ void main() {
         ).first,
       );
       expect(sizedBox.width, 72);
+    });
+  });
+
+  group('Mark Start button', () {
+    testWidgets('unmarked: shows stopwatch icon + placeholder text', (tester) async {
+      // The placeholder reserves layout space so the icon doesn't jump when
+      // the user first taps Mark Start.
+      await tester.pumpWidget(wrapInApp(buildSidebar(
+        markedStartPosition: null,
+      )));
+
+      expect(find.byIcon(Icons.timer), findsOneWidget);
+      expect(find.text('-:--.-'), findsOneWidget);
+      // No real M:SS.t value should appear when unmarked
+      expect(find.textContaining(RegExp(r'\d:\d\d\.\d')), findsNothing);
+    });
+
+    testWidgets('tap fires onMarkStart', (tester) async {
+      var pressed = false;
+      await tester.pumpWidget(wrapInApp(buildSidebar(
+        onMarkStart: () => pressed = true,
+      )));
+
+      final iconFinder = find.byIcon(Icons.timer);
+      await tester.ensureVisible(iconFinder);
+      await tester.pumpAndSettle();
+      await tester.tap(iconFinder);
+      await tester.pump();
+      expect(pressed, isTrue);
+    });
+
+    testWidgets('entire row is tappable, not just the icon', (tester) async {
+      var pressed = false;
+      await tester.pumpWidget(wrapInApp(buildSidebar(
+        viewMode: ViewMode.both,
+        onMarkStart: () => pressed = true,
+      )));
+
+      // Tap the placeholder text — different widget than the icon, but the
+      // InkWell should cover the whole row.
+      final labelFinder = find.text('-:--.-');
+      await tester.ensureVisible(labelFinder);
+      await tester.pumpAndSettle();
+      await tester.tap(labelFinder);
+      await tester.pump();
+      expect(pressed, isTrue,
+          reason: 'tapping the placeholder (not the icon) should fire onMarkStart');
+    });
+
+    testWidgets('marked: displays formatted elapsed M:SS.t', (tester) async {
+      await tester.pumpWidget(wrapInApp(buildSidebar(
+        markedStartPosition: Duration.zero,
+        currentPosition: const Duration(seconds: 5, milliseconds: 300),
+      )));
+
+      expect(find.text('0:05.3'), findsOneWidget);
+      // Placeholder should be replaced by the live timer
+      expect(find.text('-:--.-'), findsNothing);
+    });
+
+    testWidgets('negative elapsed clamps to 0:00.0', (tester) async {
+      // User scrubbed back before the marked position
+      await tester.pumpWidget(wrapInApp(buildSidebar(
+        markedStartPosition: const Duration(seconds: 10),
+        currentPosition: const Duration(seconds: 3),
+      )));
+
+      expect(find.text('0:00.0'), findsOneWidget);
+    });
+
+    testWidgets('re-tap re-marks at new position (timer resets to 0:00.0)', (tester) async {
+      // Simulate a parent that updates markedStartPosition := currentPosition
+      // when onMarkStart fires.
+      Duration? mark;
+      Duration current = const Duration(seconds: 5);
+
+      await tester.pumpWidget(MaterialApp(
+        home: Scaffold(
+          body: StatefulBuilder(
+            builder: (context, setState) => Row(
+              children: [
+                buildSidebar(
+                  markedStartPosition: mark,
+                  currentPosition: current,
+                  onMarkStart: () => setState(() => mark = current),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ));
+
+      // First tap: mark at 0:05
+      await tester.tap(find.byIcon(Icons.timer));
+      await tester.pump();
+      expect(find.text('0:00.0'), findsOneWidget);
+
+      // Advance current to 0:08.5
+      await tester.pumpWidget(MaterialApp(
+        home: Scaffold(
+          body: StatefulBuilder(
+            builder: (context, setState) => Row(
+              children: [
+                buildSidebar(
+                  markedStartPosition: mark,
+                  currentPosition: const Duration(seconds: 8, milliseconds: 500),
+                  onMarkStart: () => setState(() => mark = const Duration(seconds: 8, milliseconds: 500)),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ));
+      // 8.5 - 5 = 3.5
+      expect(find.text('0:03.5'), findsOneWidget);
+
+      // Re-tap: should reset to 0:00.0 since new mark = current
+      await tester.tap(find.byIcon(Icons.timer));
+      await tester.pump();
+      expect(find.text('0:00.0'), findsOneWidget);
+    });
+
+    testWidgets('compact mode renders Mark Start button', (tester) async {
+      await tester.pumpWidget(wrapInApp(buildSidebar(
+        viewMode: ViewMode.redOnly,
+        canToggleViewMode: false,
+      )));
+
+      expect(find.byIcon(Icons.timer), findsOneWidget);
+    });
+
+    testWidgets('compact mode shows time text under icon when marked', (tester) async {
+      await tester.pumpWidget(wrapInApp(buildSidebar(
+        viewMode: ViewMode.redOnly,
+        canToggleViewMode: false,
+        markedStartPosition: Duration.zero,
+        currentPosition: const Duration(seconds: 12, milliseconds: 400),
+      )));
+
+      expect(find.byIcon(Icons.timer), findsOneWidget);
+      expect(find.text('0:12.4'), findsOneWidget);
+    });
+
+    testWidgets('compact mode: icon position stays put when first marked', (tester) async {
+      // The placeholder reserves the layout slot for the time label so the
+      // icon doesn't jump up when the user first taps Mark Start.
+      await tester.pumpWidget(wrapInApp(buildSidebar(
+        viewMode: ViewMode.redOnly,
+        canToggleViewMode: false,
+        markedStartPosition: null,
+      )));
+      final iconCenterUnmarked = tester.getCenter(find.byIcon(Icons.timer));
+
+      await tester.pumpWidget(wrapInApp(buildSidebar(
+        viewMode: ViewMode.redOnly,
+        canToggleViewMode: false,
+        markedStartPosition: Duration.zero,
+        currentPosition: const Duration(seconds: 5),
+      )));
+      final iconCenterMarked = tester.getCenter(find.byIcon(Icons.timer));
+
+      expect(iconCenterMarked, iconCenterUnmarked,
+          reason: 'icon must not shift between unmarked and marked states');
+    });
+
+    testWidgets('expanded mode: icon position stays put when first marked', (tester) async {
+      await tester.pumpWidget(wrapInApp(buildSidebar(
+        viewMode: ViewMode.both,
+        markedStartPosition: null,
+      )));
+      final iconCenterUnmarked = tester.getCenter(find.byIcon(Icons.timer));
+
+      await tester.pumpWidget(wrapInApp(buildSidebar(
+        viewMode: ViewMode.both,
+        markedStartPosition: Duration.zero,
+        currentPosition: const Duration(seconds: 5),
+      )));
+      final iconCenterMarked = tester.getCenter(find.byIcon(Icons.timer));
+
+      expect(iconCenterMarked, iconCenterUnmarked,
+          reason: 'icon must not shift between unmarked and marked states');
     });
   });
 }

@@ -10,10 +10,11 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 import '../data/data_store.dart';
 import '../data/models.dart';
 import '../util/constants.dart';
+import '../util/format.dart';
 
 import '../viewer/drawing_controller.dart';
 import '../viewer/scrub_controller.dart';
-import '../viewer/sync_engine.dart';
+import '../viewer/timeline.dart';
 import '../widgets/control_sidebar.dart';
 import '../widgets/scrubber_bar.dart';
 import '../widgets/stroke_painter.dart';
@@ -21,8 +22,8 @@ import '../widgets/video_pane.dart';
 
 /// Full-screen landscape video viewer for match recordings.
 ///
-/// Supports dual-video synchronized playback with touch scrubbing,
-/// drawing overlay, and audio/view mode controls.
+/// Supports synchronized playback of 1, 2, or 3 sources via [Timeline]
+/// with touch scrubbing, drawing overlay, and audio/view mode controls.
 class VideoViewer extends StatefulWidget {
   final MatchWithVideos matchWithVideos;
   final DataStore dataStore;
@@ -38,16 +39,10 @@ class VideoViewer extends StatefulWidget {
 }
 
 class _VideoViewerState extends State<VideoViewer> {
-  // Players
-  Player? _redPlayer;
-  Player? _bluePlayer;
-  Player? _fullPlayer;
-  VideoController? _redController;
-  VideoController? _blueController;
-  VideoController? _fullController;
-
-  // Sync
-  SyncEngine? _syncEngine;
+  /// Single source of truth for all position/duration math, audio routing,
+  /// and per-pane chrome questions. Created in [_initPlayers] from whichever
+  /// recordings exist; null only during initial async setup.
+  Timeline? _timeline;
 
   // Convenience getters for what recordings exist
   bool get _hasRedBlue =>
@@ -94,11 +89,15 @@ class _VideoViewerState extends State<VideoViewer> {
   bool _blueManuallyRotated = false;
   bool _fullManuallyRotated = false;
 
-  // Position tracking
+  // Position state — mirrored from Timeline streams via setState. Read these
+  // in build(); never compute time math from them. The Timeline is authoritative.
   Duration _position = Duration.zero;
   Duration _duration = Duration.zero;
-  bool _laterWaiting = false;
-  Duration _countdownRemaining = Duration.zero;
+
+  /// Unified-timeline position the user marked as "match started", or null
+  /// until they first tap the Mark Start button. Resets when leaving this
+  /// screen (no disk persistence).
+  Duration? _markedStartPosition;
 
   // Single drawing controller — strokes are in screen space, not per-pane
   final _drawingController = DrawingController();
@@ -180,114 +179,75 @@ class _VideoViewerState extends State<VideoViewer> {
     final blueRec = widget.matchWithVideos.blueRecording;
     final fullRec = widget.matchWithVideos.fullRecording;
 
+    Player? redPlayer;
+    VideoController? redCtl;
+    Player? bluePlayer;
+    VideoController? blueCtl;
+    Player? fullPlayer;
+    VideoController? fullCtl;
+
     if (redRec != null) {
-      _redPlayer = Player();
-      _redController = VideoController(_redPlayer!);
+      redPlayer = Player();
+      redCtl = VideoController(redPlayer);
       final path = await _getVideoPath(redRec);
-      await _redPlayer!.open(Media(path), play: false);
-      _redPlayer!.setVolume(0);
+      await redPlayer.open(Media(path), play: false);
+      redPlayer.setVolume(0);
     }
-
     if (blueRec != null) {
-      _bluePlayer = Player();
-      _blueController = VideoController(_bluePlayer!);
+      bluePlayer = Player();
+      blueCtl = VideoController(bluePlayer);
       final path = await _getVideoPath(blueRec);
-      await _bluePlayer!.open(Media(path), play: false);
-      _bluePlayer!.setVolume(0);
+      await bluePlayer.open(Media(path), play: false);
+      bluePlayer.setVolume(0);
     }
-
     if (fullRec != null) {
-      _fullPlayer = Player();
-      _fullController = VideoController(_fullPlayer!);
+      fullPlayer = Player();
+      fullCtl = VideoController(fullPlayer);
       final path = await _getVideoPath(fullRec);
-      await _fullPlayer!.open(Media(path), play: false);
-      _fullPlayer!.setVolume(0);
+      await fullPlayer.open(Media(path), play: false);
+      fullPlayer.setVolume(0);
     }
 
-    // Set up sync engine whenever red+blue exist; optionally include full player.
-    if (_hasRedBlue && _redPlayer != null && _bluePlayer != null) {
-      _syncEngine = SyncEngine.fromRecordings(
-        redRecording: redRec!,
-        blueRecording: blueRec!,
-        redPlayer: _redPlayer!,
-        bluePlayer: _bluePlayer!,
-        fullRecording: fullRec,
-        fullPlayer: _fullPlayer,
-      );
-      _syncEngine!.startPositionMonitoring(() {
-        if (mounted) {
-          setState(() {
-            _laterWaiting = _syncEngine!.laterWaiting;
-            _countdownRemaining = _syncEngine!.countdownRemaining;
-          });
-        }
-      });
-      _laterWaiting = _syncEngine!.laterWaiting;
-      _countdownRemaining = _syncEngine!.countdownRemaining;
-    }
+    final timeline = Timeline.fromRecordings(
+      redRecording: redRec,
+      redPlayer: redPlayer,
+      redController: redCtl,
+      blueRecording: blueRec,
+      bluePlayer: bluePlayer,
+      blueController: blueCtl,
+      fullRecording: fullRec,
+      fullPlayer: fullPlayer,
+      fullController: fullCtl,
+    );
 
-    // Auto-rotate videos so the wider dimension is vertical.
-    // In landscape mode, we want phone videos (typically taller than wide)
-    // to display naturally, and landscape videos rotated so wider=vertical.
-    _autoRotatePlayer(_redPlayer, isRed: true, isFull: false);
-    _autoRotatePlayer(_bluePlayer, isRed: false, isFull: false);
-    _autoRotatePlayer(_fullPlayer, isRed: false, isFull: true);
-
-    // Subscribe to position/duration streams from the primary player
-    // (must subscribe before autoplay so we catch the playing state)
-    final primaryPlayer =
-        _syncEngine?.earlierPlayer ?? _redPlayer ?? _bluePlayer ?? _fullPlayer;
-    if (primaryPlayer != null) {
-      _subscriptions.add(
-        primaryPlayer.stream.position.listen((pos) {
-          if (mounted && !_isScrubBarDragging && !_isFingerScrubbing) {
-            setState(() => _position = pos);
-            _syncEngine?.updateIntendedPosition(pos);
-          }
-        }),
-      );
-      _subscriptions.add(
-        primaryPlayer.stream.duration.listen((dur) {
-          if (mounted) {
-            setState(() {
-              _duration = _syncEngine?.unifiedDuration ?? dur;
-            });
-          }
-        }),
-      );
-      // When sync engine exists, also subscribe to the later player's duration
-      // so we recompute the unified timeline when either duration becomes known.
-      if (_syncEngine != null) {
-        _subscriptions.add(
-          _syncEngine!.laterPlayer.stream.duration.listen((dur) {
-            if (mounted) {
-              final unified = _syncEngine?.unifiedDuration;
-              if (unified != null) {
-                setState(() => _duration = unified);
-              }
-            }
-          }),
-        );
+    _subscriptions.add(timeline.unifiedPositionStream.listen((pos) {
+      if (mounted && !_isScrubBarDragging && !_isFingerScrubbing) {
+        setState(() => _position = pos);
       }
-      _subscriptions.add(
-        primaryPlayer.stream.playing.listen((playing) {
-          if (mounted) {
-            setState(() {
-              _isPlaying = playing;
-              _updateDrawingOpacity();
-            });
-          }
-        }),
-      );
-    }
+    }));
+    _subscriptions.add(timeline.unifiedDurationStream.listen((dur) {
+      if (mounted) setState(() => _duration = dur);
+    }));
+    _subscriptions.add(timeline.isPlayingStream.listen((playing) {
+      if (mounted) {
+        setState(() {
+          _isPlaying = playing;
+          _updateDrawingOpacity();
+        });
+      }
+    }));
+    _subscriptions.add(timeline.dimensionsStream.listen((role) {
+      final w = timeline.widthFor(role);
+      final h = timeline.heightFor(role);
+      debugPrint('[VIDEO_DEBUG] $role media_kit reports: ${w}x$h '
+          '(${(w ?? 0) > (h ?? 0) ? "landscape" : "portrait"})');
+      _updateAutoRotation();
+    }));
 
-    // Autoplay: start playback after initialization
-    if (_syncEngine != null) {
-      await _syncEngine!.startSyncedPlayback();
-    } else {
-      final player = _redPlayer ?? _bluePlayer ?? _fullPlayer;
-      await player?.play();
-    }
+    if (mounted) setState(() => _timeline = timeline);
+
+    // Autoplay
+    await timeline.play();
 
     if (mounted) setState(() {});
   }
@@ -302,10 +262,7 @@ class _VideoViewerState extends State<VideoViewer> {
     for (final sub in _subscriptions) {
       sub.cancel();
     }
-    _syncEngine?.dispose();
-    _redPlayer?.dispose();
-    _bluePlayer?.dispose();
-    _fullPlayer?.dispose();
+    _timeline?.dispose();
     _drawingController.removeListener(_onDrawingChanged);
     _drawingController.dispose();
     _redZoomController.dispose();
@@ -331,29 +288,14 @@ class _VideoViewerState extends State<VideoViewer> {
   }
 
   void _applyMuteState() {
-    // Red/blue follows the logical alliance, not the visual position.
-    // Swapping sides swaps visual position but audio follows the alliance.
-    final redPlayer = _syncEngine?.redPlayer ?? _redPlayer;
-    final bluePlayer = _syncEngine?.bluePlayer ?? _bluePlayer;
-
-    switch (_muteState) {
-      case MuteState.muted:
-        redPlayer?.setVolume(0);
-        bluePlayer?.setVolume(0);
-        _fullPlayer?.setVolume(0);
-      case MuteState.redAudio:
-        redPlayer?.setVolume(100);
-        bluePlayer?.setVolume(0);
-        _fullPlayer?.setVolume(0);
-      case MuteState.blueAudio:
-        redPlayer?.setVolume(0);
-        bluePlayer?.setVolume(100);
-        _fullPlayer?.setVolume(0);
-      case MuteState.fullAudio:
-        redPlayer?.setVolume(0);
-        bluePlayer?.setVolume(0);
-        _fullPlayer?.setVolume(100);
-    }
+    final t = _timeline;
+    if (t == null) return;
+    final redVol = _muteState == MuteState.redAudio ? 100.0 : 0.0;
+    final blueVol = _muteState == MuteState.blueAudio ? 100.0 : 0.0;
+    final fullVol = _muteState == MuteState.fullAudio ? 100.0 : 0.0;
+    t.setVolumeFor(PlayerRole.red, redVol);
+    t.setVolumeFor(PlayerRole.blue, blueVol);
+    t.setVolumeFor(PlayerRole.full, fullVol);
   }
 
   // --- View Mode ---
@@ -382,72 +324,41 @@ class _VideoViewerState extends State<VideoViewer> {
     // gesture state so any stuck flag from the unreproducible scrub-broken
     // bug gets healed before the next finger touch.
     _resetGestureState();
-    if (_isPlaying) {
-      if (_syncEngine != null) {
-        await _syncEngine!.pauseBoth();
-      } else {
-        final player = _redPlayer ?? _bluePlayer ?? _fullPlayer;
-        await player?.pause();
-      }
+    final t = _timeline;
+    if (t == null) return;
+    if (t.isPlaying) {
+      await t.pause();
     } else {
-      if (_syncEngine != null) {
-        await _syncEngine!.startSyncedPlayback();
-      } else {
-        final player = _redPlayer ?? _bluePlayer ?? _fullPlayer;
-        await player?.play();
-      }
+      await t.play();
     }
   }
 
   Future<void> _rewind10() async {
-    final newPos = _position - const Duration(seconds: 10);
-    await _seekTo(newPos);
+    await _seekTo(_position - const Duration(seconds: 10));
   }
 
   Future<void> _forward10() async {
-    final newPos = _position + const Duration(seconds: 10);
-    await _seekTo(newPos);
+    await _seekTo(_position + const Duration(seconds: 10));
   }
 
   Future<void> _restart() async {
     final wasPlaying = _isPlaying;
-    if (_syncEngine != null) {
-      await _syncEngine!.restartBoth();
-      setState(() {
-        _position = Duration.zero;
-        _laterWaiting = _syncEngine!.laterWaiting;
-        _countdownRemaining = _syncEngine!.countdownRemaining;
-      });
-      if (wasPlaying) {
-        await _syncEngine!.startSyncedPlayback();
-      }
-    } else {
-      final player = _redPlayer ?? _bluePlayer ?? _fullPlayer;
-      await player?.pause();
-      await player?.seek(Duration.zero);
-      setState(() => _position = Duration.zero);
-      if (wasPlaying) {
-        await player?.play();
-      }
-    }
+    final t = _timeline;
+    if (t == null) return;
+    await t.seek(Duration.zero);
+    if (wasPlaying) await t.play();
   }
 
   Future<void> _seekTo(Duration target) async {
-    if (target < Duration.zero) target = Duration.zero;
-    if (_duration > Duration.zero && target > _duration) target = _duration;
+    await _timeline?.seek(target);
+  }
 
-    if (_syncEngine != null) {
-      await _syncEngine!.seekToEarlierPosition(target);
-      setState(() {
-        _position = target;
-        _laterWaiting = _syncEngine!.laterWaiting;
-        _countdownRemaining = _syncEngine!.countdownRemaining;
-      });
-    } else {
-      final player = _redPlayer ?? _bluePlayer ?? _fullPlayer;
-      await player?.seek(target);
-      setState(() => _position = target);
-    }
+  // --- Mark Start ---
+
+  void _markStart() {
+    final t = _timeline;
+    if (t == null) return;
+    setState(() => _markedStartPosition = t.unifiedPosition);
   }
 
   // --- Unified Pointer Handling (Scrub + Draw) ---
@@ -469,16 +380,10 @@ class _VideoViewerState extends State<VideoViewer> {
         _scrubStartX = event.position.dx;
         _wasPlayingBeforeScrub = _isPlaying;
         _isFingerScrubbing = true;
-        _scrubBasePosition = _syncEngine?.intendedEarlierPosition ?? _position;
+        _scrubBasePosition = _timeline?.unifiedPosition ?? _position;
 
-        // Pause players for scrub if currently playing
-        if (_isPlaying) {
-          if (_syncEngine != null) {
-            _syncEngine!.pauseBoth();
-          } else {
-            (_redPlayer ?? _bluePlayer ?? _fullPlayer)?.pause();
-          }
-        }
+        // Pause for scrub if currently playing
+        if (_isPlaying) _timeline?.pause();
 
         // Start coalescing timer for smooth finger scrubbing
         _scrubController.startCoalescing(
@@ -566,43 +471,25 @@ class _VideoViewerState extends State<VideoViewer> {
     if (_primaryPointer == null) return;
 
     if (_primaryPointerIsScrub) {
-      // Cancel scrub: stop coalescing, clear scrub state, resume playback
       _isFingerScrubbing = false;
       _scrubController.stopCoalescing();
       _scrubController.reset();
       _scrubStartX = null;
 
-      // Resume playback since the user intended to zoom while playing
       if (_wasPlayingBeforeScrub) {
         _wasPlayingBeforeScrub = false;
-        if (_syncEngine != null) {
-          _syncEngine!.startSyncedPlayback();
-        } else {
-          (_redPlayer ?? _bluePlayer ?? _fullPlayer)?.play();
-        }
+        _timeline?.play();
       }
     } else {
-      // Cancel draw: discard in-progress stroke
       _drawingController.cancelStroke();
     }
 
     _primaryPointer = null;
   }
 
-  /// Called by the coalescing timer at fixed intervals.
-  /// Fire-and-forget seek — do not await.
+  /// Called by the coalescing timer at fixed intervals. Fire-and-forget.
   void _onScrubCoalescingTick(Duration position) {
-    if (_syncEngine != null) {
-      _syncEngine!.seekToEarlierPosition(position);
-      if (mounted) {
-        setState(() {
-          _laterWaiting = _syncEngine!.laterWaiting;
-          _countdownRemaining = _syncEngine!.countdownRemaining;
-        });
-      }
-    } else {
-      (_redPlayer ?? _bluePlayer ?? _fullPlayer)?.seek(position);
-    }
+    _timeline?.seek(position);
   }
 
   // --- Drawing ---
@@ -666,90 +553,67 @@ class _VideoViewerState extends State<VideoViewer> {
 
   // --- Auto-rotation ---
 
-  // Cached video dimensions for recomputing rotation on view mode change
-  int? _redVideoWidth, _redVideoHeight;
-  int? _blueVideoWidth, _blueVideoHeight;
-  int? _fullVideoWidth, _fullVideoHeight;
-
-  /// Auto-rotate a video pane based on its native dimensions.
-  /// Listens to the player's width stream (fires when video opens).
-  void _autoRotatePlayer(Player? player, {required bool isRed, bool isFull = false}) {
-    if (player == null) return;
-    final tag = isFull ? 'FULL' : (isRed ? 'RED' : 'BLUE');
-    _subscriptions.add(
-      player.stream.width.listen((width) {
-        final height = player.state.height;
-        if (width != null && height != null && width > 0 && height > 0) {
-          debugPrint('[VIDEO_DEBUG] $tag media_kit reports: ${width}x$height '
-              '(${width > height ? "landscape" : "portrait"})');
-          if (isFull) {
-            _fullVideoWidth = width;
-            _fullVideoHeight = height;
-          } else if (isRed) {
-            _redVideoWidth = width;
-            _redVideoHeight = height;
-          } else {
-            _blueVideoWidth = width;
-            _blueVideoHeight = height;
-          }
-          _updateAutoRotation();
-        }
-      }),
-    );
-  }
-
   /// Recomputes auto-rotation for all panes based on current view mode.
   /// In dual mode: wider dimension should be vertical (panes are tall/narrow).
   /// In single mode: wider dimension should be horizontal (fill landscape screen).
   /// Skips panes that the user has manually rotated.
   void _updateAutoRotation() {
+    final t = _timeline;
+    if (t == null) return;
     setState(() {
       final isSingleMode = _viewMode != ViewMode.both;
       debugPrint('[VIDEO_DEBUG] _updateAutoRotation: viewMode=$_viewMode, isSingleMode=$isSingleMode');
 
-      if (!_redManuallyRotated &&
-          _redVideoWidth != null &&
-          _redVideoHeight != null) {
-        final isLandscapeVideo = _redVideoWidth! > _redVideoHeight!;
-        final oldTurns = _redQuarterTurns;
-        if (isSingleMode) {
-          _redQuarterTurns = isLandscapeVideo ? 0 : 1;
-        } else {
-          _redQuarterTurns = isLandscapeVideo ? 1 : 0;
-        }
-        debugPrint('[VIDEO_DEBUG] RED auto-rotate: ${_redVideoWidth}x$_redVideoHeight '
-            'isLandscape=$isLandscapeVideo → quarterTurns=$_redQuarterTurns (was $oldTurns)');
-      } else if (_redManuallyRotated) {
-        debugPrint('[VIDEO_DEBUG] RED skipped (manually rotated), quarterTurns=$_redQuarterTurns');
-      }
-
-      if (!_blueManuallyRotated &&
-          _blueVideoWidth != null &&
-          _blueVideoHeight != null) {
-        final isLandscapeVideo = _blueVideoWidth! > _blueVideoHeight!;
-        final oldTurns = _blueQuarterTurns;
-        if (isSingleMode) {
-          _blueQuarterTurns = isLandscapeVideo ? 0 : 1;
-        } else {
-          _blueQuarterTurns = isLandscapeVideo ? 1 : 0;
-        }
-        debugPrint('[VIDEO_DEBUG] BLUE auto-rotate: ${_blueVideoWidth}x$_blueVideoHeight '
-            'isLandscape=$isLandscapeVideo → quarterTurns=$_blueQuarterTurns (was $oldTurns)');
-      } else if (_blueManuallyRotated) {
-        debugPrint('[VIDEO_DEBUG] BLUE skipped (manually rotated), quarterTurns=$_blueQuarterTurns');
-      }
-
-      // Full player is always displayed full-screen (single mode)
-      if (!_fullManuallyRotated &&
-          _fullVideoWidth != null &&
-          _fullVideoHeight != null) {
-        final isLandscapeVideo = _fullVideoWidth! > _fullVideoHeight!;
-        final oldTurns = _fullQuarterTurns;
-        _fullQuarterTurns = isLandscapeVideo ? 0 : 1;
-        debugPrint('[VIDEO_DEBUG] FULL auto-rotate: ${_fullVideoWidth}x$_fullVideoHeight '
-            'isLandscape=$isLandscapeVideo → quarterTurns=$_fullQuarterTurns (was $oldTurns)');
-      }
+      _maybeAutoRotate(
+        tag: 'RED',
+        manuallyRotated: _redManuallyRotated,
+        width: t.widthFor(PlayerRole.red),
+        height: t.heightFor(PlayerRole.red),
+        isSingleMode: isSingleMode,
+        currentTurns: _redQuarterTurns,
+        applyTurns: (q) => _redQuarterTurns = q,
+      );
+      _maybeAutoRotate(
+        tag: 'BLUE',
+        manuallyRotated: _blueManuallyRotated,
+        width: t.widthFor(PlayerRole.blue),
+        height: t.heightFor(PlayerRole.blue),
+        isSingleMode: isSingleMode,
+        currentTurns: _blueQuarterTurns,
+        applyTurns: (q) => _blueQuarterTurns = q,
+      );
+      // Full is always single-mode-style (always full-screen)
+      _maybeAutoRotate(
+        tag: 'FULL',
+        manuallyRotated: _fullManuallyRotated,
+        width: t.widthFor(PlayerRole.full),
+        height: t.heightFor(PlayerRole.full),
+        isSingleMode: true,
+        currentTurns: _fullQuarterTurns,
+        applyTurns: (q) => _fullQuarterTurns = q,
+      );
     });
+  }
+
+  void _maybeAutoRotate({
+    required String tag,
+    required bool manuallyRotated,
+    required int? width,
+    required int? height,
+    required bool isSingleMode,
+    required int currentTurns,
+    required void Function(int) applyTurns,
+  }) {
+    if (manuallyRotated) {
+      debugPrint('[VIDEO_DEBUG] $tag skipped (manually rotated), quarterTurns=$currentTurns');
+      return;
+    }
+    if (width == null || height == null || width <= 0 || height <= 0) return;
+    final isLandscape = width > height;
+    final newTurns = isSingleMode ? (isLandscape ? 0 : 1) : (isLandscape ? 1 : 0);
+    debugPrint('[VIDEO_DEBUG] $tag auto-rotate: ${width}x$height '
+        'isLandscape=$isLandscape → quarterTurns=$newTurns (was $currentTurns)');
+    applyTurns(newTurns);
   }
 
   // --- Helpers ---
@@ -763,74 +627,6 @@ class _VideoViewerState extends State<VideoViewer> {
         recording.team4 == teamNum ||
         recording.team5 == teamNum ||
         recording.team6 == teamNum;
-  }
-
-  bool _isRedWaiting() {
-    if (_syncEngine == null) return false;
-    return _syncEngine!.isLaterSide('red') && _laterWaiting;
-  }
-
-  bool _isBlueWaiting() {
-    if (_syncEngine == null) return false;
-    return _syncEngine!.isLaterSide('blue') && _laterWaiting;
-  }
-
-  /// Whether the red pane's video has ended at the current position.
-  bool _isRedEnded() {
-    if (_syncEngine == null) return false;
-    final redDur = _syncEngine!.redPlayer.state.duration;
-    if (redDur == Duration.zero) return false;
-    if (_syncEngine!.earlierIsRed) {
-      // Red is earlier — ended when position exceeds red's duration
-      return _position > redDur;
-    } else {
-      // Red is later — derive red's local position and check against its duration
-      final redPos = SyncEngine.laterPositionFor(_position, _syncEngine!.syncOffset);
-      if (redPos == null) return false; // red hasn't started yet
-      return redPos > redDur;
-    }
-  }
-
-  /// Whether the blue pane's video has ended at the current position.
-  bool _isBlueEnded() {
-    if (_syncEngine == null) return false;
-    final blueDur = _syncEngine!.bluePlayer.state.duration;
-    if (blueDur == Duration.zero) return false;
-    if (!_syncEngine!.earlierIsRed) {
-      // Blue is earlier — ended when position exceeds blue's duration
-      return _position > blueDur;
-    } else {
-      // Blue is later — derive blue's local position and check against its duration
-      final bluePos = SyncEngine.laterPositionFor(_position, _syncEngine!.syncOffset);
-      if (bluePos == null) return false; // blue hasn't started yet
-      return bluePos > blueDur;
-    }
-  }
-
-  /// How long ago the red video ended (only meaningful when _isRedEnded()).
-  Duration _redEndedAgo() {
-    if (_syncEngine == null) return Duration.zero;
-    final redDur = _syncEngine!.redPlayer.state.duration;
-    if (_syncEngine!.earlierIsRed) {
-      return _position - redDur;
-    } else {
-      final redPos = SyncEngine.laterPositionFor(_position, _syncEngine!.syncOffset);
-      if (redPos == null) return Duration.zero;
-      return redPos - redDur;
-    }
-  }
-
-  /// How long ago the blue video ended (only meaningful when _isBlueEnded()).
-  Duration _blueEndedAgo() {
-    if (_syncEngine == null) return Duration.zero;
-    final blueDur = _syncEngine!.bluePlayer.state.duration;
-    if (!_syncEngine!.earlierIsRed) {
-      return _position - blueDur;
-    } else {
-      final bluePos = SyncEngine.laterPositionFor(_position, _syncEngine!.syncOffset);
-      if (bluePos == null) return Duration.zero;
-      return bluePos - blueDur;
-    }
   }
 
   @override
@@ -880,11 +676,14 @@ class _VideoViewerState extends State<VideoViewer> {
               canRedo: _drawingController.canRedo,
               hasDrawings: _drawingController.hasNonEmptyStrokes,
               canToggleViewMode: _availableViewModes.length > 1,
+              markedStartPosition: _markedStartPosition,
+              currentPosition: _position,
               onBack: () => Navigator.of(context).pop(),
               onSwapSides: _swapSides,
               onToggleMute: _toggleMute,
               onToggleViewMode: _toggleViewMode,
               onPlayPause: _togglePlayPause,
+              onMarkStart: _markStart,
               onRewind10: _rewind10,
               onForward10: _forward10,
               onRestart: _restart,
@@ -911,26 +710,27 @@ class _VideoViewerState extends State<VideoViewer> {
   // --- Video Layout (inside InteractiveViewer, subject to zoom/rotate) ---
 
   Widget _buildVideoLayout() {
-    final redRec = widget.matchWithVideos.redRecording;
-    final blueRec = widget.matchWithVideos.blueRecording;
-    final fullRec = widget.matchWithVideos.fullRecording;
+    final t = _timeline;
+    if (t == null) {
+      return const Center(
+        child: Text('Loading...', style: TextStyle(color: Colors.white54)),
+      );
+    }
+    final redCtl = t.controllerFor(PlayerRole.red);
+    final blueCtl = t.controllerFor(PlayerRole.blue);
+    final fullCtl = t.controllerFor(PlayerRole.full);
 
     // Full-only mode
     if (_viewMode == ViewMode.fullOnly) {
-      if (_fullPlayer == null || _fullController == null) {
+      if (fullCtl == null) {
         return const Center(
-          child: Text(
-            'No video available',
-            style: TextStyle(color: Colors.white54),
-          ),
+          child: Text('No video available', style: TextStyle(color: Colors.white54)),
         );
       }
       return _buildZoomablePane(
         paneKey: _singlePaneKey,
         zoomController: _fullZoomController,
-
-        player: _fullPlayer!,
-        videoController: _fullController!,
+        videoController: fullCtl,
         quarterTurns: _fullQuarterTurns,
         fit: BoxFit.contain,
       );
@@ -938,34 +738,26 @@ class _VideoViewerState extends State<VideoViewer> {
 
     // Single red/blue mode
     if (_viewMode != ViewMode.both) {
-      Player? player;
       VideoController? controller;
       bool isRed = true;
 
-      if (_viewMode == ViewMode.redOnly || (redRec != null && blueRec == null)) {
-        player = _redPlayer;
-        controller = _redController;
+      if (_viewMode == ViewMode.redOnly || (redCtl != null && blueCtl == null)) {
+        controller = redCtl;
         isRed = true;
       } else {
-        player = _bluePlayer;
-        controller = _blueController;
+        controller = blueCtl;
         isRed = false;
       }
 
-      if (player == null || controller == null) {
+      if (controller == null) {
         return const Center(
-          child: Text(
-            'No video available',
-            style: TextStyle(color: Colors.white54),
-          ),
+          child: Text('No video available', style: TextStyle(color: Colors.white54)),
         );
       }
 
       return _buildZoomablePane(
         paneKey: _singlePaneKey,
         zoomController: isRed ? _redZoomController : _blueZoomController,
-
-        player: player,
         videoController: controller,
         quarterTurns: isRed ? _redQuarterTurns : _blueQuarterTurns,
         fit: BoxFit.contain,
@@ -973,16 +765,13 @@ class _VideoViewerState extends State<VideoViewer> {
     }
 
     // Dual video mode — red on left, blue on right (or swapped)
-    if (_redPlayer == null || _bluePlayer == null ||
-        _redController == null || _blueController == null) {
+    if (redCtl == null || blueCtl == null) {
       return const Center(
         child: Text('Loading...', style: TextStyle(color: Colors.white54)),
       );
     }
-    final leftPlayer = _sidesSwapped ? _bluePlayer! : _redPlayer!;
-    final rightPlayer = _sidesSwapped ? _redPlayer! : _bluePlayer!;
-    final leftController = _sidesSwapped ? _blueController! : _redController!;
-    final rightController = _sidesSwapped ? _redController! : _blueController!;
+    final leftController = _sidesSwapped ? blueCtl : redCtl;
+    final rightController = _sidesSwapped ? redCtl : blueCtl;
     final leftIsRed = !_sidesSwapped;
     final rightIsRed = _sidesSwapped;
 
@@ -992,8 +781,6 @@ class _VideoViewerState extends State<VideoViewer> {
           child: _buildZoomablePane(
             paneKey: _leftPaneKey,
             zoomController: leftIsRed ? _redZoomController : _blueZoomController,
-
-            player: leftPlayer,
             videoController: leftController,
             quarterTurns: leftIsRed ? _redQuarterTurns : _blueQuarterTurns,
             fit: BoxFit.fitWidth,
@@ -1003,8 +790,6 @@ class _VideoViewerState extends State<VideoViewer> {
           child: _buildZoomablePane(
             paneKey: _rightPaneKey,
             zoomController: rightIsRed ? _redZoomController : _blueZoomController,
-
-            player: rightPlayer,
             videoController: rightController,
             quarterTurns: rightIsRed ? _redQuarterTurns : _blueQuarterTurns,
             fit: BoxFit.fitWidth,
@@ -1020,7 +805,6 @@ class _VideoViewerState extends State<VideoViewer> {
   Widget _buildZoomablePane({
     required GlobalKey paneKey,
     required TransformationController zoomController,
-    required Player player,
     required VideoController videoController,
     required int quarterTurns,
     required BoxFit fit,
@@ -1035,15 +819,12 @@ class _VideoViewerState extends State<VideoViewer> {
       child: RotatedBox(
         quarterTurns: quarterTurns,
         child: VideoPane(
-          player: player,
           videoController: videoController,
           fit: fit,
         ),
       ),
     );
   }
-
-  // --- Chrome Overlay (outside InteractiveViewer, never zooms/rotates) ---
 
   // --- Drawing Layer (screen-space, never zooms/rotates) ---
 
@@ -1070,25 +851,24 @@ class _VideoViewerState extends State<VideoViewer> {
   // --- Chrome Overlay (outside InteractiveViewer, never zooms/rotates) ---
 
   Widget _buildChromeOverlay() {
+    final t = _timeline;
+    if (t == null) return const SizedBox.shrink();
+
     final children = <Widget>[];
 
     if (_viewMode == ViewMode.both) {
       final leftIsRed = !_sidesSwapped;
       final rightIsRed = _sidesSwapped;
-      final leftColor = _sidesSwapped ? AppColors.blueAlliance : AppColors.redAlliance;
-      final rightColor = _sidesSwapped ? AppColors.redAlliance : AppColors.blueAlliance;
+      final leftRole = leftIsRed ? PlayerRole.red : PlayerRole.blue;
+      final rightRole = rightIsRed ? PlayerRole.red : PlayerRole.blue;
+      final leftColor = leftIsRed ? AppColors.redAlliance : AppColors.blueAlliance;
+      final rightColor = rightIsRed ? AppColors.redAlliance : AppColors.blueAlliance;
       final leftRec = _sidesSwapped
           ? widget.matchWithVideos.blueRecording
           : widget.matchWithVideos.redRecording;
       final rightRec = _sidesSwapped
           ? widget.matchWithVideos.redRecording
           : widget.matchWithVideos.blueRecording;
-      final leftWaiting = _sidesSwapped ? _isBlueWaiting() : _isRedWaiting();
-      final rightWaiting = _sidesSwapped ? _isRedWaiting() : _isBlueWaiting();
-      final leftEnded = _sidesSwapped ? _isBlueEnded() : _isRedEnded();
-      final rightEnded = _sidesSwapped ? _isRedEnded() : _isBlueEnded();
-      final leftEndedAgo = _sidesSwapped ? _blueEndedAgo() : _redEndedAgo();
-      final rightEndedAgo = _sidesSwapped ? _redEndedAgo() : _blueEndedAgo();
 
       children.add(_buildPaneChrome(
         paneKey: _leftPaneKey,
@@ -1096,10 +876,10 @@ class _VideoViewerState extends State<VideoViewer> {
         containsUserTeam: _containsUserTeam(leftRec),
         onRotate: () => _rotatePane(isRed: leftIsRed),
         onEdit: _openEditMetadata,
-        isWaiting: leftWaiting,
-        countdownRemaining: _countdownRemaining,
-        hasEnded: leftEnded,
-        endedAgo: leftEndedAgo,
+        isWaiting: t.isWaitingFor(leftRole),
+        countdownRemaining: t.countdownFor(leftRole),
+        hasEnded: t.hasEnded(leftRole),
+        endedAgo: t.endedAgoFor(leftRole),
       ));
       children.add(_buildPaneChrome(
         paneKey: _rightPaneKey,
@@ -1107,10 +887,10 @@ class _VideoViewerState extends State<VideoViewer> {
         containsUserTeam: _containsUserTeam(rightRec),
         onRotate: () => _rotatePane(isRed: rightIsRed),
         onEdit: _openEditMetadata,
-        isWaiting: rightWaiting,
-        countdownRemaining: _countdownRemaining,
-        hasEnded: rightEnded,
-        endedAgo: rightEndedAgo,
+        isWaiting: t.isWaitingFor(rightRole),
+        countdownRemaining: t.countdownFor(rightRole),
+        hasEnded: t.hasEnded(rightRole),
+        endedAgo: t.endedAgoFor(rightRole),
       ));
     } else if (_viewMode == ViewMode.fullOnly) {
       children.add(_buildPaneChrome(
@@ -1119,26 +899,28 @@ class _VideoViewerState extends State<VideoViewer> {
         containsUserTeam: _containsUserTeam(widget.matchWithVideos.fullRecording),
         onRotate: () => _rotatePane(isFull: true),
         onEdit: _openEditMetadata,
+        isWaiting: t.isWaitingFor(PlayerRole.full),
+        countdownRemaining: t.countdownFor(PlayerRole.full),
+        hasEnded: t.hasEnded(PlayerRole.full),
+        endedAgo: t.endedAgoFor(PlayerRole.full),
       ));
     } else {
       final isRed = _viewMode == ViewMode.redOnly;
+      final role = isRed ? PlayerRole.red : PlayerRole.blue;
       final color = isRed ? AppColors.redAlliance : AppColors.blueAlliance;
       final recording = isRed
           ? widget.matchWithVideos.redRecording
           : widget.matchWithVideos.blueRecording;
-      final isWaiting = isRed ? _isRedWaiting() : _isBlueWaiting();
-      final isEnded = isRed ? _isRedEnded() : _isBlueEnded();
-      final endedAgo = isRed ? _redEndedAgo() : _blueEndedAgo();
       children.add(_buildPaneChrome(
         paneKey: _singlePaneKey,
         allianceColor: color,
         containsUserTeam: _containsUserTeam(recording),
         onRotate: () => _rotatePane(isRed: isRed),
         onEdit: _openEditMetadata,
-        isWaiting: isWaiting,
-        countdownRemaining: _countdownRemaining,
-        hasEnded: isEnded,
-        endedAgo: endedAgo,
+        isWaiting: t.isWaitingFor(role),
+        countdownRemaining: t.countdownFor(role),
+        hasEnded: t.hasEnded(role),
+        endedAgo: t.endedAgoFor(role),
       ));
     }
 
@@ -1192,7 +974,7 @@ class _VideoViewerState extends State<VideoViewer> {
                   color: Colors.black,
                   child: Center(
                     child: Text(
-                      'Starting in ${(countdownRemaining.inMilliseconds / 1000.0).toStringAsFixed(1)}s',
+                      'Starting in ${formatStopwatch(countdownRemaining)}',
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 24,
@@ -1213,7 +995,7 @@ class _VideoViewerState extends State<VideoViewer> {
                   color: Colors.black87,
                   child: Center(
                     child: Text(
-                      'Video ended ${(endedAgo.inMilliseconds / 1000.0).toStringAsFixed(1)}s ago',
+                      'Video ended ${formatStopwatch(endedAgo)} ago',
                       style: const TextStyle(
                         color: Colors.white70,
                         fontSize: 18,
