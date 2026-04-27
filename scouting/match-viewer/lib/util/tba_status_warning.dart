@@ -2,20 +2,21 @@ import 'package:flutter/material.dart';
 
 import '../data/data_store.dart';
 import '../data/models.dart';
+import '../tba/tba_config.dart';
 
 /// Returns the warning message to show, or null if everything is fine.
 ///
 /// Tier order (highest priority first):
 ///   1. No events selected.
-///   2. Events selected, but no Blue Alliance API key.
+///   2. Events selected, but the TBA client has no API key (override blank
+///      AND default fallback empty).
 ///   3. Events + key, but no matches for the selected events.
 String? resolveTbaWarning(AppSettings settings, List<Match> matchesForEvents) {
   if (settings.selectedEventKeys.isEmpty) {
     return 'No events selected. Please enter an event in settings.';
   }
-  final apiKey = settings.tbaApiKey;
-  if (apiKey == null || apiKey.isEmpty) {
-    return 'No Blue Alliance API key entered. Please enter it in settings.';
+  if (TbaConfig.resolveApiKey(settings.tbaApiKey).isEmpty) {
+    return 'No Blue Alliance API key available. Please enter one in settings.';
   }
   if (matchesForEvents.isEmpty) {
     return 'No data from The Blue Alliance for the selected event(s). '

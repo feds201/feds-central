@@ -31,21 +31,30 @@ void main() {
       );
     });
 
-    test('tier 2: events selected but null api key', () {
+    // Tier 2 is structurally unreachable while TbaConfig.defaultApiKey is
+    // a non-empty const: a null/empty override falls back to the default,
+    // so callers fall through to tier 3 when there are no matches.
+    test('null override falls back to default key, falls through to tier 3',
+        () {
       const settings = AppSettings(selectedEventKeys: ['2026mimid']);
-      expect(
-        resolveTbaWarning(settings, const []),
-        'No Blue Alliance API key entered. Please enter it in settings.',
-      );
+      final message = resolveTbaWarning(settings, const []);
+      expect(message, isNotNull);
+      expect(message!, contains('No data from The Blue Alliance'));
     });
 
-    test('tier 2: events selected but empty-string api key', () {
+    test('empty-string override falls back to default key, falls through '
+        'to tier 3', () {
       const settings =
           AppSettings(selectedEventKeys: ['2026mimid'], tbaApiKey: '');
-      expect(
-        resolveTbaWarning(settings, const []),
-        'No Blue Alliance API key entered. Please enter it in settings.',
-      );
+      final message = resolveTbaWarning(settings, const []);
+      expect(message, isNotNull);
+      expect(message!, contains('No data from The Blue Alliance'));
+    });
+
+    test('null override + matches present returns null (default key works)',
+        () {
+      const settings = AppSettings(selectedEventKeys: ['2026mimid']);
+      expect(resolveTbaWarning(settings, [_match()]), isNull);
     });
 
     test('tier 3: events + api key, but no matches for events', () {
