@@ -581,7 +581,7 @@
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Limelight Health/ll3 isConnected",
+                  "topic": "/Shuffleboard/Pit Testing/Limelight Health/LL Backup Connected",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -598,7 +598,7 @@
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/Shuffleboard/Pit Testing/Limelight Health/ll4 isConnected",
+                  "topic": "/Shuffleboard/Pit Testing/Limelight Health/LL Main Connected",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
