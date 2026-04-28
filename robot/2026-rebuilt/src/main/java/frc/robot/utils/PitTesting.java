@@ -11,6 +11,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
@@ -51,6 +52,8 @@ public class PitTesting {
     static ShooterHood shooterHood = container.getShooterHood();
     static ShooterWheels shooterWheels = container.getShooterWheels();
     static Testing testing = new Testing();
+
+    static DigitalInput limit_switch = intake.getLimitSwitch();
 
     private static String[] moduleNames = {"Front Left", "Front Right", "Back Left", "Back Right"};
 
@@ -114,6 +117,8 @@ public class PitTesting {
         registerEntry("spindexer");
         registerEntry("testing");
         
+        entryMap.put("limit switch", pitTab.add("switch pressed", false).getEntry());
+
         //drivetrain
         for (int i = 0; i < 4; ++i) {
             registerEntry("drive" + (i + 1));
@@ -233,6 +238,8 @@ public class PitTesting {
         updateEntry("spindexer", spindexer.getSpindexerMotor());
         updateEntry("testing", testing.getMotor());
 
+        entryMap.get("limit switch").setBoolean(!limit_switch.get());
+ 
         tent.setBoolean(testing.getState() == MotorState.ON);
 
         for (int i = 0; i < 4; ++i) {

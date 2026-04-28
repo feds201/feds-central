@@ -33,6 +33,7 @@ import org.ode4j.ode.DBody;
 import org.ode4j.ode.DGeom;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
+import edu.wpi.first.wpilibj.simulation.DIOSim;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import frc.robot.RobotMap;
 import frc.robot.commands.swerve.BallTracking;
@@ -289,6 +290,7 @@ public class RebuiltSimManager {
     private final TalonFXMotorSim spindexerMotorSim;
     private final TalonFXMotorSim intakeDeployMotorSim;
     private final TalonFXMotorSim intakeRollerMotorSim;
+    private final DIOSim intakeLimitSwitchSim;
 
     // Last known pose and speeds from MapleSim (used for virtual goal telemetry)
     private Pose2d lastSimPose = STARTING_POSE;
@@ -455,6 +457,8 @@ public class RebuiltSimManager {
                 DCMotor.getKrakenX60(2)),
             INTAKE_ROLLER_GEAR_RATIO, false);
 
+        intakeLimitSwitchSim = new DIOSim(intakeSubsystem.getLimitSwitch());
+
         // --- Shooter ---
         Logger.recordOutput("Sim/State", "Loading shooter");
         // ShooterSim watches real subsystem states:
@@ -615,6 +619,9 @@ public class RebuiltSimManager {
         spindexerMotorSim.update(DT, batteryVoltage);
         intakeDeployMotorSim.update(DT, batteryVoltage);
         intakeRollerMotorSim.update(DT, batteryVoltage);
+
+        // Active-low limit switch: false = pressed when intake reaches full extension.
+        intakeLimitSwitchSim.setValue(intakeSubsystem.getSimDeployMotorPositionRotations() < IntakeSubsystem.extendedRotations);
 
         // Update shooter (unchanged)
         // ── Debug telemetry ──────────────────────────────────────────────────────
