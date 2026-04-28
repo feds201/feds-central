@@ -162,8 +162,6 @@ public class ShooterWheels extends SubsystemBase {
       break;
       case TEST:
       setVelocity(RotationsPerSecond.of(speed.getAsDouble()));
-      // case KICKER:
-      // shooterLeader.setControl(velocityVoltageControl.withVelocity(shooter_state.KICKER.getVelocity().in(RotationsPerSecond)));
       break;
     }
   }

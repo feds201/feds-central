@@ -35,8 +35,8 @@ public class IntakeSubsystem extends SubsystemBase {
   private final TalonFX motor;
   private final TalonFX rollerMotor;
   private final TalonFX rollerMotorFollower;
-  private final DigitalInput limit_switch_r;
-  private final DigitalInput limit_switch_l;
+  // private final DigitalInput limit_switch_r;
+  // private final DigitalInput limit_switch_l;
   private final DigitalInput limit_switch;
   private boolean hasMotorBeenPosResetThisCycle = false; // Track if we've reset the motor position during this command cycle
   private final SysIdRoutine sysID;
@@ -101,30 +101,14 @@ public class IntakeSubsystem extends SubsystemBase {
         moveIntakeWithPosition(retractedRotations);
       }
       case EXTENDED -> {
-        if (!limit_switch.get()) {
-          motor.setControl(new VoltageOut(0));
-          if(!hasMotorBeenPosResetThisCycle){
-            motor.setPosition(extendedRotations);
-            hasMotorBeenPosResetThisCycle = true;
-          }
-        } else {
-          motor.setControl(new VoltageOut(-7));
-        }
+        limitSwitchExtensionControl();
         setRollerState(RollerState.OFF);
       }
       case CLOSE_AGITATION_IN -> {
         moveIntakeWithPosition(0.0);
       }
       case INTAKING -> {
-        if (!limit_switch.get()) {
-          motor.setControl(new VoltageOut(0));
-          if(!hasMotorBeenPosResetThisCycle){
-            motor.setPosition(extendedRotations);
-            hasMotorBeenPosResetThisCycle = true;
-          }
-        } else {
-          motor.setControl(new VoltageOut(-7));
-        }
+        limitSwitchExtensionControl();
         setRollerState(RollerState.ON);
       }
       case AGITATE_IN -> {
@@ -350,8 +334,8 @@ public class IntakeSubsystem extends SubsystemBase {
       rollerMotor = new TalonFX(RobotMap.IntakeSubsystemConstants.kRollerMotorID);
       rollerMotorFollower = new TalonFX(RobotMap.IntakeSubsystemConstants.kRollerMotorFollowerID);
       rollerMotorFollower.setControl(new Follower(rollerMotor.getDeviceID(), MotorAlignmentValue.Opposed));
-      limit_switch_r = new DigitalInput(RobotMap.IntakeSubsystemConstants.kLimit_switch_rID);
-      limit_switch_l = new DigitalInput(RobotMap.IntakeSubsystemConstants.kLimit_switch_lID);
+      // limit_switch_r = new DigitalInput(RobotMap.IntakeSubsystemConstants.kLimit_switch_rID);
+      // limit_switch_l = new DigitalInput(RobotMap.IntakeSubsystemConstants.kLimit_switch_lID);
       limit_switch = new DigitalInput(RobotMap.IntakeSubsystemConstants.klimit_switchID);
 
       var rollerConfig = new TalonFXConfiguration();
@@ -507,28 +491,10 @@ public class IntakeSubsystem extends SubsystemBase {
           break;
 
       case INTAKING:
-        if (!limit_switch.get()) {
-          motor.setControl(new VoltageOut(0));
-          if(!hasMotorBeenPosResetThisCycle){
-            motor.setPosition(extendedRotations);
-            hasMotorBeenPosResetThisCycle = true;
-          }
-        } else {
-          motor.setControl(new VoltageOut(7));
-          hasMotorBeenPosResetThisCycle = false;
-        }
+        limitSwitchExtensionControl();
         break;
       case EXTENDED:
-        if (!limit_switch.get()) {
-          motor.setControl(new VoltageOut(0));
-          if(!hasMotorBeenPosResetThisCycle){
-            motor.setPosition(extendedRotations);
-            hasMotorBeenPosResetThisCycle = true;
-          }
-        } else {
-          motor.setControl(new VoltageOut(7));
-          hasMotorBeenPosResetThisCycle = false;
-        }
+        limitSwitchExtensionControl();
         break;
       }
 
@@ -564,7 +530,18 @@ public class IntakeSubsystem extends SubsystemBase {
   }
   
   
-  
+  public void limitSwitchExtensionControl(){
+    if (!limit_switch.get()) {
+          motor.setControl(new VoltageOut(0));
+          if(!hasMotorBeenPosResetThisCycle){
+            motor.setPosition(extendedRotations);
+            hasMotorBeenPosResetThisCycle = true;
+          }
+        } else {
+          motor.setControl(new VoltageOut(7));
+          hasMotorBeenPosResetThisCycle = false;
+        }
+  }
 
   public void stopmotor() {
     motor.stopMotor();
@@ -575,10 +552,7 @@ public class IntakeSubsystem extends SubsystemBase {
     return motor.getVelocity().getValue().in(Units.RotationsPerSecond);
   }
 
-  public boolean testIntakeExtend() {
-     setState(IntakeState.EXTENDED);
-     return limit_switch_l.get();
-    }
+
 
     public TalonFX getIntakeMotor() {
       return motor;

@@ -251,10 +251,14 @@ public class ControllerBindings {
                  .onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.INTAKING));
 
         operator.x()
-                .onTrue(intakeSubsystem.setIntakeStateCommand((IntakeState.EXTENDED)).alongWith(feederSubsystem.setStateCommand(feeder_state.PREVERSE).alongWith(shooterWheels.setStateCommand(shooter_state.TEST))).alongWith(spindexerSubsystem.setStateCommand(spindexer_state.PREVERSE)));
+                .onTrue(intakeSubsystem.setIntakeStateCommand((IntakeState.EXTENDED))
+                .alongWith(feederSubsystem.setStateCommand(feeder_state.PREVERSE)
+                .alongWith(shooterWheels.setStateCommand(shooter_state.TEST)))
+                .alongWith(spindexerSubsystem.setStateCommand(spindexer_state.PREVERSE))
+                .alongWith(intakeSubsystem.setRollerStateCommand(RollerState.REVERSE)));
 
         operator.rightTrigger()
-                .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.DITHERIN_AGITATION)).onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED));
+                .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED));
     }
 
 }
