@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../util/format.dart';
+
 /// Vertical scrubber bar for the video viewer.
 ///
 /// Positioned between the video panes and the control sidebar.
@@ -29,12 +31,6 @@ class ScrubberBar extends StatefulWidget {
 class _ScrubberBarState extends State<ScrubberBar> {
   double? _dragValue;
 
-  String _formatDuration(Duration d) {
-    final minutes = d.inMinutes;
-    final seconds = d.inSeconds.remainder(60);
-    return '$minutes:${seconds.toString().padLeft(2, '0')}';
-  }
-
   double get _maxMs => widget.duration.inMilliseconds.toDouble().clamp(1, double.infinity);
   double get _currentMs =>
       (_dragValue ?? widget.position.inMilliseconds.toDouble()).clamp(0, _maxMs);
@@ -49,7 +45,7 @@ class _ScrubberBarState extends State<ScrubberBar> {
         children: [
           // Duration label at top
           Text(
-            _formatDuration(widget.duration),
+            formatStopwatch(widget.duration),
             style: const TextStyle(color: Colors.white70, fontSize: 10),
           ),
           // Vertical slider (rotated from horizontal)
@@ -88,9 +84,7 @@ class _ScrubberBarState extends State<ScrubberBar> {
           ),
           // Current position label at bottom
           Text(
-            _formatDuration(
-              Duration(milliseconds: _currentMs.round()),
-            ),
+            formatStopwatch(Duration(milliseconds: _currentMs.round())),
             style: const TextStyle(color: Colors.white70, fontSize: 10),
           ),
         ],

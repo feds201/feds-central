@@ -7,6 +7,7 @@ import '../sync/history_tab.dart';
 import '../sync/import_tab.dart';
 import '../sync/storage_tab.dart';
 import '../sync/usb_instructions_tab.dart';
+import '../util/tba_status_warning.dart';
 
 class SyncPage extends StatefulWidget {
   final DataStore dataStore;
@@ -27,6 +28,7 @@ class _SyncPageState extends State<SyncPage> {
     super.initState();
     _initStorageDir();
     _checkAndRequestPermission();
+    showTbaStatusWarningIfNeeded(context, widget.dataStore);
   }
 
   Future<void> _initStorageDir() async {

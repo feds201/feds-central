@@ -14,6 +14,7 @@ import '../tabs/teams_tab.dart';
 import '../util/constants.dart';
 import '../util/format.dart';
 import '../util/result.dart';
+import '../util/tba_status_warning.dart';
 import '../util/test_flags.dart';
 import '../widgets/app_search_bar.dart';
 import '../widgets/autocomplete_overlay.dart';
@@ -64,6 +65,7 @@ class _MainScreenState extends State<MainScreen> {
     _searchFocusNode.addListener(_onFocusChange);
     _maybeAutoLoad();
     _startAutoSync();
+    showTbaStatusWarningIfNeeded(context, _dataStore);
   }
 
   @override

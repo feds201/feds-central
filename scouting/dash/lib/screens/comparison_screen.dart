@@ -91,7 +91,7 @@ class _ComparisonScreenState extends State<ComparisonScreen> {
               height: 400,
               child: BotPathDrawer(
                 config: config,
-                onSave: (String? pathData) {
+                onSave: (String? pathData, String? suggestedName) {
                   Navigator.of(ctx).pop(pathData);
                 },
               ),

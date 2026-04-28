@@ -68,10 +68,7 @@ dependencies:
   http: ^1.1.0
   postgres: ^3.5.9
   bot_path_drawer:
-    git:
-      url: https://github.com/feds201/feds-central.git
-      path: scouting/packages/bot_path_drawer
-      ref: main
+    path: ../packages/bot_path_drawer
 
 
 
