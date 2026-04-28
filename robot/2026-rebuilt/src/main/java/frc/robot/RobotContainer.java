@@ -295,9 +295,13 @@ public class RobotContainer extends ControllerBindings {
     public void updateLocalization() {
         if (llMain.isConnected() && SmartDashboard.getBoolean("UseMainLL", true)) {
             llMain.updateLocalizationLimelight(drivetrain);
+            //set backup to viewfinder pipeline when not in use
+            if(llBackup.getData().pipelineData.getCurrentPipelineIndex() != 1) llBackup.getSettings().withPipelineIndex(1);
             SmartDashboard.putString("Active Limelight", "MAIN");
         } else {
             llBackup.updateLocalizationLimelight(drivetrain);
+            //ensure atag pipeline is selected when llbackup is used for localization
+            if(llBackup.getData().pipelineData.getCurrentPipelineIndex() != 0) llBackup.getSettings().withPipelineIndex(0);
             SmartDashboard.putString("Active Limelight", "BACKUP");
         }
     }
