@@ -5,154 +5,9 @@
     "data": {
       "commands": [
         {
-          "type": "named",
-          "data": {
-            "name": "Extend Intake"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Run Rollers"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "UnderTrenchStart"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "AcrossCenterMidRightIntake"
-          }
-        },
-        {
-          "type": "sequential",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Run Rollers"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Start Shooter Spin"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "AcrssCenterRightIntakeToRightBump"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Run Rollers"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Run Shooter"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Retract Intake"
-          }
-        },
-        {
           "type": "wait",
           "data": {
-            "waitTime": 0.4
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Extend Intake"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.5
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Retract Intake"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.4
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Extend Intake"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.5
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Retract Intake"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.4
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Extend Intake"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.5
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Retract Intake"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.4
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Stop Shooter Spin"
+            "waitTime": 1.5
           }
         },
         {
@@ -177,38 +32,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "SecondRightBumpToMid"
+            "pathName": "FollowMid"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "SecondRightIntake"
+            "pathName": "FollowIntakeEnd"
           }
         },
         {
-          "type": "sequential",
+          "type": "named",
           "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Stop Rollers"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Start Shooter Spin"
-                }
-              }
-            ]
+            "name": "Start Shooter Spin"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "RightBumpToSecondShootingPosition"
+            "pathName": "FollowEndToShoot"
           }
         },
         {
@@ -236,7 +78,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 0.4
+                  "waitTime": 0.5
                 }
               },
               {
@@ -260,7 +102,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 0.4
+                  "waitTime": 0.5
                 }
               },
               {
@@ -284,61 +126,129 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 0.4
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Extend Intake"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
                   "waitTime": 0.5
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Retract Intake"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 0.4
-                }
-              },
-              {
-                "type": "named",
-                "data": {
                   "name": "Extend Intake"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 0.5
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Retract Intake"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 0.4
                 }
               },
               {
                 "type": "named",
                 "data": {
                   "name": "Stop Shooter Spin"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Run Rollers"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Start Shooter Spin"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "FollowCenterDepot"
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Run Shooter"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Run Rollers"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Retract Intake"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.5
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Extend Intake"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.5
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Retract Intake"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.5
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Extend Intake"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.5
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Retract Intake"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.5
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Extend Intake"
                 }
               }
             ]

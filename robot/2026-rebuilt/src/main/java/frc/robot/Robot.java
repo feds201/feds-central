@@ -195,14 +195,16 @@ public class Robot extends LoggedRobot {
   public void autonomousPeriodic() {}
 
   @Override
-  public void autonomousExit() {}
+  public void autonomousExit() {
+    
+    m_robotContainer.idleSubsystems();
+  }
 
   @Override
   public void teleopInit() {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-    m_robotContainer.idleSubsystems();
     HubShiftUtil.initialize();
   }
 
