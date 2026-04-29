@@ -151,7 +151,6 @@ public class RobotContainer extends ControllerBindings {
 
     // Set up auto chooser
     autoChooser = AutoBuilder.buildAutoChooser();
-    SmartDashboard.putData("Auto Chooser", autoChooser);
 
     try {
         // Ball tracking autos
@@ -175,7 +174,12 @@ public class RobotContainer extends ControllerBindings {
         autoChooser.addOption("Comp-LeftMidfieldDoublePass", new PathPlannerAuto("Comp-RightMidfieldDoublepass", true));
         autoChooser.addOption("Dev-MidIntakeToRightBump", new PathPlannerAuto("Comp-MidIntakeToLeftBump", true)); // TESTING - DO NOT USE
 
+
+
     } catch (Exception e) { e.printStackTrace(); }
+
+    
+     SmartDashboard.putData("Auto Chooser", autoChooser);
   }
 
     private void registBallTrackingAuto(String autoName,
