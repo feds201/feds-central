@@ -513,6 +513,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
     Logger.recordOutput("Robot/Intake/State", currentState.toString());
     Logger.recordOutput("Robot/Intake/Extended", currentState != IntakeState.DEFAULT);
+    Logger.recordOutput("Robot/Intake/LimitSwitchPressed", !limit_switch.get());
     Logger.recordOutput("Robot/Intake/ExtensionPct", Math.round(100.0 * motor.getPosition().getValue().in(Units.Rotations) / extendedRotations));
     Logger.recordOutput("Robot/Intake/PositionRotations", motor.getPosition().getValueAsDouble());
     Logger.recordOutput("Robot/Intake/TargetPositionRotations", motor.getClosedLoopReference().getValueAsDouble());
