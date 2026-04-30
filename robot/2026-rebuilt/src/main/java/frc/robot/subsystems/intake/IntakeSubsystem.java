@@ -49,6 +49,7 @@ public class IntakeSubsystem extends SubsystemBase {
   // Aggressive acceleration multiplier requested (20x faster than default)
   private static final double MOTION_MAGIC_ACCEL_MULTIPLIER = 40.0;
   private static final double ROLLER_OUTPUT = 1.0; //90% for rollers, 70% originally;
+  private static final double AGITATE_OUTPUT = 0.5; // power level to use during agitation states (lower is more gentle, higher is more aggressive)
   private final Timer timer = new Timer();
 
 
@@ -81,6 +82,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
   public enum RollerState {
     ON,
+    AGITATEON,
     OFF,
     REVERSE,
   }
@@ -461,6 +463,10 @@ public class IntakeSubsystem extends SubsystemBase {
       case ON:
         rollerMotor.set(ROLLER_OUTPUT);
         leds.intakeSignal();
+        break;
+      case AGITATEON: 
+      rollerMotor.set(AGITATE_OUTPUT);
+       leds.intakeSignal();
         break;
       case REVERSE:
         rollerMotor.set(-ROLLER_OUTPUT);
