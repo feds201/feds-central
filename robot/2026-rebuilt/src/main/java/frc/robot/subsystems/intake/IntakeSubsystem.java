@@ -94,8 +94,9 @@ public class IntakeSubsystem extends SubsystemBase {
 
   public void setState(IntakeState targetState) {
     if(!currentState.equals(targetState)){
-    timer.reset();
-    timer.stop();
+      timer.reset();
+      timer.stop();
+      timer.start();
     }
     this.currentState = targetState;
     switch (targetState) {
@@ -393,106 +394,63 @@ public class IntakeSubsystem extends SubsystemBase {
   
   @Override
   public void periodic() {
-
-    
     switch (currentState) {
       case AGITATE_IN:
-       if(! timer.isRunning()){
-          timer.start();
-       }
-       if(timer.hasElapsed(IntakeSubsystemConstants.agitateCycleConstant)){
-        setState(IntakeState.AGITATE_OUT);
-        timer.stop();
-        timer.reset();
-       }
+        if(timer.hasElapsed(IntakeSubsystemConstants.agitateCycleConstant)){
+          setState(IntakeState.AGITATE_OUT);
+        }
         break;
 
-        case AGITATE_OUT:
-           if(! timer.isRunning()){
-          timer.start();
-       }
+      case AGITATE_OUT:
         if(timer.hasElapsed(IntakeSubsystemConstants.agitateCycleConstant)){
-        setState(IntakeState.AGITATE_IN);
-        timer.stop();
-        timer.reset();
-      }
-      break;
+          setState(IntakeState.AGITATE_IN);
+        }
+        break;
 
       case FAR_AGITATION_IN:
-       if(! timer.isRunning()){
-          timer.start();
-       }
-       if(timer.hasElapsed(.2)){
-        setState(IntakeState.FAR_AGITATION_OUT);
-        timer.stop();
-        timer.reset();
-       }
+        if(timer.hasElapsed(.2)){
+          setState(IntakeState.FAR_AGITATION_OUT);
+        }
         break;
 
-        case FAR_AGITATION_OUT:
-           if(! timer.isRunning()){
-          timer.start();
-       }
+      case FAR_AGITATION_OUT:
         if(timer.hasElapsed(.2)){
-        setState(IntakeState.FAR_AGITATION_IN);
-        timer.stop();
-        timer.reset();
-      }
-      break;
-
-
-        case CLOSE_AGITATION_OUT:
-          if(!timer.isRunning()){
-            timer.start();
-          }
-          if(timer.hasElapsed(0.2)){
-            setState(IntakeState.CLOSE_AGITATION_IN); // really close to default
-            timer.stop();
-            timer.reset();
-          }
-          break;
-
-          case CLOSE_AGITATION_IN:
-          if(!timer.isRunning()){
-            timer.start();
-          }
-
-          if(timer.hasElapsed(0.2)){
-            setState(IntakeState.CLOSE_AGITATION_OUT); // about halfway from bumper to extended
-            timer.stop();
-            timer.reset();
+          setState(IntakeState.FAR_AGITATION_IN);
         }
-          break;
+        break;
 
-        case DITHERIN_AGITATION:
-        if(!timer.isRunning()){
-          timer.start();
-      }
+      case CLOSE_AGITATION_OUT:
+        if(timer.hasElapsed(0.2)){
+          setState(IntakeState.CLOSE_AGITATION_IN); // really close to default
+        }
+        break;
+
+      case CLOSE_AGITATION_IN:
+        if(timer.hasElapsed(0.2)){
+          setState(IntakeState.CLOSE_AGITATION_OUT); // about halfway from bumper to extended
+        }
+        break;
+
+      case DITHERIN_AGITATION:
         motor.set(-0.3);
 
         if(timer.hasElapsed(0.3)){
             setState(IntakeState.DITHEROUT_AGITATION);
-            timer.stop();
-            timer.reset();
         }
-          break;
+        break;
 
-        case DITHEROUT_AGITATION:
-        if(!timer.isRunning()){
-          timer.start();
-      }
+      case DITHEROUT_AGITATION:
         motor.set(0.3);
 
         if(timer.hasElapsed(0.1)){
-            setState(IntakeState.DITHERIN_AGITATION); // small retract from extended
-            timer.stop();
-            timer.reset();
+          setState(IntakeState.DITHERIN_AGITATION); // small retract from extended
         }
-          break;
+        break;
 
       case INTAKING:
         limitSwitchExtensionControl();
         break;
+
       case EXTENDED:
         limitSwitchExtensionControl();
         break;

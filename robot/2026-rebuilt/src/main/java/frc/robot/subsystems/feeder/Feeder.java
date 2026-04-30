@@ -66,8 +66,7 @@ public class Feeder extends SubsystemBase {
   private final VoltageOut vOut = new VoltageOut(0);
   private feeder_state currentState = feeder_state.STOP;
   private final SysIdRoutine m_feederSysId;
-  //Timer to switch between forward and reverse during indexing
-  private Timer washingMachineTimer = new Timer();
+  private Timer timer = new Timer();
 
     public Feeder() {
     feederMotor = new TalonFX(FeederConstants.kFeederKickerMotorId);
@@ -125,31 +124,14 @@ public class Feeder extends SubsystemBase {
     Logger.recordOutput("Robot/Feeder/StatorAmps", feederMotor.getStatorCurrent().getValueAsDouble());
      switch (currentState) {
       case RUN:
-        if(!washingMachineTimer.isRunning()){
-          washingMachineTimer.start();
-        }
-        if(washingMachineTimer.hasElapsed(indexingConstants.forwardTime)){
+        if(timer.hasElapsed(indexingConstants.forwardTime)){
           setState(feeder_state.REVERSE);
-          washingMachineTimer.stop();
-          washingMachineTimer.reset();
         }
         break;
       case REVERSE:
-        if(!washingMachineTimer.isRunning()){
-          washingMachineTimer.start();
-        }
-        if(washingMachineTimer.hasElapsed(indexingConstants.reverseTime)){
+        if(timer.hasElapsed(indexingConstants.reverseTime)){
           setState(feeder_state.RUN);
-          washingMachineTimer.stop();
-          washingMachineTimer.reset();
         }
-        break;
-
-       case STOP, PRUN, PREVERSE:
-        if(washingMachineTimer.isRunning()){
-            washingMachineTimer.reset();
-            washingMachineTimer.stop();
-          }
         break;
     }
   }
@@ -178,8 +160,9 @@ public class Feeder extends SubsystemBase {
 
   public void setState(feeder_state state) {
     if(!currentState.equals(state)){
-    washingMachineTimer.reset();
-    washingMachineTimer.stop();
+      timer.reset();
+      timer.stop();
+      timer.start();
     }
     setVoltage(state.getVoltage());
     currentState = state;
