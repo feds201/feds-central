@@ -180,8 +180,10 @@ public spindexer_state getCurrentState() {
 
 public void setState(spindexer_state state)
 {
-  washingMachineTimer.reset();
-  washingMachineTimer.stop();
+ if(!currentState.equals(state)){
+    washingMachineTimer.reset();
+    washingMachineTimer.stop();
+    }
   setVoltage(state.getVoltage());
   currentState = state;
 }

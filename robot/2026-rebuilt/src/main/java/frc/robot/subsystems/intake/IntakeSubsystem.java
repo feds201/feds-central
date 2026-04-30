@@ -93,8 +93,10 @@ public class IntakeSubsystem extends SubsystemBase {
   
 
   public void setState(IntakeState targetState) {
+    if(!currentState.equals(targetState)){
     timer.reset();
     timer.stop();
+    }
     this.currentState = targetState;
     switch (targetState) {
       case DEFAULT -> {

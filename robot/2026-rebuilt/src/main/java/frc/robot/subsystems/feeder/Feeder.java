@@ -177,8 +177,10 @@ public class Feeder extends SubsystemBase {
   }
 
   public void setState(feeder_state state) {
+    if(!currentState.equals(state)){
     washingMachineTimer.reset();
     washingMachineTimer.stop();
+    }
     setVoltage(state.getVoltage());
     currentState = state;
   }
