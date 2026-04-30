@@ -31,7 +31,7 @@ public class BallTracking extends Command {
   private BallTrackingState state;
   private final PIDController hubRotPID = new PIDController(0.1, 0, 0);
   private final double velocityCapX = 3.0; // velocity that robot will move when fuel is detected, max velocity when detected 
-  private final double rotationalRate = 3.2; // amount of rotation the robot preforms when searching for fuel, in radians per second
+  private final double rotationalRate = 1.25; // amount of rotation the robot preforms when searching for fuel, in radians per second
   private final double tyOffset = 23.0; // used to scale foward velocity based on ty  
   private final double tyCutOff = -15.0; // limit to ty, if ty is less then num robot will stop and look for ball
   private final double txDeadband = 1.5; // tx for which robot will stop (when robot is too close)
@@ -113,13 +113,7 @@ public class BallTracking extends Command {
     Logger.recordOutput("Robot/Intake/BallFinder/State", state.toString());
 
     if (state == BallTrackingState.OFF) {
-      dt.setControl(driveNormal
-          .withVelocityX(0)
-          .withVelocityY(0)
-          .withRotationalRate(0)
-      );
-      Logger.recordOutput("Robot/Intake/BallFinder/CommandedVx", 0.0);
-      Logger.recordOutput("Robot/Intake/BallFinder/CommandedRotRate", 0.0);
+      stopMovement();
       return;
     }
 
@@ -240,12 +234,24 @@ public class BallTracking extends Command {
     }
   }
 
+  private void stopMovement() {
+    dt.setControl(driveNormal
+          .withVelocityX(0)
+          .withVelocityY(0)
+          .withRotationalRate(0)
+      );
+    Logger.recordOutput("Robot/Intake/BallFinder/CommandedVx", 0.0);
+    Logger.recordOutput("Robot/Intake/BallFinder/CommandedRotRate", 0.0);
+  }
+
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     state = BallTrackingState.OFF;
     ACTIVE.set(false);
     Logger.recordOutput("Robot/Intake/BallFinder/Active", false);
+
+    stopMovement();
   }
 
   // Returns true when the command should end.

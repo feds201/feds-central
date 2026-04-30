@@ -60,13 +60,19 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Run Rollers"
+                  "name": "Auto Hub Drive"
                 }
               },
               {
                 "type": "named",
                 "data": {
                   "name": "Run Shooter"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Run Rollers"
                 }
               },
               {
@@ -173,6 +179,12 @@
           "type": "sequential",
           "data": {
             "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Auto Hub Drive"
+                }
+              },
               {
                 "type": "named",
                 "data": {

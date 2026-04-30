@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.RobotMap.DrivetrainConstants;
 import frc.robot.commands.swerve.BallTracking;
+import frc.robot.commands.swerve.HubDriveAUTO;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem.IntakeState;
 import frc.robot.subsystems.intake.IntakeSubsystem.RollerState;
@@ -157,7 +158,7 @@ public class RobotContainer extends ControllerBindings {
         registBallTrackingAuto(
             "Dev-FD-RightMidFieldDoublepass",
             "Internal-FD-RightMidFieldDoublepass-Part1",
-            List.of("Internal-FD-RightMidFieldDoublepass-Part2")
+            List.of("Internal-FD-RightMidFieldDoublepass-Part2", "Internal-FD-RightMidFieldDoublepass-Part3")
         );
         registBallTrackingAuto(
             "Dev-FD-MidIntakeToLeftBump",
@@ -391,6 +392,7 @@ public void registerNamedCommands() {
   NamedCommands.registerCommand("Shooting", shooterWheels.setStateCommand(shooter_state.SHOOTING).alongWith(feederSubsystem.setStateCommand(feeder_state.RUN)).alongWith(spinDexer.setStateCommand(spindexer_state.RUN)).alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
   NamedCommands.registerCommand("Start Passing Spin", shooterWheels.setStateCommand(shooter_state.PASSING).alongWith(shooterHood.setStateCommand(shooterhood_state.PASSING)));
   NamedCommands.registerCommand("Passing", shooterWheels.setStateCommand(shooter_state.PASSING).alongWith(feederSubsystem.setStateCommand(feeder_state.RUN)).alongWith(spinDexer.setStateCommand(spindexer_state.RUN)).alongWith(shooterHood.setStateCommand(shooterhood_state.PASSING)));
+  NamedCommands.registerCommand("Auto Hub Drive", new HubDriveAUTO(drivetrain));
 }
 
 
