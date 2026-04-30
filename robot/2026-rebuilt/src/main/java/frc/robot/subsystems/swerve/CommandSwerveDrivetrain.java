@@ -36,6 +36,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.networktables.BooleanArrayPublisher;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -469,6 +470,23 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
         return Meters.of(pose.getDistance(hubCenter));
     }
+
+    public boolean inOtherAlliance() {
+
+            if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue) {
+            if(RobotMap.ShooterConstants.redAlliance.contains(getState().Pose.getTranslation()))
+            {
+                return true;
+            }
+            }else if(DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red)
+            {
+                if(RobotMap.ShooterConstants.blueAlliance.contains(getState().Pose.getTranslation()))
+                {
+                    return true;
+                }
+            }
+            return false;
+            }
 
     public Distance getDistanceToCorner() {
          Translation2d aimLeft = RobotMap.ShooterConstants.passingLeft;

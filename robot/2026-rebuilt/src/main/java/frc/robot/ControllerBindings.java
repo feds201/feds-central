@@ -154,7 +154,7 @@ public class ControllerBindings {
         
 
         // If out of neutral zone, face hub and ready shoot
-        driver.povRight().and(() -> !ShooterConstants.neutralZone.contains(drivetrain.getState().Pose.getTranslation())).whileTrue(
+        driver.povRight().and(() -> !ShooterConstants.neutralZone.contains(drivetrain.getState().Pose.getTranslation())).and(()-> !drivetrain.inOtherAlliance()).whileTrue(
                 Commands.sequence(
                         shooterHood.setStateCommand(shooterhood_state.SHOOTING),
                         shooterWheels.setStateCommand(shooter_state.SHOOTING)
@@ -166,7 +166,7 @@ public class ControllerBindings {
                         ));
 
         // If in neutral zone, face outpost and ready shoot (passing shot)
-        driver.povRight().and(() -> ShooterConstants.neutralZone.contains(drivetrain.getState().Pose.getTranslation())).whileTrue(
+        driver.povRight().and(() -> ShooterConstants.neutralZone.contains(drivetrain.getState().Pose.getTranslation())).or(()-> drivetrain.inOtherAlliance()).whileTrue(
                 Commands.sequence(
                         shooterHood.setStateCommand(shooterhood_state.PASSING),
                         shooterWheels.setStateCommand(shooter_state.PASSING)

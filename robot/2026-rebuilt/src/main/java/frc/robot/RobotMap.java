@@ -42,7 +42,7 @@ public final class RobotMap {
 
     public static class Constants {
     public static boolean disableHAL = false;
-
+    
     public static void disableHAL() {
         disableHAL = true;
     }
@@ -169,6 +169,9 @@ public final class RobotMap {
         public static final Rectangle2d RedRightTrench = new Rectangle2d(RedRightTopRight, RedRightBottomRight);
 
         public static final Rectangle2d neutralZone = new Rectangle2d(new Translation2d(5.618, 8.0), new Translation2d(10.922, 0.0) );
+
+        public static final Rectangle2d redAlliance = new Rectangle2d(new Translation2d(11.777, 8.0), new Translation2d(16.5, 0.0) );
+        public static final Rectangle2d blueAlliance = new Rectangle2d(new Translation2d(0.0, 0.0), new Translation2d(4.830, 8.0) );
     
         // This map is used to determine the velocity of the shooter based on the distance to the target. 
         //The key is the distance to the target in meters, and the value is the velocity of the shooter in rotations per second.`
