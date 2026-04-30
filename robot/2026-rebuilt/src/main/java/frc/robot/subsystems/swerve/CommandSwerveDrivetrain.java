@@ -52,6 +52,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.RobotMap;
+import frc.robot.RobotMap.DrivetrainConstants;
 import frc.robot.RobotMap.ShooterConstants;
 import frc.robot.subsystems.swerve.generated.TunerConstants.TunerSwerveDrivetrain;
 import frc.robot.utils.ShootOnTheMove;
@@ -487,6 +488,33 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             }
             return false;
             }
+
+
+    public boolean inNeutralZone()
+    {
+        if(ShooterConstants.neutralZone.contains(getState().Pose.getTranslation()))
+        {
+            return true;
+        }else
+        {
+            return false;
+        }
+    }
+
+    public boolean inNeutralZoneOrOpposing()
+    {
+        if(inOtherAlliance())
+        {
+            return true;
+        }else if(inNeutralZone())
+        {
+            return true;
+        }else if(!inOtherAlliance() && !inNeutralZone()){
+            return false;
+        }
+            return false;
+    }
+    
 
     public Distance getDistanceToCorner() {
          Translation2d aimLeft = RobotMap.ShooterConstants.passingLeft;

@@ -79,6 +79,7 @@ public final class RobotMap {
         private static final int kBackRightDriveMotorId = 41;
         private static final int kBackRightSteerMotorId = 42;
         private static final int kBackRightEncoderId = 43;
+        public static Object drivetrain;
 
         public static CommandSwerveDrivetrain createDrivetrain(){
             SwerveModuleStatusUtil.addSwerveModule(SwerveModuleStatusUtil.ModuleLocation.FL, kFrontLeftDriveMotorId, kFrontLeftSteerMotorId, kFrontLeftEncoderId);

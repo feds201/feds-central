@@ -11,6 +11,7 @@ import frc.robot.subsystems.shooter.ShooterWheels;
 import frc.robot.subsystems.shooter.ShooterHood.shooterhood_state;
 import frc.robot.subsystems.shooter.ShooterWheels.shooter_state;
 import frc.robot.subsystems.spindexer.Spindexer.spindexer_state;
+import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import frc.robot.commands.swerve.HubDrive;
 import frc.robot.commands.swerve.PassingDrive;
 import frc.robot.commands.swerve.TeleopSwerve;
@@ -166,7 +167,7 @@ public class ControllerBindings {
                         ));
 
         // If in neutral zone, face outpost and ready shoot (passing shot)
-        driver.povRight().and(() -> ShooterConstants.neutralZone.contains(drivetrain.getState().Pose.getTranslation())).or(()-> drivetrain.inOtherAlliance()).whileTrue(
+        driver.povRight().and(() -> drivetrain.inNeutralZoneOrOpposing()).whileTrue(
                 Commands.sequence(
                         shooterHood.setStateCommand(shooterhood_state.PASSING),
                         shooterWheels.setStateCommand(shooter_state.PASSING)
