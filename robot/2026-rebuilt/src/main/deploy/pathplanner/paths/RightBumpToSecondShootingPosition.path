@@ -103,7 +103,7 @@
   "folder": "MidIntakeToRightBump",
   "idealStartingState": {
     "velocity": 2.0,
-    "rotation": 0.0
+    "rotation": 117.0
   },
   "useDefaultConstraints": true
 }
