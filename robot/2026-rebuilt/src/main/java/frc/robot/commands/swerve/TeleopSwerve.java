@@ -138,7 +138,7 @@ public class TeleopSwerve extends Command {
     SmartDashboard.putNumber("Dist to hub", dt.getState().Pose.getTranslation().getDistance(ShooterConstants.hubCenter));
     SmartDashboard.putNumber("Dist to Red hub", dt.getState().Pose.getTranslation().getDistance(redHub));
     
-    Logger.recordOutput("CTRERobotPose", dt.getState().Pose);
+    Logger.recordOutput("Robot/CTRERobotPose", dt.getState().Pose);
     switch (mode) {
       case FALCONDRIVE:
       
