@@ -23,7 +23,11 @@ class LocalDriveAccess implements DriveAccess {
 
   @override
   Future<bool> hasPermission(String driveUri) async {
-    return Directory(driveUri).existsSync();
+    try {
+      return Directory(driveUri).existsSync();
+    } on FileSystemException {
+      return false;
+    }
   }
 
   @override
