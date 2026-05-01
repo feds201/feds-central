@@ -241,7 +241,7 @@ class _ImportTabState extends State<ImportTab>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(
             'Cannot access ${access.label}: ${e.osError?.message ?? e.message}. '
-            'Check "All files access" in app settings.',
+            'Go to Settings > Apps > Special app access > All files access, grant it to this app, then force close and reopen.',
           )),
         );
       }
