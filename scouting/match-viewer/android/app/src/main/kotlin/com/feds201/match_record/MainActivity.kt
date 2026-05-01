@@ -50,7 +50,7 @@ class MainActivity : FlutterActivity() {
 
         // Dump every visible directory under /storage and /mnt for inspection.
         Log.i(tag, "===== getUsbDrives() called =====")
-        Log.i(tag, "Build.VERSION.SDK_INT=${Build.VERSION_CODES.R} (R=${Build.VERSION_CODES.R})")
+        Log.i(tag, "Build.VERSION.SDK_INT=${Build.VERSION.SDK_INT} (R=${Build.VERSION_CODES.R})")
         Log.i(tag, "Environment.isExternalStorageManager=${Environment.isExternalStorageManager()}")
         listDirSafe(tag, "/storage")
         listDirSafe(tag, "/mnt")
@@ -84,10 +84,7 @@ class MainActivity : FlutterActivity() {
                 if (!volume.isRemovable) continue
                 if (dir == null) continue
 
-                val raw = dir.absolutePath
-                val path = if (raw.startsWith("/mnt/media_rw/")) {
-                    "/storage/" + raw.removePrefix("/mnt/media_rw/")
-                } else raw
+                val path = dir.absolutePath
                 Log.i(tag, "  -> emitting path=$path label=${volume.getDescription(this) ?: dir.name}")
                 drives.add(mapOf(
                     "path" to path,
