@@ -192,7 +192,6 @@ public class LimelightWrapper extends Limelight {
                 tagPoses[idx++] = p.orElse(new Pose3d());
             }
             Logger.recordOutput("Robot/Limelights/" + limelightName + "/TagPoses", tagPoses);
-            Logger.recordOutput("Robot/Limelights/" + limelightName + "/TagPoses", tagPoses);
 
             // If we see >0 tags and robot rotates <2 rotations per second
             if (poseEstimate.tagCount > 0
