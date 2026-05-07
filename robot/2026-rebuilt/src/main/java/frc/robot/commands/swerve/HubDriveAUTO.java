@@ -21,15 +21,15 @@ import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import frc.robot.utils.ShootOnTheMove;
 
 public class HubDriveAUTO extends Command {
- 
+
 
   public static final double MAX_SPEED = 1.0;
   public static final double MAX_ANGULAR_RATE = RotationsPerSecond.of(2).in(RadiansPerSecond);
   // PID tuned for smoother response (lower P, small I). Units: degrees.
   private static final PIDController hubRotPID = new PIDController(8.5, 0.00, 0);
   private CommandSwerveDrivetrain dt;
-  private Timer timer; 
-  
+  private Timer timer;
+
   // Slew rate limiters to smooth joystick and rotation commands
   private final SlewRateLimiter rotLimiter = new SlewRateLimiter(3000.0); // deg/s per second
 
@@ -41,12 +41,11 @@ public class HubDriveAUTO extends Command {
 
     timer = new Timer();
 
-    driveNormal = new SwerveRequest.FieldCentric()
-    .withDeadband(MAX_SPEED*.07)
-    .withRotationalDeadband(MAX_ANGULAR_RATE*.07);
+    driveNormal = new SwerveRequest.FieldCentric().withDeadband(MAX_SPEED * .07)
+        .withRotationalDeadband(MAX_ANGULAR_RATE * .07);
     hubRotPID.enableContinuousInput(-180, 180);
     hubRotPID.setTolerance(5.0);
-    
+
   }
 
   // Called when the command is initially scheduled.
@@ -56,49 +55,52 @@ public class HubDriveAUTO extends Command {
     timer.start();
   }
 
-  public static boolean pidAtSetpoint(){
+  public static boolean pidAtSetpoint() {
     return hubRotPID.atSetpoint();
   }
+
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
 
     SmartDashboard.putData(hubRotPID);
     Logger.recordOutput("Robot/CTRERobotPose", dt.getState().Pose);
-          // 3. Get current robot heading
-          double robotHeading = dt.getState().Pose.getRotation().getDegrees();
+    // 3. Get current robot heading
+    double robotHeading = dt.getState().Pose.getRotation().getDegrees();
 
-          //2 Get theta to virtual goal (will be equivalent to angle to hub when stationary, but leads the target when moving)
-          Double angleToGoal = ShootOnTheMove.calculateRobotHeading(dt.getState().Pose, dt.getState().Speeds).getDegrees();
-         
-          // 4. Calculate PID output (Rotational Speed)
-          double rawRotationOutput = hubRotPID.calculate(robotHeading, angleToGoal);
+    // 2 Get theta to virtual goal (will be equivalent to angle to hub when stationary, but leads
+    // the
+    // target when moving)
+    Double angleToGoal =
+        ShootOnTheMove.calculateRobotHeading(dt.getState().Pose, dt.getState().Speeds).getDegrees();
 
-          // Clamp rotation to robot's max angular rate (convert rad/s to deg/s)
-          double maxAngularDegPerSec = Math.toDegrees(MAX_ANGULAR_RATE);
-          double clampedRotation = Math.max(-maxAngularDegPerSec, Math.min(maxAngularDegPerSec, rawRotationOutput));
+    // 4. Calculate PID output (Rotational Speed)
+    double rawRotationOutput = hubRotPID.calculate(robotHeading, angleToGoal);
 
-          // Smooth rotation command (limits how fast the commanded rotational rate can change)
-          double smoothRotation = rotLimiter.calculate(clampedRotation);
+    // Clamp rotation to robot's max angular rate (convert rad/s to deg/s)
+    double maxAngularDegPerSec = Math.toDegrees(MAX_ANGULAR_RATE);
+    double clampedRotation =
+        Math.max(-maxAngularDegPerSec, Math.min(maxAngularDegPerSec, rawRotationOutput));
 
-          // Scale joystick velocities to robot MAX_SPEED and smooth them
+    // Smooth rotation command (limits how fast the commanded rotational rate can change)
+    double smoothRotation = rotLimiter.calculate(clampedRotation);
 
-          if(smoothRotation > 0){
-            smoothRotation+= 20;
-          } else {
-            smoothRotation -= 20;
-          }
+    // Scale joystick velocities to robot MAX_SPEED and smooth them
 
-          dt.setControl(driveNormal
-              .withVelocityX(0)
-              .withVelocityY(0)
-              .withRotationalRate(DegreesPerSecond.of(smoothRotation)));
-
-         Logger.recordOutput("angular velocity (deg/s)", smoothRotation);
-         Logger.recordOutput("angular velocity (deg/Error", hubRotPID.getError());
-          
+    if (smoothRotation > 0) {
+      smoothRotation += 20;
+    } else {
+      smoothRotation -= 20;
     }
-  
+
+    dt.setControl(driveNormal.withVelocityX(0).withVelocityY(0)
+        .withRotationalRate(DegreesPerSecond.of(smoothRotation)));
+
+    Logger.recordOutput("angular velocity (deg/s)", smoothRotation);
+    Logger.recordOutput("angular velocity (deg/Error", hubRotPID.getError());
+
+  }
+
   @Override
   public void end(boolean interrupted) {
     dt.setControl(new SwerveRequest.Idle());
@@ -113,15 +115,16 @@ public class HubDriveAUTO extends Command {
 
   /**
    * Normalize a degree measure from -180 to 180 deg to a cardinal direction
+   *
    * @param angleDegrees Angle measurement from -180 to 180 degrees
    * @return The Closest multiple of 90 degrees
    */
   public static double snapToCardinal(double angleDegrees) {
-    if(angleDegrees >= -135 && angleDegrees < -45 ){
+    if (angleDegrees >= -135 && angleDegrees < -45) {
       return -90;
-    } else if(angleDegrees >= -45 && angleDegrees < 45){
+    } else if (angleDegrees >= -45 && angleDegrees < 45) {
       return 0;
-    } else if(angleDegrees >= 45 && angleDegrees < 135){
+    } else if (angleDegrees >= 45 && angleDegrees < 135) {
       return 90;
     } else {
       return 180;

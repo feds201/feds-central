@@ -46,7 +46,7 @@ deploy {
                     files = project.fileTree('src/main/deploy')
                     directory = '/home/lvuser/deploy'
                     deleteOldFiles = false // Change to true to delete files on roboRIO that no
-                                           // longer exist in deploy directory of this project
+                    // longer exist in deploy directory of this project
                 }
             }
         }
@@ -118,7 +118,11 @@ project.tasks.withType(JavaExec).configureEach {
 // knows where to look for our Robot Class.
 jar {
     dependsOn configurations.runtimeClasspath
-    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+    from {
+        configurations.runtimeClasspath.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
     from('src') { into 'backup/src' }
     from('vendordeps') { into 'backup/vendordeps' }
     from('build.gradle') { into 'backup' }
@@ -155,13 +159,14 @@ task fetchModels(type: Exec) {
     description = 'Downloads 3D model assets via Git LFS'
     group = 'simulation'
     enabled = !project.hasProperty('skipFetchModels')
-    def gitRoot = { ->
+    def gitRoot = {
+        ->
         def dir = project.projectDir
         while (dir != null && !new File(dir, '.git').exists()) dir = dir.parentFile
         return dir
     }()
     def relPath = gitRoot.toPath().relativize(project.projectDir.toPath()).toString()
-                       .replace('\\', '/')
+            .replace('\\', '/')
     workingDir gitRoot
     commandLine 'git', 'lfs', 'pull', '-X', '', '-I', "${relPath}/sim_models/**"
     ignoreExitValue = true
@@ -192,11 +197,12 @@ task fetchModels(type: Exec) {
 
 simulateJava.dependsOn fetchModels
 
-// Spotless is a formatter that makes code look pretty and readable.
+// Spotless is the Java formatter that decides what formatting is correct for this repo.
 // This only runs when you run the gradle commands below.
-// Reformatting that happens automatically on save is done separately by VS Code, but
-// uses the exact same formatting config file (eclipse-java-google-style.xml), so they should
-// behave the same!
+// VS Code format-on-save is configured separately in .vscode/settings.json.
+// It points Red Hat Java at this same formatter XML, but VS Code still sends its own
+// tab/space/newline settings when it asks Java to format. Those can override the XML,
+// so .vscode/settings.json repeats those values and must stay matched to this formatter file.
 //   ./gradlew format      — auto-formats ALL FILES for this year's robot!
 //   ./gradlew formatCheck — check formatting without changing them
 spotless {
@@ -210,7 +216,7 @@ spotless {
             exclude '**/build/**', '**/build-*/**', '**/bin/**'
         }
         toggleOffOn() // skips formatting any code between `// @formatter:off` and `// @formatter:on` comments
-        eclipse().configFile('eclipse-java-google-style.xml') // uses same formatter as format-on-save
+        eclipse().configFile('eclipse-java-google-style.xml') // same Eclipse formatter XML used by VS Code
         removeUnusedImports()
         trimTrailingWhitespace()
         endWithNewline()
@@ -241,4 +247,3 @@ spotless {
 }
 task format { dependsOn spotlessApply }
 task formatCheck { dependsOn spotlessCheck }
-

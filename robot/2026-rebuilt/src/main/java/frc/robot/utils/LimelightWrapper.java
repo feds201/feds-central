@@ -26,211 +26,216 @@ import limelight.networktables.PoseEstimate;
 
 @Logged
 public class LimelightWrapper extends Limelight {
-    private double roboRioHeartbeat = 0;
-    private int totalTags = 0;
-    private final boolean isLL4;
-    private final PoseEstimate estimateMt2;
-    private final PoseEstimate estimateMt1;
+  private double roboRioHeartbeat = 0;
+  private int totalTags = 0;
+  private final boolean isLL4;
+  private final PoseEstimate estimateMt2;
+  private final PoseEstimate estimateMt1;
 
-    public LimelightWrapper(String limelightName, boolean isLL4) {
-        super(limelightName);
-        this.isLL4 = isLL4;
-        estimateMt2 = new PoseEstimate(this, "botpose_orb_wpiblue", true);
-        estimateMt1 = new PoseEstimate(this, "botpose_wpiblue", false);
+  public LimelightWrapper(String limelightName, boolean isLL4) {
+    super(limelightName);
+    this.isLL4 = isLL4;
+    estimateMt2 = new PoseEstimate(this, "botpose_orb_wpiblue", true);
+    estimateMt1 = new PoseEstimate(this, "botpose_wpiblue", false);
 
-        SubsystemStatusManager.addSubsystem(limelightName, () -> getNTTable().getTopic("tv").exists());
-        DeviceTempReporter.addDevice(limelightName,
-                () -> Celsius.of(getNTTable().getEntry("hw").getDoubleArray(new double[4])[3]));
+    SubsystemStatusManager.addSubsystem(limelightName, () -> getNTTable().getTopic("tv").exists());
+    DeviceTempReporter.addDevice(limelightName,
+        () -> Celsius.of(getNTTable().getEntry("hw").getDoubleArray(new double[4])[3]));
+  }
+
+  /**
+   * Resets the variables used for average tag count logging.
+   */
+  public void resetTagCounting() {
+    totalTags = 0;
+    roboRioHeartbeat = 0;
+  }
+
+  /**
+   * Retrieve estimated standard deviations for a Megatag 1 estimate
+   *
+   * @param poseEstimate the pose estimate from the limelight
+   * @return the estimated standard deviations
+   */
+  public Matrix<N3, N1> getEstimationStdDevsLimelightMT1(
+      limelight.networktables.PoseEstimate poseEstimate) {
+    var estStdDevs = VisionConstants.MT1_STDDEV;
+    double stddevScalar = 1;
+
+    // Calculate the number of tags, average distance and average ambiguity
+    int numTags = 0;
+    double avgDist = 0;
+    double avgAmbiguity = 0;
+    for (var value : poseEstimate.rawFiducials) { // Loop through all the tags detected
+      numTags++;
+      avgDist += value.distToCamera;
+      avgAmbiguity += value.ambiguity;
     }
 
-    /**
-     * Resets the variables used for average tag count logging.
-     */
-    public void resetTagCounting() {
-        totalTags = 0;
-        roboRioHeartbeat = 0;
+    // if no tags detected, ignorse the pose by returning very high std devs
+    if (numTags == 0) {
+      return VecBuilder.fill(1e16, 1e16, 1e16);
     }
 
-    /**
-     * Retrieve estimated standard deviations for a Megatag 1 estimate
-     * 
-     * @param poseEstimate the pose estimate from the limelight
-     * @return the estimated standard deviations
-     */
-    public Matrix<N3, N1> getEstimationStdDevsLimelightMT1(limelight.networktables.PoseEstimate poseEstimate) {
-        var estStdDevs = VisionConstants.MT1_STDDEV;
-        double stddevScalar = 1;
+    // Calculate the averages
+    avgDist /= numTags;
+    avgAmbiguity /= numTags;
 
-        // Calculate the number of tags, average distance and average ambiguity
-        int numTags = 0;
-        double avgDist = 0;
-        double avgAmbiguity = 0;
-        for (var value : poseEstimate.rawFiducials) { // Loop through all the tags detected
-            numTags++;
-            avgDist += value.distToCamera;
-            avgAmbiguity += value.ambiguity;
-        }
-
-        // if no tags detected, ignorse the pose by returning very high std devs
-        if (numTags == 0) {
-            return VecBuilder.fill(1e16, 1e16, 1e16);
-        }
-
-        // Calculate the averages
-        avgDist /= numTags;
-        avgAmbiguity /= numTags;
-
-        // Decrease std devs if limelight is LL4
-        if (isLL4) {
-            stddevScalar *= .1;
-        }
-
-        // If the average ambiguity is too high, return very high std devs to ignore the pose
-        if (avgAmbiguity > 0.3) {
-            return VecBuilder.fill(1e16, 1e16, 1e16);
-        }
-
-        // Scale the standard deviations based on the average ambiguity
-        stddevScalar *= (1 + (avgAmbiguity * 5));
-
-        // If the average distance is too far, return very high std devs to ignore the
-        // pose
-        if (numTags == 1 && avgDist > 2) {
-            estStdDevs = VecBuilder.fill(1e16, 1e16, 1e16);
-        } else { // Scale the standard deviations based on the average distance
-            stddevScalar *= (1 + (avgDist * avgDist / 30));
-        }
-
-        //apply the calculated scalar to the standard deviations
-        estStdDevs = estStdDevs.times(stddevScalar);
-
-        Logger.recordOutput("Robot/Limelights/" + limelightName + "/MT1StdDev", estStdDevs.getData());
-        
-        return estStdDevs;
+    // Decrease std devs if limelight is LL4
+    if (isLL4) {
+      stddevScalar *= .1;
     }
 
-    /**
-     * Retrieve estimated standard deviations for a Megatag 2 estimate
-     * 
-     * @param poseEstimate the pose estimate from the limelight
-     * @return the estimated standard deviations
-     */
-    public Matrix<N3, N1> getEstimationStdDevsLimelightMT2(limelight.networktables.PoseEstimate poseEstimate) {
-        var estStdDevs = VisionConstants.MT2_STDDEV;
-        double stddevScalar = 1;
-
-        int numTags = 0;
-        double avgDist = 0;
-        for (var value : poseEstimate.rawFiducials) {
-            numTags++;
-            avgDist += value.distToCamera;
-        }
-
-        // if no tags detected, ignorse the pose by returning very high std devs
-        if (numTags == 0) {
-            return VecBuilder.fill(1e16, 1e16, 1e16);
-        }
-
-        avgDist /= numTags;
-
-        // Decrease std devs if multiple targets are visible
-        if (numTags > 1) {
-            stddevScalar *= (0.65);
-        }
-
-        // Decrease std devs if limelight is LL4
-        if (isLL4) {
-            stddevScalar *= (.8);
-        }
-
-        // Increase std devs based on (average) distance
-        if (numTags == 1 && avgDist > 5) {
-            estStdDevs = VecBuilder.fill(1e16, 1e16, 1e16);
-        } else {
-            stddevScalar *= (1 + (avgDist * avgDist * .2));
-        }
-
-        //apply the calculated scalar to the standard deviations
-        estStdDevs = estStdDevs.times(stddevScalar);
-
-        Logger.recordOutput("Robot/Limelights/" + limelightName + "/MT2StdDev", estStdDevs.getData());
-
-        return estStdDevs;
+    // If the average ambiguity is too high, return very high std devs to ignore the pose
+    if (avgAmbiguity > 0.3) {
+      return VecBuilder.fill(1e16, 1e16, 1e16);
     }
 
-    /**
-     * Update a localization-focused limelight (meant to be called each periodic
-     * loop)
-     * 
-     * @param drivetrain Robot drivetrain
-     */
-    public void updateLocalizationLimelight(CommandSwerveDrivetrain drivetrain) {
+    // Scale the standard deviations based on the average ambiguity
+    stddevScalar *= (1 + (avgAmbiguity * 5));
 
-        getSettings()
-                .withRobotOrientation(new Orientation3d(new Rotation3d(drivetrain.getState().Pose.getRotation()),
-                        new AngularVelocity3d(RadiansPerSecond.of(drivetrain.getState().Speeds.omegaRadiansPerSecond),
-                                RadiansPerSecond.of(0),
-                                RadiansPerSecond.of(0))))
-                .save();
-
-        // Get MegaTag2 pose
-
-        Optional<PoseEstimate> visionEstimateMt2 = Optional.of(estimateMt2).get().getPoseEstimate();
-
-        // If the pose is present
-        visionEstimateMt2.ifPresent((limelight.networktables.PoseEstimate poseEstimate) -> {
-            // Publish average tag count
-            totalTags += visionEstimateMt2.get().tagCount;
-            roboRioHeartbeat++;
-            Logger.recordOutput("Robot/Limelights/" + limelightName + "/AvgTagCount", totalTags / roboRioHeartbeat);
-
-            // Publish the field pose of each detected AprilTag
-            Pose3d[] tagPoses = new Pose3d[poseEstimate.rawFiducials.length];
-            int idx = 0;
-            for (var f : poseEstimate.rawFiducials) {
-                var p = AprilTagLayoutType.OFFICIAL.getLayout().getTagPose(f.id);
-                tagPoses[idx++] = p.orElse(new Pose3d());
-            }
-            Logger.recordOutput("Robot/Limelights/" + limelightName + "/TagPoses", tagPoses);
-
-            // If we see >0 tags and robot rotates <2 rotations per second
-            if (poseEstimate.tagCount > 0
-                    && Math.abs(Units.radiansToRotations(drivetrain.getState().Speeds.omegaRadiansPerSecond)) < 2) {
-                // Add it to the pose estimator.
-                drivetrain.addVisionMeasurement(poseEstimate.pose.toPose2d(), poseEstimate.timestampSeconds,
-                        getEstimationStdDevsLimelightMT2(poseEstimate));
-            }
-        });
-
-        // Only if is limelight 4, add MT1 yaw measurement to the estimator
-        if (isLL4) {
-            Optional<PoseEstimate> visionEstimateMt1 = Optional.of(estimateMt1).get().getPoseEstimate();
-
-            // If the pose is present
-            visionEstimateMt1.ifPresent((limelight.networktables.PoseEstimate poseEstimate) -> {
-                // And we see >1 tags and robot rotates <2 rotations per second
-                if (poseEstimate.tagCount > 1
-                        && Math.abs(Units.radiansToRotations(drivetrain.getState().Speeds.omegaRadiansPerSecond)) < 2) {
-                    // Add it to the pose estimator.
-                    drivetrain.addVisionMeasurement(poseEstimate.pose.toPose2d(), poseEstimate.timestampSeconds+0.001,
-                            getEstimationStdDevsLimelightMT1(poseEstimate));
-                }
-            });
-        }
+    // If the average distance is too far, return very high std devs to ignore the
+    // pose
+    if (numTags == 1 && avgDist > 2) {
+      estStdDevs = VecBuilder.fill(1e16, 1e16, 1e16);
+    } else { // Scale the standard deviations based on the average distance
+      stddevScalar *= (1 + (avgDist * avgDist / 30));
     }
 
-    //should be run periodically, tells you if the limelight has been disconnected for more than 0.5 seconds
+    // apply the calculated scalar to the standard deviations
+    estStdDevs = estStdDevs.times(stddevScalar);
 
-    private double lastHeartBeat = -1;
-    private double lastHeartBeatTime = Timer.getFPGATimestamp();
-    public boolean isConnected(){
-            double heartbeat = LimelightHelpers.getHeartbeat(limelightName);
-            if(heartbeat != lastHeartBeat){
-                lastHeartBeat = heartbeat;
-                lastHeartBeatTime = Timer.getFPGATimestamp();
-            }
+    Logger.recordOutput("Robot/Limelights/" + limelightName + "/MT1StdDev", estStdDevs.getData());
 
-            return (Timer.getFPGATimestamp() - lastHeartBeatTime < 0.5);
+    return estStdDevs;
+  }
+
+  /**
+   * Retrieve estimated standard deviations for a Megatag 2 estimate
+   *
+   * @param poseEstimate the pose estimate from the limelight
+   * @return the estimated standard deviations
+   */
+  public Matrix<N3, N1> getEstimationStdDevsLimelightMT2(
+      limelight.networktables.PoseEstimate poseEstimate) {
+    var estStdDevs = VisionConstants.MT2_STDDEV;
+    double stddevScalar = 1;
+
+    int numTags = 0;
+    double avgDist = 0;
+    for (var value : poseEstimate.rawFiducials) {
+      numTags++;
+      avgDist += value.distToCamera;
+    }
+
+    // if no tags detected, ignorse the pose by returning very high std devs
+    if (numTags == 0) {
+      return VecBuilder.fill(1e16, 1e16, 1e16);
+    }
+
+    avgDist /= numTags;
+
+    // Decrease std devs if multiple targets are visible
+    if (numTags > 1) {
+      stddevScalar *= (0.65);
+    }
+
+    // Decrease std devs if limelight is LL4
+    if (isLL4) {
+      stddevScalar *= (.8);
+    }
+
+    // Increase std devs based on (average) distance
+    if (numTags == 1 && avgDist > 5) {
+      estStdDevs = VecBuilder.fill(1e16, 1e16, 1e16);
+    } else {
+      stddevScalar *= (1 + (avgDist * avgDist * .2));
+    }
+
+    // apply the calculated scalar to the standard deviations
+    estStdDevs = estStdDevs.times(stddevScalar);
+
+    Logger.recordOutput("Robot/Limelights/" + limelightName + "/MT2StdDev", estStdDevs.getData());
+
+    return estStdDevs;
+  }
+
+  /**
+   * Update a localization-focused limelight (meant to be called each periodic loop)
+   *
+   * @param drivetrain Robot drivetrain
+   */
+  public void updateLocalizationLimelight(CommandSwerveDrivetrain drivetrain) {
+
+    getSettings().withRobotOrientation(
+        new Orientation3d(new Rotation3d(drivetrain.getState().Pose.getRotation()),
+            new AngularVelocity3d(
+                RadiansPerSecond.of(drivetrain.getState().Speeds.omegaRadiansPerSecond),
+                RadiansPerSecond.of(0), RadiansPerSecond.of(0))))
+        .save();
+
+    // Get MegaTag2 pose
+
+    Optional<PoseEstimate> visionEstimateMt2 = Optional.of(estimateMt2).get().getPoseEstimate();
+
+    // If the pose is present
+    visionEstimateMt2.ifPresent((limelight.networktables.PoseEstimate poseEstimate) -> {
+      // Publish average tag count
+      totalTags += visionEstimateMt2.get().tagCount;
+      roboRioHeartbeat++;
+      Logger.recordOutput("Robot/Limelights/" + limelightName + "/AvgTagCount",
+          totalTags / roboRioHeartbeat);
+
+      // Publish the field pose of each detected AprilTag
+      Pose3d[] tagPoses = new Pose3d[poseEstimate.rawFiducials.length];
+      int idx = 0;
+      for (var f : poseEstimate.rawFiducials) {
+        var p = AprilTagLayoutType.OFFICIAL.getLayout().getTagPose(f.id);
+        tagPoses[idx++] = p.orElse(new Pose3d());
+      }
+      Logger.recordOutput("Robot/Limelights/" + limelightName + "/TagPoses", tagPoses);
+
+      // If we see >0 tags and robot rotates <2 rotations per second
+      if (poseEstimate.tagCount > 0 && Math
+          .abs(Units.radiansToRotations(drivetrain.getState().Speeds.omegaRadiansPerSecond)) < 2) {
+        // Add it to the pose estimator.
+        drivetrain.addVisionMeasurement(poseEstimate.pose.toPose2d(), poseEstimate.timestampSeconds,
+            getEstimationStdDevsLimelightMT2(poseEstimate));
+      }
+    });
+
+    // Only if is limelight 4, add MT1 yaw measurement to the estimator
+    if (isLL4) {
+      Optional<PoseEstimate> visionEstimateMt1 = Optional.of(estimateMt1).get().getPoseEstimate();
+
+      // If the pose is present
+      visionEstimateMt1.ifPresent((limelight.networktables.PoseEstimate poseEstimate) -> {
+        // And we see >1 tags and robot rotates <2 rotations per second
+        if (poseEstimate.tagCount > 1 && Math.abs(
+            Units.radiansToRotations(drivetrain.getState().Speeds.omegaRadiansPerSecond)) < 2) {
+          // Add it to the pose estimator.
+          drivetrain.addVisionMeasurement(poseEstimate.pose.toPose2d(),
+              poseEstimate.timestampSeconds + 0.001,
+              getEstimationStdDevsLimelightMT1(poseEstimate));
         }
+      });
+    }
+  }
+
+  // should be run periodically, tells you if the limelight has been disconnected for more than 0.5
+  // seconds
+
+  private double lastHeartBeat = -1;
+  private double lastHeartBeatTime = Timer.getFPGATimestamp();
+
+  public boolean isConnected() {
+    double heartbeat = LimelightHelpers.getHeartbeat(limelightName);
+    if (heartbeat != lastHeartBeat) {
+      lastHeartBeat = heartbeat;
+      lastHeartBeatTime = Timer.getFPGATimestamp();
+    }
+
+    return (Timer.getFPGATimestamp() - lastHeartBeatTime < 0.5);
+  }
 
 }
