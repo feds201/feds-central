@@ -1,3 +1,4 @@
+import 'dart:developer' as developer;
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -128,7 +129,20 @@ class _ImportTabState extends State<ImportTab>
 
   Future<void> _connectLocalSource(LocalDriveAccess access) async {
     final dir = Directory(access.dirPath);
-    if (!await dir.exists()) {
+    bool exists;
+    try {
+      exists = await dir.exists();
+    } on FileSystemException catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(
+            'Cannot access ${access.label}: ${e.osError?.message ?? e.message}',
+          )),
+        );
+      }
+      return;
+    }
+    if (!exists) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('${access.label} folder not found')),
@@ -205,12 +219,56 @@ class _ImportTabState extends State<ImportTab>
 
   /// Connect a USB drive source (no time window, with optional pre-set alliance side).
   Future<void> _connectUsbSource(DetectedUsbDrive detected) async {
+    developer.log(
+      '_connectUsbSource: path="${detected.drive.path}" label="${detected.drive.label}" allianceSide=${detected.allianceSide}',
+      name: 'UsbDriveDebug',
+    );
     final access = LocalDriveAccess(
       dirPath: detected.drive.path,
       label: detected.drive.label,
     );
     final dir = Directory(access.dirPath);
-    if (!await dir.exists()) {
+    bool exists;
+    try {
+      exists = await dir.exists();
+      developer.log('Directory.exists("${access.dirPath}") -> $exists', name: 'UsbDriveDebug');
+    } on FileSystemException catch (e) {
+      developer.log(
+        'Directory.exists("${access.dirPath}") THREW: ${e.osError?.message ?? e.message} (errno=${e.osError?.errorCode})',
+        name: 'UsbDriveDebug',
+      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(
+            'Cannot access ${access.label}: ${e.osError?.message ?? e.message}. '
+            'Go to Settings > Apps > Special app access > All files access, grant it to this app, then force close and reopen.',
+          )),
+        );
+      }
+      return;
+    }
+    if (!exists) {
+      // Probe a few common alternate paths so we can see what's reachable.
+      for (final p in [
+        '/storage/emulated/0',
+        '/storage/self/primary',
+        '/storage/UsbDriveA1',
+        '/storage/usbotg',
+      ]) {
+        try {
+          final ok = await Directory(p).exists();
+          developer.log('probe Directory.exists("$p") -> $ok', name: 'UsbDriveDebug');
+        } on FileSystemException catch (e) {
+          developer.log('probe "$p" threw: ${e.osError?.message}', name: 'UsbDriveDebug');
+        }
+      }
+      try {
+        final storageRoot = Directory('/storage').listSync().map((e) => e.path).toList();
+        developer.log('/storage children: $storageRoot', name: 'UsbDriveDebug');
+      } catch (e) {
+        developer.log('/storage listSync threw: $e', name: 'UsbDriveDebug');
+      }
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('${access.label} is no longer connected')),

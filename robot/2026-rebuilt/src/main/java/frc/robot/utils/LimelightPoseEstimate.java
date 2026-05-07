@@ -4,23 +4,24 @@ import com.ctre.phoenix6.Utils;
 import edu.wpi.first.math.geometry.Pose2d;
 
 public class LimelightPoseEstimate {
-    private LimelightHelpers.PoseEstimate pose;
-    private double time;
+  private LimelightHelpers.PoseEstimate pose;
+  private double time;
 
-    public LimelightPoseEstimate(LimelightHelpers.PoseEstimate pose, double time) {
-        this.pose = pose;
-        this.time = time;
-    }
+  public LimelightPoseEstimate(LimelightHelpers.PoseEstimate pose,
+      double time) {
+    this.pose = pose;
+    this.time = time;
+  }
 
-    public Pose2d getPose() {
-        return pose.pose;
-    }
+  public Pose2d getPose() {
+    return pose.pose;
+  }
 
-    public double getTime() {
-        return Utils.fpgaToCurrentTime(time);
-    }
+  public double getTime() {
+    return Utils.fpgaToCurrentTime(time);
+  }
 
-    public LimelightHelpers.PoseEstimate getPoseEstimate() {
-        return pose;
-    }
+  public LimelightHelpers.PoseEstimate getPoseEstimate() {
+    return pose;
+  }
 }

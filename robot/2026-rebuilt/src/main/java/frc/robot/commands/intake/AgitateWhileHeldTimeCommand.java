@@ -5,8 +5,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 
 /**
- * Command that pulses the intake extend/retract while held using time durations.
- * Runs until canceled.
+ * Command that pulses the intake extend/retract while held using time durations. Runs until
+ * canceled.
  */
 public class AgitateWhileHeldTimeCommand extends Command {
   private final IntakeSubsystem intake;
@@ -15,7 +15,8 @@ public class AgitateWhileHeldTimeCommand extends Command {
   private boolean extended = false;
   private double phaseEnd = 0.0;
 
-  public AgitateWhileHeldTimeCommand(IntakeSubsystem intake, double extendSeconds, double retractSeconds) {
+  public AgitateWhileHeldTimeCommand(IntakeSubsystem intake,
+      double extendSeconds, double retractSeconds) {
     this.intake = intake;
     this.extendSeconds = extendSeconds;
     this.retractSeconds = retractSeconds;

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../util/constants.dart';
+import '../util/format.dart';
 
 /// Mute state for the video viewer audio.
 enum MuteState { muted, redAudio, blueAudio, fullAudio }
@@ -25,11 +26,30 @@ class ControlSidebar extends StatelessWidget {
   /// Whether the view mode toggle button is active (more than one view mode available).
   final bool canToggleViewMode;
 
+  /// Unified-timeline position when the user marked the match start, or null
+  /// if the user hasn't marked it yet.
+  final Duration? markedStartPosition;
+
+  /// Current unified-timeline position; drives the live elapsed display on
+  /// the Mark Start button after the user has marked.
+  final Duration currentPosition;
+
+  /// Current playback rate (1.0 = normal). Drives the rate-text display on
+  /// the speed adjuster.
+  final double playbackSpeed;
+
   final VoidCallback onBack;
   final VoidCallback onSwapSides;
   final VoidCallback onToggleMute;
   final VoidCallback onToggleViewMode;
   final VoidCallback onPlayPause;
+  final VoidCallback onMarkStart;
+  /// Decrease playback speed by one step. Null when already at the min.
+  final VoidCallback? onSpeedDown;
+  /// Increase playback speed by one step. Null when already at the max.
+  final VoidCallback? onSpeedUp;
+  /// Reset playback speed to 1.0x (no-op if already there).
+  final VoidCallback onSpeedReset;
   final VoidCallback onRewind10;
   final VoidCallback onForward10;
   final VoidCallback onRestart;
@@ -50,11 +70,18 @@ class ControlSidebar extends StatelessWidget {
     required this.canRedo,
     required this.hasDrawings,
     required this.canToggleViewMode,
+    required this.markedStartPosition,
+    required this.currentPosition,
+    required this.playbackSpeed,
     required this.onBack,
     required this.onSwapSides,
     required this.onToggleMute,
     required this.onToggleViewMode,
     required this.onPlayPause,
+    required this.onMarkStart,
+    required this.onSpeedDown,
+    required this.onSpeedUp,
+    required this.onSpeedReset,
     required this.onRewind10,
     required this.onForward10,
     required this.onRestart,
@@ -79,8 +106,12 @@ class ControlSidebar extends StatelessWidget {
         label: 'Back',
         onPressed: onBack,
       ),
+      // Mute is always available — every match has at least one audio source.
+      _buildMuteItem(),
     ];
 
+    // Swap and view-mode toggles only make sense when more than one view
+    // mode is available (i.e. there are multiple recordings to switch between).
     if (canToggleViewMode) {
       buttons.addAll([
         _buildItem(
@@ -88,13 +119,14 @@ class ControlSidebar extends StatelessWidget {
           label: 'Swap',
           onPressed: viewMode == ViewMode.both ? onSwapSides : null,
         ),
-        _buildMuteItem(),
         _buildViewModeItem(),
       ]);
     }
 
     buttons.addAll([
       _buildPlayPauseItem(),
+      _buildMarkStartItem(),
+      _buildSpeedItem(),
       _buildItem(
         icon: Icons.replay_10,
         label: '-10s',
@@ -134,9 +166,10 @@ class ControlSidebar extends StatelessWidget {
     // Build column children: wrap each button in Expanded, insert dividers
     // between groups at fixed height.
     final children = <Widget>[];
-    final navCount = canToggleViewMode ? 4 : 1; // back + (swap, mute, view)
+    // back + mute always (2), plus swap + view if multiple modes available
+    final navCount = canToggleViewMode ? 4 : 2;
     final playbackStart = navCount;
-    final playbackEnd = playbackStart + 4; // play, -10s, +10s, restart
+    final playbackEnd = playbackStart + 6; // play, mark-start, speed, -10s, +10s, restart
 
     for (int i = 0; i < buttons.length; i++) {
       // Insert dividers between groups
@@ -438,6 +471,136 @@ class ControlSidebar extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildMarkStartItem() {
+    final isMarked = markedStartPosition != null;
+    final elapsed = isMarked
+        ? (currentPosition - markedStartPosition!)
+        : Duration.zero;
+    final elapsedText = formatStopwatch(elapsed);
+    // Placeholder reserves the same visual space as a real `M:SS.t` value so
+    // the icon doesn't jump when the user first taps Mark Start.
+    const placeholder = '-:--.-';
+    const icon = Icons.timer;
+    final timeText = isMarked ? elapsedText : placeholder;
+    final timeColor = isMarked ? Colors.white : Colors.white54;
+
+    if (!_expanded) {
+      return Tooltip(
+        message: isMarked ? 'Started at $elapsedText' : 'Mark start',
+        child: InkWell(
+          onTap: onMarkStart,
+          // FittedBox shrinks the icon+text column if the slot is too short
+          // to fit both at full size — keeps the layout intact in cramped
+          // compact-mode rows without us hand-tuning sizes.
+          child: Center(
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(icon, color: Colors.white, size: 28),
+                  const SizedBox(height: 2),
+                  Text(
+                    timeText,
+                    style: TextStyle(color: timeColor, fontSize: 11),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return InkWell(
+      onTap: onMarkStart,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: Row(
+            children: [
+              const Icon(icon, color: Colors.white, size: 24),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  timeText,
+                  style: TextStyle(color: timeColor, fontSize: 14),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Playback speed adjuster: two square buttons (- and +) above a rate text
+  /// label. Tapping the rate text resets to 1.0x.
+  ///
+  /// Each +/- button is half the strip width, capped at 48px. The button row
+  /// fills the slot's available vertical space (minus the rate label below)
+  /// for a comfortable touch target. The rate label itself is a full-strip-
+  /// width tap target so it's easy to hit even though the text is small.
+  Widget _buildSpeedItem() {
+    final downColor = onSpeedDown == null ? Colors.white38 : Colors.white;
+    final upColor = onSpeedUp == null ? Colors.white38 : Colors.white;
+    final rateText = formatPlaybackSpeed(playbackSpeed);
+
+    // Strip width is 160 expanded / 72 compact. Half is 80 / 36. Cap at 48
+    // so the buttons don't get absurdly wide in expanded mode.
+    final buttonWidth = (_expanded ? 80.0 : 36.0).clamp(0.0, 48.0);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // Buttons row fills the available slot height minus the rate label.
+        Expanded(
+          child: Center(
+            child: SizedBox(
+              width: buttonWidth * 2,
+              height: double.infinity,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: InkWell(
+                      onTap: onSpeedDown,
+                      child: Center(
+                        child: Icon(Icons.remove, color: downColor, size: 24),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: InkWell(
+                      onTap: onSpeedUp,
+                      child: Center(
+                        child: Icon(Icons.add, color: upColor, size: 24),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        // Rate label: full strip width tap target so reset is easy to hit.
+        InkWell(
+          onTap: onSpeedReset,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 2),
+            child: Center(
+              child: Text(
+                rateText,
+                style: const TextStyle(color: Colors.white, fontSize: 11),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 

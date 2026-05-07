@@ -2,8 +2,10 @@ package com.feds201.match_record
 
 import android.media.MediaMetadataRetriever
 import android.os.Build
+import android.os.Environment
 import android.os.StatFs
 import android.os.storage.StorageManager
+import android.util.Log
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -42,21 +44,69 @@ class MainActivity : FlutterActivity() {
     }
 
     private fun getUsbDrives(): List<Map<String, String>> {
+        val tag = "UsbDriveDebug"
         val storageManager = getSystemService(STORAGE_SERVICE) as StorageManager
         val drives = mutableListOf<Map<String, String>>()
 
+        // Dump every visible directory under /storage and /mnt for inspection.
+        Log.i(tag, "===== getUsbDrives() called =====")
+        Log.i(tag, "Build.VERSION.SDK_INT=${Build.VERSION.SDK_INT} (R=${Build.VERSION_CODES.R})")
+        Log.i(tag, "Environment.isExternalStorageManager=${Environment.isExternalStorageManager()}")
+        listDirSafe(tag, "/storage")
+        listDirSafe(tag, "/mnt")
+        listDirSafe(tag, "/mnt/media_rw")
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            for (volume in storageManager.storageVolumes) {
+            val volumes = storageManager.storageVolumes
+            Log.i(tag, "storageVolumes.size=${volumes.size}")
+            for ((i, volume) in volumes.withIndex()) {
+                val dir = volume.directory
+                Log.i(tag, "----- volume[$i] -----")
+                Log.i(tag, "  isRemovable=${volume.isRemovable}")
+                Log.i(tag, "  isPrimary=${volume.isPrimary}")
+                Log.i(tag, "  isEmulated=${volume.isEmulated}")
+                Log.i(tag, "  state=${volume.state}")
+                Log.i(tag, "  uuid=${volume.uuid}")
+                Log.i(tag, "  mediaStoreVolumeName=${volume.mediaStoreVolumeName}")
+                Log.i(tag, "  description=${volume.getDescription(this)}")
+                Log.i(tag, "  directory=${dir?.absolutePath}")
+                if (dir != null) {
+                    Log.i(tag, "  directory.exists()=${dir.exists()}")
+                    Log.i(tag, "  directory.canRead()=${dir.canRead()}")
+                    Log.i(tag, "  directory.list()=${runCatching { dir.list()?.toList() }.getOrElse { it.toString() }}")
+                }
+                // Try common Samsung paths
+                volume.uuid?.let { uuid ->
+                    listDirSafe(tag, "/storage/$uuid")
+                    listDirSafe(tag, "/mnt/media_rw/$uuid")
+                }
+
                 if (!volume.isRemovable) continue
-                val dir = volume.directory ?: continue
+                if (dir == null) continue
+
+                val path = dir.absolutePath
+                Log.i(tag, "  -> emitting path=$path label=${volume.getDescription(this) ?: dir.name}")
                 drives.add(mapOf(
-                    "path" to dir.absolutePath,
+                    "path" to path,
                     "label" to (volume.getDescription(this) ?: dir.name)
                 ))
             }
         }
 
+        Log.i(tag, "===== getUsbDrives() returning ${drives.size} drives =====")
         return drives
+    }
+
+    private fun listDirSafe(tag: String, path: String) {
+        try {
+            val f = File(path)
+            val exists = f.exists()
+            val canRead = f.canRead()
+            val children = if (exists && canRead) f.list()?.toList() else null
+            Log.i(tag, "  ls $path  exists=$exists canRead=$canRead children=$children")
+        } catch (e: Exception) {
+            Log.i(tag, "  ls $path  EXCEPTION: $e")
+        }
     }
 
     private fun getVideoMetadata(filePath: String): Map<String, Any?> {

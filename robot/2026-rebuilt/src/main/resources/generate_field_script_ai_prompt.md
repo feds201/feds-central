@@ -14,7 +14,7 @@ you MUST include all major field elements:
 - 2 hoppers
 - the outline/walls of the field
 
-DO NOT INCLUDE (these are irrelevant to our goal and just add more objects for physics sim to track): 
+DO NOT INCLUDE (these are irrelevant to our goal and just add more objects for physics sim to track):
 - small details like screws or textures
 - driver/human station
 - outposts for balls
@@ -22,14 +22,14 @@ DO NOT INCLUDE (these are irrelevant to our goal and just add more objects for p
 - the scoring table
 - signs/text
 - april tags
-- game pieces 
+- game pieces
 - visual markings (eg gafers tape lines)
 
 Important notes:
 - scoring elements need to have the right geometry so we can actually score
 - ramps/bumps need to have the correct geometry so the robot can drive on it
 - this should be the "welded" field (if that makes a difference)
-- the file's coordinate system should be in meters. The origin (0,0,0) should be located at the corner of the field (if we are looking from the sky down onto the field and the blue alliance is on top / red alliance on the bottom, then the origin is the the top left corner of the field itself. increasing y moves you across the field (the narrower direction). increasing x moves you down the field (towards the red alliance side). increasing z moves you up into the air (ie negative z = underground). 
+- the file's coordinate system should be in meters. The origin (0,0,0) should be located at the corner of the field (if we are looking from the sky down onto the field and the blue alliance is on top / red alliance on the bottom, then the origin is the the top left corner of the field itself. increasing y moves you across the field (the narrower direction). increasing x moves you down the field (towards the red alliance side). increasing z moves you up into the air (ie negative z = underground).
 
 Below is a direct copy of all the info you will need from the game manual (note: some info may be extra / should be ignored! this is a superset of the
 info you will need!):
@@ -160,7 +160,7 @@ design.
 
   : Regional Field Types
 
-## Areas, Zones, & Markings 
+## Areas, Zones, & Markings
 
 FIELD areas, zones, and markings of consequence are described below.
 Unless otherwise specified, the tape used to mark lines and zones
@@ -379,4 +379,3 @@ style="width:4.16522in;height:3.55842in"
 alt="Image showing TOWER Dimensions" />
 <figcaption><p>: TOWER Dimensions</p></figcaption>
 </figure>
-
