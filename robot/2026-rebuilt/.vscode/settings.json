@@ -62,7 +62,20 @@
   "java.format.settings.url": "./eclipse-java-google-style.xml",
   "java.format.settings.profile": "GoogleStyle",
   "editor.formatOnSave": true,
+  // VS Code does not use only the formatter XML when it formats Java on save.
+  // It also sends its own tab/space/newline settings to the Java formatter, and
+  // those can override the XML. The settings below repeat those values on purpose.
+  // Keep them matched to eclipse-java-google-style.xml and Spotless, or VS Code save
+  // formatting will drift again.
   "[java]": {
-    "editor.defaultFormatter": "redhat.java"
+    "editor.defaultFormatter": "redhat.java",
+    "editor.formatOnSaveMode": "file",
+    "editor.detectIndentation": false,
+    "editor.insertSpaces": true,
+    "editor.tabSize": 2,
+    "editor.indentSize": "tabSize",
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
+    "files.trimFinalNewlines": true
   }
 }
