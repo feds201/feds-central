@@ -4,7 +4,6 @@
 
 package frc.robot.commands.swerve;
 
-import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
@@ -20,7 +19,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 // import frc.robot.RobotMap.SafetyMap.SwerveConstants;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import frc.robot.utils.ShootOnTheMove;
-import frc.robot.subsystems.swerve.generated.TunerConstants;
 
 public class HubDrive extends Command {
  

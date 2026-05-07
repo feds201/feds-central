@@ -41,9 +41,9 @@ public class Spindexer extends SubsystemBase {
 
   //subsystem states 
   public enum spindexer_state {
-    RUN(Volts.of(5)),
-    REVERSE(Volts.of(-5)),
-    PREVERSE(Volts.of(-5)),
+    RUN(Volts.of(8)),
+    REVERSE(Volts.of(-8)),
+    PREVERSE(Volts.of(-8)),
     PFORWARD(Volts.of(8)),
     STOP(Volts.of(0));
 
@@ -66,12 +66,7 @@ public class Spindexer extends SubsystemBase {
   private final VoltageOut vOut = new VoltageOut(0);
   private spindexer_state currentState = spindexer_state.STOP;
   private final SysIdRoutine m_spindexerSysId;
-  //Timer to switch between forward and reverse during indexing
-  private Timer washingMachineTimer = new Timer();
-  private final ShuffleboardTab pitTab;
-  private final ShuffleboardLayout spindexerLayout;
-  private final GenericEntry spindexerConnectedEntry;
-  private final GenericEntry spindexerPoweredEntry;
+  private Timer timer = new Timer();
 
   // private final SysIdRoutine m_SpindexerSysId;
 
@@ -114,47 +109,32 @@ public class Spindexer extends SubsystemBase {
       this // subsystem for command requirements
     )
   );
-    pitTab = Shuffleboard.getTab("Pit Testing");
-    spindexerLayout = pitTab.getLayout("Spindexer Health", BuiltInLayouts.kList).withSize(2,1).withPosition(4, 3);
-    spindexerConnectedEntry = spindexerLayout.add("spindexer Motor is Connected", false).getEntry();
-    spindexerPoweredEntry = spindexerLayout.add("spindexer Motor is Powered", false).getEntry();
   }
 
    
   @Override
   public void periodic() {
-    Logger.recordOutput("Robot/Shooter/SpindexerOn", currentState == spindexer_state.RUN || currentState == spindexer_state.REVERSE);
+    Logger.recordOutput("Robot/Shooter/SpindexerOn", currentState != spindexer_state.STOP);
     Logger.recordOutput("Robot/Shooter/SpindexerState", currentState.toString());
+
+    Logger.recordOutput("Robot/Spindexer/VelocityRPS", spindexerMotor.getVelocity().getValueAsDouble());
+    Logger.recordOutput("Robot/Spindexer/TargetVolts", currentState.getVoltage().in(Volts));
+    Logger.recordOutput("Robot/Spindexer/AppliedVolts", spindexerMotor.getMotorVoltage().getValueAsDouble());
+    Logger.recordOutput("Robot/Spindexer/StatorAmps", spindexerMotor.getStatorCurrent().getValueAsDouble());
 
     switch (currentState) {
       case RUN:
-        if(!washingMachineTimer.isRunning()){
-          washingMachineTimer.start();
-        }
-        if(washingMachineTimer.hasElapsed(indexingConstants.forwardTime)){ // 2 sec(Needs to be tuned)
+        if(timer.hasElapsed(indexingConstants.forwardTime)){
           setState(spindexer_state.REVERSE);
-          washingMachineTimer.stop();
-          washingMachineTimer.reset();
         }
         break;
       case REVERSE:
-        if(!washingMachineTimer.isRunning()){  
-          washingMachineTimer.start();
-        }
-        if(washingMachineTimer.hasElapsed(indexingConstants.reverseTime)){  // 0.5 sec(Needs to be tuned)
+        if(timer.hasElapsed(indexingConstants.reverseTime)){
           setState(spindexer_state.RUN);
-          washingMachineTimer.stop();
-          washingMachineTimer.reset();
         }
-        break;
-
-
-      case STOP, PREVERSE:
         break;
     }
-    
-    spindexerConnectedEntry.setBoolean(spindexerMotor.isConnected());
-  spindexerPoweredEntry.setBoolean(spindexerMotor.getSupplyVoltage().getValueAsDouble() > RobotMap.PitConstants.kPoweredThresholdVolts);
+
   }
 
   // subsystem getters
@@ -182,6 +162,11 @@ public spindexer_state getCurrentState() {
 
 public void setState(spindexer_state state)
 {
+  if(!currentState.equals(state)){
+    timer.reset();
+    timer.stop();
+    timer.start();
+  }
   setVoltage(state.getVoltage());
   currentState = state;
 }
@@ -206,4 +191,31 @@ public void setState(spindexer_state state)
 public Command setStateCommand(spindexer_state state) {
     return runOnce(() -> setState(state));
 }
+  public TalonFX getSpindexerMotor() {
+    return spindexerMotor;
+  }
+
+  // ////////////////////////////////////////////////////////////////////////
+  // SIMULATION SUPPORT — sim-only methods below this line
+  // ////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Returns the spindexer motor sim state so RebuiltSimManager can drive spindexer physics
+   * (DCMotorSim voltage input and position/velocity write-back). Sim use only.
+   */
+  public com.ctre.phoenix6.sim.TalonFXSimState getSpindexerMotorSimState() {
+      return spindexerMotor.getSimState();
+  }
+
+  /**
+   * Returns spindexer motor velocity in RPS. Used by RebuiltSimManager to drive the
+   * spindexer animation accumulator each tick. Sim use only.
+   */
+  public double getSimSpindexerMotorVelocityRPS() {
+      return spindexerMotor.getVelocity().getValue().in(edu.wpi.first.units.Units.RotationsPerSecond);
+  }
+
+  // ////////////////////////////////////////////////////////////////////////
+  // END SIMULATION SUPPORT
+  // ////////////////////////////////////////////////////////////////////////
 }

@@ -3,7 +3,6 @@ package frc.robot;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
-import java.lang.reflect.Field;
 import java.util.Map;
 
 import edu.wpi.first.math.Matrix;
@@ -43,7 +42,7 @@ public final class RobotMap {
 
     public static class Constants {
     public static boolean disableHAL = false;
-
+    
     public static void disableHAL() {
         disableHAL = true;
     }
@@ -54,9 +53,9 @@ public final class RobotMap {
     }
     public static final class IntakeSubsystemConstants {
         public static final int kMotorID = 61;
-        public static final int kLimit_switch_rID = 2;
-        public static final int kLimit_switch_lID = 3; 
+        public static final int klimit_switchID=9;
         public static final int kRollerMotorID = 62;
+        public static final int kRollerMotorFollowerID = 60;
         public static final double agitateCycleConstant = 0.5;
 
     }
@@ -80,6 +79,7 @@ public final class RobotMap {
         private static final int kBackRightDriveMotorId = 41;
         private static final int kBackRightSteerMotorId = 42;
         private static final int kBackRightEncoderId = 43;
+        public static Object drivetrain;
 
         public static CommandSwerveDrivetrain createDrivetrain(){
             SwerveModuleStatusUtil.addSwerveModule(SwerveModuleStatusUtil.ModuleLocation.FL, kFrontLeftDriveMotorId, kFrontLeftSteerMotorId, kFrontLeftEncoderId);
@@ -96,8 +96,8 @@ public final class RobotMap {
     }
 
     public static class indexingConstants {
-        public static final double forwardTime = 2;
-        public static final double reverseTime = .5;
+        public static final double forwardTime = 1.25;
+        public static final double reverseTime = .05;
     }
 
     public static class FeederConstants
@@ -122,12 +122,18 @@ public final class RobotMap {
     public static class PitConstants {
         public static final double kPoweredThresholdVolts = 4.0;
 
-        final static long STORAGE_PER_MATCH_BYTES = 2_000_000_000L;  // confirmed with laney for 2 gigabytes per match, which is more than enough
+        final static long STORAGE_PER_MATCH_BYTES = 100_000_000L;  // confirmed we use ~100MB/match for logs!
         final static long STORAGE_ACCEPTABLE_BYTES = 4 * STORAGE_PER_MATCH_BYTES; 
-        static java.io.File usb = new java.io.File("/media/sda1"); 
+        static java.io.File usb = new java.io.File("/u/"); 
     }
 
     public static class ShooterConstants {
+        /** Hood motor forward soft limit in rotor rotations — the maximum travel position. */
+        public static final double HOOD_FORWARD_SOFT_LIMIT_ROT = 30.0;
+        /** Physical hood angle in degrees when the motor is at 0 rotor rotations (fully retracted). */
+        public static final double HOOD_MIN_ANGLE_DEG = 35.5;
+        /** Physical hood angle in degrees when the motor is at HOOD_FORWARD_SOFT_LIMIT_ROT (fully extended). */
+        public static final double HOOD_MAX_ANGLE_DEG = 67.4;
         public static final int ShooterRightTop = 53;
         public static final int ShooterRightBottom = 52;
         public static final int ShooterBottomLeft = 51;
@@ -147,23 +153,26 @@ public final class RobotMap {
         public static final Rectangle2d trench = new Rectangle2d(robotShooterOffset, hubCenter);
         public static final Translation2d passingRight = FieldConstants.Outpost.centerPoint.plus(new Translation2d(0, 2));
         public static final Translation2d passingLeft = new Translation2d(0, 7.44).minus(new Translation2d(0, 2));
-        public static final Translation2d BlueLeftTopLeft = new Translation2d(4.0, 8.208);
+        public static final Translation2d BlueLeftTopLeft = new Translation2d(4.0, 11.208);
         public static final Translation2d BlueLeftBottomRight = new Translation2d(5.17, 6.75);
         public static final Rectangle2d BlueLeftTrench = new Rectangle2d(BlueLeftTopLeft, BlueLeftBottomRight);
 
         public static final Translation2d RedLeftTopLeft = new Translation2d(11.375, 1.221);
-        public static final Translation2d RedLeftBottomRight = new Translation2d(12.6, 0.082);
+        public static final Translation2d RedLeftBottomRight = new Translation2d(12.6, -3);
         public static final Rectangle2d RedLeftTrench = new Rectangle2d(RedLeftTopLeft, RedLeftBottomRight);
 
-        public static final Translation2d BlueRightTopLeft = new Translation2d(5.2, 0.018);
+        public static final Translation2d BlueRightTopLeft = new Translation2d(5.2, -3);
         public static final Translation2d BlueRightBottomRight = new Translation2d(4, 1.26);
         public static final Rectangle2d BlueRightTrench = new Rectangle2d(BlueRightTopLeft, BlueRightBottomRight);
 
         public static final Translation2d RedRightTopRight = new Translation2d(12.56, 6.88);
-        public static final Translation2d RedRightBottomRight = new Translation2d(11.181, 8.104);
+        public static final Translation2d RedRightBottomRight = new Translation2d(11.181, 11);
         public static final Rectangle2d RedRightTrench = new Rectangle2d(RedRightTopRight, RedRightBottomRight);
 
-        public static final Rectangle2d neutralZone = new Rectangle2d(FieldConstants.LeftTrench.openingTopLeft.toTranslation2d(), FieldConstants.RightTrench.oppOpeningTopRight.toTranslation2d());
+        public static final Rectangle2d neutralZone = new Rectangle2d(new Translation2d(5.618, 8.0), new Translation2d(10.922, 0.0) );
+
+        public static final Rectangle2d redAlliance = new Rectangle2d(new Translation2d(11.777, 8.0), new Translation2d(16.5, 0.0) );
+        public static final Rectangle2d blueAlliance = new Rectangle2d(new Translation2d(0.0, 0.0), new Translation2d(4.830, 8.0) );
     
         // This map is used to determine the velocity of the shooter based on the distance to the target. 
         //The key is the distance to the target in meters, and the value is the velocity of the shooter in rotations per second.`
@@ -173,11 +182,11 @@ public final class RobotMap {
             Map.entry(2.01, 28.0),//done
             Map.entry(2.56, 30.0),//done
             Map.entry(2.89, 31.0),//done
-             Map.entry(3.08, 33.5),//done 
+            Map.entry(3.08, 33.5),//done 
             Map.entry(3.37, 34.5),//done
             Map.entry(3.97,38.0), //done 
-            Map.entry(4.75, 39.5),//done
-            Map.entry(5.36, 40.0), // done
+            Map.entry(4.75, 39.0),
+            Map.entry(5.0,42.0),// done
             Map.entry(6.02, 42.0),//done 
             Map.entry(6.85,43.0), // Done
             Map.entry(7.6, 45.5), // done   
@@ -190,15 +199,15 @@ public final class RobotMap {
             Map.entry(2.01, 3.8),//done 
             Map.entry(2.56, 9.0),//done 
             Map.entry(2.89, 9.0),//done
-            Map.entry(3.08, 8.0),//done
-            Map.entry(3.37, 8.0),//done
-            Map.entry(3.97,10.0),//done
-            Map.entry(4.75, 14.0),//done
-            Map.entry(5.36,15.0), // done
-            Map.entry(6.02, 22.0), //done 
-            Map.entry(6.85, 25.0), // done
-            Map.entry(7.6, 29.0), // done
-            Map.entry(100.0, 29.0) //far off top limit to prevent unwanted scaling past this distance 
+            Map.entry(3.08, 8.5),//done //bumped all past this point by .2 up
+            Map.entry(3.37, 8.5),//done
+            Map.entry(3.97,10.5),//done
+            Map.entry(4.75, 14.5),
+            Map.entry(5.0, 15.5),// done
+            Map.entry(6.02, 22.5), //done 
+            Map.entry(6.85, 25.5), // done
+            Map.entry(7.6, 29.5), // done
+            Map.entry(100.0, 29.5) //far off top limit to prevent unwanted scaling past this distance 
         );
 
         public static final InterpolatingDoubleTreeMap kPassingVelocityMap = InterpolatingDoubleTreeMap.ofEntries(
@@ -206,8 +215,8 @@ public final class RobotMap {
            Map.entry(6.5, 30.0),
            Map.entry(8.53, 35.0),
            Map.entry(11.12, 44.0),
-           Map.entry(13.0,75.0),
-           Map.entry(14.0, 80.0)
+           Map.entry(12.0,80.0),
+           Map.entry(14.0, 90.0)
 
         );
 
@@ -217,24 +226,25 @@ public final class RobotMap {
             Map.entry(6.5,29.0),
             Map.entry(8.53, 29.0),
             Map.entry(11.12, 29.0),
-            Map.entry(13.0,30.0),
+            Map.entry(12.0,30.0),
             Map.entry(14.0, 30.0)
         );
 
          
 
-        public static final InterpolatingDoubleTreeMap kFlightTimeMap =
-        InterpolatingDoubleTreeMap.ofEntries(
-            Map.entry(1.44, (8.2-7.21)),
-            Map.entry(2.11, (2.2-1.25)),
-            Map.entry(2.24, (19.75-18.79)),
-            Map.entry(2.96, (18.91-17.84)),
-            Map.entry(3.39, (4.15-3.34)),
-            Map.entry(4.07, (7.01-5.69)),
-            Map.entry(4.6, (13.03-11.59)),
-            Map.entry(5.23, (1.42-0.07)),
-            Map.entry(7.6, 1.43)
-        );
+        // Dead code — ShootOnTheMove now uses a polynomial formula instead of this lookup table.
+        // public static final InterpolatingDoubleTreeMap kFlightTimeMap =
+        // InterpolatingDoubleTreeMap.ofEntries(
+        //     Map.entry(1.44, (8.2-7.21)),
+        //     Map.entry(2.11, (2.2-1.25)),
+        //     Map.entry(2.24, (19.75-18.79)),
+        //     Map.entry(2.96, (18.91-17.84)),
+        //     // Map.entry(3.39, (4.15-3.34)), // weird outlier, ignoring
+        //     Map.entry(4.07, (7.01-5.69)),
+        //     Map.entry(4.6, (13.03-11.59)),
+        //     Map.entry(5.23, (1.42-0.07)),
+        //     Map.entry(7.6, 1.43)
+        // );
 
         
     }

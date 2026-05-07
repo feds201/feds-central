@@ -42,7 +42,7 @@ public class RebuiltField {
     // ── Neutral zone dimensions (from game manual) ─────────────────────────
 
     /** Neutral zone width along field X axis (meters). */
-    private static final double NEUTRAL_ZONE_X = 1.83;
+    private static final double NEUTRAL_ZONE_X = 1.83/2; // only on our side of field (to reduce ball count for performance)
     /** Neutral zone length along field Y axis (meters). */
     private static final double NEUTRAL_ZONE_Y = 5.23;
     /** Center divider half-width (meters). */
@@ -53,10 +53,10 @@ public class RebuiltField {
     /** Depot grid: columns along X. */
     private static final int DEPOT_COLS = 4;
 
-    /** Minimum neutral zone ball count (inclusive). */
-    private static final int NEUTRAL_MIN_COUNT = 360;
+    /** Minimum neutral zone ball count (reduced for performance). */
+    private static final int NEUTRAL_MIN_COUNT = 180;
     /** Range above minimum for random neutral zone count. */
-    private static final int NEUTRAL_COUNT_RANGE = 41;
+    private static final int NEUTRAL_COUNT_RANGE = 20;
 
     /** Number of fuel balls pre-loaded in the hopper at start. */
     private static final int PRELOAD_COUNT = 8;
@@ -73,6 +73,7 @@ public class RebuiltField {
     public RebuiltField(PhysicsWorld world) {
         fieldGeometry = new FieldGeometry(world);
 
+        // TODO(ai-idea)?: move this classpath-plus-fallback mesh loader to FieldGeometry.loadMeshFromResource? only the resource name is 2026-specific.
         // Try to load field mesh from deploy directory
         try {
             InputStream meshStream = getClass().getResourceAsStream("/field_collision.obj");
@@ -157,6 +158,7 @@ public class RebuiltField {
      *
      * @param manager the game piece manager to spawn pieces into
      */
+    // TODO(ai-idea)?: extract a GridSpawner helper so these three near-identical loops collapse to one call?
     public void spawnStartingFuel(GamePieceManager manager) {
         GamePieceConfig fuel = RebuiltGamePieces.FUEL;
         Random rand = new Random();
@@ -174,12 +176,12 @@ public class RebuiltField {
         // Long axis along field WIDTH (Y), short axis along field LENGTH (X).
         // A center divider ~5cm wide splits the zone along the x-axis.
 
-        int neutralCount = NEUTRAL_MIN_COUNT + rand.nextInt(NEUTRAL_COUNT_RANGE); // 360-400 inclusive
+        int neutralCount = NEUTRAL_MIN_COUNT + rand.nextInt(NEUTRAL_COUNT_RANGE);
 
         int cols = (int) (NEUTRAL_ZONE_X / spacing);  // along X
         int rows = (int) (NEUTRAL_ZONE_Y / spacing);  // along Y
 
-        double zoneStartX = centerX - NEUTRAL_ZONE_X / 2.0;
+        double zoneStartX = centerX - NEUTRAL_ZONE_X;
         double zoneStartY = centerY - NEUTRAL_ZONE_Y / 2.0;
 
         int spawned = 0;
@@ -190,11 +192,6 @@ public class RebuiltField {
 
                 double x = baseX + (rand.nextDouble() * 2 - 1) * maxJitter;
                 double y = baseY + (rand.nextDouble() * 2 - 1) * maxJitter;
-
-                // Skip the center divider gap
-                if (Math.abs(x - centerX) < DIVIDER_HALF_WIDTH + r) {
-                    continue;
-                }
 
                 manager.spawnPiece(fuel, x, y, r + 0.001);
                 spawned++;

@@ -4,7 +4,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
@@ -40,12 +39,12 @@ public class IntakeZone {
     }
 
     /**
-     * Check all active pieces against the intake zone.
-     * Consumes pieces that are in the zone with rollers active.
+     * Check pieces against the intake zone and consume any that are inside.
      *
-     * @param manager the game piece manager (for intake counter)
-     * @param pieces list of all pieces to check
-     * @return number of pieces consumed this tick
+     * <p>Only pieces with physics enabled are considered — sleeping pieces are by
+     * definition outside the wake radius (see {@link GamePieceManager#updateProximity})
+     * and therefore can't overlap the intake zone. This lets us skip the full
+     * world→robot-relative transform for the 200+ pieces elsewhere on the field.
      */
     public int checkIntake(GamePieceManager manager, List<GamePiece> pieces) {
         if (!canIntake.getAsBoolean()) return 0;
@@ -56,6 +55,9 @@ public class IntakeZone {
         for (GamePiece piece : pieces) {
             if (!piece.isActive()) continue;
             if (piece.isOffField()) continue;
+            // Skip pieces whose physics was explicitly disabled — they're outside the wake
+            // radius (see GamePieceManager.updateProximity) and can't be in the intake zone.
+            if (piece.hasPhysics() && !piece.getBody().isEnabled()) continue;
 
             var worldPos = piece.getPosition3d();
 

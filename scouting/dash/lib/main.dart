@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:url_strategy/url_strategy.dart';
 
 import 'services/data_service.dart';
 import 'services/local_prefs.dart';
@@ -8,12 +7,13 @@ import 'theme.dart';
 import 'screens/event_entry_screen.dart';
 import 'screens/comparison_screen.dart';
 
-void main() {
-  setPathUrlStrategy();
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
 
   final dataService = DataService();
-  final config = LocalPrefs.resolveConfig();
   String initialRoute = '/';
+
+  final config = await LocalPrefs.resolveConfig();
 
   if (config != null) {
     dataService.configure(
@@ -23,14 +23,17 @@ void main() {
       tbaApiKey: config.tbaKey,
     );
 
-    final cached = LocalPrefs.loadData(config.eventKey);
+    final cached = await LocalPrefs.loadData(config.eventKey);
     if (cached != null) {
       dataService.loadFromCache(
         scoutingByTeam: cached.scoutingByTeam,
         scoutingColumns: cached.scoutingColumns,
         oprByTeam: cached.oprByTeam,
         epaByTeam: cached.epaByTeam,
-        lastUpdated: LocalPrefs.lastUpdated,
+        matchEntries: cached.matchEntries,
+        playoffAlliances: cached.playoffAlliances,
+        teamNames: cached.teamNames,
+        lastUpdated: await LocalPrefs.lastUpdated,
       );
       initialRoute = '/compare';
     }
@@ -52,7 +55,7 @@ class ScoutOpsApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Scout-Ops Dash',
+      title: 'Match Dash',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.dark,
       initialRoute: initialRoute,
@@ -60,7 +63,11 @@ class ScoutOpsApp extends StatelessWidget {
         if (settings.name == '/') {
           final args = settings.arguments as Map<String, dynamic>?;
           final autoLoad = args?['autoLoad'] ?? true;
-          return _fade(EventEntryScreen(autoLoad: autoLoad));
+          final dismissible = args?['dismissible'] ?? false;
+          return _fade(EventEntryScreen(
+            autoLoad: autoLoad,
+            dismissible: dismissible,
+          ));
         }
         if (settings.name == '/compare') {
           return _fade(const ComparisonScreen());

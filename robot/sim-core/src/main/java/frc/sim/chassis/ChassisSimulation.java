@@ -102,6 +102,10 @@ public class ChassisSimulation {
     /**
      * Set the chassis X, Y, and yaw from an external source (e.g., MapleSim).
      * Preserves Z, pitch, and roll from ODE4J so the chassis can ride over bumps/ramps.
+     *
+     * <p>Note: this only overwrites position/rotation — not linear/angular velocity.
+     * For a full planar hard-sync (pose + velocity) that keeps a follower like
+     * {@link #setPlanarState} glued to its driver, prefer that method instead.
      */
     public void setPose(Pose2d pose) {
         // X, Y from MapleSim; Z from ODE4J (gravity + contacts)
@@ -133,6 +137,42 @@ public class ChassisSimulation {
         r.set10(sy*cp);  r.set11(sy*sp*sr + cy*cr);  r.set12(sy*sp*cr - cy*sr);
         r.set20(-sp);    r.set21(cp*sr);              r.set22(cp*cr);
         chassisBody.setRotation(r);
+    }
+
+    /**
+     * Hard-sync the chassis's planar state (X, Y, yaw + their velocities) from an
+     * external 2D simulator (e.g., MapleSim), while preserving the 3D state that
+     * ODE4J owns exclusively (Z, pitch, roll + their rates).
+     *
+     * <p>Rationale: MapleSim is 2D and is authoritative for X/Y/yaw and their
+     * velocities (motor physics, tire friction, bot-on-bot collisions in a
+     * multi-robot arena). ODE4J is authoritative for the vertical DOFs because
+     * MapleSim cannot represent them — Z bounce on bumps, pitch/roll on ramps.
+     * Hard-syncing each tick eliminates drift between the two simulations (a
+     * soft follower accumulates yaw error from integration noise / contacts,
+     * which was manifesting as the rendered chassis appearing rotated ~90° off
+     * from the driver-commanded heading).
+     *
+     * <p>Wall/bot collision response in X/Y/yaw is handled by MapleSim's own 2D
+     * solver, not ODE4J — so overwriting those DOFs here does not lose contact
+     * behavior, it just moves responsibility to the correct owner.
+     *
+     * @param pose    planar pose from external sim (X, Y, yaw)
+     * @param worldVx world-frame X velocity (m/s)
+     * @param worldVy world-frame Y velocity (m/s)
+     * @param omega   yaw rate about Z (rad/s)
+     */
+    public void setPlanarState(Pose2d pose, double worldVx, double worldVy, double omega) {
+        setPose(pose);
+
+        // Linear velocity: Vx/Vy from external, preserve Vz (bump bounce / gravity).
+        DVector3C curLin = chassisBody.getLinearVel();
+        chassisBody.setLinearVel(worldVx, worldVy, curLin.get2());
+
+        // Angular velocity: yaw rate from external, preserve roll/pitch rates
+        // (ramp tilt dynamics, which MapleSim doesn't model).
+        DVector3C curAng = chassisBody.getAngularVel();
+        chassisBody.setAngularVel(curAng.get0(), curAng.get1(), omega);
     }
 
     /**

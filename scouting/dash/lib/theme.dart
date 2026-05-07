@@ -1,3 +1,4 @@
+import 'package:bot_path_drawer/bot_path_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -18,8 +19,24 @@ class AppTheme {
   static const Color red       = Color(0xFFF87171);
   static const Color green     = Color(0xFF4ADE80);
 
-  /// Colors assigned to each of the 3 comparison slots.
+  /// Colors assigned to each of the 3 comparison slots (legacy — one-alliance UI).
   static const List<Color> slotColors = [accent, accent2, accent3];
+
+  /// Per-alliance slot colors, mirroring the palette `bot_path_drawer`
+  /// applies to paths in alliance mode. Keep in sync with the package's
+  /// private `_teamBaseColors` constant.
+  static const Map<Alliance, List<Color>> allianceTeamColors = {
+    Alliance.red: [
+      Color(0xFFFF0000),
+      Color(0xFFFF9900),
+      Color(0xFFFFFF00),
+    ],
+    Alliance.blue: [
+      Color(0xFF0044FF),
+      Color(0xFF00FF44),
+      Color(0xFF00FFFF),
+    ],
+  };
 
   // ── Theme Data ───────────────────────────────────────────────────
   static ThemeData get dark {

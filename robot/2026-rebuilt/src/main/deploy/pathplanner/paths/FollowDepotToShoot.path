@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 0.5744701986754965,
+        "y": 6.779254966887416
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.4964817880794696,
+        "y": 6.866374172185429
+      },
+      "isLocked": false,
+      "linkedName": "FollowDepotEnd"
+    },
+    {
+      "anchor": {
+        "x": 1.314983443708609,
+        "y": 7.011572847682118
+      },
+      "prevControl": {
+        "x": 1.0536258278145694,
+        "y": 7.055132450331125
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 4.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 360.0,
+    "nominalVoltage": 11.8,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -23.828189122058475
+  },
+  "reversed": false,
+  "folder": "FollowCenter",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -90.0
+  },
+  "useDefaultConstraints": true
+}

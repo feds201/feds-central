@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:scout_ops_android/services/DataBase.dart';
 import 'dart:math';
@@ -142,10 +141,6 @@ class RealisticMatchDataGenerator {
 
     final autonShots =
         ((performanceLevel * 16) + _random.nextInt(6)).toInt().clamp(0, 20);
-    final autonPickupDepot =
-        performanceLevel > 0.6 || _random.nextDouble() > 0.5;
-    final autonPickupNeutral =
-        performanceLevel > 0.5 || _random.nextDouble() > 0.6;
     final autonClimb = performanceLevel > 0.7 && _random.nextDouble() > 0.4;
 
     // TeleOp data (correlates with auton performance)
@@ -155,7 +150,7 @@ class RealisticMatchDataGenerator {
     final teleOpDefense = performanceLevel > 0.6 && _random.nextDouble() > 0.3;
     final teleOpNeutralTrips =
         ((performanceLevel * 5).toInt() + _random.nextInt(3)).clamp(0, 8);
-    final teleOpFeedHP = performanceLevel > 0.5 && _random.nextDouble() > 0.4;
+    final teleOpPushBalls = _random.nextInt(4);
 
     // Endgame data
     final climbStatus = performanceLevel > 0.75 ? _random.nextInt(3) + 1 : 0;
@@ -165,71 +160,43 @@ class RealisticMatchDataGenerator {
         ((performanceLevel * 100).toInt() + _random.nextInt(20)).clamp(0, 100);
 
     final autonPoints = AutonPoints(
-      autonPickupDepot,
-      _random.nextDouble() > 0.7,
-      autonPickupNeutral,
       autonShootingTime,
       autonShots,
       autonClimb,
-      _getRandomWinner(), // Red, Tie, or Blue
-      BotLocation(
-        Offset(_randomDouble(20, 100), _randomDouble(30, 120)),
-        Size(_randomDouble(15, 35), _randomDouble(25, 40)),
-        _randomDouble(0, 360),
-      ),
-      _random.nextBool(),
       _random.nextInt(3),
     );
-
-    final teleOpShots1 = (teleOpShots * _randomDouble(0.6, 0.8)).toInt();
-    final teleOpShots2A = (teleOpShots * _randomDouble(0.1, 0.3)).toInt();
-    final teleOpShots2B = (teleOpShots * _randomDouble(0.1, 0.3)).toInt();
 
     final teleOpPoints = TeleOpPoints(
       teleOpShootingTime,
-      teleOpShootingTime * _randomDouble(0.35, 0.65),
-      teleOpShootingTime * _randomDouble(0.35, 0.65),
-      performanceLevel > 0.6,
-      performanceLevel > 0.75,
       teleOpShots,
-      teleOpShots1,
-      teleOpShots1,
-      teleOpShots2A,
-      teleOpShots2B,
-      _random.nextInt(4),
       teleOpDefense,
-      performanceLevel > 0.65 && _random.nextDouble() > 0.4,
-      performanceLevel > 0.65 && _random.nextDouble() > 0.4,
-      performanceLevel > 0.75 && _random.nextDouble() > 0.5,
-      performanceLevel > 0.75 && _random.nextDouble() > 0.5,
       teleOpNeutralTrips,
-      (teleOpNeutralTrips * _randomDouble(0.3, 0.6)).toInt(),
-      (teleOpNeutralTrips * _randomDouble(0.3, 0.6)).toInt(),
-      _random.nextInt(2),
-      _random.nextInt(2),
-      teleOpFeedHP,
-      performanceLevel > 0.6 && _random.nextDouble() > 0.4,
-      performanceLevel > 0.6 && _random.nextDouble() > 0.5,
-      performanceLevel > 0.7 && _random.nextDouble() > 0.5,
-      performanceLevel > 0.7 && _random.nextDouble() > 0.5,
-      _random.nextInt(4),
+      teleOpPushBalls,
       _random.nextInt(3),
-      _random.nextInt(3),
-      _random.nextInt(2),
-      _random.nextInt(2),
     );
+
+    final comments = [
+      'Good driver',
+      'Slow intake',
+      'Solid all around',
+      'Needs work on climb',
+      'Fast cycles',
+      '',
+      '',
+      '',
+    ];
 
     final endPoints = EndPoints(
       climbStatus,
       endgamePark,
-      teleOpFeedHP && _random.nextDouble() > 0.4,
       _random.nextInt(3),
-      true,
+      _random.nextInt(3),
+      _random.nextBool(),
       (teleOpNeutralTrips / 2).toInt(),
       shootingAccuracy,
       endgameTime,
       _random.nextInt(3),
-      _generateDrawingData(performanceLevel), // Generate realistic drawing data
+      comments[_random.nextInt(comments.length)],
     );
 
     return MatchRecord(
@@ -250,22 +217,15 @@ class RealisticMatchDataGenerator {
   String exportToCSV(List<MatchRecord> matches) {
     StringBuffer csv = StringBuffer();
 
-    // Add CSV headers
+    // Headers match the toCsv() output order from MatchRecord + nested classes
     const String headers =
-        'Battery%,Team,Scout,MatchKey,Alliance,Event,Station,MatchNumber,'
-        'LeftStartingPos,FuelDepot,FuelOutpost,FuelNeutralZone,AutonShootingTime,AutonShots,AutonClimb,AutonWinAfterAuton,'
-        'BotPosX,BotPosY,BotSizeW,BotSizeH,BotAngle,AutonPassing,'
-        'TeleOpShootingTime1,TeleOpShootingTimeA1,TeleOpShootingTimeA2,ShootingI1,ShootingI2,'
-        'TeleOpTotal1,TeleOpTotalA1,TeleOpTotalA2,TeleOpTotalI1,TeleOpTotalI2,TripAmount1,'
-        'Defense,DefenseA1,DefenseA2,DefenseI1,DefenseI2,'
-        'NeutralTrips,NeutralTripsA1,NeutralTripsA2,NeutralTripsI1,NeutralTripsI2,'
-        'FeedToHPStation,FeedToHPA1,FeedToHPA2,FeedToHPI1,FeedToHPI2,'
-        'Passing,PassingA1,PassingA2,PassingI1,PassingI2,'
-        'ClimbStatus,Park,FeedToHP,PassingEnd,EndNeutralTrips,ShootingAccuracy,EndgameTime,EndgameshootingCycles,RobotBroken,DrawingData';
+        'Team,MatchKey,MatchNumber,ScouterName,AllianceColor,EventKey,Station,BatteryPercentage,'
+        'AutonTotalShootingTime,AutonAmountOfShooting,AutonClimb,AutonPassing,'
+        'TeleOpTotalShootingTime,TeleOpTotalAmount,TeleOpDefense,TeleOpNeutralTrips,TeleOpPushBalls,TeleOpPassing,'
+        'EndClimbStatus,EndPark,EndPushBalls,EndPassing,EndRobotBroken,EndNeutralTrips,EndShootingAccuracy,EndEndgameTime,EndShootingCycles,EndComments';
 
     csv.writeln(headers);
 
-    // Use the actual app's toCsv() format from MatchRecord
     for (var match in matches) {
       csv.writeln(match.toCsv());
     }
@@ -273,51 +233,7 @@ class RealisticMatchDataGenerator {
     return csv.toString();
   }
 
-  /// Generate realistic drawing data based on performance level
-  /// Drawing data represents selected grid cells (200 total cells)
-  List<int> _generateDrawingData(double performanceLevel) {
-    List<int> drawingData = [];
-
-    // Better teams draw more cells (higher coverage)
-    int cellsToSelect = (performanceLevel * 30).toInt();
-
-    if (cellsToSelect > 0) {
-      // Create clusters/patterns (more realistic than random scattered points)
-      int clusterCount = _random.nextInt(3) + 1;
-
-      for (int c = 0; c < clusterCount; c++) {
-        // Random cluster center (1-200)
-        int clusterCenter = _random.nextInt(200) + 1;
-
-        // Add cells around cluster center
-        int cellsInCluster =
-            (cellsToSelect / clusterCount).toInt() + _random.nextInt(2);
-
-        for (int i = 0;
-            i < cellsInCluster && drawingData.length < cellsToSelect;
-            i++) {
-          int offset = _random.nextInt(5) - 2; // Nearby cells
-          int cellId = clusterCenter + offset;
-
-          if (cellId >= 1 && cellId <= 200 && !drawingData.contains(cellId)) {
-            drawingData.add(cellId);
-          }
-        }
-      }
-    }
-
-    // Sort for consistency
-    drawingData.sort();
-    return drawingData;
-  }
-
   double _randomDouble(double min, double max) {
     return min + _random.nextDouble() * (max - min);
-  }
-
-  /// Return random winner: "Red", "Tie", or "Blue"
-  String _getRandomWinner() {
-    final winners = ["Red", "Tie", "Blue"];
-    return winners[_random.nextInt(3)];
   }
 }
