@@ -11,30 +11,46 @@
           "incKey": 83
         },
         {
-          "decKey": 69,
-          "decayRate": 0.0,
-          "incKey": 82,
-          "keyRate": 0.009999999776482582
+          "decKey": 0,
+          "decayRate": 10.0,
+          "incKey": 44,
+          "keyRate": 1.0
+        },
+        {
+          "decKey": 0,
+          "decayRate": 10.0,
+          "incKey": 93,
+          "keyRate": 1.0
+        },
+        {
+          "decKey": 81,
+          "incKey": 69
         }
       ],
-      "axisCount": 3,
-      "buttonCount": 4,
+      "axisCount": 5,
+      "buttonCount": 10,
       "buttonKeys": [
-        90,
-        88,
-        67,
-        86
+        76,
+        59,
+        80,
+        79,
+        46,
+        47,
+        0,
+        39,
+        0,
+        0
       ],
       "povConfig": [
         {
-          "key0": 328,
-          "key135": 323,
-          "key180": 322,
-          "key225": 321,
-          "key270": 324,
-          "key315": 327,
-          "key45": 329,
-          "key90": 326
+          "key0": 0,
+          "key135": 0,
+          "key180": 0,
+          "key225": 0,
+          "key270": 0,
+          "key315": 0,
+          "key45": 0,
+          "key90": 91
         }
       ],
       "povCount": 1

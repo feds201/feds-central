@@ -271,7 +271,6 @@ web-build/
 .build/
 .buildlog/
 .idx/
-.run/
 migrate_working_dir/
 GeneratedPluginRegistrant.java
 

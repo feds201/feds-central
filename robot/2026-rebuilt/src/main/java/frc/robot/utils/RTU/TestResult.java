@@ -7,133 +7,121 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Immutable record that captures the outcome of a single {@link RobotAction}
- * test executed by the {@link RootTestingUtility}.
+ * Immutable record that captures the outcome of a single {@link RobotAction} test executed by the
+ * {@link RootTestingUtility}.
  *
  * <p>
  * Now also carries:
  * <ul>
- * <li><b>Alerts</b> -- human-readable messages attached by the test (info /
- * warning / error).</li>
- * <li><b>Data profiles</b> -- named series of timestamped numeric samples
- * (e.g. motor velocity over time) for anomaly detection / charting.</li>
+ * <li><b>Alerts</b> -- human-readable messages attached by the test (info / warning / error).</li>
+ * <li><b>Data profiles</b> -- named series of timestamped numeric samples (e.g. motor velocity over
+ * time) for anomaly detection / charting.</li>
  * </ul>
  */
 public final class TestResult {
 
-    public enum Status {
-        PASSED, FAILED, TIMED_OUT
-    }
+  public enum Status {
+    PASSED, FAILED, TIMED_OUT
+  }
 
-    // ── Core fields ──────────────────────────────────────────
+  // ── Core fields ──────────────────────────────────────────
 
-    private final String subsystemName;
-    private final String actionName;
-    private final String description;
-    private final Status status;
-    private final Throwable error;
-    private final double durationMs;
-    private final Instant timestamp;
-
-
-    /** Alerts attached by the test via {@link DiagnosticContext}. */
-    private final List<Alert> alerts;
-
-    /** Named data-profile series attached by the test. */
-    private final Map<String, List<DataSample>> dataProfiles;
-
-    // ── Nested types ─────────────────────────────────────────
-
-    /** Severity for diagnostic alerts. */
-    public enum AlertLevel {
-        INFO, WARNING, ERROR
-    }
-
-    /** A single alert message. */
-    public record Alert(AlertLevel level, String message) {
-    }
-
-    /** A single timestamped numeric sample. */
-    public record DataSample(double timestampMs, double value) {
-    }
+  private final String subsystemName;
+  private final String actionName;
+  private final String description;
+  private final Status status;
+  private final Throwable error;
+  private final double durationMs;
+  private final Instant timestamp;
 
 
-    public TestResult(String subsystemName,
-            String actionName,
-            String description,
-            Status status,
-            Throwable error,
-            double durationMs,
-            List<Alert> alerts,
-            Map<String, List<DataSample>> dataProfiles) {
-        this.subsystemName = subsystemName;
-        this.actionName = actionName;
-        this.description = description;
-        this.status = status;
-        this.error = error;
-        this.durationMs = durationMs;
-        this.timestamp = Instant.now();
-        this.alerts = alerts != null ? List.copyOf(alerts) : List.of();
-        this.dataProfiles = dataProfiles != null
-                ? deepCopyProfiles(dataProfiles)
-                : Map.of();
-    }
+  /** Alerts attached by the test via {@link DiagnosticContext}. */
+  private final List<Alert> alerts;
 
-    /** Backwards-compatible constructor (no alerts / profiles). */
-    public TestResult(String subsystemName,
-            String actionName,
-            String description,
-            Status status,
-            Throwable error,
-            double durationMs) {
-        this(subsystemName, actionName, description, status, error, durationMs, null, null);
-    }
+  /** Named data-profile series attached by the test. */
+  private final Map<String, List<DataSample>> dataProfiles;
 
-    // ── Getters ──────────────────────────────────────────────
+  // ── Nested types ─────────────────────────────────────────
 
-    public String getSubsystemName() {
-        return subsystemName;
-    }
+  /** Severity for diagnostic alerts. */
+  public enum AlertLevel {
+    INFO, WARNING, ERROR
+  }
 
-    public String getActionName() {
-        return actionName;
-    }
+  /** A single alert message. */
+  public record Alert(AlertLevel level, String message) {}
 
-    public String getDescription() {
-        return description;
-    }
+  /** A single timestamped numeric sample. */
+  public record DataSample(double timestampMs, double value) {}
 
-    public Status getStatus() {
-        return status;
-    }
 
-    public boolean isPassed() {
-        return status == Status.PASSED;
-    }
+  public TestResult(String subsystemName, String actionName, String description,
+      Status status, Throwable error, double durationMs, List<Alert> alerts,
+      Map<String, List<DataSample>> dataProfiles) {
+    this.subsystemName = subsystemName;
+    this.actionName = actionName;
+    this.description = description;
+    this.status = status;
+    this.error = error;
+    this.durationMs = durationMs;
+    this.timestamp = Instant.now();
+    this.alerts = alerts != null ? List.copyOf(alerts) : List.of();
+    this.dataProfiles =
+        dataProfiles != null ? deepCopyProfiles(dataProfiles) : Map.of();
+  }
 
-    public Throwable getError() {
-        return error;
-    }
+  /** Backwards-compatible constructor (no alerts / profiles). */
+  public TestResult(String subsystemName, String actionName, String description,
+      Status status, Throwable error, double durationMs) {
+    this(subsystemName, actionName, description, status, error, durationMs,
+        null, null);
+  }
 
-    public double getDurationMs() {
-        return durationMs;
-    }
+  // ── Getters ──────────────────────────────────────────────
 
-    public Instant getTimestamp() {
-        return timestamp;
-    }
+  public String getSubsystemName() {
+    return subsystemName;
+  }
 
-    public List<Alert> getAlerts() {
-        return alerts;
-    }
+  public String getActionName() {
+    return actionName;
+  }
 
-    public Map<String, List<DataSample>> getDataProfiles() {
-        return dataProfiles;
-    }
+  public String getDescription() {
+    return description;
+  }
 
-    // ── Display ──────────────────────────────────────────────
+  public Status getStatus() {
+    return status;
+  }
 
-    @Override
+  public boolean isPassed() {
+    return status == Status.PASSED;
+  }
+
+  public Throwable getError() {
+    return error;
+  }
+
+  public double getDurationMs() {
+    return durationMs;
+  }
+
+  public Instant getTimestamp() {
+    return timestamp;
+  }
+
+  public List<Alert> getAlerts() {
+    return alerts;
+  }
+
+  public Map<String, List<DataSample>> getDataProfiles() {
+    return dataProfiles;
+  }
+
+  // ── Display ──────────────────────────────────────────────
+
+  @Override
     public String toString() {
         String icon = switch (status) {
             case PASSED -> "PASS";
@@ -155,14 +143,14 @@ public final class TestResult {
         return base;
     }
 
-    // ── Helpers ──────────────────────────────────────────────
+  // ── Helpers ──────────────────────────────────────────────
 
-    private static Map<String, List<DataSample>> deepCopyProfiles(
-            Map<String, List<DataSample>> src) {
-        var copy = new LinkedHashMap<String, List<DataSample>>();
-        for (var e : src.entrySet()) {
-            copy.put(e.getKey(), List.copyOf(e.getValue()));
-        }
-        return Collections.unmodifiableMap(copy);
+  private static Map<String, List<DataSample>> deepCopyProfiles(
+      Map<String, List<DataSample>> src) {
+    var copy = new LinkedHashMap<String, List<DataSample>>();
+    for (var e : src.entrySet()) {
+      copy.put(e.getKey(), List.copyOf(e.getValue()));
     }
+    return Collections.unmodifiableMap(copy);
+  }
 }

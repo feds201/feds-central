@@ -14,10 +14,10 @@ import edu.wpi.first.networktables.StringPublisher;
 import edu.wpi.first.networktables.StringTopic;
 
 public final class Elastic {
-  private static final StringTopic notificationTopic =
-      NetworkTableInstance.getDefault().getStringTopic("/Elastic/RobotNotifications");
-  private static final StringPublisher notificationPublisher =
-      notificationTopic.publish(PubSubOption.sendAll(true), PubSubOption.keepDuplicates(true));
+  private static final StringTopic notificationTopic = NetworkTableInstance
+      .getDefault().getStringTopic("/Elastic/RobotNotifications");
+  private static final StringPublisher notificationPublisher = notificationTopic
+      .publish(PubSubOption.sendAll(true), PubSubOption.keepDuplicates(true));
   private static final StringTopic selectedTabTopic =
       NetworkTableInstance.getDefault().getStringTopic("/Elastic/SelectedTab");
   private static final StringPublisher selectedTabPublisher =
@@ -25,8 +25,8 @@ public final class Elastic {
   private static final ObjectMapper objectMapper = new ObjectMapper();
 
   /**
-   * Represents the possible levels of notifications for the Elastic dashboard. These levels are
-   * used to indicate the severity or type of notification.
+   * Represents the possible levels of notifications for the Elastic dashboard. These levels are used
+   * to indicate the severity or type of notification.
    */
   public enum NotificationLevel {
     /** Informational Message */
@@ -52,10 +52,11 @@ public final class Elastic {
   }
 
   /**
-   * Selects the tab of the dashboard with the given name. If no tab matches the name, this will
-   * have no effect on the widgets or tabs in view.
+   * Selects the tab of the dashboard with the given name. If no tab matches the name, this will have
+   * no effect on the widgets or tabs in view.
    *
-   * <p>If the given name is a number, Elastic will select the tab whose index equals the number
+   * <p>
+   * If the given name is a number, Elastic will select the tab whose index equals the number
    * provided.
    *
    * @param tabName the name of the tab to select
@@ -99,10 +100,11 @@ public final class Elastic {
     private double height;
 
     /**
-     * Creates a new Notification with all default parameters. This constructor is intended to be
-     * used with the chainable decorator methods
+     * Creates a new Notification with all default parameters. This constructor is intended to be used
+     * with the chainable decorator methods
      *
-     * <p>Title and description fields are empty.
+     * <p>
+     * Title and description fields are empty.
      */
     public Notification() {
       this(NotificationLevel.INFO, "", "");
@@ -118,12 +120,8 @@ public final class Elastic {
      * @param width the width of the notification display area
      * @param height the height of the notification display area, inferred if below zero
      */
-    public Notification(
-        NotificationLevel level,
-        String title,
-        String description,
-        int displayTimeMillis,
-        double width,
+    public Notification(NotificationLevel level, String title,
+        String description, int displayTimeMillis, double width,
         double height) {
       this.level = level;
       this.title = title;
@@ -140,7 +138,8 @@ public final class Elastic {
      * @param title the title text of the notification
      * @param description the descriptive text of the notification
      */
-    public Notification(NotificationLevel level, String title, String description) {
+    public Notification(NotificationLevel level, String title,
+        String description) {
       this(level, title, description, 3000, 350, -1);
     }
 
@@ -152,14 +151,14 @@ public final class Elastic {
      * @param description the descriptive text of the notification
      * @param displayTimeMillis the display time in milliseconds
      */
-    public Notification(
-        NotificationLevel level, String title, String description, int displayTimeMillis) {
+    public Notification(NotificationLevel level, String title,
+        String description, int displayTimeMillis) {
       this(level, title, description, displayTimeMillis, 350, -1);
     }
 
     /**
-     * Creates a new Notification with specified dimensions and default display time. If the height
-     * is below zero, it is automatically inferred based on screen size.
+     * Creates a new Notification with specified dimensions and default display time. If the height is
+     * below zero, it is automatically inferred based on screen size.
      *
      * @param level the level of the notification
      * @param title the title text of the notification
@@ -167,8 +166,8 @@ public final class Elastic {
      * @param width the width of the notification display area
      * @param height the height of the notification display area, inferred if below zero
      */
-    public Notification(
-        NotificationLevel level, String title, String description, double width, double height) {
+    public Notification(NotificationLevel level, String title,
+        String description, double width, double height) {
       this(level, title, description, 3000, width, height);
     }
 
@@ -267,7 +266,8 @@ public final class Elastic {
     /**
      * Updates the height of the notification
      *
-     * <p>If the height is set to -1, the height will be determined automatically by the dashboard
+     * <p>
+     * If the height is set to -1, the height will be determined automatically by the dashboard
      *
      * @param height the height to set the notification to
      */
@@ -363,7 +363,8 @@ public final class Elastic {
     /**
      * Modifies the notification's height and returns itself to allow for method chaining
      *
-     * <p>This will set the height to -1 to have it automatically determined by the dashboard
+     * <p>
+     * This will set the height to -1 to have it automatically determined by the dashboard
      *
      * @return the current notification
      */
@@ -375,10 +376,12 @@ public final class Elastic {
     /**
      * Modifies the notification to disable the auto dismiss behavior
      *
-     * <p>This sets the display time to 0 milliseconds
+     * <p>
+     * This sets the display time to 0 milliseconds
      *
-     * <p>The auto dismiss behavior can be re-enabled by setting the display time to a number
-     * greater than 0
+     * <p>
+     * The auto dismiss behavior can be re-enabled by setting the display time to a number greater than
+     * 0
      *
      * @return the current notification
      */

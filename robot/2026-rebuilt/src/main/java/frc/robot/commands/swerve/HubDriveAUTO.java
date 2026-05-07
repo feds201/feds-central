@@ -1,0 +1,135 @@
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
+package frc.robot.commands.swerve;
+
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+
+import org.littletonrobotics.junction.Logger;
+
+import com.ctre.phoenix6.swerve.SwerveRequest;
+import static edu.wpi.first.units.Units.DegreesPerSecond;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+// import frc.robot.RobotMap.SafetyMap.SwerveConstants;
+import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
+import frc.robot.utils.ShootOnTheMove;
+
+public class HubDriveAUTO extends Command {
+
+
+  public static final double MAX_SPEED = 1.0;
+  public static final double MAX_ANGULAR_RATE =
+      RotationsPerSecond.of(2).in(RadiansPerSecond);
+  // PID tuned for smoother response (lower P, small I). Units: degrees.
+  private static final PIDController hubRotPID =
+      new PIDController(8.5, 0.00, 0);
+  private CommandSwerveDrivetrain dt;
+  private Timer timer;
+
+  // Slew rate limiters to smooth joystick and rotation commands
+  private final SlewRateLimiter rotLimiter = new SlewRateLimiter(3000.0); // deg/s per second
+
+  private SwerveRequest.FieldCentric driveNormal;
+
+  /** Command used to control swerve in teleop. */
+  public HubDriveAUTO(CommandSwerveDrivetrain dt) {
+    this.dt = dt;
+
+    timer = new Timer();
+
+    driveNormal = new SwerveRequest.FieldCentric().withDeadband(MAX_SPEED * .07)
+        .withRotationalDeadband(MAX_ANGULAR_RATE * .07);
+    hubRotPID.enableContinuousInput(-180, 180);
+    hubRotPID.setTolerance(5.0);
+
+  }
+
+  // Called when the command is initially scheduled.
+  @Override
+  public void initialize() {
+    hubRotPID.reset();
+    timer.start();
+  }
+
+  public static boolean pidAtSetpoint() {
+    return hubRotPID.atSetpoint();
+  }
+
+  // Called every time the scheduler runs while the command is scheduled.
+  @Override
+  public void execute() {
+
+    SmartDashboard.putData(hubRotPID);
+    Logger.recordOutput("Robot/CTRERobotPose", dt.getState().Pose);
+    // 3. Get current robot heading
+    double robotHeading = dt.getState().Pose.getRotation().getDegrees();
+
+    // 2 Get theta to virtual goal (will be equivalent to angle to hub when stationary, but leads the
+    // target when moving)
+    Double angleToGoal = ShootOnTheMove
+        .calculateRobotHeading(dt.getState().Pose, dt.getState().Speeds)
+        .getDegrees();
+
+    // 4. Calculate PID output (Rotational Speed)
+    double rawRotationOutput = hubRotPID.calculate(robotHeading, angleToGoal);
+
+    // Clamp rotation to robot's max angular rate (convert rad/s to deg/s)
+    double maxAngularDegPerSec = Math.toDegrees(MAX_ANGULAR_RATE);
+    double clampedRotation = Math.max(-maxAngularDegPerSec,
+        Math.min(maxAngularDegPerSec, rawRotationOutput));
+
+    // Smooth rotation command (limits how fast the commanded rotational rate can change)
+    double smoothRotation = rotLimiter.calculate(clampedRotation);
+
+    // Scale joystick velocities to robot MAX_SPEED and smooth them
+
+    if (smoothRotation > 0) {
+      smoothRotation += 20;
+    } else {
+      smoothRotation -= 20;
+    }
+
+    dt.setControl(driveNormal.withVelocityX(0).withVelocityY(0)
+        .withRotationalRate(DegreesPerSecond.of(smoothRotation)));
+
+    Logger.recordOutput("angular velocity (deg/s)", smoothRotation);
+    Logger.recordOutput("angular velocity (deg/Error", hubRotPID.getError());
+
+  }
+
+  @Override
+  public void end(boolean interrupted) {
+    dt.setControl(new SwerveRequest.Idle());
+    timer.reset();
+    timer.stop();
+  }
+
+  @Override
+  public boolean isFinished() {
+    return timer.get() > 2.0;
+  }
+
+  /**
+   * Normalize a degree measure from -180 to 180 deg to a cardinal direction
+   *
+   * @param angleDegrees Angle measurement from -180 to 180 degrees
+   * @return The Closest multiple of 90 degrees
+   */
+  public static double snapToCardinal(double angleDegrees) {
+    if (angleDegrees >= -135 && angleDegrees < -45) {
+      return -90;
+    } else if (angleDegrees >= -45 && angleDegrees < 45) {
+      return 0;
+    } else if (angleDegrees >= 45 && angleDegrees < 135) {
+      return 90;
+    } else {
+      return 180;
+    }
+  }
+}
