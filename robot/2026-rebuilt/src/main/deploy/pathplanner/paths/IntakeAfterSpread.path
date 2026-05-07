@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 8.259072289156627,
+        "y": 4.067783132530121
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 7.953096385542169,
+        "y": 4.7343734939759035
+      },
+      "isLocked": false,
+      "linkedName": "FuelDisipated"
+    },
+    {
+      "anchor": {
+        "x": 6.324867469879519,
+        "y": 3.7399518072289153
+      },
+      "prevControl": {
+        "x": 6.3795060240963855,
+        "y": 5.357253012048193
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "TurnAround"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 4.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 360.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 2.0,
+    "rotation": 90.0
+  },
+  "reversed": false,
+  "folder": "GriefAuto",
+  "idealStartingState": {
+    "velocity": 3.0,
+    "rotation": -45.0
+  },
+  "useDefaultConstraints": false
+}

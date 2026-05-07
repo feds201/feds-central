@@ -24,8 +24,9 @@ import lombok.RequiredArgsConstructor;
 /**
  * Contains information for location of field element and other useful reference points.
  *
- * <p>NOTE: All constants are defined relative to the field coordinate system, and from the
- * perspective of the blue alliance station
+ * <p>
+ * NOTE: All constants are defined relative to the field coordinate system, and from the perspective
+ * of the blue alliance station
  */
 public class FieldConstants {
   public static final FieldType fieldType = FieldType.WELDED;
@@ -60,7 +61,8 @@ public class FieldConstants {
   /**
    * Officially defined and relevant horizontal lines found on the field (defined by Y-axis offset)
    *
-   * <p>NOTE: The field element start and end are always left to right from the perspective of the
+   * <p>
+   * NOTE: The field element start and end are always left to right from the perspective of the
    * alliance station
    */
   public static class LinesHorizontal {
@@ -85,22 +87,18 @@ public class FieldConstants {
 
     // Dimensions
     public static final double width = Units.inchesToMeters(47.0);
-    public static final double height =
-        Units.inchesToMeters(72.0); // includes the catcher at the top
+    public static final double height = Units.inchesToMeters(72.0); // includes the catcher at the
+                                                                    // top
     public static final double innerWidth = Units.inchesToMeters(41.7);
     public static final double innerHeight = Units.inchesToMeters(56.5);
 
     // Relevant reference points on alliance side
-    public static final Translation3d topCenterPoint =
-        new Translation3d(
-            AprilTagLayoutType.OFFICIAL.getLayout().getTagPose(26).get().getX() + width / 2.0,
-            fieldWidth / 2.0,
-            height);
-    public static final Translation3d innerCenterPoint =
-        new Translation3d(
-            AprilTagLayoutType.OFFICIAL.getLayout().getTagPose(26).get().getX() + width / 2.0,
-            fieldWidth / 2.0,
-            innerHeight);
+    public static final Translation3d topCenterPoint = new Translation3d(
+        AprilTagLayoutType.OFFICIAL.getLayout().getTagPose(26).get().getX() + width / 2.0,
+        fieldWidth / 2.0, height);
+    public static final Translation3d innerCenterPoint = new Translation3d(
+        AprilTagLayoutType.OFFICIAL.getLayout().getTagPose(26).get().getX() + width / 2.0,
+        fieldWidth / 2.0, innerHeight);
 
     public static final Translation2d nearLeftCorner =
         new Translation2d(topCenterPoint.getX() - width / 2.0, fieldWidth / 2.0 + width / 2.0);
@@ -112,11 +110,9 @@ public class FieldConstants {
         new Translation2d(topCenterPoint.getX() + width / 2.0, fieldWidth / 2.0 - width / 2.0);
 
     // Relevant reference points on the opposite side
-    public static final Translation3d oppTopCenterPoint =
-        new Translation3d(
-            AprilTagLayoutType.OFFICIAL.getLayout().getTagPose(4).get().getX() + width / 2.0,
-            fieldWidth / 2.0,
-            height);
+    public static final Translation3d oppTopCenterPoint = new Translation3d(
+        AprilTagLayoutType.OFFICIAL.getLayout().getTagPose(4).get().getX() + width / 2.0,
+        fieldWidth / 2.0, height);
     public static final Translation2d oppNearLeftCorner =
         new Translation2d(oppTopCenterPoint.getX() - width / 2.0, fieldWidth / 2.0 + width / 2.0);
     public static final Translation2d oppNearRightCorner =
@@ -247,39 +243,24 @@ public class FieldConstants {
     public static final double highRungHeight = Units.inchesToMeters(63.0);
 
     // Relevant reference points on alliance side
-    public static final Translation2d centerPoint =
-        new Translation2d(
-            frontFaceX, AprilTagLayoutType.OFFICIAL.getLayout().getTagPose(31).get().getY());
-    public static final Translation2d leftUpright =
-        new Translation2d(
-            frontFaceX,
-            (AprilTagLayoutType.OFFICIAL.getLayout().getTagPose(31).get().getY())
-                + innerOpeningWidth / 2
-                + Units.inchesToMeters(0.75));
-    public static final Translation2d rightUpright =
-        new Translation2d(
-            frontFaceX,
-            (AprilTagLayoutType.OFFICIAL.getLayout().getTagPose(31).get().getY())
-                - innerOpeningWidth / 2
-                - Units.inchesToMeters(0.75));
+    public static final Translation2d centerPoint = new Translation2d(frontFaceX,
+        AprilTagLayoutType.OFFICIAL.getLayout().getTagPose(31).get().getY());
+    public static final Translation2d leftUpright = new Translation2d(frontFaceX,
+        (AprilTagLayoutType.OFFICIAL.getLayout().getTagPose(31).get().getY())
+            + innerOpeningWidth / 2 + Units.inchesToMeters(0.75));
+    public static final Translation2d rightUpright = new Translation2d(frontFaceX,
+        (AprilTagLayoutType.OFFICIAL.getLayout().getTagPose(31).get().getY())
+            - innerOpeningWidth / 2 - Units.inchesToMeters(0.75));
 
     // Relevant reference points on opposing side
-    public static final Translation2d oppCenterPoint =
-        new Translation2d(
-            fieldLength - frontFaceX,
-            AprilTagLayoutType.OFFICIAL.getLayout().getTagPose(15).get().getY());
-    public static final Translation2d oppLeftUpright =
-        new Translation2d(
-            fieldLength - frontFaceX,
-            (AprilTagLayoutType.OFFICIAL.getLayout().getTagPose(15).get().getY())
-                + innerOpeningWidth / 2
-                + Units.inchesToMeters(0.75));
-    public static final Translation2d oppRightUpright =
-        new Translation2d(
-            fieldLength - frontFaceX,
-            (AprilTagLayoutType.OFFICIAL.getLayout().getTagPose(15).get().getY())
-                - innerOpeningWidth / 2
-                - Units.inchesToMeters(0.75));
+    public static final Translation2d oppCenterPoint = new Translation2d(fieldLength - frontFaceX,
+        AprilTagLayoutType.OFFICIAL.getLayout().getTagPose(15).get().getY());
+    public static final Translation2d oppLeftUpright = new Translation2d(fieldLength - frontFaceX,
+        (AprilTagLayoutType.OFFICIAL.getLayout().getTagPose(15).get().getY())
+            + innerOpeningWidth / 2 + Units.inchesToMeters(0.75));
+    public static final Translation2d oppRightUpright = new Translation2d(fieldLength - frontFaceX,
+        (AprilTagLayoutType.OFFICIAL.getLayout().getTagPose(15).get().getY())
+            - innerOpeningWidth / 2 - Units.inchesToMeters(0.75));
   }
 
   public static class Depot {
@@ -311,15 +292,14 @@ public class FieldConstants {
 
   @RequiredArgsConstructor
   public enum FieldType {
-    ANDYMARK("andymark"),
-    WELDED("welded");
+    ANDYMARK("andymark"), WELDED("welded");
 
-    @Getter private final String jsonFolder;
+    @Getter
+    private final String jsonFolder;
   }
 
   public enum AprilTagLayoutType {
-    OFFICIAL("2026-official"),
-    NONE("2026-none");
+    OFFICIAL("2026-official"), NONE("2026-none");
 
     private final String name;
     private volatile AprilTagFieldLayout layout;
@@ -334,20 +314,11 @@ public class FieldConstants {
         synchronized (this) {
           if (layout == null) {
             try {
-              Path p =
-                  Constants.disableHAL
-                      ? Path.of(
-                          "src",
-                          "main",
-                          "deploy",
-                          "apriltags",
-                          fieldType.getJsonFolder(),
-                          name + ".json")
-                      : Path.of(
-                          Filesystem.getDeployDirectory().getPath(),
-                          "apriltags",
-                          fieldType.getJsonFolder(),
-                          name + ".json");
+              Path p = Constants.disableHAL
+                  ? Path.of("src", "main", "deploy", "apriltags", fieldType.getJsonFolder(),
+                      name + ".json")
+                  : Path.of(Filesystem.getDeployDirectory().getPath(), "apriltags",
+                      fieldType.getJsonFolder(), name + ".json");
               layout = new AprilTagFieldLayout(p);
               layoutString = new ObjectMapper().writeValueAsString(layout);
             } catch (IOException e) {

@@ -192,7 +192,7 @@ class NeonMatchService {
         // Endgame fields
         end['ClimbStatus'] ?? 0,                              // $19
         end['Park'] ?? false,                                 // $20
-        end['FeedToHP'] ?? 0,                                 // $21
+        end['PushBallsEnd'] ?? 0,                                 // $21
         end['Passing'] ?? 0,                                  // $22
         end['robotBroken'] ?? false,                          // $23
         end['EndNeutralTrips'] ?? 0,                          // $24

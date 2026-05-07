@@ -2,6 +2,7 @@ plugins {
     id "java"
     id "edu.wpi.first.GradleRIO" version "2026.2.1"
     id "com.peterabeles.gversion" version "1.10.2"
+    id "com.diffplug.spotless" version "7.0.4"
 }
 
 // Additional maven repositories used by optional simulation vendor libraries
@@ -45,7 +46,7 @@ deploy {
                     files = project.fileTree('src/main/deploy')
                     directory = '/home/lvuser/deploy'
                     deleteOldFiles = false // Change to true to delete files on roboRIO that no
-                                           // longer exist in deploy directory of this project
+                    // longer exist in deploy directory of this project
                 }
             }
         }
@@ -117,7 +118,11 @@ project.tasks.withType(JavaExec).configureEach {
 // knows where to look for our Robot Class.
 jar {
     dependsOn configurations.runtimeClasspath
-    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+    from {
+        configurations.runtimeClasspath.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
     from('src') { into 'backup/src' }
     from('vendordeps') { into 'backup/vendordeps' }
     from('build.gradle') { into 'backup' }
@@ -154,13 +159,14 @@ task fetchModels(type: Exec) {
     description = 'Downloads 3D model assets via Git LFS'
     group = 'simulation'
     enabled = !project.hasProperty('skipFetchModels')
-    def gitRoot = { ->
+    def gitRoot = {
+        ->
         def dir = project.projectDir
         while (dir != null && !new File(dir, '.git').exists()) dir = dir.parentFile
         return dir
     }()
     def relPath = gitRoot.toPath().relativize(project.projectDir.toPath()).toString()
-                       .replace('\\', '/')
+            .replace('\\', '/')
     workingDir gitRoot
     commandLine 'git', 'lfs', 'pull', '-X', '', '-I', "${relPath}/sim_models/**"
     ignoreExitValue = true
@@ -190,3 +196,54 @@ task fetchModels(type: Exec) {
 }
 
 simulateJava.dependsOn fetchModels
+
+// Spotless is the Java formatter that decides what formatting is correct for this repo.
+// This only runs when you run the gradle commands below.
+// VS Code format-on-save is configured separately in .vscode/settings.json.
+// It points Red Hat Java at this same formatter XML, but VS Code still sends its own
+// tab/space/newline settings when it asks Java to format. Those can override the XML,
+// so .vscode/settings.json repeats those values and must stay matched to this formatter file.
+//   ./gradlew format      — auto-formats ALL FILES for this year's robot!
+//   ./gradlew formatCheck — check formatting without changing them
+spotless {
+    // When `true`, Spotless hooks up `formatCheck` to run anytime you do a build which is really annoying,
+    // so we set it to `false`. You can still run `./gradlew formatCheck` manually to check formatting.
+    enforceCheck = false
+
+    java {
+        target fileTree('.') {
+            include '**/*.java'
+            exclude '**/build/**', '**/build-*/**', '**/bin/**'
+        }
+        toggleOffOn() // skips formatting any code between `// @formatter:off` and `// @formatter:on` comments
+        eclipse().configFile('eclipse-java-google-style.xml') // same Eclipse formatter XML used by VS Code
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+
+    // Build files
+    groovyGradle {
+        target fileTree('.') {
+            include '**/*.gradle'
+            exclude '**/build/**', '**/build-*/**'
+        }
+        greclipse()
+        leadingTabsToSpaces(4)
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+
+    // Markdown and .gitignore
+    format 'misc', {
+        target fileTree('.') {
+            include '**/*.md', '**/.gitignore'
+            exclude '**/build/**', '**/build-*/**'
+        }
+        trimTrailingWhitespace()
+        leadingTabsToSpaces(2)
+        endWithNewline()
+    }
+}
+task format { dependsOn spotlessApply }
+task formatCheck { dependsOn spotlessCheck }

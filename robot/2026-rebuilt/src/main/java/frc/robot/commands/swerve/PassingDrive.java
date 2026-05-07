@@ -5,7 +5,6 @@
 package frc.robot.commands.swerve;
 
 import static edu.wpi.first.units.Units.DegreesPerSecond;
-import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
@@ -23,12 +22,15 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.RobotMap;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
-import frc.robot.subsystems.swerve.generated.TunerConstants;
 import org.littletonrobotics.junction.Logger;
 
-/* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
+/*
+ * You should consider using the more terse Command factories API instead
+ * https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#
+ * defining-commands
+ */
 public class PassingDrive extends Command {
-  private static final double MAX_SPEED = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+  private static final double MAX_SPEED = 2.5;
   private static final double MAX_ANGULAR_RATE = RotationsPerSecond.of(2).in(RadiansPerSecond);
   private static Translation2d aimLeft = RobotMap.ShooterConstants.passingLeft;
   private static Translation2d aimRight = RobotMap.ShooterConstants.passingRight;
@@ -38,7 +40,7 @@ public class PassingDrive extends Command {
   private static boolean isFlipped = false;
 
   private static final PIDController passRotPID = new PIDController(6.7, 0, .2);
- private SwerveRequest.FieldCentric driveNormal;
+  private SwerveRequest.FieldCentric driveNormal;
 
   /** Command used to control swerve in teleop. */
   public PassingDrive(CommandSwerveDrivetrain dt, CommandXboxController controller) {
@@ -46,16 +48,15 @@ public class PassingDrive extends Command {
     this.controller = controller;
 
 
-    driveNormal = new SwerveRequest.FieldCentric()
-    .withDeadband(MAX_SPEED*.07)
-    .withRotationalDeadband(MAX_ANGULAR_RATE*.07);
+    driveNormal = new SwerveRequest.FieldCentric().withDeadband(MAX_SPEED * .07)
+        .withRotationalDeadband(MAX_ANGULAR_RATE * .07);
     passRotPID.enableContinuousInput(-180, 180);
     passRotPID.setTolerance(10);
-    
+
     addRequirements(this.dt);
   }
 
-  public static boolean pidAtSetpoint(){
+  public static boolean pidAtSetpoint() {
     return passRotPID.atSetpoint();
   }
 
@@ -63,36 +64,36 @@ public class PassingDrive extends Command {
   @Override
   public void initialize() {
     if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red && !isFlipped) {
-                aimLeft = FlippingUtil.flipFieldPosition(aimLeft);
-                aimRight = FlippingUtil.flipFieldPosition(aimRight);
-                isFlipped = true;
-            }
-    
+      aimLeft = FlippingUtil.flipFieldPosition(aimLeft);
+      aimRight = FlippingUtil.flipFieldPosition(aimRight);
+      isFlipped = true;
+    }
+
     aimPoints = List.of(aimLeft, aimRight);
     passRotPID.reset();
   }
 
- 
+
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     Translation2d robotPose = dt.getState().Pose.getTranslation();
     Translation2d aimLoc = robotPose.nearest(aimPoints);
-    Logger.recordOutput("Robot/distToPassLoc", robotPose.getDistance(aimLoc)); 
+    Logger.recordOutput("Robot/distToPassLoc", robotPose.getDistance(aimLoc));
 
-    double angleToTarget = Math.toDegrees(Math.atan2(aimLoc.getY() - robotPose.getY(), aimLoc.getX() - robotPose.getX()));
+    double angleToTarget = Math
+        .toDegrees(Math.atan2(aimLoc.getY() - robotPose.getY(), aimLoc.getX() - robotPose.getX()));
     double robotHeading = dt.getState().Pose.getRotation().getDegrees();
-    double rotRate = passRotPID.calculate(robotHeading,angleToTarget);
-    if(rotRate > 0){
-            rotRate+= 15;
-          } else {
-            rotRate -= 15;
-          }
-    dt.setControl(driveNormal
-              .withVelocityX(-controller.getLeftY() * MAX_SPEED)
-              .withVelocityY(-controller.getLeftX() * MAX_SPEED)
-              .withRotationalRate(DegreesPerSecond.of(rotRate)));
+    double rotRate = passRotPID.calculate(robotHeading, angleToTarget);
+    if (rotRate > 0) {
+      rotRate += 15;
+    } else {
+      rotRate -= 15;
+    }
+    dt.setControl(driveNormal.withVelocityX(-controller.getLeftY() * MAX_SPEED)
+        .withVelocityY(-controller.getLeftX() * MAX_SPEED)
+        .withRotationalRate(DegreesPerSecond.of(rotRate)));
   }
 
   // Called once the command ends or is interrupted.
