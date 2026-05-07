@@ -10,6 +10,7 @@ Run from the `robot/2026-rebuilt/` directory.
 |---|---|
 | `./gradlew build` | Compile and run all tests |
 | `./gradlew test` | Run tests only |
+| `./gradlew format` | Format this year's robot code using [eclipse-java-google-style.xml](eclipse-java-google-style.xml). VS Code format-on-save uses the same config. |
 | `./gradlew deploy` | Deploy robot code to the roboRIO |
 | `./gradlew simulateJava` | Run robot code in simulation (opens Glass + Driver Station). Automatically downloads 3D models via Git LFS. |
 | `./gradlew simulateJava -PskipFetchModels` | Run simulation without downloading 3D models |
