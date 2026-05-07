@@ -1,6 +1,6 @@
 # Viewer Module
 
-Business logic for synchronized 1-, 2-, or 3-source match playback. The three classes in this directory (`Timeline`, `ScrubController`, `DrawingController`) are pure logic with no Flutter widget dependencies, consumed by `VideoViewer` and its child widgets.
+Business logic for dual-video synchronized match playback. The three classes in this directory (`SyncEngine`, `ScrubController`, `DrawingController`) are pure logic with no Flutter widget dependencies, consumed by `VideoViewer` and its child widgets.
 
 ## Expected UX Behavior
 
@@ -161,59 +161,25 @@ The play/pause button has a subtle lighter gray background to make it visually d
 
 **Why:** Play/pause is the most frequently used control. A subtle highlight makes it faster to locate, especially in a column of same-colored icons.
 
-### Sidebar Mark Start Button
-
-A stopwatch button (`Icons.timer`) sits directly below Play/Pause. The user taps it to mark the moment the match begins relative to the video. From then on, the button face displays elapsed time formatted `M:SS.t` (e.g. `0:05.3`, `2:14.7`). Tapping again re-marks at the new current position; the timer resets to `0:00.0`.
-
-**Why:** Recordings start before the actual match (random pre-match handling time on each phone). Without an anchor, scouts have to do mental math to translate "I want to look at 30 seconds into the match" into video timestamps. The mark gives them a match-relative timeline overlay.
-
-The button's full row is the tap target (not just the icon), matching every other sidebar button. If the user scrubs back before the marked position, the displayed elapsed clamps to `0:00.0` (not negative). The mark survives within a single video viewing session and resets when leaving the screen.
-
-**The displayed elapsed comes from the unified Timeline**, so it works correctly in single, dual, and triple-video modes — including Period 3 (when only the latest-ending video is still playing).
-
 ## How to Use This Module
 
-### Timeline
+### SyncEngine
 
-`Timeline` is the unified master clock for synchronized playback of 1, 2, or 3 video sources. Every UI consumer of position/duration/time MUST go through this class — the rest of the app does no per-player time math.
+`SyncEngine` manages synchronized playback of two match recordings (red alliance and blue alliance) that started recording at different times.
 
-**The unified timeline.** All sources are placed on a single timeline whose origin is the earliest recording start across all provided sources. Each source has a non-negative `startOffset` (delay from origin). The unified duration is the union of all source windows: `max over slots of (startOffset + duration)`.
+**Earlier/later model.** One recording always started before the other. `SyncEngine.fromRecordings()` compares the two `Recording.recordingStartTime` values, designates the earlier one as the primary clock, and computes the `syncOffset` (absolute difference between start times). The later player's position is always derived: `laterPos = earlierPos - syncOffset`. The `earlierIsRed` flag tracks which alliance is which, and `redPlayer`/`bluePlayer` getters abstract over the earlier/later assignment so callers can address players by alliance color.
 
-In dual mode this gives three periods:
-- **Period 1**: only the earliest source has frames (between the two start anchors)
-- **Period 2**: all sources are within their own windows (overlap region)
-- **Period 3**: only the latest-ending source has frames (after the others end)
+**Sync offset and countdown.** When playback starts from a position before the offset (i.e., the earlier video is at a point where the later video hadn't started recording yet), `laterWaiting` is set to `true` and the later pane shows a countdown overlay. The countdown is driven by the earlier player's position stream (not a wall-clock timer), so it stays accurate even if the video buffers. When the earlier player's position reaches the offset, `SyncEngine` automatically seeks and plays the later player.
 
-In single mode there is one slot at offset 0 — the unified position and duration pass through to that one source. In triple mode the same union applies across all three.
+**Position monitoring.** Call `startPositionMonitoring(onStateChanged)` after creating the engine. This subscribes to the earlier player's position stream and manages the countdown/trigger lifecycle. The `onStateChanged` callback lets the UI rebuild when `laterWaiting` or `countdownRemaining` change.
 
-**Clock-slot handoff (the Period-3 fix).** `unifiedPosition` is computed from whichever active source(s) are currently in their windows. When the source driving the master clock ends, the next still-running source takes over driving the clock and `unifiedPosition` continues advancing. A monotonic floor (no backward sub-frame jumps) prevents glitches at the handoff. Without this, the scrub bar handle would freeze at `earlierDuration` during Period 3 even though playback continues — which was the actual bug before this refactor.
+**Intended position tracking.** `_intendedEarlierPosition` tracks where the earlier player *should* be, separately from `player.state.position` (which updates asynchronously via streams and may lag behind after a `seek()`). Every code path that changes position (`seekToEarlierPosition`, `restartBoth`, `updateIntendedPosition`) updates this value. The UI reads it via `intendedEarlierPosition` as the authoritative position for scrub offset calculations.
 
-**Public API.**
-
-Master clock observables (the single source of truth for ALL position/duration math in the app):
-- `Duration get unifiedPosition` — never freezes; works in all 3 modes, all 3 periods
-- `Duration get unifiedDuration` — spans the union of all sources (including the full player)
-- `Stream<Duration> get unifiedPositionStream` — fires when ANY source advances; emits unified positions
-- `Stream<Duration> get unifiedDurationStream` — fires when any source's duration becomes known
-- `bool get isPlaying`, `Stream<bool> get isPlayingStream`
-
-Coordinated commands:
-- `Future<void> play()` — plays only slots whose unified-time window contains `unifiedPosition`. Out-of-window slots stay paused; the position monitor wakes them when unified time crosses their start, and pauses them when it exits their end.
-- `Future<void> pause()` / `Future<void> restart()` / `Future<void> seek(Duration unified)` — seek clamps each slot independently and pauses out-of-window slots.
-
-Per-player accessors (the only intentional per-pane API surface — see "Per-player exception list" below):
-- `VideoController? controllerFor(PlayerRole role)` — for rendering one pane
-- `Future<void> setVolumeFor(PlayerRole role, double volume)` — for mute routing
-- `bool isWaitingFor(PlayerRole role)` — pre-start chrome ("Starting in X")
-- `bool hasEnded(PlayerRole role)` / `Duration endedAgoFor(PlayerRole role)` — post-end dimming
-- `Duration countdownFor(PlayerRole role)` — countdown text content
-- `int? widthFor(PlayerRole role)` / `int? heightFor(PlayerRole role)` / `Stream<PlayerRole> dimensionsStream` — auto-rotate inputs
-
-**Per-player exception list.** These accessors are parameterized by role, but the data they return is derived from the unified clock (or is intrinsically per-source identity like rendering and audio). The viewer NEVER reads `Player.state.position` or computes `laterPos = earlierPos - syncOffset` directly. Any future code that thinks it needs raw per-player position must add a method to `Timeline` that answers the actual question.
-
-**Intended position override during scrub.** During a paused-scrub seek, `seek()` stores `_intendedUnifiedPosition` and returns it from `unifiedPosition` until a real source position event arrives that matches it. This generalizes media_kit's "stale position after seek" semantics correctly across all modes.
-
-**TimelineSource abstraction.** `Timeline` consumes a narrow `TimelineSource` interface from each underlying video source. Production wraps `Player + VideoController` in a private `_PlayerSource` adapter via `Timeline.fromRecordings()`. Tests pass `FakeSource` implementations via `Timeline.forTesting()` to drive position/duration/completed streams and assert on play/pause/seek call recordings — no real media_kit Player needed.
+**Key operations:**
+- `startSyncedPlayback()` -- starts both players from the current intended position, handling the offset logic (both play immediately if past the offset, otherwise earlier plays and later waits).
+- `pauseBoth()` -- pauses both players.
+- `seekToEarlierPosition(duration)` -- seeks both players, clamping to valid ranges. If the target is before the offset, puts the later player in waiting state.
+- `restartBoth()` -- pauses both, seeks both to zero, resets waiting/countdown state.
 
 ### ScrubController
 
@@ -239,25 +205,17 @@ Per-player accessors (the only intentional per-pane API surface — see "Per-pla
 
 ## Known Issues / Shortcomings
 
-- **Per-source start offsets cannot be manually adjusted.** The offsets are computed automatically from `recordingStartTime` values. There is no UI to fine-tune them if a phone's clock was off.
+- **Sync offset cannot be manually adjusted.** The offset is computed automatically from recording timestamps. There is no UI to fine-tune the offset.
 
-- **No playback speed control.** Playback is always at 1x speed. Slow-motion review would require exposing `setRate` through `TimelineSource` and forwarding to media_kit.
+- **No playback speed control.** Playback is always at 1x speed. Slow-motion review would require `player.setRate()`.
 
 - **Chrome overlay positioning on view mode switch.** Chrome reads pane positions via GlobalKey.findRenderObject. On view mode switch, the old pane's RenderBox may be gone before the new one is laid out, causing a brief frame where chrome can't position itself. Currently mitigated with addPostFrameCallback, which triggers an extra rebuild.
 
-- **Mark Start does not persist.** The marked match-start position is in-memory only and resets when leaving the viewer. No disk persistence.
-
 ## Technical Details
 
-- **Single source of truth via `Timeline`.** Every position/duration/time math read in the app routes through `Timeline.unifiedPosition`/`unifiedDuration`. The `VideoViewer` holds `_position` and `_duration` only as `setState` mirrors of the Timeline streams, never reads from a `Player` directly. The viewer has zero `if (_syncEngine != null)` branches — single, dual, and triple modes all use the same code path.
+- **Intended position tracking, not `player.state.position`.** `SyncEngine._intendedEarlierPosition` is the single source of truth for the earlier player's position. `player.state.position` is updated asynchronously via streams and may reflect stale values after a `seek()`. All sync decisions (scrub offset calculation, countdown, synced seeking) use `_intendedEarlierPosition`. The position stream still feeds the UI for display during normal playback, but is suppressed during scrub operations.
 
-- **Intended position override during scrub.** `Timeline._intendedUnifiedPosition` overrides `unifiedPosition` between a `seek()` call and the moment a real source position event catches up to the target (within 250ms tolerance). Without this, media_kit's stale `position` events from before the seek would briefly flicker the UI back to the pre-seek position.
-
-- **Monotonic floor on `unifiedPosition`.** When position events arrive from any source, `Timeline` only accepts forward (or equal) updates. Backward jumps are rejected as stale unless they go through `seek()` (which sets `_intendedUnifiedPosition` first and bypasses this check). This prevents sub-frame regressions during the Period 2 → Period 3 clock-slot handoff.
-
-- **Window-gated `play()`.** `Timeline.play()` only starts slots whose unified-time window contains `unifiedPosition`. A waiting slot (Period 1 from its perspective) stays paused; the internal `_maybeWakeOrPark` watches the unified clock and wakes the slot when its anchor is crossed. An ended slot (Period 3 from its perspective) stays paused.
-
-- **`completedStream` triggers slot park.** When a source emits `completed`, `Timeline` pauses it but does NOT pause the timeline as a whole. Other still-running sources keep emitting position events that drive `unifiedPosition` forward. This is the heart of the Period-3 fix.
+- **Countdown driven by position stream, not wall clock.** `startPositionMonitoring` subscribes to `earlierPlayer.stream.position`. If the video buffers, the countdown pauses too (because no new position events arrive). A `DateTime.now()`-based timer would keep counting and trigger the later player too early.
 
 - **`.whenComplete()` not `.then()` for seek completion.** In `ScrubController._dispatchSeek`, the seek future's completion is handled with `.whenComplete()`. media_kit's `seek()` can throw during rapid seeking. `.then()` only fires on success, which would leave `_seekInFlight = true` permanently and block all subsequent seeks. `.whenComplete()` fires on both success and error.
 
@@ -265,10 +223,8 @@ Per-player accessors (the only intentional per-pane API surface — see "Per-pla
 
 - **Opacity via `Paint.color` alpha, not `Opacity` widget.** An `Opacity` widget would force Flutter to create an offscreen compositing layer, which is expensive for a full-screen overlay that repaints frequently during active drawing.
 
-- **Position stream suppression during scrub.** The `unifiedPositionStream` listener in `VideoViewer` is guarded by `!_isScrubBarDragging && !_isFingerScrubbing`. Without this, the stream would overwrite the UI position set by scrub logic with the player's actual (lagging) decoded position, causing flicker.
+- **Position stream suppression during scrub.** The position stream listener in `VideoViewer` is guarded by `!_isScrubBarDragging && !_isFingerScrubbing`. Without this, the stream would overwrite the UI position set by scrub logic with the player's actual (lagging) decoded position, causing flicker.
 
 - **Cancel-and-replace naturally adapts to decoder speed.** On fast hardware, seeks fire rapidly. On slow hardware, intermediate positions are skipped but the final position is always reached. The UI stays responsive because `setState` updates the displayed position immediately, independently of the actual seek.
 
 - **Landscape lock and immersive mode.** `VideoViewer` locks to landscape orientation and enables `SystemUiMode.immersiveSticky` on init, restoring default orientation and `edgeToEdge` mode on dispose. `WakelockPlus` keeps the screen on during the entire viewer session.
-
-- **Shared time formatting.** `lib/util/format.dart` exposes `formatStopwatch(Duration) → "M:SS.t"` (truncates tenths, clamps negatives to `0:00.0`). Used by the scrub bar's current/total labels, the Mark Start stopwatch, and the per-pane countdown / video-ended overlays — single source of truth for time display formatting.

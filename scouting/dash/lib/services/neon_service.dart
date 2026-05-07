@@ -24,14 +24,16 @@ class NeonService {
 
     print('[Neon] POST https://$host/sql — $sql');
 
-    final response = await http.post(
+    final response = await http
+        .post(
       Uri.parse('https://$host/sql'),
       headers: {
         'Content-Type': 'application/json',
         'Neon-Connection-String': connectionString.trim(),
       },
       body: jsonEncode({'query': sql, 'params': params}),
-    );
+    )
+        .timeout(const Duration(seconds: 20));
 
     print('[Neon] Status: ${response.statusCode}');
 

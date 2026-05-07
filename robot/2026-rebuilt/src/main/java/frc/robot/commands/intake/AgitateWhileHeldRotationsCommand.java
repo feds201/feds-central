@@ -6,43 +6,41 @@ import frc.robot.subsystems.intake.IntakeSubsystem;
 
 
 public class AgitateWhileHeldRotationsCommand extends Command {
-  private enum Phase {
-    EXTENDING, RETRACTING
-  }
+	private enum Phase { EXTENDING, RETRACTING }
+	private static final double HOME_ROTATIONS = 0.0;
 
-  private static final double HOME_ROTATIONS = 0.0;
+	private final IntakeSubsystem intake;
+	private final double rotationsPerPulse;
+	private final double retractDwellSeconds;
 
-  private final IntakeSubsystem intake;
-  private final double rotationsPerPulse;
-  private final double retractDwellSeconds;
-
-  private Phase phase;
-  private double targetPosition;
-  private boolean moveAwayFromHome;
-  private double moveDirection;
-  private final Timer dwellTimer = new Timer();
+	private Phase phase;
+	private double targetPosition;
+	private boolean moveAwayFromHome;
+	private double moveDirection;
+	private final Timer dwellTimer = new Timer();
 
 
-  public AgitateWhileHeldRotationsCommand(IntakeSubsystem intake,
-      double rotationsPerPulse, double retractDwellSeconds) {
-    this.intake = intake;
-    this.rotationsPerPulse = rotationsPerPulse;
-    this.retractDwellSeconds = retractDwellSeconds;
-    addRequirements(intake); // properly require the subsystem
-  }
+	public AgitateWhileHeldRotationsCommand(IntakeSubsystem intake,
+	                                        double rotationsPerPulse,
+	                                        double retractDwellSeconds) {
+		this.intake = intake;
+		this.rotationsPerPulse = rotationsPerPulse;
+		this.retractDwellSeconds = retractDwellSeconds;
+		addRequirements(intake); // properly require the subsystem
+	}
 
-  /** Convenience: 0.3 s retract dwell by default. */
-  /*
-   * public AgitateWhileHeldRotationsCommand(IntakeSubsystem intake, double rotationsPerPulse) {
-   * this(intake, rotationsPerPulse, 0.3); }
-   */
-  @Override
-  public void initialize() {
-    moveAwayFromHome = true;
-    startExtend();
-  }
+	/** Convenience: 0.3 s retract dwell by default. */
+  /* 	public AgitateWhileHeldRotationsCommand(IntakeSubsystem intake, double rotationsPerPulse) {
+		this(intake, rotationsPerPulse, 0.3);
+	}
+*/
+	@Override
+	public void initialize() {
+		moveAwayFromHome = true;
+		startExtend();
+	}
 
-  @Override
+	@Override
 	public void execute() {
 		switch (phase) {
 			case EXTENDING -> {
@@ -68,29 +66,29 @@ public class AgitateWhileHeldRotationsCommand extends Command {
 		}
 	}
 
-  @Override
-  public void end(boolean interrupted) {
-    intake.stopRoller();
-    intake.setState(IntakeSubsystem.IntakeState.DEFAULT);
-    dwellTimer.stop();
-  }
+	@Override
+	public void end(boolean interrupted) {
+		intake.stopRoller();
+		intake.setState(IntakeSubsystem.IntakeState.DEFAULT);
+		dwellTimer.stop();
+	}
 
-  @Override
-  public boolean isFinished() {
-    return false; // runs until canceled
-  }
+	@Override
+	public boolean isFinished() {
+		return false; // runs until canceled
+	}
 
-  private void startExtend() {
-    intake.setState(IntakeSubsystem.IntakeState.EXTENDED);
-    double currentPosition = intake.getRollerPosition();
-    targetPosition =
-        moveAwayFromHome ? Math.abs(rotationsPerPulse) : HOME_ROTATIONS;
-    moveDirection = Math.signum(targetPosition - currentPosition);
-    if (moveDirection >= 0) {
-      intake.startRoller();
-    } else {
-      intake.setRollerState(IntakeSubsystem.RollerState.REVERSE);
-    }
-    phase = Phase.EXTENDING;
-  }
+	private void startExtend() {
+		intake.setState(IntakeSubsystem.IntakeState.EXTENDED);
+		double currentPosition = intake.getRollerPosition();
+		targetPosition = moveAwayFromHome ? Math.abs(rotationsPerPulse) : HOME_ROTATIONS;
+		moveDirection = Math.signum(targetPosition - currentPosition);
+		if (moveDirection >= 0) {
+			intake.startRoller();
+		} else {
+			intake.setRollerState(IntakeSubsystem.RollerState.REVERSE);
+		}
+		phase = Phase.EXTENDING;
+	}
 }
+

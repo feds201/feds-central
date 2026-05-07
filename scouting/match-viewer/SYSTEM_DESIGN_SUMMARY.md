@@ -8,7 +8,7 @@ Offline-first Android tablet app for FRC Team 201. Students record matches on ph
 
 **Platform:** Android tablet, sideloaded. Target SDK: API 35 (do NOT target API 36+ — breaks forced-landscape orientation on tablets).
 
-**Scope:** Core ingest + dual/triple-video viewer + drawing overlay + import integrity check.
+**Scope:** P0 (core) + P1 (drawing, integrity check) from SPECS.md. P2 items deferred.
 
 ## 2. Architecture
 
@@ -16,7 +16,7 @@ Offline-first Android tablet app for FRC Team 201. Students record matches on ph
 
 ```
 UI Layer          — Screens, Tabs, Widgets (Material 3)
-Business Logic    — Import Pipeline, Match Suggestion, Timeline (unified clock)
+Business Logic    — Import Pipeline, Match Suggestion, Sync Engine
 Data Layer        — DataStore (in-memory + JSON), TBA API, Drive Access
 Platform Layer    — Video Metadata Channel (Kotlin), SAF, media_kit
 ```
@@ -145,32 +145,26 @@ All recordings in `{externalStorageDir}/recordings/`. Filename: `{uuid}{ext}`. P
 
 ## 7. Video Viewer
 
-### Unified Timeline (1, 2, or 3 sources)
+### Dual-Player Sync
 
-A single `Timeline` class is the master clock for synchronized playback. Accepts 1, 2, or 3 sources uniformly (red phone, blue phone, optional full-field cam). Every UI consumer of position/duration goes through `unifiedPosition` / `unifiedDuration` — no per-source time math anywhere outside `Timeline`.
+Two `media_kit` Player instances: "earlier" and "later" (by `recordingStartTime`). Sync offset = difference in recording start times. Earlier player is primary clock; later player tracks `earlierPos - syncOffset`.
 
-All sources are placed on a single timeline whose origin is the earliest `recordingStartTime`. Each source has a non-negative `startOffset`. Unified duration = `max over slots of (startOffset + duration)` — spans the union of all sources.
+**Unified timeline:** Scrub bar spans `min(start1, start2)` to `max(end1, end2)`. Panes show countdown/ended messages when outside their video's range.
 
-**Three periods (dual mode):** Period 1 (only earlier playing), Period 2 (both playing), Period 3 (only later-ending playing). The unified clock continuously advances across all three because Timeline rotates which source drives it. When the current driver ends, the next still-running source takes over (with a monotonic floor preventing sub-frame backwards glitches at the handoff). This fixes a pre-existing bug where the scrub bar handle and current-time label would freeze during Period 3.
-
-**Triple mode** (red+blue+full) extends the same model — unified duration spans the union of all three sources' windows, including cases where full started earlier than the alliance phones or ended later.
-
-### Sidebar Mark Start
-
-Stopwatch button below Play/Pause. Tap to anchor a "match started" position on the unified timeline. Button face then displays elapsed time (`M:SS.t`) live during playback. Re-tap re-marks. In-memory only.
+**Single-video mode:** One player when only one recording exists or user selects red/blue-only view.
 
 ### Non-Linear Scrubbing
 
-- Touch down on video area = pause + anchor at `Timeline.unifiedPosition`.
+- Touch down on video = pause + anchor.
 - Horizontal drag = non-linear scrub (power curve: `normalized^2.5 * maxRange`).
 - Seek throttling: cancel-and-replace pattern (one seek in-flight, latest pending dispatched on completion).
-- `unifiedPositionStream` suppressed during scrub to prevent flicker.
+- Position stream suppressed during scrub to prevent flicker.
 
 ### Other Viewer Features
 
-- **Audio:** 4-state toggle: muted / full audio / red audio / blue audio.
-- **View modes:** Both sides / full only / red only / blue only.
-- **Layout:** Forced landscape, immersive sticky. Control sidebar (~72px compact, ~160px expanded) with playback, view, and drawing controls. Time display via shared `formatStopwatch(Duration) → "M:SS.t"` (used by scrub bar current/total, Mark Start stopwatch, and per-pane countdown/ended overlays).
+- **Audio:** 3-state toggle: muted / red audio / blue audio.
+- **View modes:** Both sides / red only / blue only.
+- **Layout:** Forced landscape, immersive sticky. Control sidebar (~72px) with playback, view, and drawing controls.
 - **Edit metadata:** Per-pane pencil icon opens bottom sheet to edit match assignment, alliance side, teams.
 - **Lifecycle:** Lock landscape + immersive + wakelock on entry; restore all on exit.
 

@@ -91,7 +91,7 @@ class _ComparisonScreenState extends State<ComparisonScreen> {
               height: 400,
               child: BotPathDrawer(
                 config: config,
-                onSave: (String? pathData, String? suggestedName) {
+                onSave: (String? pathData) {
                   Navigator.of(ctx).pop(pathData);
                 },
               ),
@@ -138,15 +138,7 @@ class _ComparisonScreenState extends State<ComparisonScreen> {
 
   Future<void> _refresh() async {
     final svc = context.read<DataService>();
-    final messenger = ScaffoldMessenger.of(context);
-    await svc.fetchAll(onProgress: (p) {
-      messenger.removeCurrentSnackBar();
-      messenger.showSnackBar(SnackBar(
-        content: Text(p.summary),
-        duration: const Duration(seconds: 30),
-      ));
-    });
-    if (mounted) messenger.removeCurrentSnackBar();
+    await svc.fetchAll();
     if (mounted && svc.scoutingByTeam.isNotEmpty) {
       await LocalPrefs.saveData(
         eventKey: svc.eventKey,

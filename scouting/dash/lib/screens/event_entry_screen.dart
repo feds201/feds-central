@@ -105,18 +105,10 @@ class _EventEntryScreenState extends State<EventEntryScreen>
   Future<void> _loadCsv() async {
     if (_csvContent == null) return;
     final svc = context.read<DataService>();
-    final messenger = ScaffoldMessenger.of(context);
     _configureSvc(svc);
 
     svc.loadFromCsv(_csvContent!);
-    await svc.fetchExternalOnly(onProgress: (p) {
-      messenger.removeCurrentSnackBar();
-      messenger.showSnackBar(SnackBar(
-        content: Text(p.summary),
-        duration: const Duration(seconds: 30),
-      ));
-    });
-    if (mounted) messenger.removeCurrentSnackBar();
+    await svc.fetchExternalOnly();
 
     if (!mounted) return;
     if (svc.scoutingByTeam.isEmpty) {
@@ -144,16 +136,8 @@ class _EventEntryScreenState extends State<EventEntryScreen>
     }
 
     final svc = context.read<DataService>();
-    final messenger = ScaffoldMessenger.of(context);
     _configureSvc(svc);
-    await svc.fetchAll(onProgress: (p) {
-      messenger.removeCurrentSnackBar();
-      messenger.showSnackBar(SnackBar(
-        content: Text(p.summary),
-        duration: const Duration(seconds: 30),
-      ));
-    });
-    if (mounted) messenger.removeCurrentSnackBar();
+    await svc.fetchAll();
 
     if (!mounted) return;
     if (svc.error != null && svc.scoutingByTeam.isEmpty) {

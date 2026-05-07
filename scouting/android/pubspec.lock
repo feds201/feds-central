@@ -76,9 +76,11 @@ packages:
   bot_path_drawer:
     dependency: "direct main"
     description:
-      path: "../packages/bot_path_drawer"
-      relative: true
-    source: path
+      path: "scouting/packages/bot_path_drawer"
+      ref: main
+      resolved-ref: "3e8ac1d8b3ecee011133504e4731b7c35e790020"
+      url: "https://github.com/feds201/feds-central.git"
+    source: git
     version: "0.1.0"
   buffer:
     dependency: transitive

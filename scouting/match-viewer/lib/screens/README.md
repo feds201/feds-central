@@ -53,26 +53,24 @@ Search state is owned entirely by `_MainScreenState`: the `TextEditingController
 1. Lock orientation to landscape via `SystemChrome.setPreferredOrientations`.
 2. Enter immersive sticky mode via `SystemChrome.setEnabledSystemUIMode`.
 3. Enable wakelock via `WakelockPlus.enable()`.
-4. Initialize `Player` + `VideoController` instances (media_kit) for red, blue, and/or full recordings (whichever exist). All start paused and muted.
-5. Construct a single `Timeline` from whichever recordings are present (1, 2, or 3 sources, no conditional). Timeline owns disposal of the players.
-6. Subscribe to `Timeline.unifiedPositionStream`, `unifiedDurationStream`, `isPlayingStream`, and `dimensionsStream`. Call `Timeline.play()` to autoplay.
+4. Initialize `Player` instances (media_kit) for red and/or blue recordings. Both start paused and muted.
+5. If dual video, create a `SyncEngine` from both recordings and start position monitoring.
+6. Subscribe to position, duration, and playing streams from the primary (earlier) player.
 
 **On exit (`dispose`):**
 1. Cancel all stream subscriptions.
-2. Dispose Timeline (which disposes the players) and DrawingController.
+2. Dispose SyncEngine, players, and DrawingController.
 3. Restore orientation to all directions, UI mode to edge-to-edge, and disable wakelock.
 
-**Playback:** Play/pause/seek/restart all go through `Timeline.play()`/`pause()`/`seek()`/`restart()`. There is NO branching on view mode or source count — the Timeline accepts 1, 2, or 3 sources uniformly and plays/pauses/seeks the right ones based on each slot's window.
+**Playback:** Play/pause goes through `SyncEngine.startSyncedPlayback()` / `pauseBoth()` for dual video, or directly on the single player. The sync engine handles the timing offset between the two recordings.
 
 **Scrubbing:** Two scrub mechanisms exist:
-- **ScrubberBar:** A vertical slider bar between the video area and the control sidebar. Drag suppresses `unifiedPositionStream` updates via `_isScrubBarDragging`. Current and total time labels both use `formatStopwatch` (`M:SS.t` format with tenths).
-- **Touch scrub on the video area:** Pan gesture on the video itself. Pauses playback on start (via `Timeline.pause()`), computes a seek offset using `ScrubController.computeScrubOffsetMs` (exponential curve based on horizontal delta), and dispatches throttled seeks via `Timeline.seek()`. The scrub base position reads from `Timeline.unifiedPosition` — correct in all three periods, including Period 3 when only the latest-ending source is still playing.
+- **ScrubberBar:** A bottom slider bar. Drag suppresses position stream updates via `_isScrubBarDragging`.
+- **Touch scrub on VideoPane:** Pan gesture on the video itself. Pauses playback on start, computes a seek offset using `ScrubController.computeScrubOffsetMs` (exponential curve based on horizontal delta), and throttles seeks via `ScrubController.enqueueSeek`.
 
-**Mark Start:** A stopwatch button in the sidebar (below Play/Pause) lets the user anchor a "match start" position on the unified timeline. After tap, the button face shows elapsed time `M:SS.t` derived from `unifiedPosition − markedStartPosition`, clamped to `0:00.0` if the user scrubs back before the mark. Re-tap re-marks at the new position. The mark is in-memory only and resets when leaving the viewer.
+**Drawing:** Available only when paused. The ControlSidebar shows draw/undo/redo/clear buttons. `DrawingController` manages stroke state with undo/redo stacks. Strokes render at full opacity when paused, half opacity during playback. `DrawingOverlay` captures raw pointer events; `StrokePainter` renders bezier-smoothed strokes. Drawing mode auto-exits when playback resumes.
 
-**Drawing:** Available only when paused. The ControlSidebar shows draw/undo/redo/clear buttons. `DrawingController` manages stroke state with undo/redo stacks. Strokes render at full opacity when paused, half opacity during playback. Drawing mode auto-exits when playback resumes.
-
-**Audio:** Cycles through muted -> full (if exists) -> red audio -> blue audio. Audio follows the logical alliance, not the visual position (swapping sides does not swap audio). Volume is routed via `Timeline.setVolumeFor(role, volume)`.
+**Audio:** Cycles through muted -> red audio -> blue audio. Audio follows the logical alliance, not the visual position (swapping sides does not swap audio).
 
 ### Sync Page Tabs
 
@@ -188,7 +186,7 @@ All search state lives in `_MainScreenState`:
 
 **Orientation and UI:** On enter, the viewer forces landscape orientation and immersive sticky mode. On dispose, it restores all orientations and edge-to-edge UI. The wakelock prevents the screen from sleeping during review.
 
-**Unified timeline (1, 2, or 3 sources):** `Timeline` places all available sources on a single master timeline whose origin is the earliest recording start. Each source has a non-negative `startOffset`. `unifiedPosition` and `unifiedDuration` are the only position/duration values the rest of the app touches — there is no per-source time math anywhere outside `Timeline`. In dual mode this gives three periods (Period 1: only earlier playing, Period 2: both playing, Period 3: only later playing); the master clock continuously advances across all three because `Timeline` rotates which source drives it. Triple mode (red+blue+full) extends the same model — the unified duration spans the union of all three sources.
+**Dual video sync:** When both red and blue recordings exist, `SyncEngine` handles the timing offset. The "earlier" player (the one whose recording started first) is the primary source of position/duration. The "later" player shows a countdown overlay until its recording's start time is reached. Seeking and play/pause always go through the SyncEngine for coordinated control.
 
 **View modes:** Cycles through both -> red-only -> blue-only. Only available for dual-video matches. In single-video mode, the single available recording fills the space.
 

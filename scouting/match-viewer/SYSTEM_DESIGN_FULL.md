@@ -4,7 +4,13 @@
 
 Offline-first Android tablet app for FRC Team 201 (The FEDS). Students record each match on personal phones (one per alliance side, vertical video), transfer via USB-C flash drives, and the tablet provides a synchronized dual-video viewer for match strategy analysis between matches.
 
-**Scope:** Core ingest + dual/triple-video viewer + drawing overlay + import integrity check. Deferred: desktop/web/iOS support, API 36 migration, local ripped YouTube pipeline, multi-field support.
+**Scope:** P0 (core) + P1 (drawing) from SPECS.md. P2 items (desktop/web/iOS support, API 36 migration, local ripped YouTube pipeline, multi-field support) are deferred.
+
+**Reference documents:**
+- Requirements: `SPECS.md`
+- Video prototype findings: `VIDEO_PROTOTYPE_LEARNINGS.md`
+- Drawing prototype findings: `DRAWING_PROTOTYPE_LEARNINGS.md`
+- Previous strawman: `SYSTEM_DESIGN_STRAWMAN.md` (superseded by this document)
 
 ---
 
@@ -111,7 +117,7 @@ lib/
 │   ├── match_suggester.dart          // pure function: suggest match for each video
 │   └── alliance_suggester.dart       // pure function: suggest alliance side for drive
 ├── viewer/
-│   ├── timeline.dart                 // unified master clock for 1-3 sources (replaces sync_engine.dart)
+│   ├── sync_engine.dart              // dual-player sync logic
 │   ├── scrub_controller.dart         // non-linear scrub math + seek throttling
 │   └── drawing_controller.dart       // stroke management, undo/redo
 ├── screens/
@@ -636,7 +642,7 @@ class VideoMetadata {
     if (date == null) return null;
     if (isIOSRecording) return date; // iOS creation_time = start
     // Android: creation_time = END. Subtract duration for approximate start.
-    // Imprecision: 0.5-3.3s from finalization delay (variable across devices).
+    // Imprecision: 0.5-3.3s from finalization delay (see VIDEO_PROTOTYPE_LEARNINGS.md §2).
     if (durationMs != null && durationMs! > 0) {
       return date!.subtract(Duration(milliseconds: durationMs!));
     }
@@ -699,7 +705,7 @@ Stage 7: Finalize         → ImportSession in DataStore, skip history updated
 - Output: `List<ImportPreviewRow>` with suggested match, teams, alliance side, auto-skip status
 
 **Stage 5 — User review:**
-- Display the import preview list — one row per scanned video with match assignment, alliance side, team slots, and a per-row import checkbox.
+- Display the import preview list (see SPECS.md "Import Preview" section for full UI spec)
 - User can: change match assignment (cascades per §6.6), toggle alliance side, change teams, select/deselect
 - **Header controls:**
   - Alliance color: tap to set ALL rows to the same color (red or blue). This is a bulk override, not cascade.
@@ -873,45 +879,35 @@ The UUID is the recording's identifier. File path is derived, not stored: `"${st
 
 ### 7.1 Player Management
 
-A `media_kit` `Player` + `VideoController` is created for each existing recording (red, blue, and/or full — 1 to 3 sources total). All are constructed with media open and paused, then handed to a single `Timeline` instance:
+Two `media_kit` `Player` instances: one "earlier" (started recording first), one "later."
 
 ```dart
-final redPlayer = Player();
-final redCtl = VideoController(redPlayer);
-await redPlayer.open(Media(redPath), play: false);
-redPlayer.setVolume(0);
-// ... same for blue and full if present ...
+final _earlierPlayer = Player();
+final _laterPlayer = Player();
 
-_timeline = Timeline.fromRecordings(
-  redRecording: redRec, redPlayer: redPlayer, redController: redCtl,
-  blueRecording: blueRec, bluePlayer: bluePlayer, blueController: blueCtl,
-  fullRecording: fullRec, fullPlayer: fullPlayer, fullController: fullCtl,
-);
+// Open without auto-play
+await _earlierPlayer.open(Media(filePath), play: false);
 ```
 
-Timeline takes ownership of disposal — `Timeline.dispose()` disposes all underlying players. The viewer never holds direct `Player` references after construction; it asks `_timeline.controllerFor(role)` when building a pane.
+Which player is "earlier" is determined by comparing `recordingStartTime` of the two recordings.
 
-**Single-, dual-, and triple-video modes** are not separate code paths. The same `Timeline` accepts whichever sources exist (1, 2, or 3) and the rest of the viewer is uniform. Mode-specific UI (which view mode toggle is available, what the swap button does, what mute states cycle through) is decided from the recording presence flags, not from a sync-engine instance check.
+**Single-video mode:** When only one recording exists (or user selects red-only/blue-only view mode, or viewing a local ripped video), only one player is used. Dual-video-specific controls (swap, per-side mute, view mode) are hidden/grayed.
 
-### 7.2 Timestamp Sync — Unified Timeline
+### 7.2 Timestamp Sync
 
-The viewer routes ALL position/duration math through `Timeline` (`lib/viewer/timeline.dart`). Single source of truth for 1, 2, or 3 sources. The rest of the app (scrub bar, sidebar, mark-start stopwatch, per-pane chrome) reads `Timeline.unifiedPosition` and `Timeline.unifiedDuration` only — no per-source time math anywhere outside Timeline.
+From VIDEO_PROTOTYPE_LEARNINGS.md (proven in prototype):
 
-**Model.** Each provided source is placed in a `_Slot { role, source, startOffset }`. The earliest `recordingStartTime` across all provided sources anchors unified-time-zero. Each slot's `startOffset` is its delay relative to that anchor (≥ 0 always). `unifiedDuration = max over slots of (startOffset + duration)` — spans the full union.
+- `_syncOffset = laterVideo.recordingStartTime - earlierVideo.recordingStartTime`
+- Earlier player is the primary clock. Later player's position = `earlierPos - syncOffset`.
+- Track `_intendedEarlierPosition` separately (do NOT use `Player.state.position` — it's async and stale after seek).
+- Countdown driven by earlier player's position stream, NOT wall clock.
+- Later player shows black with "Starting in X.Xs" until `earlierPos >= syncOffset`.
 
-**Three periods (dual mode).** Period 1: only earliest source has frames. Period 2: all sources within their windows. Period 3: only latest-ending source has frames. The unified clock continuously advances across all three because Timeline rotates which source drives it (see "Clock-slot handoff" below).
-
-**Triple mode (red+blue+full).** Same model — unified duration and position correctly span the union of all three windows, including cases where the full-field cam started earlier than the alliance phones or ended later.
-
-**Clock-slot handoff (the Period-3 fix).** Timeline subscribes to `position`, `duration`, `completed`, `width`, `height` on every source. On any position event from any source, it computes `asUnified = slot.startOffset + localPos` and applies a **monotonic floor**: only forward (or equal) updates are accepted. When the source currently driving the master clock ends, position events stop arriving from it; the next still-running source's events naturally take over driving `unifiedPosition` forward. Without this, the scrub bar handle and current-time label would freeze at `earlierDuration` during Period 3 — which was the actual bug before this refactor.
-
-**Intended position override during scrub.** Backward jumps via `seek()` are legitimate. `Timeline.seek(unified)` sets `_intendedUnifiedPosition` to the target before dispatching per-slot seeks. Until a real position event from any source matches the target (within 250ms), `unifiedPosition` returns the override. After it matches, the override clears and normal monotonic-floor behavior resumes.
-
-**Per-pane chrome questions.** Pre-start ("Starting in X.X") and post-end ("Video ended X.X ago") overlays are answered by `Timeline.isWaitingFor(role)`, `hasEnded(role)`, `endedAgoFor(role)`, `countdownFor(role)`. These are parameterized by role but derived entirely from the unified clock — never reading raw per-player position.
-
-**Window-gated playback.** `Timeline.play()` only starts slots whose unified-time window contains `unifiedPosition`. Out-of-window slots stay paused. An internal monitor wakes a slot when unified time crosses its `startOffset`, and pauses a slot when unified time exits its end.
+**Unified timeline:** The scrub bar and playback span the full combined range: `min(start1, start2)` to `max(end1, end2)`, where start/end are derived from each video's `recordingStartTime` and duration. For any timeline position where a video is not yet playing, that pane shows black with "Video starts in X.Xs". For any position after a video has ended, that pane shows black with "Video ended X.Xs ago". This means the scrub bar may extend beyond either individual video's range to cover the full span of both recordings.
 
 ### 7.3 Non-Linear Scrubbing
+
+From VIDEO_PROTOTYPE_LEARNINGS.md (proven in prototype):
 
 **Touch interaction:**
 - Finger down anywhere on video = pause, record touch-down position and current playback time
@@ -999,7 +995,9 @@ This provides a quick single-video edit path for mislabeled recordings without n
 
 ---
 
-## 8. Drawing Overlay
+## 8. Drawing Overlay (P1)
+
+From DRAWING_PROTOTYPE_LEARNINGS.md (proven in prototype):
 
 - **Engine:** `CustomPainter` + `Listener` (raw pointer events). No library.
 - **Activation:** When paused via the play/pause button (not touch-to-pause). Scrubbing is disabled during drawing mode.
@@ -1097,17 +1095,16 @@ This state lives in `MainScreen` because the search bar is in the AppBar (outsid
 1. Lock landscape: `SystemChrome.setPreferredOrientations([landscapeLeft, landscapeRight])`
 2. Immersive: `SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky)`
 3. Enable wakelock: `WakelockPlus.enable()`
-4. Initialize `Player + VideoController` for each existing recording (red, blue, full); open media files (without auto-play); set volume 0
-5. Construct a single `Timeline` from whichever sources exist (1, 2, or 3 — no conditional). Timeline takes ownership of disposing the players.
-6. Subscribe to `Timeline.unifiedPositionStream`, `unifiedDurationStream`, `isPlayingStream`, `dimensionsStream`. Call `Timeline.play()` for autoplay.
+4. Initialize players, compute sync offset, open media files (without auto-play)
+5. Subscribe to position/duration streams
 
 **Exit (`dispose`):**
 1. Cancel all stream subscriptions
-2. Dispose Timeline (which disposes the underlying players)
+2. Dispose players
 3. Restore all orientations: `SystemChrome.setPreferredOrientations(DeviceOrientation.values)`
 4. Restore system UI: `SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge)`
 5. Release wakelock: `WakelockPlus.disable()`
-6. Drawings + mark-start cleared implicitly (in-memory, widget disposed)
+6. Drawings cleared implicitly (in-memory, widget disposed)
 
 **Back navigation:** System back gesture works automatically (triggers `Navigator.pop` → `dispose`). Sidebar also has an explicit back button: `IconButton(onPressed: () => Navigator.pop(context))`.
 

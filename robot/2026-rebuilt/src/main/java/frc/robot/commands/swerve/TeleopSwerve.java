@@ -40,19 +40,19 @@ import frc.robot.utils.ShootOnTheMove;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 
 public class TeleopSwerve extends Command {
-  public enum driveMode {
-    FALCONDRIVE, NORMALDRIVE, HUBDRIVE;
+  public enum driveMode{
+    FALCONDRIVE,
+    NORMALDRIVE,
+    HUBDRIVE;
   }
 
-  public static final double MAX_SPEED =
-      TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
-  public static final double MAX_ANGULAR_RATE =
-      RotationsPerSecond.of(2).in(RadiansPerSecond);
+  public static final double MAX_SPEED = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+  public static final double MAX_ANGULAR_RATE = RotationsPerSecond.of(2).in(RadiansPerSecond);
   private final PIDController hubRotPID = new PIDController(25, 0, 0);
   private double speedMultiplier = 1.0;
   private CommandSwerveDrivetrain dt;
   private CommandXboxController controller;
-
+  
   private SwerveRequest.FieldCentric driveNormal;
 
   private SwerveRequest.FieldCentric falconDrive;
@@ -61,82 +61,75 @@ public class TeleopSwerve extends Command {
   private String swerveCommandType = "NORMAL";
   private final ShuffleboardTab tab = Shuffleboard.getTab(getName());
 
-  // Stores the joystick's angle from the previous loop cycle to calculate its speed
-  private Angle previousJoystickAngle = Rotations.of(0);
-  // A timestamp from the last time the angle was updated, for a more accurate velocity calculation
-  private Time lastAngleTimestamp = Seconds.of(0);
-  private Rotation2d lastTargetDirection = Rotation2d.fromDegrees(0);
-  private Rotation2d currentRotation;
-  private Time currentTime;
-  private Time deltaTime;
-  private Angle currentJoystickAngle = Degrees.of(0);
-  private Translation2d redHub =
-      FlippingUtil.flipFieldPosition(ShooterConstants.hubCenter);
+   // Stores the joystick's angle from the previous loop cycle to calculate its speed
+   private Angle previousJoystickAngle = Rotations.of(0); 
+   // A timestamp from the last time the angle was updated, for a more accurate velocity calculation
+   private Time lastAngleTimestamp = Seconds.of(0);
+   private Rotation2d lastTargetDirection = Rotation2d.fromDegrees(0);
+   private Rotation2d currentRotation;
+   private Time currentTime;
+   private Time deltaTime;
+   private Angle currentJoystickAngle = Degrees.of(0);
+   private Translation2d redHub = FlippingUtil.flipFieldPosition(ShooterConstants.hubCenter);
 
-  private static driveMode mode = driveMode.NORMALDRIVE;
+   private static driveMode mode = driveMode.NORMALDRIVE;
 
   /** Command used to control swerve in teleop. */
-  public TeleopSwerve(CommandSwerveDrivetrain dt,
-      CommandXboxController controller) {
+  public TeleopSwerve(CommandSwerveDrivetrain dt, CommandXboxController controller) {
     this.dt = dt;
     this.controller = controller;
 
     currentRotation = dt.getState().Pose.getRotation();
 
-    driveNormal = new SwerveRequest.FieldCentric().withDeadband(MAX_SPEED * .07)
-        .withRotationalDeadband(MAX_ANGULAR_RATE * .07);
+  driveNormal = new SwerveRequest.FieldCentric()
+  .withDeadband(MAX_SPEED*.07)
+  .withRotationalDeadband(MAX_ANGULAR_RATE*.07);
     hubRotPID.enableContinuousInput(-180, 180);
-    falconDrive = new SwerveRequest.FieldCentric()
-        .withDeadband(MAX_SPEED * 0.07).withRotationalDeadband(0);
+  falconDrive = new SwerveRequest.FieldCentric()
+  .withDeadband(MAX_SPEED*0.07)
+  .withRotationalDeadband(0);
 
-    swerveCommandEntry =
-        tab.add("Swerve Command Status", swerveCommandType).getEntry();
-    tab.addDouble("Controller Pointing Angle",
-        () -> -(Math.atan2(controller.getRightX(), -controller.getRightY())
-            / (2 * Math.PI) * 360));
-    tab.addDouble("Snapped Controller Pointing angle",
-        () -> currentJoystickAngle.in(Degrees));
+    swerveCommandEntry= tab.add("Swerve Command Status", swerveCommandType).getEntry();
+    tab.addDouble("Controller Pointing Angle", ()-> -(Math.atan2(controller.getRightX(), -controller.getRightY())/ (2*Math.PI) * 360));
+    tab.addDouble("Snapped Controller Pointing angle", ()-> currentJoystickAngle.in(Degrees));
     addRequirements(this.dt);
     controller.povLeft()
-        .toggleOnTrue(new InstantCommand(() -> mode = driveMode.FALCONDRIVE)
-            .andThen(new RunCommand(() -> {
-            })).finallyDo(() -> mode = driveMode.NORMALDRIVE));
+            .toggleOnTrue(new InstantCommand(()-> mode = driveMode.FALCONDRIVE)
+                          .andThen(new RunCommand(()->{}))
+                          .finallyDo(()-> mode = driveMode.NORMALDRIVE));
   }
 
   /** Command used to control swerve in teleop. */
-  public TeleopSwerve(CommandSwerveDrivetrain dt,
-      CommandXboxController controller, double speedMultiplier) {
+  public TeleopSwerve(CommandSwerveDrivetrain dt, CommandXboxController controller, double speedMultiplier) {
     this.dt = dt;
     this.controller = controller;
     this.speedMultiplier = speedMultiplier;
 
     currentRotation = dt.getState().Pose.getRotation();
 
-    driveNormal = new SwerveRequest.FieldCentric().withDeadband(MAX_SPEED * .07)
-        .withRotationalDeadband(MAX_ANGULAR_RATE * .07);
+  driveNormal = new SwerveRequest.FieldCentric()
+  .withDeadband(MAX_SPEED*.07)
+  .withRotationalDeadband(MAX_ANGULAR_RATE*.07);
     hubRotPID.enableContinuousInput(-180, 180);
-    falconDrive = new SwerveRequest.FieldCentric()
-        .withDeadband(MAX_SPEED * 0.07).withRotationalDeadband(0);
+  falconDrive = new SwerveRequest.FieldCentric()
+  .withDeadband(MAX_SPEED*0.07)
+  .withRotationalDeadband(0);
 
-    swerveCommandEntry =
-        tab.add("Swerve Command Status", swerveCommandType).getEntry();
-    tab.addDouble("Controller Pointing Angle",
-        () -> -(Math.atan2(controller.getRightX(), -controller.getRightY())
-            / (2 * Math.PI) * 360));
-    tab.addDouble("Snapped Controller Pointing angle",
-        () -> currentJoystickAngle.in(Degrees));
+    swerveCommandEntry= tab.add("Swerve Command Status", swerveCommandType).getEntry();
+    tab.addDouble("Controller Pointing Angle", ()-> -(Math.atan2(controller.getRightX(), -controller.getRightY())/ (2*Math.PI) * 360));
+    tab.addDouble("Snapped Controller Pointing angle", ()-> currentJoystickAngle.in(Degrees));
     addRequirements(this.dt);
     controller.povLeft()
-        .toggleOnTrue(new InstantCommand(() -> mode = driveMode.FALCONDRIVE)
-            .andThen(new RunCommand(() -> {
-            })).finallyDo(() -> mode = driveMode.NORMALDRIVE));
+            .toggleOnTrue(new InstantCommand(()-> mode = driveMode.FALCONDRIVE)
+                          .andThen(new RunCommand(()->{}))
+                          .finallyDo(()-> mode = driveMode.NORMALDRIVE));
   }
 
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-
+    
   }
 
   public static driveMode getDriveMode() {
@@ -146,120 +139,110 @@ public class TeleopSwerve extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    SmartDashboard.putNumber("Dist to hub", dt.getState().Pose.getTranslation()
-        .getDistance(ShooterConstants.hubCenter));
-    SmartDashboard.putNumber("Dist to Red hub",
-        dt.getState().Pose.getTranslation().getDistance(redHub));
-
-    Logger.recordOutput("Robot/CTRERobotPose", dt.getState().Pose);
+    SmartDashboard.putNumber("Dist to hub", dt.getState().Pose.getTranslation().getDistance(ShooterConstants.hubCenter));
+    SmartDashboard.putNumber("Dist to Red hub", dt.getState().Pose.getTranslation().getDistance(redHub));
+    
+    Logger.recordOutput("CTRERobotPose", dt.getState().Pose);
     switch (mode) {
       case FALCONDRIVE:
-
+      
         double rightX = controller.getRightX();
         double rightY = -controller.getRightY();
 
         if (Math.hypot(rightX, rightY) > 0.7) { // Deadband check
+            
+            // 1. Calculate current angle
+            currentJoystickAngle = Radians.of(-Math.atan2(rightX, rightY));
+            currentJoystickAngle = Degrees.of(snapToCardinal(currentJoystickAngle.in(Degrees)));
+            
+            // 2. Calculate joystick's angular velocity
+            currentTime = Seconds.of(Timer.getFPGATimestamp());
+            deltaTime = currentTime.minus(lastAngleTimestamp);
+            
+            // To avoid division by zero on the first run
+            if (deltaTime.isEquivalent(Seconds.of(0))) {
+                deltaTime = Seconds.of(0.02); // Assume a 50Hz loop rate initially
+            }
 
-          // 1. Calculate current angle
-          currentJoystickAngle = Radians.of(-Math.atan2(rightX, rightY));
-          currentJoystickAngle =
-              Degrees.of(snapToCardinal(currentJoystickAngle.in(Degrees)));
+            // Find the shortest angle difference to handle the 180 -> -180 degree wrap-around
+            Angle angleDifference = currentJoystickAngle.minus(previousJoystickAngle);
 
-          // 2. Calculate joystick's angular velocity
-          currentTime = Seconds.of(Timer.getFPGATimestamp());
-          deltaTime = currentTime.minus(lastAngleTimestamp);
+            AngularVelocity joystickAngularVelocity = angleDifference.div(deltaTime); // degrees per second
 
-          // To avoid division by zero on the first run
-          if (deltaTime.isEquivalent(Seconds.of(0))) {
-            deltaTime = Seconds.of(0.02); // Assume a 50Hz loop rate initially
-          }
+            // 3. Calculate the "lead" angle based on velocity
+            // This is the amount predicted ahead. The faster the stick moves, the more we lead.
+            Angle leadAngle = joystickAngularVelocity.times(Seconds.of(.05));
 
-          // Find the shortest angle difference to handle the 180 -> -180 degree wrap-around
-          Angle angleDifference =
-              currentJoystickAngle.minus(previousJoystickAngle);
+            // 4. Apply the prediction
+            // The final target is the snapped angle plus the predictive lead
+            Angle finalTargetAngle = currentJoystickAngle.plus(leadAngle);
 
-          AngularVelocity joystickAngularVelocity =
-              angleDifference.div(deltaTime); // degrees per second
+            lastTargetDirection = new Rotation2d(finalTargetAngle);
+            // --- PREDICTION LOGIC END ---
 
-          // 3. Calculate the "lead" angle based on velocity
-          // This is the amount predicted ahead. The faster the stick moves, the more we lead.
-          Angle leadAngle = joystickAngularVelocity.times(Seconds.of(.05));
-
-          // 4. Apply the prediction
-          // The final target is the snapped angle plus the predictive lead
-          Angle finalTargetAngle = currentJoystickAngle.plus(leadAngle);
-
-          lastTargetDirection = new Rotation2d(finalTargetAngle);
-          // --- PREDICTION LOGIC END ---
-
-          // Update state for the next loop
-          previousJoystickAngle = currentJoystickAngle;
-          lastAngleTimestamp = currentTime;
+            // Update state for the next loop
+            previousJoystickAngle = currentJoystickAngle;
+            lastAngleTimestamp = currentTime;
         }
-
+        
         currentRotation = dt.getState().Pose.getRotation();
-        Angle errorRad =
-            lastTargetDirection.minus(currentRotation).getMeasure();
-        AngularVelocity rotationalRateRadPerSec =
-            errorRad.div(Seconds.of(0.1666));
+        Angle errorRad = lastTargetDirection.minus(currentRotation).getMeasure();
+        AngularVelocity rotationalRateRadPerSec = errorRad.div(Seconds.of(0.1666));
 
-        dt.setControl(falconDrive
-            .withVelocityX(-controller.getLeftY() * MAX_SPEED * speedMultiplier)
-            .withVelocityY(-controller.getLeftX() * MAX_SPEED * speedMultiplier)
-            .withRotationalRate(rotationalRateRadPerSec));
+  dt.setControl(falconDrive
+  .withVelocityX(-controller.getLeftY() * MAX_SPEED * speedMultiplier)
+  .withVelocityY(-controller.getLeftX() * MAX_SPEED * speedMultiplier)
+  .withRotationalRate(rotationalRateRadPerSec));
 
         swerveCommandType = "FALCON";
         swerveCommandEntry.setString(swerveCommandType);
 
         break;
-
+    
       case NORMALDRIVE:
 
         lastTargetDirection = dt.getState().Pose.getRotation();
         currentRotation = dt.getState().Pose.getRotation();
 
 
-        dt.setControl(driveNormal
-            .withVelocityX(-controller.getLeftY() * MAX_SPEED)
-            .withVelocityY(-controller.getLeftX() * MAX_SPEED)
-            .withRotationalRate(-controller.getRightX() * MAX_ANGULAR_RATE));
+          dt.setControl(driveNormal
+          .withVelocityX(-controller.getLeftY() * MAX_SPEED)
+          .withVelocityY(-controller.getLeftX() * MAX_SPEED)
+          .withRotationalRate(-controller.getRightX() * MAX_ANGULAR_RATE));
+  
+          swerveCommandType = "NORMAL";
+          swerveCommandEntry.setString(swerveCommandType);
+          break;
 
-        swerveCommandType = "NORMAL";
-        swerveCommandEntry.setString(swerveCommandType);
-        break;
 
+          case HUBDRIVE:
+          // 3. Get current robot heading
+          double robotHeading = dt.getState().Pose.getRotation().getDegrees();
 
-      case HUBDRIVE:
-        // 3. Get current robot heading
-        double robotHeading = dt.getState().Pose.getRotation().getDegrees();
-
-        // 2 Get theta to virtual goal (will be equivalent to angle to hub when stationary, but leads the
-        // target when moving)
-        Double angleToGoal = ShootOnTheMove
-            .calculateRobotHeading(dt.getState().Pose, dt.getState().Speeds)
-            .getDegrees();
-        Logger.recordOutput("angleToGoal", angleToGoal);
-        // 4. Calculate PID output (Rotational Speed)
-        double rotationOutput = hubRotPID.calculate(robotHeading, angleToGoal);
-        SmartDashboard.putNumber("rotationoutput", rotationOutput);
-        // 5. Apply to Drivetrain
-        // We use FieldCentric so your Left Stick (driving) remains intuitive
-        // regardless of where the robot is facing.
-        dt.setControl(driveNormal
-            .withVelocityX(-controller.getLeftY() * 2 * speedMultiplier)
-            .withVelocityY(-controller.getLeftX() * 2 * speedMultiplier)
-            .withRotationalRate(DegreesPerSecond.of(rotationOutput)));
-
-        swerveCommandType = "HUB_AIM";
-        swerveCommandEntry.setString(swerveCommandType);
-        break;
+          //2 Get theta to virtual goal (will be equivalent to angle to hub when stationary, but leads the target when moving)
+          Double angleToGoal = ShootOnTheMove.calculateRobotHeading(dt.getState().Pose, dt.getState().Speeds).getDegrees();
+          Logger.recordOutput("angleToGoal", angleToGoal);
+          // 4. Calculate PID output (Rotational Speed)
+          double rotationOutput = hubRotPID.calculate(robotHeading, angleToGoal);
+          SmartDashboard.putNumber("rotationoutput", rotationOutput);
+          // 5. Apply to Drivetrain
+          // We use FieldCentric so your Left Stick (driving) remains intuitive 
+          // regardless of where the robot is facing.
+      dt.setControl(driveNormal
+        .withVelocityX(-controller.getLeftY() *2 * speedMultiplier)
+        .withVelocityY(-controller.getLeftX() *2 * speedMultiplier)
+        .withRotationalRate(DegreesPerSecond.of(rotationOutput)));
+          
+          swerveCommandType = "HUB_AIM";
+          swerveCommandEntry.setString(swerveCommandType);
+          break;
 
     }
+    
 
-
-
-  }
-
+    
+    }
+  
   @Override
   public void end(boolean interrupted) {
     swerveCommandType = "INACTIVE";
@@ -273,16 +256,15 @@ public class TeleopSwerve extends Command {
 
   /**
    * Normalize a degree measure from -180 to 180 deg to a cardinal direction
-   *
    * @param angleDegrees Angle measurement from -180 to 180 degrees
    * @return The Closest multiple of 90 degrees
    */
   public static double snapToCardinal(double angleDegrees) {
-    if (angleDegrees >= -135 && angleDegrees < -45) {
+    if(angleDegrees >= -135 && angleDegrees < -45 ){
       return -90;
-    } else if (angleDegrees >= -45 && angleDegrees < 45) {
+    } else if(angleDegrees >= -45 && angleDegrees < 45){
       return 0;
-    } else if (angleDegrees >= 45 && angleDegrees < 135) {
+    } else if(angleDegrees >= 45 && angleDegrees < 135){
       return 90;
     } else {
       return 180;

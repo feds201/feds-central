@@ -8,7 +8,7 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.7,
+        "x": 7.5,
         "y": 3.5
       },
       "isLocked": false,
@@ -17,23 +17,18 @@
     {
       "anchor": {
         "x": 6.634602609727166,
-        "y": 2.609
+        "y": 2.6094068801897983
       },
       "prevControl": {
-        "x": 7.834602609727166,
-        "y": 2.609
+        "x": 7.172562277580072,
+        "y": 2.7707947805456707
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "SecondRightIntakeEnd"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.7611940298507427,
-      "rotationDegrees": 45.0
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -47,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 2.0,
-    "rotation": 117.0
+    "rotation": 117.18999999999998
   },
   "reversed": false,
   "folder": "MidIntakeToRightBump",
   "idealStartingState": {
     "velocity": 2.0,
-    "rotation": 150.0
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }

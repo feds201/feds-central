@@ -1,4 +1,4 @@
-// Copyright (c) FIRST and other WPILib contributors.
+ // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
@@ -21,8 +21,10 @@ import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -33,15 +35,15 @@ import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 @Logged
 public class ShooterHood extends SubsystemBase {
 
-  public enum shooterhood_state {
-    TEST(Rotations.of(0)), IN(ShooterConstants.minHoodAngle), OUT(
-        ShooterConstants.maxHoodAngle), PASSING(Rotations.of(0)), SHOOTING(
-            Rotations.of(30)), LAYUP(Rotations.of(8.5)), // 3.278m (midway between hub+tower), see
-                                                         // https://docs.google.com/spreadsheets/d/1dgeEKQ00QiUogEZPXbh4vTJQD8yXOX3HCi0rzDTo5SA
-    HALFCOURT(Rotations.of(17.0)), // 5.23m (corner), see doc above
-    MANUAL(Rotations.of(0)),
-    // Sim states
-    AIMING_UP(Rotations.of(0)), AIMING_DOWN(Rotations.of(0));
+    public enum shooterhood_state {
+      TEST(Rotations.of(0)),
+      IN(ShooterConstants.minHoodAngle),
+      OUT(ShooterConstants.maxHoodAngle),
+      PASSING(Rotations.of(0)),
+      SHOOTING(Rotations.of(30)),
+      LAYUP(Rotations.of(7.8)), // ~3m (midway between hub+tower)
+      HALFCOURT(Rotations.of(18.5)), // ~5.5m (corner)
+      MANUAL(Rotations.of(0));
 
 
     private final Angle angleTarget;
@@ -63,7 +65,7 @@ public class ShooterHood extends SubsystemBase {
   private final CommandSwerveDrivetrain dt;
   private double HoodAngleMultiplier = 1;
   private ShuffleboardTab tab = Shuffleboard.getTab("testing");
-  public DoubleSupplier pos = () -> 0.0;
+  public DoubleSupplier pos = ()->0.0;
 
   /** Creates a new Shooter. */
   public ShooterHood(CommandSwerveDrivetrain dt) {
@@ -74,37 +76,31 @@ public class ShooterHood extends SubsystemBase {
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     config.CurrentLimits.StatorCurrentLimit = 40;
-    // Following values would need to be tuned.
+    //Following values would need to be tuned.
     config.Slot0.kS = .235; // Constant applied for friction compensation (static gain)
-    config.Slot0.kP = 1; // Proportional gain
+    config.Slot0.kP = 1; // Proportional gain 
     config.Slot0.kD = 0.0; // Derivative gain
-    config.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
-        ShooterConstants.HOOD_FORWARD_SOFT_LIMIT_ROT;
-    config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0.0;
+    config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = ShooterConstants.HOOD_FORWARD_SOFT_LIMIT_ROT;
+    config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0.0; 
     config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
     config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
     // Apply config multiple times to ensure application
-    for (int i = 0; i < 2; ++i) {
+    for (int i = 0; i < 2; ++i){
       var status = hoodMotor.getConfigurator().apply(config);
-      if (status.isOK())
-        break;
+      if(status.isOK()) break;
     }
 
-    GenericEntry swanNeckPivotSpeedSetter =
-        tab.add("hood pos", 0.0).withWidget(BuiltInWidgets.kNumberSlider)
-            .withProperties(Map.of("min", 0, "max", .2)).getEntry();
-    pos = () -> swanNeckPivotSpeedSetter.getDouble(0);
+     GenericEntry swanNeckPivotSpeedSetter = tab.add("hood pos", 0.0)
+                .withWidget(BuiltInWidgets.kNumberSlider)
+                .withProperties(Map.of("min", 0, "max", .2))
+                .getEntry();
+                pos = () -> swanNeckPivotSpeedSetter.getDouble(0);
   }
 
-  /**
-   * Converts hood motor rotor rotations to physical hood angle in degrees, assuming linear mapping
-   * between 0 rot → HOOD_MIN_ANGLE_DEG and HOOD_FORWARD_SOFT_LIMIT_ROT → HOOD_MAX_ANGLE_DEG.
-   */
+  /** Converts hood motor rotor rotations to physical hood angle in degrees, assuming linear mapping between 0 rot → HOOD_MIN_ANGLE_DEG and HOOD_FORWARD_SOFT_LIMIT_ROT → HOOD_MAX_ANGLE_DEG. */
   public static double rotationsToAngleDegrees(double rotations) {
-    double range = ShooterConstants.HOOD_MAX_ANGLE_DEG
-        - ShooterConstants.HOOD_MIN_ANGLE_DEG;
-    return ShooterConstants.HOOD_MIN_ANGLE_DEG
-        + (rotations / ShooterConstants.HOOD_FORWARD_SOFT_LIMIT_ROT) * range;
+    double range = ShooterConstants.HOOD_MAX_ANGLE_DEG - ShooterConstants.HOOD_MIN_ANGLE_DEG;
+    return ShooterConstants.HOOD_MIN_ANGLE_DEG + (rotations / ShooterConstants.HOOD_FORWARD_SOFT_LIMIT_ROT) * range;
   }
 
   public double getPositionDegrees() {
@@ -113,104 +109,92 @@ public class ShooterHood extends SubsystemBase {
 
   @Override
   public void periodic() {
-    Logger.recordOutput("Robot/Shooter/Shooter Hood State",
-        currentState.toString());
+    Logger.recordOutput("Robot/Shooter/Shooter Hood State", currentState.toString());
 
     switch (currentState) {
       case OUT:
-
+      
         break;
-
+    
       case IN:
         break;
 
       case SHOOTING:
-        hoodMotor.setControl(positionVoltage.withPosition(
-            getTargetPositionShooting().times(HoodAngleMultiplier)));
+      hoodMotor.setControl(positionVoltage.withPosition(getTargetPositionShooting().times(HoodAngleMultiplier)));
         break;
 
       case PASSING:
-        hoodMotor.setControl(
-            positionVoltage.withPosition(getTargetPositionPassing()));
+      hoodMotor.setControl(positionVoltage.withPosition(getTargetPositionPassing()));
         break;
 
       case MANUAL:
         break;
-
+      
       case LAYUP, HALFCOURT:
         break;
       case TEST:
-        setAngle(Rotations.of(pos.getAsDouble()));
-        break;
+      setAngle(Rotations.of(pos.getAsDouble()));
+      break;
     }
-    Logger.recordOutput("Robot/Shooter/HoodAngleRotations",
-        getPosition().in(Rotations));
+    Logger.recordOutput("Robot/Shooter/HoodAngleRotations", getPosition().in(Rotations));
 
     double targetRot = hoodMotor.getClosedLoopReference().getValueAsDouble();
-    Logger.recordOutput("Robot/ShooterHood/PositionRotations",
-        getPosition().in(Rotations));
-    Logger.recordOutput("Robot/ShooterHood/PositionDegrees",
-        getPositionDegrees());
+    Logger.recordOutput("Robot/ShooterHood/PositionRotations", getPosition().in(Rotations));
+    Logger.recordOutput("Robot/ShooterHood/PositionDegrees", getPositionDegrees());
     Logger.recordOutput("Robot/ShooterHood/TargetPositionRotations", targetRot);
-    Logger.recordOutput("Robot/ShooterHood/TargetPositionDegrees",
-        rotationsToAngleDegrees(targetRot));
-    Logger.recordOutput("Robot/ShooterHood/AppliedVolts",
-        hoodMotor.getMotorVoltage().getValueAsDouble());
-    Logger.recordOutput("Robot/ShooterHood/StatorAmps",
-        hoodMotor.getStatorCurrent().getValueAsDouble());
+    Logger.recordOutput("Robot/ShooterHood/TargetPositionDegrees", rotationsToAngleDegrees(targetRot));
+    Logger.recordOutput("Robot/ShooterHood/AppliedVolts", hoodMotor.getMotorVoltage().getValueAsDouble());
+    Logger.recordOutput("Robot/ShooterHood/StatorAmps", hoodMotor.getStatorCurrent().getValueAsDouble());
 
     // This method will be called once per scheduler run
   }
 
-  public void setAngle(Angle targetAngle) {
+  public void setAngle(Angle targetAngle){
     hoodMotor.setControl(positionVoltage.withPosition(targetAngle));
   }
 
-  public void setState(shooterhood_state state) {
+  public void setState(shooterhood_state state){
     currentState = state;
     setAngle(state.getAngle());
   }
-
-  public shooterhood_state getCurrentState() {
+  
+  public shooterhood_state getCurrentState(){
     return currentState;
   }
 
-  public Angle getPosition() {
+  public Angle getPosition(){
     return hoodMotor.getPosition().getValue();
   }
 
-  public boolean atSetpointShooting() {
-    return RobotMap.ShooterConstants.postionTolerance.gte(Rotations
-        .of(getPosition().minus(getTargetPositionShooting()).abs(Rotations))); // not for passing bc doesnt need to be super accurate
+  public boolean atSetpointShooting(){
+    return RobotMap.ShooterConstants.postionTolerance.gte(Rotations.of(getPosition().minus(getTargetPositionShooting()).abs(Rotations))); //not for passing bc doesnt need to be super accurate
+  } 
+
+
+  public Angle getTargetPositionShooting()
+  {
+    //  double d = dt.getState().Pose.getTranslation().getDistance(ShooterConstants.hubCenter);
+              double d = dt.getDistanceToVirtualHub().in(Meters);
+
+      return Rotations.of(RobotMap.ShooterConstants.kShootingPositionMap.get(d));
   }
 
-
-  public Angle getTargetPositionShooting() {
-    // double d = dt.getState().Pose.getTranslation().getDistance(ShooterConstants.hubCenter);
-    double d = dt.getDistanceToVirtualHub().in(Meters);
-
-    return Rotations.of(RobotMap.ShooterConstants.kShootingPositionMap.get(d));
-  }
-
-  public Angle getTargetPositionPassing() {
-    Distance d = dt.getDistanceToCorner();
-    return Rotations
-        .of(RobotMap.ShooterConstants.kPassingPositionMap.get(d.in(Meters)));
+   public Angle getTargetPositionPassing()
+  {
+     Distance d = dt.getDistanceToCorner();
+      return Rotations.of(RobotMap.ShooterConstants.kPassingPositionMap.get(d.in(Meters)));
   }
 
   /**
    * Update the hood angle multiplier, capped in the range of 0.9 to 1.1.
-   *
-   * @param toAdd Positive or negative double value to add to the multiplier
+   * @param toAdd Positive or negative double value to add to the multiplier 
    */
   public void updateHoodAngleMultiplier(double toAdd) {
-    if (HoodAngleMultiplier + toAdd > 1.1
-        || HoodAngleMultiplier + toAdd < 0.9) {
+    if(HoodAngleMultiplier + toAdd > 1.1 || HoodAngleMultiplier + toAdd < 0.9) {
       return;
     } else {
-      HoodAngleMultiplier += toAdd;
-      Logger.recordOutput("Robot/Shooter/HoodAngleMultiplier",
-          HoodAngleMultiplier);
+    HoodAngleMultiplier += toAdd;
+    Logger.recordOutput("Robot/Shooter/HoodAngleMultiplier", HoodAngleMultiplier);
     }
   }
 
@@ -218,14 +202,14 @@ public class ShooterHood extends SubsystemBase {
     return runOnce(() -> setState(state));
   }
 
-  public Command setMotorPower(Double power) {
-    return runOnce(() -> {
-      setState(shooterhood_state.MANUAL);
-      hoodMotor.set(power);
+   public Command setMotorPower(Double power){
+    return runOnce(()->{
+        setState(shooterhood_state.MANUAL);
+        hoodMotor.set(power);
     });
   }
 
-  public Command resetHoodAngle() {
+  public Command resetHoodAngle(){
     return runOnce(() -> hoodMotor.setPosition(0));
   }
 
@@ -242,7 +226,7 @@ public class ShooterHood extends SubsystemBase {
    * (SingleJointedArmSim voltage input and position/velocity write-back). Sim use only.
    */
   public com.ctre.phoenix6.sim.TalonFXSimState getHoodMotorSimState() {
-    return hoodMotor.getSimState();
+      return hoodMotor.getSimState();
   }
 
   // ////////////////////////////////////////////////////////////////////////

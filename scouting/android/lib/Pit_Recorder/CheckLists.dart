@@ -82,15 +82,6 @@ class _RecordState extends State<Record> {
   bool _pathSaved = false;
   bool isPageScrollable = true;
 
-  /// Bumped on save and on clear to force a fresh BotPathDrawer instance
-  /// (via ValueKey) so its internal state resets.
-  int _drawerInstanceKey = 0;
-
-  /// Tracks whether the user has manually edited the path-name field. If
-  /// false, [onSave] is allowed to overwrite the field with the geometry-
-  /// based suggestion. Reset by [_resetPathState].
-  bool _pathNameUserEdited = false;
-
   @override
   void initState() {
     super.initState();
@@ -227,35 +218,6 @@ class _RecordState extends State<Record> {
     super.dispose();
   }
 
-  /// Resets all per-path UI state: forces a fresh [BotPathDrawer] instance,
-  /// clears the path-name field, and marks the field as not-yet-edited so
-  /// the next save will adopt the geometry-based suggestion.
-  void _resetPathState() {
-    setState(() {
-      _drawerInstanceKey++;
-      PathNameController.clear();
-      _pathNameUserEdited = false;
-    });
-  }
-
-  /// Toggle button that locks/unlocks page scrolling, used twice — once
-  /// above the path-name field and once below the drawer — so the user
-  /// can flip it from either side without scrolling around.
-  Widget _buildLockToggle() {
-    return TextButton.icon(
-      onPressed: () {
-        setState(() {
-          isPageScrollable = !isPageScrollable;
-        });
-      },
-      icon: Icon(isPageScrollable ? Icons.lock_outline : Icons.lock_open),
-      label: Text(isPageScrollable ? "Unlock" : "Lock"),
-      style: TextButton.styleFrom(
-        foregroundColor: islightmode() ? Colors.black : Colors.white,
-      ),
-    );
-  }
-
 
   Widget _buildQuestions() {
     return SingleChildScrollView(
@@ -310,20 +272,15 @@ class _RecordState extends State<Record> {
             [
               Container(
                 width: double.infinity,
-                height: 720,
+                height: 650 ,
                 child: Column(
                   children: [
                     Text("Auton Path", textAlign: TextAlign.center,
                         style: GoogleFonts.museoModerno(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.blue)),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [_buildLockToggle()],
-                    ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                       child: TextField(
                         controller: PathNameController,
-                        onChanged: (_) => _pathNameUserEdited = true,
                         decoration: InputDecoration(
                           labelText: "Path Name",
                           hintText: "ex. Left Side Rush",
@@ -345,45 +302,41 @@ class _RecordState extends State<Record> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: BotPathDrawer(
-                          key: ValueKey(_drawerInstanceKey),
                           config: config,
-                          onClear: _resetPathState,
-                          onPathUpdated: (String? pathData, String? suggestedName) {
-                            // Pre-fill the name field with the suggestion when
-                            // the user hasn't claimed a name themselves (blank
-                            // or never edited). Programmatic writes don't fire
-                            // the TextField's onChanged, so this doesn't flip
-                            // _pathNameUserEdited.
-                            if (suggestedName == null) return;
-                            final useSuggestion =
-                                PathNameController.text.trim().isEmpty ||
-                                    !_pathNameUserEdited;
-                            if (useSuggestion) {
-                              setState(() {
-                                PathNameController.text = suggestedName;
-                              });
-                            }
-                          },
-                          onSave: (String? pathData, String? suggestedName) {
+                          onSave: (String? pathData) {
                             setState(() {
                               PathDataController.add({
-                                'name': PathNameController.text,
-                                'path': pathData,
-                              });
-                              _pathSaved = true;
+                              'name': PathNameController.text,
+                              'path': pathData,
                             });
-                            _pathSavedTimer?.cancel();
-                            _pathSavedTimer = Timer(const Duration(seconds: 2), () {
-                              setState(() => _pathSaved = false);
-                              _resetPathState();
-                            });
+                           _pathSaved = true;
+                          });
+                             _pathSavedTimer?.cancel();
+                             _pathSavedTimer = Timer(const Duration(seconds: 5), () {
+                             setState(() => _pathSaved = false);
+                               });
                           },
                         ),
                       ),
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [_buildLockToggle()],
+                      children: [
+                        TextButton.icon(
+                          onPressed: () {
+                            setState(() {
+                              isPageScrollable = !isPageScrollable;
+                            });
+                          },
+                          icon:
+                          Icon(isPageScrollable ? Icons.lock_outline : Icons.lock_open),
+                          label: Text(isPageScrollable ? "Unlock" : "Lock"),
+                          style: TextButton.styleFrom(
+                            foregroundColor:
+                            islightmode() ? Colors.black : Colors.white,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),

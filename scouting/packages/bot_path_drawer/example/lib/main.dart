@@ -177,18 +177,11 @@ class _DemoHomeState extends State<DemoHome> {
             height: screenSize.height * 0.9,
             child: BotPathDrawer(
               config: _configWithBrightness,
-              onSave: (pathData, suggestedName) {
-                print('Suggested name: $suggestedName');
+              onSave: (pathData) {
                 Navigator.of(dialogContext).pop();
                 if (pathData != null) {
                   final teamName = _teamNameController.text.trim();
-                  final typed = _pathNameController.text.trim();
-                  // Adopt the suggestion when the user hasn't named the path:
-                  // either they left it blank or kept the default 'Path'.
-                  final useSuggestion = typed.isEmpty || typed == 'Path';
-                  final pathName = useSuggestion
-                      ? (suggestedName ?? 'Path')
-                      : typed;
+                  final pathName = _pathNameController.text.trim();
                   if (teamName.isNotEmpty && pathName.isNotEmpty) {
                     setState(() {
                       _teams.putIfAbsent(teamName, () => {});
