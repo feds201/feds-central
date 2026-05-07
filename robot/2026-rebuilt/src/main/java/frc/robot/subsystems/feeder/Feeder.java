@@ -6,7 +6,6 @@ package frc.robot.subsystems.feeder;
 
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
-import static edu.wpi.first.units.Units.Volt;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.SignalLogger;
@@ -18,19 +17,13 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.epilogue.Logged;
-import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.RobotMap;
 import frc.robot.RobotMap.FeederConstants;
 import frc.robot.RobotMap.indexingConstants;
 import frc.robot.utils.DeviceTempReporter;
@@ -41,11 +34,8 @@ public class Feeder extends SubsystemBase {
 
   // subsystem states
   public enum feeder_state {
-    RUN(Volts.of(7)),
-    PRUN(Volts.of(7)),
-    REVERSE(Volts.of(-7)),
-    PREVERSE(Volts.of(-7)),
-    STOP(Volts.of(0));
+    RUN(Volts.of(7)), PRUN(Volts.of(7)), REVERSE(Volts.of(-7)), PREVERSE(Volts.of(-7)), STOP(
+        Volts.of(0));
 
     private final Voltage targetVoltage;
 
@@ -68,7 +58,7 @@ public class Feeder extends SubsystemBase {
   private final SysIdRoutine m_feederSysId;
   private Timer timer = new Timer();
 
-    public Feeder() {
+  public Feeder() {
     feederMotor = new TalonFX(FeederConstants.kFeederKickerMotorId);
 
     config = new TalonFXConfiguration();
@@ -87,29 +77,31 @@ public class Feeder extends SubsystemBase {
     SubsystemStatusManager.addSubsystem(getName(), feederMotor);
     DeviceTempReporter.addDevices(feederMotor);
 
-    m_feederSysId = new SysIdRoutine(
-        new SysIdRoutine.Config(
-            Volts.of(0.5).per(Second), // default ramp (or Volts.of(x).per(Second) if you want custom)
-            Volts.of(3), // dynamic step voltage: start with something conservative (4-6 V)
-            Seconds.of(5), // default timeout
-            state -> SignalLogger.writeString("SysId_Feeder_State", state.toString()) // log state string
-        ),
-        new SysIdRoutine.Mechanism(
-            // apply voltage request -> set CTRE motor VoltageOut
-            voltsMeasure -> {
-              // voltsMeasure is a Measure<Voltage>
-              double volts = voltsMeasure.in(Volts); // numeric voltage (e.g. 0..12)
-              // phoenix6: setControl with VoltageOut (applies volts to motor)
-              feederMotor.setControl(new VoltageOut(volts));
-              // if you have follower motors, set them appropriately (use followers or set
-              // same request for each)
-              SignalLogger.writeDouble("Rotational_Rate", voltsMeasure.in(Volts));
-            },
-            // logging callback: when using CTRE SignalLogger set this to null (CTRE logs
-            // motor signals automatically)
-            null,
-            this // subsystem for command requirements
-        ));
+    m_feederSysId = new SysIdRoutine(new SysIdRoutine.Config(Volts.of(0.5).per(Second), // default
+                                                                                        // ramp (or
+                                                                                        // Volts.of(x).per(Second)
+                                                                                        // if you
+                                                                                        // want
+                                                                                        // custom)
+        Volts.of(3), // dynamic step voltage: start with something conservative (4-6 V)
+        Seconds.of(5), // default timeout
+        state -> SignalLogger.writeString("SysId_Feeder_State", state.toString()) // log state
+                                                                                  // string
+    ), new SysIdRoutine.Mechanism(
+        // apply voltage request -> set CTRE motor VoltageOut
+        voltsMeasure -> {
+          // voltsMeasure is a Measure<Voltage>
+          double volts = voltsMeasure.in(Volts); // numeric voltage (e.g. 0..12)
+          // phoenix6: setControl with VoltageOut (applies volts to motor)
+          feederMotor.setControl(new VoltageOut(volts));
+          // if you have follower motors, set them appropriately (use followers or set
+          // same request for each)
+          SignalLogger.writeDouble("Rotational_Rate", voltsMeasure.in(Volts));
+        },
+        // logging callback: when using CTRE SignalLogger set this to null (CTRE logs
+        // motor signals automatically)
+        null, this // subsystem for command requirements
+    ));
   }
 
   @Override
@@ -120,16 +112,18 @@ public class Feeder extends SubsystemBase {
 
     Logger.recordOutput("Robot/Feeder/VelocityRPS", feederMotor.getVelocity().getValueAsDouble());
     Logger.recordOutput("Robot/Feeder/TargetVolts", currentState.getVoltage().in(Volts));
-    Logger.recordOutput("Robot/Feeder/AppliedVolts", feederMotor.getMotorVoltage().getValueAsDouble());
-    Logger.recordOutput("Robot/Feeder/StatorAmps", feederMotor.getStatorCurrent().getValueAsDouble());
-     switch (currentState) {
+    Logger.recordOutput("Robot/Feeder/AppliedVolts",
+        feederMotor.getMotorVoltage().getValueAsDouble());
+    Logger.recordOutput("Robot/Feeder/StatorAmps",
+        feederMotor.getStatorCurrent().getValueAsDouble());
+    switch (currentState) {
       case RUN:
-        if(timer.hasElapsed(indexingConstants.forwardTime)){
+        if (timer.hasElapsed(indexingConstants.forwardTime)) {
           setState(feeder_state.REVERSE);
         }
         break;
       case REVERSE:
-        if(timer.hasElapsed(indexingConstants.reverseTime)){
+        if (timer.hasElapsed(indexingConstants.reverseTime)) {
           setState(feeder_state.RUN);
         }
         break;
@@ -137,7 +131,7 @@ public class Feeder extends SubsystemBase {
   }
 
   // subsystem getters
-  public TalonFX getFeederMotor(){
+  public TalonFX getFeederMotor() {
     return feederMotor;
   }
 
@@ -159,7 +153,7 @@ public class Feeder extends SubsystemBase {
   }
 
   public void setState(feeder_state state) {
-    if(!currentState.equals(state)){
+    if (!currentState.equals(state)) {
       timer.reset();
       timer.stop();
       timer.start();
@@ -189,27 +183,32 @@ public class Feeder extends SubsystemBase {
     return new InstantCommand(() -> setState(feeder_state.STOP));
   }
 
-  public Command feederSysIdQuasistatic(SysIdRoutine.Direction dir) { return m_feederSysId.quasistatic(dir); }
-  public Command feederSysIdDynamic(SysIdRoutine.Direction dir) { return m_feederSysId.dynamic(dir); }
+  public Command feederSysIdQuasistatic(SysIdRoutine.Direction dir) {
+    return m_feederSysId.quasistatic(dir);
+  }
+
+  public Command feederSysIdDynamic(SysIdRoutine.Direction dir) {
+    return m_feederSysId.dynamic(dir);
+  }
 
   // ////////////////////////////////////////////////////////////////////////
   // SIMULATION SUPPORT — sim-only methods below this line
   // ////////////////////////////////////////////////////////////////////////
 
   /**
-   * Returns the feeder motor sim state so RebuiltSimManager can drive feeder physics
-   * (DCMotorSim voltage input and position/velocity write-back). Sim use only.
+   * Returns the feeder motor sim state so RebuiltSimManager can drive feeder physics (DCMotorSim
+   * voltage input and position/velocity write-back). Sim use only.
    */
   public com.ctre.phoenix6.sim.TalonFXSimState getFeederMotorSimState() {
-      return feederMotor.getSimState();
+    return feederMotor.getSimState();
   }
 
   /**
-   * Returns feeder motor velocity in RPS. Used by RebuiltSimManager to gate ball launches
-   * (feeder must be spinning forward above threshold). Sim use only.
+   * Returns feeder motor velocity in RPS. Used by RebuiltSimManager to gate ball launches (feeder
+   * must be spinning forward above threshold). Sim use only.
    */
   public double getSimFeederMotorVelocityRPS() {
-      return feederMotor.getVelocity().getValue().in(edu.wpi.first.units.Units.RotationsPerSecond);
+    return feederMotor.getVelocity().getValue().in(edu.wpi.first.units.Units.RotationsPerSecond);
   }
 
   // ////////////////////////////////////////////////////////////////////////

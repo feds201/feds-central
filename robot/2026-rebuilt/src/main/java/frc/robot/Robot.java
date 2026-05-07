@@ -30,11 +30,13 @@ import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.utils.HubShiftUtil;
 import frc.robot.utils.PitTesting;
 
-//comment out the above line if you don't have a LedsSubsystem, and comment out the line in RobotContainer that creates the LedsSubsystem, and comment out the line in RobotContainer that sets the default command for the LedsSubsystem. You can also delete the LedsSubsystem class if you don't have it, but it's easier to just comment out those lines.
+// comment out the above line if you don't have a LedsSubsystem, and comment out the line in
+// RobotContainer that creates the LedsSubsystem, and comment out the line in RobotContainer that
+// sets the default command for the LedsSubsystem. You can also delete the LedsSubsystem class if
+// you don't have it, but it's easier to just comment out those lines.
 public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
 
@@ -47,9 +49,10 @@ public class Robot extends LoggedRobot {
 
     // DO NOT COMMENT THIS OUT!
     // If build fails the 1st time because no BuildConstant:
-    //  1. clean your workspace cache
-    //  2. run the build command again
-    // WHY: BuildConstants is automatically generated during your build but sometimes that makes the build upset 
+    // 1. clean your workspace cache
+    // 2. run the build command again
+    // WHY: BuildConstants is automatically generated during your build but sometimes that makes the
+    // build upset
     Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
     Logger.recordMetadata("GitBranch", BuildConstants.GIT_BRANCH);
     Logger.recordMetadata("GitDirty", BuildConstants.DIRTY == 1 ? "UNCOMMITTED CHANGES" : "clean");
@@ -59,19 +62,19 @@ public class Robot extends LoggedRobot {
     // SET UP LOGGING!
     // How logging works:
     // - ALL logs get published to NetworkTables, ie:
-    //   - via AdvantageKit Logger.recordOutput OR
-    //   - via @Logged annotation OR
-    //   - via SmartDashboard OR
-    //   - via Shuffleboard OR
-    //   - by the DriverStation (automatic) OR
-    //   - by WPILib and other parties (eg Limelight)
+    // - via AdvantageKit Logger.recordOutput OR
+    // - via @Logged annotation OR
+    // - via SmartDashboard OR
+    // - via Shuffleboard OR
+    // - by the DriverStation (automatic) OR
+    // - by WPILib and other parties (eg Limelight)
     // - All those NetworkTable logs then get saved to a .wpilog file IF:
-    //   - On the real robot
-    //   - In sim if EXPLICITLY requested logging: `./gradlew simulateJava -PsimLogging=true`)
+    // - On the real robot
+    // - In sim if EXPLICITLY requested logging: `./gradlew simulateJava -PsimLogging=true`)
     // - Separately, CTRE Phoenix's SignalLogger captures every CAN signal from Phoenix devices
-    //   (TalonFX, CANcoder, Pigeon2, etc) to a .hoot file (opened with Tuner X):
-    //   - On the real robot: always on
-    //   - In sim: only when -PsimLogging=true
+    // (TalonFX, CANcoder, Pigeon2, etc) to a .hoot file (opened with Tuner X):
+    // - On the real robot: always on
+    // - In sim: only when -PsimLogging=true
     switch (RobotMap.getRobotMode()) {
       case REAL:
         new File("/U/logs/main/").mkdirs(); // Create folders for logs
@@ -80,8 +83,9 @@ public class Robot extends LoggedRobot {
         Logger.addDataReceiver(new WPILOGWriter("/U/logs/main/"));
         DataLogManager.start("/U/logs/main/"); // Starts saving logs to USB stick
         // NetworkTableInstance.getDefault() // Saves all NetworkTable logs to USB stick
-        //     .startEntryDataLog(DataLogManager.getLog(), "", "");
-        SignalLogger.setPath("/U/logs/ctre/"); // Puts .hoot files alongside our main/wpilog logs on the USB stick
+        // .startEntryDataLog(DataLogManager.getLog(), "", "");
+        SignalLogger.setPath("/U/logs/ctre/"); // Puts .hoot files alongside our main/wpilog logs on
+                                               // the USB stick
         SignalLogger.enableAutoLogging(true); // Phoenix writes a .hoot file
         break;
 
@@ -94,7 +98,8 @@ public class Robot extends LoggedRobot {
           DataLogManager.start("logs/main/"); // Starts saving logs
           NetworkTableInstance.getDefault() // Saves all NetworkTable logs
               .startEntryDataLog(DataLogManager.getLog(), "", "");
-          SignalLogger.setPath("logs/ctre/"); // Overrides the real-robot path so .hoot files go where we want
+          SignalLogger.setPath("logs/ctre/"); // Overrides the real-robot path so .hoot files go
+                                              // where we want
           SignalLogger.enableAutoLogging(true); // Phoenix writes a .hoot file
         } else {
           SignalLogger.enableAutoLogging(false); // Stops Phoenix from writing a .hoot file in sim
@@ -105,25 +110,25 @@ public class Robot extends LoggedRobot {
         String inPath = LogFileUtil.findReplayLog();
         Logger.setReplaySource(new WPILOGReader(inPath)); // Sets the log file to replay
         Logger.addDataReceiver(new NT4Publisher()); // Publishes logs to network tables
-        SignalLogger.enableAutoLogging(false); // No live devices in replay, so no Phoenix logs to capture
+        SignalLogger.enableAutoLogging(false); // No live devices in replay, so no Phoenix logs to
+                                               // capture
         break;
     }
     Logger.start();
 
-     // Silence joystick alerts
+    // Silence joystick alerts
     DriverStation.silenceJoystickConnectionWarning(true);
 
     // Log active commands
     Map<String, Integer> commandCounts = new HashMap<>();
-    BiConsumer<Command, Boolean> logCommandFunction =
-        (Command command, Boolean active) -> {
-          String name = command.getName();
-          int count = commandCounts.getOrDefault(name, 0) + (active ? 1 : -1);
-          commandCounts.put(name, count);
-          Logger.recordOutput(
-              "CommandsUnique/" + name + "_" + Integer.toHexString(command.hashCode()), active);
-          Logger.recordOutput("CommandsAll/" + name, count > 0);
-        };
+    BiConsumer<Command, Boolean> logCommandFunction = (Command command, Boolean active) -> {
+      String name = command.getName();
+      int count = commandCounts.getOrDefault(name, 0) + (active ? 1 : -1);
+      commandCounts.put(name, count);
+      Logger.recordOutput("CommandsUnique/" + name + "_" + Integer.toHexString(command.hashCode()),
+          active);
+      Logger.recordOutput("CommandsAll/" + name, count > 0);
+    };
     CommandScheduler.getInstance()
         .onCommandInitialize((Command command) -> logCommandFunction.accept(command, true));
     CommandScheduler.getInstance()
@@ -149,12 +154,18 @@ public class Robot extends LoggedRobot {
 
     // Tick Epilogue so @Logged fields publish to NetworkTables
     var backend = Epilogue.getConfig().backend;
-    Epilogue.feederLogger.update(backend.getNested("@Logged/Feeder"), m_robotContainer.getFeederSubsystem());
-    Epilogue.spindexerLogger.update(backend.getNested("@Logged/Spindexer"), m_robotContainer.getSpindexer());
-    Epilogue.shooterHoodLogger.update(backend.getNested("@Logged/ShooterHood"), m_robotContainer.getShooterHood());
-    Epilogue.shooterWheelsLogger.update(backend.getNested("@Logged/ShooterWheels"), m_robotContainer.getShooterWheels());
-    Epilogue.limelightWrapperLogger.update(backend.getNested("@Logged/Limelights/Main"), m_robotContainer.getLimelightMain());
-    Epilogue.limelightWrapperLogger.update(backend.getNested("@Logged/Limelights/Backup"), m_robotContainer.getLimelightBackup());
+    Epilogue.feederLogger.update(backend.getNested("@Logged/Feeder"),
+        m_robotContainer.getFeederSubsystem());
+    Epilogue.spindexerLogger.update(backend.getNested("@Logged/Spindexer"),
+        m_robotContainer.getSpindexer());
+    Epilogue.shooterHoodLogger.update(backend.getNested("@Logged/ShooterHood"),
+        m_robotContainer.getShooterHood());
+    Epilogue.shooterWheelsLogger.update(backend.getNested("@Logged/ShooterWheels"),
+        m_robotContainer.getShooterWheels());
+    Epilogue.limelightWrapperLogger.update(backend.getNested("@Logged/Limelights/Main"),
+        m_robotContainer.getLimelightMain());
+    Epilogue.limelightWrapperLogger.update(backend.getNested("@Logged/Limelights/Backup"),
+        m_robotContainer.getLimelightBackup());
 
     // Publish a small set of live telemetry for the RTU dashboard
     m_robotContainer.publishTelemetry();
@@ -163,12 +174,15 @@ public class Robot extends LoggedRobot {
     m_robotContainer.limelightConnection();
     m_robotContainer.usbStorage();
 
-    //Log Hub shift times
-    Logger.recordOutput("Robot/HubShift/RemainingTime", HubShiftUtil.getOfficialShiftInfo().remainingTime());
-    Logger.recordOutput("Robot/HubShift/ElapsedTime", HubShiftUtil.getOfficialShiftInfo().elapsedTime());
+    // Log Hub shift times
+    Logger.recordOutput("Robot/HubShift/RemainingTime",
+        HubShiftUtil.getOfficialShiftInfo().remainingTime());
+    Logger.recordOutput("Robot/HubShift/ElapsedTime",
+        HubShiftUtil.getOfficialShiftInfo().elapsedTime());
     Logger.recordOutput("Robot/HubShift/Active", HubShiftUtil.getOfficialShiftInfo().active());
-    Logger.recordOutput("Robot/HubShift/CurrentShift", HubShiftUtil.getOfficialShiftInfo().currentShift().toString());
-    
+    Logger.recordOutput("Robot/HubShift/CurrentShift",
+        HubShiftUtil.getOfficialShiftInfo().currentShift().toString());
+
     // DeviceTempReporter.pollAll();
     // SubsystemStatusManager.pollAll();
   }
@@ -198,7 +212,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void autonomousExit() {
-    
+
     m_robotContainer.idleSubsystems();
   }
 
@@ -219,12 +233,12 @@ public class Robot extends LoggedRobot {
   @Override
   public void testInit() {
     CommandScheduler.getInstance().cancelAll();
-    //m_robotContainer.runRootTests();
+    // m_robotContainer.runRootTests();
   }
 
   @Override
   public void testPeriodic() {
-    //m_robotContainer.updateRootTests();
+    // m_robotContainer.updateRootTests();
   }
 
   @Override
