@@ -11,6 +11,7 @@ import frc.robot.subsystems.shooter.ShooterWheels;
 import frc.robot.subsystems.shooter.ShooterHood.shooterhood_state;
 import frc.robot.subsystems.shooter.ShooterWheels.shooter_state;
 import frc.robot.subsystems.spindexer.Spindexer.spindexer_state;
+import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import frc.robot.commands.swerve.HubDrive;
 import frc.robot.commands.swerve.PassingDrive;
 import frc.robot.commands.swerve.TeleopSwerve;
@@ -123,7 +124,7 @@ public class ControllerBindings {
         // Button to shoot from against hub — run shooter/feeder/spindexer + agitate in parallel while held
         driver.x()
                 .whileTrue(Commands.sequence(
-                  intakeSubsystem.setRollerStateCommand(RollerState.ON),
+                  intakeSubsystem.setRollerStateCommand(RollerState.AGITATEON),
                         feederSubsystem.setStateCommand(feeder_state.PRUN),
                         spinDexer.setStateCommand(spindexer_state.PFORWARD),
                         // Pulse intake extend/retract while held (5 roller rotations per pulse, 0.3s retract dwell)
@@ -154,7 +155,7 @@ public class ControllerBindings {
         
 
         // If out of neutral zone, face hub and ready shoot
-        driver.povRight().and(() -> !ShooterConstants.neutralZone.contains(drivetrain.getState().Pose.getTranslation())).whileTrue(
+        driver.povRight().and(() -> !ShooterConstants.neutralZone.contains(drivetrain.getState().Pose.getTranslation())).and(()-> !drivetrain.inOtherAlliance()).whileTrue(
                 Commands.sequence(
                         shooterHood.setStateCommand(shooterhood_state.SHOOTING),
                         shooterWheels.setStateCommand(shooter_state.SHOOTING)
@@ -166,7 +167,7 @@ public class ControllerBindings {
                         ));
 
         // If in neutral zone, face outpost and ready shoot (passing shot)
-        driver.povRight().and(() -> ShooterConstants.neutralZone.contains(drivetrain.getState().Pose.getTranslation())).whileTrue(
+        driver.povRight().and(() -> drivetrain.inNeutralZoneOrOpposing()).whileTrue(
                 Commands.sequence(
                         shooterHood.setStateCommand(shooterhood_state.PASSING),
                         shooterWheels.setStateCommand(shooter_state.PASSING)
@@ -182,7 +183,7 @@ public class ControllerBindings {
                 Commands.sequence(
                         feederSubsystem.setStateCommand(feeder_state.PRUN),
                         spinDexer.setStateCommand(spindexer_state.PFORWARD),
-                        intakeSubsystem.setRollerStateCommand(RollerState.ON)
+                        intakeSubsystem.setRollerStateCommand(RollerState.AGITATEON)
                 )
         ).onFalse(
                 Commands.sequence(
@@ -239,15 +240,15 @@ public class ControllerBindings {
                 .onTrue(new InstantCommand(() -> shooterHood.updateHoodAngleMultiplier(-.01)));
 
          operator.y()
-                .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.AGITATE_IN).alongWith(intakeSubsystem.setRollerStateCommand(RollerState.ON)))
+                .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.AGITATE_IN).alongWith(intakeSubsystem.setRollerStateCommand(RollerState.AGITATEON)))
                 .onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.INTAKING));
 
        operator.a()
-                .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.CLOSE_AGITATION_OUT).alongWith(intakeSubsystem.setRollerStateCommand(RollerState.ON)))
+                .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.CLOSE_AGITATION_OUT).alongWith(intakeSubsystem.setRollerStateCommand(RollerState.AGITATEON)))
                 .onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.INTAKING));
         
         operator.b()
-                .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.FAR_AGITATION_IN).alongWith(intakeSubsystem.setRollerStateCommand(RollerState.ON)))
+                .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.FAR_AGITATION_IN).alongWith(intakeSubsystem.setRollerStateCommand(RollerState.AGITATEON)))
                  .onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.INTAKING));
 
         operator.x()

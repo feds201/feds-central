@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.RobotMap.DrivetrainConstants;
 import frc.robot.commands.swerve.BallTracking;
+import frc.robot.commands.swerve.HubDriveAUTO;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem.IntakeState;
 import frc.robot.subsystems.intake.IntakeSubsystem.RollerState;
@@ -151,14 +152,13 @@ public class RobotContainer extends ControllerBindings {
 
     // Set up auto chooser
     autoChooser = AutoBuilder.buildAutoChooser();
-    SmartDashboard.putData("Auto Chooser", autoChooser);
 
     try {
         // Ball tracking autos
         registBallTrackingAuto(
             "Dev-FD-RightMidFieldDoublepass",
             "Internal-FD-RightMidFieldDoublepass-Part1",
-            List.of("Internal-FD-RightMidFieldDoublepass-Part2")
+            List.of("Internal-FD-RightMidFieldDoublepass-Part2", "Internal-FD-RightMidFieldDoublepass-Part3")
         );
         registBallTrackingAuto(
             "Dev-FD-MidIntakeToLeftBump",
@@ -175,7 +175,12 @@ public class RobotContainer extends ControllerBindings {
         autoChooser.addOption("Comp-LeftMidfieldDoublePass", new PathPlannerAuto("Comp-RightMidfieldDoublepass", true));
         autoChooser.addOption("Dev-MidIntakeToRightBump", new PathPlannerAuto("Comp-MidIntakeToLeftBump", true)); // TESTING - DO NOT USE
 
+
+
     } catch (Exception e) { e.printStackTrace(); }
+
+    
+     SmartDashboard.putData("Auto Chooser", autoChooser);
   }
 
     private void registBallTrackingAuto(String autoName,
@@ -295,9 +300,13 @@ public class RobotContainer extends ControllerBindings {
     public void updateLocalization() {
         if (llMain.isConnected() && SmartDashboard.getBoolean("UseMainLL", true)) {
             llMain.updateLocalizationLimelight(drivetrain);
+            //set backup to viewfinder pipeline when not in use
+            if(llBackup.getData().pipelineData.getCurrentPipelineIndex() != 1) llBackup.getSettings().withPipelineIndex(1);
             SmartDashboard.putString("Active Limelight", "MAIN");
         } else {
             llBackup.updateLocalizationLimelight(drivetrain);
+            //ensure atag pipeline is selected when llbackup is used for localization
+            if(llBackup.getData().pipelineData.getCurrentPipelineIndex() != 0) llBackup.getSettings().withPipelineIndex(0);
             SmartDashboard.putString("Active Limelight", "BACKUP");
         }
     }
@@ -383,6 +392,7 @@ public void registerNamedCommands() {
   NamedCommands.registerCommand("Shooting", shooterWheels.setStateCommand(shooter_state.SHOOTING).alongWith(feederSubsystem.setStateCommand(feeder_state.RUN)).alongWith(spinDexer.setStateCommand(spindexer_state.RUN)).alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
   NamedCommands.registerCommand("Start Passing Spin", shooterWheels.setStateCommand(shooter_state.PASSING).alongWith(shooterHood.setStateCommand(shooterhood_state.PASSING)));
   NamedCommands.registerCommand("Passing", shooterWheels.setStateCommand(shooter_state.PASSING).alongWith(feederSubsystem.setStateCommand(feeder_state.RUN)).alongWith(spinDexer.setStateCommand(spindexer_state.RUN)).alongWith(shooterHood.setStateCommand(shooterhood_state.PASSING)));
+  NamedCommands.registerCommand("Auto Hub Drive", new HubDriveAUTO(drivetrain));
 }
 
 

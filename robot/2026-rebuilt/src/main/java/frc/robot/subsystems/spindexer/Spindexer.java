@@ -66,8 +66,7 @@ public class Spindexer extends SubsystemBase {
   private final VoltageOut vOut = new VoltageOut(0);
   private spindexer_state currentState = spindexer_state.STOP;
   private final SysIdRoutine m_spindexerSysId;
-  //Timer to switch between forward and reverse during indexing
-  private Timer washingMachineTimer = new Timer();
+  private Timer timer = new Timer();
 
   // private final SysIdRoutine m_SpindexerSysId;
 
@@ -125,30 +124,13 @@ public class Spindexer extends SubsystemBase {
 
     switch (currentState) {
       case RUN:
-        if(!washingMachineTimer.isRunning()){
-          washingMachineTimer.start();
-        }
-        if(washingMachineTimer.hasElapsed(indexingConstants.forwardTime)){ // 2 sec (Needs to be tuned)
+        if(timer.hasElapsed(indexingConstants.forwardTime)){
           setState(spindexer_state.REVERSE);
-          washingMachineTimer.stop();
-          washingMachineTimer.reset();
         }
         break;
       case REVERSE:
-        if(!washingMachineTimer.isRunning()){
-          washingMachineTimer.start();
-        }
-        if(washingMachineTimer.hasElapsed(indexingConstants.reverseTime)){ // 0.5 sec (Needs to be tuned)
+        if(timer.hasElapsed(indexingConstants.reverseTime)){
           setState(spindexer_state.RUN);
-          washingMachineTimer.stop();
-          washingMachineTimer.reset();
-        }
-        break;
-
-      case STOP, PREVERSE, PFORWARD:
-        if(washingMachineTimer.isRunning()){
-          washingMachineTimer.stop();
-          washingMachineTimer.reset();
         }
         break;
     }
@@ -180,6 +162,11 @@ public spindexer_state getCurrentState() {
 
 public void setState(spindexer_state state)
 {
+  if(!currentState.equals(state)){
+    timer.reset();
+    timer.stop();
+    timer.start();
+  }
   setVoltage(state.getVoltage());
   currentState = state;
 }

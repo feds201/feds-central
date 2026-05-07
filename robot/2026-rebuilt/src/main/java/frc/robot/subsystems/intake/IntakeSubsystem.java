@@ -49,6 +49,7 @@ public class IntakeSubsystem extends SubsystemBase {
   // Aggressive acceleration multiplier requested (20x faster than default)
   private static final double MOTION_MAGIC_ACCEL_MULTIPLIER = 40.0;
   private static final double ROLLER_OUTPUT = 1.0; //90% for rollers, 70% originally;
+  private static final double AGITATE_OUTPUT = 0.5; // power level to use during agitation states (lower is more gentle, higher is more aggressive)
   private final Timer timer = new Timer();
 
 
@@ -81,6 +82,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
   public enum RollerState {
     ON,
+    AGITATEON,
     OFF,
     REVERSE,
   }
@@ -93,6 +95,11 @@ public class IntakeSubsystem extends SubsystemBase {
   
 
   public void setState(IntakeState targetState) {
+    if(!currentState.equals(targetState)){
+      timer.reset();
+      timer.stop();
+      timer.start();
+    }
     this.currentState = targetState;
     switch (targetState) {
       case DEFAULT -> {
@@ -389,106 +396,63 @@ public class IntakeSubsystem extends SubsystemBase {
   
   @Override
   public void periodic() {
-
-    
     switch (currentState) {
       case AGITATE_IN:
-       if(! timer.isRunning()){
-          timer.start();
-       }
-       if(timer.hasElapsed(IntakeSubsystemConstants.agitateCycleConstant)){
-        setState(IntakeState.AGITATE_OUT);
-        timer.stop();
-        timer.reset();
-       }
+        if(timer.hasElapsed(IntakeSubsystemConstants.agitateCycleConstant)){
+          setState(IntakeState.AGITATE_OUT);
+        }
         break;
 
-        case AGITATE_OUT:
-           if(! timer.isRunning()){
-          timer.start();
-       }
+      case AGITATE_OUT:
         if(timer.hasElapsed(IntakeSubsystemConstants.agitateCycleConstant)){
-        setState(IntakeState.AGITATE_IN);
-        timer.stop();
-        timer.reset();
-      }
-      break;
+          setState(IntakeState.AGITATE_IN);
+        }
+        break;
 
       case FAR_AGITATION_IN:
-       if(! timer.isRunning()){
-          timer.start();
-       }
-       if(timer.hasElapsed(.2)){
-        setState(IntakeState.FAR_AGITATION_OUT);
-        timer.stop();
-        timer.reset();
-       }
+        if(timer.hasElapsed(.2)){
+          setState(IntakeState.FAR_AGITATION_OUT);
+        }
         break;
 
-        case FAR_AGITATION_OUT:
-           if(! timer.isRunning()){
-          timer.start();
-       }
+      case FAR_AGITATION_OUT:
         if(timer.hasElapsed(.2)){
-        setState(IntakeState.FAR_AGITATION_IN);
-        timer.stop();
-        timer.reset();
-      }
-      break;
-
-
-        case CLOSE_AGITATION_OUT:
-          if(!timer.isRunning()){
-            timer.start();
-          }
-          if(timer.hasElapsed(0.2)){
-            setState(IntakeState.CLOSE_AGITATION_IN); // really close to default
-            timer.stop();
-            timer.reset();
-          }
-          break;
-
-          case CLOSE_AGITATION_IN:
-          if(!timer.isRunning()){
-            timer.start();
-          }
-
-          if(timer.hasElapsed(0.2)){
-            setState(IntakeState.CLOSE_AGITATION_OUT); // about halfway from bumper to extended
-            timer.stop();
-            timer.reset();
+          setState(IntakeState.FAR_AGITATION_IN);
         }
-          break;
+        break;
 
-        case DITHERIN_AGITATION:
-        if(!timer.isRunning()){
-          timer.start();
-      }
+      case CLOSE_AGITATION_OUT:
+        if(timer.hasElapsed(0.2)){
+          setState(IntakeState.CLOSE_AGITATION_IN); // really close to default
+        }
+        break;
+
+      case CLOSE_AGITATION_IN:
+        if(timer.hasElapsed(0.2)){
+          setState(IntakeState.CLOSE_AGITATION_OUT); // about halfway from bumper to extended
+        }
+        break;
+
+      case DITHERIN_AGITATION:
         motor.set(-0.3);
 
         if(timer.hasElapsed(0.3)){
             setState(IntakeState.DITHEROUT_AGITATION);
-            timer.stop();
-            timer.reset();
         }
-          break;
+        break;
 
-        case DITHEROUT_AGITATION:
-        if(!timer.isRunning()){
-          timer.start();
-      }
+      case DITHEROUT_AGITATION:
         motor.set(0.3);
 
         if(timer.hasElapsed(0.1)){
-            setState(IntakeState.DITHERIN_AGITATION); // small retract from extended
-            timer.stop();
-            timer.reset();
+          setState(IntakeState.DITHERIN_AGITATION); // small retract from extended
         }
-          break;
+        break;
 
       case INTAKING:
         limitSwitchExtensionControl();
         break;
+
       case EXTENDED:
         limitSwitchExtensionControl();
         break;
@@ -499,6 +463,10 @@ public class IntakeSubsystem extends SubsystemBase {
       case ON:
         rollerMotor.set(ROLLER_OUTPUT);
         leds.intakeSignal();
+        break;
+      case AGITATEON: 
+      rollerMotor.set(AGITATE_OUTPUT);
+       leds.intakeSignal();
         break;
       case REVERSE:
         rollerMotor.set(-ROLLER_OUTPUT);
@@ -511,6 +479,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
     Logger.recordOutput("Robot/Intake/State", currentState.toString());
     Logger.recordOutput("Robot/Intake/Extended", currentState != IntakeState.DEFAULT);
+    Logger.recordOutput("Robot/Intake/LimitSwitchPressed", !limit_switch.get());
     Logger.recordOutput("Robot/Intake/ExtensionPct", Math.round(100.0 * motor.getPosition().getValue().in(Units.Rotations) / extendedRotations));
     Logger.recordOutput("Robot/Intake/PositionRotations", motor.getPosition().getValueAsDouble());
     Logger.recordOutput("Robot/Intake/TargetPositionRotations", motor.getClosedLoopReference().getValueAsDouble());

@@ -28,7 +28,12 @@
       "linkedName": "SecondRightIntakeEnd"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.7611940298507427,
+      "rotationDegrees": 45.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -42,7 +47,7 @@
   },
   "goalEndState": {
     "velocity": 2.0,
-    "rotation": 0.0
+    "rotation": 117.0
   },
   "reversed": false,
   "folder": "MidIntakeToRightBump",

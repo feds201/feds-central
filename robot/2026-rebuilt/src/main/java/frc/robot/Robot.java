@@ -13,6 +13,7 @@ import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import com.pathplanner.lib.commands.FollowPathCommand;
 import com.ctre.phoenix6.SignalLogger;
@@ -73,12 +74,13 @@ public class Robot extends LoggedRobot {
     //   - In sim: only when -PsimLogging=true
     switch (RobotMap.getRobotMode()) {
       case REAL:
-        Logger.addDataReceiver(new NT4Publisher()); // Publishes all Logger logs to NetworkTables
         new File("/U/logs/main/").mkdirs(); // Create folders for logs
         new File("/U/logs/ctre/").mkdirs();
+        Logger.addDataReceiver(new NT4Publisher()); // Publishes all Logger logs to NetworkTables
+        Logger.addDataReceiver(new WPILOGWriter("/U/logs/main/"));
         DataLogManager.start("/U/logs/main/"); // Starts saving logs to USB stick
-        NetworkTableInstance.getDefault() // Saves all NetworkTable logs to USB stick
-            .startEntryDataLog(DataLogManager.getLog(), "", "");
+        // NetworkTableInstance.getDefault() // Saves all NetworkTable logs to USB stick
+        //     .startEntryDataLog(DataLogManager.getLog(), "", "");
         SignalLogger.setPath("/U/logs/ctre/"); // Puts .hoot files alongside our main/wpilog logs on the USB stick
         SignalLogger.enableAutoLogging(true); // Phoenix writes a .hoot file
         break;

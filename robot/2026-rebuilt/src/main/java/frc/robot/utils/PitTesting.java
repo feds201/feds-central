@@ -171,7 +171,7 @@ public class PitTesting {
             new InstantCommand(() -> orchestra.stop()) ,
             intake.setIntakeStateCommand(IntakeState.INTAKING),
             Commands.waitSeconds(testTime),
-            intake.setRollerStateCommand(RollerState.ON),
+            intake.setRollerStateCommand(RollerState.AGITATEON),
             Commands.waitSeconds(testTime),
             intake.setRollerStateCommand(RollerState.OFF),
             Commands.waitSeconds(testTime),
