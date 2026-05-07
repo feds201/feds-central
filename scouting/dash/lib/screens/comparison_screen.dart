@@ -138,7 +138,15 @@ class _ComparisonScreenState extends State<ComparisonScreen> {
 
   Future<void> _refresh() async {
     final svc = context.read<DataService>();
-    await svc.fetchAll();
+    final messenger = ScaffoldMessenger.of(context);
+    await svc.fetchAll(onProgress: (p) {
+      messenger.removeCurrentSnackBar();
+      messenger.showSnackBar(SnackBar(
+        content: Text(p.summary),
+        duration: const Duration(seconds: 30),
+      ));
+    });
+    if (mounted) messenger.removeCurrentSnackBar();
     if (mounted && svc.scoutingByTeam.isNotEmpty) {
       await LocalPrefs.saveData(
         eventKey: svc.eventKey,
