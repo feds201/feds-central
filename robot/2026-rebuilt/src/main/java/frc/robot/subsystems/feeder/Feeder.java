@@ -17,13 +17,19 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.RobotMap;
 import frc.robot.RobotMap.FeederConstants;
 import frc.robot.RobotMap.indexingConstants;
 import frc.robot.utils.DeviceTempReporter;
@@ -34,8 +40,12 @@ public class Feeder extends SubsystemBase {
 
   // subsystem states
   public enum feeder_state {
-    RUN(Volts.of(7)), PRUN(Volts.of(7)), REVERSE(Volts.of(-7)), PREVERSE(
-        Volts.of(-7)), STOP(Volts.of(0)), REVERSE_SHORT(Volts.of(-7));
+    RUN(Volts.of(7)),
+    PRUN(Volts.of(7)),
+    REVERSE(Volts.of(-7)),
+    PREVERSE(Volts.of(-6)),
+    STOP(Volts.of(0)),
+    REVERSE_SHORT(Volts.of(-7));
 
     private final Voltage targetVoltage;
 
@@ -56,9 +66,15 @@ public class Feeder extends SubsystemBase {
   private final VoltageOut vOut = new VoltageOut(0);
   private feeder_state currentState = feeder_state.STOP;
   private final SysIdRoutine m_feederSysId;
-  private Timer timer = new Timer();
+  //Timer to switch between forward and reverse during indexing
+  private Timer washingMachineTimer = new Timer();
+  private Timer reverseTimer = new Timer();
+  private final ShuffleboardTab pitTab;
+  private final GenericEntry feederConnectedEntry;
+  private final GenericEntry feederPoweredEntry;
+  private final ShuffleboardLayout feederLayout;
 
-  public Feeder() {
+    public Feeder() {
     feederMotor = new TalonFX(FeederConstants.kFeederKickerMotorId);
 
     config = new TalonFXConfiguration();
@@ -77,13 +93,14 @@ public class Feeder extends SubsystemBase {
     SubsystemStatusManager.addSubsystem(getName(), feederMotor);
     DeviceTempReporter.addDevices(feederMotor);
 
-    m_feederSysId =
-        new SysIdRoutine(new SysIdRoutine.Config(Volts.of(0.5).per(Second), // default ramp (or Volts.of(x).per(Second) if you want custom)
+    m_feederSysId = new SysIdRoutine(
+        new SysIdRoutine.Config(
+            Volts.of(0.5).per(Second), // default ramp (or Volts.of(x).per(Second) if you want custom)
             Volts.of(3), // dynamic step voltage: start with something conservative (4-6 V)
             Seconds.of(5), // default timeout
-            state -> SignalLogger.writeString("SysId_Feeder_State",
-                state.toString()) // log state string
-        ), new SysIdRoutine.Mechanism(
+            state -> SignalLogger.writeString("SysId_Feeder_State", state.toString()) // log state string
+        ),
+        new SysIdRoutine.Mechanism(
             // apply voltage request -> set CTRE motor VoltageOut
             voltsMeasure -> {
               // voltsMeasure is a Measure<Voltage>
@@ -92,54 +109,67 @@ public class Feeder extends SubsystemBase {
               feederMotor.setControl(new VoltageOut(volts));
               // if you have follower motors, set them appropriately (use followers or set
               // same request for each)
-              SignalLogger.writeDouble("Rotational_Rate",
-                  voltsMeasure.in(Volts));
+              SignalLogger.writeDouble("Rotational_Rate", voltsMeasure.in(Volts));
             },
             // logging callback: when using CTRE SignalLogger set this to null (CTRE logs
             // motor signals automatically)
-            null, this // subsystem for command requirements
+            null,
+            this // subsystem for command requirements
         ));
+        pitTab = Shuffleboard.getTab("Pit Testing");
+        feederLayout = pitTab.getLayout("feeder Health", BuiltInLayouts.kList).withSize(2, 1).withPosition(4, 2);
+        feederConnectedEntry = feederLayout.add("feeder Motor is Connected", false).getEntry();
+        feederPoweredEntry = feederLayout.add("feeder Motor is Powered", false).getEntry();
   }
 
   @Override
   public void periodic() {
+    feederConnectedEntry.setBoolean(feederMotor.isConnected());
+  feederPoweredEntry.setBoolean(feederMotor.getSupplyVoltage().getValueAsDouble() > RobotMap.PitConstants.kPoweredThresholdVolts);
 
-    Logger.recordOutput("Robot/Shooter/FeederOn",
-        currentState != feeder_state.STOP);
+    Logger.recordOutput("Robot/Shooter/FeederOn", currentState == feeder_state.RUN);
     Logger.recordOutput("Robot/Shooter/FeederState", currentState.toString());
-
-    Logger.recordOutput("Robot/Feeder/VelocityRPS",
-        feederMotor.getVelocity().getValueAsDouble());
-    Logger.recordOutput("Robot/Feeder/TargetVolts",
-        currentState.getVoltage().in(Volts));
-    Logger.recordOutput("Robot/Feeder/AppliedVolts",
-        feederMotor.getMotorVoltage().getValueAsDouble());
-    Logger.recordOutput("Robot/Feeder/StatorAmps",
-        feederMotor.getStatorCurrent().getValueAsDouble());
-    switch (currentState) {
+     switch (currentState) {
       case RUN:
-        if (timer.hasElapsed(indexingConstants.forwardTime)) {
+        if(!washingMachineTimer.isRunning()){
+          washingMachineTimer.start();
+        }
+        if(washingMachineTimer.hasElapsed(indexingConstants.forwardTime)){
           setState(feeder_state.REVERSE);
+          washingMachineTimer.stop();
+          washingMachineTimer.reset();
         }
         break;
       case REVERSE:
-        if (timer.hasElapsed(indexingConstants.reverseTime)) {
-          setState(feeder_state.RUN);
+        if(!washingMachineTimer.isRunning()){
+          washingMachineTimer.start();
         }
+        if(washingMachineTimer.hasElapsed(indexingConstants.reverseTime)){
+          setState(feeder_state.RUN);
+          washingMachineTimer.stop();
+          washingMachineTimer.reset();
+        } 
         break;
       case REVERSE_SHORT:
-        if (timer.hasElapsed(0.1)) {
+        reverseTimer.start();
+        if(reverseTimer.hasElapsed(0.1)){
           setState(feeder_state.STOP);
+          reverseTimer.stop();
+          reverseTimer.reset();
         }
+        break;
+        
+
+       case STOP, PRUN, PREVERSE:
+        if(washingMachineTimer.isRunning()){
+            washingMachineTimer.reset();
+            washingMachineTimer.stop();
+          }
         break;
     }
   }
 
   // subsystem getters
-  public TalonFX getFeederMotor() {
-    return feederMotor;
-  }
-
   public Angle getPosition() {
     return feederMotor.getPosition().getValue();
   }
@@ -158,11 +188,6 @@ public class Feeder extends SubsystemBase {
   }
 
   public void setState(feeder_state state) {
-    if (!currentState.equals(state)) {
-      timer.reset();
-      timer.stop();
-      timer.start();
-    }
     setVoltage(state.getVoltage());
     currentState = state;
   }
@@ -188,36 +213,12 @@ public class Feeder extends SubsystemBase {
     return new InstantCommand(() -> setState(feeder_state.STOP));
   }
 
-  public Command feederSysIdQuasistatic(SysIdRoutine.Direction dir) {
-    return m_feederSysId.quasistatic(dir);
-  }
+  //    public final Command FeederAimingMode(double seconds){
+  // return runOnce(() ->{
+  //     setStateCommand(feeder_state.REVERSE);})
+  //     .withTimeout(seconds);
+  // };
 
-  public Command feederSysIdDynamic(SysIdRoutine.Direction dir) {
-    return m_feederSysId.dynamic(dir);
-  }
-
-  // ////////////////////////////////////////////////////////////////////////
-  // SIMULATION SUPPORT — sim-only methods below this line
-  // ////////////////////////////////////////////////////////////////////////
-
-  /**
-   * Returns the feeder motor sim state so RebuiltSimManager can drive feeder physics (DCMotorSim
-   * voltage input and position/velocity write-back). Sim use only.
-   */
-  public com.ctre.phoenix6.sim.TalonFXSimState getFeederMotorSimState() {
-    return feederMotor.getSimState();
-  }
-
-  /**
-   * Returns feeder motor velocity in RPS. Used by RebuiltSimManager to gate ball launches (feeder
-   * must be spinning forward above threshold). Sim use only.
-   */
-  public double getSimFeederMotorVelocityRPS() {
-    return feederMotor.getVelocity().getValue()
-        .in(edu.wpi.first.units.Units.RotationsPerSecond);
-  }
-
-  // ////////////////////////////////////////////////////////////////////////
-  // END SIMULATION SUPPORT
-  // ////////////////////////////////////////////////////////////////////////
+  public Command feederSysIdQuasistatic(SysIdRoutine.Direction dir) { return m_feederSysId.quasistatic(dir); }
+  public Command feederSysIdDynamic(SysIdRoutine.Direction dir) { return m_feederSysId.dynamic(dir); }
 }

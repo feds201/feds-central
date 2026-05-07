@@ -1,23 +1,19 @@
-import 'package:bot_path_drawer/bot_path_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/data_service.dart';
 import '../theme.dart';
 
 /// Dropdown search box for picking a team number.
-/// Tint is derived from (alliance, slot) to mirror the bot path drawer's
-/// per-team colors in alliance mode.
+/// Shows the slot color as an accent.
 class TeamSelector extends StatefulWidget {
   const TeamSelector({
     super.key,
-    required this.alliance,
-    required this.slot,
+    required this.slotIndex,
     required this.value,
     required this.onChanged,
   });
 
-  final Alliance alliance;
-  final int slot;
+  final int slotIndex;
   final int? value;
   final ValueChanged<int?> onChanged;
 
@@ -30,9 +26,6 @@ class _TeamSelectorState extends State<TeamSelector> {
   final _focusNode = FocusNode();
   OverlayEntry? _overlay;
   String _filter = '';
-
-  Color get _color =>
-      AppTheme.allianceTeamColors[widget.alliance]![widget.slot];
 
   @override
   void initState() {
@@ -106,10 +99,6 @@ class _TeamSelectorState extends State<TeamSelector> {
                     itemBuilder: (_, i) {
                       final t = filtered[i];
                       final isSelected = t == widget.value;
-                      final name = svc.teamNames[t];
-                      final label = (name == null || name.isEmpty)
-                          ? '$t'
-                          : '$t — $name';
                       return InkWell(
                         onTap: () {
                           widget.onChanged(t);
@@ -119,13 +108,17 @@ class _TeamSelectorState extends State<TeamSelector> {
                         child: Container(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 12, vertical: 8),
-                          color:
-                              isSelected ? _color.withOpacity(0.10) : null,
+                          color: isSelected
+                              ? AppTheme.slotColors[widget.slotIndex]
+                                  .withOpacity(0.10)
+                              : null,
                           child: Text(
-                            label,
+                            '$t',
                             style: AppTheme.mono(12,
-                                color: isSelected ? _color : AppTheme.text),
-                            overflow: TextOverflow.ellipsis,
+                                color: isSelected
+                                    ? AppTheme
+                                        .slotColors[widget.slotIndex]
+                                    : AppTheme.text),
                           ),
                         ),
                       );
@@ -146,10 +139,8 @@ class _TeamSelectorState extends State<TeamSelector> {
 
   @override
   Widget build(BuildContext context) {
-    final color = _color;
-    final hint = widget.alliance == Alliance.red
-        ? 'Red ${widget.slot + 1}'
-        : 'Blue ${widget.slot + 1}';
+    final color = AppTheme.slotColors[widget.slotIndex];
+    final slotLabel = 'Team ${widget.slotIndex + 1}';
 
     return SizedBox(
       height: 38,
@@ -158,7 +149,7 @@ class _TeamSelectorState extends State<TeamSelector> {
         focusNode: _focusNode,
         style: AppTheme.mono(12, color: color),
         decoration: InputDecoration(
-          hintText: hint,
+          hintText: slotLabel,
           hintStyle: AppTheme.mono(11, color: AppTheme.muted),
           prefixIcon: Container(
             width: 32,

@@ -4,20 +4,12 @@ import '../models/match_entry.dart';
 import '../services/data_service.dart';
 import '../theme.dart';
 
-/// Dropdown for picking a match from the TBA schedule.
-/// Calls [onSelected] with the [MatchEntry] so the parent can grab both
-/// red and blue team lists.
+/// Dropdown for picking a match/alliance from TBA schedule.
+/// When an entry is selected, calls [onSelected] with the 3 team numbers.
 class MatchSelector extends StatefulWidget {
-  const MatchSelector({
-    super.key,
-    required this.value,
-    required this.onSelected,
-    required this.onCleared,
-  });
+  const MatchSelector({super.key, required this.onSelected});
 
-  final MatchEntry? value;
-  final ValueChanged<MatchEntry> onSelected;
-  final VoidCallback onCleared;
+  final void Function(List<int> teams) onSelected;
 
   @override
   State<MatchSelector> createState() => _MatchSelectorState();
@@ -26,6 +18,7 @@ class MatchSelector extends StatefulWidget {
 class _MatchSelectorState extends State<MatchSelector> {
   OverlayEntry? _overlay;
   final _linkKey = GlobalKey();
+  MatchEntry? _selected;
 
   @override
   void dispose() {
@@ -52,6 +45,7 @@ class _MatchSelectorState extends State<MatchSelector> {
 
       return Stack(
         children: [
+          // Dismiss on tap outside.
           Positioned.fill(
             child: GestureDetector(
               behavior: HitTestBehavior.translucent,
@@ -67,7 +61,7 @@ class _MatchSelectorState extends State<MatchSelector> {
               borderRadius: BorderRadius.circular(8),
               elevation: 8,
               child: ConstrainedBox(
-                constraints: const BoxConstraints(maxHeight: 360),
+                constraints: const BoxConstraints(maxHeight: 300),
                 child: entries.isEmpty
                     ? const Padding(
                         padding: EdgeInsets.all(12),
@@ -92,18 +86,25 @@ class _MatchSelectorState extends State<MatchSelector> {
   }
 
   Widget _buildItem(MatchEntry entry) {
-    final isSelected = widget.value?.matchKey == entry.matchKey;
+    final isSelected = _selected?.matchKey == entry.matchKey &&
+        _selected?.alliance == entry.alliance;
+    final isRed = entry.alliance == 'red';
 
     return InkWell(
       onTap: () {
-        widget.onSelected(entry);
+        setState(() => _selected = entry);
+        widget.onSelected(entry.teamNumbers);
         _removeOverlay();
       },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        color: isSelected ? AppTheme.gold.withOpacity(0.10) : null,
+        color: isSelected
+            ? AppTheme.gold.withOpacity(0.10)
+            : isRed
+                ? AppTheme.red.withOpacity(0.04)
+                : const Color(0xFF3B82F6).withOpacity(0.04),
         child: Text(
-          _formatLabel(entry),
+          entry.label,
           style: AppTheme.mono(
             11,
             color: isSelected ? AppTheme.gold : AppTheme.text,
@@ -113,18 +114,6 @@ class _MatchSelectorState extends State<MatchSelector> {
     );
   }
 
-  String _formatLabel(MatchEntry entry) {
-    final star = entry.hasOurTeam ? '⭐ ' : '';
-    final red = _formatTeamList(entry.redTeams);
-    final blue = _formatTeamList(entry.blueTeams);
-    return '$star[${entry.shortLabel}] $red vs $blue';
-  }
-
-  String _formatTeamList(List<int> teams) {
-    if (teams.isEmpty) return '(—)';
-    return '(${teams.join(', ')})';
-  }
-
   void _removeOverlay() {
     _overlay?.remove();
     _overlay = null;
@@ -132,10 +121,9 @@ class _MatchSelectorState extends State<MatchSelector> {
 
   @override
   Widget build(BuildContext context) {
+    // Watch so we rebuild when matchEntries loads.
     final hasMatches =
         context.select<DataService, bool>((s) => s.matchEntries.isNotEmpty);
-    final label =
-        widget.value != null ? _formatLabel(widget.value!) : 'Match';
 
     return GestureDetector(
       onTap: hasMatches ? _toggle : null,
@@ -147,7 +135,7 @@ class _MatchSelectorState extends State<MatchSelector> {
           color: AppTheme.surfaceHi,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
-            color: widget.value != null
+            color: _selected != null
                 ? AppTheme.gold.withOpacity(0.5)
                 : AppTheme.border,
           ),
@@ -160,17 +148,17 @@ class _MatchSelectorState extends State<MatchSelector> {
             const SizedBox(width: 8),
             Expanded(
               child: Text(
-                label,
+                _selected?.label ?? 'Match',
                 style: AppTheme.mono(
                   11,
-                  color: widget.value != null ? AppTheme.gold : AppTheme.muted,
+                  color: _selected != null ? AppTheme.gold : AppTheme.muted,
                 ),
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            if (widget.value != null)
+            if (_selected != null)
               GestureDetector(
-                onTap: widget.onCleared,
+                onTap: () => setState(() => _selected = null),
                 child: const Icon(Icons.close_rounded,
                     size: 14, color: AppTheme.muted),
               )

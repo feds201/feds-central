@@ -1,9 +1,7 @@
 import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
-import '../models/match_entry.dart';
-import '../models/playoff_alliance.dart';
+import 'dart:html' show window;
 
-/// Persists config, cached scouting data, and locally drawn paths.
+/// Thin wrapper around browser localStorage for persisting config and data.
 class LocalPrefs {
   static const _kEventKey = 'scout_ops.eventKey';
   static const _kTableName = 'scout_ops.tableName';
@@ -12,141 +10,80 @@ class LocalPrefs {
   static const _kCachedEvent = 'scout_ops.cachedEvent';
   static const _kCachedData = 'scout_ops.cachedData';
   static const _kLastUpdated = 'scout_ops.lastUpdated';
-  static const _kLocalPaths = 'scout_ops.localPaths';
-
-  // Read-only key for public TBA data — safe to commit.
-  static const _defaultTbaKey =
-      'nfgL68cGRgoKXYWT0D4JcGxv6lPYuWkWVz4TcYPN9VlFQ6vHoLrQjJRwjFKRcJu8';
-
-  // ── JSON-safe value helper ───────────────────────────────────────────
-
-  static Map<String, dynamic> _matchToJson(MatchEntry m) => {
-        'matchKey': m.matchKey,
-        'compLevel': m.compLevel,
-        'matchNumber': m.matchNumber,
-        'setNumber': m.setNumber,
-        'redTeams': m.redTeams,
-        'blueTeams': m.blueTeams,
-        'hasOurTeam': m.hasOurTeam,
-      };
-
-  static MatchEntry _matchFromJson(Map<String, dynamic> j) => MatchEntry(
-        matchKey: j['matchKey'] as String,
-        compLevel: j['compLevel'] as String,
-        matchNumber: j['matchNumber'] as int,
-        setNumber: j['setNumber'] as int,
-        redTeams: (j['redTeams'] as List).cast<int>().toList(),
-        blueTeams: (j['blueTeams'] as List).cast<int>().toList(),
-        hasOurTeam: j['hasOurTeam'] as bool,
-      );
-
-  static Map<String, dynamic> _allianceToJson(PlayoffAlliance a) => {
-        'name': a.name,
-        'teams': a.teams,
-      };
-
-  static PlayoffAlliance _allianceFromJson(Map<String, dynamic> j) =>
-      PlayoffAlliance(
-        name: j['name'] as String,
-        teams: (j['teams'] as List).cast<int>().toList(),
-      );
-
-  static dynamic _toJsonSafe(dynamic value) {
-    if (value is DateTime) return value.toIso8601String();
-    if (value is Map) {
-      return value.map((k, v) => MapEntry(k.toString(), _toJsonSafe(v)));
-    }
-    if (value is List) return value.map(_toJsonSafe).toList();
-    return value;
-  }
 
   // ── Config ──────────────────────────────────────────────────────────
 
-  static Future<void> saveConfig({
+  static void saveConfig({
     required String eventKey,
     required String tableName,
     required String neonConn,
     required String tbaKey,
-  }) async {
+  }) {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString(_kEventKey, eventKey);
-      await prefs.setString(_kTableName, tableName);
-      await prefs.setString(_kNeonConn, neonConn);
-      await prefs.setString(_kTbaKey, tbaKey);
+      final s = window.localStorage;
+      s[_kEventKey] = eventKey;
+      s[_kTableName] = tableName;
+      s[_kNeonConn] = neonConn;
+      s[_kTbaKey] = tbaKey;
       print('[LocalPrefs] saveConfig OK');
     } catch (e) {
       print('[LocalPrefs] saveConfig FAILED: $e');
     }
   }
 
-  static Future<({
-  String eventKey,
-  String tableName,
-  String neonConn,
-  String tbaKey,
-  })?> resolveConfig() async {
-    final prefs = await SharedPreferences.getInstance();
-    final neonConn = prefs.getString(_kNeonConn) ?? '';
+  /// Resolve config from URL params (highest priority) then localStorage.
+  /// Returns null if no Neon connection string is available.
+  static ({
+    String eventKey,
+    String tableName,
+    String neonConn,
+    String tbaKey,
+  })? resolveConfig() {
+    final params = Uri.base.queryParameters;
+    final s = window.localStorage;
+
+    final neonConn = params['neon'] ?? s[_kNeonConn] ?? '';
     if (neonConn.isEmpty) return null;
 
     return (
-    eventKey: prefs.getString(_kEventKey) ?? '',
-    tableName: prefs.getString(_kTableName) ?? 'scouting_data',
-    neonConn: neonConn,
-    tbaKey: prefs.getString(_kTbaKey) ?? _defaultTbaKey,
+      eventKey: params['event'] ?? s[_kEventKey] ?? '',
+      tableName: params['table'] ?? s[_kTableName] ?? 'scouting_data',
+      neonConn: neonConn,
+      tbaKey: params['tba'] ?? s[_kTbaKey] ?? '',
     );
   }
 
   // ── Data cache ──────────────────────────────────────────────────────
 
-  static Future<void> saveData({
+  static void saveData({
     required String eventKey,
     required Map<int, List<Map<String, dynamic>>> scoutingByTeam,
     required List<String> scoutingColumns,
     required Map<int, double> oprByTeam,
     required Map<int, double> epaByTeam,
-    required List<MatchEntry> matchEntries,
-    required List<PlayoffAlliance> playoffAlliances,
-    required Map<int, String> teamNames,
-  }) async {
-    if (scoutingByTeam.isEmpty) {
-      print('[LocalPrefs] saveData SKIPPED: empty scouting data');
-      return;
-    }
+  }) {
+    final s = window.localStorage;
+    s[_kCachedEvent] = eventKey;
+    s[_kLastUpdated] = DateTime.now().toIso8601String();
 
-    final prefs = await SharedPreferences.getInstance();
-
-    // Snapshot prior values for rollback if the write fails partway through.
-    final oldData = prefs.getString(_kCachedData);
-    final oldEvent = prefs.getString(_kCachedEvent);
-    final oldUpdated = prefs.getString(_kLastUpdated);
-
+    // Drop base64 image columns to stay under localStorage quota.
     const dropCols = {'botimage1', 'botimage2', 'botimage3'};
     final teamData = scoutingByTeam.map(
-          (k, v) => MapEntry(
+      (k, v) => MapEntry(
         k.toString(),
         v.map((row) => Map.fromEntries(
-          row.entries
-              .where((e) => !dropCols.contains(e.key))
-              .map((e) => MapEntry(e.key, _toJsonSafe(e.value))),
+          row.entries.where((e) => !dropCols.contains(e.key)),
         )).toList(),
       ),
     );
     final opr = oprByTeam.map((k, v) => MapEntry(k.toString(), v));
     final epa = epaByTeam.map((k, v) => MapEntry(k.toString(), v));
-    final matches = matchEntries.map(_matchToJson).toList();
-    final alliances = playoffAlliances.map(_allianceToJson).toList();
-    final names = teamNames.map((k, v) => MapEntry(k.toString(), v));
 
     final encoded = json.encode({
       'scoutingByTeam': teamData,
       'scoutingColumns': scoutingColumns,
       'oprByTeam': opr,
       'epaByTeam': epa,
-      'matchEntries': matches,
-      'playoffAlliances': alliances,
-      'teamNames': names,
     });
 
     final sizeKb = (encoded.length / 1024).toStringAsFixed(1);
@@ -155,141 +92,83 @@ class LocalPrefs {
         '${scoutingColumns.length} cols');
 
     try {
-      await prefs.setString(_kCachedData, encoded);
-      await prefs.setString(_kCachedEvent, eventKey);
-      await prefs.setString(_kLastUpdated, DateTime.now().toIso8601String());
+      s[_kCachedData] = encoded;
     } catch (e) {
-      print('[LocalPrefs] saveData FAILED, rolling back: $e');
-      await _restore(prefs, _kCachedData, oldData);
-      await _restore(prefs, _kCachedEvent, oldEvent);
-      await _restore(prefs, _kLastUpdated, oldUpdated);
+      print('[LocalPrefs] saveData FAILED: $e');
+      s.remove(_kCachedData);
+      s.remove(_kCachedEvent);
+      s.remove(_kLastUpdated);
     }
   }
 
-  static Future<void> _restore(
-      SharedPreferences prefs, String key, String? oldValue) async {
-    if (oldValue != null) {
-      await prefs.setString(key, oldValue);
-    } else {
-      await prefs.remove(key);
-    }
-  }
+  /// Load cached data if it matches [eventKey]. Returns null on mismatch
+  /// or if no cache exists.
+  static ({
+    Map<int, List<Map<String, dynamic>>> scoutingByTeam,
+    List<String> scoutingColumns,
+    Map<int, double> oprByTeam,
+    Map<int, double> epaByTeam,
+  })? loadData(String eventKey) {
+    final s = window.localStorage;
+    if (s[_kCachedEvent] != eventKey) return null;
 
-  static Future<({
-  Map<int, List<Map<String, dynamic>>> scoutingByTeam,
-  List<String> scoutingColumns,
-  Map<int, double> oprByTeam,
-  Map<int, double> epaByTeam,
-  List<MatchEntry> matchEntries,
-  List<PlayoffAlliance> playoffAlliances,
-  Map<int, String> teamNames,
-  })?> loadData(String eventKey) async {
-    final prefs = await SharedPreferences.getInstance();
-    if (prefs.getString(_kCachedEvent) != eventKey) return null;
-
-    final raw = prefs.getString(_kCachedData);
+    final raw = s[_kCachedData];
     if (raw == null || raw.isEmpty) return null;
 
     try {
       final decoded = json.decode(raw) as Map<String, dynamic>;
 
       final teamMap = (decoded['scoutingByTeam'] as Map<String, dynamic>).map(
-            (k, v) => MapEntry(
+        (k, v) => MapEntry(
           int.parse(k),
           (v as List).map((e) => Map<String, dynamic>.from(e as Map)).toList(),
         ),
       );
+
       final columns =
-      (decoded['scoutingColumns'] as List).cast<String>().toList();
+          (decoded['scoutingColumns'] as List).cast<String>().toList();
+
       final opr = (decoded['oprByTeam'] as Map<String, dynamic>).map(
-            (k, v) => MapEntry(int.parse(k), (v as num).toDouble()),
+        (k, v) => MapEntry(int.parse(k), (v as num).toDouble()),
       );
+
       final epa = (decoded['epaByTeam'] as Map<String, dynamic>).map(
-            (k, v) => MapEntry(int.parse(k), (v as num).toDouble()),
+        (k, v) => MapEntry(int.parse(k), (v as num).toDouble()),
       );
-      final matches = ((decoded['matchEntries'] as List?) ?? const [])
-          .map((e) => _matchFromJson(e as Map<String, dynamic>))
-          .toList();
-      final alliances = ((decoded['playoffAlliances'] as List?) ?? const [])
-          .map((e) => _allianceFromJson(e as Map<String, dynamic>))
-          .toList();
-      final names = ((decoded['teamNames'] as Map<String, dynamic>?) ?? const {})
-          .map((k, v) => MapEntry(int.parse(k), v as String));
 
       return (
-      scoutingByTeam: teamMap,
-      scoutingColumns: columns,
-      oprByTeam: opr,
-      epaByTeam: epa,
-      matchEntries: matches,
-      playoffAlliances: alliances,
-      teamNames: names,
+        scoutingByTeam: teamMap,
+        scoutingColumns: columns,
+        oprByTeam: opr,
+        epaByTeam: epa,
       );
-    } catch (_) {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.remove(_kCachedData);
-      await prefs.remove(_kCachedEvent);
-      await prefs.remove(_kLastUpdated);
+    } on Exception {
+      // Corrupted cache — clear and return null.
+      s.remove(_kCachedData);
+      s.remove(_kCachedEvent);
+      s.remove(_kLastUpdated);
       return null;
     }
   }
 
-  // ── Locally drawn paths ─────────────────────────────────────────────
-  // Stored as: { "201": { "Left Start": "v2:M...", "Center": "v2:M..." }, ... }
-
-  static Future<Map<String, Map<String, String>>> loadLocalPaths() async {
-    final prefs = await SharedPreferences.getInstance();
-    final raw = prefs.getString(_kLocalPaths);
-    if (raw == null || raw.isEmpty) return {};
-
-    try {
-      final decoded = json.decode(raw) as Map<String, dynamic>;
-      return decoded.map((teamKey, paths) => MapEntry(
-        teamKey,
-        (paths as Map<String, dynamic>)
-            .map((k, v) => MapEntry(k, v.toString())),
-      ));
-    } catch (e) {
-      print('[LocalPrefs] loadLocalPaths FAILED: $e');
-      return {};
-    }
-  }
-
-  static Future<void> saveLocalPaths(
-      Map<String, Map<String, String>> paths) async {
-    final prefs = await SharedPreferences.getInstance();
-    final encoded = json.encode(paths);
-    await prefs.setString(_kLocalPaths, encoded);
-    print('[LocalPrefs] saveLocalPaths OK — ${paths.length} teams');
-  }
-
-  static Future<void> deleteLocalPath(String teamKey, String pathName) async {
-    final all = await loadLocalPaths();
-    all[teamKey]?.remove(pathName);
-    if (all[teamKey]?.isEmpty ?? false) all.remove(teamKey);
-    await saveLocalPaths(all);
-  }
-
   // ── Last updated ────────────────────────────────────────────────────
 
-  static Future<DateTime?> get lastUpdated async {
-    final prefs = await SharedPreferences.getInstance();
-    final raw = prefs.getString(_kLastUpdated);
+  static DateTime? get lastUpdated {
+    final raw = window.localStorage[_kLastUpdated];
     if (raw == null || raw.isEmpty) return null;
     return DateTime.tryParse(raw);
   }
 
   // ── Clear ───────────────────────────────────────────────────────────
 
-  static Future<void> clear() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_kEventKey);
-    await prefs.remove(_kTableName);
-    await prefs.remove(_kNeonConn);
-    await prefs.remove(_kTbaKey);
-    await prefs.remove(_kCachedData);
-    await prefs.remove(_kCachedEvent);
-    await prefs.remove(_kLastUpdated);
-    // Note: local paths are NOT cleared on config reset — intentional
+  static void clear() {
+    final s = window.localStorage;
+    s.remove(_kEventKey);
+    s.remove(_kTableName);
+    s.remove(_kNeonConn);
+    s.remove(_kTbaKey);
+    s.remove(_kCachedData);
+    s.remove(_kCachedEvent);
+    s.remove(_kLastUpdated);
   }
 }

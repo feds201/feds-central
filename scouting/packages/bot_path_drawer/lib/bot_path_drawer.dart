@@ -7,7 +7,6 @@ export 'src/models/bot_path_config.dart';
 export 'src/models/bot_path_data.dart';
 export 'src/models/bot_viewer_path.dart';
 export 'src/models/team_paths.dart';
-export 'src/utils/path_naming.dart';
 export 'src/widgets/bot_path_drawer_widget.dart';
 export 'src/widgets/bot_path_viewer_widget.dart';
 export 'src/widgets/bot_path_viewer_with_selector.dart';

@@ -33,26 +33,19 @@ See [`_config` in the example](example/lib/main.dart) (line 99) for a version wi
 
 ### 3. Let the user draw a path
 
-Drop a `BotPathDrawer` into your UI. `onSave` hands back the serialized string and a suggested name:
+Drop a `BotPathDrawer` into your UI. It gives you a serialized path string via `onSave`:
 
 ```dart
 BotPathDrawer(
   config: config,
-  onSave: (String? pathData, String? suggestedName) {
+  onSave: (String? pathData) {
     // pathData is the compact string, or null if empty.
-    // suggestedName is a geometry-based label like "Left Trench Mid",
-    // or null if there's no path. Use it as a default in your naming UI
-    // or ignore it entirely.
+    // Store it, send it to your server, etc.
   },
 )
 ```
 
-Two more optional callbacks let you sync parent state:
-
-- `onPathUpdated: (pathData, suggestedName)` fires every time the user lifts their finger and the path is curve-fitted. Use it to preview the suggested name in a text field before the user hits Save.
-- `onClear: () { ... }` fires when the user presses Clear, so you can reset your own fields alongside the canvas.
-
-The example opens it in a dialog -- see [`_openDrawer()`](example/lib/main.dart) (line 129). That function also shows how to lock orientation to landscape while drawing.
+The example opens it in a dialog — see [`_openDrawer()`](example/lib/main.dart) (line 129). That function also shows how to lock orientation to landscape while drawing.
 
 ### 4. Play back saved paths
 
@@ -101,15 +94,7 @@ BotPathViewerWithSelector(
 
 This shows a collapsible sidebar with expandable team sections and checkboxes per path. The first path of each team is selected by default.
 
-**Color assignment:** Teams are auto-assigned colors from a 6-color palette (red, orange, yellow, blue, green, cyan) unless overridden via `TeamPaths.color`. The palette cycles if there are more than 6 teams. Selected paths within a team vary by saturation from 100% down to 30%.
-
-**Alliance mode:** When every team has an `alliance` set, the viewer enters alliance mode. Red alliance teams get warm colors (red, orange, yellow) and blue alliance teams get cool colors (blue, green, cyan). Blue alliance paths are horizontally reflected so all paths appear from their respective driver station perspective. If only some teams have `alliance` set, the field is ignored with a debug warning.
-
-**Crop fraction in alliance mode:** When alliance mode is active, `cropFraction` is forced to `1.0` (full field) regardless of the config value, since both sides of the field need to be visible.
-
-**Mirror toggle:** When a path is selected, a mirror button appears next to it in the sidebar. Toggling it vertically mirrors that individual path. This is independent of the alliance horizontal reflection.
-
-**Add path callback:** Pass `onAddPath` to show an add button on each team header. When tapped, it calls `onAddPath` with the team label.
+**Color assignment:** Teams are auto-assigned base colors (red, green, blue) unless overridden via `TeamPaths.color`. Selected paths within a team vary by saturation from 100% down to 30%.
 
 ### Run the example
 
@@ -130,13 +115,13 @@ Shared configuration for both widgets. Only `backgroundImage` is required.
 | Parameter | Default | Description |
 |-----------|---------|-------------|
 | `backgroundImage` | *required* | The field image (`ImageProvider`). The larger pixel dimension is treated as width. |
-| `cropFraction` | `0.70` | Show only the left N% of the image (e.g. the autonomous zone). Range: (0, 1]. Forced to 1.0 in alliance mode. |
+| `cropFraction` | `0.70` | Show only the left N% of the image (e.g. the autonomous zone). Range: (0, 1]. |
 | `robotSizeFraction` | `~0.056` | Robot square size as fraction of canvas width. Default fits a 27.5" FRC robot on a standard field at 70% crop. |
 | `defaultPlaybackSpeed` | `4.0` | Initial speed multiplier. |
 | `maxPlaybackSpeed` | `10.0` | Maximum speed multiplier. |
 | `playbackDurationMs` | `20000` | Base playback duration at 1x speed (ms). Defaults to 20s (FRC auto period). Set to `null` to use the path's actual recorded duration instead. |
 | `pathColor` | yellow | Path line, intake edge, dial indicator, highlight. Used by `BotPathDrawer` always; used by `BotPathViewer` only with the legacy `pathData` API (overridden by `BotViewerPath.color` when using `paths`). |
-| `robotColor` | semi-transparent blue | Robot body fill. Same scoping as `pathColor` -- overridden per-path when using `paths`. |
+| `robotColor` | semi-transparent blue | Robot body fill. Same scoping as `pathColor` — overridden per-path when using `paths`. |
 | `startColor` / `endColor` | green / red | Endpoint indicator circles. |
 | `highlightSizeMultiplier` | `5.0` | Touch highlight circle radius relative to robot size. |
 | `simplificationError` | `50` | Curve fitting error tolerance. Lower = tighter fit (more curves). Higher = simpler (fewer curves). |
@@ -147,14 +132,7 @@ Shared configuration for both widgets. Only `backgroundImage` is required.
 
 ### BotPathDrawer
 
-The drawing widget.
-
-| Prop | Type | Description |
-|------|------|-------------|
-| `config` | `BotPathConfig` (required) | Configuration. |
-| `onSave` | `void Function(String? pathData, String? suggestedName)` (required) | Called when Save is tapped. `pathData` is the serialized string (or null if empty); `suggestedName` is a geometry-based label like `"Left Trench Mid"` (or null). |
-| `onPathUpdated` | `void Function(String? pathData, String? suggestedName)?` | Fires after every pointer-up where a path was finalized. Same shape as `onSave`. Useful for previewing the suggested name before save. |
-| `onClear` | `VoidCallback?` | Fires when the user presses Clear. |
+The drawing widget. Props: `config` and `onSave`.
 
 **Controls (all platforms):**
 - Single row: [info] [Play/Stop] [-] speed [+] [Clear] [Save]
@@ -169,7 +147,7 @@ The drawing widget.
 **Desktop/web:**
 - Click and drag to draw
 - Hold WASD before clicking to set initial direction
-- Q/E to rotate the robot (11.25 degrees per press)
+- Q/E to rotate the robot (11.25° per press)
 - Scroll wheel for fine rotation
 
 **Other behavior:**
@@ -189,99 +167,42 @@ The playback widget. Props: `config`, and either `pathData` (single path) or `pa
 
 ### BotViewerPath
 
-A path entry for multi-path viewing.
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `pathData` | `String` (required) | Serialized path string from `BotPathDrawer`. |
-| `color` | `Color` (required) | Used for the path line, robot fill (30% opacity), intake edge, and start/end dot outlines. |
-| `alliance` | `Alliance?` | When set, the path is horizontally reflected for `Alliance.blue`. |
-| `mirrored` | `bool` | Vertically mirrors the path. Defaults to `false`. |
+A path entry for multi-path viewing. Fields: `pathData` (serialized string) and `color` (used for path line, robot fill at 30% opacity, intake edge, and start/end dot outlines).
 
 ### BotPathViewerWithSelector
 
-A wrapper around `BotPathViewer` with a collapsible sidebar for team/path selection.
+A wrapper around `BotPathViewer` with a collapsible sidebar for team/path selection. Props: `config` and `teams` (a `Map<String, TeamPaths>`).
 
-| Prop | Type | Description |
-|------|------|-------------|
-| `config` | `BotPathConfig` (required) | Configuration for the underlying viewer. |
-| `teams` | `Map<String, TeamPaths>` (required) | Teams and their paths. Keys are team labels. |
-| `onAddPath` | `void Function(String)?` | If provided, shows an add button on each team header. Called with the team label when tapped. |
-
-**Sidebar behavior:**
-- Expandable team sections with checkboxes per path
+- Sidebar shows expandable team sections with checkboxes per path
 - Colored dots next to teams (base color) and paths (saturation variant)
 - First path of each team is selected by default
-- All teams expanded by default
-- On wide screens (>=600px), sidebar is inline; on narrow screens it floats as an overlay with a scrim
-- Mirror toggle button appears next to each selected path
-
-### Alliance
-
-```dart
-enum Alliance { red, blue }
-```
-
-Used on `TeamPaths.alliance` and `BotViewerPath.alliance`. When all teams in a `BotPathViewerWithSelector` have an alliance set, alliance mode activates: teams are grouped under "RED ALLIANCE" / "BLUE ALLIANCE" headers, warm/cool color palettes are used, blue paths are horizontally reflected, and crop fraction is forced to 1.0.
+- Teams auto-assigned base colors (red, green, blue) unless `TeamPaths.color` is set
+- Selected paths within a team vary by saturation: 100% → 30%
 
 ### TeamPaths
 
-A team's paths for `BotPathViewerWithSelector`.
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `paths` | `Map<String, String>` (required) | Map of path name to serialized path string. |
-| `color` | `Color?` | Base color override. If null, auto-assigned from the palette. |
-| `alliance` | `Alliance?` | Which alliance this team belongs to. Set on all teams or none. |
+A team's paths for `BotPathViewerWithSelector`. Fields: `paths` (map of name → serialized path string) and optional `color` (base color override).
 
 ### BotPathData
 
 The serialization model (also exported if you need to inspect or manipulate paths).
 
 - Stores curves in normalized 0-1 coordinates
-- `serialize()` -- returns the compact string
-- `BotPathData.tryParse(String)` -- parses a string back, returns `null` if invalid
-- `scaledCurves(Size)` / `scaledEndpoints(Size)` / `toFlutterPath(Size)` -- scale to pixel coords for rendering (accept optional `cropFraction` parameter, defaults to 1.0)
-- `BotPathData.fromPixelCurves(...)` -- normalizes pixel-coordinate curves from a recording session
-
-**Format versions:** v1 (legacy) normalized coordinates relative to the cropped canvas size, making paths crop-dependent. v2 (current) normalizes relative to the full uncropped image, so paths display correctly at any crop fraction. New paths are always written as v2. Both versions are parsed transparently.
-
-### Path naming
-
-> **⚠️ GAME-SPECIFIC: TUNED FOR FRC 2026 "REBUILT".**
-> The token vocabulary (Mid, Trench, Bump, Depot, Outpost) and every threshold (28% mid line, 7% depot/outpost dip, the band fractions) are specific to this year's field. Every FRC season replaces the field, so every season you'll need to write a new `PathNamer` implementation and update `activePathNamer`. **Do not edit the existing 2026 namer in place** when the game changes -- keep it around so old paths can still be re-named retroactively.
-
-```dart
-String? suggestedPathName({
-  required BotPathData path,
-  required Size backgroundImageSize,
-});
-```
-
-Returns a geometry-based label like `"Left Trench Mid"` or `"Center Depot"`. The drawer calls this internally and surfaces the result through `onSave` / `onPathUpdated`, but it's exported so you can also call it on already-stored paths (parse with `BotPathData.tryParse` first).
-
-It's a thin wrapper around `activePathNamer.name(...)`. The package ships with `Rebuilt2026PathNamer` (the current implementation) and the abstract base `PathNamer`. To support a new game, write a new `PathNamer` subclass and update `activePathNamer` in `lib/src/utils/path_naming.dart`.
-
-**2026 token rules (in the order they're emitted):**
-- Start: `Left` / `Center` / `Right` based on the first waypoint's y, by thirds of bg image height.
-- `Trench` / `Bump`: at every left-to-right crossing of x = 28% of bg image width, the y picks a band. `[0, 0.2)` and `[0.8, 1.0]` are Trench, `[0.2, 0.4)` and `[0.6, 0.8)` are Bump, `[0.4, 0.6)` is omitted.
-- `Mid`: any left-to-right crossing of x = 28%.
-- `Depot`: any sample with x < 7% in the top half.
-- `Outpost`: any sample with x < 7% in the bottom half.
-
-Each token fires at most once. Returns `null` for empty paths or v1-format paths (v1 can't be interpreted without crop fraction information).
+- `serialize()` — returns the compact string
+- `BotPathData.tryParse(String)` — parses a string back, returns `null` if invalid
+- `scaledCurves(Size)` / `scaledEndpoints(Size)` / `toFlutterPath(Size)` — scale to pixel coords for rendering
+- `BotPathData.fromPixelCurves(...)` — normalizes pixel-coordinate curves from a recording session
 
 ### Serialization format
 
 ```
-v2:M0.083,0.573C0.098,0.559 0.241,0.397 0.390,0.317|0.00:0,1.57:450,3.14:1200
+M0.083,0.573C0.098,0.559 0.241,0.397 0.390,0.317|0.00:0,1.57:450,3.14:1200
 ```
 
-- `v2:` prefix indicates format version (absent for legacy v1 paths).
 - Before `|`: SVG path commands (`M` = moveTo, `C` = cubic Bezier). Normalized 0-1 coordinates, 3 decimal places.
 - After `|`: comma-separated `rotation:timestamp` pairs. Rotation in radians (2 decimals), timestamp in ms (integer, 0 = start). One pair per waypoint.
 - Typical size: 80-150 characters for a simple auto path.
 
 ### Dependencies
 
-- [`fit_curve`](https://pub.dev/packages/fit_curve) (^1.0.4) -- Schneider curve fitting algorithm. Stable textbook algorithm, doesn't need updates.
+- [`fit_curve`](https://pub.dev/packages/fit_curve) (^1.0.4) — Schneider curve fitting algorithm. Stable textbook algorithm, doesn't need updates.

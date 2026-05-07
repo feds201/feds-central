@@ -62,7 +62,10 @@ class BotPathViewer extends StatefulWidget {
     required this.config,
     this.pathData,
     this.paths,
-  });
+  }) : assert(
+          pathData != null || paths != null,
+          'Either pathData or paths must be provided',
+        );
 
   @override
   State<BotPathViewer> createState() => _BotPathViewerState();
@@ -208,6 +211,7 @@ class _BotPathViewerState extends State<BotPathViewer>
   /// Called on each animation frame during playback.
   void _onPlaybackTick() {
     final t = _playbackController.value;
+    final baseDuration = _baseDurationMs;
 
     var changed = false;
 
@@ -216,8 +220,10 @@ class _BotPathViewerState extends State<BotPathViewer>
       if (data == null || data.curves.isEmpty) continue;
 
       final pathDuration = data.timestamps.last;
-      // Every path is normalized to the full animation duration
-      final pathT = t;
+      // Map the global animation t to this path's local progress
+      final pathT = baseDuration > 0
+          ? (t * baseDuration / pathDuration).clamp(0.0, 1.0)
+          : 1.0;
 
       if (pathT >= 1.0) {
         // This path has finished — park robot at end
@@ -506,15 +512,13 @@ class _BotPathViewerState extends State<BotPathViewer>
                                       _scaledPlaybackPos(i, canvasSize),
                                   playbackRobotRot: _playbackRotations[i],
                                   showHighlight: false,
-                                  alliance: _effectivePaths[i].alliance,
-                                  mirrored: _effectivePaths[i].mirrored,
                                 ),
                               ),
                             ),
                         // Play/Stop toggle + speed controls
                         Positioned(
-                          bottom: 20,
-                          left: 20,
+                          top: 8,
+                          left: 8,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -590,16 +594,14 @@ class _ControlButton extends StatelessWidget {
 
     return TextButton.icon(
       onPressed: onPressed,
-      icon: Icon(icon, color: effectiveColor, size: 16),
+      icon: Icon(icon, color: effectiveColor, size: 18),
       label: Text(
         label,
-        style: TextStyle(color: effectiveColor, fontSize: 12),
+        style: TextStyle(color: effectiveColor, fontSize: 13),
       ),
       style: TextButton.styleFrom(
         backgroundColor: bgColor,
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        minimumSize: Size.zero,
-        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
@@ -632,7 +634,7 @@ class _SpeedControl extends StatelessWidget {
   Widget build(BuildContext context) {
     final disabledColor = textColor.withAlpha(77);
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: bgColor,
         borderRadius: BorderRadius.circular(20),
@@ -645,7 +647,7 @@ class _SpeedControl extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             child: Icon(
               Icons.remove,
-              size: 16,
+              size: 18,
               color: canDecrement ? textColor : disabledColor,
             ),
           ),
@@ -653,7 +655,7 @@ class _SpeedControl extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 8),
             child: Text(
               speedLabel,
-              style: TextStyle(color: textColor, fontSize: 12),
+              style: TextStyle(color: textColor, fontSize: 13),
             ),
           ),
           InkWell(
@@ -661,7 +663,7 @@ class _SpeedControl extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             child: Icon(
               Icons.add,
-              size: 16,
+              size: 18,
               color: canIncrement ? textColor : disabledColor,
             ),
           ),

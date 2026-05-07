@@ -34,7 +34,7 @@ class SettingsPageState extends State<SettingsPage> {
   TextEditingController eventKeyController = TextEditingController();
   TextEditingController neonRestController = TextEditingController();
   TextEditingController apiKeyController = TextEditingController();
-  String ApiKey = Hive.box('settings').get('ApiKey', defaultValue: Settings.defaultApiKey);
+  String ApiKey = Hive.box('settings').get('ApiKey', defaultValue: '');
 
   String? serverIp;
 
@@ -59,7 +59,7 @@ class SettingsPageState extends State<SettingsPage> {
   void initState() {
     super.initState();
     apiKeyController.text =
-        Hive.box('settings').get('ApiKey', defaultValue: Settings.defaultApiKey);
+        Hive.box('settings').get('ApiKey', defaultValue: '');
     neonRestController.text =
         Hive.box('settings').get('neonRestUrl', defaultValue: '');
     fetchServerIp();

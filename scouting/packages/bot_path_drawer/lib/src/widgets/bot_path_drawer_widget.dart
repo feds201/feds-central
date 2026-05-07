@@ -10,7 +10,6 @@ import '../models/bot_path_data.dart';
 import '../painters/path_painter.dart';
 import '../utils/bezier_math.dart';
 import '../utils/curve_fitting.dart';
-import '../utils/path_naming.dart';
 import '../widgets/rotation_dial.dart';
 
 /// Widget for drawing robot autonomous paths on a field image.
@@ -26,11 +25,9 @@ import '../widgets/rotation_dial.dart';
 ///   config: BotPathConfig(
 ///     backgroundImage: AssetImage('assets/field.png'),
 ///   ),
-///   onSave: (pathData, suggestedName) {
-///     // pathData is the serialized path string, or null if no path.
-///     // suggestedName is a geometry-based name suggestion (e.g.
-///     // "Left Trench Mid"), or null if there's no path.
-///     print('Saved: $pathData (suggested: $suggestedName)');
+///   onSave: (pathData) {
+///     // pathData is the serialized path string, or null if no path
+///     print('Saved: $pathData');
 ///   },
 /// )
 /// ```
@@ -40,36 +37,13 @@ class BotPathDrawer extends StatefulWidget {
 
   /// Called when the user presses the Save button.
   ///
-  /// First argument is the serialized path string (or null if the canvas is
-  /// empty). Second argument is a suggested human-readable name derived from
-  /// the path's geometry (e.g. "Left Trench Mid", "Center Depot") — also
-  /// null when there is no path. Consumers may use the suggestion as a
-  /// default in their naming UI; ignore it to keep current behavior.
-  /// See [suggestedPathName] for how the name is computed.
-  final void Function(String? pathData, String? suggestedName) onSave;
-
-  /// Called when the user presses the Clear button.
-  ///
-  /// Lets consumers reset their own state (e.g. a path-name text field)
-  /// in sync with the canvas being cleared. Optional.
-  final VoidCallback? onClear;
-
-  /// Called every time the path is finalized — i.e. after the user lifts
-  /// their finger and the raw points have been curve-fitted into beziers.
-  ///
-  /// Same shape as [onSave]: receives the serialized path string and a
-  /// geometry-based name suggestion. Useful for previewing the suggestion
-  /// in a parent text field before the user commits with Save. Optional.
-  final void Function(String? pathData, String? suggestedName)? onPathUpdated;
+  /// Receives the serialized path string if a path has been drawn,
+  /// or null if the canvas is empty. The parent can use this to
+  /// store the path data and dismiss the drawing UI.
+  final ValueChanged<String?> onSave;
 
   /// Creates a [BotPathDrawer] widget.
-  const BotPathDrawer({
-    super.key,
-    required this.config,
-    required this.onSave,
-    this.onClear,
-    this.onPathUpdated,
-  });
+  const BotPathDrawer({super.key, required this.config, required this.onSave});
 
   @override
   State<BotPathDrawer> createState() => _BotPathDrawerState();
@@ -107,7 +81,6 @@ class _BotPathDrawerState extends State<BotPathDrawer>
   // Fitted path after finalization
   BotPathData? _pathData;
   String _serializedData = '';
-  String? _suggestedName;
 
   // Playback
   late final AnimationController _playbackController;
@@ -393,22 +366,6 @@ class _BotPathDrawerState extends State<BotPathDrawer>
     );
     _cachedScaledCurves = const [];
     _serializedData = _pathData!.serialize();
-    _suggestedName = _computeSuggestedName();
-    widget.onPathUpdated?.call(_serializedData, _suggestedName);
-  }
-
-  /// Computes the geometry-based name suggestion for the current [_pathData],
-  /// or null if the path or bg image dimensions aren't ready.
-  String? _computeSuggestedName() {
-    if (_pathData == null || _imageWidth == null || _imageHeight == null) {
-      return null;
-    }
-    final w = max(_imageWidth!, _imageHeight!).toDouble();
-    final h = min(_imageWidth!, _imageHeight!).toDouble();
-    return suggestedPathName(
-      path: _pathData!,
-      backgroundImageSize: Size(w, h),
-    );
   }
 
   // ---------------------------------------------------------------------------
@@ -575,7 +532,6 @@ class _BotPathDrawerState extends State<BotPathDrawer>
       _rawPath.clear();
       _pathData = null;
       _serializedData = '';
-      _suggestedName = null;
       _cachedRawPositions = const [];
       _cachedScaledCurves = const [];
       _stopwatch.reset();
@@ -585,14 +541,11 @@ class _BotPathDrawerState extends State<BotPathDrawer>
       _pointer1Id = null;
       _pointer1Pos = null;
     });
-    widget.onClear?.call();
   }
 
-  /// Passes the serialized path data (or null) and the cached geometry-based
-  /// name suggestion to the parent via [onSave].
+  /// Passes the serialized path data (or null) to the parent via [onSave].
   void _save() {
-    final pathData = _serializedData.isNotEmpty ? _serializedData : null;
-    widget.onSave(pathData, _suggestedName);
+    widget.onSave(_serializedData.isNotEmpty ? _serializedData : null);
   }
 
   // ---------------------------------------------------------------------------

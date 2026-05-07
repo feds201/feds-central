@@ -2,14 +2,11 @@ package frc.sim.vision;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer;
 import edu.wpi.first.wpilibj.Timer;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.function.Supplier;
 
 /**
  * Orchestrates simulated Limelight cameras.
@@ -18,11 +15,11 @@ import java.util.function.Supplier;
  * {@link LimelightSim} every tick. Each camera decides independently
  * whether to publish based on its own FPS.
  *
- * <p>AprilTag cameras use {@link #update(Pose2d)} for latency-aware pose
- * publishing. Game-piece cameras use {@link #updateGamePieces(Pose2d, Supplier)},
- * which runs a pure-Java frustum test only when the camera's activation gate
- * allows. Mode guards inside {@link LimelightSim} ensure each camera only
- * responds to the calls relevant to its mode.
+ * <p>Handles both AprilTag and game piece cameras. AprilTag cameras use
+ * {@link #update(Pose2d)} for latency-aware pose publishing. Game piece
+ * cameras use {@link #prepareGamePieces()} and {@link #updateGamePieces()}
+ * around the physics step. Mode guards inside {@link LimelightSim} ensure
+ * each camera only responds to the calls relevant to its mode.
  */
 public class VisionSimManager {
 
@@ -57,17 +54,24 @@ public class VisionSimManager {
     }
 
     /**
-     * Run game-piece detection for any game-piece-mode cameras. Cheap when
-     * the cameras' activation gates are false — the supplier is only invoked
-     * when a camera actually needs piece positions.
-     *
-     * @param chassisPose            current chassis pose (world frame)
-     * @param piecePositionsSupplier lazy supplier of active piece world positions
+     * Enable/disable game piece sensors based on FPS gating.
+     * Must be called BEFORE {@code physicsWorld.step()}.
+     * AprilTag cameras ignore this call.
      */
-    public void updateGamePieces(Pose2d chassisPose,
-                                 Supplier<List<Translation3d>> piecePositionsSupplier) {
+    public void prepareGamePieces() {
         for (LimelightSim camera : cameras) {
-            camera.updateGamePiece(chassisPose, piecePositionsSupplier);
+            camera.prepareGamePiece();
+        }
+    }
+
+    /**
+     * Read sensor contacts and publish game piece detection to NT.
+     * Must be called AFTER {@code physicsWorld.step()}.
+     * AprilTag cameras ignore this call.
+     */
+    public void updateGamePieces() {
+        for (LimelightSim camera : cameras) {
+            camera.updateGamePiece();
         }
     }
 

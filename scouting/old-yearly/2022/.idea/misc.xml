@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Users/Saravanan Ponniah/AndroidStudioProjects/ScoutingAppAndroid/app/src/main/res/drawable/blue_background.xml" value="0.218" />
+        <entry key="..\:/Users/Saravanan Ponniah/AndroidStudioProjects/ScoutingAppAndroid/app/src/main/res/drawable/home_icon.xml" value="0.218" />
+        <entry key="..\:/Users/Saravanan Ponniah/AndroidStudioProjects/ScoutingAppAndroid/app/src/main/res/drawable/onclick_animation.xml" value="0.218" />
+        <entry key="..\:/Users/Saravanan Ponniah/AndroidStudioProjects/ScoutingAppAndroid/app/src/main/res/drawable/red_background.xml" value="0.218" />
+        <entry key="..\:/Users/Saravanan Ponniah/AndroidStudioProjects/ScoutingAppAndroid/app/src/main/res/layout/activity_main.xml" value="0.25416666666666665" />
+        <entry key="..\:/Users/Saravanan Ponniah/AndroidStudioProjects/ScoutingAppAndroid/app/src/main/res/layout/activity_splash.xml" value="0.11302083333333333" />
+        <entry key="..\:/Users/Saravanan Ponniah/AndroidStudioProjects/ScoutingAppAndroid/app/src/main/res/layout/fragment_dashboard.xml" value="0.25416666666666665" />
+        <entry key="..\:/Users/Saravanan Ponniah/AndroidStudioProjects/ScoutingAppAndroid/app/src/main/res/layout/fragment_history.xml" value="0.25416666666666665" />
+        <entry key="..\:/Users/Saravanan Ponniah/AndroidStudioProjects/ScoutingAppAndroid/app/src/main/res/layout/fragment_home.xml" value="0.25416666666666665" />
+        <entry key="..\:/Users/Saravanan Ponniah/AndroidStudioProjects/ScoutingAppAndroid/app/src/main/res/layout/recyclerview_row.xml" value="0.25416666666666665" />
+        <entry key="..\:/Users/Saravanan Ponniah/AndroidStudioProjects/ScoutingAppAndroid/app/src/main/res/menu/bottom_nav_menu.xml" value="0.25416666666666665" />
+        <entry key="..\:/Users/Saravanan Ponniah/AndroidStudioProjects/ScoutingAppMain/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.253" />
+        <entry key="..\:/Users/Saravanan Ponniah/AndroidStudioProjects/ScoutingAppMain/app/src/main/res/drawable/blue_background.xml" value="0.253" />
+        <entry key="..\:/Users/Saravanan Ponniah/AndroidStudioProjects/ScoutingAppMain/app/src/main/res/drawable/ic_launcher_background.xml" value="0.253" />
+        <entry key="..\:/Users/Saravanan Ponniah/AndroidStudioProjects/ScoutingAppMain/app/src/main/res/drawable/onclick_animation.xml" value="0.247" />
+        <entry key="..\:/Users/Saravanan Ponniah/AndroidStudioProjects/ScoutingAppMain/app/src/main/res/drawable/recycler_view_background.xml" value="0.253" />
+        <entry key="..\:/Users/Saravanan Ponniah/AndroidStudioProjects/ScoutingAppMain/app/src/main/res/drawable/round_corners.xml" value="0.2595" />
+        <entry key="..\:/Users/Saravanan Ponniah/AndroidStudioProjects/ScoutingAppMain/app/src/main/res/drawable/settings_icon.xml" value="0.247" />
+        <entry key="..\:/Users/Saravanan Ponniah/AndroidStudioProjects/ScoutingAppMain/app/src/main/res/drawable/slllll.xml" value="0.253" />
+        <entry key="..\:/Users/Saravanan Ponniah/AndroidStudioProjects/ScoutingAppMain/app/src/main/res/drawable/sssssss.xml" value="0.253" />
+        <entry key="..\:/Users/Saravanan Ponniah/AndroidStudioProjects/ScoutingAppMain/app/src/main/res/layout/activity_main.xml" value="0.20863616930312098" />
+        <entry key="..\:/Users/Saravanan Ponniah/AndroidStudioProjects/ScoutingAppMain/app/src/main/res/layout/activity_recycler.xml" value="0.20863616930312098" />
+        <entry key="..\:/Users/Saravanan Ponniah/AndroidStudioProjects/ScoutingAppMain/app/src/main/res/layout/activity_splash.xml" value="0.20863616930312098" />
+        <entry key="..\:/Users/Saravanan Ponniah/AndroidStudioProjects/ScoutingAppMain/app/src/main/res/layout/fragment_dashboard.xml" value="0.2" />
+        <entry key="..\:/Users/Saravanan Ponniah/AndroidStudioProjects/ScoutingAppMain/app/src/main/res/layout/fragment_history.xml" value="0.20863616930312098" />
+        <entry key="..\:/Users/Saravanan Ponniah/AndroidStudioProjects/ScoutingAppMain/app/src/main/res/layout/fragment_home.xml" value="0.20557197129590546" />
+        <entry key="..\:/Users/Saravanan Ponniah/AndroidStudioProjects/ScoutingAppMain/app/src/main/res/layout/fragment_settings.xml" value="0.20863616930312098" />
+        <entry key="..\:/Users/Saravanan Ponniah/AndroidStudioProjects/ScoutingAppMain/app/src/main/res/layout/recycler_design.xml" value="0.20863616930312098" />
+        <entry key="..\:/Users/Saravanan Ponniah/AndroidStudioProjects/ScoutingAppMain/app/src/main/res/layout/recycler_view_row.xml" value="0.20778110303548525" />
+        <entry key="..\:/Users/Saravanan Ponniah/AndroidStudioProjects/ScoutingAppMain/app/src/main/res/layout/recyclerview_row.xml" value="0.20863616930312098" />
+        <entry key="..\:/Users/Saravanan Ponniah/AndroidStudioProjects/ScoutingAppMain/app/src/main/res/menu/bottom_nav_menu.xml" value="0.20863616930312098" />
+        <entry key="..\:/Users/Saravanan Ponniah/AndroidStudioProjects/ScoutingAppMain/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.124" />
+        <entry key="..\:/Users/Saravanan Ponniah/AndroidStudioProjects/ScoutingAppMain/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.2045" />
+        <entry key="..\:/Users/Saravanan Ponniah/AndroidStudioProjects/fragment/app/src/main/res/drawable/background_1.xml" value="0.2545" />
+        <entry key="..\:/Users/Saravanan Ponniah/AndroidStudioProjects/fragment/app/src/main/res/drawable/slllll.xml" value="0.2545" />
+        <entry key="..\:/Users/Saravanan Ponniah/AndroidStudioProjects/fragment/app/src/main/res/drawable/sssssss.xml" value="0.2545" />
+        <entry key="..\:/Users/Saravanan Ponniah/AndroidStudioProjects/fragment/app/src/main/res/layout/activity_main.xml" value="0.24010416666666667" />
+        <entry key="..\:/Users/Saravanan Ponniah/AndroidStudioProjects/fragment/app/src/main/res/layout/activity_splash.xml" value="0.25416666666666665" />
+        <entry key="..\:/Users/Saravanan Ponniah/AndroidStudioProjects/fragment/app/src/main/res/layout/fragment_dashboard.xml" value="0.24010416666666667" />
+        <entry key="..\:/Users/Saravanan Ponniah/AndroidStudioProjects/fragment/app/src/main/res/layout/fragment_history.xml" value="0.25416666666666665" />
+        <entry key="..\:/Users/Saravanan Ponniah/AndroidStudioProjects/fragment/app/src/main/res/layout/fragment_home.xml" value="0.20820863616930313" />
+        <entry key="..\:/Users/Saravanan Ponniah/AndroidStudioProjects/fragment/app/src/main/res/layout/fragment_settings.xml" value="0.24010416666666667" />
+        <entry key="..\:/Users/Saravanan Ponniah/AndroidStudioProjects/fragment/app/src/main/res/menu/bottom_nav_menu.xml" value="0.25416666666666665" />
+        <entry key="..\:/Users/feds201/AndroidStudioProjects/ScoutingAppAndroid/app/src/main/res/layout/activity_main.xml" value="0.18802083333333333" />
+        <entry key="..\:/Users/feds201/AndroidStudioProjects/ScoutingAppAndroid/app/src/main/res/layout/activity_splash.xml" value="0.20018115942028986" />
+        <entry key="..\:/Users/feds201/AndroidStudioProjects/ScoutingAppAndroid/app/src/main/res/layout/fragment_dashboard.xml" value="0.22418478260869565" />
+        <entry key="..\:/Users/feds201/AndroidStudioProjects/ScoutingAppAndroid/app/src/main/res/layout/fragment_home.xml" value="0.18802083333333333" />
+        <entry key="..\:/Users/feds201/AndroidStudioProjects/ScoutingAppAndroid/app/src/main/res/layout/fragment_rapid_react_dashboard.xml" value="0.1" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>

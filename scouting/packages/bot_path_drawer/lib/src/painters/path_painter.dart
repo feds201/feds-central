@@ -4,7 +4,6 @@ import 'package:fit_curve/fit_curve.dart' show CubicCurve;
 import 'package:flutter/material.dart';
 
 import '../models/bot_path_config.dart';
-import '../models/team_paths.dart';
 
 /// Paints the robot path overlay on the field canvas.
 ///
@@ -70,12 +69,6 @@ class PathPainter extends CustomPainter {
   /// Typically true on touch devices, false on desktop.
   final bool showHighlight;
 
-  /// Optional alliance for this path (blue paths are horizontally reflected).
-  final Alliance? alliance;
-
-  /// Whether this path should be vertically mirrored.
-  final bool mirrored;
-
   /// Creates a [PathPainter] that draws the path overlay.
   ///
   /// All positional parameters ([rawPath], [robotPosition], etc.) should
@@ -92,34 +85,12 @@ class PathPainter extends CustomPainter {
     required this.playbackRobotPos,
     required this.playbackRobotRot,
     this.showHighlight = true,
-    this.alliance,
-    this.mirrored = false,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
-    // Apply alliance/mirror transforms
-    final needsTransform = alliance == Alliance.blue || mirrored;
-    if (needsTransform) canvas.save();
-
-    if (alliance == Alliance.blue) {
-      // 180° rotation for blue alliance (field is rotated between alliances)
-      canvas.scale(-1, -1);
-      canvas.translate(-size.width, -size.height);
-    }
-    if (mirrored) {
-      // Vertical mirror
-      canvas.scale(1, -1);
-      canvas.translate(0, -size.height);
-    }
-
-    // Blue alliance applies 180° rotation (both axes flipped).
-    // Vertical mirror flips the Y axis. XOR to determine net flip per axis.
-    final flipH = alliance == Alliance.blue;
-    final flipV = (alliance == Alliance.blue) != mirrored;
-
     final robotPixels = size.width * config.robotSizeFraction;
-    const lineWidth = 3.0;
+    const lineWidth = 4.0;
     final dotRadius = lineWidth * 2;
     // For raw trail (semi-transparent path color)
     final trailPaint = Paint()
@@ -221,8 +192,6 @@ class PathPainter extends CustomPainter {
         robotPixels,
         config.pathColor,
         config.robotColor,
-        flipH: flipH,
-        flipV: flipV,
       );
     }
 
@@ -235,8 +204,6 @@ class PathPainter extends CustomPainter {
         robotPixels,
         config.pathColor,
         config.robotColor,
-        flipH: flipH,
-        flipV: flipV,
       );
     }
 
@@ -249,12 +216,8 @@ class PathPainter extends CustomPainter {
         robotPixels,
         config.pathColor,
         config.robotColor,
-        flipH: flipH,
-        flipV: flipV,
       );
     }
-
-    if (needsTransform) canvas.restore();
   }
 
   /// Draws a robot rectangle at [center] with the given [rotation].
@@ -275,10 +238,8 @@ class PathPainter extends CustomPainter {
     double rotation,
     double robotSize,
     Color pathColor,
-    Color robotColor, {
-    bool flipH = false,
-    bool flipV = false,
-  }) {
+    Color robotColor,
+  ) {
     canvas.save();
     canvas.translate(center.dx, center.dy);
     canvas.rotate(rotation);
@@ -330,10 +291,6 @@ class PathPainter extends CustomPainter {
       textDirection: TextDirection.ltr,
     )..layout();
     canvas.save();
-    // Compensate for any outer mirror/flip transforms so text stays upright
-    final scaleX = flipH ? -1.0 : 1.0;
-    final scaleY = flipV ? -1.0 : 1.0;
-    canvas.scale(scaleX, scaleY);
     // Gap between rect edge and text = half the text height
     canvas.translate(half + 3.5 + tp.height * 0.5, 0);
     canvas.rotate(-pi / 2);
@@ -354,8 +311,6 @@ class PathPainter extends CustomPainter {
         endRobotRot != oldDelegate.endRobotRot ||
         playbackRobotPos != oldDelegate.playbackRobotPos ||
         playbackRobotRot != oldDelegate.playbackRobotRot ||
-        showHighlight != oldDelegate.showHighlight ||
-        alliance != oldDelegate.alliance ||
-        mirrored != oldDelegate.mirrored;
+        showHighlight != oldDelegate.showHighlight;
   }
 }

@@ -58,11 +58,5 @@
     "edu.wpi.first.math.**.struct.*",
   ],
   "java.dependency.enableDependencyCheckup": false,
-  "java.debug.settings.onBuildFailureProceed": true,
-  "java.format.settings.url": "./eclipse-java-google-style.xml",
-  "java.format.settings.profile": "GoogleStyle",
-  "editor.formatOnSave": true,
-  "[java]": {
-    "editor.defaultFormatter": "redhat.java"
-  }
+  "java.debug.settings.onBuildFailureProceed": true
 }
