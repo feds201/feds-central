@@ -1,4 +1,11 @@
 import time
+import sys
+
+if len(sys.argv) != 2:
+    print("Usage: python opr.py <event_key>")
+    print("Example: python opr.py 2026mil")
+    sys.exit(1)
+
 import tbapy
 import numpy as np
 import psycopg2
@@ -12,7 +19,7 @@ TBA_KEY = os.getenv("TBA_KEY")
 NEON_CONN_STR = os.getenv("NEON_CONN_STR")
 
 tba = tbapy.TBA(TBA_KEY)
-event_key = '2026mil'
+event_key = sys.argv[1]
 
 METRIC_MAP = {
     'opr':              'totalPoints',
@@ -36,10 +43,12 @@ def get_deep_value(data, target_key):
     return None
 
 def init_db():
+    print("Connecting to Neon to initialize tables...")
     conn = psycopg2.connect(NEON_CONN_STR)
     cur = conn.cursor()
 
     # Existing team_stats table
+    print("Dropping and recreating team_stats...")
     cur.execute("DROP TABLE IF EXISTS team_stats")
     cols = [
         "team_key TEXT PRIMARY KEY",
@@ -55,6 +64,7 @@ def init_db():
     cur.execute(f"CREATE TABLE team_stats ({', '.join(cols)})")
 
     # Match results table (match_number as INT)
+    print("Dropping and recreating match_results...")
     cur.execute("DROP TABLE IF EXISTS match_results")
     cur.execute("""
         CREATE TABLE match_results (
@@ -70,6 +80,7 @@ def init_db():
     print("Database Initialized.")
 
 def sync_tba_scores(scored_matches):
+    print(f"Connecting to Neon to sync {len(scored_matches)} match results...")
     conn = psycopg2.connect(NEON_CONN_STR)
     cur = conn.cursor()
     values = []
@@ -110,6 +121,7 @@ def calculate_copr(team_keys, matches, api_key):
     return {team: float(val) for team, val in zip(team_list, x)}
 
 def update_neon(all_stats):
+    print(f"Connecting to Neon to update stats for {len(all_stats)} teams...")
     conn = psycopg2.connect(NEON_CONN_STR)
     cur = conn.cursor()
     columns = ["team_key", "opr", "hub_auto_fuel_opr", "hub_teleop_fuel_opr",
@@ -128,12 +140,22 @@ def update_neon(all_stats):
     conn.close()
 
 # --- MAIN LOOP ---
+SLEEP_SECONDS = 60
 last_count = 0
 db_initialized = False
 
 while True:
     try:
-        matches = tba.event_matches(event_key)
+        try:
+            print(f"Calling TBA event_matches for \"{event_key}\"...")
+            matches = tba.event_matches(event_key)
+        except Exception as e:
+            print(f"Could not fetch matches for event key: \"{event_key}\"")
+            print("Check the event key and TBA API access.")
+            print("Example event key format: 2026mil")
+            print(f"Raw TBA/tbapy error: {e}")
+            sys.exit(1)
+
         scored_quals = [m for m in matches if m['comp_level'] == 'qm' and m.get('score_breakdown')]
 
         if scored_quals:
@@ -145,6 +167,7 @@ while True:
                 print(f"[{time.strftime('%H:%M:%S')}] Syncing {len(scored_quals)} match scores...")
                 sync_tba_scores(scored_quals)
 
+                print(f"Calling TBA event_teams for \"{event_key}\"...")
                 team_keys = tba.event_teams(event_key, keys=True)
                 team_results = {team: {} for team in team_keys}
                 for label, api_key in METRIC_MAP.items():
@@ -154,11 +177,12 @@ while True:
 
                 update_neon(team_results)
                 last_count = len(scored_quals)
-                print("Update complete.")
+                print(f"Update complete. Sleeping for {SLEEP_SECONDS} seconds.\n")
         else:
             print(f"Waiting for match data...")
 
     except Exception as e:
         print(f"Error: {e}")
+        sys.exit(1)
 
-    time.sleep(60)
+    time.sleep(SLEEP_SECONDS)
