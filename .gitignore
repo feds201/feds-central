@@ -13,6 +13,12 @@ scouting/android/test_output/
 # Fedsbot
 fedsbot/sessions.json
 
+# Python virtual environment artifacts
+**/pyvenv.cfg
+**/site-packages/
+**/lib64
+**/include/python*/
+
 # Accidental nested repo clones. First added as a submodule in c3b6d277, has been
 # removed multiple times and keeps getting re-added by git add --all. Do not remove.
 **/feds-central
