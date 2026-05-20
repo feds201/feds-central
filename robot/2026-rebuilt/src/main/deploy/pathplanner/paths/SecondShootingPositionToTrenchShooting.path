@@ -1,0 +1,65 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.966,
+        "y": 2.265112692763938
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.044155363644629,
+        "y": 1.997523644547319
+      },
+      "isLocked": false,
+      "linkedName": "RightFirstShootPosition"
+    },
+    {
+      "anchor": {
+        "x": 3.331530249110321,
+        "y": 1.017046263345195
+      },
+      "prevControl": {
+        "x": 3.025248011978617,
+        "y": 2.2315471841219887
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "TrenchShooting"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [
+    {
+      "fieldPosition": {
+        "x": 4.5,
+        "y": 4.3
+      },
+      "rotationOffset": 0.0,
+      "minWaypointRelativePos": 0.031496062992132715,
+      "maxWaypointRelativePos": 0.9066366704162135,
+      "name": "Point Towards Zone"
+    }
+  ],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 0.38,
+    "maxAcceleration": 4.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 360.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0.0,
+    "rotation": 66.75272999125686
+  },
+  "reversed": false,
+  "folder": "MidIntakeToRightBump",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 47.444068057635405
+  },
+  "useDefaultConstraints": false
+}
