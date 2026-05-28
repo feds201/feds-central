@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.3428821643399838,
-        "y": 0.7673041282926202
+        "x": 3.417603795966786,
+        "y": 0.7480664294187431
       },
       "isLocked": false,
       "linkedName": "TrenchShooting"
@@ -25,7 +25,7 @@
       },
       "nextControl": {
         "x": 4.263789717496599,
-        "y": 0.5091592230564599
+        "y": 0.5091592230564598
       },
       "isLocked": false,
       "linkedName": null
@@ -53,7 +53,7 @@
       },
       "prevControl": {
         "x": 5.85,
-        "y": 1.3023496003358932
+        "y": 1.7891696322657173
       },
       "nextControl": {
         "x": 5.85,
@@ -73,7 +73,7 @@
       },
       "nextControl": {
         "x": 5.85,
-        "y": 3.0
+        "y": 3.5
       },
       "isLocked": false,
       "linkedName": null
@@ -106,7 +106,7 @@
       "rotationDegrees": -90.0
     },
     {
-      "waypointRelativePos": 3.960923623445851,
+      "waypointRelativePos": 4.040852575488472,
       "rotationDegrees": -90.0
     }
   ],
@@ -123,7 +123,7 @@
   },
   "goalEndState": {
     "velocity": 2.0,
-    "rotation": 150.0
+    "rotation": 180.0
   },
   "reversed": false,
   "folder": "MidIntakeToRightBump",
