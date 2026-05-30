@@ -49,7 +49,9 @@ public class ShooterWheels extends SubsystemBase {
                                                                             // between hub+tower),
                                                                             // see
                                                                             // https://docs.google.com/spreadsheets/d/1dgeEKQ00QiUogEZPXbh4vTJQD8yXOX3HCi0rzDTo5SA
-    HALFCOURT(RotationsPerSecond.of(40.86)); // ~5.23m (corner), see doc above
+    HALFCOURT(RotationsPerSecond.of(40.86)), // ~5.23m (corner), see doc above
+    DEMO(RotationsPerSecond.of(18.0)), DEMOFAR(RotationsPerSecond.of(80.0));
+
 
     private final AngularVelocity targetVelocity;
 

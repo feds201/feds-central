@@ -44,6 +44,8 @@ public class ShooterHood extends SubsystemBase {
                                                                                     // https://docs.google.com/spreadsheets/d/1dgeEKQ00QiUogEZPXbh4vTJQD8yXOX3HCi0rzDTo5SA
     HALFCOURT(Rotations.of(17.0)), // 5.23m (corner), see doc above
     MANUAL(Rotations.of(0)),
+
+    DEMO(Rotations.of(10.0)),
     // Sim states
     AIMING_UP(Rotations.of(0)), AIMING_DOWN(Rotations.of(0));
 

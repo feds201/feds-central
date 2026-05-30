@@ -242,4 +242,47 @@ public class ControllerBindings {
     operator.rightTrigger().onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.EXTENDED));
   }
 
+
+  public void setupDemoBindings(CommandXboxController controller) {
+    var container = RobotContainer.getInstance();
+    if (container == null) {
+      return;
+    }
+
+    var intakeSubsystem = container.getIntakeSubsystem();
+    var feederSubsystem = container.getFeederSubsystem();
+    var spinDexer = container.getSpindexer();
+    var shooterHood = container.getShooterHood();
+    var shooterWheels = container.getShooterWheels();
+
+    controller.leftTrigger().onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.INTAKING))
+        .onFalse(intakeSubsystem.setRollerStateCommand(RollerState.OFF));
+
+    controller.leftBumper().onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT));
+    controller.rightTrigger()
+        .onTrue(Commands
+            .sequence(shooterHood.setStateCommand(shooterhood_state.DEMO),
+                shooterWheels.setStateCommand(shooter_state.DEMO))
+            .andThen(new WaitCommand(.5))
+            .andThen(feederSubsystem.setStateCommand(feeder_state.PRUN),
+                spinDexer.setStateCommand(spindexer_state.PFORWARD)))
+
+        .onFalse(Commands.sequence(feederSubsystem.setStateCommand(feeder_state.STOP),
+            spinDexer.setStateCommand(spindexer_state.STOP),
+            shooterWheels.setStateCommand(shooter_state.IDLE),
+            shooterHood.setStateCommand(shooterhood_state.IN)));
+
+    controller.a().and(controller.rightBumper())
+        .onTrue(Commands
+            .sequence(shooterHood.setStateCommand(shooterhood_state.OUT),
+                shooterWheels.setStateCommand(shooter_state.DEMOFAR))
+            .andThen(new WaitCommand(1.0))
+            .andThen(feederSubsystem.setStateCommand(feeder_state.PRUN),
+                spinDexer.setStateCommand(spindexer_state.PFORWARD)))
+
+        .onFalse(Commands.sequence(feederSubsystem.setStateCommand(feeder_state.STOP),
+            spinDexer.setStateCommand(spindexer_state.STOP),
+            shooterWheels.setStateCommand(shooter_state.IDLE),
+            shooterHood.setStateCommand(shooterhood_state.IN)));
+  }
 }
