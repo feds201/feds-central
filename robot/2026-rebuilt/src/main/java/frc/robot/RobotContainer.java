@@ -142,8 +142,9 @@ public class RobotContainer extends ControllerBindings {
   public RobotContainer() {
     instance = this;
     llMain.getSettings().withImuMode(ImuMode.ExternalImu).save();
-    setupDriveBindings(controller);
-    setupOperatorBindings(operaterController);
+    // setupDriveBindings(controller);
+    // setupOperatorBindings(operaterController);
+    setupDemoBindings(controller);
     configureRootTests();
     PitTesting.createDashboard();
     new Trigger(drivetrain::withinTrench).and(DriverStation::isTeleop)

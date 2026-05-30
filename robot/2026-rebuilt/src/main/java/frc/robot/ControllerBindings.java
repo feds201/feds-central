@@ -261,7 +261,7 @@ public class ControllerBindings {
     controller.leftBumper().onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.DEFAULT));
     controller.rightTrigger()
         .onTrue(Commands
-            .sequence(shooterHood.setStateCommand(shooterhood_state.DEMO),
+            .sequence(shooterHood.setStateCommand(shooterhood_state.OUT),
                 shooterWheels.setStateCommand(shooter_state.DEMO))
             .andThen(new WaitCommand(.5))
             .andThen(feederSubsystem.setStateCommand(feeder_state.PRUN),
