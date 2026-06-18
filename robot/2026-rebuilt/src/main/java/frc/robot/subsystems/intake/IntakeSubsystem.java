@@ -96,9 +96,11 @@ public class IntakeSubsystem extends SubsystemBase {
     DITHERIN_AGITATION, // Inwards portion of dithering state-loop, intake will toggle between the
                         // dithers on a timer when
                         // set to one of these states
-    DITHEROUT_AGITATION // Dithering causes the intake to move inwards, then outwards half as much
-                        // in order to slowly bring
-                        // in the intake while also agitating
+    DITHEROUT_AGITATION, // Dithering causes the intake to move inwards, then outwards half as much
+                         // in order to slowly bring
+                         // in the intake while also agitating
+
+    DETECT_RESISTANCE, DETECTED_RESISTANCE
   }
 
   public enum RollerState {
@@ -151,6 +153,14 @@ public class IntakeSubsystem extends SubsystemBase {
       }
       case DITHERIN_AGITATION, DITHEROUT_AGITATION -> {
         // No position command — dither uses duty-cycle motor.set() in periodic
+      }
+      case DETECT_RESISTANCE -> {
+        moveIntakeWithPosition(retractedRotations);
+        setRollerState(RollerState.ON);
+      }
+      case DETECTED_RESISTANCE -> {
+        moveIntakeWithPosition(extendedRotations);
+        setRollerState(RollerState.REVERSE);
       }
     }
 
@@ -329,6 +339,10 @@ public class IntakeSubsystem extends SubsystemBase {
     return rollerMotor.getPosition().getValue().in(Units.Rotations);
   }
 
+  public double getMotorPosition() {
+    return motor.getPosition().getValue().in(Units.Rotations);
+  }
+
 
   public Command emergencyStop() {
     return Commands.runOnce(() -> {
@@ -475,6 +489,25 @@ public class IntakeSubsystem extends SubsystemBase {
 
       case EXTENDED:
         limitSwitchExtensionControl();
+        break;
+
+      case DETECT_RESISTANCE:
+        if (motor.getStatorCurrent().getValueAsDouble() > 10) {
+          if (getMotorPosition() < 12.5) {
+            setState(IntakeState.DETECTED_RESISTANCE);
+          } else {
+            setState(IntakeState.AGITATE_IN);
+          }
+        }
+        break;
+
+      case DETECTED_RESISTANCE:
+        if (!timer.isRunning()) {
+          timer.start();
+        }
+        if (timer.hasElapsed(0.5)) {
+          setState(IntakeState.DETECT_RESISTANCE);
+        }
         break;
     }
 

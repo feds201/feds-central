@@ -35,7 +35,7 @@ public class Feeder extends SubsystemBase {
   // subsystem states
   public enum feeder_state {
     RUN(Volts.of(7)), PRUN(Volts.of(7)), REVERSE(Volts.of(-7)), PREVERSE(Volts.of(-7)), STOP(
-        Volts.of(0));
+        Volts.of(0)), REVERSE_SHORT(Volts.of(-7));
 
     private final Voltage targetVoltage;
 
@@ -125,6 +125,11 @@ public class Feeder extends SubsystemBase {
       case REVERSE:
         if (timer.hasElapsed(indexingConstants.reverseTime)) {
           setState(feeder_state.RUN);
+        }
+        break;
+      case REVERSE_SHORT:
+        if (timer.hasElapsed(0.1)) {
+          setState(feeder_state.STOP);
         }
         break;
     }

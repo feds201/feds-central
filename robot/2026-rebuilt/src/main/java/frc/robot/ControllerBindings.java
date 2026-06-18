@@ -217,9 +217,12 @@ public class ControllerBindings {
     operator.povDown()
         .onTrue(new InstantCommand(() -> shooterHood.updateHoodAngleMultiplier(-.01)));
 
-    operator.y()
-        .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.AGITATE_IN)
-            .alongWith(intakeSubsystem.setRollerStateCommand(RollerState.AGITATEON)))
+    // Old operator Y agitation binding, replaced by resistance-detect agitation.
+    // operator.y()
+    // .onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.AGITATE_IN)
+    // .alongWith(intakeSubsystem.setRollerStateCommand(RollerState.AGITATEON)))
+    // .onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.INTAKING));
+    operator.y().onTrue(intakeSubsystem.setIntakeStateCommand(IntakeState.DETECT_RESISTANCE))
         .onFalse(intakeSubsystem.setIntakeStateCommand(IntakeState.INTAKING));
 
     operator.a()
