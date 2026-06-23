@@ -505,4 +505,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
   }
 
+  public Pose2d getPose() {
+    return getStateCopy().Pose;
+  }
 }

@@ -36,7 +36,7 @@ import frc.robot.subsystems.spindexer.Spindexer;
 import frc.robot.subsystems.spindexer.Spindexer.spindexer_state;
 import frc.robot.sim.RebuiltSimManager;
 import com.pathplanner.lib.path.PathConstraints;
-
+import choreo.auto.AutoFactory;
 import org.json.simple.parser.ParseException;
 import org.littletonrobotics.junction.Logger;
 
@@ -91,7 +91,7 @@ public class RobotContainer extends ControllerBindings {
 
   private final RTUManager rtumanager = new RTUManager();
 
-
+  private final AutoFactory autoFactory;
   private final SendableChooser<Command> autoChooser;
 
 
@@ -152,6 +152,9 @@ public class RobotContainer extends ControllerBindings {
     SmartDashboard.putBoolean("UseMainLL", true);
     drivetrain.registerTelemetry(telemetry::telemeterize);
 
+    // Set up choreo auto factory
+    autoFactory = new AutoFactory(drivetrain::getPose, drivetrain::resetPose,
+        drivetrain::followTrajectoryChoreo, true, drivetrain);
     // Set up auto chooser
     autoChooser = AutoBuilder.buildAutoChooser();
 
@@ -175,7 +178,7 @@ public class RobotContainer extends ControllerBindings {
 
       autoChooser.addOption("Dev-LeftSotmMidfieldDoublepass",
           new PathPlannerAuto("Dev-RightSotmMidfieldDoublepass", true));
-
+      autoChooser.addOption("Choreo-Test", autoFactory.trajectoryCmd("testPath"));
 
 
     } catch (Exception e) {

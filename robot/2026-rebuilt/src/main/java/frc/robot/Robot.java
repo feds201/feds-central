@@ -18,6 +18,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import com.pathplanner.lib.commands.FollowPathCommand;
 import choreo.Choreo;
+import choreo.auto.AutoFactory;
 import choreo.trajectory.SwerveSample;
 import choreo.trajectory.Trajectory;
 import com.ctre.phoenix6.SignalLogger;
@@ -50,9 +51,6 @@ public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
 
   private final RobotContainer m_robotContainer;
-  private final Optional<Trajectory<SwerveSample>> trajectory = Choreo.loadTrajectory("testPath");
-  private final CommandSwerveDrivetrain driveSubsystem = TunerConstants.createDrivetrain();
-  private final Timer timer = new Timer();
 
   // public LedsSubsystem m_ledsSubsystem = new LedsSubsystem();
 
@@ -211,42 +209,17 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void autonomousInit() {
-    // m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
-    // if (m_autonomousCommand != null) {
-    // CommandScheduler.getInstance().schedule(m_autonomousCommand);
-    // }
-    // HubShiftUtil.initialize();
-
-    if (trajectory.isPresent()) {
-      // Get the initial pose of the trajectory
-      Optional<Pose2d> initialPose = trajectory.get().getInitialPose(isRedAlliance());
-
-      if (initialPose.isPresent()) {
-        // Reset odometry to the start of the trajectory
-        driveSubsystem.resetPose(initialPose.get());
-      }
+    if (m_autonomousCommand != null) {
+      CommandScheduler.getInstance().schedule(m_autonomousCommand);
     }
-
-    // Reset and start the timer when the autonomous period begins
-    timer.restart();
-  }
-
-  private boolean isRedAlliance() {
-    return DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Red);
+    HubShiftUtil.initialize();
   }
 
   @Override
-  public void autonomousPeriodic() {
-    if (trajectory.isPresent()) {
-      // Sample the trajectory at the current time into the autonomous period
-      Optional<SwerveSample> sample = trajectory.get().sampleAt(timer.get(), isRedAlliance());
+  public void autonomousPeriodic() {}
 
-      if (sample.isPresent()) {
-        driveSubsystem.followTrajectoryChoreo(sample.get());
-      }
-    }
-  }
 
   @Override
   public void autonomousExit() {
