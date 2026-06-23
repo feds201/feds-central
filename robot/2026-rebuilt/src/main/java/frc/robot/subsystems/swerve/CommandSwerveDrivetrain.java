@@ -28,8 +28,9 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.FlippingUtil;
-
+import choreo.trajectory.SwerveSample;
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -66,7 +67,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   /* Keep track if we've ever applied the operator perspective before or not */
   private boolean m_hasAppliedOperatorPerspective = false;
 
-
+  /* Choreo-related things */
+  private final PIDController xController = new PIDController(10.0, 0, 0);
+  private final PIDController yController = new PIDController(10.0, 0, 0);
+  private final PIDController headingController = new PIDController(7.5, 0, 0);
 
   /** Swerve request to apply during robot-centric path following */
   private final SwerveRequest.ApplyRobotSpeeds m_pathApplyRobotSpeeds =
@@ -147,6 +151,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
       startSimThread();
     }
     configureAutoBuilder();
+    headingController.enableContinuousInput(-Math.PI, Math.PI);
   }
 
   /**
@@ -168,6 +173,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
       startSimThread();
     }
     configureAutoBuilder();
+    headingController.enableContinuousInput(-Math.PI, Math.PI);
   }
 
   /**
@@ -194,6 +200,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
       startSimThread();
     }
     configureAutoBuilder();
+    headingController.enableContinuousInput(-Math.PI, Math.PI);
   }
 
   private void configureAutoBuilder() {
@@ -223,6 +230,18 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
       DriverStation.reportError("Failed to load PathPlanner config and configure AutoBuilder",
           ex.getStackTrace());
     }
+  }
+
+  public void followTrajectoryChoreo(SwerveSample sample) {
+    Pose2d pose = getState().Pose;
+
+    ChassisSpeeds speeds =
+        new ChassisSpeeds(sample.vx + xController.calculate(pose.getX(), sample.x),
+            sample.vy + yController.calculate(pose.getY(), sample.y), sample.omega
+                + headingController.calculate(pose.getRotation().getRadians(), sample.heading));
+
+    setControl(new SwerveRequest.FieldCentric().withVelocityX(speeds.vxMetersPerSecond)
+        .withVelocityY(speeds.vyMetersPerSecond).withRotationalRate(speeds.omegaRadiansPerSecond));
   }
 
   /**

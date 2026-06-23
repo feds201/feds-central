@@ -24,8 +24,8 @@ public record ChoreoTraj(
     Pose2d initialPoseBlue,
     Pose2d endPoseBlue
 ) {
-    public static final ChoreoTraj NewPath = new ChoreoTraj(
-        "NewPath",
+    public static final ChoreoTraj testPath = new ChoreoTraj(
+        "testPath",
         OptionalInt.empty(),
         5.2026,
         new Pose2d(4.45046, 0.44844, Rotation2d.fromRadians(-1.5708)),
@@ -37,7 +37,7 @@ public record ChoreoTraj(
      * This allows for trajectory data to be looked up with strings during runtime.
      */
     public static final Map<String, ChoreoTraj> ALL_TRAJECTORIES = Map.ofEntries(
-        Map.entry("NewPath", NewPath)
+        Map.entry("testPath", testPath)
     );
 
     /**
