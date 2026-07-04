@@ -156,8 +156,8 @@ public class Robot extends LoggedRobot {
     var backend = Epilogue.getConfig().backend;
     Epilogue.feederLogger.update(backend.getNested("@Logged/Feeder"),
         m_robotContainer.getFeederSubsystem());
-    Epilogue.spindexerLogger.update(backend.getNested("@Logged/Spindexer"),
-        m_robotContainer.getSpindexer());
+    // Epilogue.spindexerLogger.update(backend.getNested("@Logged/Spindexer"),
+    // m_robotContainer.getSpindexer());
     Epilogue.shooterHoodLogger.update(backend.getNested("@Logged/ShooterHood"),
         m_robotContainer.getShooterHood());
     Epilogue.shooterWheelsLogger.update(backend.getNested("@Logged/ShooterWheels"),
@@ -170,7 +170,12 @@ public class Robot extends LoggedRobot {
     // Publish a small set of live telemetry for the RTU dashboard
     m_robotContainer.publishTelemetry();
 
-    PitTesting.updateDashboard();
+    // NOTE: Pit testing will only run if robot is real. this is because architecture this year is
+    // too far gone to work with IO interfaces. maybe will try to fix it later, for now its like
+    // this :)
+    if (RobotMap.getRobotMode() == RobotMap.robotState.REAL) {
+      PitTesting.updateDashboard();
+    }
     m_robotContainer.limelightConnection();
     m_robotContainer.usbStorage();
 

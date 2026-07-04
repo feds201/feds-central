@@ -9,7 +9,7 @@ import frc.robot.subsystems.intake.IntakeSubsystem.RollerState;
 import frc.robot.subsystems.feeder.Feeder.feeder_state;
 import frc.robot.subsystems.shooter.ShooterHood.shooterhood_state;
 import frc.robot.subsystems.shooter.ShooterWheels.shooter_state;
-import frc.robot.subsystems.spindexer.Spindexer.spindexer_state;
+import frc.robot.subsystems.spindexer.SpindexerSubsystem.spindexer_state;
 import frc.robot.commands.swerve.HubDrive;
 import frc.robot.commands.swerve.PassingDrive;
 import frc.robot.commands.swerve.TeleopSwerve;

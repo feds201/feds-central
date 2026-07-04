@@ -5,11 +5,14 @@ import static edu.wpi.first.units.Units.Volts;
 import org.littletonrobotics.junction.Logger;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.controls.VoltageOut;
+import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.RobotMap.indexingConstants;
@@ -109,6 +112,10 @@ public class SpindexerSubsystem extends SubsystemBase {
     return inputs.spindexerMotorAppliedVoltage;
   }
 
+  public Current getCurrent() {
+    return inputs.spindexerMotorCurrent;
+  }
+
   public AngularVelocity getVelocity() {
     return inputs.spindexerMotorVelocity;
   }
@@ -129,6 +136,10 @@ public class SpindexerSubsystem extends SubsystemBase {
     return currentState.getVoltage();
   }
 
+  public TalonFX getSpindexerMotor() {
+    return spindexerIO.getSpindexerMotor();
+  }
+
   public void setVoltage(Voltage voltage) {
     spindexerIO.setVoltage(voltage);
   }
@@ -141,5 +152,9 @@ public class SpindexerSubsystem extends SubsystemBase {
     }
     setVoltage(state.getVoltage());
     currentState = state;
+  }
+
+  public Command setStateCommand(spindexer_state state) {
+    return runOnce(() -> setState(state));
   }
 }

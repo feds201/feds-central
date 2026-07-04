@@ -41,7 +41,7 @@ import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.shooter.ShooterHood;
 import frc.robot.subsystems.shooter.ShooterWheels;
-import frc.robot.subsystems.spindexer.Spindexer;
+import frc.robot.subsystems.spindexer.SpindexerSubsystem;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.utils.FieldConstants;
@@ -318,6 +318,7 @@ public class RebuiltSimManager {
 
   // References to robot subsystems
   private final IntakeSubsystem intakeSubsystem;
+  private final SpindexerSubsystem spindexer;
 
   // CTRE sim state (for gyro only — MapleSim handles motor/encoder sim state)
   private final Pigeon2SimState pigeonSimState;
@@ -327,7 +328,6 @@ public class RebuiltSimManager {
   private final TalonFXMotorSim shooterMotorSim;
   private final TalonFXArmSim hoodArmSim;
   private final TalonFXMotorSim feederMotorSim;
-  private final TalonFXMotorSim spindexerMotorSim;
   private final TalonFXMotorSim intakeDeployMotorSim;
   private final TalonFXMotorSim intakeRollerMotorSim;
   private final DIOSim intakeLimitSwitchSim;
@@ -351,8 +351,10 @@ public class RebuiltSimManager {
    * @param spindexer the spindexer subsystem (run/stop state)
    */
   public RebuiltSimManager(CommandSwerveDrivetrain drivetrain, IntakeSubsystem intakeSubsystem,
-      Feeder feeder, ShooterWheels shooterWheels, ShooterHood shooterHood, Spindexer spindexer) {
+      Feeder feeder, ShooterWheels shooterWheels, ShooterHood shooterHood,
+      SpindexerSubsystem spindexer) {
     this.intakeSubsystem = intakeSubsystem;
+    this.spindexer = spindexer;
 
     // --- MapleSim timing ---
     // Use AddRampCollider=false so MapleSim only blocks on the hub (47x47),
@@ -453,12 +455,6 @@ public class RebuiltSimManager {
     feederMotorSim = new TalonFXMotorSim(feeder.getFeederMotorSimState(), new DCMotorSim(
         LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60(1), FEEDER_MOI, FEEDER_GEAR_RATIO),
         DCMotor.getKrakenX60(1)), FEEDER_GEAR_RATIO, true);
-
-    spindexerMotorSim =
-        new TalonFXMotorSim(spindexer.getSpindexerMotorSimState(),
-            new DCMotorSim(LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60(1),
-                SPINDEXER_MOI, SPINDEXER_GEAR_RATIO), DCMotor.getKrakenX60(1)),
-            SPINDEXER_GEAR_RATIO, true);
 
     intakeDeployMotorSim = new TalonFXMotorSim(intakeSubsystem.getDeployMotorSimState(),
         new DCMotorSim(LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60(1),
@@ -624,13 +620,12 @@ public class RebuiltSimManager {
                                                                                                  // flywheel
                                                                                                  // load
             hoodArmSim.getCurrentDrawAmps(), feederMotorSim.getCurrentDrawAmps(),
-            spindexerMotorSim.getCurrentDrawAmps(), intakeDeployMotorSim.getCurrentDrawAmps(),
+            spindexer.getCurrent().in(Amps), intakeDeployMotorSim.getCurrentDrawAmps(),
             intakeRollerMotorSim.getCurrentDrawAmps());
 
     shooterMotorSim.update(DT, batteryVoltage);
     hoodArmSim.update(DT, batteryVoltage);
     feederMotorSim.update(DT, batteryVoltage);
-    spindexerMotorSim.update(DT, batteryVoltage);
     intakeDeployMotorSim.update(DT, batteryVoltage);
     intakeRollerMotorSim.update(DT, batteryVoltage);
 
@@ -643,7 +638,7 @@ public class RebuiltSimManager {
     Logger.recordOutput("Sim/Debug/ShooterVelocityRPS", shooterMotorSim.getAngularVelocityRPS());
     Logger.recordOutput("Sim/Debug/FeederVelocityRPS", feederMotorSim.getAngularVelocityRPS());
     Logger.recordOutput("Sim/Debug/SpindexerVelocityRPS",
-        spindexerMotorSim.getAngularVelocityRPS());
+        spindexer.getVelocity().in(RotationsPerSecond));
     Logger.recordOutput("Sim/Debug/HoodAngleDeg", Math.toDegrees(hoodArmSim.getAngleRads()));
     Logger.recordOutput("Sim/Debug/IntakeDeployPositionRot",
         intakeSubsystem.getSimDeployMotorPositionRotations());
@@ -726,8 +721,7 @@ public class RebuiltSimManager {
 
     double rollerAngle =
         -(intakeSubsystem.getSimRollerMotorPositionRotations() * 2 * Math.PI) % (2 * Math.PI);
-    double spindexerAngle =
-        (spindexerMotorSim.getAngularPositionRotations() * 2 * Math.PI) % (2 * Math.PI);
+    double spindexerAngle = (spindexer.getPosition().in(Rotations) * 2 * Math.PI) % (2 * Math.PI);
     double feederAngle =
         (feederMotorSim.getAngularPositionRotations() * 2 * Math.PI) % (2 * Math.PI);
     double shooterAngle =

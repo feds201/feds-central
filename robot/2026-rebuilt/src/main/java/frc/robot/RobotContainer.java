@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -32,9 +33,10 @@ import frc.robot.subsystems.shooter.ShooterHood;
 import frc.robot.subsystems.shooter.ShooterHood.shooterhood_state;
 import frc.robot.subsystems.shooter.ShooterWheels;
 import frc.robot.subsystems.shooter.ShooterWheels.shooter_state;
-import frc.robot.subsystems.spindexer.Spindexer;
+import frc.robot.subsystems.spindexer.SpindexerIOTalonFX;
 import frc.robot.subsystems.spindexer.SpindexerSubsystem;
-import frc.robot.subsystems.spindexer.Spindexer.spindexer_state;
+import frc.robot.subsystems.spindexer.SpindexerSubsystem.spindexer_state;
+import frc.robot.subsystems.spindexer.SpindexerIOSim;
 import frc.robot.sim.RebuiltSimManager;
 import com.pathplanner.lib.path.PathConstraints;
 
@@ -81,7 +83,7 @@ public class RobotContainer extends ControllerBindings {
   private final Feeder feederSubsystem = new Feeder();
   private final ShooterHood shooterHood = new ShooterHood(drivetrain);
   private final ShooterWheels shooterWheels = new ShooterWheels(drivetrain);
-  private final Spindexer spinDexer = new Spindexer();
+  private final SpindexerSubsystem spindexer;
 
 
   // Simulation
@@ -123,8 +125,8 @@ public class RobotContainer extends ControllerBindings {
     return feederSubsystem;
   }
 
-  public Spindexer getSpindexer() {
-    return spinDexer;
+  public SpindexerSubsystem getSpindexer() {
+    return spindexer;
   }
 
   public CommandSwerveDrivetrain getDrivetrain() {
@@ -141,6 +143,8 @@ public class RobotContainer extends ControllerBindings {
 
   public RobotContainer() {
     instance = this;
+    spindexer = RobotBase.isReal() ? new SpindexerSubsystem(new SpindexerIOTalonFX())
+        : new SpindexerSubsystem(new SpindexerIOSim());
     llMain.getSettings().withImuMode(ImuMode.ExternalImu).save();
     setupDriveBindings(controller);
     setupOperatorBindings(operaterController);
@@ -326,7 +330,7 @@ public class RobotContainer extends ControllerBindings {
 
   public void initSimulation() {
     simManager = new RebuiltSimManager(drivetrain, intakeSubsystem, feederSubsystem, shooterWheels,
-        shooterHood, spinDexer);
+        shooterHood, spindexer);
     Logger.recordOutput("Sim/State", "Ready");
     drivetrain.resetPose(RebuiltSimManager.STARTING_POSE);
   }
@@ -378,7 +382,7 @@ public class RobotContainer extends ControllerBindings {
     intakeSubsystem.setRollerState(RollerState.OFF);
     shooterWheels.setState(shooter_state.IDLE);
     shooterHood.setState(shooterhood_state.IN);
-    spinDexer.setState(spindexer_state.STOP);
+    spindexer.setState(spindexer_state.STOP);
     feederSubsystem.setState(feeder_state.STOP);
   }
 
@@ -400,22 +404,22 @@ public class RobotContainer extends ControllerBindings {
     NamedCommands.registerCommand("Stop Shooter Spin",
         shooterWheels.setStateCommand(shooter_state.IDLE)
             .alongWith(shooterHood.setStateCommand(shooterhood_state.IN))
-            .alongWith(spinDexer.setStateCommand(spindexer_state.STOP))
+            .alongWith(spindexer.setStateCommand(spindexer_state.STOP))
             .alongWith(feederSubsystem.setStateCommand(feeder_state.STOP)));
     NamedCommands.registerCommand("End Shooter Spin",
         shooterWheels.setStateCommand(shooter_state.IDLE)
             .alongWith(shooterHood.setStateCommand(shooterhood_state.IN))
-            .alongWith(spinDexer.setStateCommand(spindexer_state.STOP))
+            .alongWith(spindexer.setStateCommand(spindexer_state.STOP))
             .alongWith(feederSubsystem.setStateCommand(feeder_state.STOP)));
     NamedCommands.registerCommand("Run Shooter",
         shooterWheels.setStateCommand(shooter_state.SHOOTING)
             .alongWith(feederSubsystem.setStateCommand(feeder_state.RUN))
-            .alongWith(spinDexer.setStateCommand(spindexer_state.RUN))
+            .alongWith(spindexer.setStateCommand(spindexer_state.RUN))
             .alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
     NamedCommands.registerCommand("Shooting",
         shooterWheels.setStateCommand(shooter_state.SHOOTING)
             .alongWith(feederSubsystem.setStateCommand(feeder_state.RUN))
-            .alongWith(spinDexer.setStateCommand(spindexer_state.RUN))
+            .alongWith(spindexer.setStateCommand(spindexer_state.RUN))
             .alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
     NamedCommands.registerCommand("Start Passing Spin",
         shooterWheels.setStateCommand(shooter_state.PASSING)
@@ -423,7 +427,7 @@ public class RobotContainer extends ControllerBindings {
     NamedCommands.registerCommand("Passing",
         shooterWheels.setStateCommand(shooter_state.PASSING)
             .alongWith(feederSubsystem.setStateCommand(feeder_state.RUN))
-            .alongWith(spinDexer.setStateCommand(spindexer_state.RUN))
+            .alongWith(spindexer.setStateCommand(spindexer_state.RUN))
             .alongWith(shooterHood.setStateCommand(shooterhood_state.PASSING)));
     NamedCommands.registerCommand("Auto Hub Drive", new HubDriveAUTO(drivetrain));
   }
