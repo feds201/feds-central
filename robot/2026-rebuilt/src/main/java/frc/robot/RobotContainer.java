@@ -33,6 +33,7 @@ import frc.robot.subsystems.shooter.ShooterHood.shooterhood_state;
 import frc.robot.subsystems.shooter.ShooterWheels;
 import frc.robot.subsystems.shooter.ShooterWheels.shooter_state;
 import frc.robot.subsystems.spindexer.Spindexer;
+import frc.robot.subsystems.spindexer.SpindexerSubsystem;
 import frc.robot.subsystems.spindexer.Spindexer.spindexer_state;
 import frc.robot.sim.RebuiltSimManager;
 import com.pathplanner.lib.path.PathConstraints;
@@ -56,7 +57,6 @@ import java.util.List;
 import static edu.wpi.first.units.Units.Rotations;
 
 public class RobotContainer extends ControllerBindings {
-
   // Singleton accessor so external code (DiagnosticServer) can command
   // shooter/hood.
   private static RobotContainer instance;

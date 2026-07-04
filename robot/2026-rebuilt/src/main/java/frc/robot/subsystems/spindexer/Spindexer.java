@@ -80,16 +80,16 @@ public class Spindexer extends SubsystemBase {
     DeviceTempReporter.addDevices(spindexerMotor);
 
     m_spindexerSysId = new SysIdRoutine(new SysIdRoutine.Config(Volts.of(0.5).per(Second), // default
-                                                                                           // ramp
-                                                                                           // (or
-                                                                                           // Volts.of(x).per(Second)
-                                                                                           // if you
-                                                                                           // want
-                                                                                           // custom)
+        // ramp
+        // (or
+        // Volts.of(x).per(Second)
+        // if you
+        // want
+        // custom)
         Volts.of(3), // dynamic step voltage: start with something conservative (4-6 V)
         null, // default timeout
         state -> SignalLogger.writeString("SysId_Spindexer_State", state.toString()) // log state
-                                                                                     // string
+    // string
     ), new SysIdRoutine.Mechanism(
         // apply voltage request -> set CTRE motor VoltageOut
         voltsMeasure -> {
