@@ -58,6 +58,27 @@ public final class RobotMap {
     public static final int kRollerMotorFollowerID = 60;
     public static final double agitateCycleConstant = 0.5;
 
+
+    public static final double extendedRotations = 18.0; // TUNE on new intake
+    public static final double retractedRotations = 0.39;
+    public static final double closeAgitationRotations = 9.0; // about halfway from bumper to
+                                                              // extended,
+    // used
+    // for agitating the close half of the
+    // hopper
+    public static final double farAgitationRotations = 13.5; // about three-quarters from bumper to
+    // extended, used for agitating the far half
+    // of
+    // the hopper
+    public static final double burstAgitation = extendedRotations / 2.0;
+    // Desired motion timing: target to complete extend/retract in under 1s
+    public static final double MOVE_TARGET_SECONDS = .45;
+    // Aggressive acceleration multiplier requested (20x faster than default)
+    public static final double MOTION_MAGIC_ACCEL_MULTIPLIER = 40.0;
+    public static final double ROLLER_OUTPUT = 1.0; // 90% for rollers, 70% originally;
+    public static final double AGITATE_OUTPUT = 0.5; // power level to use during agitation states
+                                                     // (lower is more gentle, higher is more
+                                                     // aggressive)
   }
 
 

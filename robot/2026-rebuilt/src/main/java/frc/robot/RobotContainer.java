@@ -24,9 +24,13 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.RobotMap.DrivetrainConstants;
 import frc.robot.commands.swerve.BallTracking;
 import frc.robot.commands.swerve.HubDriveAUTO;
-import frc.robot.subsystems.intake.IntakeSubsystem;
-import frc.robot.subsystems.intake.IntakeSubsystem.IntakeState;
-import frc.robot.subsystems.intake.IntakeSubsystem.RollerState;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.RackIOSim;
+import frc.robot.subsystems.intake.RackIOTalonFX;
+import frc.robot.subsystems.intake.RollerIOSim;
+import frc.robot.subsystems.intake.RollerIOTalonFX;
+import frc.robot.subsystems.intake.Intake.IntakeState;
+import frc.robot.subsystems.intake.Intake.RollerState;
 import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.subsystems.feeder.Feeder.feeder_state;
 import frc.robot.subsystems.shooter.ShooterHood;
@@ -79,7 +83,7 @@ public class RobotContainer extends ControllerBindings {
   private final Telemetry telemetry =
       new Telemetry(TunerConstants.kSpeedAt12Volts.in(MetersPerSecond));
 
-  private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
+  private final Intake intakeSubsystem;
   private final Feeder feederSubsystem = new Feeder();
   private final ShooterHood shooterHood = new ShooterHood(drivetrain);
   private final ShooterWheels shooterWheels = new ShooterWheels(drivetrain);
@@ -109,7 +113,7 @@ public class RobotContainer extends ControllerBindings {
     return operaterController;
   }
 
-  public IntakeSubsystem getIntakeSubsystem() {
+  public Intake getIntakeSubsystem() {
     return intakeSubsystem;
   }
 
@@ -145,11 +149,15 @@ public class RobotContainer extends ControllerBindings {
     instance = this;
     spindexer = RobotBase.isReal() ? new SpindexerSubsystem(new SpindexerIOTalonFX())
         : new SpindexerSubsystem(new SpindexerIOSim());
+    intakeSubsystem = RobotBase.isReal() ? new Intake(new RackIOTalonFX(), new RollerIOTalonFX())
+        : new Intake(new RackIOSim(), new RollerIOSim());
     llMain.getSettings().withImuMode(ImuMode.ExternalImu).save();
     setupDriveBindings(controller);
     setupOperatorBindings(operaterController);
     configureRootTests();
-    PitTesting.createDashboard();
+    if (RobotBase.isReal()) {
+      PitTesting.createDashboard();
+    }
     new Trigger(drivetrain::withinTrench).and(DriverStation::isTeleop)
         .onTrue(shooterHood.setStateCommand(shooterhood_state.IN));
     registerNamedCommands();
@@ -378,7 +386,7 @@ public class RobotContainer extends ControllerBindings {
   }
 
   public void idleSubsystems() {
-    intakeSubsystem.setState(IntakeState.DEFAULT);
+    intakeSubsystem.setRackState(IntakeState.DEFAULT);
     intakeSubsystem.setRollerState(RollerState.OFF);
     shooterWheels.setState(shooter_state.IDLE);
     shooterHood.setState(shooterhood_state.IN);

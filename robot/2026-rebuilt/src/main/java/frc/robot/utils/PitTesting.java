@@ -15,9 +15,9 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import frc.robot.subsystems.intake.IntakeSubsystem;
-import frc.robot.subsystems.intake.IntakeSubsystem.IntakeState;
-import frc.robot.subsystems.intake.IntakeSubsystem.RollerState;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.Intake.IntakeState;
+import frc.robot.subsystems.intake.Intake.RollerState;
 import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.subsystems.feeder.Feeder.feeder_state;
 import frc.robot.subsystems.shooter.ShooterHood;
@@ -45,7 +45,7 @@ public class PitTesting {
   static Orchestra testOrchestra = new Orchestra();
 
   static CommandSwerveDrivetrain drivetrain = container.getDrivetrain();
-  static IntakeSubsystem intake = container.getIntakeSubsystem();
+  static Intake intake = container.getIntakeSubsystem();
   static Feeder feeder = container.getFeederSubsystem();
   static SpindexerSubsystem spindexer = container.getSpindexer();
   static ShooterHood shooterHood = container.getShooterHood();
@@ -78,7 +78,7 @@ public class PitTesting {
   public static void createDashboard() {
     // sound
     orchestra.addInstrument(feeder.getFeederMotor());
-    orchestra.addInstrument(intake.getIntakeMotor());
+    orchestra.addInstrument(intake.getRackMotor());
     orchestra.addInstrument(intake.getRollerMotor());
     orchestra.addInstrument(shooterHood.getShooterHoodMotor());
     orchestra.addInstrument(shooterWheels.getShooterLeader());
@@ -223,7 +223,7 @@ public class PitTesting {
   public static void updateDashboard() {
 
     updateEntry("feeder", feeder.getFeederMotor());
-    updateEntry("intake", intake.getIntakeMotor());
+    updateEntry("intake", intake.getRackMotor());
     updateEntry("roller", intake.getRollerMotor());
     updateEntry("hood", shooterHood.getShooterHoodMotor());
     updateEntry("topRight", shooterWheels.getShooterLeader());
