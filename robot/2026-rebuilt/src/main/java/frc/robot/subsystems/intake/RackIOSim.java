@@ -1,20 +1,24 @@
 package frc.robot.subsystems.intake;
 
-import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Fahrenheit;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Volts;
+import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
-import edu.wpi.first.math.system.LinearSystem;
+import com.ctre.phoenix6.sim.ChassisReference;
+import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.simulation.DIOSim;
 import frc.robot.RobotMap.IntakeSubsystemConstants;
+import frc.robot.utils.PhoenixUtil;
 
 public class RackIOSim implements RackIO {
   /**
@@ -32,62 +36,96 @@ public class RackIOSim implements RackIO {
   private boolean hasMotorBeenPosResetThisCycle = false;
 
   private final DCMotor rackMotorType = DCMotor.getKrakenX60(1);
-  private final DCMotorSim rackSim =
+  private final DCMotorSim rackDcMotorSim =
       new DCMotorSim(LinearSystemId.createDCMotorSystem(rackMotorType, INTAKE_DEPLOY_MOI,
           INTAKE_DEPLOY_GEAR_RATIO), rackMotorType);
   private final DIOSim limitSwitch = new DIOSim(IntakeSubsystemConstants.klimit_switchID);
+  private final TalonFX rackTalonFX = new TalonFX(IntakeSubsystemConstants.kMotorID);
 
-  private Voltage rackAppliedVoltage = Volts.of(0);
+
+  private final MotionMagicVoltage positionOut = new MotionMagicVoltage(Rotations.of(0));
+  private final VoltageOut voltageOut = new VoltageOut(0);
+  private final DutyCycleOut dutyCycleOut = new DutyCycleOut(0);
+
+  public RackIOSim() {
+
+    // Apply config; repeat to ensure application (some hardware requires it)
+    PhoenixUtil.tryUntilOk(5, () -> rackTalonFX.getConfigurator()
+        .apply(IntakeSubsystemConstants.getRackMotorConfig(), 0.25));
+    TalonFXSimState ctreRackSimState = rackTalonFX.getSimState();
+    ctreRackSimState.Orientation = ChassisReference.CounterClockwise_Positive;
+    ctreRackSimState.setMotorType(TalonFXSimState.MotorType.KrakenX60);
+  }
 
   @Override
   public void updateInputs(RackIOInputs inputs) {
-    rackSim.setInputVoltage(rackAppliedVoltage.in(Volts));
-    rackSim.update(0.02);
+    TalonFXSimState ctreRackSimState = rackTalonFX.getSimState();
+
+    // set the supply voltage of the TalonFX
+    ctreRackSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
+
+    // get the motor voltage of the TalonFX
+    var motorVoltage = ctreRackSimState.getMotorVoltageMeasure();
+
+    // use the motor voltage to calculate new position and velocity
+    // using WPILib's DCMotorSim class for physics simulation
+    rackDcMotorSim.setInputVoltage(motorVoltage.in(Volts));
+    rackDcMotorSim.update(0.020); // assume 20 ms loop time
+
+    // apply the new rotor position and velocity to the TalonFX;
+    // note that this is rotor position/velocity (before gear ratio), but
+    // DCMotorSim returns mechanism position/velocity (after gear ratio)
+    ctreRackSimState
+        .setRawRotorPosition(rackDcMotorSim.getAngularPosition().times(INTAKE_DEPLOY_GEAR_RATIO));
+    ctreRackSimState
+        .setRotorVelocity(rackDcMotorSim.getAngularVelocity().times(INTAKE_DEPLOY_GEAR_RATIO));
+
     limitSwitch.setValue(
         inputs.rackMotorPosition.in(Rotations) < IntakeSubsystemConstants.extendedRotations);
 
     inputs.rackLimitSwitch = limitSwitch.getValue();
-    inputs.rackMotorAppliedVoltage = rackAppliedVoltage;
+    inputs.rackMotorAppliedVoltage = ctreRackSimState.getMotorVoltageMeasure();
     inputs.rackMotorTemp = Fahrenheit.of(75); // In sim we don't really care about temp this is
                                               // pretty realistic i think maybe
-    inputs.rackMotorPosition = rackSim.getAngularPosition();
-    inputs.rackMotorCurrent = Amps.of(rackSim.getCurrentDrawAmps());
-    inputs.rackMotorVelocity = rackSim.getAngularVelocity();
+    inputs.rackMotorCurrent = ctreRackSimState.getSupplyCurrentMeasure();
+    inputs.rackMotorPosition = rackTalonFX.getPosition().getValue();
+    inputs.rackMotorVelocity = rackTalonFX.getVelocity().getValue();
     inputs.hasMotorBeenPosResetThisCycle = this.hasMotorBeenPosResetThisCycle;
   }
 
   @Override
   public void limitSwitchExtensionControl() {
     if (!limitSwitch.getValue()) {
-      rackAppliedVoltage = Volts.of(0);
+      rackTalonFX.setControl(voltageOut.withOutput(0));
       if (!hasMotorBeenPosResetThisCycle) {
-        rackSim.setAngle(Rotations.of(IntakeSubsystemConstants.extendedRotations).in(Radians));
+        setPosition(Rotations.of(IntakeSubsystemConstants.extendedRotations));
         hasMotorBeenPosResetThisCycle = true;
       }
     } else {
-      rackAppliedVoltage = Volts.of(7);
+      rackTalonFX.setControl(voltageOut.withOutput(7));
       hasMotorBeenPosResetThisCycle = false;
     }
   }
 
   @Override
   public void setPosition(Angle position) {
-    rackSim.setAngle(position.in(Radians));
+    rackTalonFX.setControl(positionOut.withPosition(position));
   }
 
   @Override
   public void zeroEncoder(Angle position) {
-    rackSim.setAngle(position.in(Radians));
+    rackDcMotorSim.setAngle(position.in(Radians));
+    rackTalonFX.getSimState().setRawRotorPosition(position.times(INTAKE_DEPLOY_GEAR_RATIO));
   }
 
   @Override
   public void stop() {
-    rackAppliedVoltage = Volts.of(0);
+    rackTalonFX.setControl(voltageOut.withOutput(0));
   }
 
   @Override
   public void set(double percent) {
-    rackAppliedVoltage = Volts.of(percent * 12.0);
+    rackTalonFX.setControl(dutyCycleOut.withOutput(percent));
   }
 
   // TODO: implement sysid routine for rack
@@ -96,6 +134,6 @@ public class RackIOSim implements RackIO {
 
   @Override
   public TalonFX getIntakeMotor() {
-    return null;
+    return rackTalonFX;
   }
 }
