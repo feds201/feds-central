@@ -31,8 +31,10 @@ import frc.robot.subsystems.intake.RollerIOSim;
 import frc.robot.subsystems.intake.RollerIOTalonFX;
 import frc.robot.subsystems.intake.Intake.IntakeState;
 import frc.robot.subsystems.intake.Intake.RollerState;
-import frc.robot.subsystems.feeder.Feeder;
-import frc.robot.subsystems.feeder.Feeder.feeder_state;
+import frc.robot.subsystems.feeder.FeederSubsystem;
+import frc.robot.subsystems.feeder.FeederSubsystem.feeder_state;
+import frc.robot.subsystems.feeder.FeederIOSim;
+import frc.robot.subsystems.feeder.FeederIOTalonFX;
 import frc.robot.subsystems.shooter.ShooterHood;
 import frc.robot.subsystems.shooter.ShooterHood.shooterhood_state;
 import frc.robot.subsystems.shooter.ShooterWheels;
@@ -84,7 +86,7 @@ public class RobotContainer extends ControllerBindings {
       new Telemetry(TunerConstants.kSpeedAt12Volts.in(MetersPerSecond));
 
   private final Intake intakeSubsystem;
-  private final Feeder feederSubsystem = new Feeder();
+  private final FeederSubsystem feederSubsystem;
   private final ShooterHood shooterHood = new ShooterHood(drivetrain);
   private final ShooterWheels shooterWheels = new ShooterWheels(drivetrain);
   private final SpindexerSubsystem spindexer;
@@ -125,7 +127,7 @@ public class RobotContainer extends ControllerBindings {
     return shooterWheels;
   }
 
-  public Feeder getFeederSubsystem() {
+  public FeederSubsystem getFeederSubsystem() {
     return feederSubsystem;
   }
 
@@ -149,6 +151,8 @@ public class RobotContainer extends ControllerBindings {
     instance = this;
     spindexer = RobotBase.isReal() ? new SpindexerSubsystem(new SpindexerIOTalonFX())
         : new SpindexerSubsystem(new SpindexerIOSim());
+    feederSubsystem = RobotBase.isReal() ? new FeederSubsystem(new FeederIOTalonFX())
+        : new FeederSubsystem(new FeederIOSim());
     intakeSubsystem = RobotBase.isReal() ? new Intake(new RackIOTalonFX(), new RollerIOTalonFX())
         : new Intake(new RackIOSim(), new RollerIOSim());
     llMain.getSettings().withImuMode(ImuMode.ExternalImu).save();

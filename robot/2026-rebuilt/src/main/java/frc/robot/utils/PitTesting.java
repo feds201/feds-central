@@ -18,8 +18,8 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.Intake.IntakeState;
 import frc.robot.subsystems.intake.Intake.RollerState;
-import frc.robot.subsystems.feeder.Feeder;
-import frc.robot.subsystems.feeder.Feeder.feeder_state;
+import frc.robot.subsystems.feeder.FeederSubsystem;
+import frc.robot.subsystems.feeder.FeederSubsystem.feeder_state;
 import frc.robot.subsystems.shooter.ShooterHood;
 import frc.robot.subsystems.shooter.ShooterHood.shooterhood_state;
 import frc.robot.subsystems.shooter.ShooterWheels;
@@ -46,7 +46,7 @@ public class PitTesting {
 
   static CommandSwerveDrivetrain drivetrain = container.getDrivetrain();
   static Intake intake = container.getIntakeSubsystem();
-  static Feeder feeder = container.getFeederSubsystem();
+  static FeederSubsystem feeder = container.getFeederSubsystem();
   static SpindexerSubsystem spindexer = container.getSpindexer();
   static ShooterHood shooterHood = container.getShooterHood();
   static ShooterWheels shooterWheels = container.getShooterWheels();

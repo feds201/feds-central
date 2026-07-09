@@ -154,8 +154,8 @@ public class Robot extends LoggedRobot {
 
     // Tick Epilogue so @Logged fields publish to NetworkTables
     var backend = Epilogue.getConfig().backend;
-    Epilogue.feederLogger.update(backend.getNested("@Logged/Feeder"),
-        m_robotContainer.getFeederSubsystem());
+    // Epilogue.feederLogger.update(backend.getNested("@Logged/Feeder"),
+    // m_robotContainer.getFeederSubsystem());
     // Epilogue.spindexerLogger.update(backend.getNested("@Logged/Spindexer"),
     // m_robotContainer.getSpindexer());
     Epilogue.shooterHoodLogger.update(backend.getNested("@Logged/ShooterHood"),

@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.intake.Intake.IntakeState;
 import frc.robot.subsystems.intake.Intake.RollerState;
-import frc.robot.subsystems.feeder.Feeder.feeder_state;
+import frc.robot.subsystems.feeder.FeederSubsystem.feeder_state;
 import frc.robot.subsystems.shooter.ShooterHood.shooterhood_state;
 import frc.robot.subsystems.shooter.ShooterWheels.shooter_state;
 import frc.robot.subsystems.spindexer.SpindexerSubsystem.spindexer_state;
