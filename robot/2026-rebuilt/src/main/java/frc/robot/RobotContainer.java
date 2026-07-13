@@ -27,12 +27,15 @@ import frc.robot.commands.swerve.HubDriveAUTO;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.RackIOSim;
 import frc.robot.subsystems.intake.RackIOTalonFX;
+import frc.robot.subsystems.intake.RollerIO;
 import frc.robot.subsystems.intake.RollerIOSim;
 import frc.robot.subsystems.intake.RollerIOTalonFX;
 import frc.robot.subsystems.intake.Intake.IntakeState;
 import frc.robot.subsystems.intake.Intake.RollerState;
+import frc.robot.subsystems.intake.RackIO;
 import frc.robot.subsystems.feeder.FeederSubsystem;
 import frc.robot.subsystems.feeder.FeederSubsystem.feeder_state;
+import frc.robot.subsystems.feeder.FeederIO;
 import frc.robot.subsystems.feeder.FeederIOSim;
 import frc.robot.subsystems.feeder.FeederIOTalonFX;
 import frc.robot.subsystems.shooter.ShooterHood;
@@ -42,6 +45,7 @@ import frc.robot.subsystems.shooter.ShooterWheels.shooter_state;
 import frc.robot.subsystems.spindexer.SpindexerIOTalonFX;
 import frc.robot.subsystems.spindexer.SpindexerSubsystem;
 import frc.robot.subsystems.spindexer.SpindexerSubsystem.spindexer_state;
+import frc.robot.subsystems.spindexer.SpindexerIO;
 import frc.robot.subsystems.spindexer.SpindexerIOSim;
 import frc.robot.sim.RebuiltSimManager;
 import com.pathplanner.lib.path.PathConstraints;
@@ -149,12 +153,26 @@ public class RobotContainer extends ControllerBindings {
 
   public RobotContainer() {
     instance = this;
-    spindexer = RobotBase.isReal() ? new SpindexerSubsystem(new SpindexerIOTalonFX())
-        : new SpindexerSubsystem(new SpindexerIOSim());
-    feederSubsystem = RobotBase.isReal() ? new FeederSubsystem(new FeederIOTalonFX())
-        : new FeederSubsystem(new FeederIOSim());
-    intakeSubsystem = RobotBase.isReal() ? new Intake(new RackIOTalonFX(), new RollerIOTalonFX())
-        : new Intake(new RackIOSim(), new RollerIOSim());
+    switch (RobotMap.getRobotMode()) {
+      case REAL:
+        spindexer = new SpindexerSubsystem(new SpindexerIOTalonFX());
+        feederSubsystem = new FeederSubsystem(new FeederIOTalonFX());
+        intakeSubsystem = new Intake(new RackIOTalonFX(), new RollerIOTalonFX());
+        break;
+      case SIM:
+        spindexer = new SpindexerSubsystem(new SpindexerIOSim());
+        feederSubsystem = new FeederSubsystem(new FeederIOSim());
+        intakeSubsystem = new Intake(new RackIOSim(), new RollerIOSim());
+        break;
+      case REPLAY:
+        spindexer = new SpindexerSubsystem(new SpindexerIO() {});
+        feederSubsystem = new FeederSubsystem(new FeederIO() {});
+        intakeSubsystem = new Intake(new RackIO() {}, new RollerIO() {});
+        break;
+      default:
+        throw new IllegalStateException("Unexpected value: " + RobotMap.getRobotMode());
+    }
+
     llMain.getSettings().withImuMode(ImuMode.ExternalImu).save();
     setupDriveBindings(controller);
     setupOperatorBindings(operaterController);

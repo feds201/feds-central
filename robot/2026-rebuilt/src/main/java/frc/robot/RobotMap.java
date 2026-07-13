@@ -109,7 +109,8 @@ public final class RobotMap {
 
 
   public static robotState getRobotMode() {
-    return Robot.isReal() ? robotState.REAL : robotState.SIM;
+    return robotState.REPLAY;
+    // return Robot.isReal() ? robotState.REAL : robotState.SIM;
   }
 
   public static class DrivetrainConstants {

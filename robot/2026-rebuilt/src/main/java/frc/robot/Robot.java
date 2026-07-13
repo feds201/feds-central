@@ -91,10 +91,12 @@ public class Robot extends LoggedRobot {
 
       case SIM:
         Logger.addDataReceiver(new NT4Publisher()); // Publishes all Logger logs to NetworkTables
-        Logger.addDataReceiver(new NT4Publisher()); // Publishes all Logger logs to NetworkTables
         if (Boolean.getBoolean("simLogging")) {
           new File("logs/main/").mkdirs(); // Create folders for logs
           new File("logs/ctre/").mkdirs();
+
+          Logger.addDataReceiver(new WPILOGWriter("logs/main/"));
+
           DataLogManager.start("logs/main/"); // Starts saving logs
           NetworkTableInstance.getDefault() // Saves all NetworkTable logs
               .startEntryDataLog(DataLogManager.getLog(), "", "");
@@ -109,7 +111,10 @@ public class Robot extends LoggedRobot {
       case REPLAY:
         String inPath = LogFileUtil.findReplayLog();
         Logger.setReplaySource(new WPILOGReader(inPath)); // Sets the log file to replay
-        Logger.addDataReceiver(new NT4Publisher()); // Publishes logs to network tables
+        // Logger.addDataReceiver(new NT4Publisher()); // Publishes logs to network tables
+        // The addPathSuffix function generates a new filename by adding the suffix.
+        // If running replay repeatedly, a numeric index is added to the filename instead.
+        Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(inPath, "_sim")));
         SignalLogger.enableAutoLogging(false); // No live devices in replay, so no Phoenix logs to
                                                // capture
         break;
