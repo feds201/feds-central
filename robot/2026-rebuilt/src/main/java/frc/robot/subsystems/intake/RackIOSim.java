@@ -60,25 +60,7 @@ public class RackIOSim implements RackIO {
   @Override
   public void updateInputs(RackIOInputs inputs) {
     TalonFXSimState ctreRackSimState = rackTalonFX.getSimState();
-
-    // set the supply voltage of the TalonFX
-    ctreRackSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
-
-    // get the motor voltage of the TalonFX
-    var motorVoltage = ctreRackSimState.getMotorVoltageMeasure();
-
-    // use the motor voltage to calculate new position and velocity
-    // using WPILib's DCMotorSim class for physics simulation
-    rackDcMotorSim.setInputVoltage(motorVoltage.in(Volts));
-    rackDcMotorSim.update(0.020); // assume 20 ms loop time
-
-    // apply the new rotor position and velocity to the TalonFX;
-    // note that this is rotor position/velocity (before gear ratio), but
-    // DCMotorSim returns mechanism position/velocity (after gear ratio)
-    ctreRackSimState
-        .setRawRotorPosition(rackDcMotorSim.getAngularPosition().times(INTAKE_DEPLOY_GEAR_RATIO));
-    ctreRackSimState
-        .setRotorVelocity(rackDcMotorSim.getAngularVelocity().times(INTAKE_DEPLOY_GEAR_RATIO));
+    PhoenixUtil.updateTalonSimState(rackDcMotorSim, ctreRackSimState, INTAKE_DEPLOY_GEAR_RATIO);
 
     limitSwitch.setValue(
         inputs.rackMotorPosition.in(Rotations) < IntakeSubsystemConstants.extendedRotations);

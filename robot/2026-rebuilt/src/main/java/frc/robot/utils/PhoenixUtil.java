@@ -8,6 +8,10 @@
 package frc.robot.utils;
 
 import com.ctre.phoenix6.StatusCode;
+import com.ctre.phoenix6.sim.TalonFXSimState;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.simulation.DCMotorSim;
+import static edu.wpi.first.units.Units.Volts;
 import java.util.function.Supplier;
 
 public class PhoenixUtil {
@@ -18,5 +22,19 @@ public class PhoenixUtil {
       if (error.isOK())
         break;
     }
+  }
+
+  public static void updateTalonSimState(DCMotorSim motorSim, TalonFXSimState simState,
+      double gearRatio) {
+    simState.setSupplyVoltage(RobotController.getBatteryVoltage());
+
+    // Update simulation of motor's produced torque
+    double volts = simState.getMotorVoltageMeasure().in(Volts);
+    motorSim.setInputVoltage(volts);
+    motorSim.update(0.02);
+
+    // Update the Talon's physical state based on the intertial simulaiton
+    simState.setRawRotorPosition(motorSim.getAngularPosition().times(gearRatio));
+    simState.setRotorVelocity(motorSim.getAngularVelocity().times(gearRatio));
   }
 }
