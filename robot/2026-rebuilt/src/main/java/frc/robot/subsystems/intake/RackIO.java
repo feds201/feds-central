@@ -42,8 +42,4 @@ public interface RackIO {
   public default void limitSwitchExtensionControl() {}
 
   public default void runSysIdRoutine(Voltage volts) {}
-
-  public default DigitalInput getLimitSwitch() {
-    return null;
-  }
 }

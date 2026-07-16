@@ -52,7 +52,7 @@ public class PitTesting {
   static ShooterWheels shooterWheels = container.getShooterWheels();
   static Testing testing = new Testing();
 
-  static DigitalInput limit_switch = intake.getLimitSwitch();
+  // static DigitalInput limit_switch = intake.getLimitSwitch();
 
   private static String[] moduleNames = {"Front Left", "Front Right", "Back Left", "Back Right"};
 
@@ -235,7 +235,8 @@ public class PitTesting {
     // updateEntry("spindexer", spindexer.getSpindexerMotor());
     // updateEntry("testing", testing.getMotor());
 
-    entryMap.get("limit switch").setBoolean(!limit_switch.get());
+    // TODO: reimplement limit switch ot pit testing dash
+    // entryMap.get("limit switch").setBoolean(!limit_switch.get());
 
     tent.setBoolean(testing.getState() == MotorState.ON);
 

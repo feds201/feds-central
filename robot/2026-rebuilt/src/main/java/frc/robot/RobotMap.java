@@ -5,6 +5,8 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import java.util.Map;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Rectangle2d;
@@ -109,8 +111,8 @@ public final class RobotMap {
 
 
   public static robotState getRobotMode() {
-    return robotState.REPLAY;
-    // return Robot.isReal() ? robotState.REAL : robotState.SIM;
+    // return robotState.REPLAY;
+    return Robot.isReal() ? robotState.REAL : robotState.SIM;
   }
 
   public static class DrivetrainConstants {
@@ -179,6 +181,24 @@ public final class RobotMap {
   }
 
   public static class ShooterConstants {
+    public static TalonFXConfiguration getShooterHoodConfiguration() {
+      TalonFXConfiguration config = new TalonFXConfiguration();
+      config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+      config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+      config.CurrentLimits.StatorCurrentLimit = 40;
+      // Following values would need to be tuned.
+      config.Slot0.kS = .235; // Constant applied for friction compensation (static gain)
+      config.Slot0.kP = 1; // Proportional gain
+      config.Slot0.kD = 0.0; // Derivative gain
+      config.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
+          ShooterConstants.HOOD_FORWARD_SOFT_LIMIT_ROT;
+      config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0.0;
+      config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+      config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+
+      return config;
+    }
+
     /** Hood motor forward soft limit in rotor rotations — the maximum travel position. */
     public static final double HOOD_FORWARD_SOFT_LIMIT_ROT = 30.0;
     /** Physical hood angle in degrees when the motor is at 0 rotor rotations (fully retracted). */
