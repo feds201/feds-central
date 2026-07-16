@@ -48,11 +48,6 @@ public class FeederSubsystem extends SubsystemBase {
   public FeederSubsystem(FeederIO io) {
     this.io = io;
 
-    if (io.getFeederMotor() != null) {
-      SubsystemStatusManager.addSubsystem(getName(), io.getFeederMotor());
-      DeviceTempReporter.addDevices(io.getFeederMotor());
-    }
-
     m_feederSysId = new SysIdRoutine(
         new SysIdRoutine.Config(Volts.of(0.5).per(Second), Volts.of(3), Seconds.of(5),
             state -> SignalLogger.writeString("SysId_Feeder_State", state.toString())),
@@ -100,10 +95,6 @@ public class FeederSubsystem extends SubsystemBase {
 
   public Current getCurrent() {
     return inputs.feederMotorCurrent;
-  }
-
-  public TalonFX getFeederMotor() {
-    return io.getFeederMotor();
   }
 
   public Voltage getTargetVoltage() {

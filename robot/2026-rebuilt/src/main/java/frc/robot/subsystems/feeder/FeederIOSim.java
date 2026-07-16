@@ -60,8 +60,4 @@ public class FeederIOSim implements FeederIO {
   @Override
   public void runSysIdRoutine(Voltage volts) {}
 
-  @Override
-  public TalonFX getFeederMotor() {
-    return null;
-  }
 }

@@ -260,18 +260,6 @@ public class Intake extends SubsystemBase {
     return rackInputs.rackMotorCurrent;
   }
 
-  public TalonFX getRackMotor() {
-    return rackIO.getIntakeMotor();
-  }
-
-  public TalonFX getRollerMotor() {
-    return rollerIO.getRollerMotorLeader();
-  }
-
-  public DigitalInput getLimitSwitch() {
-    return rackIO.getLimitSwitch();
-  }
-
   /**
    * Current is multiplied by 2 to give representation for both motors
    */

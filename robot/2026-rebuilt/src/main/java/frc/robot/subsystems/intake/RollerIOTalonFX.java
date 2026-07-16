@@ -83,14 +83,4 @@ public class RollerIOTalonFX implements RollerIO {
   public void runSysIdRoutine(Voltage volts) {
     rollerMotorLeader.setControl(new VoltageOut(0));
   }
-
-  @Override
-  public TalonFX getRollerMotorLeader() {
-    return rollerMotorLeader;
-  }
-
-  @Override
-  public TalonFX getRollerMotorFollower() {
-    return rollerMotorFollower;
-  }
 }

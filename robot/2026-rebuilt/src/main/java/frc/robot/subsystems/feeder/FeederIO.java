@@ -32,7 +32,4 @@ public interface FeederIO {
 
   public default void runSysIdRoutine(Voltage volts) {}
 
-  public default TalonFX getFeederMotor() {
-    return null;
-  }
 }

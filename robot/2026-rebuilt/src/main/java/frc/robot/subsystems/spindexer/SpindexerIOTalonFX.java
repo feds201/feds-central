@@ -78,9 +78,4 @@ public class SpindexerIOTalonFX implements SpindexerIO {
   public void runSysIdRoutine(Voltage volts) {
     spindexerMotor.setControl(new VoltageOut(0));
   }
-
-  @Override
-  public TalonFX getSpindexerMotor() {
-    return spindexerMotor;
-  }
 }

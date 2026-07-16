@@ -31,8 +31,4 @@ public interface SpindexerIO {
   public default void stop() {}
 
   public default void runSysIdRoutine(Voltage volts) {}
-
-  public default TalonFX getSpindexerMotor() {
-    return null;
-  }
 }

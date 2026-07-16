@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.Rotations;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.ParentDevice;
@@ -31,6 +32,8 @@ public class RackIOTalonFX implements RackIO {
   private final StatusSignal<Temperature> rackMotorTemp;
 
   private final MotionMagicVoltage positionOut = new MotionMagicVoltage(Rotations.of(0));
+  private final VoltageOut voltageOut = new VoltageOut(0);
+  private final DutyCycleOut dutyCycleOut = new DutyCycleOut(0);
 
   public RackIOTalonFX() {
     this.rackMotor = new TalonFX(RobotMap.IntakeSubsystemConstants.kMotorID);
@@ -91,12 +94,12 @@ public class RackIOTalonFX implements RackIO {
 
   @Override
   public void stop() {
-    rackMotor.setControl(new VoltageOut(0));
+    rackMotor.setControl(voltageOut.withOutput(0));
   }
 
   @Override
   public void set(double percent) {
-    rackMotor.set(percent);
+    rackMotor.setControl(dutyCycleOut.withOutput(percent));
   }
 
   // TODO: implement sysid routine for rack
@@ -105,13 +108,4 @@ public class RackIOTalonFX implements RackIO {
     rackMotor.setControl(new VoltageOut(0));
   }
 
-  @Override
-  public TalonFX getIntakeMotor() {
-    return rackMotor;
-  }
-
-  @Override
-  public DigitalInput getLimitSwitch() {
-    return limitSwitch;
-  }
 }

@@ -135,10 +135,6 @@ public class SpindexerSubsystem extends SubsystemBase {
     return currentState.getVoltage();
   }
 
-  public TalonFX getSpindexerMotor() {
-    return spindexerIO.getSpindexerMotor();
-  }
-
   public void setVoltage(Voltage voltage) {
     spindexerIO.setVoltage(voltage);
   }

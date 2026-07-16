@@ -76,44 +76,46 @@ public class PitTesting {
 
 
   public static void createDashboard() {
-    // sound
-    orchestra.addInstrument(feeder.getFeederMotor());
-    orchestra.addInstrument(intake.getRackMotor());
-    orchestra.addInstrument(intake.getRollerMotor());
-    orchestra.addInstrument(shooterHood.getShooterHoodMotor());
-    orchestra.addInstrument(shooterWheels.getShooterLeader());
-    orchestra.addInstrument(shooterWheels.getShooterFollower1());
-    orchestra.addInstrument(shooterWheels.getShooterFollower2());
-    orchestra.addInstrument(shooterWheels.getShooterFollower3());
-    testOrchestra.addInstrument(testing.getMotor());
+    // to save io, music is commented out. TODO: implement music into each real subsystem, accessing
+    // this orchestra.
+    // // sound
+    // orchestra.addInstrument(feeder.getFeederMotor());
+    // orchestra.addInstrument(intake.getRackMotor());
+    // orchestra.addInstrument(intake.getRollerMotor());
+    // orchestra.addInstrument(shooterHood.getShooterHoodMotor());
+    // orchestra.addInstrument(shooterWheels.getShooterLeader());
+    // orchestra.addInstrument(shooterWheels.getShooterFollower1());
+    // orchestra.addInstrument(shooterWheels.getShooterFollower2());
+    // orchestra.addInstrument(shooterWheels.getShooterFollower3());
+    // testOrchestra.addInstrument(testing.getMotor());
 
-    for (int i = 0; i < 4; ++i) {
-      orchestra.addInstrument(drivetrain.getModule(i).getDriveMotor());
-      orchestra.addInstrument(drivetrain.getModule(i).getSteerMotor());
-      orchestra.addInstrument(drivetrain.getModule(i).getEncoder());
-    }
+    // for (int i = 0; i < 4; ++i) {
+    // orchestra.addInstrument(drivetrain.getModule(i).getDriveMotor());
+    // orchestra.addInstrument(drivetrain.getModule(i).getSteerMotor());
+    // orchestra.addInstrument(drivetrain.getModule(i).getEncoder());
+    // }
 
-    // TODO: add music
-    var status = orchestra.loadMusic("output.chrp");
-    if (!status.isOK()) {
-      System.out.println("Failed to load music");
-    }
+    // // TODO: add music
+    // var status = orchestra.loadMusic("output.chrp");
+    // if (!status.isOK()) {
+    // System.out.println("Failed to load music");
+    // }
 
-    var testStatus = testOrchestra.loadMusic("output.chrp");
-    if (!testStatus.isOK()) {
-      System.out.println("Failed to load music");
-    }
+    // var testStatus = testOrchestra.loadMusic("output.chrp");
+    // if (!testStatus.isOK()) {
+    // System.out.println("Failed to load music");
+    // }
 
-    registerEntry("feeder");
-    registerEntry("intake");
-    registerEntry("roller");
-    registerEntry("hood");
-    registerEntry("topRight");
-    registerEntry("bottomLeft");
-    registerEntry("bottomRight");
-    registerEntry("topLeft");
-    registerEntry("spindexer");
-    registerEntry("testing");
+    // registerEntry("feeder");
+    // registerEntry("intake");
+    // registerEntry("roller");
+    // registerEntry("hood");
+    // registerEntry("topRight");
+    // registerEntry("bottomLeft");
+    // registerEntry("bottomRight");
+    // registerEntry("topLeft");
+    // registerEntry("spindexer");
+    // registerEntry("testing");
 
     entryMap.put("limit switch", pitTab.add("switch pressed", false).getEntry());
 
@@ -221,17 +223,17 @@ public class PitTesting {
   }
 
   public static void updateDashboard() {
-
-    updateEntry("feeder", feeder.getFeederMotor());
-    updateEntry("intake", intake.getRackMotor());
-    updateEntry("roller", intake.getRollerMotor());
-    updateEntry("hood", shooterHood.getShooterHoodMotor());
-    updateEntry("topRight", shooterWheels.getShooterLeader());
-    updateEntry("bottomLeft", shooterWheels.getShooterFollower1());
-    updateEntry("bottomRight", shooterWheels.getShooterFollower2());
-    updateEntry("topLeft", shooterWheels.getShooterFollower3());
-    updateEntry("spindexer", spindexer.getSpindexerMotor());
-    updateEntry("testing", testing.getMotor());
+    // //Seems to not do anything? commenting out to save io layer
+    // updateEntry("feeder", feeder.getFeederMotor());
+    // updateEntry("intake", intake.getRackMotor());
+    // updateEntry("roller", intake.getRollerMotor());
+    // updateEntry("hood", shooterHood.getShooterHoodMotor());
+    // updateEntry("topRight", shooterWheels.getShooterLeader());
+    // updateEntry("bottomLeft", shooterWheels.getShooterFollower1());
+    // updateEntry("bottomRight", shooterWheels.getShooterFollower2());
+    // updateEntry("topLeft", shooterWheels.getShooterFollower3());
+    // updateEntry("spindexer", spindexer.getSpindexerMotor());
+    // updateEntry("testing", testing.getMotor());
 
     entryMap.get("limit switch").setBoolean(!limit_switch.get());
 

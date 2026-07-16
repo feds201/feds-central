@@ -31,12 +31,4 @@ public interface RollerIO {
   public default void stop() {}
 
   public default void runSysIdRoutine(Voltage volts) {}
-
-  public default TalonFX getRollerMotorLeader() {
-    return null;
-  }
-
-  public default TalonFX getRollerMotorFollower() {
-    return null;
-  }
 }

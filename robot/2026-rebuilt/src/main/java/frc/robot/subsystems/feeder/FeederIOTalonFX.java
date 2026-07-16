@@ -80,8 +80,4 @@ public class FeederIOTalonFX implements FeederIO {
     feederMotor.setControl(new VoltageOut(0));
   }
 
-  @Override
-  public TalonFX getFeederMotor() {
-    return feederMotor;
-  }
 }

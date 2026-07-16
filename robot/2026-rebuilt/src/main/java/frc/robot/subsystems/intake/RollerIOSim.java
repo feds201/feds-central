@@ -57,14 +57,4 @@ public class RollerIOSim implements RollerIO {
   // TODO: implement sysid routine for roller
   @Override
   public void runSysIdRoutine(Voltage volts) {}
-
-  @Override
-  public TalonFX getRollerMotorLeader() {
-    return null;
-  }
-
-  @Override
-  public TalonFX getRollerMotorFollower() {
-    return null;
-  }
 }

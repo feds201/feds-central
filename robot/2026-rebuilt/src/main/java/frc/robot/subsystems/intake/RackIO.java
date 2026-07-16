@@ -43,10 +43,6 @@ public interface RackIO {
 
   public default void runSysIdRoutine(Voltage volts) {}
 
-  public default TalonFX getIntakeMotor() {
-    return null;
-  }
-
   public default DigitalInput getLimitSwitch() {
     return null;
   }

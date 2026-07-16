@@ -114,8 +114,4 @@ public class RackIOSim implements RackIO {
   @Override
   public void runSysIdRoutine(Voltage volts) {}
 
-  @Override
-  public TalonFX getIntakeMotor() {
-    return rackTalonFX;
-  }
 }

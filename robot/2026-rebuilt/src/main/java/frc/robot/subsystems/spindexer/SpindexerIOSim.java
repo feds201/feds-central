@@ -53,9 +53,4 @@ public class SpindexerIOSim implements SpindexerIO {
   @Override
   public void runSysIdRoutine(Voltage volts) {}
 
-  @Override
-  public TalonFX getSpindexerMotor() {
-    return null;
-  }
-
 }
