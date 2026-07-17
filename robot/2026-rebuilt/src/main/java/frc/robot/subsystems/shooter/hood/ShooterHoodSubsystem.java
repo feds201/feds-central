@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -96,12 +97,35 @@ public class ShooterHoodSubsystem extends SubsystemBase {
     io.setPosition(state.getAngle());
   }
 
+  public void updateHoodAngleMultiplier(double toAdd) {
+    io.updateHoodAngleMultiplier(toAdd);
+  }
+
   public shooterhood_state getCurrentState() {
     return currentState;
   }
 
   public Angle getPosition() {
     return shooterHoodInputs.hoodMotorPosition;
+  }
+
+  public Current getCurrentDraw() {
+    return shooterHoodInputs.hoodMotorCurrent;
+  }
+
+  public static double rotationsToAngleRadians(double rotations) {
+    double range = ShooterConstants.HOOD_MAX_ANGLE_DEG - ShooterConstants.HOOD_MIN_ANGLE_DEG;
+    double degrees = ShooterConstants.HOOD_MIN_ANGLE_DEG
+        + (rotations / ShooterConstants.HOOD_FORWARD_SOFT_LIMIT_ROT) * range;
+    return degrees / 180 * Math.PI;
+  }
+
+  public double getPositionRadians() {
+    return rotationsToAngleRadians(getPosition().in(Rotations));
+  }
+
+  public void setAngle(Angle angle) {
+    io.setPosition(angle);
   }
 
   public boolean atSetpointShooting() {

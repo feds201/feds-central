@@ -10,7 +10,6 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
@@ -20,10 +19,10 @@ import frc.robot.subsystems.intake.Intake.IntakeState;
 import frc.robot.subsystems.intake.Intake.RollerState;
 import frc.robot.subsystems.feeder.FeederSubsystem;
 import frc.robot.subsystems.feeder.FeederSubsystem.feeder_state;
-import frc.robot.subsystems.shooter.ShooterHood;
-import frc.robot.subsystems.shooter.ShooterHood.shooterhood_state;
+import frc.robot.subsystems.shooter.hood.ShooterHoodSubsystem.shooterhood_state;
 import frc.robot.subsystems.shooter.ShooterWheels;
 import frc.robot.subsystems.shooter.ShooterWheels.shooter_state;
+import frc.robot.subsystems.shooter.hood.ShooterHoodSubsystem;
 import frc.robot.subsystems.spindexer.SpindexerSubsystem;
 import frc.robot.subsystems.spindexer.SpindexerSubsystem.spindexer_state;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
@@ -48,7 +47,7 @@ public class PitTesting {
   static Intake intake = container.getIntakeSubsystem();
   static FeederSubsystem feeder = container.getFeederSubsystem();
   static SpindexerSubsystem spindexer = container.getSpindexer();
-  static ShooterHood shooterHood = container.getShooterHood();
+  static ShooterHoodSubsystem shooterHood = container.getShooterHood();
   static ShooterWheels shooterWheels = container.getShooterWheels();
   static Testing testing = new Testing();
 
