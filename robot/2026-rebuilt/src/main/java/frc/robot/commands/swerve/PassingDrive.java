@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.RobotMap;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
+import frc.robot.utils.ShootOnTheMove;
 import org.littletonrobotics.junction.Logger;
 
 /*
@@ -81,6 +82,8 @@ public class PassingDrive extends Command {
     Translation2d robotPose = dt.getState().Pose.getTranslation();
     Translation2d aimLoc = robotPose.nearest(aimPoints);
     Logger.recordOutput("Robot/distToPassLoc", robotPose.getDistance(aimLoc));
+
+    aimLoc = ShootOnTheMove.calculateVirtualGoal(dt.getState().Pose, dt.getState().Speeds, aimLoc);
 
     double angleToTarget = Math
         .toDegrees(Math.atan2(aimLoc.getY() - robotPose.getY(), aimLoc.getX() - robotPose.getX()));

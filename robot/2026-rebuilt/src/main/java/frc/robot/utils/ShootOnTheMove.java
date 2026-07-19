@@ -72,6 +72,53 @@ public class ShootOnTheMove {
     return virtualGoal;
   }
 
+  public static Translation2d calculateVirtualGoal(Pose2d robotPose, ChassisSpeeds chassisSpeeds,
+      Translation2d targetPos) {
+    Translation2d hubCenter = targetPos;
+
+    // Get shooter field position
+    Translation2d shooterFieldPosition = getShooterFieldPosition(robotPose);
+
+    // Compute shooter field velocity
+    Translation2d shooterVelocity = getShooterFieldVelocity(robotPose, chassisSpeeds);
+
+    // Compute approximate flight time
+    double previousDistToGoal = 0;
+
+    // Adjust goal position for motion
+    Translation2d virtualGoal = hubCenter;
+    for (int i = 0; i <= 10; i++) {
+      double distToGoal = shooterFieldPosition.getDistance(virtualGoal);
+      double hoodAngle = ShooterConstants.kShootingPositionMap.get(distToGoal);
+      double wheelVelocity = ShooterConstants.kShootingVelocityMap.get(distToGoal);
+
+      // Used WolframAlpha to fit a formula to empirical measures of time of flight.
+      // Raw ToF data:
+      // https://docs.google.com/spreadsheets/d/1soxpyImFWBpTkXsz01xsferNdRXlu_cC-2IQG3SakfE
+      // Wolfram Code:
+      // Fit[
+      // {{0,0,0}, {1,0,1}, {0,1,1}, {1,1,4}, {2,0,4}, {0,2,4}, {2,2,12}},
+      // {1, x, y, x^2, y^2, x*y},
+      // {x, y}
+      // ]
+      double flightTime = -0.000772833 * Math.pow(wheelVelocity, 2)
+          + 0.00465107 * wheelVelocity * hoodAngle + 0.0621835 * wheelVelocity
+          - 0.00218423 * Math.pow(hoodAngle, 2) - 0.136261 * hoodAngle - 0.149612;
+
+      virtualGoal = hubCenter.minus(shooterVelocity.times(flightTime));
+
+      if (Math.abs(previousDistToGoal - distToGoal) <= 0.1) {
+        return virtualGoal;
+      }
+
+      previousDistToGoal = distToGoal;
+    }
+
+    Logger.recordOutput("ShootOnTheMove", new Pose2d(hubCenter, new Rotation2d()));
+
+    return virtualGoal;
+  }
+
   /**
    * Calculates the robot heading required to hit the goal while moving.
    *

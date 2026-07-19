@@ -458,6 +458,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     aimPoints = List.of(aimLeft, aimRight);
     Translation2d pose = getState().Pose.getTranslation();
     Translation2d aimTo = pose.nearest(aimPoints);
+    aimTo = ShootOnTheMove.calculateVirtualGoal(getState().Pose, getState().Speeds, aimTo);
     return Meters.of(pose.getDistance(aimTo));
   }
 
