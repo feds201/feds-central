@@ -20,8 +20,8 @@ import frc.robot.subsystems.intake.Intake.RollerState;
 import frc.robot.subsystems.feeder.FeederSubsystem;
 import frc.robot.subsystems.feeder.FeederSubsystem.feeder_state;
 import frc.robot.subsystems.shooter.hood.ShooterHoodSubsystem.shooterhood_state;
-import frc.robot.subsystems.shooter.ShooterWheels;
-import frc.robot.subsystems.shooter.ShooterWheels.shooter_state;
+import frc.robot.subsystems.shooter.wheels.Flywheel;
+import frc.robot.subsystems.shooter.wheels.Flywheel.shooter_state;
 import frc.robot.subsystems.shooter.hood.ShooterHoodSubsystem;
 import frc.robot.subsystems.spindexer.SpindexerSubsystem;
 import frc.robot.subsystems.spindexer.SpindexerSubsystem.spindexer_state;
@@ -48,7 +48,7 @@ public class PitTesting {
   static FeederSubsystem feeder = container.getFeederSubsystem();
   static SpindexerSubsystem spindexer = container.getSpindexer();
   static ShooterHoodSubsystem shooterHood = container.getShooterHood();
-  static ShooterWheels shooterWheels = container.getShooterWheels();
+  static Flywheel shooterWheels = container.getShooterWheels();
   static Testing testing = new Testing();
 
   // static DigitalInput limit_switch = intake.getLimitSwitch();

@@ -199,6 +199,24 @@ public final class RobotMap {
       return config;
     }
 
+    public static TalonFXConfiguration getShooterWheelsConfiguration() {
+      TalonFXConfiguration config = new TalonFXConfiguration();
+      config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+      config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+      config.CurrentLimits.StatorCurrentLimit = 80; // Increased for faster recovery between shots
+      config.CurrentLimits.SupplyCurrentLimit = 60;
+      config.ClosedLoopRamps.VoltageClosedLoopRampPeriod = 0.02;
+      // config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
+      // config.Feedback.SensorToMechanismRatio = 2/3;
+
+      // Following values would need to be tuned.
+      config.Slot0.kS = 0.34; // Constant applied for friction compensation (static gain)
+      config.Slot0.kP = 0.4; // Proportional gain
+      config.Slot0.kV = 0.12;// Velocity gain
+
+      return config;
+    }
+
     /** Hood motor forward soft limit in rotor rotations — the maximum travel position. */
     public static final double HOOD_FORWARD_SOFT_LIMIT_ROT = 30.0;
     /** Physical hood angle in degrees when the motor is at 0 rotor rotations (fully retracted). */

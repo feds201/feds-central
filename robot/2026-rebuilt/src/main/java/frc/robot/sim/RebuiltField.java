@@ -156,7 +156,7 @@ public class RebuiltField {
    *
    * @param manager the game piece manager to spawn pieces into
    */
-  // TODO(ai-idea)?: extract a GridSpawner helper so these three near-identical loops collapse to
+  // (ai-idea)?: extract a GridSpawner helper so these three near-identical loops collapse to
   // one
   // call?
   public void spawnStartingFuel(GamePieceManager manager) {

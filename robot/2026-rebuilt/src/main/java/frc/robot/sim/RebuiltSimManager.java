@@ -30,14 +30,12 @@ import org.ironmaple.simulation.motorsims.SimulatedMotorController;
 import org.littletonrobotics.junction.Logger;
 import org.ode4j.ode.DBody;
 import org.ode4j.ode.DGeom;
-import edu.wpi.first.wpilibj.simulation.DCMotorSim;
-import edu.wpi.first.math.system.plant.LinearSystemId;
 import frc.robot.RobotMap.IntakeSubsystemConstants;
 import frc.robot.commands.swerve.BallTracking;
 import frc.robot.subsystems.feeder.FeederSubsystem;
 import frc.robot.subsystems.intake.Intake;
-import frc.robot.subsystems.shooter.ShooterWheels;
 import frc.robot.subsystems.shooter.hood.ShooterHoodSubsystem;
+import frc.robot.subsystems.shooter.wheels.Flywheel;
 import frc.robot.subsystems.spindexer.SpindexerSubsystem;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
@@ -176,12 +174,6 @@ public class RebuiltSimManager {
 
   // ── Motor physics constants (TODO: update with real measured values) ───────
 
-  /** Shooter wheel MOI (kg·m²). 0.5 × mass × radius² for a solid cylinder. */
-  private static final double SHOOTER_MOI = 0.5 * 2.0 * 0.05 * 0.05;
-
-  /** Shooter gear ratio (motor rot / wheel rot). 36T motor gear -> 24T axle gear (overdrive). */
-  private static final double SHOOTER_GEAR_RATIO = 24.0 / 36.0;
-
   /**
    * Shooter velocity threshold (RPS) above which wheels count as spinning. TODO update placeholder
    */
@@ -256,13 +248,10 @@ public class RebuiltSimManager {
   private final SpindexerSubsystem spindexer;
   private final FeederSubsystem feederSubsystem;
   private final ShooterHoodSubsystem shooterHoodSubsystem;
+  private final Flywheel shooterWheels;
 
   // CTRE sim state (for gyro only — MapleSim handles motor/encoder sim state)
   private final Pigeon2SimState pigeonSimState;
-
-  // Mechanism physics sims (non-drivetrain) — wrap DCMotorSim/SingleJointedArmSim +
-  // TalonFXSimState.
-  private final TalonFXMotorSim shooterMotorSim;
 
   // Last known pose and speeds from MapleSim (used for virtual goal telemetry)
   private Pose2d lastSimPose = STARTING_POSE;
@@ -283,12 +272,13 @@ public class RebuiltSimManager {
    * @param spindexer the spindexer subsystem (run/stop state)
    */
   public RebuiltSimManager(CommandSwerveDrivetrain drivetrain, Intake intakeSubsystem,
-      FeederSubsystem feeder, ShooterWheels shooterWheels, ShooterHoodSubsystem shooterHood,
+      FeederSubsystem feeder, Flywheel shooterWheels, ShooterHoodSubsystem shooterHood,
       SpindexerSubsystem spindexer) {
     this.intakeSubsystem = intakeSubsystem;
     this.spindexer = spindexer;
     this.feederSubsystem = feeder;
     this.shooterHoodSubsystem = shooterHood;
+    this.shooterWheels = shooterWheels;
 
     // --- MapleSim timing ---
     // Use AddRampCollider=false so MapleSim only blocks on the hub (47x47),
@@ -374,11 +364,6 @@ public class RebuiltSimManager {
     // --- Mechanism physics sims (non-drivetrain) ---
     Logger.recordOutput("Sim/State", "Loading mechanism sims");
 
-    shooterMotorSim = new TalonFXMotorSim(shooterWheels.getShooterLeaderMotorSimState(),
-        new DCMotorSim(LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60(1), SHOOTER_MOI,
-            SHOOTER_GEAR_RATIO), DCMotor.getKrakenX60(1)),
-        SHOOTER_GEAR_RATIO, true);
-
     // --- Shooter ---
     Logger.recordOutput("Sim/State", "Loading shooter");
     // ShooterSim watches real subsystem states:
@@ -396,9 +381,9 @@ public class RebuiltSimManager {
         // so invert the hood angle via (π/2 − hood). Offset is then added to the inverted angle.
         () -> (Math.PI / 2.0) - shooterHood.getPositionRadians()
             + Math.toRadians(BALL_ANGLE_OFFSET_DEG),
-        () -> shooterMotorSim.getAngularVelocityRadPerSec() * SHOOTER_WHEEL_RADIUS_M
+        () -> shooterWheels.getVelocity().in(RadiansPerSecond) * SHOOTER_WHEEL_RADIUS_M
             * SHOOTER_EFFICIENCY_FACTOR,
-        () -> shooterMotorSim.getAngularVelocityRPS() > SHOOTER_VELOCITY_THRESHOLD_RPS
+        () -> shooterWheels.getVelocity().in(RotationsPerSecond) > SHOOTER_VELOCITY_THRESHOLD_RPS
             && feederSubsystem.getFeederVelocity()
                 .in(RotationsPerSecond) > FEEDER_VELOCITY_THRESHOLD_RPS,
         () -> chassis.getBody().getLinearVel().get0(),
@@ -521,27 +506,26 @@ public class RebuiltSimManager {
     // TODO(ai-idea)?: have TalonFXMotorSim self-report current so this collapses to one call? would
     // remove the easy-to-miss *4 multiplier for shooter followers.
     double batteryVoltage =
-        BatterySimUtil.updateBatteryVoltage(7.0, 12.5, shooterMotorSim.getCurrentDrawAmps() * 4, // leader
-                                                                                                 // +
-                                                                                                 // 3
-                                                                                                 // followers,
-                                                                                                 // all
-                                                                                                 // share
-                                                                                                 // the
-                                                                                                 // same
-                                                                                                 // flywheel
-                                                                                                 // load
+        BatterySimUtil.updateBatteryVoltage(7.0, 12.5, shooterWheels.getCurrent().in(Amps) * 4, // leader
+                                                                                                // +
+                                                                                                // 3
+                                                                                                // followers,
+                                                                                                // all
+                                                                                                // share
+                                                                                                // the
+                                                                                                // same
+                                                                                                // flywheel
+                                                                                                // load
             shooterHoodSubsystem.getCurrentDraw().in(Amps), feederSubsystem.getCurrent().in(Amps),
             spindexer.getCurrent().in(Amps), intakeSubsystem.getRackAppliedCurrent().in(Amps),
             intakeSubsystem.getRollerAppliedCurrent().in(Amps));
-
-    shooterMotorSim.update(DT, batteryVoltage);
 
 
 
     // Update shooter (unchanged)
     // ── Debug telemetry ──────────────────────────────────────────────────────
-    Logger.recordOutput("Sim/Debug/ShooterVelocityRPS", shooterMotorSim.getAngularVelocityRPS());
+    Logger.recordOutput("Sim/Debug/ShooterVelocityRPS",
+        shooterWheels.getVelocity().in(RotationsPerSecond));
     Logger.recordOutput("Sim/Debug/FeederVelocityRPS",
         feederSubsystem.getFeederVelocity().in(RotationsPerSecond));
     Logger.recordOutput("Sim/Debug/SpindexerVelocityRPS",
@@ -561,8 +545,9 @@ public class RebuiltSimManager {
             && intakeSubsystem.getRollerAngularVelocity()
                 .in(RotationsPerSecond) > INTAKE_ROLLER_VELOCITY_THRESHOLD_RPS);
     Logger.recordOutput("Sim/Debug/ShootingGateOpen",
-        shooterMotorSim.getAngularVelocityRPS() > SHOOTER_VELOCITY_THRESHOLD_RPS && feederSubsystem
-            .getFeederVelocity().in(RotationsPerSecond) > FEEDER_VELOCITY_THRESHOLD_RPS);
+        shooterWheels.getVelocity().in(RotationsPerSecond) > SHOOTER_VELOCITY_THRESHOLD_RPS
+            && feederSubsystem.getFeederVelocity()
+                .in(RotationsPerSecond) > FEEDER_VELOCITY_THRESHOLD_RPS);
     Logger.recordOutput("Sim/Debug/BatteryVoltage", batteryVoltage);
     Logger.recordOutput("Sim/Debug/FuelHeld", (double) gamePieceManager.getHeldCount());
     shooterSim.update(DT);
@@ -635,8 +620,7 @@ public class RebuiltSimManager {
     double spindexerAngle = (spindexer.getPosition().in(Rotations) * 2 * Math.PI) % (2 * Math.PI);
     double feederAngle =
         (feederSubsystem.getPosition().in(Rotations) * 2 * Math.PI) % (2 * Math.PI);
-    double shooterAngle =
-        (shooterMotorSim.getAngularPositionRotations() * 2 * Math.PI) % (2 * Math.PI);
+    double shooterAngle = (shooterWheels.getPosition().in(Rotations) * 2 * Math.PI) % (2 * Math.PI);
     // Hood visual angle: physics sim angle minus visual model offset
     double hoodAngle = shooterHoodSubsystem.getPositionRadians() - HOOD_VISUAL_OFFSET_RAD;
 

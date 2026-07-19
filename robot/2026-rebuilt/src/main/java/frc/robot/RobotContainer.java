@@ -40,8 +40,11 @@ import frc.robot.subsystems.feeder.FeederIO;
 import frc.robot.subsystems.feeder.FeederIOSim;
 import frc.robot.subsystems.feeder.FeederIOTalonFX;
 import frc.robot.subsystems.shooter.hood.ShooterHoodSubsystem.shooterhood_state;
-import frc.robot.subsystems.shooter.ShooterWheels;
-import frc.robot.subsystems.shooter.ShooterWheels.shooter_state;
+import frc.robot.subsystems.shooter.wheels.Flywheel;
+import frc.robot.subsystems.shooter.wheels.FlywheelIO;
+import frc.robot.subsystems.shooter.wheels.FlywheelIOSim;
+import frc.robot.subsystems.shooter.wheels.FlywheelIOTalonFX;
+import frc.robot.subsystems.shooter.wheels.Flywheel.shooter_state;
 import frc.robot.subsystems.shooter.hood.ShooterHoodIO;
 import frc.robot.subsystems.shooter.hood.ShooterHoodIOSim;
 import frc.robot.subsystems.shooter.hood.ShooterHoodIOTalonFX;
@@ -96,7 +99,7 @@ public class RobotContainer extends ControllerBindings {
   private final Intake intakeSubsystem;
   private final FeederSubsystem feederSubsystem;
   private final ShooterHoodSubsystem shooterHood;
-  private final ShooterWheels shooterWheels = new ShooterWheels(drivetrain);
+  private final Flywheel shooterWheels;
   private final SpindexerSubsystem spindexer;
 
   // --- APIs used by the diagnostic server / UI to command shooter/hood ---
@@ -134,7 +137,7 @@ public class RobotContainer extends ControllerBindings {
     return shooterHood;
   }
 
-  public ShooterWheels getShooterWheels() {
+  public Flywheel getShooterWheels() {
     return shooterWheels;
   }
 
@@ -168,6 +171,9 @@ public class RobotContainer extends ControllerBindings {
         shooterHood = new ShooterHoodSubsystem(new ShooterHoodIOTalonFX(),
             () -> drivetrain.getDistanceToHub().in(Meters),
             () -> drivetrain.getDistanceToCorner().in(Meters));
+        shooterWheels =
+            new Flywheel(new FlywheelIOTalonFX(), () -> drivetrain.getDistanceToHub().in(Meters),
+                () -> drivetrain.getDistanceToCorner().in(Meters));
         break;
       case SIM:
         spindexer = new SpindexerSubsystem(new SpindexerIOSim());
@@ -176,6 +182,9 @@ public class RobotContainer extends ControllerBindings {
         shooterHood = new ShooterHoodSubsystem(new ShooterHoodIOSim(),
             () -> drivetrain.getDistanceToHub().in(Meters),
             () -> drivetrain.getDistanceToCorner().in(Meters));
+        shooterWheels =
+            new Flywheel(new FlywheelIOSim(), () -> drivetrain.getDistanceToHub().in(Meters),
+                () -> drivetrain.getDistanceToCorner().in(Meters));
         break;
       case REPLAY:
         spindexer = new SpindexerSubsystem(new SpindexerIO() {});
@@ -184,6 +193,9 @@ public class RobotContainer extends ControllerBindings {
         shooterHood = new ShooterHoodSubsystem(new ShooterHoodIO() {},
             () -> drivetrain.getDistanceToHub().in(Meters),
             () -> drivetrain.getDistanceToCorner().in(Meters));
+        shooterWheels =
+            new Flywheel(new FlywheelIO() {}, () -> drivetrain.getDistanceToHub().in(Meters),
+                () -> drivetrain.getDistanceToCorner().in(Meters));
         break;
       default:
         throw new IllegalStateException("Unexpected value: " + RobotMap.getRobotMode());
@@ -191,7 +203,7 @@ public class RobotContainer extends ControllerBindings {
 
     autoSweeper = new AutoSweeper(rps -> {
       try {
-        shooterWheels.setStateCommand(ShooterWheels.shooter_state.TEST).execute();
+        shooterWheels.setStateCommand(shooter_state.TEST).execute();
         shooterWheels.setVelocity(RotationsPerSecond.of(rps));
       } catch (Exception e) {
         e.printStackTrace();
@@ -327,7 +339,7 @@ public class RobotContainer extends ControllerBindings {
    */
   public synchronized void startAutoSweepFromDiagnostic(int holdMs) {
     // enter test mode immediately
-    shooterWheels.setState(frc.robot.subsystems.shooter.ShooterWheels.shooter_state.TEST);
+    shooterWheels.setState(shooter_state.TEST);
     shooterHood.setState(shooterhood_state.TEST);
 
     autoSweeper.startDynamic(
@@ -337,12 +349,12 @@ public class RobotContainer extends ControllerBindings {
         () -> frc.robot.utils.RTU.TelemetryPublisher.getHoodAngleDeg(),
         // enter test mode (redundant but safe)
         () -> {
-          shooterWheels.setState(frc.robot.subsystems.shooter.ShooterWheels.shooter_state.TEST);
+          shooterWheels.setState(shooter_state.TEST);
           shooterHood.setState(shooterhood_state.TEST);
         },
         // exit test mode: restore reasonable idle states
         () -> {
-          shooterWheels.setState(frc.robot.subsystems.shooter.ShooterWheels.shooter_state.IDLE);
+          shooterWheels.setState(shooter_state.IDLE);
           shooterHood.setState(shooterhood_state.IN);
         }, holdMs);
   }

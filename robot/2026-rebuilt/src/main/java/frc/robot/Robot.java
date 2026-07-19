@@ -165,8 +165,8 @@ public class Robot extends LoggedRobot {
     // m_robotContainer.getSpindexer());
     // Epilogue.shooterHoodLogger.update(backend.getNested("@Logged/ShooterHood"),
     // m_robotContainer.getShooterHood());
-    Epilogue.shooterWheelsLogger.update(backend.getNested("@Logged/ShooterWheels"),
-        m_robotContainer.getShooterWheels());
+    // Epilogue.shooterWheelsLogger.update(backend.getNested("@Logged/ShooterWheels"),
+    // m_robotContainer.getShooterWheels());
     Epilogue.limelightWrapperLogger.update(backend.getNested("@Logged/Limelights/Main"),
         m_robotContainer.getLimelightMain());
     Epilogue.limelightWrapperLogger.update(backend.getNested("@Logged/Limelights/Backup"),
