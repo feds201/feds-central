@@ -83,7 +83,8 @@ public class PassingDrive extends Command {
     Translation2d aimLoc = robotPose.nearest(aimPoints);
     Logger.recordOutput("Robot/distToPassLoc", robotPose.getDistance(aimLoc));
 
-    aimLoc = ShootOnTheMove.calculateVirtualGoal(dt.getState().Pose, dt.getState().Speeds, aimLoc);
+    aimLoc = ShootOnTheMove.calculateVirtualGoalForPassing(dt.getState().Pose, dt.getState().Speeds,
+        aimLoc);
 
     double angleToTarget = Math
         .toDegrees(Math.atan2(aimLoc.getY() - robotPose.getY(), aimLoc.getX() - robotPose.getX()));
