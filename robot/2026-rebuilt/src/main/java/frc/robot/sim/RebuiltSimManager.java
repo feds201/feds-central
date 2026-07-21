@@ -673,7 +673,8 @@ public class RebuiltSimManager {
     Pose3d robotPose = chassis.getPose3d();
     Logger.recordOutput("Sim/RobotPose", robotPose);
 
-    Translation2d virtualGoal = ShootOnTheMove.calculateVirtualGoal(lastSimPose, lastSimSpeeds);
+    Translation2d virtualGoal =
+        ShootOnTheMove.calculateVirtualGoalForShooting(lastSimPose, lastSimSpeeds);
     Logger.recordOutput("Sim/VirtualGoal", new Pose3d(virtualGoal.getX(), virtualGoal.getY(),
         FieldConstants.Hub.innerHeight, new Rotation3d()));
 
