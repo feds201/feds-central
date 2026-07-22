@@ -194,6 +194,9 @@ public class RebuiltSimManager {
    */
   private static final double SHOOTER_EFFICIENCY_FACTOR = 0.49;
 
+  /** Shooter gear ratio (motor rot / wheel rot). 36T motor gear -> 24T axle gear (overdrive). */
+  private static final double SHOOTER_GEAR_RATIO = 24.0 / 36.0;
+
   /**
    * Additional pitch (deg) added to the hood angle when computing ball launch angle (makes balls
    * launch more vertical).
@@ -381,8 +384,8 @@ public class RebuiltSimManager {
         // so invert the hood angle via (π/2 − hood). Offset is then added to the inverted angle.
         () -> (Math.PI / 2.0) - shooterHood.getPositionRadians()
             + Math.toRadians(BALL_ANGLE_OFFSET_DEG),
-        () -> shooterWheels.getVelocity().in(RadiansPerSecond) * SHOOTER_WHEEL_RADIUS_M
-            * SHOOTER_EFFICIENCY_FACTOR,
+        () -> shooterWheels.getVelocity().in(RadiansPerSecond) / SHOOTER_GEAR_RATIO
+            * SHOOTER_WHEEL_RADIUS_M * SHOOTER_EFFICIENCY_FACTOR,
         () -> shooterWheels.getVelocity().in(RotationsPerSecond) > SHOOTER_VELOCITY_THRESHOLD_RPS
             && feederSubsystem.getFeederVelocity()
                 .in(RotationsPerSecond) > FEEDER_VELOCITY_THRESHOLD_RPS,

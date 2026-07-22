@@ -84,11 +84,17 @@ public class Flywheel extends SubsystemBase {
 
   @Override
   public void periodic() {
+    io.updateInputs(flywheelIOInputs);
+    Logger.processInputs("Flywheel", flywheelIOInputs);
+
+
     Logger.recordOutput("Robot/Shooter/IsShooting", currentState != shooter_state.IDLE);
     Logger.recordOutput("Robot/Shooter/ShooterState", currentState.toString());
 
     Logger.recordOutput("Robot/ShooterWheels/TargetVelocityRPS",
         currentState.getVelocity().in(RotationsPerSecond));
+    Logger.recordOutput("Robot/Shooter/ActualVelocityRPS",
+        flywheelIOInputs.flywheelMotorVelocity.in(RotationsPerSecond));
     switch (currentState) {
       case SHOOTING:
         io.setVelocity(getTargetVelocityShooting());
