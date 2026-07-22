@@ -21,7 +21,7 @@ public class SpindexerSubsystem extends SubsystemBase {
   // subsystem states
   public enum spindexer_state {
     RUN(Volts.of(8)), REVERSE(Volts.of(-8)), PREVERSE(Volts.of(-8)), PFORWARD(Volts.of(8)), STOP(
-        Volts.of(0));
+        Volts.of(0)), LOOPIDLE(Volts.of(0));
 
     private final Voltage targetPosition;
 
@@ -87,11 +87,18 @@ public class SpindexerSubsystem extends SubsystemBase {
       case RUN:
 
         if (timer.hasElapsed(indexingConstants.forwardTime))
-          setState(spindexer_state.REVERSE);
+          setState(spindexer_state.LOOPIDLE);
 
         break;
 
       case REVERSE:
+
+        if (timer.hasElapsed(indexingConstants.reverseTime))
+          setState(spindexer_state.RUN);
+
+        break;
+
+      case LOOPIDLE:
 
         if (timer.hasElapsed(indexingConstants.reverseTime))
           setState(spindexer_state.RUN);

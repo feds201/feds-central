@@ -472,12 +472,12 @@ public class RobotContainer extends ControllerBindings {
             .alongWith(feederSubsystem.setStateCommand(feeder_state.STOP)));
     NamedCommands.registerCommand("Run Shooter",
         shooterWheels.setStateCommand(shooter_state.SHOOTING)
-            .alongWith(feederSubsystem.setStateCommand(feeder_state.RUN))
+            .alongWith(feederSubsystem.setStateCommand(feeder_state.PRUN))
             .alongWith(spindexer.setStateCommand(spindexer_state.RUN))
             .alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
     NamedCommands.registerCommand("Shooting",
         shooterWheels.setStateCommand(shooter_state.SHOOTING)
-            .alongWith(feederSubsystem.setStateCommand(feeder_state.RUN))
+            .alongWith(feederSubsystem.setStateCommand(feeder_state.PRUN))
             .alongWith(spindexer.setStateCommand(spindexer_state.RUN))
             .alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
     NamedCommands.registerCommand("Start Passing Spin",
@@ -485,7 +485,7 @@ public class RobotContainer extends ControllerBindings {
             .alongWith(shooterHood.setStateCommand(shooterhood_state.PASSING)));
     NamedCommands.registerCommand("Passing",
         shooterWheels.setStateCommand(shooter_state.PASSING)
-            .alongWith(feederSubsystem.setStateCommand(feeder_state.RUN))
+            .alongWith(feederSubsystem.setStateCommand(feeder_state.PRUN))
             .alongWith(spindexer.setStateCommand(spindexer_state.RUN))
             .alongWith(shooterHood.setStateCommand(shooterhood_state.PASSING)));
     NamedCommands.registerCommand("Auto Hub Drive", new HubDriveAUTO(drivetrain));
