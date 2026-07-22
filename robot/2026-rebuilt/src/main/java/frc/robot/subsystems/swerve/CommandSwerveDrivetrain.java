@@ -458,6 +458,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     aimPoints = List.of(aimLeft, aimRight);
     Translation2d pose = getState().Pose.getTranslation();
     Translation2d aimTo = pose.nearest(aimPoints);
+    aimTo =
+        ShootOnTheMove.calculateVirtualGoalForPassing(getState().Pose, getState().Speeds, aimTo);
     return Meters.of(pose.getDistance(aimTo));
   }
 
@@ -465,7 +467,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     Translation2d pose = getState().Pose.getTranslation();
     // virtual goal calculation flips itself to opposing alliance automatically
     Translation2d virtualGoal =
-        ShootOnTheMove.calculateVirtualGoal(getState().Pose, getState().Speeds);
+        ShootOnTheMove.calculateVirtualGoalForShooting(getState().Pose, getState().Speeds);
 
     return Meters.of(pose.getDistance(virtualGoal));
   }
