@@ -24,8 +24,8 @@ import frc.robot.utils.SubsystemStatusManager;
 public class FeederSubsystem extends SubsystemBase {
 
   public enum feeder_state {
-    RUN(Volts.of(7)), PRUN(Volts.of(7)), REVERSE(Volts.of(-7)), PREVERSE(Volts.of(-7)), STOP(
-        Volts.of(0));
+    RUN(Volts.of(8.5)), PRUN(Volts.of(8.5)), REVERSE(Volts.of(-8.5)), PREVERSE(
+        Volts.of(-8.5)), STOP(Volts.of(0));
 
     private final Voltage targetVoltage;
 

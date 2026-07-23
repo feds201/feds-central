@@ -287,7 +287,7 @@ public final class RobotMap {
             Map.entry(2.01, 28.0), // done
             Map.entry(2.56, 30.0), // done
             Map.entry(2.89, 31.0), // done
-            Map.entry(3.08, 33.5), // done
+            Map.entry(3.08, 33.5), // done Adjust up here
             Map.entry(3.37, 34.5), // done
             Map.entry(3.97, 38.0), // done
             Map.entry(4.75, 39.0), Map.entry(5.0, 42.0), // done

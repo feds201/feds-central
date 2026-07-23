@@ -252,8 +252,8 @@ public class RobotContainer extends ControllerBindings {
       autoChooser.addOption("Dev-MidIntakeToRightBump",
           new PathPlannerAuto("Comp-MidIntakeToLeftBump", true)); // TESTING - DO NOT USE
 
-      autoChooser.addOption("Dev-LeftSotmMidfieldDoublepass",
-          new PathPlannerAuto("Dev-RightSotmMidfieldDoublepass", true));
+      autoChooser.addOption("Comp-LeftSotmMidfieldDoublepass",
+          new PathPlannerAuto("Comp-RightSotmMidfieldDoublepass", true));
 
 
 

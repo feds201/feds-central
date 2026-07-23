@@ -20,7 +20,7 @@ public class SpindexerSubsystem extends SubsystemBase {
 
   // subsystem states
   public enum spindexer_state {
-    RUN(Volts.of(8)), REVERSE(Volts.of(-8)), PREVERSE(Volts.of(-8)), PFORWARD(Volts.of(8)), STOP(
+    RUN(Volts.of(6)), REVERSE(Volts.of(-6)), PREVERSE(Volts.of(-6)), PFORWARD(Volts.of(6)), STOP(
         Volts.of(0)), LOOPIDLE(Volts.of(0));
 
     private final Voltage targetPosition;
