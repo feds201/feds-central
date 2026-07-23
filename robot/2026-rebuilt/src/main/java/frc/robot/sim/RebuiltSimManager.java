@@ -39,6 +39,7 @@ import frc.robot.RobotMap;
 import frc.robot.commands.swerve.BallTracking;
 import frc.robot.subsystems.feeder.Feeder;
 import frc.robot.subsystems.intake.IntakeSubsystem;
+import frc.robot.subsystems.led.LedsSubsystem;
 import frc.robot.subsystems.shooter.ShooterHood;
 import frc.robot.subsystems.shooter.ShooterWheels;
 import frc.robot.subsystems.spindexer.Spindexer;
@@ -310,6 +311,7 @@ public class RebuiltSimManager {
   private final ShooterSim shooterSim;
   private final ScoringTracker scoringTracker;
   private final GroundClearance groundClearance;
+  private final LedsSim ledsSim;
 
   // MapleSim swerve simulation
   private final SwerveDriveSimulation mapleSimDrive;
@@ -349,10 +351,14 @@ public class RebuiltSimManager {
    * @param shooterWheels the shooter wheels subsystem (flywheel state)
    * @param shooterHood the shooter hood subsystem (aiming state)
    * @param spindexer the spindexer subsystem (run/stop state)
+   * @param ledsSubsystem the LED subsystem (for simulating LED states)
    */
   public RebuiltSimManager(CommandSwerveDrivetrain drivetrain, IntakeSubsystem intakeSubsystem,
-      Feeder feeder, ShooterWheels shooterWheels, ShooterHood shooterHood, Spindexer spindexer) {
+      Feeder feeder, ShooterWheels shooterWheels, ShooterHood shooterHood, Spindexer spindexer,
+      LedsSubsystem ledsSubsystem) {
     this.intakeSubsystem = intakeSubsystem;
+    Logger.recordOutput("Sim/State", "Loading LEDs");
+    this.ledsSim = new LedsSim(ledsSubsystem.m_leds);
 
     // --- MapleSim timing ---
     // Use AddRampCollider=false so MapleSim only blocks on the hub (47x47),
@@ -661,6 +667,7 @@ public class RebuiltSimManager {
     Logger.recordOutput("Sim/Debug/BatteryVoltage", batteryVoltage);
     Logger.recordOutput("Sim/Debug/FuelHeld", (double) gamePieceManager.getHeldCount());
     shooterSim.update(DT);
+    ledsSim.update(DT);
 
     // Publish telemetry to NetworkTables
     publishTelemetry();
