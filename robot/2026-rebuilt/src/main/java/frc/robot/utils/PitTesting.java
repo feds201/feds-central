@@ -75,6 +75,17 @@ public class PitTesting {
 
 
   public static void createDashboard() {
+    /*
+     * TODO IMPORTANT: non-drivetrain health reporting is not hooked up.
+     *
+     * The Connected and Powered indicators for the feeder, intake, roller, hood,
+     * spindexer, and shooter motors are not registered or updated. The intake
+     * limit-switch indicator is created but never updated. Their Elastic indicators
+     * may be false, missing, or stale and must not be used for diagnosis.
+     *
+     * Drivetrain, CANcoder, Pigeon, Limelight, and USB storage reporting still works.
+     * Restore these indicators through the subsystem IO layer before re-enabling them.
+     */
     // to save io, music is commented out. TODO: implement music into each real subsystem, accessing
     // this orchestra.
     // // sound

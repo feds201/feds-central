@@ -1,0 +1,122 @@
+---
+title: "Pit Testing"
+---
+
+import {Callout} from 'nextra/components';
+
+# Pit Testing
+
+<Callout type="error">
+## Gray Health Indicators
+
+Health reporting is not hooked up for the feeder, intake, roller, hood, spindexer, shooter motors, or intake limit switch. Their `Connected`, `Powered`, and switch indicators may be false, missing, or stale. Do not use those indicators for diagnosis.
+
+The drivetrain motors, CANcoders, Pigeon, Limelights, and USB storage indicators still report live status.
+</Callout>
+
+## Why We Want This
+
+Pit Testing gives the pit crew one place to run short mechanism checks and review the health information that is currently available. It helps us perform the same basic checks after repairs and between matches.
+
+- Run one mechanism at a time without using normal driver controls.
+- Check drivetrain CAN connections and supply power.
+- Check both Limelight connections and USB log storage.
+- Catch basic problems before the robot returns to the field.
+
+Pit Testing is a diagnostic aid. It does not decide whether the robot is ready for a match.
+
+## How to Use It
+
+### Set up
+
+1. Connect the Driver Station computer to the robot by Wi-Fi or USB.
+2. Open Driver Station and Elastic.
+3. In Elastic, press `Ctrl+D` and load `elastic-layout-with-pit`.
+4. Open the `CAN/Power` tab for health indicators or the `pit test` tab for commands.
+5. Clear people, tools, and game pieces from every moving mechanism.
+6. Support the robot before running either drivetrain command.
+7. Keep Driver Station visible so the robot can be disabled immediately.
+
+### Read the working indicators
+
+For the drivetrain motors, CANcoders, and Pigeon:
+
+- `Connected` means the CTRE device is responding.
+- `Powered` means its measured supply voltage is above 4 volts.
+
+`Powered` does not prove that a device is healthy under load. The Limelight indicators report whether each camera is connected. The storage indicator checks that the roboRIO sees the USB drive and has enough free space for logs.
+
+Ignore the non-drivetrain health indicators listed in the red warning above.
+
+### Run mechanism checks
+
+Enable the robot only after the area is clear. Run one command at a time:
+
+1. `Run Feeder`
+2. `Run Intake and Rollers`
+3. `Run Spindexer`
+4. `Run Shooter Wheels`
+5. `Move Shooter Hood`
+6. `test Drivetrain translation`
+7. `test Drivetrain rotation`
+
+Watch the mechanism for correct direction, smooth motion, unexpected noise, and a clean stop. Disable immediately if anything behaves incorrectly. Investigate the mechanism before continuing to the next check.
+
+The standalone `Run Intake` command exists in robot code but is not included in the saved Elastic layout.
+
+## Architecture Deep Dive
+
+### Startup and dashboard registration
+
+`RobotContainer` creates the normal robot subsystems and calls `PitTesting.createDashboard()` when the code is running on the physical robot. Pit Testing stores references to those existing subsystems. It does not create separate feeder, intake, shooter, or drivetrain implementations.
+
+`createDashboard()` publishes two groups of NetworkTables data through WPILib Shuffleboard:
+
+- Health entries under `/Shuffleboard/Pit Testing/...`
+- Commands under `/Shuffleboard/Pit Commands/Test Commands/...`
+
+The saved Elastic layout subscribes to those topics and decides where each indicator and command button appears. The layout only displays data. The robot code owns the values and commands.
+
+### Health reporting
+
+Working drivetrain health entries are created with `registerEntry()`. Each device gets two Boolean entries:
+
+```text
+<device> Connected
+<device> Powered
+```
+
+`Robot.robotPeriodic()` calls `PitTesting.updateDashboard()` on the physical robot. The update method reads each supported CTRE device and writes:
+
+- `Connected` from `isConnected()`
+- `Powered` from whether supply voltage is greater than `RobotMap.PitConstants.kPoweredThresholdVolts`
+
+The current threshold is 4 volts. This separates a missing CAN connection from a device that has no useful supply voltage, but it is not a full electrical test. It does not measure behavior under load or explain why a check failed.
+
+The drivetrain publishes health for four drive motors, four steer motors, four CANcoders, and the Pigeon. `RobotContainer` separately updates Limelight connectivity and USB storage information during `robotPeriodic()`.
+
+Health registration and updates for the feeder, intake, roller, hood, spindexer, shooter motors, and intake limit switch were disabled during the subsystem IO migration. Their old Elastic widgets remain, but there is no current publisher keeping those values accurate. The TODO in `PitTesting.java` marks where this must be restored through the subsystem IO layer.
+
+### Command flow
+
+Each dashboard button publishes a normal WPILib command. The button does not write motor voltage directly. It calls the same subsystem state commands used elsewhere in robot code.
+
+Most checks follow this sequence:
+
+1. Send a `Clear the area` notification to Elastic.
+2. Wait for the warning period.
+3. Select the subsystem's active state.
+4. Wait for the test duration.
+5. Select the subsystem's normal stopped or idle state.
+
+Mechanism checks normally run for 1.5 seconds. Drivetrain checks normally run for 0.75 seconds. The feeder transitions from `RUN` to `STOP`, the spindexer from `RUN` to `STOP`, the shooter wheels from `SHOOTING` to `IDLE`, and the hood from `OUT` to `IN`.
+
+`Run Intake and Rollers` is sequential. It starts the intake, waits, changes the roller state, waits again, stops the roller, then returns the intake to its default state. It is not a single simultaneous pulse.
+
+The drivetrain commands send a short field-centric translation or rotation request, then replace it with an idle request. This is why the robot must be supported and the area must be clear before either command runs.
+
+### Failure and interruption behavior
+
+Pit Testing does not compare measured motion against an expected result. It does not check current draw, position, speed, or direction, and it does not produce an overall pass or fail result. The operator must observe each check and decide what needs investigation.
+
+The final stopped or idle state runs when a sequence completes normally. These sequences do not include interruption cleanup. If another command interrupts a test between its start and final stop step, the sequence itself does not run that final step. Disable the robot immediately if a test is interrupted or behaves unexpectedly.
