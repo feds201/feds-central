@@ -15,6 +15,7 @@ import java.util.function.DoubleSupplier;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.CoastOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
@@ -185,6 +186,10 @@ public class ShooterWheels extends SubsystemBase {
 
   public void setState(shooter_state state) {
     currentState = state;
+    if (state.equals(shooter_state.IDLE)) {
+      shooterLeader.setControl(new CoastOut());
+      return;
+    }
     setVelocity(state.getVelocity());
   }
 

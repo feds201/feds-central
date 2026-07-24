@@ -3,77 +3,77 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.965717674970344,
-        "y": 2.265112692763938
+        "x": 3.331530249110321,
+        "y": 1.017046263345195
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.180296559912613,
-        "y": 0.6619928825650279
+        "x": 3.417603795966786,
+        "y": 0.7480664294187431
       },
       "isLocked": false,
-      "linkedName": "RightFirstShootPosition"
+      "linkedName": "TrenchShooting"
     },
     {
       "anchor": {
-        "x": 3.944804270462635,
-        "y": 0.554400948991697
+        "x": 4.030877817319099,
+        "y": 0.6
       },
       "prevControl": {
-        "x": 3.5861488560029486,
-        "y": 0.554400948991697
+        "x": 3.1271055753262162,
+        "y": 0.9524911032028468
       },
       "nextControl": {
-        "x": 4.428967971530248,
-        "y": 0.554400948991697
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 5.7,
-        "y": 0.554400948991697
-      },
-      "prevControl": {
-        "x": 4.666893312177352,
-        "y": 0.5544009489916971
-      },
-      "nextControl": {
-        "x": 6.5,
-        "y": 0.554400948991697
+        "x": 4.263789717496599,
+        "y": 0.5091592230564598
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.0,
-        "y": 1.6841162514827999
+        "x": 4.99920521945433,
+        "y": 0.6
       },
       "prevControl": {
-        "x": 6.330071409545965,
-        "y": 1.3008197150471117
+        "x": 4.49920521945433,
+        "y": 0.6000000000000001
       },
       "nextControl": {
-        "x": 5.6479240806642945,
-        "y": 2.0929655990510083
+        "x": 6.19920521945433,
+        "y": 0.6
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.827663107947806,
-        "y": 2.8
+        "x": 5.85,
+        "y": 2.0391696322657173
       },
       "prevControl": {
-        "x": 5.793738749968803,
-        "y": 1.8452743113638446
+        "x": 5.85,
+        "y": 1.7891696322657173
       },
       "nextControl": {
-        "x": 5.849181494661923,
-        "y": 3.4055871886121
+        "x": 5.85,
+        "y": 2.2891696322657173
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.85,
+        "y": 2.5
+      },
+      "prevControl": {
+        "x": 5.85,
+        "y": 2.25
+      },
+      "nextControl": {
+        "x": 5.85,
+        "y": 3.5
       },
       "isLocked": false,
       "linkedName": null
@@ -84,8 +84,8 @@
         "y": 3.5
       },
       "prevControl": {
-        "x": 6.645361803084223,
-        "y": 3.4916607354685643
+        "x": 6.1000000000000005,
+        "y": 3.5000000000000004
       },
       "nextControl": null,
       "isLocked": false,
@@ -94,30 +94,30 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.8847184986595117,
-      "rotationDegrees": 0.0
+      "waypointRelativePos": 0.8738898756660758,
+      "rotationDegrees": 180.0
     },
     {
-      "waypointRelativePos": 1.8336886993603454,
-      "rotationDegrees": 0.0
+      "waypointRelativePos": 1.698046181172298,
+      "rotationDegrees": 180.0
     },
     {
-      "waypointRelativePos": 3.2,
+      "waypointRelativePos": 2.84902309058614,
       "rotationDegrees": -90.0
     },
     {
-      "waypointRelativePos": 4.008396641343463,
-      "rotationDegrees": -94.69057103678631
+      "waypointRelativePos": 4.040852575488472,
+      "rotationDegrees": -90.0
     }
   ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 4.0,
+    "maxVelocity": 5.0,
     "maxAcceleration": 4.0,
     "maxAngularVelocity": 540.0,
-    "maxAngularAcceleration": 360.0,
+    "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
@@ -128,8 +128,8 @@
   "reversed": false,
   "folder": "MidIntakeToRightBump",
   "idealStartingState": {
-    "velocity": 0,
-    "rotation": 47.444068057635405
+    "velocity": 0.0,
+    "rotation": 66.75272999125686
   },
   "useDefaultConstraints": false
 }

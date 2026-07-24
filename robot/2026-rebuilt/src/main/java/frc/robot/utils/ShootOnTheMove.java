@@ -23,11 +23,10 @@ public class ShootOnTheMove {
    * @param chassisSpeeds Robot-relative of the robot
    * @return The distance to the target goal
    */
-  public static Translation2d calculateVirtualGoal(Pose2d robotPose, ChassisSpeeds chassisSpeeds) {
-    Translation2d hubCenter = RobotMap.ShooterConstants.hubCenter;
-    if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
-      hubCenter = FlippingUtil.flipFieldPosition(RobotMap.ShooterConstants.hubCenter);
-    }
+
+  private static Translation2d calculateVirtualGoal(Pose2d robotPose, ChassisSpeeds chassisSpeeds,
+      Translation2d targetPos) {
+    Translation2d hubCenter = targetPos;
 
     // Get shooter field position
     Translation2d shooterFieldPosition = getShooterFieldPosition(robotPose);
@@ -72,6 +71,21 @@ public class ShootOnTheMove {
     return virtualGoal;
   }
 
+  public static Translation2d calculateVirtualGoalForShooting(Pose2d robotPose,
+      ChassisSpeeds chassisSpeeds) {
+    Translation2d hubCenter = RobotMap.ShooterConstants.hubCenter;
+    if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
+      hubCenter = FlippingUtil.flipFieldPosition(hubCenter);
+    }
+    return calculateVirtualGoal(robotPose, chassisSpeeds, hubCenter);
+  }
+
+  public static Translation2d calculateVirtualGoalForPassing(Pose2d robotPose,
+      ChassisSpeeds chassisSpeeds, Translation2d targetPos) {
+
+    return calculateVirtualGoal(robotPose, chassisSpeeds, targetPos);
+  }
+
   /**
    * Calculates the robot heading required to hit the goal while moving.
    *
@@ -83,7 +97,7 @@ public class ShootOnTheMove {
     // Get shooter field position
     Translation2d shooterFieldPosition = getShooterFieldPosition(robotPose);
     // Compute field-relative angle shooter must point
-    Translation2d virtualGoal = calculateVirtualGoal(robotPose, chassisSpeeds);
+    Translation2d virtualGoal = calculateVirtualGoalForShooting(robotPose, chassisSpeeds);
     Translation2d shooterToGoal = virtualGoal.minus(shooterFieldPosition);
     Logger.recordOutput("VirtualGoal",
         new Pose2d(virtualGoal.getX(), virtualGoal.getY(), virtualGoal.getAngle()));
