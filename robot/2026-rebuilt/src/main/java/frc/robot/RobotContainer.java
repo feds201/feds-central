@@ -4,6 +4,7 @@
 // the WPILib BSD license file in the root directory of this project.
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -15,6 +16,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -23,17 +25,35 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.RobotMap.DrivetrainConstants;
 import frc.robot.commands.swerve.BallTracking;
 import frc.robot.commands.swerve.HubDriveAUTO;
-import frc.robot.subsystems.intake.IntakeSubsystem;
-import frc.robot.subsystems.intake.IntakeSubsystem.IntakeState;
-import frc.robot.subsystems.intake.IntakeSubsystem.RollerState;
-import frc.robot.subsystems.feeder.Feeder;
-import frc.robot.subsystems.feeder.Feeder.feeder_state;
-import frc.robot.subsystems.shooter.ShooterHood;
-import frc.robot.subsystems.shooter.ShooterHood.shooterhood_state;
-import frc.robot.subsystems.shooter.ShooterWheels;
-import frc.robot.subsystems.shooter.ShooterWheels.shooter_state;
-import frc.robot.subsystems.spindexer.Spindexer;
-import frc.robot.subsystems.spindexer.Spindexer.spindexer_state;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.RackIOSim;
+import frc.robot.subsystems.intake.RackIOTalonFX;
+import frc.robot.subsystems.intake.RollerIO;
+import frc.robot.subsystems.intake.RollerIOSim;
+import frc.robot.subsystems.intake.RollerIOTalonFX;
+import frc.robot.subsystems.intake.Intake.IntakeState;
+import frc.robot.subsystems.intake.Intake.RollerState;
+import frc.robot.subsystems.intake.RackIO;
+import frc.robot.subsystems.feeder.FeederSubsystem;
+import frc.robot.subsystems.feeder.FeederSubsystem.feeder_state;
+import frc.robot.subsystems.feeder.FeederIO;
+import frc.robot.subsystems.feeder.FeederIOSim;
+import frc.robot.subsystems.feeder.FeederIOTalonFX;
+import frc.robot.subsystems.shooter.hood.ShooterHoodSubsystem.shooterhood_state;
+import frc.robot.subsystems.shooter.wheels.Flywheel;
+import frc.robot.subsystems.shooter.wheels.FlywheelIO;
+import frc.robot.subsystems.shooter.wheels.FlywheelIOSim;
+import frc.robot.subsystems.shooter.wheels.FlywheelIOTalonFX;
+import frc.robot.subsystems.shooter.wheels.Flywheel.shooter_state;
+import frc.robot.subsystems.shooter.hood.ShooterHoodIO;
+import frc.robot.subsystems.shooter.hood.ShooterHoodIOSim;
+import frc.robot.subsystems.shooter.hood.ShooterHoodIOTalonFX;
+import frc.robot.subsystems.shooter.hood.ShooterHoodSubsystem;
+import frc.robot.subsystems.spindexer.SpindexerIOTalonFX;
+import frc.robot.subsystems.spindexer.SpindexerSubsystem;
+import frc.robot.subsystems.spindexer.SpindexerSubsystem.spindexer_state;
+import frc.robot.subsystems.spindexer.SpindexerIO;
+import frc.robot.subsystems.spindexer.SpindexerIOSim;
 import frc.robot.sim.RebuiltSimManager;
 import com.pathplanner.lib.path.PathConstraints;
 
@@ -56,7 +76,6 @@ import java.util.List;
 import static edu.wpi.first.units.Units.Rotations;
 
 public class RobotContainer extends ControllerBindings {
-
   // Singleton accessor so external code (DiagnosticServer) can command
   // shooter/hood.
   private static RobotContainer instance;
@@ -77,11 +96,14 @@ public class RobotContainer extends ControllerBindings {
   private final Telemetry telemetry =
       new Telemetry(TunerConstants.kSpeedAt12Volts.in(MetersPerSecond));
 
-  private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
-  private final Feeder feederSubsystem = new Feeder();
-  private final ShooterHood shooterHood = new ShooterHood(drivetrain);
-  private final ShooterWheels shooterWheels = new ShooterWheels(drivetrain);
-  private final Spindexer spinDexer = new Spindexer();
+  private final Intake intakeSubsystem;
+  private final FeederSubsystem feederSubsystem;
+  private final ShooterHoodSubsystem shooterHood;
+  private final Flywheel shooterWheels;
+  private final SpindexerSubsystem spindexer;
+
+  // --- APIs used by the diagnostic server / UI to command shooter/hood ---
+  private final AutoSweeper autoSweeper;
 
 
   // Simulation
@@ -107,24 +129,24 @@ public class RobotContainer extends ControllerBindings {
     return operaterController;
   }
 
-  public IntakeSubsystem getIntakeSubsystem() {
+  public Intake getIntakeSubsystem() {
     return intakeSubsystem;
   }
 
-  public ShooterHood getShooterHood() {
+  public ShooterHoodSubsystem getShooterHood() {
     return shooterHood;
   }
 
-  public ShooterWheels getShooterWheels() {
+  public Flywheel getShooterWheels() {
     return shooterWheels;
   }
 
-  public Feeder getFeederSubsystem() {
+  public FeederSubsystem getFeederSubsystem() {
     return feederSubsystem;
   }
 
-  public Spindexer getSpindexer() {
-    return spinDexer;
+  public SpindexerSubsystem getSpindexer() {
+    return spindexer;
   }
 
   public CommandSwerveDrivetrain getDrivetrain() {
@@ -141,11 +163,68 @@ public class RobotContainer extends ControllerBindings {
 
   public RobotContainer() {
     instance = this;
+    switch (RobotMap.getRobotMode()) {
+      case REAL:
+        spindexer = new SpindexerSubsystem(new SpindexerIOTalonFX());
+        feederSubsystem = new FeederSubsystem(new FeederIOTalonFX());
+        intakeSubsystem = new Intake(new RackIOTalonFX(), new RollerIOTalonFX());
+        shooterHood = new ShooterHoodSubsystem(new ShooterHoodIOTalonFX(),
+            () -> drivetrain.getDistanceToHub().in(Meters),
+            () -> drivetrain.getDistanceToCorner().in(Meters));
+        shooterWheels =
+            new Flywheel(new FlywheelIOTalonFX(), () -> drivetrain.getDistanceToHub().in(Meters),
+                () -> drivetrain.getDistanceToCorner().in(Meters));
+        break;
+      case SIM:
+        spindexer = new SpindexerSubsystem(new SpindexerIOSim());
+        feederSubsystem = new FeederSubsystem(new FeederIOSim());
+        intakeSubsystem = new Intake(new RackIOSim(), new RollerIOSim());
+        shooterHood = new ShooterHoodSubsystem(new ShooterHoodIOSim(),
+            () -> drivetrain.getDistanceToHub().in(Meters),
+            () -> drivetrain.getDistanceToCorner().in(Meters));
+        shooterWheels =
+            new Flywheel(new FlywheelIOSim(), () -> drivetrain.getDistanceToHub().in(Meters),
+                () -> drivetrain.getDistanceToCorner().in(Meters));
+        break;
+      case REPLAY:
+        spindexer = new SpindexerSubsystem(new SpindexerIO() {});
+        feederSubsystem = new FeederSubsystem(new FeederIO() {});
+        intakeSubsystem = new Intake(new RackIO() {}, new RollerIO() {});
+        shooterHood = new ShooterHoodSubsystem(new ShooterHoodIO() {},
+            () -> drivetrain.getDistanceToHub().in(Meters),
+            () -> drivetrain.getDistanceToCorner().in(Meters));
+        shooterWheels =
+            new Flywheel(new FlywheelIO() {}, () -> drivetrain.getDistanceToHub().in(Meters),
+                () -> drivetrain.getDistanceToCorner().in(Meters));
+        break;
+      default:
+        throw new IllegalStateException("Unexpected value: " + RobotMap.getRobotMode());
+    }
+
+    autoSweeper = new AutoSweeper(rps -> {
+      try {
+        shooterWheels.setStateCommand(shooter_state.TEST).execute();
+        shooterWheels.setVelocity(RotationsPerSecond.of(rps));
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }, pos -> {
+      try {
+        shooterHood.setStateCommand(shooterhood_state.TEST).execute();
+        shooterHood.setAngle(Rotations.of(pos)); // pos is already in rotations (0-30)
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    });
+
+
     llMain.getSettings().withImuMode(ImuMode.ExternalImu).save();
     setupDriveBindings(controller);
     setupOperatorBindings(operaterController);
     configureRootTests();
-    PitTesting.createDashboard();
+    if (RobotBase.isReal()) {
+      PitTesting.createDashboard();
+    }
     new Trigger(drivetrain::withinTrench).and(DriverStation::isTeleop)
         .onTrue(shooterHood.setStateCommand(shooterhood_state.IN));
     registerNamedCommands();
@@ -173,8 +252,8 @@ public class RobotContainer extends ControllerBindings {
       autoChooser.addOption("Dev-MidIntakeToRightBump",
           new PathPlannerAuto("Comp-MidIntakeToLeftBump", true)); // TESTING - DO NOT USE
 
-      autoChooser.addOption("Dev-LeftSotmMidfieldDoublepass",
-          new PathPlannerAuto("Dev-RightSotmMidfieldDoublepass", true));
+      autoChooser.addOption("Comp-LeftSotmMidfieldDoublepass",
+          new PathPlannerAuto("Comp-RightSotmMidfieldDoublepass", true));
 
 
 
@@ -203,30 +282,6 @@ public class RobotContainer extends ControllerBindings {
     autoChooser.addOption(autoName, autoCommand);
   }
 
-  // --- APIs used by the diagnostic server / UI to command shooter/hood ---
-  private final AutoSweeper autoSweeper = new AutoSweeper(rps -> {
-    try {
-      shooterWheels.setStateCommand(ShooterWheels.shooter_state.TEST).execute();
-      shooterWheels.setVelocity(RotationsPerSecond.of(rps));
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-  }, pos -> {
-    try {
-      shooterHood.setStateCommand(ShooterHood.shooterhood_state.TEST).execute();
-      shooterHood.setAngle(Rotations.of(pos)); // pos is already in rotations (0-30)
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-  });
-
-  public synchronized void setShooterVelocityRps(double rps) {
-    try {
-      shooterWheels.setVelocity(RotationsPerSecond.of(rps));
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-  }
 
   public synchronized void setHoodPosition(double position) {
     try {
@@ -241,6 +296,14 @@ public class RobotContainer extends ControllerBindings {
   public synchronized void setHoodAngleDeg(double deg) {
     try {
       shooterHood.setAngle(Rotations.of(deg / 360.0));
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+  public synchronized void setShooterVelocityRps(double rps) {
+    try {
+      shooterWheels.setVelocity(RotationsPerSecond.of(rps));
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -276,8 +339,8 @@ public class RobotContainer extends ControllerBindings {
    */
   public synchronized void startAutoSweepFromDiagnostic(int holdMs) {
     // enter test mode immediately
-    shooterWheels.setState(frc.robot.subsystems.shooter.ShooterWheels.shooter_state.TEST);
-    shooterHood.setState(frc.robot.subsystems.shooter.ShooterHood.shooterhood_state.TEST);
+    shooterWheels.setState(shooter_state.TEST);
+    shooterHood.setState(shooterhood_state.TEST);
 
     autoSweeper.startDynamic(
         // shooter velocity supplier (RPS) comes from TelemetryPublisher
@@ -286,13 +349,13 @@ public class RobotContainer extends ControllerBindings {
         () -> frc.robot.utils.RTU.TelemetryPublisher.getHoodAngleDeg(),
         // enter test mode (redundant but safe)
         () -> {
-          shooterWheels.setState(frc.robot.subsystems.shooter.ShooterWheels.shooter_state.TEST);
-          shooterHood.setState(frc.robot.subsystems.shooter.ShooterHood.shooterhood_state.TEST);
+          shooterWheels.setState(shooter_state.TEST);
+          shooterHood.setState(shooterhood_state.TEST);
         },
         // exit test mode: restore reasonable idle states
         () -> {
-          shooterWheels.setState(frc.robot.subsystems.shooter.ShooterWheels.shooter_state.IDLE);
-          shooterHood.setState(frc.robot.subsystems.shooter.ShooterHood.shooterhood_state.IN);
+          shooterWheels.setState(shooter_state.IDLE);
+          shooterHood.setState(shooterhood_state.IN);
         }, holdMs);
   }
 
@@ -326,7 +389,7 @@ public class RobotContainer extends ControllerBindings {
 
   public void initSimulation() {
     simManager = new RebuiltSimManager(drivetrain, intakeSubsystem, feederSubsystem, shooterWheels,
-        shooterHood, spinDexer);
+        shooterHood, spindexer);
     Logger.recordOutput("Sim/State", "Ready");
     drivetrain.resetPose(RebuiltSimManager.STARTING_POSE);
   }
@@ -374,11 +437,11 @@ public class RobotContainer extends ControllerBindings {
   }
 
   public void idleSubsystems() {
-    intakeSubsystem.setState(IntakeState.DEFAULT);
+    intakeSubsystem.setRackState(IntakeState.DEFAULT);
     intakeSubsystem.setRollerState(RollerState.OFF);
     shooterWheels.setState(shooter_state.IDLE);
     shooterHood.setState(shooterhood_state.IN);
-    spinDexer.setState(spindexer_state.STOP);
+    spindexer.setState(spindexer_state.STOP);
     feederSubsystem.setState(feeder_state.STOP);
   }
 
@@ -400,30 +463,30 @@ public class RobotContainer extends ControllerBindings {
     NamedCommands.registerCommand("Stop Shooter Spin",
         shooterWheels.setStateCommand(shooter_state.IDLE)
             .alongWith(shooterHood.setStateCommand(shooterhood_state.IN))
-            .alongWith(spinDexer.setStateCommand(spindexer_state.STOP))
+            .alongWith(spindexer.setStateCommand(spindexer_state.STOP))
             .alongWith(feederSubsystem.setStateCommand(feeder_state.STOP)));
     NamedCommands.registerCommand("End Shooter Spin",
         shooterWheels.setStateCommand(shooter_state.IDLE)
             .alongWith(shooterHood.setStateCommand(shooterhood_state.IN))
-            .alongWith(spinDexer.setStateCommand(spindexer_state.STOP))
+            .alongWith(spindexer.setStateCommand(spindexer_state.STOP))
             .alongWith(feederSubsystem.setStateCommand(feeder_state.STOP)));
     NamedCommands.registerCommand("Run Shooter",
         shooterWheels.setStateCommand(shooter_state.SHOOTING)
-            .alongWith(feederSubsystem.setStateCommand(feeder_state.RUN))
-            .alongWith(spinDexer.setStateCommand(spindexer_state.RUN))
+            .alongWith(feederSubsystem.setStateCommand(feeder_state.PRUN))
+            .alongWith(spindexer.setStateCommand(spindexer_state.RUN))
             .alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
     NamedCommands.registerCommand("Shooting",
         shooterWheels.setStateCommand(shooter_state.SHOOTING)
-            .alongWith(feederSubsystem.setStateCommand(feeder_state.RUN))
-            .alongWith(spinDexer.setStateCommand(spindexer_state.RUN))
+            .alongWith(feederSubsystem.setStateCommand(feeder_state.PRUN))
+            .alongWith(spindexer.setStateCommand(spindexer_state.RUN))
             .alongWith(shooterHood.setStateCommand(shooterhood_state.SHOOTING)));
     NamedCommands.registerCommand("Start Passing Spin",
         shooterWheels.setStateCommand(shooter_state.PASSING)
             .alongWith(shooterHood.setStateCommand(shooterhood_state.PASSING)));
     NamedCommands.registerCommand("Passing",
         shooterWheels.setStateCommand(shooter_state.PASSING)
-            .alongWith(feederSubsystem.setStateCommand(feeder_state.RUN))
-            .alongWith(spinDexer.setStateCommand(spindexer_state.RUN))
+            .alongWith(feederSubsystem.setStateCommand(feeder_state.PRUN))
+            .alongWith(spindexer.setStateCommand(spindexer_state.RUN))
             .alongWith(shooterHood.setStateCommand(shooterhood_state.PASSING)));
     NamedCommands.registerCommand("Auto Hub Drive", new HubDriveAUTO(drivetrain));
   }
