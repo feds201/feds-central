@@ -19,10 +19,10 @@ import frc.robot.utils.PhoenixUtil;
 
 public class FlywheelIOTalonFX implements FlywheelIO {
 
-  private TalonFX shooterLeader = new TalonFX(ShooterConstants.ShooterRightTop);
-  private TalonFX shooterFollower1 = new TalonFX(ShooterConstants.ShooterBottomLeft);
-  private TalonFX shooterFollower2 = new TalonFX(ShooterConstants.ShooterRightBottom);
-  private TalonFX shooterFollower3 = new TalonFX(ShooterConstants.ShooterTopLeft);
+  private final TalonFX shooterLeader;
+  private final TalonFX shooterFollower1;
+  private final TalonFX shooterFollower2;
+  private final TalonFX shooterFollower3;
   private VelocityVoltage velocityVoltageControl = new VelocityVoltage(0);
 
   private final StatusSignal<Angle> flywheelMotorPosition;
@@ -32,6 +32,10 @@ public class FlywheelIOTalonFX implements FlywheelIO {
   private final StatusSignal<Temperature> flywheelMotorTemp;
 
   public FlywheelIOTalonFX() {
+    shooterLeader = new TalonFX(ShooterConstants.ShooterRightTop);
+    shooterFollower1 = new TalonFX(ShooterConstants.ShooterBottomLeft);
+    shooterFollower2 = new TalonFX(ShooterConstants.ShooterRightBottom);
+    shooterFollower3 = new TalonFX(ShooterConstants.ShooterTopLeft);
     shooterFollower1
         .setControl(new Follower(shooterLeader.getDeviceID(), MotorAlignmentValue.Opposed));
     shooterFollower2
@@ -41,14 +45,14 @@ public class FlywheelIOTalonFX implements FlywheelIO {
 
     velocityVoltageControl.Acceleration = 200;
 
+    PhoenixUtil.tryUntilOk(5, () -> shooterLeader.getConfigurator()
+        .apply(ShooterConstants.getShooterWheelsConfiguration(), .25));
+
     this.flywheelMotorAppliedVoltage = shooterLeader.getMotorVoltage();
     this.flywheelMotorCurrent = shooterLeader.getStatorCurrent();
     this.flywheelMotorPosition = shooterLeader.getPosition();
     this.flywheelMotorTemp = shooterLeader.getDeviceTemp();
     this.flywheelMotorVelocity = shooterLeader.getVelocity();
-
-    PhoenixUtil.tryUntilOk(5, () -> shooterLeader.getConfigurator()
-        .apply(ShooterConstants.getShooterWheelsConfiguration(), .25));
 
     BaseStatusSignal.setUpdateFrequencyForAll(50, flywheelMotorAppliedVoltage, flywheelMotorCurrent,
         flywheelMotorPosition, flywheelMotorTemp, flywheelMotorVelocity);
@@ -58,6 +62,9 @@ public class FlywheelIOTalonFX implements FlywheelIO {
 
   @Override
   public void updateInputs(FlywheelIOInputs inputs) {
+    BaseStatusSignal.refreshAll(flywheelMotorAppliedVoltage, flywheelMotorCurrent,
+        flywheelMotorPosition, flywheelMotorTemp, flywheelMotorVelocity);
+
     inputs.flywheelMotorAppliedVoltage = flywheelMotorAppliedVoltage.getValue();
     inputs.flywheelMotorCurrent = flywheelMotorCurrent.getValue();
     inputs.flywheelMotorPosition = flywheelMotorPosition.getValue();

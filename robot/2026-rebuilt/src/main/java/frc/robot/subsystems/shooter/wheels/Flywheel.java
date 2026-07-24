@@ -90,6 +90,7 @@ public class Flywheel extends SubsystemBase {
 
     Logger.recordOutput("Robot/Shooter/IsShooting", currentState != shooter_state.IDLE);
     Logger.recordOutput("Robot/Shooter/ShooterState", currentState.toString());
+    Logger.recordOutput("Robot/Shooter/atSetpoint", atSetpoint());
 
     Logger.recordOutput("Robot/ShooterWheels/TargetVelocityRPS",
         currentState.getVelocity().in(RotationsPerSecond));

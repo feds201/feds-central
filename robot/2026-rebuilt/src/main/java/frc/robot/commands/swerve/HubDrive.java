@@ -98,10 +98,10 @@ public class HubDrive extends Command {
     dt.setControl(driveNormal.withVelocityX(targetVelX).withVelocityY(targetVelY)
         .withRotationalRate(DegreesPerSecond.of(smoothRotation)));
 
-    Logger.recordOutput("angular velocity (deg/s)", smoothRotation);
+    Logger.recordOutput("angular velocity (deg:s)", smoothRotation);
     Logger.recordOutput("targetVelX", targetVelX);
     Logger.recordOutput("targetVelY", targetVelY);
-    Logger.recordOutput("angular velocity (deg/Error", hubRotPID.getError());
+    Logger.recordOutput("angular velocity (deg:Error", hubRotPID.getError());
 
   }
 
