@@ -8,7 +8,6 @@ import com.ctre.phoenix6.sim.CANcoderSimState;
 import com.ctre.phoenix6.sim.Pigeon2SimState;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import frc.sim.motor.BatterySimUtil;
-import frc.sim.motor.TalonFXArmSim;
 import frc.sim.motor.TalonFXMotorSim;
 import frc.sim.gamepiece.ShooterSim;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -31,17 +30,13 @@ import org.ironmaple.simulation.motorsims.SimulatedMotorController;
 import org.littletonrobotics.junction.Logger;
 import org.ode4j.ode.DBody;
 import org.ode4j.ode.DGeom;
-import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
-import edu.wpi.first.wpilibj.simulation.DCMotorSim;
-import edu.wpi.first.wpilibj.simulation.DIOSim;
-import edu.wpi.first.math.system.plant.LinearSystemId;
-import frc.robot.RobotMap;
+import frc.robot.RobotMap.IntakeSubsystemConstants;
 import frc.robot.commands.swerve.BallTracking;
-import frc.robot.subsystems.feeder.Feeder;
-import frc.robot.subsystems.intake.IntakeSubsystem;
-import frc.robot.subsystems.shooter.ShooterHood;
-import frc.robot.subsystems.shooter.ShooterWheels;
-import frc.robot.subsystems.spindexer.Spindexer;
+import frc.robot.subsystems.feeder.FeederSubsystem;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.shooter.hood.ShooterHoodSubsystem;
+import frc.robot.subsystems.shooter.wheels.Flywheel;
+import frc.robot.subsystems.spindexer.SpindexerSubsystem;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.utils.FieldConstants;
@@ -179,12 +174,6 @@ public class RebuiltSimManager {
 
   // ── Motor physics constants (TODO: update with real measured values) ───────
 
-  /** Shooter wheel MOI (kg·m²). 0.5 × mass × radius² for a solid cylinder. */
-  private static final double SHOOTER_MOI = 0.5 * 2.0 * 0.05 * 0.05;
-
-  /** Shooter gear ratio (motor rot / wheel rot). 36T motor gear -> 24T axle gear (overdrive). */
-  private static final double SHOOTER_GEAR_RATIO = 24.0 / 36.0;
-
   /**
    * Shooter velocity threshold (RPS) above which wheels count as spinning. TODO update placeholder
    */
@@ -205,84 +194,25 @@ public class RebuiltSimManager {
    */
   private static final double SHOOTER_EFFICIENCY_FACTOR = 0.49;
 
+  /** Shooter gear ratio (motor rot / wheel rot). 36T motor gear -> 24T axle gear (overdrive). */
+  private static final double SHOOTER_GEAR_RATIO = 24.0 / 36.0;
+
   /**
    * Additional pitch (deg) added to the hood angle when computing ball launch angle (makes balls
    * launch more vertical).
    */
   private static final double BALL_ANGLE_OFFSET_DEG = 20.0;
-
-  /** Hood gear ratio (motor rot / mechanism rot). Derived from soft limit and angle range. */
-  private static final double HOOD_GEAR_RATIO = 30.0 * 2 * Math.PI / Math.toRadians(67.4 - 35.5);
-
-  /**
-   * Hood mechanism moment of inertia (kg·m²), estimated via WPILib uniform-rod approximation. TODO
-   * update placeholder: measure arm length and mass from CAD.
-   */
-  private static final double HOOD_MOI_KGM2 = SingleJointedArmSim.estimateMOI(0.23, 3.0); // 23cm
-                                                                                          // arm,
-                                                                                          // 3kg
-
-  /** Hood arm effective length for SingleJointedArmSim (m). TODO update placeholder */
-  private static final double HOOD_ARM_LENGTH_M = 0.15;
-
-  /** Hood minimum angle (degrees from horizontal) — motor position = 0. */
-  private static final double HOOD_MIN_ANGLE_DEG = RobotMap.ShooterConstants.HOOD_MIN_ANGLE_DEG;
-
-  /**
-   * Hood maximum angle (degrees from horizontal) — motor position = HOOD_FORWARD_SOFT_LIMIT_ROT.
-   */
-  private static final double HOOD_MAX_ANGLE_DEG = RobotMap.ShooterConstants.HOOD_MAX_ANGLE_DEG;
-
-  /** Feeder motor moment of inertia (kg·m²). TODO update placeholder */
-  private static final double FEEDER_MOI = 4 * 0.5 * 0.75 * 0.025 * 0.025; // 4 axles × 0.5 ×
-                                                                           // mass(0.75kg) ×
-                                                                           // radius²(0.025m) — TODO
-                                                                           // update placeholder
-
-  /** Feeder gear ratio (motor rotations / mechanism rotations). TODO update placeholder */
-  private static final double FEEDER_GEAR_RATIO = 1.0;
-
   /**
    * Feeder velocity threshold (RPS, forward-only) — negative velocity (reverse phase) stops
    * shooting. TODO update placeholder
    */
   private static final double FEEDER_VELOCITY_THRESHOLD_RPS = 0.5;
 
-  /** Spindexer motor moment of inertia (kg·m²). TODO update placeholder */
-  private static final double SPINDEXER_MOI = 2 * 0.5 * 0.5 * 0.04 * 0.04; // 2 axles × 0.5 ×
-                                                                           // mass(0.5kg) ×
-                                                                           // radius²(0.04m) — TODO
-                                                                           // update placeholder
-
-  /** Spindexer gear ratio (motor rotations / mechanism rotations). TODO update placeholder */
-  private static final double SPINDEXER_GEAR_RATIO = 1.0;
-
   /**
    * Intake roller velocity threshold (motor RPS) above which roller counts as spinning. TODO update
    * placeholder
    */
   private static final double INTAKE_ROLLER_VELOCITY_THRESHOLD_RPS = 1.0;
-
-  /**
-   * Intake deploy MOI (kg·m²). Sim tuning knob, not measured from CAD yet. May need retuning now
-   * that the gear ratio is physical.
-   */
-  private static final double INTAKE_DEPLOY_MOI = 0.01;
-
-  /**
-   * Intake deploy gear ratio (motor rotations / mechanism rotations). Two 3:1 stages in series =
-   * 9:1.
-   */
-  private static final double INTAKE_DEPLOY_GEAR_RATIO = 9.0;
-
-  /** Intake roller MOI (kg·m²). TODO update placeholder */
-  private static final double INTAKE_ROLLER_MOI = 0.001;
-
-  /**
-   * Intake roller gear ratio (motor rotations / mechanism rotations). 3:1 on each of two motors in
-   * parallel.
-   */
-  private static final double INTAKE_ROLLER_GEAR_RATIO = 3.0;
 
   // Intake extension translation (delta from retracted position)
   private static final double INTAKE_EXTEND_X = -0.302;
@@ -317,20 +247,14 @@ public class RebuiltSimManager {
   private final SwerveModuleSimulation[] moduleSimulations;
 
   // References to robot subsystems
-  private final IntakeSubsystem intakeSubsystem;
+  private final Intake intakeSubsystem;
+  private final SpindexerSubsystem spindexer;
+  private final FeederSubsystem feederSubsystem;
+  private final ShooterHoodSubsystem shooterHoodSubsystem;
+  private final Flywheel shooterWheels;
 
   // CTRE sim state (for gyro only — MapleSim handles motor/encoder sim state)
   private final Pigeon2SimState pigeonSimState;
-
-  // Mechanism physics sims (non-drivetrain) — wrap DCMotorSim/SingleJointedArmSim +
-  // TalonFXSimState.
-  private final TalonFXMotorSim shooterMotorSim;
-  private final TalonFXArmSim hoodArmSim;
-  private final TalonFXMotorSim feederMotorSim;
-  private final TalonFXMotorSim spindexerMotorSim;
-  private final TalonFXMotorSim intakeDeployMotorSim;
-  private final TalonFXMotorSim intakeRollerMotorSim;
-  private final DIOSim intakeLimitSwitchSim;
 
   // Last known pose and speeds from MapleSim (used for virtual goal telemetry)
   private Pose2d lastSimPose = STARTING_POSE;
@@ -350,9 +274,14 @@ public class RebuiltSimManager {
    * @param shooterHood the shooter hood subsystem (aiming state)
    * @param spindexer the spindexer subsystem (run/stop state)
    */
-  public RebuiltSimManager(CommandSwerveDrivetrain drivetrain, IntakeSubsystem intakeSubsystem,
-      Feeder feeder, ShooterWheels shooterWheels, ShooterHood shooterHood, Spindexer spindexer) {
+  public RebuiltSimManager(CommandSwerveDrivetrain drivetrain, Intake intakeSubsystem,
+      FeederSubsystem feeder, Flywheel shooterWheels, ShooterHoodSubsystem shooterHood,
+      SpindexerSubsystem spindexer) {
     this.intakeSubsystem = intakeSubsystem;
+    this.spindexer = spindexer;
+    this.feederSubsystem = feeder;
+    this.shooterHoodSubsystem = shooterHood;
+    this.shooterWheels = shooterWheels;
 
     // --- MapleSim timing ---
     // Use AddRampCollider=false so MapleSim only blocks on the hub (47x47),
@@ -429,49 +358,14 @@ public class RebuiltSimManager {
     Logger.recordOutput("Sim/State", "Loading intake");
     intakeZone =
         new IntakeZone(INTAKE_X_MIN, INTAKE_X_MAX, INTAKE_Y_MIN, INTAKE_Y_MAX, INTAKE_Z_MAX,
-            () -> intakeSubsystem
-                .getSimDeployMotorPositionRotations() > IntakeSubsystem.extendedRotations - 0.5
-                && intakeSubsystem
-                    .getSimRollerMotorVelocityRPS() > INTAKE_ROLLER_VELOCITY_THRESHOLD_RPS,
+            () -> intakeSubsystem.getRackPosition()
+                .in(Rotations) > IntakeSubsystemConstants.extendedRotations - 0.5
+                && intakeSubsystem.getRollerAngularVelocity()
+                    .in(RotationsPerSecond) > INTAKE_ROLLER_VELOCITY_THRESHOLD_RPS,
             () -> chassis.getPose2d());
 
     // --- Mechanism physics sims (non-drivetrain) ---
     Logger.recordOutput("Sim/State", "Loading mechanism sims");
-
-    shooterMotorSim = new TalonFXMotorSim(shooterWheels.getShooterLeaderMotorSimState(),
-        new DCMotorSim(LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60(1), SHOOTER_MOI,
-            SHOOTER_GEAR_RATIO), DCMotor.getKrakenX60(1)),
-        SHOOTER_GEAR_RATIO, true);
-
-    hoodArmSim = new TalonFXArmSim(shooterHood.getHoodMotorSimState(),
-        new SingleJointedArmSim(DCMotor.getKrakenX60(1), HOOD_GEAR_RATIO, HOOD_MOI_KGM2,
-            HOOD_ARM_LENGTH_M, Math.toRadians(HOOD_MIN_ANGLE_DEG),
-            Math.toRadians(HOOD_MAX_ANGLE_DEG), true, Math.toRadians(HOOD_MIN_ANGLE_DEG)),
-        Math.toRadians(HOOD_MIN_ANGLE_DEG), Math.toRadians(HOOD_MAX_ANGLE_DEG),
-        RobotMap.ShooterConstants.HOOD_FORWARD_SOFT_LIMIT_ROT, true);
-
-    feederMotorSim = new TalonFXMotorSim(feeder.getFeederMotorSimState(), new DCMotorSim(
-        LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60(1), FEEDER_MOI, FEEDER_GEAR_RATIO),
-        DCMotor.getKrakenX60(1)), FEEDER_GEAR_RATIO, true);
-
-    spindexerMotorSim =
-        new TalonFXMotorSim(spindexer.getSpindexerMotorSimState(),
-            new DCMotorSim(LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60(1),
-                SPINDEXER_MOI, SPINDEXER_GEAR_RATIO), DCMotor.getKrakenX60(1)),
-            SPINDEXER_GEAR_RATIO, true);
-
-    intakeDeployMotorSim = new TalonFXMotorSim(intakeSubsystem.getDeployMotorSimState(),
-        new DCMotorSim(LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60(1),
-            INTAKE_DEPLOY_MOI, INTAKE_DEPLOY_GEAR_RATIO), DCMotor.getKrakenX60(1)),
-        INTAKE_DEPLOY_GEAR_RATIO, false);
-
-    // Two Krakens in parallel drive the rollers (one each side).
-    intakeRollerMotorSim = new TalonFXMotorSim(intakeSubsystem.getRollerMotorSimState(),
-        new DCMotorSim(LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60(2),
-            INTAKE_ROLLER_MOI, INTAKE_ROLLER_GEAR_RATIO), DCMotor.getKrakenX60(2)),
-        INTAKE_ROLLER_GEAR_RATIO, false);
-
-    intakeLimitSwitchSim = new DIOSim(intakeSubsystem.getLimitSwitch());
 
     // --- Shooter ---
     Logger.recordOutput("Sim/State", "Loading shooter");
@@ -488,11 +382,13 @@ public class RebuiltSimManager {
         // the way → ball passes more forward). LaunchParameters expects 0 = horizontal, π/2 =
         // vertical,
         // so invert the hood angle via (π/2 − hood). Offset is then added to the inverted angle.
-        () -> (Math.PI / 2.0) - hoodArmSim.getAngleRads() + Math.toRadians(BALL_ANGLE_OFFSET_DEG),
-        () -> shooterMotorSim.getAngularVelocityRadPerSec() * SHOOTER_WHEEL_RADIUS_M
-            * SHOOTER_EFFICIENCY_FACTOR,
-        () -> shooterMotorSim.getAngularVelocityRPS() > SHOOTER_VELOCITY_THRESHOLD_RPS
-            && feederMotorSim.getAngularVelocityRPS() > FEEDER_VELOCITY_THRESHOLD_RPS,
+        () -> (Math.PI / 2.0) - shooterHood.getPositionRadians()
+            + Math.toRadians(BALL_ANGLE_OFFSET_DEG),
+        () -> shooterWheels.getVelocity().in(RadiansPerSecond) / SHOOTER_GEAR_RATIO
+            * SHOOTER_WHEEL_RADIUS_M * SHOOTER_EFFICIENCY_FACTOR,
+        () -> shooterWheels.getVelocity().in(RotationsPerSecond) > SHOOTER_VELOCITY_THRESHOLD_RPS
+            && feederSubsystem.getFeederVelocity()
+                .in(RotationsPerSecond) > FEEDER_VELOCITY_THRESHOLD_RPS,
         () -> chassis.getBody().getLinearVel().get0(),
         () -> chassis.getBody().getLinearVel().get1(), LAUNCH_HEIGHT, MUZZLE_FORWARD_OFFSET,
         BARREL_LATERAL_OFFSET, SHOTS_PER_SECOND);
@@ -613,51 +509,48 @@ public class RebuiltSimManager {
     // TODO(ai-idea)?: have TalonFXMotorSim self-report current so this collapses to one call? would
     // remove the easy-to-miss *4 multiplier for shooter followers.
     double batteryVoltage =
-        BatterySimUtil.updateBatteryVoltage(7.0, 12.5, shooterMotorSim.getCurrentDrawAmps() * 4, // leader
-                                                                                                 // +
-                                                                                                 // 3
-                                                                                                 // followers,
-                                                                                                 // all
-                                                                                                 // share
-                                                                                                 // the
-                                                                                                 // same
-                                                                                                 // flywheel
-                                                                                                 // load
-            hoodArmSim.getCurrentDrawAmps(), feederMotorSim.getCurrentDrawAmps(),
-            spindexerMotorSim.getCurrentDrawAmps(), intakeDeployMotorSim.getCurrentDrawAmps(),
-            intakeRollerMotorSim.getCurrentDrawAmps());
+        BatterySimUtil.updateBatteryVoltage(7.0, 12.5, shooterWheels.getCurrent().in(Amps) * 4, // leader
+                                                                                                // +
+                                                                                                // 3
+                                                                                                // followers,
+                                                                                                // all
+                                                                                                // share
+                                                                                                // the
+                                                                                                // same
+                                                                                                // flywheel
+                                                                                                // load
+            shooterHoodSubsystem.getCurrentDraw().in(Amps), feederSubsystem.getCurrent().in(Amps),
+            spindexer.getCurrent().in(Amps), intakeSubsystem.getRackAppliedCurrent().in(Amps),
+            intakeSubsystem.getRollerAppliedCurrent().in(Amps));
 
-    shooterMotorSim.update(DT, batteryVoltage);
-    hoodArmSim.update(DT, batteryVoltage);
-    feederMotorSim.update(DT, batteryVoltage);
-    spindexerMotorSim.update(DT, batteryVoltage);
-    intakeDeployMotorSim.update(DT, batteryVoltage);
-    intakeRollerMotorSim.update(DT, batteryVoltage);
 
-    // Active-low limit switch: false = pressed when intake reaches full extension.
-    intakeLimitSwitchSim.setValue(
-        intakeSubsystem.getSimDeployMotorPositionRotations() < IntakeSubsystem.extendedRotations);
 
     // Update shooter (unchanged)
     // ── Debug telemetry ──────────────────────────────────────────────────────
-    Logger.recordOutput("Sim/Debug/ShooterVelocityRPS", shooterMotorSim.getAngularVelocityRPS());
-    Logger.recordOutput("Sim/Debug/FeederVelocityRPS", feederMotorSim.getAngularVelocityRPS());
+    Logger.recordOutput("Sim/Debug/ShooterVelocityRPS",
+        shooterWheels.getVelocity().in(RotationsPerSecond));
+    Logger.recordOutput("Sim/Debug/FeederVelocityRPS",
+        feederSubsystem.getFeederVelocity().in(RotationsPerSecond));
     Logger.recordOutput("Sim/Debug/SpindexerVelocityRPS",
-        spindexerMotorSim.getAngularVelocityRPS());
-    Logger.recordOutput("Sim/Debug/HoodAngleDeg", Math.toDegrees(hoodArmSim.getAngleRads()));
+        spindexer.getVelocity().in(RotationsPerSecond));
+    Logger.recordOutput("Sim/Debug/HoodAngleDeg",
+        Math.toDegrees(shooterHoodSubsystem.getPositionRadians()));
     Logger.recordOutput("Sim/Debug/IntakeDeployPositionRot",
-        intakeSubsystem.getSimDeployMotorPositionRotations());
+        intakeSubsystem.getRackPosition().in(Rotations));
     Logger.recordOutput("Sim/Debug/IntakeDeployExtendedPct",
-        Math.min(100.0, Math.max(0.0, intakeSubsystem.getSimDeployMotorPositionRotations()
-            / IntakeSubsystem.extendedRotations * 100.0)));
+        Math.min(100.0, Math.max(0.0, intakeSubsystem.getRackPosition().in(Rotations)
+            / IntakeSubsystemConstants.extendedRotations * 100.0)));
     Logger.recordOutput("Sim/Debug/IntakeRollerVelocityRPS",
-        intakeSubsystem.getSimRollerMotorVelocityRPS());
-    Logger.recordOutput("Sim/Debug/IntakeZoneActive", intakeSubsystem
-        .getSimDeployMotorPositionRotations() > IntakeSubsystem.extendedRotations - 0.5
-        && intakeSubsystem.getSimRollerMotorVelocityRPS() > INTAKE_ROLLER_VELOCITY_THRESHOLD_RPS);
+        intakeSubsystem.getRollerAngularVelocity().in(RotationsPerSecond));
+    Logger.recordOutput("Sim/Debug/IntakeZoneActive",
+        intakeSubsystem.getRackPosition().in(Rotations) > IntakeSubsystemConstants.extendedRotations
+            - 0.5
+            && intakeSubsystem.getRollerAngularVelocity()
+                .in(RotationsPerSecond) > INTAKE_ROLLER_VELOCITY_THRESHOLD_RPS);
     Logger.recordOutput("Sim/Debug/ShootingGateOpen",
-        shooterMotorSim.getAngularVelocityRPS() > SHOOTER_VELOCITY_THRESHOLD_RPS
-            && feederMotorSim.getAngularVelocityRPS() > FEEDER_VELOCITY_THRESHOLD_RPS);
+        shooterWheels.getVelocity().in(RotationsPerSecond) > SHOOTER_VELOCITY_THRESHOLD_RPS
+            && feederSubsystem.getFeederVelocity()
+                .in(RotationsPerSecond) > FEEDER_VELOCITY_THRESHOLD_RPS);
     Logger.recordOutput("Sim/Debug/BatteryVoltage", batteryVoltage);
     Logger.recordOutput("Sim/Debug/FuelHeld", (double) gamePieceManager.getHeldCount());
     shooterSim.update(DT);
@@ -720,21 +613,20 @@ public class RebuiltSimManager {
     // 15: Shooter - Wheels (Y rotation)
 
     // Intake extension: scale deploy position [0, extendedRotations] → [0, 1] fraction
-    double deployFraction = Math.min(1.0, Math.max(0.0,
-        intakeSubsystem.getSimDeployMotorPositionRotations() / IntakeSubsystem.extendedRotations));
+    double deployFraction =
+        Math.min(1.0, Math.max(0.0, intakeSubsystem.getRackPosition().in(Rotations)
+            / IntakeSubsystemConstants.extendedRotations));
     Translation3d intakeExtension =
         new Translation3d(INTAKE_EXTEND_X * deployFraction, 0, INTAKE_EXTEND_Z * deployFraction);
 
     double rollerAngle =
-        -(intakeSubsystem.getSimRollerMotorPositionRotations() * 2 * Math.PI) % (2 * Math.PI);
-    double spindexerAngle =
-        (spindexerMotorSim.getAngularPositionRotations() * 2 * Math.PI) % (2 * Math.PI);
+        -(intakeSubsystem.getRollerPosition().in(Rotations) * 2 * Math.PI) % (2 * Math.PI);
+    double spindexerAngle = (spindexer.getPosition().in(Rotations) * 2 * Math.PI) % (2 * Math.PI);
     double feederAngle =
-        (feederMotorSim.getAngularPositionRotations() * 2 * Math.PI) % (2 * Math.PI);
-    double shooterAngle =
-        (shooterMotorSim.getAngularPositionRotations() * 2 * Math.PI) % (2 * Math.PI);
+        (feederSubsystem.getPosition().in(Rotations) * 2 * Math.PI) % (2 * Math.PI);
+    double shooterAngle = (shooterWheels.getPosition().in(Rotations) * 2 * Math.PI) % (2 * Math.PI);
     // Hood visual angle: physics sim angle minus visual model offset
-    double hoodAngle = hoodArmSim.getAngleRads() - HOOD_VISUAL_OFFSET_RAD;
+    double hoodAngle = shooterHoodSubsystem.getPositionRadians() - HOOD_VISUAL_OFFSET_RAD;
 
     Logger.recordOutput("Sim/ComponentPoses", new Pose3d[] {new Pose3d(), // 0: Intake - Stationary
         new Pose3d(intakeExtension, new Rotation3d()), // 1: Intake - Hopper

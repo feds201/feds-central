@@ -4,12 +4,12 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.subsystems.intake.IntakeSubsystem.IntakeState;
-import frc.robot.subsystems.intake.IntakeSubsystem.RollerState;
-import frc.robot.subsystems.feeder.Feeder.feeder_state;
-import frc.robot.subsystems.shooter.ShooterHood.shooterhood_state;
-import frc.robot.subsystems.shooter.ShooterWheels.shooter_state;
-import frc.robot.subsystems.spindexer.Spindexer.spindexer_state;
+import frc.robot.subsystems.intake.Intake.IntakeState;
+import frc.robot.subsystems.intake.Intake.RollerState;
+import frc.robot.subsystems.feeder.FeederSubsystem.feeder_state;
+import frc.robot.subsystems.shooter.wheels.Flywheel.shooter_state;
+import frc.robot.subsystems.shooter.hood.ShooterHoodSubsystem.shooterhood_state;
+import frc.robot.subsystems.spindexer.SpindexerSubsystem.spindexer_state;
 import frc.robot.commands.swerve.HubDrive;
 import frc.robot.commands.swerve.PassingDrive;
 import frc.robot.commands.swerve.TeleopSwerve;
@@ -48,7 +48,7 @@ public class ControllerBindings {
         .whileTrue(Commands.sequence(shooterWheels.setStateCommand(shooter_state.SHOOTING),
             shooterHood.setStateCommand(shooterhood_state.SHOOTING),
             feederSubsystem.setStateCommand(feeder_state.PRUN),
-            spinDexer.setStateCommand(spindexer_state.PFORWARD)))
+            spinDexer.setStateCommand(spindexer_state.RUN)))
         .onFalse(Commands.sequence(feederSubsystem.setStateCommand(feeder_state.STOP),
             spinDexer.setStateCommand(spindexer_state.STOP),
             shooterWheels.setStateCommand(shooter_state.IDLE),
@@ -111,7 +111,7 @@ public class ControllerBindings {
                 shooterWheels.setStateCommand(shooter_state.HALFCOURT))
             .andThen(new WaitCommand(.5))
             .andThen(feederSubsystem.setStateCommand(feeder_state.PRUN),
-                spinDexer.setStateCommand(spindexer_state.PFORWARD)))
+                spinDexer.setStateCommand(spindexer_state.RUN)))
 
         .onFalse(Commands.sequence(feederSubsystem.setStateCommand(feeder_state.STOP),
             spinDexer.setStateCommand(spindexer_state.STOP),
@@ -123,7 +123,7 @@ public class ControllerBindings {
     driver.x()
         .whileTrue(Commands.sequence(intakeSubsystem.setRollerStateCommand(RollerState.AGITATEON),
             feederSubsystem.setStateCommand(feeder_state.PRUN),
-            spinDexer.setStateCommand(spindexer_state.PFORWARD),
+            spinDexer.setStateCommand(spindexer_state.RUN),
             // Pulse intake extend/retract while held (5 roller rotations per pulse,
             // 0.3s retract dwell)
             shooterWheels.setStateCommand(shooter_state.TEST),
@@ -140,7 +140,7 @@ public class ControllerBindings {
                 shooterWheels.setStateCommand(shooter_state.LAYUP))
             .andThen(new WaitCommand(.5))
             .andThen(feederSubsystem.setStateCommand(feeder_state.PRUN),
-                spinDexer.setStateCommand(spindexer_state.PFORWARD)))
+                spinDexer.setStateCommand(spindexer_state.RUN)))
         .onFalse(Commands.sequence(feederSubsystem.setStateCommand(feeder_state.STOP),
             spinDexer.setStateCommand(spindexer_state.STOP),
             shooterWheels.setStateCommand(shooter_state.IDLE),
@@ -171,7 +171,7 @@ public class ControllerBindings {
     // Button to fire, if swerve is aimed and shooter is at speed.
     driver.rightTrigger().and(HubDrive::pidAtSetpoint).and(shooterWheels::atSetpoint)
         .whileTrue(Commands.sequence(feederSubsystem.setStateCommand(feeder_state.PRUN),
-            spinDexer.setStateCommand(spindexer_state.PFORWARD),
+            spinDexer.setStateCommand(spindexer_state.RUN),
             intakeSubsystem.setRollerStateCommand(RollerState.AGITATEON)))
         .onFalse(Commands.sequence(feederSubsystem.setStateCommand(feeder_state.STOP),
             spinDexer.setStateCommand(spindexer_state.STOP),
@@ -179,7 +179,7 @@ public class ControllerBindings {
 
     driver.rightTrigger().and(PassingDrive::pidAtSetpoint)
         .whileTrue(Commands.sequence(feederSubsystem.setStateCommand(feeder_state.PRUN),
-            spinDexer.setStateCommand(spindexer_state.PFORWARD)
+            spinDexer.setStateCommand(spindexer_state.RUN)
         // Pulse the intake while firing (run until release). 5 rotations per pulse.
         // intakeSubsystem.agitateWhileHeldRotations(15.0)
         )).onFalse(Commands.sequence(feederSubsystem.setStateCommand(feeder_state.STOP),

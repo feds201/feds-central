@@ -4,7 +4,9 @@ import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import java.util.Map;
-
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Rectangle2d;
@@ -58,11 +60,58 @@ public final class RobotMap {
     public static final int kRollerMotorFollowerID = 60;
     public static final double agitateCycleConstant = 0.5;
 
+
+    public static final double extendedRotations = 18.0; // TUNE on new intake
+    public static final double retractedRotations = 0.39;
+    public static final double closeAgitationRotations = 9.0; // about halfway from bumper to
+                                                              // extended,
+    // used
+    // for agitating the close half of the
+    // hopper
+    public static final double farAgitationRotations = 13.5; // about three-quarters from bumper to
+    // extended, used for agitating the far half
+    // of
+    // the hopper
+    public static final double burstAgitation = extendedRotations / 2.0;
+    // Desired motion timing: target to complete extend/retract in under 1s
+    public static final double MOVE_TARGET_SECONDS = .45;
+    // Aggressive acceleration multiplier requested (20x faster than default)
+    public static final double MOTION_MAGIC_ACCEL_MULTIPLIER = 40.0;
+    public static final double ROLLER_OUTPUT = 1.0; // 90% for rollers, 70% originally;
+    public static final double AGITATE_OUTPUT = 0.5; // power level to use during agitation states
+                                                     // (lower is more gentle, higher is more
+                                                     // aggressive)
+
+    public static TalonFXConfiguration getRackMotorConfig() {
+      var config = new TalonFXConfiguration();
+      config.Slot0.kP = 4;
+      config.Slot0.kS = 0.42; // TUNE on new intake
+      config.Slot0.kI = 0.0;
+      config.Slot0.kD = 0.0;
+      // config.CurrentLimits.SupplyCurrentLimit = 40.0;
+      config.CurrentLimits.StatorCurrentLimit = 45.0;
+      config.CurrentLimits.SupplyCurrentLimitEnable = true;
+
+
+      // Configure MotionMagic cruise velocity and acceleration so moves complete
+      // near our desired MOVE_TARGET_SECONDS. Units: motor rotations / sec and
+      // rotations / sec^2 respectively.
+      double delta = Math.abs(
+          IntakeSubsystemConstants.extendedRotations - IntakeSubsystemConstants.retractedRotations);
+      double cruise = delta / IntakeSubsystemConstants.MOVE_TARGET_SECONDS; // rotations per second
+      double accel = cruise * 4.0; // base accel to reach cruise quickly
+      // Apply user-requested multiplier to increase acceleration aggressively
+      accel = accel * IntakeSubsystemConstants.MOTION_MAGIC_ACCEL_MULTIPLIER;
+      config.MotionMagic.MotionMagicCruiseVelocity = cruise;
+      config.MotionMagic.MotionMagicAcceleration = accel;
+      return config;
+    }
   }
 
 
 
   public static robotState getRobotMode() {
+    // return robotState.REPLAY;
     return Robot.isReal() ? robotState.REAL : robotState.SIM;
   }
 
@@ -132,6 +181,42 @@ public final class RobotMap {
   }
 
   public static class ShooterConstants {
+    public static TalonFXConfiguration getShooterHoodConfiguration() {
+      TalonFXConfiguration config = new TalonFXConfiguration();
+      config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+      config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+      config.CurrentLimits.StatorCurrentLimit = 40;
+      // Following values would need to be tuned.
+      config.Slot0.kS = .235; // Constant applied for friction compensation (static gain)
+      config.Slot0.kP = 1; // Proportional gain
+      config.Slot0.kD = 0.0; // Derivative gain
+      config.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
+          ShooterConstants.HOOD_FORWARD_SOFT_LIMIT_ROT;
+      config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0.0;
+      config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+      config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+
+      return config;
+    }
+
+    public static TalonFXConfiguration getShooterWheelsConfiguration() {
+      TalonFXConfiguration config = new TalonFXConfiguration();
+      config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+      config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+      config.CurrentLimits.StatorCurrentLimit = 80; // Increased for faster recovery between shots
+      config.CurrentLimits.SupplyCurrentLimit = 60;
+      config.ClosedLoopRamps.VoltageClosedLoopRampPeriod = 0.02;
+      // config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
+      // config.Feedback.SensorToMechanismRatio = 2/3;
+
+      // Following values would need to be tuned.
+      config.Slot0.kS = 0.34; // Constant applied for friction compensation (static gain)
+      config.Slot0.kP = 0.4; // Proportional gain
+      config.Slot0.kV = 0.12;// Velocity gain
+
+      return config;
+    }
+
     /** Hood motor forward soft limit in rotor rotations — the maximum travel position. */
     public static final double HOOD_FORWARD_SOFT_LIMIT_ROT = 30.0;
     /** Physical hood angle in degrees when the motor is at 0 rotor rotations (fully retracted). */
@@ -202,7 +287,7 @@ public final class RobotMap {
             Map.entry(2.01, 28.0), // done
             Map.entry(2.56, 30.0), // done
             Map.entry(2.89, 31.0), // done
-            Map.entry(3.08, 33.5), // done
+            Map.entry(3.08, 33.5), // done Adjust up here
             Map.entry(3.37, 34.5), // done
             Map.entry(3.97, 38.0), // done
             Map.entry(4.75, 39.0), Map.entry(5.0, 42.0), // done
