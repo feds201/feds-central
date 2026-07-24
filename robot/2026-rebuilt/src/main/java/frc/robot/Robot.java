@@ -172,9 +172,6 @@ public class Robot extends LoggedRobot {
     Epilogue.limelightWrapperLogger.update(backend.getNested("@Logged/Limelights/Backup"),
         m_robotContainer.getLimelightBackup());
 
-    // Publish a small set of live telemetry for the RTU dashboard
-    m_robotContainer.publishTelemetry();
-
     // NOTE: Pit testing will only run if robot is real. this is because architecture this year is
     // too far gone to work with IO interfaces. maybe will try to fix it later, for now its like
     // this :)
@@ -243,13 +240,10 @@ public class Robot extends LoggedRobot {
   @Override
   public void testInit() {
     CommandScheduler.getInstance().cancelAll();
-    // m_robotContainer.runRootTests();
   }
 
   @Override
-  public void testPeriodic() {
-    // m_robotContainer.updateRootTests();
-  }
+  public void testPeriodic() {}
 
   @Override
   public void testExit() {}
