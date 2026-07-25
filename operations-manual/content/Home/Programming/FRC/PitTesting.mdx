@@ -6,12 +6,16 @@ import {Callout} from 'nextra/components';
 
 # Pit Testing
 
-<Callout type="error">
-## Gray Health Indicators
+<Callout type="warning">
+<div style={{ paddingBottom: '0.75rem' }}>
+
+## Unavailable Health Indicators
 
 Health reporting is not hooked up for the feeder, intake, roller, hood, spindexer, shooter motors, or intake limit switch. Their `Connected`, `Powered`, and switch indicators may be false, missing, or stale. Do not use those indicators for diagnosis.
 
 The drivetrain motors, CANcoders, Pigeon, Limelights, and USB storage indicators still report live status.
+
+</div>
 </Callout>
 
 ## Why We Want This
