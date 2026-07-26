@@ -255,6 +255,8 @@ public class RobotContainer extends ControllerBindings {
       autoChooser.addOption("Comp-LeftSotmMidfieldDoublepass",
           new PathPlannerAuto("Comp-RightSotmMidfieldDoublepass", true));
 
+      autoChooser.addOption("Comp-GearheadsLeft", new PathPlannerAuto("Comp-GearheadsRight", true));
+
 
 
     } catch (Exception e) {
