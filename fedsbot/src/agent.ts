@@ -43,7 +43,7 @@ ${ui === 'chat' ? chatPrompt : discordPrompt}
 
 function getSessionOptions() {
   return {
-    model: 'claude-sonnet-4-6',
+    model: 'claude-sonnet-5',
     // `tools` restricts which tools the agent can use
     tools: ['Read', 'Glob', 'Grep', 'WebSearch', 'WebFetch', 'Bash', 'Task'],
     // `allowedTools` auto-approves them so they don't hang waiting for permission
