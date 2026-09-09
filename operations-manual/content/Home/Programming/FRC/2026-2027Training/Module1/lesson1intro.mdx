@@ -1,0 +1,593 @@
+**Time to seeing code: 0 min**
+
+**Time to writing code: 1 min**
+
+## Lesson 1: Your First Java Program
+
+---
+
+## Welcome!
+
+Welcome to your first Java lesson! By the end of this lesson you'll understand:
+
+* What a **class** is
+* The difference between **ints**, **doubles**, and **strings**
+* How to create variables
+* Why Java sometimes refuses to compile your code
+* How to build and print your own "ID Card"
+
+Don't worry if you've never programmed before. We'll intentionally break things along the way—that's one of the best ways to learn.
+
+---
+
+## Your First Java Program
+
+For this lesson, we are going to use an online compiler called **Programiz**.
+
+Navigate to it at this link: [Online Java Compiler - Programiz](https://www.programiz.com/java-programming/online-compiler/)
+
+Copy the following code exactly into your editor.
+
+```java
+public class Main {
+
+    public static void main(String[] args) {
+
+        System.out.println(0);
+
+    }
+
+}
+```
+
+Run the program.
+
+You should see:
+
+```text
+0
+```
+
+Congratulations! You just wrote and ran your first Java program.
+
+---
+
+## Let's Break It
+
+Now move the `main` method **outside** of the `Main` class.
+
+Your code should now look something like this:
+
+```java
+public class Main {
+
+}
+
+public static void main(String[] args) {
+
+    System.out.println(0);
+
+}
+```
+
+Try compiling it.
+
+You should get several errors.
+
+Don't worry about reading every error message just yet. Instead, ask yourself:
+
+> **What changed?**
+
+The only thing we changed was moving the method outside of the class.
+
+You probably don’t know what methods or classes are yet - **That is Okay!** Next, you are going to learn how to identify a class and a method.
+
+---
+
+## Classes Are Containers
+
+Notice that this opening brace:
+
+```java
+public class Main {
+```
+
+has a matching closing brace.
+
+Everything between those braces belongs to the **Main class**.
+
+Think of a class as a container.
+
+For now, **all of the code that you write must live inside a class.**
+
+If Java finds code floating around outside of a class, it doesn't know what to do with it, so it reports errors.
+
+We'll learn much more about classes later, but for now just remember:
+
+> **A class is a container that holds your code.**
+
+---
+
+## The main Method
+
+Now you know what the class is. That other code that looks like:
+
+```java
+public static void main(String[] args) {
+
+    System.out.println(0);
+
+}
+```
+
+is called the **main method**.
+
+The line inside, `System.out.println(0);`, is **not** a part of the method itself; its code is *inside* the method.
+
+Methods are contained using curly bracket pairs. In the above example, you can see the beginning bracket next to `(String[] args)` and the ending bracket down below the `println` statement.
+
+For the rest of this lesson, you will be writing all of your code inside the main method.
+
+Move the `main` method back where it belongs before continuing.
+
+---
+
+## Java Has Different Types of Data
+
+Let's experiment with different kinds of values.
+
+Replace the `0` inside `println()` with each of these values.
+
+```java
+System.out.println(5);
+```
+
+Compile and run.
+
+Now try:
+
+```java
+System.out.println(5.2);
+```
+
+Compile and run.
+
+Now try:
+
+```java
+System.out.println(ONE);
+```
+
+Compile.
+
+What happened?
+
+Java reports an error.
+
+Why?
+
+Because **ONE** is not a number, and it isn't a string either.
+
+Now try:
+
+```java
+System.out.println("ONE");
+```
+
+Notice that it works.
+
+The quotation marks completely change the meaning.
+
+Anything inside quotation marks is called a **String**.
+
+Strings represent text.
+
+Examples:
+
+```text
+"Hello"
+"Programming"
+"FRC Team 201"
+"123"
+```
+
+Even though `"123"` looks like a number, Java treats it as text because it is inside quotation marks.
+
+---
+
+## Let's See How Different Types Behave
+
+Try replacing the value inside `println()` with each of the following.
+
+Before you run each one, **predict what you think will happen.**
+
+```java
+5 + 5
+```
+
+```java
+5.0 + 2.5
+```
+
+```java
+5 + 2.5
+```
+
+```java
+5 / 2.0
+```
+
+```java
+5.0 / 2
+```
+
+```java
+5 / 2
+```
+
+Notice something interesting?
+
+When both numbers are integers, Java performs **integer division**, meaning the decimal portion is thrown away.
+
+Now try:
+
+```java
+5 * 5
+```
+
+Next:
+
+```java
+5 * "Hello"
+```
+
+Finally:
+
+```java
+5.0 * "Hello"
+```
+
+What happened?
+
+Some operations simply don't make sense.
+
+Java won't let you multiply text by a number.
+
+Now try:
+
+```java
+"Hello" + 5
+```
+
+Then:
+
+```java
+"Hello" + " World"
+```
+
+Notice that using `+` with strings joins them together instead of adding numbers.
+
+This is called **concatenation**.
+
+---
+
+## Checkpoint
+
+At this point you should understand:
+
+* Java has many different data types.
+* Different types are used for different purposes.
+* Not every operation works with every type.
+
+---
+
+## Creating Variables
+
+So far we've been typing values directly into `println()`.
+
+That's useful, but real programs store information in **variables**.
+
+Before we create one, look closely at this line:
+
+```java
+System.out.println(0);
+```
+
+Remove the semicolon.
+
+Compile.
+
+Java reports an error.
+
+Put the semicolon back.
+
+Now look at this line:
+
+```java
+public static void main(String[] args) {
+```
+
+Notice that **there is no semicolon**.
+
+The closing brace also doesn't have one.
+
+So what's the rule?
+
+Most Java statements end with a semicolon.
+
+Things that introduce a block of code, like classes and methods, use braces `{}` instead of semicolons.
+
+We'll learn much more about methods later.
+
+---
+
+## Variables in Real Life
+
+Variables are one of the most important aspects of any programming language - especially when we write robot code in Java.
+
+Imagine writing math.
+
+```text
+x = 25
+y = 16.4
+```
+
+Java is very similar.
+
+You already know half of the formula.
+
+Every variable has:
+
+* a name
+* an equals sign
+* a value
+
+Java simply adds two more pieces:
+
+* the type
+* the semicolon
+
+The complete formula is:
+
+```text
+type name = value;
+```
+
+The type tells Java what kind of information you intend to store.
+
+---
+
+## Your First Variable
+
+Create an integer variable within your main method.
+
+```java
+int myInt = 1;
+```
+
+Here you can see the formula in action.
+
+* Our type is `int` - this is short for integer. This is a basic variable type, but is used even as far as advanced robot programming.
+* The name is `myInt`. There is something **important** to notice here. See that the first letter of the second word in the variable name is capitalized. This pattern is called camel case, and it’s used almost every time we make a variable. If your variable is multiple words long, **Capitalize each one after the first.**
+* Finally, we have the equal sign, value, and semicolon. Notice that the value is `1`, an integer. Variable type and value type must match when creating variables.
+
+Compile.
+
+No errors.
+
+Now create a double.
+
+```java
+double myDouble = 1.1;
+```
+
+Compile again.
+
+Still no errors.
+
+Now try this instead.
+
+```java
+int myInt = 1.1;
+```
+
+Compile.
+
+Java reports an error.
+
+Why?
+
+Because an integer cannot store decimal values.
+
+Now try the opposite.
+
+```java
+double myDouble = 1;
+```
+
+Before compiling...
+
+**Predict what will happen.**
+
+Compile.
+
+No errors!
+
+Why?
+
+Think of an integer as a simpler version of a double.
+
+Every integer can be written as a decimal.
+
+```text
+1
+```
+
+becomes
+
+```text
+1.0
+```
+
+The compiler can automatically make that conversion.
+
+But the reverse isn't always possible.
+
+```text
+1.7
+```
+
+can't automatically become an integer because Java doesn't know whether you wanted
+
+```text
+1
+```
+
+or
+
+```text
+2
+```
+
+So Java refuses to guess.
+
+---
+
+## Checkpoint
+
+You should now understand:
+
+* the formula for creating variables
+* why every variable has a type
+* the difference between ints and doubles
+
+---
+
+## Your First Programming Challenge (L1 P0)
+
+It's time to make your own program.
+
+Create an "ID Card."
+
+Make these variables:
+
+* A **String** containing your name.
+* A **double** containing your age. Use the decimal portion to represent part of the year.
+
+Example:
+
+```text
+16.5
+```
+
+* A made-up **int** representing your student ID.
+* Finally, print all three pieces of information.
+
+Your output might look something like:
+
+```text
+Name: Alex
+Age: 16.5
+Student ID: 48291
+```
+
+There are many correct ways to print this.
+
+Experiment! Everything you need has been taught in this lesson. However, if you need more help, feel free to look at documentation online, or ask a more knowledgeable programmer if you are really stuck.
+
+---
+
+## Lesson Complete
+
+If your program:
+
+* Compiles without errors
+* Prints all three pieces of information correctly
+
+then you've completed Lesson 1!
+
+---
+
+## Above and Beyond
+
+Ready for something extra?
+
+Let's learn one more data type.
+
+## Booleans
+
+A boolean can only store one of two values.
+
+```text
+true
+```
+
+or
+
+```text
+false
+```
+
+Create a boolean variable.
+
+```java
+boolean isInHighSchool = true;
+```
+
+Compile.
+
+Now change it to:
+
+```java
+boolean isInHighSchool = false;
+```
+
+Compile again.
+
+Still works.
+
+Now try replacing it with something else.
+
+```java
+boolean isInHighSchool = maybe;
+```
+
+Compile.
+
+Java reports an error.
+
+A boolean can only ever be one of two values:
+
+* `true`
+* `false`
+
+Nothing else.
+
+---
+
+## Final Challenge
+
+Go back to your ID Card.
+
+Add one more variable.
+
+```java
+boolean isInHighSchool = true;
+```
+
+Print it along with everything else.
+
+---
+
+## Turn It In
+
+When you're finished, send your entire `Main` class by email to [feds.programming@gmail.com](mailto:feds.programming@gmail.com) - title the subject: **NAME - ID Card FEDS**. Replace `NAME` with your first name.
+
+Include:
+
+* Your `Main` class
+* Your variables
+* Your printed ID Card
+* Your boolean variable
+
+If your code compiles without errors and prints everything correctly, you've successfully completed Lesson 1!

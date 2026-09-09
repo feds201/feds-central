@@ -1,0 +1,158 @@
+## Strings → Java Switch
+
+Complete the W3Schools lessons from [**Strings**](https://www.w3schools.com/java/java_strings.asp) through [**Java Switch**](https://www.w3schools.com/java/java_switch.asp).
+
+**Reminder:** Make sure you put **all code challenge snippets** in the doc under your name tab.
+
+---
+
+## Real Code Example
+
+Take a look at this code from our 2026 robot:
+
+```java
+switch (currentState) {
+    case RUN:
+        if (timer.hasElapsed(indexingConstants.forwardTime)) {
+            setState(spindexer_state.REVERSE);
+        }
+        break;
+
+    case REVERSE:
+        if (timer.hasElapsed(indexingConstants.reverseTime)) {
+            setState(spindexer_state.RUN);
+        }
+        break;
+}
+```
+
+Here, there is a whole lot of stuff that you see. Not a lot of it is important, but here is what you should notice.
+
+First, notice the **if statements** used in the code. You learned about these in the W3Schools lesson, and you know that the code in the parentheses directly next to the `if` keyword must represent a boolean value.
+
+Right now, `timer.hasElapsed(indexingConstants.forwardTime)` probably looks a little scary, but know that it represents a boolean value through something called a **method**. If you stick along, you will learn what that means later.
+
+Second, there is a **switch statement** here. In your lesson, you likely saw a switch statement using something like an `int`:
+
+```java
+int day = 4;
+
+switch (day) {
+    case 1:
+        // ...
+        break;
+
+    case 2:
+        // ...
+        break;
+
+    // Etcetera...
+}
+```
+
+In this code, we are using something called an **enum**. For now, think of an enum as a way to represent a group of constant values for use in representing a fixed number of possibilities.
+
+You will learn exactly what it does later in the training.
+
+---
+
+## Exercise
+
+## Project – Elevator State Interpreter (Switch Statements)
+
+### Objective
+
+In real robot code we use enums, but to practice, you will use **switch statements with Strings** by creating a simple robot elevator state interpreter.
+
+Imagine you are programming a robot elevator. Another part of the robot code tells your program what position the elevator should move to by setting a **String** variable.
+
+The possible states are:
+
+* `"down"`
+* `"level1"`
+* `"level2"`
+* `"level3"`
+* `"up"`
+
+Your job is to use a **switch statement** to determine which state is active and print a message to the console.
+
+---
+
+## Starter Code
+
+```java
+public class Main {
+    public static void main(String[] args) {
+
+        String elevatorState = "level2";
+
+        // Write your switch statement here
+
+    }
+}
+```
+
+---
+
+## Requirements
+
+* Create a **switch statement** that checks the value of `elevatorState`.
+* Print the following messages:
+
+| **State**  | **Output**              |
+| ---------- | ----------------------- |
+| `"down"`   | Elevator is DOWN.       |
+| `"level1"` | Elevator is at LEVEL 1. |
+| `"level2"` | Elevator is at LEVEL 2. |
+| `"level3"` | Elevator is at LEVEL 3. |
+| `"up"`     | Elevator is FULLY UP.   |
+
+* Include a `default` case that prints:
+
+  ```text
+  Unknown elevator state!
+  ```
+* Remember to include a `break;` after each case.
+
+---
+
+## Test Your Program
+
+Try changing the value of `elevatorState` to each of the following:
+
+```text
+"down"
+"level1"
+"level2"
+"level3"
+"up"
+"banana"
+```
+
+Verify that your program prints the correct output each time.
+
+---
+
+## Challenge (Optional)
+
+Instead of simply printing the state, print a short description of what the robot is doing.
+
+Example outputs:
+
+```text
+Elevator is DOWN. Ready to intake.
+```
+
+```text
+Elevator is at LEVEL 2. Preparing to score.
+```
+
+```text
+Elevator is FULLY UP. Maximum height reached.
+```
+
+```text
+Unknown elevator state!
+```
+
+When you're done and your code works with no errors, add it to your doc!
