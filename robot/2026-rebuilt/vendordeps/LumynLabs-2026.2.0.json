@@ -1,25 +1,24 @@
 {
-    "fileName": "LumynLabs-2026.2.0.json",
+    "fileName": "LumynLabs.json",
     "name": "LumynLabs",
-    "version": "2026.2.0",
+    "version": "2026.2.1-beta.1",
     "frcYear": "2026",
     "uuid": "eebd34fc-a6d3-48a2-a286-ac1cec59ab89",
     "mavenUrls": [
-        "https://packages.lumynlabs.com/repo"
+        "https://lumyn-labs.github.io/packages-staging/repo"
     ],
-    "jsonUrl": "https://packages.lumynlabs.com/LumynLabs.json",
     "javaDependencies": [
         {
             "groupId": "com.lumynlabs.frc",
             "artifactId": "LumynLabs-java",
-            "version": "2026.2.0"
+            "version": "2026.2.1-beta.1"
         }
     ],
     "jniDependencies": [
         {
             "groupId": "com.lumynlabs.frc",
             "artifactId": "LumynLabs-driver",
-            "version": "2026.2.0",
+            "version": "2026.2.1-beta.1",
             "skipInvalidPlatforms": true,
             "isJar": false,
             "validPlatforms": [
@@ -36,7 +35,7 @@
         {
             "groupId": "com.lumynlabs.frc",
             "artifactId": "LumynLabs-cpp",
-            "version": "2026.2.0",
+            "version": "2026.2.1-beta.1",
             "libName": "Lumyn",
             "headerClassifier": "headers",
             "sharedLibrary": true,
@@ -53,7 +52,7 @@
         {
             "groupId": "com.lumynlabs.frc",
             "artifactId": "LumynLabs-driver",
-            "version": "2026.2.0",
+            "version": "2026.2.1-beta.1",
             "libName": "LumynDriver",
             "headerClassifier": "headers",
             "sharedLibrary": true,
@@ -67,5 +66,6 @@
                 "osxuniversal"
             ]
         }
-    ]
+    ],
+    "jsonUrl": "https://lumyn-labs.github.io/packages-staging/LumynLabs-2026.2.1-beta.1.json"
 }
