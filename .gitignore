@@ -311,3 +311,9 @@ expo-env.d.ts
 
 *.pak
 *.plugin_symlinks
+
+
+# Ignore coding agent folders
+.claude/
+.codex/
+.gemini/

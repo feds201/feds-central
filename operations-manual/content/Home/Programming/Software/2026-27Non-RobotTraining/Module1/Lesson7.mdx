@@ -1,0 +1,610 @@
+# Lesson 7
+
+## What comes next?
+
+We will now go into one of the hardest parts to learn in basic Dart. Some topics may be confusing, but I am sure you guys can get through them.
+
+If there are any questions along the way, ask David or any veteran members for clarification.
+
+# Step 5: Conditionals
+
+## What is a conditional?
+
+An easy way to think about a conditional is that the program will run based on whether a question is **true or false**.
+
+A real-life example might be:
+
+**Is it raining 🌧️?** If yes, bring an umbrella ☂️. If not, then do not bring an umbrella.
+
+Do you notice the word **if** being bolded?
+
+That is because `if` is the code we will use.
+
+This is an example of a conditional statement:
+
+```dart
+void main() {
+  bool isRaining = true;
+
+  if (isRaining) {
+    print('Bring an umbrella');
+  } else {
+    print('Do not bring an umbrella');
+  }
+}
+```
+
+First, run the code.
+
+Let’s go line by line.
+
+First, we have a boolean variable. `bool` is how we represent booleans.
+
+Then, we have:
+
+```dart
+if (isRaining) {}
+```
+
+Like the main function, whatever is inside the curly braces `{}` is inside the `if` statement.
+
+The code inside the curly braces will run only if what is inside the parentheses `()` results in a boolean value of `true`.
+
+In this case, `isRaining` is `true`, so the `if` statement runs and prints:
+
+```text
+Bring an umbrella
+```
+
+Now, we have:
+
+```dart
+else {}
+```
+
+This will run if the condition in the `if` statement is `false`.
+
+### Try it yourself
+
+Change the value of the variable `isRaining` from `true` to `false`.
+
+Now you should notice that the program prints:
+
+```text
+Do not bring an umbrella
+```
+
+# Multiple Conditions
+
+What if there are multiple conditions?
+
+For example, a real-life situation could be an elevator where:
+
+- If the floor level is `1`, you get on the elevator.
+- If you are at floor `2`, you do not get off.
+- If you are at floor `3`, you get off the elevator.
+
+Let’s see what this looks like in code:
+
+```dart
+void main() {
+  int floor = 1;
+
+  if (floor == 1) {
+    print("Get on the elevator");
+  } else if (floor == 2) {
+    print("Do not get off the elevator");
+  } else {
+    print("Get off the elevator!");
+  }
+}
+```
+
+Try changing the value of `floor` from `1` to `2` and then to `3`.
+
+Everything seems familiar, but there are some differences from before.
+
+First, you will notice:
+
+```dart
+floor == 1
+```
+
+What could that mean?
+
+In Dart, if you use **double equal signs `==`**, you are comparing the first value to the second value.
+
+In this case, you are comparing the value of the variable `floor` to `1`.
+
+> **Make sure you know the difference between `=` and `==`.**
+>
+> A single equal sign `=` assigns a value to a variable.
+>
+> A double equal sign `==` compares two values.
+
+You will also notice the `else if`.
+
+This is another condition.
+
+If the first `if` statement results in `false`, the `else if` statement will be checked. If that also results in `false`, the `else` statement will run.
+
+You can have as many `else if` statements as you need.
+
+# Multiple Conditions That Must Be True
+
+What do you do when you need **multiple conditions to be true**?
+
+A real-life example might be:
+
+There is a roller coaster, but you must be over `150 cm` **and** over `13 years old` to ride it.
+
+Let’s see how this looks in code:
+
+```dart
+void main() {
+  int age = 15;
+  int height = 160;
+
+  if (age >= 13 && height >= 150) {
+    print("You can ride the roller coaster");
+  } else {
+    print("You cannot get on the roller coaster");
+  }
+}
+```
+
+Try running this and see what you get as the result.
+
+Now, change the values of the variables `age` and `height` to something else that would print a different result.
+
+Now let’s break it down.
+
+Whenever you want the `if` statement to run only when **2 or more conditions are met**, use double ampersands `&&`.
+
+For example, if the rider must also be under `250` pounds, you could write:
+
+```dart
+age >= 13 && height >= 150 && weight < 250
+```
+
+You would also need to create a new variable called `weight`.
+
+# When Only One of Two Conditions Needs to Be True
+
+How about when you only want **1 of 2 things** to be true?
+
+An example of this could be:
+
+If either Oreos or Chips Ahoy are in your snack cabinet, you will drink milk.
+
+Let’s see how it looks in code:
+
+```dart
+void main() {
+  String snack1 = "chips ahoy";
+
+  if (snack1 == "oreo" || snack1 == "chips ahoy") {
+    print("I will drink milk");
+  } else {
+    print("I will not drink milk");
+  }
+}
+```
+
+Everything seems the same as before, but instead of using double ampersands, we use double pipes `||`.
+
+The double pipes mean **OR**.
+
+This means that if either condition is `true`, the `if` statement will run.
+
+# Step 6: Loops
+
+There are only 2 more big concepts you will need to know before moving on to **Module 2 of Non-Robot Programming Training**!
+
+What we will learn next is called **loops**.
+
+What are loops?
+
+Well, it's a loop 😂.
+
+You are going to write code that will continuously repeat, or **loop through**, until you want it to stop.
+
+There are mainly 2 types of loops we will use:
+
+- `for` loops
+- `while` loops
+
+## For Loops
+
+Let’s learn about `for` loops first.
+
+Try this code:
+
+```dart
+void main() {
+  for (int i = 0; i < 10; i++) {
+    print(i);
+  }
+}
+```
+
+What do you get as the output?
+
+You should see a series of numbers being printed from `0-9`.
+
+Let’s see what is happening.
+
+We first wrote:
+
+```dart
+for () {}
+```
+
+Inside the parentheses `()`, we created an integer variable `i` and set it to `0`.
+
+Then, after a semicolon, we wrote that we want to run this loop while:
+
+```dart
+i < 10
+```
+
+Then, after another semicolon, we said we want to increment `i` by `1`.
+
+Finally, inside the curly braces `{}`, we printed `i`.
+
+So, the three parts inside a `for` loop are:
+
+```dart
+for (starting value; condition; increment)
+```
+
+In our example:
+
+```dart
+for (int i = 0; i < 10; i++)
+```
+
+- `int i = 0` → where the loop starts
+- `i < 10` → how long the loop runs
+- `i++` → how much `i` increases each time
+
+### Try changing the increment
+
+Try this code, but before running it, predict what the output will be and compare it to the actual output:
+
+```dart
+void main() {
+  for (int i = 0; i < 10; i = i + 2) {
+    print(i);
+  }
+}
+```
+
+Notice that instead of increasing by `1`, we increased by `2`, so we only got even numbers as outputs.
+
+But why did it not print `10`?
+
+That is because the loop will run while `i` is **less than `10`**.
+
+When `i` reaches `10`, the condition `i < 10` becomes false, so the loop stops.
+
+But when we do this:
+
+```dart
+void main() {
+  for (int i = 0; i <= 10; i = i + 2) {
+    print(i);
+  }
+}
+```
+
+The program also prints `10` because the loop will run while `i` is **less than or equal to `10`**.
+
+# While Loops
+
+Now let’s look at `while` loops.
+
+Here is an example of a `while` loop:
+
+```dart
+void main() {
+  int i = 0;
+
+  while (i < 10) {
+    print(i);
+    i++;
+  }
+}
+```
+
+Try running this program.
+
+What is the result?
+
+It is the same as the first `for` loop we ran.
+
+So what is different?
+
+We ran what is called a **while loop**.
+
+Inside the parentheses for this kind of loop, you are only going to put the **condition for when the loop should continue**.
+
+Instead of putting the incrementation inside the parentheses, you put it inside the curly braces.
+
+# Putting Everything Together
+
+Before moving on, look at this code and predict the outcome.
+
+This code includes:
+
+- A boolean variable
+- An `if` statement
+- A `while` loop
+
+```dart
+void main() {
+  bool isSeven = false;
+  int i = 0;
+
+  while (isSeven == false) {
+    if (i == 7) {
+      print("Number is 7!");
+      isSeven = true;
+    } else {
+      print("Number is not 7");
+      i++;
+    }
+  }
+}
+```
+
+Try predicting what the result will be and then run the code.
+
+In this example, we have a boolean variable called `isSeven`, and it starts as `false`.
+
+We want it to become `true` when the value of `i` is `7`.
+
+Then, we have a `while` loop that will continuously run while `isSeven` is `false`.
+
+We have an `if` statement inside the `while` loop to check if the value of `i` is `7`.
+
+If it is not `7`, we add `1` to `i` every time.
+
+Once the value of `i` is `7`, the boolean variable `isSeven` becomes `true`, which ultimately ends the `while` loop.
+
+# Step 7: Functions
+
+Finally, let’s learn about **functions**.
+
+Before we explain what they are and what they do, let’s look at the code first:
+
+```dart
+void main() {
+  add(2, 3);
+  print(add2(2, 4));
+}
+
+void add(int a, int b) {
+  print(a + b);
+}
+
+int add2(int a, int b) {
+  return a + b;
+}
+```
+
+You can see that we have code outside the main function.
+
+What are they doing outside of it?
+
+Like the main function, these functions contain code that can be run.
+
+However, these functions will not run unless you **call them** inside the main function.
+
+That is why the main function is so important.
+
+When you press **Run** in your IDE, the program will first go into the main function and start from there.
+
+Inside the main function, it finds:
+
+```dart
+add(2, 3);
+```
+
+So now it will go and find the `add` function outside the main function.
+
+The program finds:
+
+```dart
+void add(int a, int b) {
+  print(a + b);
+}
+```
+
+The `add` function is a `void` function, which means it does not return a value.
+
+Inside the parentheses, there are 2 variables:
+
+```dart
+int a
+int b
+```
+
+These are called **parameters**.
+
+Inside the function, these values are added together and printed.
+
+## Parameters vs. Arguments
+
+Let’s go back to the function call:
+
+```dart
+add(2, 3);
+```
+
+The 2 numbers inside the parentheses are the values that will be given to `a` and `b`.
+
+These values are called **arguments**.
+
+So:
+
+```dart
+add(2, 3);
+```
+
+means:
+
+- `a = 2`
+- `b = 3`
+
+The function then adds them together and prints `5`.
+
+## Returning a Value
+
+Let’s look at the code again:
+
+```dart
+print(add2(2, 4));
+```
+
+Why is this function call inside a `print()` statement while the other one isn't?
+
+Let’s go to where the function is written:
+
+```dart
+int add2(int a, int b) {
+  return a + b;
+}
+```
+
+The `add2` function is not a `void` function.
+
+Instead, it is an `int` function.
+
+That means the function needs to **return an `int` value** back to the main function.
+
+The function returns:
+
+```dart
+a + b
+```
+
+Since `2 + 4 = 6`, the function returns `6`.
+
+Then, the `print()` statement prints that returned value.
+
+# Dart Coding Challenge: Amusement Park Ride
+
+Now that we’ve learned the basics of Dart, let’s test your knowledge with a small coding challenge.
+
+## Challenge
+
+Create a simple program that determines whether someone can ride a roller coaster at an amusement park.
+
+### Requirements
+
+Your code must have these variables in the `main()` function:
+
+- An `int` variable called `age`.
+- A `double` variable called `height`.
+- A `bool` variable called `isRaining`.
+- A `String` variable called `name`.
+- An `int` variable called `time` and set it to `13`, representing 1:00 PM.
+
+## Roller Coaster Function
+
+Create a **boolean function** called `rollerCoaster`.
+
+The function should have these four parameters:
+
+- An `int` for age
+- A `double` for height
+- A `bool` for whether it is raining
+- A `String` for the person's name
+
+Inside the function:
+
+- Check if the person is `13` or older.
+- Check if the person is `160 cm` or taller.
+- Check that it is **not raining**.
+- If all three conditions are true, print a message using their name saying they can ride the roller coaster and return `true`.
+- Otherwise, print a message using their name saying they cannot ride the roller coaster and return `false`.
+
+## Calling the Function
+
+In `main()`:
+
+- Call the `rollerCoaster` function using the variables you created.
+- If the function returns `true`, add `2` to `time` and print the new time.
+- If the function returns `false`, print the original time without changing it.
+
+## Example
+
+If:
+
+```dart
+int age = 15;
+double height = 173.2;
+bool isRaining = false;
+String name = "David";
+int time = 13;
+```
+
+The person should be allowed to ride, and the time should change from `13:00` to `15:00`.
+
+### Once done, take a screenshot of the code and the output results and send it to David through Discord or show it to him at a meeting.
+
+## Example Output
+
+Variables:
+
+```dart
+int age = 15;
+double height = 173.2;
+bool isRaining = false;
+String name = "David";
+```
+
+Output:
+
+```text
+David can ride the roller coaster!
+Rode the roller coaster so time is now 15:00
+```
+
+{
+//example code if needed
+/* ## Example Code
+
+```dart
+void main() {
+  int age = 15;
+  double height = 173.2;
+  bool isRaining = false;
+  String name = "David";
+  int time = 13;
+
+  if (rollerCoaster(age, height, isRaining, name) == true) {
+    time += 2;
+    print("Rode the roller coaster so time is now " +
+        time.toString() + ":00");
+  } else {
+    print("Couldn't ride the roller coaster so time is still " +
+        time.toString() + ":00");
+  }
+}
+
+bool rollerCoaster(int a, double h, bool i, String n) {
+  if (a >= 13 && h >= 160 && i == false) {
+    print(n + " can ride the roller coaster!");
+    return true;
+  } else {
+    print(n + " cannot ride the roller coaster");
+    return false;
+  }
+}
+``` */}
+
+# Congrats!
+
+Now you are ready to move onto **Module 2 of Non-Robot Programming!**
