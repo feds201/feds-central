@@ -8,6 +8,25 @@ import 'tba_service.dart';
 import 'statbotics_service.dart';
 import 'csv_loader.dart';
 
+enum SyncTaskStatus { loading, done, fail }
+
+/// Snapshot of all in-flight sync tasks. Iteration order = launch order.
+class SyncProgress {
+  SyncProgress(this.statuses);
+  final Map<String, SyncTaskStatus> statuses;
+
+  int get total => statuses.length;
+  int get finished => statuses.values
+      .where((s) => s == SyncTaskStatus.done || s == SyncTaskStatus.fail)
+      .length;
+
+  /// "2/4 — neon: done, tba opr: loading, tba matches: fail, statbotics: done"
+  String get summary {
+    final parts = statuses.entries.map((e) => '${e.key}: ${e.value.name}');
+    return '$finished/$total — ${parts.join(', ')}';
+  }
+}
+
 /// Central state object exposed via Provider.
 class DataService extends ChangeNotifier {
   // ── Configuration ──────────────────────────────────────────────────
@@ -148,23 +167,22 @@ class DataService extends ChangeNotifier {
 
   // ── Fetch from Neon + TBA + Statbotics ─────────────────────────────
 
-  Future<void> fetchAll() async {
+  Future<void> fetchAll({void Function(SyncProgress)? onProgress}) async {
     _errorDismissTimer?.cancel();
     loading = true;
     error = null;
     notifyListeners();
 
-    try {
-      final neon = NeonService(_neonConnString);
-      final tba = TbaService(_tbaApiKey);
-      final statbotics = StatboticsService();
+    final neon = NeonService(_neonConnString);
+    final tba = TbaService(_tbaApiKey);
+    final statbotics = StatboticsService();
 
-      final errors = <String>[];
+    final errors = <String>[];
 
-      try {
+    final tasks = <String, Future<void> Function()>{
+      'neon': () async {
         final rows = await neon.fetchAll(_tableName);
         final cols = await neon.columns(_tableName);
-
         final next = <int, List<Map<String, dynamic>>>{};
         for (final row in rows) {
           final raw = row['team'];
@@ -172,112 +190,87 @@ class DataService extends ChangeNotifier {
           if (teamNum == null) continue;
           next.putIfAbsent(teamNum, () => []).add(row);
         }
-
         if (next.isNotEmpty) {
           scoutingByTeam = next;
           scoutingColumns = cols;
           _dataSource = 'neon';
         }
-      } catch (e) {
-        errors.add('Neon: $e');
-      }
-
-      try {
+      },
+      'tba opr': () async {
         final opr = await tba.fetchOprs(_eventKey);
         if (opr.isNotEmpty) oprByTeam = opr;
-      } catch (e) {
-        errors.add('TBA OPR: $e');
-      }
-
-      try {
-        final rawMatches = await tba.fetchMatches(_eventKey);
-        final parsed = parseMatches(rawMatches, ourTeamKey: 'frc201');
+      },
+      'tba matches': () async {
+        final raw = await tba.fetchMatches(_eventKey);
+        final parsed = parseMatches(raw, ourTeamKey: 'frc201');
         if (parsed.isNotEmpty) matchEntries = parsed;
-      } catch (e) {
-        errors.add('TBA matches: $e');
-      }
-
-      try {
-        final rawAlliances = await tba.fetchPlayoffAlliances(_eventKey);
-        final parsed = parsePlayoffAlliances(rawAlliances);
+      },
+      'tba alliances': () async {
+        final raw = await tba.fetchPlayoffAlliances(_eventKey);
+        final parsed = parsePlayoffAlliances(raw);
         if (parsed.isNotEmpty) playoffAlliances = parsed;
-      } catch (e) {
-        errors.add('TBA alliances: $e');
-      }
-
-      try {
+      },
+      'tba names': () async {
         final names = await tba.fetchTeamNames(_eventKey);
         if (names.isNotEmpty) teamNames = names;
-      } catch (e) {
-        errors.add('TBA team names: $e');
-      }
-
-      try {
+      },
+      'statbotics': () async {
         final epa = await statbotics.fetchEpas(_eventKey);
         if (epa.isNotEmpty) epaByTeam = epa;
-      } catch (e) {
-        errors.add('Statbotics: $e');
-      }
+      },
+    };
 
-      if (!_applyOfflineErrorIfAllOffline(errors)) {
-        error = errors.isEmpty ? null : errors.join('\n');
-      }
-    } catch (e) {
-      error = e.toString();
-    } finally {
-      loading = false;
-      lastUpdated = DateTime.now();
-      notifyListeners();
+    await _runParallel(tasks, errors, onProgress);
+
+    if (!_applyOfflineErrorIfAllOffline(errors)) {
+      error = errors.isEmpty ? null : errors.join('\n');
     }
+
+    loading = false;
+    lastUpdated = DateTime.now();
+    notifyListeners();
   }
 
   // ── Fetch TBA/Statbotics only (for CSV mode) ──────────────────────
 
-  Future<void> fetchExternalOnly() async {
+  Future<void> fetchExternalOnly({
+    void Function(SyncProgress)? onProgress,
+  }) async {
     _errorDismissTimer?.cancel();
     loading = true;
     notifyListeners();
 
-    final errors = <String>[];
     final tba = TbaService(_tbaApiKey);
     final statbotics = StatboticsService();
 
-    try {
-      final opr = await tba.fetchOprs(_eventKey);
-      if (opr.isNotEmpty) oprByTeam = opr;
-    } catch (e) {
-      errors.add('TBA OPR: $e');
-    }
+    final errors = <String>[];
 
-    try {
-      final rawMatches = await tba.fetchMatches(_eventKey);
-      final parsed = parseMatches(rawMatches, ourTeamKey: 'frc201');
-      if (parsed.isNotEmpty) matchEntries = parsed;
-    } catch (e) {
-      errors.add('TBA matches: $e');
-    }
+    final tasks = <String, Future<void> Function()>{
+      'tba opr': () async {
+        final opr = await tba.fetchOprs(_eventKey);
+        if (opr.isNotEmpty) oprByTeam = opr;
+      },
+      'tba matches': () async {
+        final raw = await tba.fetchMatches(_eventKey);
+        final parsed = parseMatches(raw, ourTeamKey: 'frc201');
+        if (parsed.isNotEmpty) matchEntries = parsed;
+      },
+      'tba alliances': () async {
+        final raw = await tba.fetchPlayoffAlliances(_eventKey);
+        final parsed = parsePlayoffAlliances(raw);
+        if (parsed.isNotEmpty) playoffAlliances = parsed;
+      },
+      'tba names': () async {
+        final names = await tba.fetchTeamNames(_eventKey);
+        if (names.isNotEmpty) teamNames = names;
+      },
+      'statbotics': () async {
+        final epa = await statbotics.fetchEpas(_eventKey);
+        if (epa.isNotEmpty) epaByTeam = epa;
+      },
+    };
 
-    try {
-      final rawAlliances = await tba.fetchPlayoffAlliances(_eventKey);
-      final parsed = parsePlayoffAlliances(rawAlliances);
-      if (parsed.isNotEmpty) playoffAlliances = parsed;
-    } catch (e) {
-      errors.add('TBA alliances: $e');
-    }
-
-    try {
-      final names = await tba.fetchTeamNames(_eventKey);
-      if (names.isNotEmpty) teamNames = names;
-    } catch (e) {
-      errors.add('TBA team names: $e');
-    }
-
-    try {
-      final epa = await statbotics.fetchEpas(_eventKey);
-      if (epa.isNotEmpty) epaByTeam = epa;
-    } catch (e) {
-      errors.add('Statbotics: $e');
-    }
+    await _runParallel(tasks, errors, onProgress);
 
     if (errors.isNotEmpty) {
       if (!_applyOfflineErrorIfAllOffline(errors)) {
@@ -287,6 +280,36 @@ class DataService extends ChangeNotifier {
 
     loading = false;
     notifyListeners();
+  }
+
+  /// Launches every task in [tasks] simultaneously, emits a [SyncProgress]
+  /// snapshot when any task transitions, and accumulates failures into
+  /// [errors] as `"<key>: <exception>"`.
+  Future<void> _runParallel(
+    Map<String, Future<void> Function()> tasks,
+    List<String> errors,
+    void Function(SyncProgress)? onProgress,
+  ) async {
+    final statuses = <String, SyncTaskStatus>{
+      for (final k in tasks.keys) k: SyncTaskStatus.loading,
+    };
+
+    void emit() {
+      onProgress?.call(SyncProgress(Map.of(statuses)));
+    }
+
+    emit();
+
+    await Future.wait(tasks.entries.map((entry) async {
+      try {
+        await entry.value();
+        statuses[entry.key] = SyncTaskStatus.done;
+      } catch (e) {
+        statuses[entry.key] = SyncTaskStatus.fail;
+        errors.add('${entry.key}: $e');
+      }
+      emit();
+    }));
   }
 
   // ── Convenience ────────────────────────────────────────────────────

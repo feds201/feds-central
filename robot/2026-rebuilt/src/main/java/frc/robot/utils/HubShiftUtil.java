@@ -16,18 +16,11 @@ import lombok.Setter;
 
 public class HubShiftUtil {
   public enum ShiftEnum {
-    TRANSITION,
-    SHIFT1,
-    SHIFT2,
-    SHIFT3,
-    SHIFT4,
-    ENDGAME,
-    AUTO,
-    DISABLED;
+    TRANSITION, SHIFT1, SHIFT2, SHIFT3, SHIFT4, ENDGAME, AUTO, DISABLED;
   }
 
-  public record ShiftInfo(
-      ShiftEnum currentShift, double elapsedTime, double remainingTime, boolean active) {}
+  public record ShiftInfo(ShiftEnum currentShift, double elapsedTime, double remainingTime,
+      boolean active) {}
 
   private static Timer shiftTimer = new Timer();
   private static final ShiftEnum[] shiftsEnums = ShiftEnum.values();
@@ -41,7 +34,8 @@ public class HubShiftUtil {
   private static final boolean[] inactiveSchedule = {true, false, true, false, true, true};
   private static final double timeResetThreshold = 3.0;
   private static double shiftTimerOffset = 0.0;
-  @Setter private static Supplier<Optional<Boolean>> allianceWinOverride = () -> Optional.empty();
+  @Setter
+  private static Supplier<Optional<Boolean>> allianceWinOverride = () -> Optional.empty();
 
   public static Optional<Boolean> getAllianceWinOverride() {
     return allianceWinOverride.get();
@@ -53,8 +47,7 @@ public class HubShiftUtil {
     // Return override value
     var winOverride = getAllianceWinOverride();
     if (!winOverride.isEmpty()) {
-      return winOverride.get()
-          ? (alliance == Alliance.Blue ? Alliance.Red : Alliance.Blue)
+      return winOverride.get() ? (alliance == Alliance.Blue ? Alliance.Red : Alliance.Blue)
           : (alliance == Alliance.Blue ? Alliance.Blue : Alliance.Red);
     }
 
@@ -83,14 +76,13 @@ public class HubShiftUtil {
     boolean[] currentSchedule;
     Alliance startAlliance = getFirstActiveAlliance();
     currentSchedule =
-        startAlliance == DriverStation.getAlliance().orElse(Alliance.Blue)
-            ? activeSchedule
+        startAlliance == DriverStation.getAlliance().orElse(Alliance.Blue) ? activeSchedule
             : inactiveSchedule;
     return currentSchedule;
   }
 
-  private static ShiftInfo getShiftInfo(
-      boolean[] currentSchedule, double[] shiftStartTimes, double[] shiftEndTimes) {
+  private static ShiftInfo getShiftInfo(boolean[] currentSchedule, double[] shiftStartTimes,
+      double[] shiftEndTimes) {
     double timerValue = shiftTimer.get();
     double currentTime = timerValue - shiftTimerOffset;
     double stateTimeElapsed = currentTime;
@@ -106,8 +98,7 @@ public class HubShiftUtil {
       currentShift = ShiftEnum.AUTO;
     } else if (DriverStation.isEnabled()) {
       // Adjust the current offset if the time difference above the theshold
-      if (Math.abs(fieldTeleopTime - currentTime) >= timeResetThreshold
-          && fieldTeleopTime <= 135
+      if (Math.abs(fieldTeleopTime - currentTime) >= timeResetThreshold && fieldTeleopTime <= 135
           && DriverStation.isFMSAttached()) {
         shiftTimerOffset += currentTime - fieldTeleopTime;
         currentTime = timerValue + shiftTimerOffset;

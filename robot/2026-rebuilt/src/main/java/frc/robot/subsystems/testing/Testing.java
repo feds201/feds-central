@@ -6,23 +6,19 @@ package frc.robot.subsystems.testing;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 
-import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.feeder.Feeder.feeder_state;
-import frc.robot.subsystems.intake.IntakeSubsystem.RollerState;
 
 public class Testing extends SubsystemBase {
   /** Creates a new Terting. */
   private final TalonFX motor;
 
   public enum MotorState {
-    ON,
-    OFF
+    ON, OFF
   }
-  
+
   private MotorState currentMotorState = MotorState.OFF;
-    
+
   public void setState(MotorState targetState){
     switch (targetState) {
       case OFF -> {
@@ -32,8 +28,8 @@ public class Testing extends SubsystemBase {
         currentMotorState = MotorState.ON;
       }
     }
-    
-  } 
+
+  }
 
   public Testing() {
     motor = new TalonFX(42);
@@ -42,8 +38,8 @@ public class Testing extends SubsystemBase {
   public Command setStateCommand(MotorState state) {
     return runOnce(() -> setState(state));
   }
- 
-  public TalonFX getMotor(){
+
+  public TalonFX getMotor() {
     return motor;
   }
 

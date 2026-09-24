@@ -16,32 +16,48 @@
     },
     {
       "anchor": {
-        "x": 8.211920529801324,
-        "y": 4.579495033112582
+        "x": 8.183926453143537,
+        "y": 4.3093594306049825
       },
       "prevControl": {
-        "x": 8.524097682119205,
-        "y": 5.015091059602648
+        "x": 8.496103605461418,
+        "y": 4.744955457095049
       },
       "nextControl": {
-        "x": 8.06629079444432,
-        "y": 4.37629075121909
+        "x": 8.038296717786533,
+        "y": 4.1061551487114905
       },
       "isLocked": false,
       "linkedName": "FollowIntakeEnd1"
     },
     {
       "anchor": {
-        "x": 6.1863990066225165,
-        "y": 4.209238410596026
+        "x": 6.118161328588376,
+        "y": 4.3093594306049825
       },
       "prevControl": {
-        "x": 8.407938741721853,
-        "y": 4.187458609271521
+        "x": 6.294938023885013,
+        "y": 4.132582735308345
+      },
+      "nextControl": {
+        "x": 5.941384633291738,
+        "y": 4.48613612590162
+      },
+      "isLocked": false,
+      "linkedName": "FollowIntakeEnd2"
+    },
+    {
+      "anchor": {
+        "x": 5.870699881376039,
+        "y": 5.514389086595493
+      },
+      "prevControl": {
+        "x": 5.870699881376039,
+        "y": 4.432351554381604
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "FollowIntakeEnd2"
+      "linkedName": "FollowIntakeEnd3"
     }
   ],
   "rotationTargets": [
@@ -50,8 +66,16 @@
       "rotationDegrees": 90.0
     },
     {
-      "waypointRelativePos": 1.7288135593220353,
+      "waypointRelativePos": 1.3587921847246842,
       "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 1.539964476021295,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 2.792184724689182,
+      "rotationDegrees": -90.0
     }
   ],
   "constraintZones": [],
@@ -67,7 +91,7 @@
   },
   "goalEndState": {
     "velocity": 0.0,
-    "rotation": 0.0
+    "rotation": -100.4374753511182
   },
   "reversed": false,
   "folder": "FollowCenter",
