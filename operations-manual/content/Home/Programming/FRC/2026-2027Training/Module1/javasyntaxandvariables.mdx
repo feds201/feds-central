@@ -1,0 +1,54 @@
+---
+title: Java Syntax and Variables
+---
+
+**Time to seeing code: 0 min**
+**Time to writing code: 10 min**
+
+We will be using W3Schools to learn Java.
+
+## Lesson One
+
+Complete W3Schools **starting at** [**Java Syntax**](https://www.w3schools.com/java/java_syntax.asp) **and** **through** [**Java Variables**](https://www.w3schools.com/java/java_variables.asp), including the code challenge.
+
+Paste all code challenges you complete into your lesson section on your doc tab.
+
+## Robot Code Observation
+
+This is a constants file from our last year’s codebase. Does this look familiar to what you have seen in W3Schools?
+
+Even at the highest level, robot code is still backboned by primitive data types and constants. Simple blocks make a complex building.
+
+```java
+public static class SpindexerConstants {
+    public static final int kSpindexerMotorId = 57;
+}
+
+public static class indexingConstants {
+    public static final double forwardTime = 1.25;
+    public static final double reverseTime = .05;
+}
+
+public static class FeederConstants {
+    public static final int kFeederKickerMotorId = 56;
+}
+
+// All values subject to change, just placeholders for now
+public static class PathfindConstants {
+    public static final double xP = 0.0;
+    public static final double xI = 0.0;
+    public static final double xD = 0.0;
+    public static final double yP = 0.0;
+    public static final double yI = 0.0;
+    public static final double yD = 0.0;
+    public static final double rotP = 0.0;
+    public static final double rotI = 0.0;
+    public static final double rotD = 0.0;
+}
+```
+
+### About the Snippet
+
+You can see that these are all **constant values**, or values that cannot change after you declare them. This comes from the `final` keyword that you learned about during the Java Variables section of W3Schools.
+
+Don’t worry if you don’t know what all these variable names mean. We will learn more about what motor IDs and P, I, and D do in later lessons.

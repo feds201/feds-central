@@ -1,0 +1,280 @@
+# Lesson 5
+
+## What comes next?
+
+Now that we’ve gone through the 3 major things we work on, we will dive deeper into what we work on the most: the scouting app 📱
+
+## What will we do?
+
+Like mentioned before, our app is made with a programming language called **Dart**.
+
+So, before we go too far into complex code, we will start with the basics of Dart and move our way towards the actual scouting app!
+
+## What should I expect for Lesson 5?
+
+We will learn Dart from the start, just like how we learned HTML in Lesson 2.
+
+# Introduction to Dart
+
+## Learn the basics
+
+Before we go into the actual app, we will start learning Dart from the very beginning.
+
+A good thing is that what we will learn is almost identical in most other programming languages, so learning it well here will give you a head start on other languages as well!
+
+Let’s first go into this website:
+
+**https://dartpad.dev/**
+
+The website is an online **IDE (Integrated Development Environment)**, which simply means a website or app that helps us build and run projects.
+
+## First step
+
+When you first go into the website, you will find this code:
+
+```dart
+void main() {
+  for (var i = 0; i < 10; i++) {
+    print('hello ${i + 1}');
+  }
+}
+```
+
+Don’t worry about it for now and just replace it with this code:
+
+```dart
+void main() {
+  // this statement will print hello
+  print('hello');
+}
+```
+
+Press **Run** and see what happens on the right half of the screen.
+
+It should show **hello** on the screen.
+
+Now let’s break down the code one by one.
+
+### What is `main()`?
+
+First, look at the word `main()`. What does this mean?
+
+This is the **main function**.
+
+Every time you run any Dart code, the first thing that runs is the main function.
+
+Whatever is inside the curly braces `{}` is what is inside the function.
+
+### What does `void` mean?
+
+But what does the `void` mean?
+
+Every function will either return a value or return nothing.
+
+The `void` indicates that the function will return nothing.
+
+### What is a comment?
+
+Now let’s look inside the function. You see the `//` and a bunch of words following after?
+
+That is called a **comment**.
+
+Comments do nothing to your code.
+
+Then why do we use comments?
+
+Comments are used to keep your code organized.
+
+Sometimes when your code gets too long, it is hard to find things or know what different parts of the code do.
+
+That is why we write comments. Whenever we come back to the code, we can quickly understand what the code does.
+
+### What is `print()`?
+
+Finally, let’s look at:
+
+```dart
+print('hello');
+```
+
+As you probably guessed, `print()` will print whatever is inside the parentheses.
+
+Try replacing `hello` with any number, like `7`.
+
+Now try replacing `hello` with just `hello` without the quotation marks.
+
+Did you notice the error?
+
+This is because whenever you want to print a word or a letter, you must use either single quotation marks (`''`) or double quotation marks (`""`).
+
+And finally, let’s talk about the semicolon `;`.
+
+The semicolon is used at the end of every statement.
+
+# Step 2: Variables
+
+Now we will talk about **variables**.
+
+Variables are things that store a specified value.
+
+Before we dive deeper, look at this code:
+
+```dart
+void main() {
+  int number = 4;
+  print(number);
+}
+```
+
+Before you put this into the IDE and run it, **predict what the result will be.**
+
+After running the code, let’s break it down.
+
+Look at the line:
+
+```dart
+int number = 4;
+```
+
+- `int` is short for **integer**.
+- An integer is a non-decimal number.
+- `number` is the name of the variable.
+- `= 4` assigns the value `4` to `number`.
+- The statement ends in a semicolon.
+
+In short, the line declares a variable called `number` with an integer data type and assigns it the value `4`.
+
+At the end, the code prints the variable `number`, which stores the value `4`, so the program prints `4`.
+
+## Variable data types
+
+Now let’s dive deeper into variables.
+
+Like we discussed before, variables can have different types.
+
+The most popular ones that we will be using are:
+
+- `int`
+- `double`
+- `String`
+- `bool`
+
+Let’s go one by one to learn what each of them does.
+
+### `int`
+
+`int` represents whole numbers, including positive numbers, negative numbers, and zero.
+
+Example:
+
+```dart
+int number = 4;
+```
+
+### `double`
+
+`double` represents decimal numbers.
+
+Example:
+
+```dart
+double decimal = 1.6;
+```
+
+### `String`
+
+`String` represents text and letters.
+
+Example:
+
+```dart
+String word = "hello";
+```
+
+### `bool`
+
+`bool` represents either `true` or `false`.
+
+Example:
+
+```dart
+bool example = true;
+```
+
+Try all of these variables in your IDE to truly understand how they work.
+
+You can use the examples given or make your own in the same format.
+
+## Matching data types
+
+Now that you know how variables work, it brings up a question:
+
+**What happens if you give a variable with a data type a value of a different data type?**
+
+Let’s try it.
+
+Replace:
+
+```dart
+int number = 4;
+```
+
+with:
+
+```dart
+int number = "four";
+```
+
+You get an error!
+
+This is because the data type of the variable and the value you assign to it must be compatible.
+
+An `int` cannot store text like `"four"`.
+
+## Changing the value of a variable
+
+You can also change the value of a variable.
+
+Try out the code below:
+
+```dart
+void main() {
+  int number = 4;
+  print(number);
+  number = 7;
+  print(number);
+}
+```
+
+When you run the program, you can see that it outputs `4` and then `7`.
+
+This is because we changed the value of `number` in the middle of the print statements.
+
+However, you may notice that when we changed the value to `7`, we wrote:
+
+```dart
+number = 7;
+```
+
+and **not**:
+
+```dart
+int number = 7;
+```
+
+If you try the second option, you will get an error.
+
+This is because the variable's data type is declared when the variable is created.
+
+So whenever you want to reuse the same variable, make sure you don't include the data type again.
+
+For example:
+
+```dart
+int number = 4;
+
+number = 7;
+number = 10;
+```
+
+The variable is declared as an `int` once, and after that, you can change its value as long as the new value is compatible with the variable's data type.

@@ -1,0 +1,194 @@
+# Lesson 6
+
+## What comes next?
+
+We will continue to learn the basics of Dart and start to learn more complex topics.
+
+# Step 3: Math
+
+Inside Dart, we can also perform math with the following operators:
+
+- `+` — addition
+- `-` — subtraction
+- `*` — multiplication
+- `/` — division
+- `%` — modulo (the remainder of a division)
+- `++` — add by 1
+- `--` — subtract by 1
+
+Let’s try some of these out!
+
+An example of using addition is the following:
+
+```dart
+void main() {
+  int number = 4 + 7;
+  print(number);
+}
+```
+
+The program will print the number `11` since `4 + 7` is `11`.
+
+It works the same way for all the other basic operations.
+
+## Using `++` and `--`
+
+Let’s try the `++` and `--` operators since they are a little different.
+
+```dart
+void main() {
+  int number = 4;
+  number++;
+  number++;
+  print(number);
+}
+```
+
+Before running the program, **predict what will happen.**
+
+You should have gotten `6`.
+
+Why did we get `6`?
+
+That is because the variable `number` started at `4` and was increased by `1` twice.
+
+So:
+
+`4 + 1 + 1 = 6`
+
+The `--` operator works the same way, except it subtracts `1` instead.
+
+## Using math with variables
+
+What we can also do is perform these math operations with variables.
+
+Here is an example:
+
+```dart
+void main() {
+  int number1 = 4;
+  int number2 = 6;
+  int number3 = number1 * number2;
+  print(number3);
+}
+```
+
+The result of this program is `24`.
+
+This is because `number3` is assigned the result of multiplying the values of `number1` and `number2`.
+
+So:
+
+`4 * 6 = 24`
+
+# Step 4: Adding Different Variable Types
+
+What do you do when you want to use the `print()` statement and print both an `int` and a `String` at the same time?
+
+Let’s try it first:
+
+```dart
+void main() {
+  String number1 = "four";
+  int number2 = 6;
+  print(number1 + number2);
+}
+```
+
+You may use the example code above, or make your own code.
+
+Did you get an error?
+
+We can’t combine `String`s and `int`s directly like we would with the same data types.
+
+Well, there are **2 main ways** to do this.
+
+## Method 1: `.toString()`
+
+Let’s look at the error message:
+
+> A value of type 'int' can't be assigned to a variable of type 'String'.
+
+It is telling us that the `int` value cannot be used where a `String` is expected.
+
+Can we change the `int` into a `String`?
+
+Yes!
+
+Luckily, Dart has a very simple feature we can use to convert your variable into a `String`. The function is called `.toString()`.
+
+Let’s try to use that.
+
+Here is an example of how we would use the function:
+
+```dart
+void main() {
+  String number1 = "four";
+  int number2 = 6;
+  print(number1 + number2.toString());
+}
+```
+
+Now our code runs successfully!
+
+`number2` was originally an `int`, but `.toString()` converted it into a `String`.
+
+## Method 2: String Interpolation
+
+Let’s look at the second way now.
+
+Instead of using a new function, in this method we will use something called **string interpolation**.
+
+String interpolation uses a `$` sign to insert a variable directly into a `String`.
+
+Did that not make much sense?
+
+Let’s look at how it is used to get a better understanding:
+
+```dart
+void main() {
+  String number1 = "four";
+  int number2 = 6;
+  print("$number1$number2");
+}
+```
+
+Try running this code.
+
+Notice how we get the same result as before?
+
+That is because `$` works similarly to the `.toString()` function by allowing us to use the value of a variable as part of a `String`.
+
+However, there is an important difference: **string interpolation must be inside quotation marks.**
+
+It also works with all variable types, including `String` variables.
+
+You can see this with the variable `number1`.
+
+Even though it is already a `String`, there is still a `$` sign in front of it.
+
+What happens if you don't use the `$`?
+
+Let’s try it:
+
+```dart
+void main() {
+  String number1 = "four";
+  int number2 = 6;
+  print("number1$number2");
+}
+```
+
+We get:
+
+`number16`
+
+Why is that?
+
+That is because without the `$` sign, the compiler thinks `number1` is just regular text.
+
+So it combines the text `"number1"` with the value `6`, resulting in:
+
+`number16`
+
+This is why the `$` sign is important when using variables inside a `String`.
