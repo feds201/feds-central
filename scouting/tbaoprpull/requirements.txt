@@ -1,0 +1,4 @@
+tbapy
+numpy
+psycopg2-binary
+python-dotenv
