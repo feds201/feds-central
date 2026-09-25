@@ -1,0 +1,166 @@
+---
+title: Java Types and Operators
+---
+
+## Java Data Types → Java Operators
+
+Complete the next sections of W3Schools from [**Java Data Types**](https://www.w3schools.com/java/java_data_types.asp) through [**Java Operators**](https://www.w3schools.com/java/java_operators.asp).
+
+**Reminder:** Complete **all exercises and code challenges**, and paste the code challenges into your section of the doc!
+
+---
+
+## Robot Battery Monitor
+
+## Goal
+
+Create a Java program that simulates a robot checking its battery status before a match.
+
+Robots rely on batteries to power motors, sensors, and electronics. A low battery can cause motors to slow down or the robot to stop working, so teams monitor battery voltage carefully.
+
+Your program will calculate the robot's remaining battery voltage and determine if the robot is ready to compete.
+
+---
+
+## Requirements
+
+Your program must:
+
+* Store the starting battery voltage in a variable.
+* Store the amount of power being used by the robot in a variable.
+* Calculate the voltage lost from usage.
+* Calculate the remaining battery voltage.
+* Print the final battery voltage.
+
+---
+
+## Example Output
+
+```text
+Robot Battery Monitor
+
+Starting Voltage: 12.6V
+Motor Usage: 75%
+
+Voltage Lost: 0.6V
+Remaining Voltage: 12.0V
+
+Battery Status: READY
+```
+
+---
+
+## Step 1: Create Your Variables
+
+Create variables for:
+
+### Starting Battery Voltage
+
+Example:
+
+```java
+double startingVoltage = 12.6;
+```
+
+### Robot Motor Usage
+
+Represent motor usage as a percentage from 0 to 100.
+
+Example:
+
+```java
+double motorUsage = 75;
+```
+
+---
+
+## Step 2: Calculate Voltage Loss
+
+Assume the robot loses **0.008 volts per 1% motor usage**.
+
+Example:
+
+```text
+75% usage × 0.008 = 0.6V lost
+```
+
+Create a variable called:
+
+```java
+double voltageLoss;
+```
+
+and calculate the voltage lost.
+
+---
+
+## Step 3: Calculate Remaining Voltage
+
+Create a variable:
+
+```java
+double remainingVoltage;
+```
+
+Calculate:
+
+```text
+remaining voltage = starting voltage - voltage loss
+```
+
+---
+
+## Step 4: Print Your Results
+
+Your program should print:
+
+* Starting voltage
+* Motor usage
+* Voltage lost
+* Remaining voltage
+
+Example:
+
+```java
+System.out.println("Remaining Voltage: " + remainingVoltage);
+```
+
+---
+
+## Challenge 1
+
+Add a battery warning system.
+
+If the battery voltage is below **11 volts**, print:
+
+```text
+WARNING: Battery Low!
+```
+
+Otherwise, print:
+
+```text
+Battery Status: READY
+```
+
+---
+
+## Challenge 2
+
+Add a driver warning.
+
+If the robot is using more than **90% power**, print:
+
+```text
+WARNING: High Current Usage!
+```
+
+---
+
+## What You Should Do
+
+For this activity, we will return to Programiz.
+
+Like last time, make all code in the `main` method.
+
+When you're done, paste your **whole code** in your doc.

@@ -64,20 +64,13 @@ import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.utils.LimelightWrapper;
 import frc.robot.utils.PitTesting;
-import frc.robot.rtu.RTUManager;
-import frc.robot.utils.AutoSweeper;
 import limelight.networktables.LimelightSettings.ImuMode;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import java.io.IOException;
 import java.util.List;
 
 
-import static edu.wpi.first.units.Units.Rotations;
-
 public class RobotContainer extends ControllerBindings {
-  // Singleton accessor so external code (DiagnosticServer) can command
-  // shooter/hood.
   private static RobotContainer instance;
 
   private final CommandSwerveDrivetrain drivetrain = DrivetrainConstants.createDrivetrain();
@@ -102,17 +95,8 @@ public class RobotContainer extends ControllerBindings {
   private final Flywheel shooterWheels;
   private final SpindexerSubsystem spindexer;
 
-  // --- APIs used by the diagnostic server / UI to command shooter/hood ---
-  private final AutoSweeper autoSweeper;
-
-
   // Simulation
   private RebuiltSimManager simManager;
-
-
-
-  private final RTUManager rtumanager = new RTUManager();
-
 
   private final SendableChooser<Command> autoChooser;
 
@@ -201,27 +185,9 @@ public class RobotContainer extends ControllerBindings {
         throw new IllegalStateException("Unexpected value: " + RobotMap.getRobotMode());
     }
 
-    autoSweeper = new AutoSweeper(rps -> {
-      try {
-        shooterWheels.setStateCommand(shooter_state.TEST).execute();
-        shooterWheels.setVelocity(RotationsPerSecond.of(rps));
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
-    }, pos -> {
-      try {
-        shooterHood.setStateCommand(shooterhood_state.TEST).execute();
-        shooterHood.setAngle(Rotations.of(pos)); // pos is already in rotations (0-30)
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
-    });
-
-
     llMain.getSettings().withImuMode(ImuMode.ExternalImu).save();
     setupDriveBindings(controller);
     setupOperatorBindings(operaterController);
-    configureRootTests();
     if (RobotBase.isReal()) {
       PitTesting.createDashboard();
     }
@@ -255,6 +221,8 @@ public class RobotContainer extends ControllerBindings {
       autoChooser.addOption("Comp-LeftSotmMidfieldDoublepass",
           new PathPlannerAuto("Comp-RightSotmMidfieldDoublepass", true));
 
+      autoChooser.addOption("Comp-GearheadsLeft", new PathPlannerAuto("Comp-GearheadsRight", true));
+
 
 
     } catch (Exception e) {
@@ -282,84 +250,6 @@ public class RobotContainer extends ControllerBindings {
     autoChooser.addOption(autoName, autoCommand);
   }
 
-
-  public synchronized void setHoodPosition(double position) {
-    try {
-      // position is in rotations (0 to 30 rotations)
-      shooterHood.setAngle(Rotations.of(position));
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-  }
-
-  /** Backwards-compatible API: set hood angle in degrees (360deg = 1 rotation). */
-  public synchronized void setHoodAngleDeg(double deg) {
-    try {
-      shooterHood.setAngle(Rotations.of(deg / 360.0));
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-  }
-
-  public synchronized void setShooterVelocityRps(double rps) {
-    try {
-      shooterWheels.setVelocity(RotationsPerSecond.of(rps));
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-  }
-
-  /**
-   * Start an automatic sweep of shooter velocities from min..max (inclusive) using step, commanding
-   * hoodDeg for each step and holding for holdMs milliseconds. This runs in a background thread and
-   * can be stopped with stopAutoSweep().
-   */
-  public synchronized void startAutoSweep(double min, double max, double step, double hoodDeg,
-      int holdMs) {
-    autoSweeper.start(min, max, step, hoodDeg, holdMs);
-  }
-
-  public synchronized void stopAutoSweep() {
-    autoSweeper.stop();
-  }
-
-  public synchronized boolean isAutoRunning() {
-    return autoSweeper.isRunning();
-  }
-
-  public synchronized double getAutoCurrent() {
-    return autoSweeper.getCurrent();
-  }
-
-  /**
-   * Start a dynamic auto-sweep driven by the diagnostic dashboard's telemetry values. Puts shooter
-   * wheels and hood into TEST state while the sweep runs and restores them when it finishes.
-   *
-   * @param holdMs milliseconds to hold each supplier sample
-   */
-  public synchronized void startAutoSweepFromDiagnostic(int holdMs) {
-    // enter test mode immediately
-    shooterWheels.setState(shooter_state.TEST);
-    shooterHood.setState(shooterhood_state.TEST);
-
-    autoSweeper.startDynamic(
-        // shooter velocity supplier (RPS) comes from TelemetryPublisher
-        () -> frc.robot.utils.RTU.TelemetryPublisher.getShooterVelocityRps(),
-        // hood angle supplier (degrees) comes from TelemetryPublisher
-        () -> frc.robot.utils.RTU.TelemetryPublisher.getHoodAngleDeg(),
-        // enter test mode (redundant but safe)
-        () -> {
-          shooterWheels.setState(shooter_state.TEST);
-          shooterHood.setState(shooterhood_state.TEST);
-        },
-        // exit test mode: restore reasonable idle states
-        () -> {
-          shooterWheels.setState(shooter_state.IDLE);
-          shooterHood.setState(shooterhood_state.IN);
-        }, holdMs);
-  }
-
-
   public void updateLocalization() {
     if (llMain.isConnected() && SmartDashboard.getBoolean("UseMainLL", true)) {
       llMain.updateLocalizationLimelight(drivetrain);
@@ -373,17 +263,6 @@ public class RobotContainer extends ControllerBindings {
       if (llBackup.getData().pipelineData.getCurrentPipelineIndex() != 0)
         llBackup.getSettings().withPipelineIndex(0);
       SmartDashboard.putString("Active Limelight", "BACKUP");
-    }
-  }
-
-  public void publishTelemetry() {
-    try {
-      var vel = shooterWheels.getVelocity();
-      var hood = shooterHood.getPosition();
-      var dist = drivetrain.getDistanceToVirtualHub();
-      frc.robot.utils.RTU.TelemetryPublisher.publish(vel, hood, dist);
-    } catch (Exception e) {
-      e.printStackTrace();
     }
   }
 
@@ -402,38 +281,6 @@ public class RobotContainer extends ControllerBindings {
 
   public Command getAutonomousCommand() {
     return autoChooser.getSelected();
-  }
-
-  private void configureRootTests() {
-    // Keep this method for compatibility but delegate to RTUManager
-    rtumanager.registerSubsystem();
-
-    rtumanager.setSafetyCheck(() -> {
-      if (!controller.getHID().isConnected()) {
-        return "Joystick is not connected";
-      }
-
-      boolean triggersOk =
-          controller.getLeftTriggerAxis() >= 0.5 && controller.getRightTriggerAxis() >= 0.5;
-
-      boolean xyOk = controller.getHID().getXButton() && controller.getHID().getYButton();
-
-      if (!triggersOk && !xyOk) {
-        return "Did not receive start command from gamepads, please press both triggers to continue the tests";
-      }
-
-      return null; // Safe to run
-    });
-  }
-
-  public void runRootTests() {
-    rtumanager.runAll();
-  }
-
-  public void updateRootTests() {
-
-
-    rtumanager.periodic();
   }
 
   public void idleSubsystems() {

@@ -1,0 +1,40 @@
+---
+title: "Pit Testing"
+---
+
+import {Callout} from 'nextra/components';
+
+## Purpose
+
+Pit Testing is meant to streamline and expand the checks done post-match in the pit.
+
+<Callout type="warning">
+Health indicators for the feeder, intake, roller, hood, spindexer, shooter motors, and intake limit switch aren't hooked up right now, so ignore them. The drivetrain, Limelight, and USB storage indicators still work.
+</Callout>
+
+## How
+1. Connect to the robot via deploy cable or wifi
+2. If you wish to connect via wifi, select the robot's wifi network (it'll have "201" in the name).
+3. Open DriverStation and Elastic
+4. Enable the robot through DriverStation and set the connection type appropriately.
+5. On Elastic, press the shortcut "ctrl+D" and select "elastic-layout-with-pit" and confirm
+6. The Pit Testing displays and interfaces are located on the tabs titled "CAN/Power" and "pit test".
+
+## Running tests
+Before running anything, clear people, tools, and game pieces away from the robot. Support the robot (e.g. on blocks) before the drivetrain tests. Keep DriverStation up so you can disable right away.
+
+On the "pit test" tab, run one test at a time:
+- Run Feeder
+- Run Intake and Rollers
+- Run Spindexer
+- Run Shooter Wheels
+- Move Shooter Hood
+- test Drivetrain translation
+- test Drivetrain rotation
+
+Watch each one. If something moves the wrong way, sounds off, or doesn't stop, disable the robot. Pit Testing doesn't decide pass or fail for you, whoever is watching does.
+
+## Power
+The power indicator of a device will turn on if the device has at least a 4-volt supply.
+i.e., this does not check for brownouts, only that power is being fed to the device.
+Right now this only works for the drivetrain motors, CANcoders, and Pigeon.

@@ -1,0 +1,328 @@
+---
+title: Java Looping and Breaking / Continuing  
+---
+
+## Java While Loops → Java Break/Continue
+
+Complete the W3Schools lessons from [**Java While Loop**](https://www.w3schools.com/java/java_while_loop.asp) through [**Java Break/Continue**](https://www.w3schools.com/java/java_break.asp).
+
+**Make sure to paste all code challenges into your section of the doc.**
+
+## Robotics Programming Challenge: Intake Control
+
+## Objective
+
+You are programming the **intake mechanism** of an FRC robot.
+
+Your job is to write the code that controls two motors:
+
+* **Intake motor** — pulls game pieces into the robot
+* **Indexer motor** — moves game pieces farther into the robot
+
+The robot operator has several controls, and the intake has a sensor that detects when a game piece has been collected.
+
+You will be given some starter code, but you are responsible for writing the majority of the control logic.
+
+---
+
+## 1. Starter Code
+
+Begin with:
+
+```java
+public class IntakeChallenge {
+
+    public static void main(String[] args) {
+
+        // Operator controls
+        boolean intakeButton = true;
+        boolean outtakeButton = false;
+
+        // Intake sensor
+        boolean hasPiece = false;
+
+        // Motor speed from 0.0 to 1.0
+        double motorSpeed = 0.75;
+
+        // Motor outputs
+        double intakeMotor = 0;
+        double indexerMotor = 0;
+
+        // Your code goes here
+
+
+
+        // Print final motor outputs
+        System.out.println("Intake Motor: " + intakeMotor);
+        System.out.println("Indexer Motor: " + indexerMotor);
+    }
+}
+```
+
+The motor outputs work like this:
+
+| Output | Meaning      |
+| -----: | ------------ |
+|  `1.0` | 100% forward |
+|  `0.5` | 50% forward  |
+|  `0.0` | Stopped      |
+| `-0.5` | 50% reverse  |
+| `-1.0` | 100% reverse |
+
+---
+
+## 2. Program the Intake
+
+When the operator presses the **intake button**, the intake should run forward.
+
+If:
+
+```java
+intakeButton == true
+```
+
+then:
+
+* `intakeMotor` should equal `motorSpeed`
+* `indexerMotor` should equal `motorSpeed`
+
+If the button isn't pressed, the motors should not run **unless another command tells them to**.
+
+You'll need to decide what conditional structure makes sense here.
+
+---
+
+## 3. Program the Outtake
+
+The robot also needs to be able to spit a game piece back out.
+
+When:
+
+```java
+outtakeButton == true
+```
+
+the motors should run **backward**.
+
+For example:
+
+```java
+intakeMotor = -motorSpeed;
+```
+
+The indexer should also run backward.
+
+### Important
+
+What happens if **both** `intakeButton` and `outtakeButton` are pressed?
+
+Your program should choose **one behavior** rather than trying to run the motors in both directions.
+
+Decide which command should have priority and implement it using `if`, `else if`, and `else`.
+
+---
+
+## 4. Add the Game-Piece Sensor
+
+The intake has a sensor called:
+
+```java
+boolean hasPiece = false;
+```
+
+This tells you whether the robot currently has a game piece.
+
+If the robot detects a game piece while intaking:
+
+* The **indexer should stop**
+* The **intake should continue running**
+* Print:
+
+```text
+GAME PIECE DETECTED
+INDEXER STOPPED
+```
+
+For example:
+
+```text
+Intake Motor: 0.75
+Indexer Motor: 0.0
+```
+
+Think carefully about the order of your conditions.
+
+**The sensor should be able to override the normal indexer behavior.**
+
+---
+
+## 5. Add a Motor Safety Limit
+
+Real robot code shouldn't blindly trust its inputs.
+
+Add a safety check so that `motorSpeed` can never cause the motor to run above 100%.
+
+For example, if:
+
+```java
+double motorSpeed = 1.25;
+```
+
+your program should prevent the motor from running at 125%.
+
+Print:
+
+```text
+WARNING: MOTOR SPEED LIMITED
+```
+
+and adjust the speed to the maximum allowed value.
+
+You should also consider what should happen if the speed is **negative**.
+
+---
+
+## 6. Simulate Collecting a Game Piece
+
+Now use a loop to simulate the intake collecting a game piece.
+
+Start with:
+
+```java
+int distanceToPiece = 5;
+```
+
+The distance represents how many arbitrary units away the game piece is.
+
+While the robot is intaking, decrease the distance:
+
+```text
+Distance to piece: 5
+Distance to piece: 4
+Distance to piece: 3
+Distance to piece: 2
+Distance to piece: 1
+Distance to piece: 0
+GAME PIECE COLLECTED
+```
+
+You will need to:
+
+* Create a loop
+* Use a comparison
+* Change the distance each iteration
+* Stop the loop when the piece reaches the robot
+
+---
+
+## 7. Test Your Code
+
+Change the starter variables to test different situations.
+
+## Test A — Intake
+
+```java
+boolean intakeButton = true;
+boolean outtakeButton = false;
+boolean hasPiece = false;
+double motorSpeed = 0.75;
+```
+
+**Expected:**
+
+```text
+Intake Motor: 0.75
+Indexer Motor: 0.75
+Motor Speed: 75%
+```
+
+---
+
+## Test B — Already Have a Piece
+
+```java
+boolean intakeButton = true;
+boolean outtakeButton = false;
+boolean hasPiece = true;
+double motorSpeed = 0.75;
+```
+
+**Expected:**
+
+```text
+GAME PIECE DETECTED
+INDEXER STOPPED
+Intake Motor: 0.75
+Indexer Motor: 0.0
+```
+
+---
+
+## Test C — Outtake
+
+```java
+boolean intakeButton = false;
+boolean outtakeButton = true;
+boolean hasPiece = true;
+double motorSpeed = 0.50;
+```
+
+**Expected:**
+
+```text
+Intake Motor: -0.5
+Indexer Motor: -0.5
+Motor Speed: 50%
+```
+
+---
+
+## Test D — Nothing Happening
+
+```java
+boolean intakeButton = false;
+boolean outtakeButton = false;
+boolean hasPiece = false;
+double motorSpeed = 0.75;
+```
+
+**Expected:**
+
+```text
+Intake Motor: 0.0
+Indexer Motor: 0.0
+```
+
+---
+
+## Final Requirements
+
+Your completed program must use:
+
+* `boolean`
+* `int`
+* `double`
+* `if`
+* `else if`
+* `else`
+* `switch`
+* A `for` or `while` loop
+* Arithmetic operators
+* Comparison operators
+* An explicit cast
+* Intake control
+* Outtake control
+* Game-piece detection
+* Motor speed limiting
+
+---
+
+## CONGRATULATIONS!
+
+You have completed what I consider **starter Java**.
+
+You know how to do a lot of cool things in a `main` method, and you have become good at taking apart challenges and completing them on your own.
+
+Up next is more basic Java, but it is going to take you much further than anything you're able to do right now.
+
+**Keep it up!**

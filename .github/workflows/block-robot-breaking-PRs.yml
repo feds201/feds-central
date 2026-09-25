@@ -37,6 +37,7 @@ jobs:
             | { grep '^robot/' || true; } \
             | cut -d'/' -f2 \
             | sort -u \
+            | while read -r p; do if [ -f "robot/$p/gradlew" ]; then echo "$p"; fi; done \
             | jq -R -s -c 'split("\n") | map(select(length > 0))')
           echo "Detected changed projects: $projects"
           echo "projects=$projects" >> "$GITHUB_OUTPUT"

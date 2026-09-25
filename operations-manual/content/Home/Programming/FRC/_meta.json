@@ -1,6 +1,6 @@
 {
   "index" : "Introduction",
-  "BasicJava" : "Understanding Java",
+  "Basicjava" : "Understanding Java",
   "Tools&Setup": "FRC Tools & Utilities",
   "InstallingNi": "FRC Game Tools Installation",
   "Subsystems":"Crescendo Code Dive",
@@ -9,9 +9,10 @@
   "Vision": "Video Processing",
   "Autonomous": "Autonomous",
   "Simulation": "Simulation",
-  "RobotTestingUtility": "Robot Testing Utility",
+  "PitTesting": "Pit Testing",
   "Examples": "Examples",
   "UsingInterijIdea": "Resources",
   "Workshop": "Workshop",
-  "PastProblems+Solutions": "Past Problems and Solutions"
+  "PastProblems+Solutions": "Past Problems and Solutions",
+  "2026-2027Training": "2026-2027 Training"
 }
