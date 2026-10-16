@@ -12,6 +12,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
+import frc.robot.RobotMap;
 
 public interface ShooterHoodIO {
 
@@ -22,7 +23,7 @@ public interface ShooterHoodIO {
     public Current hoodMotorCurrent = Amps.of(0);
     public Angle hoodMotorPosition = Rotations.of(0);
     public AngularVelocity hoodMotorVelocity = RotationsPerSecond.of(0);
-    public double hoodAngleMultiplier = 1;
+    public double hoodAngleMultiplier = RobotMap.ShooterConstants.hoodAngleMultiplierStartingValue;
   }
 
   public default void updateInputs(HoodIOInputs inputs) {}
