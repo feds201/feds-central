@@ -22,7 +22,7 @@ public interface ShooterHoodIO {
     public Current hoodMotorCurrent = Amps.of(0);
     public Angle hoodMotorPosition = Rotations.of(0);
     public AngularVelocity hoodMotorVelocity = RotationsPerSecond.of(0);
-    public double hoodAngleMultiplier = 1;
+    public double hoodAngleMultiplier = 1.05;
   }
 
   public default void updateInputs(HoodIOInputs inputs) {}

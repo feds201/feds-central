@@ -35,7 +35,7 @@ public class ShooterHoodIOSim implements ShooterHoodIO {
       rackMotorType);
   private final TalonFX hoodTalonFX = new TalonFX(RobotMap.ShooterConstants.ShooterHood);
   private final PositionVoltage positionVoltage = new PositionVoltage(0);
-  private double hoodAngleMultiplier = 1.0;
+  private double hoodAngleMultiplier = 1.05;
 
   public ShooterHoodIOSim() {
     // Apply config; repeat to ensure application (some hardware requires it)
