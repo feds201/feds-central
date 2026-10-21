@@ -1,0 +1,288 @@
+---
+title: Java Methods
+---
+
+Welcome back to your next lesson in FRC programming training. Next up, you're learning about methods. Methods, in one way or another, make up over half of our robot code.
+
+Before moving on, learn about methods in the [W3Schools Java Methods section](https://www.w3schools.com/java/java_methods.asp?utm_source=chatgpt.com), down through Java method parameters. Then, come back to complete the rest of this lesson.
+
+## Code in Practice
+
+```
+public void setRackState(IntakeState targetState) {
+    if (!currentState.equals(targetState)) {
+        timer.reset();
+        timer.stop();
+        timer.start();
+    }
+    this.currentState = targetState;
+    switch (targetState) {
+        case DEFAULT -> {
+            setPosition(IntakeSubsystemConstants.retractedRotations);
+        }
+        case EXTENDED -> {
+            rackIO.limitSwitchExtensionControl();
+            setRollerState(RollerState.OFF);
+        }
+        case INTAKING -> {
+            rackIO.limitSwitchExtensionControl();
+            setRollerState(RollerState.ON);
+        }
+        case AGITATE_IN -> {
+            setPosition(IntakeSubsystemConstants.retractedRotations);
+        }
+        case AGITATE_OUT -> {
+            setPosition(IntakeSubsystemConstants.extendedRotations);
+        }
+    }
+}
+
+public void setRollerState(RollerState desiredState) {
+    this.currentRollerState = desiredState;
+}
+
+public RollerState getRollerState() {
+    return this.currentRollerState;
+}
+
+public Angle getRollerPosition() {
+    return rollerInputs.rollerMotorPosition;
+}
+
+public Angle getRackPosition() {
+    return rackInputs.rackMotorPosition;
+}
+
+public boolean getLimitSwitchValue() {
+    return rackInputs.rackLimitSwitch;
+}
+
+public Voltage getRackAppliedVoltage() {
+    return rackInputs.rackMotorAppliedVoltage;
+}
+```
+
+How many methods can you count in this intake subsystem? What have you seen before? Do you recognize a switch statement, or perhaps a return type?
+
+For your next challenge, you will be creating methods for a simple "subsystem."
+
+This is the most difficult challenge so far, and it has a lot of parts. Expect to take a while on it! Also, make sure you copy all of your code into something like a Google Doc periodically so you don't lose it all while working in Programiz.
+
+## Exercise: Your First Robot Subsystem (Elevator)
+
+Now that you've learned about variables, methods, conditionals, loops, and method parameters, it's time to build your first very simple robot subsystem.
+
+In every subsystem you make, there are going to be values called inputs.
+
+Inputs are things like:
+
+- Motor rotations
+- Sensor values
+- Device temperatures
+
+The subsystem processes these inputs and determines the correct outputs. Outputs are the commands and values going out of the system. This could be a value on a dashboard or a command telling a motor to spin at a certain speed.
+
+In this exercise, you'll simulate an elevator subsystem entirely inside your `main()` method.
+
+### Step 1 - Create the Inputs
+
+Create the following variables.
+
+```
+double motorRotations;
+double motorVoltage;
+boolean topLimitSwitch;
+boolean bottomLimitSwitch;
+```
+
+These are your subsystem's inputs.
+
+### Step 2 - Create Constants
+
+Remember that constants use the `final` keyword.
+
+Create these constants:
+
+| Constant                | Value              |
+| ----------------------- | ------------------ |
+| Maximum Elevator Height | 50 motor rotations |
+| Minimum Elevator Height | 0 motor rotations  |
+| Maximum Motor Voltage   | 6 volts            |
+
+Example:
+
+```
+final double MAX_HEIGHT = 50;
+```
+
+### Step 3 - Create Internal Variables
+
+These variables aren't inputs or outputs. They're simply used to keep track of what the subsystem is doing.
+
+Create:
+
+```
+String elevatorState;
+int loopCount = 0;
+```
+
+The elevator state should only ever contain one of these three values:
+
+- `"Stopped"`
+- `"Moving Up"`
+- `"Moving Down"`
+
+### Step 4 - Create the Program Loop
+
+Inside `main()`, create an infinite loop.
+
+```
+while (true) {
+    // Elevator code goes here
+}
+```
+
+This loop represents the robot running continuously.
+
+### Step 5 - Update the Limit Switches
+
+At the beginning of every loop, determine whether the elevator is touching either end of its travel.
+
+If the elevator is at the bottom:
+
+```
+motorRotations <= 0
+```
+
+Then:
+
+```
+bottomLimitSwitch = true;
+```
+
+Otherwise:
+
+```
+bottomLimitSwitch = false;
+```
+
+If the elevator is at the top:
+
+```
+motorRotations >= MAX_HEIGHT
+```
+
+Then:
+
+```
+topLimitSwitch = true;
+```
+
+Otherwise:
+
+```
+topLimitSwitch = false;
+```
+
+These two switches represent the sensors mounted at the bottom and top of the elevator.
+
+### Step 6 - Move the Elevator
+
+One volt of power moves the motor 0.02 rotations every loop.
+
+For example:
+
+- 1 volt → 0.02 rotations
+- 3 volts → 0.06 rotations
+- 6 volts → 0.12 rotations
+
+Whenever the elevator is moving, it should always use the maximum allowed voltage so it travels as fast as possible.
+
+### Step 7 - Prevent Illegal Movement
+
+The elevator should never move past its limits.
+
+If:
+
+```
+bottomLimitSwitch == true
+```
+
+The elevator cannot move downward.
+
+If:
+
+```
+topLimitSwitch == true
+```
+
+The elevator cannot move upward.
+
+If movement would go past one of these limits, simply keep the position where it is.
+
+### Step 8 - Change States
+
+Your elevator should continuously cycle through these states:
+
+1. Moving Up
+2. Stopped (for 100 loops)
+3. Moving Down
+4. Stopped (for 100 loops)
+5. Moving Up
+
+...and repeat forever.
+
+While the elevator is moving upward:
+
+- `elevatorState` should be `"Moving Up"`.
+- `motorVoltage` should be positive.
+
+While moving downward:
+
+- `elevatorState` should be `"Moving Down"`.
+- `motorVoltage` should be negative.
+
+While stopped:
+
+- `elevatorState` should be `"Stopped"`.
+- `motorVoltage` should be `0`.
+
+You'll probably find that you need another variable to keep track of how many loops the elevator has been stopped.
+
+### Step 9 - Count Loops
+
+Every iteration of the `while` loop should increase `loopCount` by one.
+
+### Step 10 - Print Diagnostic Information
+
+Every 10th loop, print every non-constant variable to the terminal.
+
+Your output should include:
+
+- `motorRotations`
+- `motorVoltage`
+- `topLimitSwitch`
+- `bottomLimitSwitch`
+- `elevatorState`
+- `loopCount`
+
+A sample output might look something like this:
+
+```
+Loop: 120
+State: Moving Up
+Motor Rotations: 14.40
+Motor Voltage: 6.0
+Top Limit Switch: false
+Bottom Limit Switch: false
+```
+
+## Challenge Questions
+
+1. How many loops should it take for the elevator to travel from the bottom to the top?
+2. How long (in loops) does one complete cycle take?
+
+   Bottom → Up → Stop → Down → Stop → Bottom
+3. Why are the limit switches considered inputs, even though your program is setting their values?
+4. In a real robot, where would the value of `motorRotations` come from instead of your simulation?
+5. Suppose the maximum motor voltage changed from 6 V to 4 V. What would happen to the speed of the elevator without changing any other code?

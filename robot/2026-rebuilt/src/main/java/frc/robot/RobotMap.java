@@ -233,6 +233,7 @@ public final class RobotMap {
     public static final int ShooterHood = 54;
     public static final AngularVelocity velocityTolerance = RotationsPerSecond.of(3);
     public static final Angle postionTolerance = Rotations.of(.05);
+    public static final double hoodAngleMultiplierStartingValue = 1.0;
 
     public static final Angle maxHoodAngle = Rotations.of(27); // tune
     public static final Angle minHoodAngle = Rotations.of(0); // tune
