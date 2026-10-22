@@ -76,7 +76,7 @@ public static void main(String[] args) {
 
 Try compiling it.
 
-You should get several errors.
+You should get an error, this message may look weird
 
 Don't worry about reading every error message just yet. Instead, ask yourself:
 
@@ -126,7 +126,7 @@ public static void main(String[] args) {
 
 is called the **main method**.
 
-The line inside, `System.out.println(0);`, is **not** a part of the method itself; its code is *inside* the method.
+The line inside, `System.out.println(0);`, is code *inside* the method.
 
 Methods are contained using curly bracket pairs. In the above example, you can see the beginning bracket next to `(String[] args)` and the ending bracket down below the `println` statement.
 
@@ -146,7 +146,7 @@ Replace the `0` inside `println()` with each of these values.
 System.out.println(5);
 ```
 
-Compile and run.
+Run.
 
 Now try:
 
@@ -154,7 +154,7 @@ Now try:
 System.out.println(5.2);
 ```
 
-Compile and run.
+Run.
 
 Now try:
 
@@ -162,7 +162,7 @@ Now try:
 System.out.println(ONE);
 ```
 
-Compile.
+Run.
 
 What happened?
 
@@ -299,7 +299,7 @@ System.out.println(0);
 
 Remove the semicolon.
 
-Compile.
+Run.
 
 Java reports an error.
 
@@ -375,7 +375,7 @@ Here you can see the formula in action.
 * The name is `myInt`. There is something **important** to notice here. See that the first letter of the second word in the variable name is capitalized. This pattern is called camel case, and it’s used almost every time we make a variable. If your variable is multiple words long, **Capitalize each one after the first.**
 * Finally, we have the equal sign, value, and semicolon. Notice that the value is `1`, an integer. Variable type and value type must match when creating variables.
 
-Compile.
+Run.
 
 No errors.
 
@@ -385,7 +385,7 @@ Now create a double.
 double myDouble = 1.1;
 ```
 
-Compile again.
+Run again.
 
 Still no errors.
 
@@ -395,7 +395,7 @@ Now try this instead.
 int myInt = 1.1;
 ```
 
-Compile.
+Run.
 
 Java reports an error.
 
@@ -403,7 +403,7 @@ Why?
 
 Because an integer cannot store decimal values.
 
-Now try the opposite.
+Now try the opposite and replace the previous line with this:
 
 ```java
 double myDouble = 1;
@@ -413,7 +413,7 @@ Before compiling...
 
 **Predict what will happen.**
 
-Compile.
+Run.
 
 No errors!
 
