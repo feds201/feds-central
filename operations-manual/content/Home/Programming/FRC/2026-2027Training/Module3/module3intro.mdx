@@ -1,0 +1,99 @@
+---
+title: "Module 3: Meet Your Robot"
+---
+
+## Welcome to the Robot Garage 🤖
+
+⏱ **About 5 minutes**
+
+In Module 1 you learned the building blocks: variables, types, operators, `if`, `switch` and loops. Now we use them to **build something**: a little robot you can drive around a screen with your arrow keys.
+
+We'll build it the way a video game character levels up. Each level unlocks a new ability:
+
+| Level | What the robot can do | Where you learn it |
+|---|---|---|
+| 🥚 Level 0 | Exist. That's it. It just says hi. | Module 3 |
+| 🐣 Level 1 | Has a blueprint and can be "born" | Module 3 |
+| 🐥 Level 2 | Has skills (methods) you can trigger | Module 3 |
+| 🐔 Level 3 | Remembers where it is (fields) | Module 3 |
+| 🎮 Level 4 | Listens to you type commands in a game loop | Module 4 |
+| 🕹️ Level 5 | Lives in a real window and moves with arrow keys | Module 5 |
+
+By the end of Module 5 you will have written every line of a small Java game. That's a big deal, so let's go!
+
+---
+
+## Where We Write Code
+
+For Modules 3 and 4 we'll use the same online compiler as Module 1:
+
+👉 **[Programiz Java Online Compiler](https://www.programiz.com/java-programming/online-compiler/)**
+
+No installing, no setup. Paste your code, press **Run**, and see the output on the right.
+
+### One file, two classes
+
+In a "real" Java project, like our FRC robot code, every `public class` lives in **its own file**: `Main.java`, `Robot.java`, and so on. Think of it like each student getting their own locker.
+
+Programiz only gives us **one file** (one locker). That's fine! We'll put `Main` at the top and put `Robot` underneath it, **without** the word `public`:
+
+```java
+public class Main {
+    public static void main(String[] args) {
+        System.out.println("Program started!");
+    }
+}
+
+class Robot {
+    // the robot's blueprint goes here
+}
+```
+
+Java is happy with that because only **one** class in the file is `public`, and it's the one that matches the file name (`Main`).
+
+> 💡 **Remember:** When you see `Main.java` and `Robot.java` as separate files in this guide, that's how the real project is organized. In Programiz, just stack them in one file like above.
+
+---
+
+## The Front Door: `main`
+
+Every Java program needs a place to start. That place is:
+
+```java
+public static void main(String[] args) {
+```
+
+Think of `main` as the **front door** of your program. When you press Run, Java walks in through this door and runs the lines inside it from top to bottom. Without a front door, Java just stands on the porch confused. 🚪
+
+You don't need to understand `public static void` or `String[] args` yet. For now, read the whole line as "**start here**."
+
+---
+
+## 🛠 Exercise: Turn the Key
+
+Paste this code (our **Step 0**) into Programiz and press **Run**:
+
+```java
+public class Main {
+
+    public static void main(String[] args) {
+        System.out.println("Program started!");
+    }
+}
+```
+
+Expected output:
+
+```text
+Program started!
+```
+
+🎉 Your robot's garage is open. It's empty, but it's open.
+
+### ⭐ Stretch
+
+Add a second `println` that prints your team number and your robot's name. (Every great robot needs a great name. "Sir Beeps-a-Lot" is taken.)
+
+---
+
+**Next up:** we design the robot's blueprint. ➡️

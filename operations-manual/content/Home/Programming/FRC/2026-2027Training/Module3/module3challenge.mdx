@@ -1,0 +1,116 @@
+---
+title: "Challenge: Robot Blueprint"
+---
+
+## Challenge: Robot Blueprint 💃🤖
+
+⏱ **About 10 minutes**
+
+Time to put all of Module 3 together. You'll design a complete `Robot` class from scratch, then write a `main` that makes two robots do a little dance.
+
+---
+
+## Objective
+
+Build a `Robot` class that:
+
+- Remembers its **name**, **position** (`x`, `y`), **step size** and **energy**
+- Starts at `(0, 0)` with `100` energy
+- Can move up, down, left and right. **Each move costs 5 energy.**
+- Can **dance**, which is a combo move made out of its other moves
+- Can tell you whether it's **tired**
+- Prints itself nicely with `toString()`
+
+---
+
+## Requirements
+
+Your `Robot` class **must** have:
+
+| # | Requirement | Concept |
+|---|---|---|
+| 1 | `private` fields: `String name`, `int x`, `int y`, `int energy` | Fields, encapsulation |
+| 2 | A `private final int stepSize` | `final` |
+| 3 | A constructor `Robot(String name, int stepSize)` that uses `this.` to save both values and sets `energy` to `100` | Constructors, `this` |
+| 4 | `moveUp()`, `moveDown()`, `moveLeft()` and `moveRight()`, each changing `x` or `y` by `stepSize` (remember: **up means y gets smaller**) and using up 5 energy | Methods, `+=` / `-=` |
+| 5 | `dance()`, which calls `moveUp()`, `moveRight()`, `moveDown()` and `moveLeft()` in that order, then prints `<name> finished dancing!` | Methods calling methods |
+| 6 | `getX()`, `getY()` and `getEnergy()` getters | Return values |
+| 7 | `isTired()`, which returns a `boolean`: `true` if energy is under 20 | Return values, conditions |
+| 8 | `toString()` with `@Override` that returns `Chompy at (20, 0) with 70% energy` (using the real values) | `toString` |
+
+> 💡 Requirement 5 is new: a method can call **other methods** of the same object. Inside `dance()`, just write `moveUp();` with no `robot.` in front, because the robot is calling its own buttons.
+
+---
+
+## Starter Code
+
+```java
+public class Main {
+
+    public static void main(String[] args) {
+        System.out.println("Program started!");
+
+        Robot chompy = new Robot("Chompy", 10);
+        Robot sparky = new Robot("Sparky", 3);
+
+        System.out.println(chompy);
+
+        chompy.moveRight();
+        chompy.moveRight();
+        System.out.println(chompy);
+
+        chompy.dance();
+        System.out.println(chompy);
+
+        sparky.moveDown();
+        System.out.println(sparky);
+        System.out.println("Sparky's y is " + sparky.getY());
+        System.out.println("Is Chompy tired? " + chompy.isTired());
+    }
+}
+
+class Robot {
+    // Your code here!
+}
+```
+
+---
+
+## Test Your Program
+
+When you run the starter `main` with your `Robot`, you should see **exactly** this:
+
+```text
+Program started!
+Chompy at (0, 0) with 100% energy
+Chompy at (20, 0) with 90% energy
+Chompy finished dancing!
+Chompy at (20, 0) with 70% energy
+Sparky at (0, 3) with 95% energy
+Sparky's y is 3
+Is Chompy tired? false
+```
+
+Check these against your output:
+
+| Scenario | Expected result |
+|---|---|
+| Brand-new robot | Position `(0, 0)`, `100%` energy |
+| Two `moveRight()` calls with step 10 | `x` is `20`, energy is `90` |
+| A `dance()` | Ends at the **same position** it started (it's a square!) and uses 20 energy |
+| A robot with step 3 calls `moveDown()` | `y` is `3` (down means y gets **bigger**) |
+| Energy is 70 | `isTired()` returns `false` |
+
+Paste your finished code and output into your lesson doc under **Module 3: Challenge**.
+
+---
+
+## ⭐ Challenge (Optional)
+
+1. **Make Chompy tired.** Add a loop in `main` that calls `chompy.dance()` until `chompy.isTired()` is `true`, then prints `Chompy needs a nap 😴`. How many dances did it take?
+2. **Robots shouldn't run on empty.** Change the move methods so that if `energy` is less than 5, the robot prints `Too tired to move!` and **doesn't** move.
+3. **Add `recharge()`**, which sets energy back to 100. Should `energy` be `final`? Why or why not?
+
+---
+
+🎓 **Module 3 complete!** Your robot has a blueprint, skills and a memory. In Module 4, it gets **ears**: you'll type commands and it will respond in real time.

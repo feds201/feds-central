@@ -1,0 +1,153 @@
+---
+title: "Challenge: Console Robot Arena"
+---
+
+## Challenge: Console Robot Arena 🏟️🤖
+
+⏱ **About 13 minutes**
+
+Time to combine **everything** from Modules 3 and 4. Your robot lives in a square arena with walls, and the player drives it around by typing commands. If the robot tries to drive through a wall... **Bonk!** 💥
+
+---
+
+## Objective
+
+Build a text-based arena game where:
+
+- The arena goes from `0` to `100` in both directions, so `(0, 0)` is the top-left corner and `(100, 100)` is the bottom-right.
+- The robot starts in the middle at `(50, 50)` and moves `20` units per step.
+- After **every** move, the robot prints where it is.
+- If a move would take it **past a wall**, the robot stops right at the wall and prints `Bonk! Hit the wall`.
+- Typing something that isn't a command prints a friendly error.
+- Typing `x` ends the game and prints the final position.
+
+---
+
+## Requirements
+
+| # | Requirement | Concept |
+|---|---|---|
+| 1 | `private` fields for `name`, `x` and `y`, and a `private final int stepSize` | Fields, `final` (Module 3) |
+| 2 | A constructor `Robot(String name)` that sets the name with `this.`, starts at `(50, 50)`, and sets `stepSize` to `20` | Constructors |
+| 3 | A `move(String key)` method that uses a **`switch`** to change `x` or `y` (`f` = up, `b` = down, `l` = left, `r` = right) | Switch |
+| 4 | Inside `move`, after the switch: use `if` statements to **clamp** `x` and `y` between `0` and `100`. If clamping happens, print `Bonk! Hit the wall` | Conditionals |
+| 5 | At the end of `move`, print the robot itself (using `toString()`) | `toString` |
+| 6 | `toString()` returns something like `Chompy at (50, 30)` | `toString` |
+| 7 | In `main`: an `import`, **one** `Scanner`, and **one** `Robot` built before the loop | Scanner, objects |
+| 8 | A `while (true)` game loop that prints the menu and reads a line each turn | Game loop |
+| 9 | An `if / else if / else` chain using `.equals()` and the OR operator: directions call `move`, `x` prints `Exiting arena` plus the final position and then **breaks**, and anything else prints `Unknown command: ` plus the input | Conditionals, `break` |
+| 10 | `scanner.close()` after the loop | Scanner |
+
+### What does "clamp" mean?
+
+**Clamping** means "if a number goes past a limit, snap it back to the limit." It's like a dog on a leash 🐕: it can run around, but only so far.
+
+```java
+if (x < 0) {
+    x = 0;
+    // ...
+}
+```
+
+You'll need checks like this for the left wall (`x` below 0), the right wall (`x` above 100), the top wall (`y` below 0) and the bottom wall (`y` above 100).
+
+---
+
+## Starter Code
+
+```java
+import java.util.Scanner;
+
+public class Main {
+
+    public static void main(String[] args) {
+        System.out.println("Welcome to the Robot Arena!");
+
+        // TODO: create the Scanner and the Robot (name it whatever you like)
+
+        // TODO: the game loop
+        //   print: "f = forward | b = back | l = left | r = right  | x = exit"
+        //   read a line
+        //   if it's a direction: robot.move(input)
+        //   else if it's "x": print "Exiting arena", print the robot, break
+        //   else: print "Unknown command: " + input
+
+        // TODO: close the Scanner
+    }
+}
+
+class Robot {
+    // TODO: fields
+
+    // TODO: constructor
+
+    public void move(String key) {
+        // TODO: switch on key to change x or y by stepSize
+
+        // TODO: clamp x and y to the arena walls (0 to 100)
+
+        // TODO: print this robot
+    }
+
+    // TODO: toString()
+}
+```
+
+> 💡 **Hint for requirement 5:** inside a method, an object can print *itself* with `System.out.println(this);`. Java calls `toString()` for you.
+
+---
+
+## Test Your Program
+
+What to type, one per line: `f`, `f`, `f`, `r`, `r`, `r`, `jump`, `x`
+
+Expected output (with a robot named `Chompy`):
+
+```text
+Welcome to the Robot Arena!
+f = forward | b = back | l = left | r = right  | x = exit
+Chompy at (50, 30)
+f = forward | b = back | l = left | r = right  | x = exit
+Chompy at (50, 10)
+f = forward | b = back | l = left | r = right  | x = exit
+Bonk! Hit the wall
+Chompy at (50, 0)
+f = forward | b = back | l = left | r = right  | x = exit
+Chompy at (70, 0)
+f = forward | b = back | l = left | r = right  | x = exit
+Chompy at (90, 0)
+f = forward | b = back | l = left | r = right  | x = exit
+Bonk! Hit the wall
+Chompy at (100, 0)
+f = forward | b = back | l = left | r = right  | x = exit
+Unknown command: jump
+f = forward | b = back | l = left | r = right  | x = exit
+Exiting arena
+Chompy at (100, 0)
+```
+
+Then run it again and check each of these scenarios:
+
+| Scenario | What to type | Expected result |
+|---|---|---|
+| One step up | `f`, `x` | `Chompy at (50, 30)` |
+| Hit the left wall | `l`, `l`, `l`, `x` | Third move prints `Bonk! Hit the wall` and `Chompy at (0, 50)` |
+| Hit the bottom wall | `b`, `b`, `b`, `x` | Third move prints `Bonk! Hit the wall` and `Chompy at (50, 100)` |
+| Keep pushing a wall | `l`, `l`, `l`, `l`, `x` | Fourth move bonks **again** and stays at `(0, 50)` |
+| Silly input | `pizza`, `x` | `Unknown command: pizza`, and the robot doesn't move |
+| Quit right away | `x` | `Exiting arena` then `Chompy at (50, 50)` |
+
+Paste your finished code and output into your lesson doc under **Module 4: Challenge**.
+
+---
+
+## ⭐ Challenge (Optional)
+
+1. **Move counter.** Count only the moves that **didn't** bonk. Print `Good moves: N` when the game ends.
+2. **Treasure!** 💎 Put a treasure at `(90, 10)`. If the robot lands exactly on it, print `You found the treasure!` and end the game.
+3. **Uppercase commands.** Make `F`, `B`, `L` and `R` work too, using either `.equalsIgnoreCase()` or `switch` fall-through.
+4. **No magic numbers.** Instead of typing `100` in four places, add a `private final int arenaSize = 100;` field and use it. Why is that better?
+
+---
+
+🎓 **Module 4 complete!** Your robot can hear, decide and play forever. But it's still trapped in a world of text. In Module 5, it gets a **real window**, and you'll drive it with the **arrow keys**. 🕹️

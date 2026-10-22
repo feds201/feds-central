@@ -1,0 +1,367 @@
+---
+title: "Java: Drawing with Graphics"
+---
+
+## Painting Your Robot 🎨
+
+⏱ **About 15 minutes**
+
+### What you'll learn
+
+- How screen **coordinates** work (spoiler: y goes **down**)
+- How to draw a shape with `Graphics`: `setColor` and `fillRect`
+- How to mix your own colors with `new Color(r, g, b)`
+- What an **anonymous inner class** is, and why we override `paintComponent`
+- What `super.paintComponent(g)` does
+- How `repaint()` makes things move
+
+📚 Extra reading: [Oracle: Performing Custom Painting](https://docs.oracle.com/javase/tutorial/uiswing/painting/step2.html) and [W3Schools: Java Inner Classes](https://www.w3schools.com/java/java_inner_classes.asp)
+
+---
+
+## Screen Coordinates: Upside-Down Math 🙃
+
+In math class, `(0, 0)` is in the middle, and y goes **up**. On a computer screen, it's different:
+
+- `(0, 0)` is the **top-left corner**.
+- `x` gets bigger as you go **right**.
+- `y` gets bigger as you go **down**, like line numbers on a page.
+
+```text
+(0,0) ----------> x gets bigger
+  |
+  |       (250, 100)
+  |
+  |                 (400, 300)
+  v
+y gets bigger
+```
+
+Now you know why Module 3's robot did `y -= stepSize` in `moveUp()`. Going **up** the screen means going to a **smaller** y. Mystery solved! 🕵️
+
+---
+
+## The Real Code (Step 4, Simplified)
+
+Here's the full robot game with a drawing. To keep things simple, our robot is a **blue box**. (Step 4's real robot has a face. You'll get a peek at the end.)
+
+```java
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+
+public class Main implements KeyListener {
+    private Robot robot;
+    private JFrame frame;
+    private JLabel positionLabel;
+    private JPanel displayPanel;
+
+    public Main() {
+        // Initialize the robot at the center position
+        robot = new Robot();
+
+        // Setup the window
+        frame = new JFrame();
+        frame.setTitle("Robot Controller - Use Arrow Keys");
+        frame.setSize(500, 500);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLayout(new BorderLayout());
+
+        // Create display panel that knows how to draw the robot
+        displayPanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                drawRobot(g);
+            }
+        };
+        displayPanel.setBackground(Color.WHITE);
+
+        // Create instruction label
+        JLabel instructionLabel = new JLabel("Use Arrow Keys to Move the Robot", SwingConstants.CENTER);
+        instructionLabel.setFont(new Font("Arial", Font.BOLD, 16));
+
+        // Create position label
+        positionLabel = new JLabel(robot.toString(), SwingConstants.CENTER);
+        positionLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+
+        // Add components
+        frame.add(instructionLabel, BorderLayout.NORTH);
+        frame.add(displayPanel, BorderLayout.CENTER);
+        frame.add(positionLabel, BorderLayout.SOUTH);
+
+        // Add key listener
+        frame.addKeyListener(this);
+        frame.setFocusable(true);
+        frame.setFocusTraversalKeysEnabled(false);
+
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+    }
+
+    private void drawRobot(Graphics g) {
+        int robotSize = 40;
+
+        // Find the top-left corner so the box is centered on the robot's (x, y)
+        int robotX = robot.getX() - robotSize / 2;
+        int robotY = robot.getY() - robotSize / 2;
+
+        // Draw the robot as a blue box
+        g.setColor(new Color(51, 153, 255));
+        g.fillRect(robotX, robotY, robotSize, robotSize);
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        int keyCode = e.getKeyCode();
+
+        switch (keyCode) {
+            case KeyEvent.VK_UP:
+                robot.moveUp();
+                break;
+            case KeyEvent.VK_DOWN:
+                robot.moveDown();
+                break;
+            case KeyEvent.VK_LEFT:
+                robot.moveLeft();
+                break;
+            case KeyEvent.VK_RIGHT:
+                robot.moveRight();
+                break;
+        }
+
+        // Update display
+        positionLabel.setText(robot.toString());
+        displayPanel.repaint();
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+        // Not used
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+        // Not used
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new Main());
+    }
+}
+
+class Robot {
+    private int x;
+    private int y;
+    private final int stepSize;
+
+    public Robot() {
+        x = 250;
+        y = 250;
+        stepSize = 10;
+    }
+
+    public void moveUp() {
+        y -= stepSize;
+    }
+
+    public void moveDown() {
+        y += stepSize;
+    }
+
+    public void moveLeft() {
+        x -= stepSize;
+    }
+
+    public void moveRight() {
+        x += stepSize;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    @Override
+    public String toString() {
+        return "Robot at position (" + x + ", " + y + ")";
+    }
+}
+```
+
+Paste it into OneCompiler, run it, click the window and drive! 🚗 Compared to the last lesson, only three things are new: the panel's `paintComponent`, the `drawRobot` method and the `repaint()` line.
+
+---
+
+## Walking Through It
+
+### Drawing a box: `Graphics`
+
+```java
+g.setColor(new Color(51, 153, 255));
+g.fillRect(robotX, robotY, robotSize, robotSize);
+```
+
+`g` is a `Graphics` object. Think of it as a **paintbrush** 🖌️ that Java hands you, pointed at the panel.
+
+- `setColor(...)` dips the brush in paint. Everything you draw after this uses that color, until you change it.
+- `fillRect(x, y, width, height)` paints a **filled rectangle**. The `x` and `y` are its **top-left corner**.
+
+Some other brush strokes you can use:
+
+| Method | Draws |
+|---|---|
+| `fillRect(x, y, w, h)` | A filled rectangle |
+| `drawRect(x, y, w, h)` | Just the outline of a rectangle |
+| `fillOval(x, y, w, h)` | A filled circle or oval that fits inside that rectangle |
+| `drawLine(x1, y1, x2, y2)` | A line from one point to another |
+| `drawString("Hi", x, y)` | Text |
+
+### Centering the box
+
+The robot's `(x, y)` is its **center**, but `fillRect` wants the **top-left corner**. So we back up by half the box size in each direction:
+
+```java
+int robotX = robot.getX() - robotSize / 2;
+int robotY = robot.getY() - robotSize / 2;
+```
+
+If the robot is at `(250, 250)` and the box is 40 wide, the corner is at `(230, 230)`. Then the box spans from 230 to 270, centered on 250. 🎯
+
+### Mixing colors: `new Color(r, g, b)`
+
+Every color on your screen is a mix of **R**ed, **G**reen and **B**lue light, each from `0` (none) to `255` (full blast).
+
+| Color | Code |
+|---|---|
+| Our robot blue | `new Color(51, 153, 255)` |
+| FEDS red | `new Color(200, 0, 0)` |
+| Purple | `new Color(128, 0, 128)` |
+| Black | `new Color(0, 0, 0)` or `Color.BLACK` |
+| White | `new Color(255, 255, 255)` or `Color.WHITE` |
+
+> 💡 Google "color picker" to find the RGB numbers for any color you like.
+
+### A one-of-a-kind panel: the anonymous inner class 🎂
+
+```java
+displayPanel = new JPanel() {
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        drawRobot(g);
+    }
+};
+```
+
+This is the weirdest-looking code in the whole game, so let's go slowly.
+
+A normal `JPanel` only knows how to paint its background. We need a panel that **also** paints our robot. We could write a whole new class for that, like `class RobotPanel extends JPanel`. But we only need **one** of these panels, ever.
+
+So instead, we use an **anonymous inner class**. It's like ordering a **custom cake** 🎂: "I'd like your regular JPanel... but with **these changes**." The curly braces right after `new JPanel()` hold the changes. It's *anonymous* because it never gets a class name. We make it once, right here, and that's that.
+
+The change we make is **overriding** `paintComponent`. That's the method Java calls whenever the panel needs to be drawn. (Same `@Override` as `toString()` in Module 3 and `keyPressed` in the last lesson!) Our version does two things:
+
+1. `super.paintComponent(g);` runs the **original** JPanel painting first. `super` means "**the version from the class I'm based on**." That paints the white background, which **wipes the old drawing** like erasing a whiteboard. Without it, every old box would stay on screen, leaving a trail. 🐌
+2. `drawRobot(g);` then draws the robot fresh, in its current spot.
+
+> 💡 You never call `paintComponent` yourself. Remember: "**Don't call us, we'll call you.**" Java calls it when the window first appears, when it's resized, and when you ask for a repaint.
+
+### `repaint()`: flip to the next page 📖
+
+```java
+displayPanel.repaint();
+```
+
+When you press a key, the robot's `x` and `y` change in its backpack, but the screen doesn't know that! `repaint()` tells Java, "**This panel is out of date. Please redraw it.**" Java then calls `paintComponent`, which wipes the panel and draws the box in its new spot.
+
+It's like a **flipbook**: each key press draws a new page with the box in a slightly different place. Flip fast enough, and it looks like it's moving. That's how every video game and cartoon works!
+
+---
+
+## 👀 Peek at Step 4's Fancy Robot (Optional)
+
+The real Step 4 robot is a smiley circle with eyes and a red arrow on top. Here's a slice of its `drawRobot`:
+
+```java
+Graphics2D g2d = (Graphics2D) g;
+g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+// Draw robot body (circle)
+g2d.setColor(new Color(51, 153, 255));
+g2d.fillOval(robotX, robotY, robotSize, robotSize);
+
+// Draw mouth
+g2d.setStroke(new BasicStroke(2));
+g2d.drawArc(robotX + 12, robotY + 20, 16, 10, 0, -180);
+
+// Draw direction indicator (small arrow on top)
+g2d.setColor(Color.RED);
+int[] xPoints = {robot.getX(), robot.getX() - 5, robot.getX() + 5};
+int[] yPoints = {robotY - 10, robotY - 5, robotY - 5};
+g2d.fillPolygon(xPoints, yPoints, 3);
+```
+
+A few new ideas are hiding in there. You don't need them yet, but here's a quick tour:
+
+- **`(Graphics2D) g` is a cast.** The paintbrush Java gives you is secretly a fancier `Graphics2D` brush. The cast is like **putting on special glasses** 🥽 so you can see and use its extra features, like `setStroke` (line thickness). You did casts with numbers in Module 1, for example `(int) 3.7`.
+- **Antialiasing** smooths out jagged, pixelly edges on curves.
+- **`int[]` is an array**: one variable that holds a whole **list** of values, like an egg carton 🥚 with numbered slots. `xPoints` holds the 3 x-values of the triangle's corners, and `yPoints` holds the 3 y-values. `fillPolygon` connects the dots.
+- **`fillOval` and `drawArc`** draw circles and curved slices of circles (the smile).
+
+Want to try it? Open the real `Step4 - Swing/src/Main.java` and swap its `drawRobot` into your program.
+
+---
+
+## 🔮 Predict the Result
+
+1. You **delete** `super.paintComponent(g);` and drive the robot to the right. What do you see?
+2. You **delete** `displayPanel.repaint();` and press → three times. What do you see?
+
+Answers:
+
+1. A **blue trail**, like a snail. 🐌 The old boxes never get erased, because nothing wipes the panel before each new box is drawn.
+2. The **label** at the bottom updates to `Robot at position (280, 250)`, but the box **doesn't move**, because nobody asked Java to redraw the panel. (If you resize the window, Java redraws it anyway, and the box suddenly jumps to its real spot!)
+
+---
+
+## 🙈 Common Oopsies
+
+- **Forgetting `repaint()`.** The robot moves in memory, but not on screen.
+- **Forgetting `super.paintComponent(g)`.** You get a trail of old drawings.
+- **Calling `setColor` *after* `fillRect`.** The color only affects things drawn *after* it. Order matters!
+- **Forgetting the `;` after the anonymous class.** `new JPanel() { ... };` is still one long statement that ends in a semicolon.
+- **Mixing up the corner and the center.** If your box seems "off" by half its size, check your `- robotSize / 2` math.
+- **Using `+` for "up."** Remember, up means **smaller** y.
+
+---
+
+## 🛠 Exercise: Robot Makeover
+
+Start with the simplified Step 4 code above and:
+
+1. Change the robot's color to your favorite color using `new Color(r, g, b)`.
+2. Make the box **60** pixels instead of 40.
+3. Make the robot move **25** pixels per key press instead of 10. (Hint: look in `Robot`'s constructor.)
+4. Give the box a **black outline**: after `fillRect`, set the color to `Color.BLACK` and call `drawRect` with the same four numbers.
+5. Make the background light gray: `new Color(230, 230, 230)`.
+
+Expected result: a big box in your color with a black border on a light gray background. Each arrow press moves it a big jump. After pressing → once, the label reads:
+
+```text
+Robot at position (275, 250)
+```
+
+Paste your finished `drawRobot` method and `Robot` constructor into your lesson doc under **Module 5: Drawing**.
+
+### ⭐ Stretch
+
+Give your box robot a face! Use two small `fillOval`s for eyes (in white, with smaller black ones on top for pupils) and a `drawLine` for a mouth. All of them should be positioned using `robotX` and `robotY` (for example, `robotX + 15`) so the face moves with the robot.
+
+---
+
+**Next up:** the Boss Level. Everything you've learned in Modules 3, 4 and 5, all at once. ➡️

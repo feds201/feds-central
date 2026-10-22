@@ -1,0 +1,297 @@
+---
+title: "Java: Building a Window with Swing"
+---
+
+## Building the Robot's House 🏠
+
+⏱ **About 12 minutes**
+
+### What you'll learn
+
+- The three Swing building blocks: **JFrame**, **JPanel** and **JLabel**
+- How **BorderLayout** decides where things go
+- The window setup methods: `setTitle`, `setSize`, `setDefaultCloseOperation`, `setLocationRelativeTo` and `setVisible`
+- How to change text on the screen with `setText` and style it with `Font`
+
+📚 Extra reading: [Oracle: Using Top-Level Containers](https://docs.oracle.com/javase/tutorial/uiswing/components/toplevel.html), [How to Use Labels](https://docs.oracle.com/javase/tutorial/uiswing/components/label.html) and [How to Use BorderLayout](https://docs.oracle.com/javase/tutorial/uiswing/layout/border.html)
+
+---
+
+## The Picture Frame Analogy 🖼️
+
+Think about hanging art on a wall:
+
+| Real life | Swing | What it is |
+|---|---|---|
+| A **picture frame** | `JFrame` | The window itself: title bar, close button and border |
+| A **canvas** inside the frame | `JPanel` | A blank area you can put things in or draw on |
+| A **sticky note** on the frame | `JLabel` | A bit of text (or an image) |
+
+You build a window by making a frame, making the pieces, and then **adding** the pieces to the frame.
+
+Each of these is just a **class**, exactly like your `Robot`. `new JFrame()` builds a frame object the same way `new Robot()` builds a robot. Someone at Java wrote these blueprints so we don't have to. 🙏
+
+---
+
+## The Real Code (Step 4, Part 1)
+
+Here's the window from **Step 4**, minus the drawing code (that's next lesson). It also uses the **Step 4 Robot** from Module 3, the one with `private` fields, getters and `toString()`.
+
+```java
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+
+public class Main implements KeyListener {
+    private Robot robot;
+    private JFrame frame;
+    private JLabel positionLabel;
+    private JPanel displayPanel;
+
+    public Main() {
+        // Initialize the robot at the center position
+        robot = new Robot();
+
+        // Setup the window
+        frame = new JFrame();
+        frame.setTitle("Robot Controller - Use Arrow Keys");
+        frame.setSize(500, 500);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLayout(new BorderLayout());
+
+        // Create display panel
+        displayPanel = new JPanel();
+        displayPanel.setBackground(Color.WHITE);
+
+        // Create instruction label
+        JLabel instructionLabel = new JLabel("Use Arrow Keys to Move the Robot", SwingConstants.CENTER);
+        instructionLabel.setFont(new Font("Arial", Font.BOLD, 16));
+
+        // Create position label
+        positionLabel = new JLabel(robot.toString(), SwingConstants.CENTER);
+        positionLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+
+        // Add components
+        frame.add(instructionLabel, BorderLayout.NORTH);
+        frame.add(displayPanel, BorderLayout.CENTER);
+        frame.add(positionLabel, BorderLayout.SOUTH);
+
+        // Add key listener
+        frame.addKeyListener(this);
+        frame.setFocusable(true);
+        frame.setFocusTraversalKeysEnabled(false);
+
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        int keyCode = e.getKeyCode();
+
+        switch (keyCode) {
+            case KeyEvent.VK_UP:
+                robot.moveUp();
+                break;
+            case KeyEvent.VK_DOWN:
+                robot.moveDown();
+                break;
+            case KeyEvent.VK_LEFT:
+                robot.moveLeft();
+                break;
+            case KeyEvent.VK_RIGHT:
+                robot.moveRight();
+                break;
+        }
+
+        // Update display
+        positionLabel.setText(robot.toString());
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+        // Not used
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+        // Not used
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new Main());
+    }
+}
+
+class Robot {
+    private int x;
+    private int y;
+    private final int stepSize;
+
+    public Robot() {
+        x = 250;
+        y = 250;
+        stepSize = 10;
+    }
+
+    public void moveUp() {
+        y -= stepSize;
+    }
+
+    public void moveDown() {
+        y += stepSize;
+    }
+
+    public void moveLeft() {
+        x -= stepSize;
+    }
+
+    public void moveRight() {
+        x += stepSize;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    @Override
+    public String toString() {
+        return "Robot at position (" + x + ", " + y + ")";
+    }
+}
+```
+
+(We removed the `println` lines from the move methods because the window now shows the position for us.)
+
+Run it, click the window and press the arrow keys. The text at the bottom changes as the robot moves!
+
+---
+
+## Walking Through It
+
+### Comments: notes to your future self 📝
+
+```java
+// Setup the window
+```
+
+Step 4 is full of comments. Java skips everything after `//`. They're for **humans**, like the teammate who reads your code next year (or you, next week, after you've forgotten everything). A good comment says *why* or *what's coming*, not something obvious like `// add 1 to x`.
+
+### Setting up the frame
+
+| Line | What it does |
+|---|---|
+| `frame.setTitle("...")` | The text in the window's title bar |
+| `frame.setSize(500, 500)` | Width, then height, measured in **pixels** (the tiny dots on your screen) |
+| `frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)` | Clicking ❌ **ends the program**. Without this, the window hides but the program keeps running, like a ghost. 👻 |
+| `frame.setLayout(new BorderLayout())` | Chooses how things get arranged (see below) |
+| `frame.setLocationRelativeTo(null)` | Puts the window in the **center** of the screen |
+| `frame.setVisible(true)` | Actually **shows** the window. Windows start out invisible! |
+| `frame.setFocusTraversalKeysEnabled(false)` | Stops the Tab key from being "stolen" for jumping between components, so your code can use it |
+
+> 💡 Call `setVisible(true)` **last**. It's like opening the curtain after the stage is set. If you open it first, the audience sees you running around moving furniture.
+
+### BorderLayout: a compass 🧭
+
+`BorderLayout` splits the window into five areas named like a compass:
+
+```text
++-----------------------------+
+|           NORTH             |
++------+---------------+------+
+|      |               |      |
+| WEST |    CENTER     | EAST |
+|      |               |      |
++------+---------------+------+
+|           SOUTH             |
++-----------------------------+
+```
+
+```java
+frame.add(instructionLabel, BorderLayout.NORTH);
+frame.add(displayPanel, BorderLayout.CENTER);
+frame.add(positionLabel, BorderLayout.SOUTH);
+```
+
+The edges are only as big as what's inside them. **CENTER** is greedy and grabs all the leftover space. That's why our big white panel goes there.
+
+### Labels and fonts
+
+```java
+JLabel instructionLabel = new JLabel("Use Arrow Keys to Move the Robot", SwingConstants.CENTER);
+instructionLabel.setFont(new Font("Arial", Font.BOLD, 16));
+```
+
+- The first input is the label's text. `SwingConstants.CENTER` centers it.
+- `new Font("Arial", Font.BOLD, 16)` builds a font object: the font name, the style (`Font.PLAIN`, `Font.BOLD` or `Font.ITALIC`) and the size.
+- `Color.WHITE` is a ready-made color. There are others, like `Color.RED` and `Color.BLACK`. (More colors next lesson.)
+
+### Why are some things fields and some aren't?
+
+Look closely: `positionLabel` is a **field**, but `instructionLabel` is a **local variable** inside the constructor. Why?
+
+`positionLabel` needs to change **later**, inside `keyPressed`:
+
+```java
+positionLabel.setText(robot.toString());
+```
+
+So it has to live in `Main`'s backpack, where every method can reach it. The instruction text never changes after setup, so it can be a local variable that's forgotten once the constructor ends. (The frame still remembers to display it. We just can't reach it by name anymore.)
+
+### `setText`: updating the sticky note
+
+`setText` swaps the label's text for new text. Since `toString()` returns `"Robot at position (260, 250)"`, the bottom of the window always shows the robot's latest position.
+
+---
+
+## 🔮 Predict the Result
+
+In the code above, what happens if you **delete** the line `frame.setVisible(true);` and run it?
+
+Answer: **Nothing appears.** The program builds the whole window, the labels and the robot... and never shows any of it. Everything is set up backstage with the curtain closed. 🎭
+
+What if you add **two** things to `BorderLayout.NORTH`?
+
+Answer: Only the **last one** shows. Each compass area holds just one component, so the second one replaces the first.
+
+---
+
+## 🙈 Common Oopsies
+
+- **Forgetting `setVisible(true)`**, or calling it *before* adding components, which can leave pieces missing until the window is resized.
+- **Forgetting `setSize`.** The window shows up as a tiny little stub.
+- **Forgetting `EXIT_ON_CLOSE`.** The window closes, but your program keeps running in the background.
+- **Forgetting to import.** `JLabel cannot be found` means you need `import javax.swing.*;`. `Color` and `Font` come from `import java.awt.*;`.
+- **Making a label a local variable, then trying to `setText` it in another method.** Java will say it can't find the symbol. Make it a field.
+
+---
+
+## 🛠 Exercise: Remodel the House
+
+Start with the Step 4 Part 1 code above and:
+
+1. Change the window title to `<Your Name>'s Robot Arena` (with your real name, of course).
+2. Make the window `600` wide and `400` tall.
+3. Add a new label to `BorderLayout.EAST` that says ` Team 201 ` (spaces included, so it doesn't hug the edge), in **italic**, size `18`.
+4. Change the position label's text to show the robot's position **and** a fun status, like `Robot at position (260, 250) - Vroom!`. (Hint: use `+` in the `setText` line.)
+
+Expected result: a 600×400 window with your title, the instructions on top, "Team 201" on the right side and the position at the bottom. When you press →, the bottom label reads:
+
+```text
+Robot at position (260, 250) - Vroom!
+```
+
+Paste your finished constructor and `keyPressed` into your lesson doc under **Module 5: Swing Windows**.
+
+### ⭐ Stretch
+
+Add a `JLabel` to `BorderLayout.WEST` that shows the **last key pressed**. Hint: `KeyEvent.getKeyText(keyCode)` returns a key's name as a String, like `"Up"` or `"W"`. Make the label a field and `setText` it in `keyPressed`.
+
+---
+
+**Next up:** that big white panel is just begging for a robot. Let's **draw**! ➡️

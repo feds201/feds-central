@@ -1,0 +1,226 @@
+---
+title: "Java: If, Else If, Else and Logic"
+---
+
+## The Bouncer at the Door 🚪🕶️
+
+⏱ **About 12 minutes**
+
+### What you'll learn
+
+- How `if`, `else if` and `else` let your program make decisions
+- How to combine conditions with `||` (OR), `&&` (AND) and `!` (NOT)
+- Why Strings are compared with `.equals()` and **not** `==`
+
+📚 Extra reading: [W3Schools: Java If ... Else](https://www.w3schools.com/java/java_conditions.asp), [Logical Operators](https://www.w3schools.com/java/java_operators_logical.asp) and [Comparing Strings](https://www.w3schools.com/java/ref_string_equals.asp)
+
+---
+
+## The Bouncer Analogy
+
+Picture a bouncer at the door of a robot party. 🎉 Each guest walks up, and the bouncer checks a list of rules **in order**:
+
+1. "Are you on the VIP list? → Go to the VIP room."
+2. "**Otherwise**, are you on the regular list? → Come on in."
+3. "**Otherwise**... sorry, you're not getting in."
+
+The bouncer stops at the **first** rule that matches. If you're a VIP, they don't bother checking the regular list.
+
+That's exactly how `if / else if / else` works:
+
+```java
+if (isVip) {
+    System.out.println("Welcome to the VIP room!");
+}
+else if (isOnList) {
+    System.out.println("Come on in!");
+}
+else {
+    System.out.println("Sorry, not tonight.");
+}
+```
+
+- `if (...)`: check the first rule. The thing in the parentheses must be a `boolean` (true or false).
+- `else if (...)`: only checked if every rule above it was false. You can have as many as you want.
+- `else`: the "none of the above" catch-all. No condition. It's optional.
+
+**Only one** of the blocks runs. Never two.
+
+---
+
+## The Real Code (Step 2)
+
+Here's the decision-making part of Step 2's `Main`:
+
+```java
+if (input.equals("f") || input.equals("b") || input.equals("l") || input.equals("r")) {
+    robot.move(input);
+}
+else if (input.equals("x")) {
+    System.out.println("Exiting program");
+    break;
+}
+```
+
+Let's break it down. (We'll cover `break` in the game loop lesson.)
+
+### `input.equals("f")`
+
+This asks, "Is the text in `input` exactly `f`?" It returns `true` or `false`.
+
+### `||` means OR
+
+The two vertical bars `||` mean **OR**. (On most keyboards, `|` is Shift + the backslash key, above Enter.) The whole condition is true if **any** piece is true:
+
+"Is the input `f`, **or** `b`, **or** `l`, **or** `r`?"
+
+If yes, the robot moves. If no, the bouncer checks the next rule: "Is it `x`?"
+
+### No `else`?
+
+Notice that Step 2 has **no** `else`. If the user types something silly like `banana`, neither rule matches, so... nothing happens. The robot just ignores it. 🤷 You'll fix that in the exercise.
+
+---
+
+## AND, OR, NOT
+
+| Operator | Name | True when... | Example |
+|---|---|---|---|
+| `&&` | AND | **both** sides are true | `energy > 0 && !isTired` |
+| (two bars) | OR | **at least one** side is true | `key.equals("f")` OR `key.equals("b")` |
+| `!` | NOT | flips true ↔ false | `!isTired` is true when `isTired` is false |
+
+Real-life examples:
+
+- "You can drive **if** you have a license **AND** a car." 🚗
+- "We'll cancel practice **if** it snows **OR** the power is out." ❄️
+- "Bring an umbrella **if NOT** sunny." ☂️
+
+---
+
+## `.equals()` vs `==`: The Twin Problem 👯
+
+For numbers like `int` and `double`, `==` works great:
+
+```java
+if (score == 10) { ... }
+```
+
+But for **Strings**, `==` asks the wrong question. Imagine two identical twins:
+
+- `.equals()` asks: "Do these two **look the same**?" (Same letters?) 👍
+- `==` asks: "Are these the **exact same person**?" (The same object in memory?) 🤔
+
+Two Strings can have the exact same letters but be **different objects**, especially text that came from a Scanner. Then `==` says `false` even though they look identical!
+
+```java
+String input = scanner.nextLine();   // user types: f
+
+input == "f"        // ❌ might be false! Different objects.
+input.equals("f")   // ✅ true. Same letters.
+```
+
+**Rule of thumb:** compare Strings with `.equals()`. Always. No exceptions. Tattoo it on your arm. 💪
+
+---
+
+## 🔮 Predict the Output
+
+```java
+public class Main {
+
+    public static void main(String[] args) {
+        int battery = 15;
+        boolean isCharging = false;
+        String mode = "turbo";
+
+        if (battery < 10) {
+            System.out.println("Shutting down!");
+        }
+        else if (battery < 20 && !isCharging) {
+            System.out.println("Low battery! Plug me in!");
+        }
+        else {
+            System.out.println("All good!");
+        }
+
+        if (mode.equals("slow") || mode.equals("turbo")) {
+            System.out.println("Mode accepted: " + mode);
+        }
+    }
+}
+```
+
+Answer:
+
+```text
+Low battery! Plug me in!
+Mode accepted: turbo
+```
+
+`battery < 10` is false, so the bouncer checks the next rule. `battery < 20` is true **and** `!isCharging` is true, so we get the low-battery message. The `else` never runs.
+
+---
+
+## 🙈 Common Oopsies
+
+- **Using `==` on Strings.** Use `.equals()`. (Yes, we're saying it again.)
+- **Using `=` instead of `==`.** `=` **stores** a value; `==` **compares**. `if (score = 10)` won't compile.
+- **A semicolon after the condition.** `if (x > 5);` ends the `if` right there, and the block below it **always** runs. Sneaky!
+- **Writing `input.equals("f" || "b")`.** You can't OR two Strings together. Write out each check: `input.equals("f") || input.equals("b")`.
+- **Expecting more than one block to run.** In an `if / else if / else` chain, only the **first** match runs.
+
+---
+
+## 🛠 Exercise: The Command Bouncer
+
+Start with this code:
+
+```java
+import java.util.Scanner;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        Robot robot = new Robot();
+
+        System.out.println("f = forward | b = back | l = left | r = right  | x = exit");
+        String input = scanner.nextLine();
+
+        // TODO: if input is f, b, l or r: call robot.move(input)
+        // TODO: else if input is x: print "Exiting program"
+        // TODO: else: print "Unknown command: " followed by the input
+
+        scanner.close();
+    }
+}
+
+class Robot {
+
+    public void move(String key) {
+        System.out.println(" ===== Robot is moving " + key + " =====");
+    }
+
+}
+```
+
+(This `Robot` is simplified so we can focus on the `if`. The `switch` comes back in the next lesson.)
+
+Run it **three times**, typing a different command each time:
+
+| What to type | Expected output (after the menu line) |
+|---|---|
+| `f` | ` ===== Robot is moving f =====` |
+| `x` | `Exiting program` |
+| `banana` | `Unknown command: banana` |
+
+Paste your finished code into your lesson doc under **Module 4: Conditionals**.
+
+### ⭐ Stretch
+
+Users sometimes type `F` instead of `f`. Look up `.equalsIgnoreCase()` on W3Schools and use it so that both `F` and `f` work. Bonus: what happens if the user just presses Enter without typing anything?
+
+---
+
+**Next up:** that long OR chain is getting messy. There's a cleaner way to pick from a menu. ➡️

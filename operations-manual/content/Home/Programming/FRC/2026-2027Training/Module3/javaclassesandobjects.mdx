@@ -1,0 +1,219 @@
+---
+title: "Java: Classes, Objects and Constructors"
+---
+
+## Blueprints and Robots 🍪
+
+⏱ **About 15 minutes**
+
+### What you'll learn
+
+- What a **class** is (the blueprint)
+- What an **object** is (the actual thing built from the blueprint)
+- How `new` builds an object
+- What a **constructor** is and when it runs
+
+📚 Extra reading: [W3Schools: Java Classes and Objects](https://www.w3schools.com/java/java_classes.asp) and [W3Schools: Java Constructors](https://www.w3schools.com/java/java_constructors.asp)
+
+---
+
+## The Cookie Cutter Analogy
+
+Imagine a **cookie cutter** shaped like a robot. 🍪🤖
+
+- The **cookie cutter** is not a cookie. You can't eat it. It only describes the *shape* a cookie will have.
+- Each time you press the cutter into dough, you get a **cookie**. You can make one cookie, or a hundred, all from the same cutter.
+
+In Java:
+
+| Kitchen | Java | Example |
+|---|---|---|
+| Cookie cutter | **class** | `class Robot` |
+| Pressing the cutter | the keyword **`new`** | `new Robot()` |
+| A cookie | an **object** (also called an *instance*) | the robot you just made |
+
+A **class** is a blueprint. An **object** is a real thing built from that blueprint.
+
+---
+
+## The Real Code (Step 1)
+
+Here's Step 1 of our robot game, combined into one file for Programiz:
+
+```java
+public class Main {
+
+    public static void main(String[] args) {
+        System.out.println("Program started!");
+
+        Robot robot = new Robot();
+    }
+}
+
+class Robot {
+
+    Robot() {
+        System.out.println("Moving Forward");
+    }
+
+}
+```
+
+Output:
+
+```text
+Program started!
+Moving Forward
+```
+
+Wait... `main` never said `println("Moving Forward")`. So where did that come from? Let's break it down.
+
+### `class Robot { ... }`
+
+This is the cookie cutter. Everything between the curly braces describes what a Robot *is* and what it *can do*. By itself, it does **nothing**. A blueprint doesn't drive anywhere.
+
+### `Robot() { ... }`: the constructor
+
+Look closely. This looks like a method, but:
+
+1. Its name is **exactly the same** as the class name (`Robot`).
+2. It has **no return type** (no `void`, no `int`, nothing).
+
+That makes it a **constructor**. The constructor is the robot's **birth moment** 🐣. Its code runs **automatically, once**, at the instant the robot is created. It's where a robot "wakes up" and gets itself ready.
+
+### `Robot robot = new Robot();`
+
+This line is the star of the show. Read it right to left:
+
+| Piece | Meaning |
+|---|---|
+| `new Robot()` | "Press the cookie cutter!" Build a brand-new Robot object. This runs the constructor. |
+| `=` | Store what you just built... |
+| `robot` | ...in a variable named `robot`... |
+| `Robot` | ...whose **type** is `Robot`. |
+
+Remember from Module 1: `int score = 5;` means "a variable of type `int` named `score`." This is the same pattern! A class you write becomes a brand-new **type** you can use, just like `int` or `String`.
+
+> 💡 **Naming convention:** Class names start with a **Capital** letter (`Robot`). Variable names start with a **lowercase** letter (`robot`). Java doesn't care which you use, but every Java programmer on Earth does. Follow it!
+
+---
+
+## Constructors Can Take Inputs
+
+What if every robot should have a name? We can give the constructor a **parameter**, which is a value you hand it at birth:
+
+```java
+class Robot {
+
+    Robot(String name) {
+        System.out.println(name + " has been built!");
+    }
+
+}
+```
+
+Now when we build it, we **must** pass in a name:
+
+```java
+Robot robot = new Robot("Chompy");
+```
+
+```text
+Chompy has been built!
+```
+
+That's like a baby getting its name on the birth certificate. 📜
+
+---
+
+## 🔮 Predict the Output
+
+What does this print? Decide **before** you peek!
+
+```java
+public class Main {
+
+    public static void main(String[] args) {
+        System.out.println("Factory open");
+        Robot a = new Robot();
+        Robot b = new Robot();
+        System.out.println("Factory closed");
+    }
+}
+
+class Robot {
+
+    Robot() {
+        System.out.println("Beep!");
+    }
+
+}
+```
+
+Answer:
+
+```text
+Factory open
+Beep!
+Beep!
+Factory closed
+```
+
+Two `new`s means two robots, and two births means two `Beep!`s. One cookie cutter, two cookies. 🍪🍪
+
+---
+
+## 🙈 Common Oopsies
+
+- **Forgetting `new`.** `Robot robot = Robot();` is an error. You have to press the cutter!
+- **Putting a return type on a constructor.** `void Robot() { ... }` is *not* a constructor anymore. It's a regular method that happens to have a weird name, and it will **not** run at birth.
+- **Misspelling the constructor.** `robot() { ... }` with a lowercase r doesn't match the class name `Robot`, so Java gets confused.
+- **Wrong number of inputs.** If the constructor is `Robot(String name)`, then `new Robot()` with nothing inside won't compile. You promised a name!
+- **Two `public` classes in one Programiz file.** Only `Main` gets `public`.
+
+---
+
+## 🛠 Exercise: Robot Factory
+
+Start with this code in Programiz:
+
+```java
+public class Main {
+
+    public static void main(String[] args) {
+        System.out.println("Program started!");
+
+        // TODO: build two robots with different names
+    }
+}
+
+class Robot {
+
+    // TODO: write a constructor that takes a String name
+    // and prints "<name> is online!"
+
+}
+```
+
+Your goal:
+
+1. Write a constructor for `Robot` that takes a `String name` and prints the name followed by ` is online!`.
+2. In `main`, build **two** robots with different names.
+
+Expected output (your names can be different):
+
+```text
+Program started!
+Chompy is online!
+Sparky is online!
+```
+
+Paste your finished code into your lesson doc under **Module 3: Classes and Objects**.
+
+### ⭐ Stretch
+
+Give the constructor a **second** parameter, `int teamNumber`, and print something like `Chompy is online! (Team 201)`. Separate the parameters with a comma: `Robot(String name, int teamNumber)`.
+
+---
+
+**Next up:** a robot that only does one thing at birth is pretty boring. Let's give it **skills**. ➡️

@@ -1,0 +1,132 @@
+---
+title: "Boss Level: Robot Arena Deluxe"
+---
+
+## Boss Level: Robot Arena Deluxe 👾🏆
+
+⏱ **About 13 minutes** (plus optional bonus rounds)
+
+You've made it to the final boss. Time to turn the simplified Step 4 robot into a real little arcade game, using everything from Modules 3, 4 and 5.
+
+---
+
+## Objective
+
+Upgrade the robot game so that:
+
+- 🎮 It works with **both** WASD and the arrow keys
+- 🧱 The robot **can't drive off the edge** of the white panel
+- 🔢 A label keeps track of **how many moves** you've made
+- 🚀 Pressing **T** toggles **turbo mode**, which makes the robot move 3× as far
+
+Start with the **simplified Step 4 code** from the Drawing lesson (or your upgraded version from that exercise).
+
+---
+
+## Requirements
+
+| # | Requirement | Concepts |
+|---|---|---|
+| 1 | W/A/S/D move the robot just like ↑/←/↓/→ | `switch`, stacked `case` labels, `VK_` constants |
+| 2 | The robot box never goes past any edge of the white panel | `if`, getters, `getWidth()` / `getHeight()` |
+| 3 | A label in `BorderLayout.EAST` shows ` Moves: 0 ` and counts up **only** when the robot moves | Fields, `setText`, `+=` |
+| 4 | Pressing T switches turbo on and off. Turbo step size is 30; normal is 10. | `boolean` fields, `!`, methods |
+| 5 | In turbo mode, the robot is drawn **red** instead of blue | `if/else`, `Color` |
+| 6 | Each of your new methods has a short comment explaining what it does | Comments |
+
+---
+
+## Hints
+
+### Hint 1: `stepSize` can't be `final` anymore
+
+Back in Module 3, `stepSize` was `final`, which means **carved in stone**. But turbo mode needs to **change** it while the game runs! So remove the word `final`:
+
+```java
+private int stepSize;
+```
+
+This is a great example of a real design decision: `final` protected us when the step size should never change. Now the rules of the game changed, so the code has to change, too.
+
+Then give `Robot` a way to toggle turbo. One approach:
+
+```java
+private boolean turbo;
+
+// Switches turbo mode on or off
+public void toggleTurbo() {
+    turbo = !turbo;
+    if (turbo) {
+        stepSize = 30;
+    } else {
+        stepSize = 10;
+    }
+}
+
+public boolean isTurbo() {
+    return turbo;
+}
+```
+
+(`turbo = !turbo;` flips a boolean: `true` becomes `false`, and `false` becomes `true`. Like a light switch. 💡)
+
+### Hint 2: Keeping the robot in the arena
+
+The panel can tell you its size with `displayPanel.getWidth()` and `displayPanel.getHeight()`. Since the robot's `(x, y)` is the **center** of the box, the center must stay at least **half a box** away from each edge.
+
+Add a method to `Robot` that pushes it back inside if it went too far:
+
+```java
+// Pushes the robot back inside the arena if it went past an edge
+public void keepInside(int width, int height, int margin) {
+    if (x < margin) {
+        x = margin;
+    }
+    // TODO: the right edge (x can't be more than width - margin)
+    // TODO: the top edge
+    // TODO: the bottom edge
+}
+```
+
+Then call it in `keyPressed` **after** the `switch`:
+
+```java
+robot.keepInside(displayPanel.getWidth(), displayPanel.getHeight(), 20);
+```
+
+The `20` is half of the 40-pixel box. (If you made your box bigger in the last exercise, use half of *your* size.)
+
+### Hint 3: Only count real moves
+
+If you add `moveCount += 1;` at the bottom of `keyPressed`, then pressing T, the spacebar or *any* key would count as a move. Put the counting **inside** the move `case`s instead, or use a `boolean moved` variable that the move cases set to `true`.
+
+---
+
+## Test Your Program
+
+Run your program, click the window, then try each scenario **in order**:
+
+| Scenario | Expected result |
+|---|---|
+| Just started | Bottom: `Robot at position (250, 250)`. Right: `Moves: 0`. Box is **blue**. |
+| Press **D** | `Robot at position (260, 250)`, `Moves: 1` |
+| Press **↑** | `Robot at position (260, 240)`, `Moves: 2` |
+| Press **Spacebar** | Nothing changes. Still `Moves: 2`. |
+| Press **T**, then **A** | Box turns **red**. `Robot at position (230, 240)`, `Moves: 3` |
+| Hold **A** down for a few seconds | The box slides left and **stops** at the edge. `x` stays at `20`. |
+| Press **T** again, then **S** | Box is **blue** again, and moves down by just 10. |
+
+Paste your finished code into your lesson doc under **Module 5: Boss Level**, along with a screenshot of your robot parked in a corner.
+
+---
+
+## ⭐ Bonus Rounds (Optional)
+
+1. **🎯 Goal target.** Draw a small green square somewhere in the arena. When the robot touches it, print `GOAL!` to the console, add 1 to a score label, and move the target to a new random spot. Hint: `(int) (Math.random() * 400)` gives you a random whole number from 0 to 399. To check whether they're touching, see if the distance between their centers is less than 30 in **both** x and y. (`Math.abs` turns a negative number positive.)
+2. **⏳ Out of energy.** Bring back Module 3's energy idea. Each move costs 1 energy, turbo moves cost 3, and at 0 energy the robot stops moving and the label says `Out of energy! Press R to recharge.`
+3. **🚪 Escape hatch.** Pressing **Esc** closes the game. Hint: `System.exit(0);`
+4. **🤖 Face swap.** Swap in Step 4's fancy smiley robot from the "Peek" section of the Drawing lesson.
+
+---
+
+🏁 **Modules 3–5 complete!** You started with a program that only said `Program started!`, and now you have a working arcade game with a class you designed, methods, fields, loops, conditionals, events and graphics. Those are the same building blocks our FRC robot code uses. The robot in the shop is just a much, *much* bigger version of the box you just drove around. 🤖🏆

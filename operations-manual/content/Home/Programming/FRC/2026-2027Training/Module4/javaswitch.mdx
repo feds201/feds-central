@@ -1,0 +1,257 @@
+---
+title: "Java: Switch Statements"
+---
+
+## The Train Track Switch 🚂
+
+⏱ **About 10 minutes**
+
+### What you'll learn
+
+- How a `switch` picks one path out of many
+- What `case`, `break` and `default` do
+- What **fall-through** is (and how to avoid crashing the train)
+
+📚 Extra reading: [W3Schools: Java Switch](https://www.w3schools.com/java/java_switch.asp)
+
+---
+
+## The Train Track Analogy
+
+Imagine a train rolling into a station with lots of tracks. A **track switch** looks at the train's ticket and sends it down the matching track:
+
+- Ticket says "f"? → Forward track.
+- Ticket says "b"? → Back track.
+- Ticket says "l"? → Left track.
+- None of the above? → The "lost and found" track.
+
+A Java `switch` does the same thing. It looks at **one value** and jumps straight to the matching `case`.
+
+---
+
+## The Real Code (Step 2)
+
+You've already seen this! It's the inside of the robot's `move` method:
+
+```java
+public void move(String key) {
+    System.out.print(" ===== Robot is moving ");
+
+    switch (key) {
+        case "f":
+            System.out.println("Forward =====");
+            break;
+        case "b":
+            System.out.println("Back =====");
+            break;
+        case "l":
+            System.out.println("Left =====");
+            break;
+        case "r":
+            System.out.println("Right =====");
+            break;
+    }
+}
+```
+
+| Piece | What it does |
+|---|---|
+| `switch (key)` | "Look at the ticket." The value in parentheses is what we're matching. |
+| `case "f":` | "If the ticket says `f`, start here." Note the **colon**, not a semicolon. |
+| the lines under a case | The code that runs for that case |
+| `break;` | "Stop! Get off the train." Jump out of the switch. |
+
+### `print` vs `println`
+
+Notice the first line uses `print` (no `ln`). `print` doesn't move to a new line afterward, so the next output lands on the **same line**:
+
+```text
+ ===== Robot is moving Forward =====
+```
+
+The first half comes from `print`, and the second half from the `println` inside the case.
+
+### Step 0 did it too
+
+**Step 0's** robot used the exact same `switch`, but inside its constructor. In Module 3 you learned why moving it into a method was better. The `switch` itself didn't change at all.
+
+---
+
+## `default`: The Lost and Found Track 🧳
+
+What if the ticket doesn't match **any** case? Without a `default`, the switch just does nothing. Add one to catch everything else:
+
+```java
+switch (key) {
+    case "f":
+        System.out.println("Forward =====");
+        break;
+    // ... other cases ...
+    default:
+        System.out.println("??? =====");
+        break;
+}
+```
+
+`default` is like the `else` at the end of an `if` chain. It usually goes last.
+
+---
+
+## Fall-Through: Forgetting the Brakes 💥
+
+Here's the weird part. If you **forget** `break`, Java doesn't stop at the end of the case. It keeps rolling straight into the **next** case's code, without even checking its label! This is called **fall-through**.
+
+```java
+switch (key) {
+    case "f":
+        System.out.println("Forward");
+    case "b":
+        System.out.println("Back");
+        break;
+}
+```
+
+If `key` is `"f"`, this prints:
+
+```text
+Forward
+Back
+```
+
+😱 The train blew right past the station. **Always end each case with `break;`** unless you *want* fall-through.
+
+### Fall-through on purpose
+
+Sometimes fall-through is handy. If several cases should do the **same** thing, stack them up:
+
+```java
+switch (key) {
+    case "f":
+    case "F":
+        System.out.println("Forward");
+        break;
+}
+```
+
+Now both `f` and `F` go forward.
+
+---
+
+## `switch` vs `if / else if`
+
+| Use a `switch` when... | Use `if / else if` when... |
+|---|---|
+| You're comparing **one** value against a list of exact matches | You need ranges like `battery < 20` |
+| There are lots of options (a menu!) | You need to combine conditions with AND / OR |
+
+A `switch` works with `int`, `char`, `String` and a few other types. In Module 5 you'll see a `switch` on `int` key codes for the arrow keys!
+
+---
+
+## 🔮 Predict the Output
+
+```java
+public class Main {
+
+    public static void main(String[] args) {
+        String key = "l";
+
+        switch (key) {
+            case "f":
+                System.out.println("Forward");
+                break;
+            case "l":
+                System.out.println("Left");
+            case "r":
+                System.out.println("Right");
+                break;
+            default:
+                System.out.println("Huh?");
+                break;
+        }
+    }
+}
+```
+
+Answer:
+
+```text
+Left
+Right
+```
+
+Case `"l"` is missing its `break`, so it falls through into case `"r"`. It stops at `"r"`'s `break`, so `default` never runs.
+
+---
+
+## 🙈 Common Oopsies
+
+- **Forgetting `break`.** The #1 switch bug. Your robot moves Left *and* Right at the same time. 🤖💫
+- **Semicolon instead of colon.** It's `case "f":`, not `case "f";`.
+- **Wrong type in the case.** If `key` is a String, the cases must be Strings: `case "f":`, not `case f:`.
+- **Duplicate cases.** Two `case "f":` lines in the same switch won't compile.
+
+---
+
+## 🛠 Exercise: More Tracks
+
+Start with this code:
+
+```java
+public class Main {
+
+    public static void main(String[] args) {
+        Robot robot = new Robot();
+
+        robot.move("f");
+        robot.move("s");
+        robot.move("h");
+        robot.move("z");
+    }
+}
+
+class Robot {
+
+    public void move(String key) {
+        System.out.print(" ===== Robot is ");
+
+        switch (key) {
+            case "f":
+                System.out.println("moving Forward =====");
+                break;
+            case "b":
+                System.out.println("moving Back =====");
+                break;
+            case "l":
+                System.out.println("moving Left =====");
+                break;
+            case "r":
+                System.out.println("moving Right =====");
+                break;
+            // TODO: add case "s" that prints "spinning in circles ====="
+            // TODO: add case "h" that prints "honking: HONK HONK! ====="
+            // TODO: add a default that prints "confused ====="
+        }
+    }
+
+}
+```
+
+Expected output:
+
+```text
+ ===== Robot is moving Forward =====
+ ===== Robot is spinning in circles =====
+ ===== Robot is honking: HONK HONK! =====
+ ===== Robot is confused =====
+```
+
+Paste your finished code into your lesson doc under **Module 4: Switch**.
+
+### ⭐ Stretch
+
+Use **fall-through on purpose** so that uppercase `F`, `B`, `L` and `R` work just like their lowercase versions. Test it with `robot.move("F");`.
+
+---
+
+**Next up:** right now the robot only listens **once** and then the program ends. Let's make it listen **forever**. ➡️
