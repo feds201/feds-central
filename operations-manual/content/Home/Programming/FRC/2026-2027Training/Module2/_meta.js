@@ -1,3 +1,4 @@
 export default{
-    Methods : 'Java Methods'
+    Methods : 'Java Methods',
+    PhoenixTuner : 'Phoenix Tuner X'
 }
