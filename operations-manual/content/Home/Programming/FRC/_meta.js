@@ -1,0 +1,18 @@
+export default {
+  index: 'Introduction',
+  BasicJava: 'Understanding Java',
+  'Tools&Setup': 'FRC Tools & Utilities',
+  InstallingNi: 'FRC Game Tools Installation',
+  Subsystems: 'Crescendo Code Dive',
+  StingrayCode: 'Reefscape Code Dive',
+  PID_control: 'PID Control',
+  Vision: 'Video Processing',
+  Autonomous: 'Autonomous',
+  Simulation: 'Simulation',
+  PitTesting: 'Pit Testing',
+  Examples: 'Examples',
+  UsingInterijIdea: 'Resources',
+  Workshop: 'Workshop',
+  'PastProblems+Solutions': 'Past Problems and Solutions',
+  '2026-2027Training': '2026-2027 Training'
+}
