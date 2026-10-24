@@ -1,5 +1,6 @@
 export default {
   index: 'Introduction',
+  '2026-2027Training': '2026-2027 Training',
   BasicJava: 'Understanding Java',
   'Tools&Setup': 'FRC Tools & Utilities',
   InstallingNi: 'FRC Game Tools Installation',
@@ -13,6 +14,5 @@ export default {
   Examples: 'Examples',
   UsingInterijIdea: 'Resources',
   Workshop: 'Workshop',
-  'PastProblems+Solutions': 'Past Problems and Solutions',
-  '2026-2027Training': '2026-2027 Training'
+  'PastProblems+Solutions': 'Past Problems and Solutions'
 }
