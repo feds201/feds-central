@@ -1,116 +1,153 @@
 ---
-title: "Challenge: Robot Blueprint"
+title: "Challenge: Console Robot Arena"
 ---
 
-## Challenge: Robot Blueprint 💃🤖
+## Challenge: Console Robot Arena 🏟️🤖
 
-⏱ **About 10 minutes**
+⏱ **About 15 minutes**
 
-Time to put all of Module 3 together. You'll design a complete `Robot` class from scratch, then write a `main` that makes two robots do a little dance.
+Time to combine **everything** from this module with your Java Classes skills. Your robot lives in a square arena with walls, and the player drives it around by typing commands. If the robot tries to drive through a wall... **Bonk!** 💥
 
 ---
 
 ## Objective
 
-Build a `Robot` class that:
+Build a text-based arena game where:
 
-- Remembers its **name**, **position** (`x`, `y`), **step size** and **energy**
-- Starts at `(0, 0)` with `100` energy
-- Can move up, down, left and right. **Each move costs 5 energy.**
-- Can **dance**, which is a combo move made out of its other moves
-- Can tell you whether it's **tired**
-- Prints itself nicely with `toString()`
+- The arena goes from `0` to `100` in both directions, so `(0, 0)` is the top-left corner and `(100, 100)` is the bottom-right.
+- The robot starts in the middle at `(50, 50)` and moves `20` units per step.
+- After **every** move, the robot prints where it is.
+- If a move would take it **past a wall**, the robot stops right at the wall and prints `Bonk! Hit the wall`.
+- Typing something that isn't a command prints a friendly error.
+- Typing `x` ends the game and prints the final position.
 
 ---
 
 ## Requirements
 
-Your `Robot` class **must** have:
-
 | # | Requirement | Concept |
 |---|---|---|
-| 1 | `private` fields: `String name`, `int x`, `int y`, `int energy` | Fields, encapsulation |
-| 2 | A `private final int stepSize` | `final` |
-| 3 | A constructor `Robot(String name, int stepSize)` that uses `this.` to save both values and sets `energy` to `100` | Constructors, `this` |
-| 4 | `moveUp()`, `moveDown()`, `moveLeft()` and `moveRight()`, each changing `x` or `y` by `stepSize` (remember: **up means y gets smaller**) and using up 5 energy | Methods, `+=` / `-=` |
-| 5 | `dance()`, which calls `moveUp()`, `moveRight()`, `moveDown()` and `moveLeft()` in that order, then prints `<name> finished dancing!` | Methods calling methods |
-| 6 | `getX()`, `getY()` and `getEnergy()` getters | Return values |
-| 7 | `isTired()`, which returns a `boolean`: `true` if energy is under 20 | Return values, conditions |
-| 8 | `toString()` with `@Override` that returns `Chompy at (20, 0) with 70% energy` (using the real values) | `toString` |
+| 1 | `private` fields for `name`, `x` and `y`, and a `private final int stepSize` | Java Classes, encapsulation |
+| 2 | A constructor `Robot(String name)` that sets the name with `this.`, starts at `(50, 50)`, and sets `stepSize` to `20` | Constructors, `this` |
+| 3 | A `move(String key)` method that uses a **`switch`** to change `x` or `y` (`f` = up, `b` = down, `l` = left, `r` = right) | Switch |
+| 4 | Inside `move`, after the switch: use `if` statements to **clamp** `x` and `y` between `0` and `100`. If clamping happens, print `Bonk! Hit the wall` | Conditionals |
+| 5 | At the end of `move`, the robot prints **itself** | `toString`, `this` |
+| 6 | `toString()` with `@Override` returns something like `Chompy at (50, 30)` | `toString`, `@Override` |
+| 7 | In `main`: an `import`, **one** `Scanner`, and **one** `Robot` built before the loop | Scanner, objects |
+| 8 | A `while (true)` game loop that prints the menu and reads a line each turn | Game loop |
+| 9 | An `if / else if / else` chain using `.equals()` and OR: directions call `move`, `x` prints `Exiting arena` plus the final position and then **breaks**, and anything else prints `Unknown command: ` plus the input | `.equals()`, `break` |
+| 10 | `scanner.close()` after the loop | Scanner |
 
-> 💡 Requirement 5 is new: a method can call **other methods** of the same object. Inside `dance()`, just write `moveUp();` with no `robot.` in front, because the robot is calling its own buttons.
+### Clamping, again
+
+You clamped motor speed in the Module 1 intake challenge and kept the elevator between its limit switches in Module 2. Same idea here: **if a number goes past a limit, snap it back to the limit.** It's like a dog on a leash 🐕: it can run around, but only so far.
+
+```java
+if (x < 0) {
+    x = 0;
+    // ...
+}
+```
+
+You'll need checks for the left wall (`x` below 0), the right wall (`x` above 100), the top wall (`y` below 0) and the bottom wall (`y` above 100).
 
 ---
 
 ## Starter Code
 
 ```java
+import java.util.Scanner;
+
 public class Main {
 
     public static void main(String[] args) {
-        System.out.println("Program started!");
+        System.out.println("Welcome to the Robot Arena!");
 
-        Robot chompy = new Robot("Chompy", 10);
-        Robot sparky = new Robot("Sparky", 3);
+        // TODO: create the Scanner and the Robot (name it whatever you like)
 
-        System.out.println(chompy);
+        // TODO: the game loop
+        //   print: "f = forward | b = back | l = left | r = right  | x = exit"
+        //   read a line
+        //   if it's a direction: robot.move(input)
+        //   else if it's "x": print "Exiting arena", print the robot, break
+        //   else: print "Unknown command: " + input
 
-        chompy.moveRight();
-        chompy.moveRight();
-        System.out.println(chompy);
-
-        chompy.dance();
-        System.out.println(chompy);
-
-        sparky.moveDown();
-        System.out.println(sparky);
-        System.out.println("Sparky's y is " + sparky.getY());
-        System.out.println("Is Chompy tired? " + chompy.isTired());
+        // TODO: close the Scanner
     }
 }
 
 class Robot {
-    // Your code here!
+    // TODO: fields
+
+    // TODO: constructor
+
+    public void move(String key) {
+        // TODO: switch on key to change x or y by stepSize
+
+        // TODO: clamp x and y to the arena walls (0 to 100)
+
+        // TODO: print this robot
+    }
+
+    // TODO: toString()
 }
 ```
+
+> 💡 **Hint for requirement 5:** inside a method, an object can print *itself* with `System.out.println(this);`.
 
 ---
 
 ## Test Your Program
 
-When you run the starter `main` with your `Robot`, you should see **exactly** this:
+What to type, one per line: `f`, `f`, `f`, `r`, `r`, `r`, `jump`, `x`
+
+Expected output (with a robot named `Chompy`):
 
 ```text
-Program started!
-Chompy at (0, 0) with 100% energy
-Chompy at (20, 0) with 90% energy
-Chompy finished dancing!
-Chompy at (20, 0) with 70% energy
-Sparky at (0, 3) with 95% energy
-Sparky's y is 3
-Is Chompy tired? false
+Welcome to the Robot Arena!
+f = forward | b = back | l = left | r = right  | x = exit
+Chompy at (50, 30)
+f = forward | b = back | l = left | r = right  | x = exit
+Chompy at (50, 10)
+f = forward | b = back | l = left | r = right  | x = exit
+Bonk! Hit the wall
+Chompy at (50, 0)
+f = forward | b = back | l = left | r = right  | x = exit
+Chompy at (70, 0)
+f = forward | b = back | l = left | r = right  | x = exit
+Chompy at (90, 0)
+f = forward | b = back | l = left | r = right  | x = exit
+Bonk! Hit the wall
+Chompy at (100, 0)
+f = forward | b = back | l = left | r = right  | x = exit
+Unknown command: jump
+f = forward | b = back | l = left | r = right  | x = exit
+Exiting arena
+Chompy at (100, 0)
 ```
 
-Check these against your output:
+Then run it again and check each of these scenarios:
 
-| Scenario | Expected result |
-|---|---|
-| Brand-new robot | Position `(0, 0)`, `100%` energy |
-| Two `moveRight()` calls with step 10 | `x` is `20`, energy is `90` |
-| A `dance()` | Ends at the **same position** it started (it's a square!) and uses 20 energy |
-| A robot with step 3 calls `moveDown()` | `y` is `3` (down means y gets **bigger**) |
-| Energy is 70 | `isTired()` returns `false` |
+| Scenario | What to type | Expected result |
+|---|---|---|
+| One step up | `f`, `x` | `Chompy at (50, 30)` |
+| Hit the left wall | `l`, `l`, `l`, `x` | Third move prints `Bonk! Hit the wall` and `Chompy at (0, 50)` |
+| Hit the bottom wall | `b`, `b`, `b`, `x` | Third move prints `Bonk! Hit the wall` and `Chompy at (50, 100)` |
+| Keep pushing a wall | `l`, `l`, `l`, `l`, `x` | Fourth move bonks **again** and stays at `(0, 50)` |
+| Silly input | `pizza`, `x` | `Unknown command: pizza`, and the robot doesn't move |
+| Quit right away | `x` | `Exiting arena` then `Chompy at (50, 50)` |
 
-Paste your finished code and output into your lesson doc under **Module 3: Challenge**.
+Paste your finished code and output into your doc under **Module 3: Challenge**.
 
 ---
 
 ## ⭐ Challenge (Optional)
 
-1. **Make Chompy tired.** Add a loop in `main` that calls `chompy.dance()` until `chompy.isTired()` is `true`, then prints `Chompy needs a nap 😴`. How many dances did it take?
-2. **Robots shouldn't run on empty.** Change the move methods so that if `energy` is less than 5, the robot prints `Too tired to move!` and **doesn't** move.
-3. **Add `recharge()`**, which sets energy back to 100. Should `energy` be `final`? Why or why not?
+1. **Move counter.** Count only the moves that **didn't** bonk. Print `Good moves: N` when the game ends. (Hint: what if `move` **returned** a `boolean` saying whether it bonked?)
+2. **Treasure!** 💎 Put a treasure at `(90, 10)`. If the robot lands exactly on it, print `You found the treasure!` and end the game.
+3. **Uppercase commands.** Make `F`, `B`, `L` and `R` work too, using `.equalsIgnoreCase()` or stacked `case` labels.
+4. **No magic numbers.** Instead of typing `100` in four places, add a `private final int arenaSize = 100;` field and use it. It's the same reason your robot code keeps CAN IDs and limits in a constants class.
 
 ---
 
-🎓 **Module 3 complete!** Your robot has a blueprint, skills and a memory. In Module 4, it gets **ears**: you'll type commands and it will respond in real time.
+🎓 **Module 3 complete!** Your robot can hear, decide and play until you tell it to stop. But it's still trapped in a world of text, and the whole game freezes every time it waits for you to press Enter. In Module 4, it gets a **real window**, you'll drive it with the **arrow keys**, and nothing will ever have to wait. 🕹️

@@ -1,7 +1,7 @@
 export default {
-    module3intro : 'Module 3: Meet Your Robot',
-    javaclassesandobjects : 'Java: Classes, Objects and Constructors',
-    javamethods : 'Java: Methods, Parameters and Return Values',
-    javafieldsandstate : 'Java: Fields, State and Encapsulation',
-    module3challenge : 'Challenge: Robot Blueprint'
+    module3intro : 'Module 3: The Robot Game',
+    javatostringandoverride : 'Java: toString, @Override and Default Values',
+    javascannerandstrings : 'Java: Scanner and Comparing Strings',
+    javaconsolegameloop : 'Java: The Console Game Loop',
+    module3challenge : 'Challenge: Console Robot Arena'
 }

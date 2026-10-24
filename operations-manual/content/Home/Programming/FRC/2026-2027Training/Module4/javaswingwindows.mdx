@@ -29,7 +29,7 @@ Think about hanging art on a wall:
 
 You build a window by making a frame, making the pieces, and then **adding** the pieces to the frame.
 
-Each of these is just a **class**, exactly like your `Robot`. `new JFrame()` builds a frame object the same way `new Robot()` builds a robot. Someone at Java wrote these blueprints so we don't have to. 🙏
+Each of these is just a **class**, exactly like your `Robot`. `new JFrame()` builds a frame object the same way `new TalonFX(motorId)` builds a motor. Someone at Java wrote these blueprints so we don't have to. 🙏
 
 ---
 
@@ -174,14 +174,6 @@ Run it, click the window and press the arrow keys. The text at the bottom change
 
 ## Walking Through It
 
-### Comments: notes to your future self 📝
-
-```java
-// Setup the window
-```
-
-Step 4 is full of comments. Java skips everything after `//`. They're for **humans**, like the teammate who reads your code next year (or you, next week, after you've forgotten everything). A good comment says *why* or *what's coming*, not something obvious like `// add 1 to x`.
-
 ### Setting up the frame
 
 | Line | What it does |
@@ -241,7 +233,9 @@ Look closely: `positionLabel` is a **field**, but `instructionLabel` is a **loca
 positionLabel.setText(robot.toString());
 ```
 
-So it has to live in `Main`'s backpack, where every method can reach it. The instruction text never changes after setup, so it can be a local variable that's forgotten once the constructor ends. (The frame still remembers to display it. We just can't reach it by name anymore.)
+So it has to be a field, where every method of `Main` can reach it. The instruction text never changes after setup, so it can be a local variable that's forgotten once the constructor ends. (The frame still remembers to display it. We just can't reach it by name anymore.)
+
+It's the same choice you made in your subsystems: the `TalonFX` is a field because `setPower` and `periodic` both need it later, while a configuration object can be a local variable in the constructor because it's only needed once.
 
 ### `setText`: updating the sticky note
 
@@ -286,7 +280,7 @@ Expected result: a 600×400 window with your title, the instructions on top, "Te
 Robot at position (260, 250) - Vroom!
 ```
 
-Paste your finished constructor and `keyPressed` into your lesson doc under **Module 5: Swing Windows**.
+Paste your finished constructor and `keyPressed` into your doc under **Module 4: Swing Windows**.
 
 ### ⭐ Stretch
 

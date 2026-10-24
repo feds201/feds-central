@@ -1,0 +1,222 @@
+---
+title: "Java: toString, @Override and Default Values"
+---
+
+## Giving Your Robot a Name Tag 🏷️
+
+⏱ **About 12 minutes**
+
+### What you'll learn
+
+- That every class secretly **extends** a class called `Object`
+- How overriding `toString()` lets you print an object directly
+- What `@Override` actually does, and why it belongs above `periodic()` too
+- What values fields start with when you don't set them
+
+📚 Extra reading: [W3Schools: Java toString()](https://www.w3schools.com/java/ref_object_tostring.asp) and [Oracle: Object as a Superclass](https://docs.oracle.com/javase/tutorial/java/IandI/objectclass.html)
+
+---
+
+## The Secret Parent: `Object`
+
+In the inheritance lesson you saw that a class can `extends` another class to get its methods for free. Your `ArmSubsystem extends SubsystemBase`, for example.
+
+Here's the secret: **every** class extends something. If you don't write `extends`, Java quietly adds `extends Object` for you. So your warm-up robot is really:
+
+```java
+class Robot extends Object {
+    // ...
+}
+```
+
+`Object` is the great-great-grandparent of every class in Java. It hands down a few methods to everybody, and the most useful one is `toString()`.
+
+---
+
+## Printing an Object
+
+Try adding this to the end of `main` from the warm-up:
+
+```java
+System.out.println(robot);
+```
+
+You'll see something ugly like:
+
+```text
+Robot@1b6d3586
+```
+
+When you print an object (or glue it onto a String with `+`), Java calls its `toString()` method for you. The version Robot inherited from `Object` doesn't know anything about robots, so it just prints the class name and a code for where the object lives in memory. Not helpful. 🤷
+
+### Override it
+
+Remember polymorphism: a child class can **replace** a method it inherited with its own version. Let's do that with the real code from **Step 4**:
+
+```java
+@Override
+public String toString() {
+    return "Robot at position (" + x + ", " + y + ")";
+}
+```
+
+Now:
+
+```java
+System.out.println(robot);
+System.out.println("Status: " + robot);
+```
+
+```text
+Robot at position (250, 250)
+Status: Robot at position (250, 250)
+```
+
+That's the robot's **name tag**. Any time Java needs to turn a Robot into text, it reads the name tag.
+
+> 💡 Inside a method, an object can print **itself** with `System.out.println(this);`. Java calls `toString()` on `this` for you. You'll use that in the challenge.
+
+---
+
+## `@Override`: The Spell-Checker ✅
+
+`@Override` is an **annotation**: a note to Java that sits above a method. It says:
+
+> "I'm replacing a method I inherited, **on purpose**. Please double-check that one actually exists."
+
+Why bother? Look at this typo:
+
+```java
+public String tostring() {    // lowercase s!
+    return "Robot at position (" + x + ", " + y + ")";
+}
+```
+
+Without `@Override`, Java shrugs and treats `tostring` as a brand-new method. It compiles fine. But `println` still calls the *real* `toString()`, so you get `Robot@1b6d3586` and spend an hour wondering why. 😩
+
+With `@Override` on top, Java refuses to compile and tells you there's nothing named `tostring` to override. Typo caught in two seconds.
+
+That's exactly why every subsystem in our robot code has this:
+
+```java
+@Override
+public void periodic() {
+    // runs every 20 ms
+}
+```
+
+`periodic()` comes from `SubsystemBase`. If you misspelled it as `periodc()`, your code would compile, and your logging would silently never run. `@Override` makes sure that never happens. **Always use it when you override.**
+
+---
+
+## Default Values: What's in an Empty Backpack? 🎒
+
+What if a constructor *doesn't* set a field? Fields get **automatic default values**:
+
+| Type | Default |
+|---|---|
+| `int`, `double` | `0` / `0.0` |
+| `boolean` | `false` |
+| `String` (and every other object type) | `null` (meaning "nothing here yet") |
+
+So if you delete `x = 250;` from the constructor, the robot starts at `x = 0`. And a `String name` field that never gets set prints as `null`.
+
+> ⚠️ This is **only** true for fields. A local variable inside a method has *no* default, and Java won't compile if you use it before giving it a value.
+
+> ⚠️ `null` on an object field is dangerous. If your `TalonFX motor` field is never created in the constructor, it's `null`, and calling `motor.set(0.1)` crashes the program with a `NullPointerException`. Always create your objects in the constructor!
+
+---
+
+## 🔮 Predict the Output
+
+```java
+public class Main {
+
+    public static void main(String[] args) {
+        Robot a = new Robot();
+        a.charge();
+        System.out.println(a);
+        System.out.println("Hello, " + a);
+    }
+}
+
+class Robot {
+    private String name;
+    private int battery;
+    private boolean isOn;
+
+    public void charge() {
+        battery += 50;
+    }
+
+    @Override
+    public String toString() {
+        return name + " (" + battery + "%, on: " + isOn + ")";
+    }
+}
+```
+
+Answer:
+
+```text
+null (50%, on: false)
+Hello, null (50%, on: false)
+```
+
+`name` was never set, so it's `null`. `battery` started at `0`, then `charge()` added 50. `isOn` defaulted to `false`.
+
+---
+
+## 🙈 Common Oopsies
+
+- **Misspelling it.** `tostring()`, `ToString()` and `toSting()` are all wrong. It must be exactly `toString()`. `@Override` catches this for you.
+- **Printing instead of returning.** `toString()` must **return** a String. If it calls `println` and returns nothing, it won't compile.
+- **Forgetting `public`.** `Object`'s version is `public`, and an override can't be *less* public than the original.
+- **Re-declaring a field in the constructor.** `int x = 250;` inside the constructor creates a *new* local `x` and leaves the field at its default of `0`. Use `x = 250;` without the type.
+- **Leaving an object field `null`** and then calling a method on it. Crash!
+
+---
+
+## 🛠 Exercise: Robot Name Tag
+
+Start with your warm-up `Robot` and:
+
+1. Add a `private String name` field, and change the constructor to `Robot(String name)`. Save the name with `this.name`.
+2. Override `toString()` (with `@Override`!) so it returns something like `Chompy at (250, 250)`.
+3. Run this `main`:
+
+```java
+public class Main {
+
+    public static void main(String[] args) {
+        Robot robot = new Robot("Chompy");
+        System.out.println(robot);
+
+        robot.moveRight();
+        robot.moveUp();
+
+        System.out.println("Final: " + robot);
+    }
+}
+```
+
+Expected output:
+
+```text
+Chompy at (250, 250)
+Moving RIGHT - New position: (260, 250)
+Moving UP - New position: (260, 240)
+Final: Chompy at (260, 240)
+```
+
+4. **Break it on purpose:** rename your method to `tostring()` (lowercase `s`) and run it again. Read the error message. Then delete `@Override`, run it again, and see what prints instead. Put it back when you're done!
+
+Paste your finished code and the error message into your doc under **Module 3: toString**.
+
+### ⭐ Stretch
+
+Add a `private int moveCount` field. Don't set it in the constructor (what will it start at?). Make every move method add 1 to it, and include it in `toString()`: `Chompy at (260, 240) after 2 moves`.
+
+---
+
+**Next up:** right now *you* decide every move ahead of time, in `main`. Let's let the player decide while the program runs. ➡️

@@ -1,57 +1,219 @@
 ---
-title: "Module 4: Your Robot Gets Ears"
+title: "Module 4: From Text to Video Game"
 ---
 
-## Your Robot Gets Ears 👂🤖
+## Level Up: Your Robot Gets a Window 🕹️
 
-⏱ **About 3 minutes**
+⏱ **About 10 minutes**
 
-In Module 3 you built a robot with a **blueprint** (class), **skills** (methods) and a **memory** (fields). But there was one problem: *you* had to decide every move ahead of time, in `main`. The robot was like a wind-up toy that does the same dance every time you run it.
+### What you'll learn
 
-In Module 4, the robot learns to **listen**. You'll type commands while the program is running, and the robot will react right away, just like a real game.
+- Why we're switching to a new online compiler
+- The difference between a **console program** and an **event-driven program**
+- How to run your first windowed robot (our **Step 3**)
 
-| Lesson | New superpower |
+---
+
+## 🚚 Moving Day
+
+In Module 3, our robot lived in the **console**: the plain text box where `println` shows up. Programiz is great for that, but it has one big limitation: **there's no window**. Programiz can't draw shapes or listen to your arrow keys.
+
+So we're packing up the robot and moving to a new home:
+
+👉 **[OneCompiler: Java Swing](https://onecompiler.com/java-swing)**
+
+OneCompiler runs your Java program on its server and **streams the window it creates right into your browser**. You get a real window with real arrow keys, and you still don't have to install anything.
+
+How to use it:
+
+1. Open the link above. You'll see some sample code already in the editor.
+2. **Delete all of it** and paste in the code from this guide.
+3. Press **Run**.
+4. A window appears in the output area. **Click inside the window** so it knows you're talking to it, then press your arrow keys.
+
+The good news: the single-file layout is the same as Programiz. `public class Main` goes on top, and `class Robot` (without `public`) goes underneath.
+
+> 💡 **"Swing"** is the name of Java's built-in toolkit for making windows, buttons and drawings. That's why the compiler is called "Java Swing." It has nothing to do with playgrounds. 🛝
+
+---
+
+## Console vs. Event-Driven: The Doorbell 🔔
+
+In Module 3, our game loop worked like this:
+
+```java
+while (true) {
+    String input = scanner.nextLine();   // wait for the user...
+    // ...then do something
+}
+```
+
+That's like standing at your front door all day, **staring at it** until someone shows up. You can't do anything else while you wait. And as you saw, a robot that froze like that would be a disaster.
+
+A windowed program works differently. It's like installing a **doorbell**. You tell Java, "**When** someone presses a key, **call this method** of mine." Then you go do other things. When the doorbell rings, Java runs your method.
+
+This is called **event-driven programming**. An *event* is something that happens, like a key press, a mouse click or a window closing. Your job is to write the code that **reacts** to events.
+
+The motto of event-driven code: **"Don't call us, we'll call you."** 📞
+
+### You've already done this!
+
+Remember binding your arm to the Xbox controller in `RobotContainer`?
+
+```java
+controller.x().onTrue(armSubsystem.setStateCommand(ArmState.FORWARD));
+```
+
+You never wrote a loop that asked, "Is X pressed? How about now? Now?" You just told WPILib, "**When** X is pressed, run this command," and WPILib rang your doorbell at the right time. That's event-driven programming. This module shows you how that idea works in plain Java.
+
+| Console program (Module 3) | Event-driven program (Module 4) |
 |---|---|
-| Imports and Scanner | The robot can **hear** what you type |
-| If, Else If, Else | The robot can **decide** what to do |
-| Switch Statements | The robot can **pick** from a menu of actions |
-| While Loops and the Game Loop | The robot keeps listening **forever** (until you say stop) |
-| Challenge: Console Robot Arena | All of it together, with walls! |
+| *You* write a loop that keeps asking for input | *Java* waits for input for you |
+| `scanner.nextLine()` stops everything until Enter is pressed | Your `keyPressed` method runs whenever a key is pressed |
+| Output is text only | Output can be a window, shapes and colors |
 
 ---
 
-## Where We're Headed
+## 🛠 Exercise: Run Step 3
 
-By the end of this module you'll understand every line of **Step 2** of our robot game. Here's a sneak peek of what it looks like when you play it:
+Here's **Step 3** of the robot game, combined into one file with the `Robot` you built in Module 3. (We added one line, `frame.setSize(400, 300);`, so the window isn't microscopic.) Don't worry about understanding `Main` yet. The next lessons explain every line.
+
+Paste it into OneCompiler, press **Run**, click the window, and press the arrow keys a few times.
+
+```java
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
+
+public class Main implements KeyListener {
+    Robot robot;
+    JFrame frame;
+
+    Main() {
+        robot = new Robot();
+
+        frame = new JFrame();
+        frame.setSize(400, 300);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.addKeyListener(this);
+        frame.setFocusable(true);
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+    }
+
+    public static void main(String[] args) {
+        System.out.println("Program started!");
+        SwingUtilities.invokeLater(() -> new Main());
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        int keyCode = e.getKeyCode();
+
+        switch (keyCode) {
+            case KeyEvent.VK_UP:
+                robot.moveUp();
+                break;
+            case KeyEvent.VK_DOWN:
+                robot.moveDown();
+                break;
+            case KeyEvent.VK_LEFT:
+                robot.moveLeft();
+                break;
+            case KeyEvent.VK_RIGHT:
+                robot.moveRight();
+                break;
+        }
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+        // Not used
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+        // Not used
+    }
+
+}
+
+class Robot {
+    private int x;
+    private int y;
+    private final int stepSize;
+
+    public Robot() {
+        x = 250;
+        y = 250;
+        stepSize = 10;
+    }
+
+    public void moveUp() {
+        y -= stepSize;
+        System.out.println("Moving UP - New position: (" + x + ", " + y + ")");
+    }
+
+    public void moveDown() {
+        y += stepSize;
+        System.out.println("Moving DOWN - New position: (" + x + ", " + y + ")");
+    }
+
+    public void moveLeft() {
+        x -= stepSize;
+        System.out.println("Moving LEFT - New position: (" + x + ", " + y + ")");
+    }
+
+    public void moveRight() {
+        x += stepSize;
+        System.out.println("Moving RIGHT - New position: (" + x + ", " + y + ")");
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    @Override
+    public String toString() {
+        return "Robot at position (" + x + ", " + y + ")";
+    }
+}
+```
+
+You'll see an **empty gray window**, but press **→**, **→**, **↓** and the console prints:
 
 ```text
 Program started!
-Enter a direction:
-f = forward | b = back | l = left | r = right  | x = exit
-f
- ===== Robot is moving Forward =====
-f = forward | b = back | l = left | r = right  | x = exit
-l
- ===== Robot is moving Left =====
-f = forward | b = back | l = left | r = right  | x = exit
-x
-Exiting program
+Moving RIGHT - New position: (260, 250)
+Moving RIGHT - New position: (270, 250)
+Moving DOWN - New position: (270, 260)
 ```
 
-The lines that are just `f`, `l` and `x` are what the player typed. Everything else is the program talking back.
+The `Robot` class is the **exact same one** you built in Module 3. Only `Main` changed. That's the power of classes: we gave the robot a whole new way to be controlled without touching its blueprint. (It's the same reason your `ArmSubsystem` doesn't care whether it's driven by an Xbox controller, a dashboard button or an autonomous routine.)
+
+### 😵 Nothing happens when I press keys!
+
+1. **Click inside the window first.** Keys only go to the window that has *focus* (the one you last clicked).
+2. Still nothing? Some browser setups don't pass focus to the frame itself. Try putting the key listener on the window's **content pane** instead. Replace the `frame.addKeyListener(this);` and `frame.setFocusable(true);` lines with these, and put them **after** `frame.setVisible(true);`:
+
+```java
+frame.getContentPane().setFocusable(true);
+frame.getContentPane().addKeyListener(this);
+frame.getContentPane().requestFocusInWindow();
+```
+
+3. Still stuck? Ask a mentor or FEDSBot. That's what we're here for!
+
+### ⭐ Stretch
+
+Change `"Program started!"` to something more dramatic, like `"ROBOT ONLINE. AWAITING ORDERS."` 🤖
 
 ---
 
-## Still Using Programiz
-
-We'll keep using the **[Programiz Java Online Compiler](https://www.programiz.com/java-programming/online-compiler/)** with the same one-file layout as Module 3: `public class Main` on top, and `class Robot` (no `public`) underneath.
-
-> 💡 **Typing input in Programiz:** When your program is waiting for input, click inside the **output panel on the right**, type your answer, and press **Enter**. If nothing seems to happen after you press Run, the program is probably waiting for you to type something!
-
-### How to read expected output in this module
-
-In each exercise, you'll see a list of **what to type** followed by the **expected output**. The expected output only shows what the *program* prints. In Programiz, the letters you type will *also* appear on screen, mixed in between those lines. That's normal.
-
----
-
-**Next up:** giving the robot ears. ➡️
+**Next up:** how does Java know to call `keyPressed`? It's an interface you already know how to use. ➡️

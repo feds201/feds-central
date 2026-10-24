@@ -1,153 +1,142 @@
 ---
-title: "Challenge: Console Robot Arena"
+title: "Boss Level: Robot Arena Deluxe"
 ---
 
-## Challenge: Console Robot Arena 🏟️🤖
+## Boss Level: Robot Arena Deluxe 👾🏆
 
-⏱ **About 13 minutes**
+⏱ **About 13 minutes** (plus optional bonus rounds)
 
-Time to combine **everything** from Modules 3 and 4. Your robot lives in a square arena with walls, and the player drives it around by typing commands. If the robot tries to drive through a wall... **Bonk!** 💥
+You've made it to the final boss. Time to turn the simplified Step 4 robot into a real little arcade game, using everything from Modules 3 and 4.
 
 ---
 
 ## Objective
 
-Build a text-based arena game where:
+Upgrade the robot game so that:
 
-- The arena goes from `0` to `100` in both directions, so `(0, 0)` is the top-left corner and `(100, 100)` is the bottom-right.
-- The robot starts in the middle at `(50, 50)` and moves `20` units per step.
-- After **every** move, the robot prints where it is.
-- If a move would take it **past a wall**, the robot stops right at the wall and prints `Bonk! Hit the wall`.
-- Typing something that isn't a command prints a friendly error.
-- Typing `x` ends the game and prints the final position.
+- 🎮 It works with **both** WASD and the arrow keys
+- 🧱 The robot **can't drive off the edge** of the white panel
+- 🔢 A label keeps track of **how many moves** you've made
+- 🚀 Pressing **T** toggles **turbo mode**, which makes the robot move 3× as far
+
+Start with the **simplified Step 4 code** from the Drawing lesson (or your upgraded version from that exercise).
 
 ---
 
 ## Requirements
 
-| # | Requirement | Concept |
+| # | Requirement | Concepts |
 |---|---|---|
-| 1 | `private` fields for `name`, `x` and `y`, and a `private final int stepSize` | Fields, `final` (Module 3) |
-| 2 | A constructor `Robot(String name)` that sets the name with `this.`, starts at `(50, 50)`, and sets `stepSize` to `20` | Constructors |
-| 3 | A `move(String key)` method that uses a **`switch`** to change `x` or `y` (`f` = up, `b` = down, `l` = left, `r` = right) | Switch |
-| 4 | Inside `move`, after the switch: use `if` statements to **clamp** `x` and `y` between `0` and `100`. If clamping happens, print `Bonk! Hit the wall` | Conditionals |
-| 5 | At the end of `move`, print the robot itself (using `toString()`) | `toString` |
-| 6 | `toString()` returns something like `Chompy at (50, 30)` | `toString` |
-| 7 | In `main`: an `import`, **one** `Scanner`, and **one** `Robot` built before the loop | Scanner, objects |
-| 8 | A `while (true)` game loop that prints the menu and reads a line each turn | Game loop |
-| 9 | An `if / else if / else` chain using `.equals()` and the OR operator: directions call `move`, `x` prints `Exiting arena` plus the final position and then **breaks**, and anything else prints `Unknown command: ` plus the input | Conditionals, `break` |
-| 10 | `scanner.close()` after the loop | Scanner |
-
-### What does "clamp" mean?
-
-**Clamping** means "if a number goes past a limit, snap it back to the limit." It's like a dog on a leash 🐕: it can run around, but only so far.
-
-```java
-if (x < 0) {
-    x = 0;
-    // ...
-}
-```
-
-You'll need checks like this for the left wall (`x` below 0), the right wall (`x` above 100), the top wall (`y` below 0) and the bottom wall (`y` above 100).
+| 1 | W/A/S/D move the robot just like ↑/←/↓/→ | `switch`, stacked `case` labels, `VK_` constants |
+| 2 | The robot box never goes past any edge of the white panel | `if`, getters, `getWidth()` / `getHeight()` |
+| 3 | A label in `BorderLayout.EAST` shows ` Moves: 0 ` and counts up **only** when the robot moves | Fields, `setText`, `+=` |
+| 4 | Pressing T switches turbo on and off. Turbo step size is 30; normal is 10. | `boolean` fields, `!`, methods |
+| 5 | In turbo mode, the robot is drawn **red** instead of blue | `if/else`, `Color` |
+| 6 | Each of your new methods has a short comment explaining what it does | Comments |
 
 ---
 
-## Starter Code
+## Hints
+
+### Hint 1: `stepSize` can't be `final` anymore
+
+Ever since the Module 3 warm-up, `stepSize` has been `final`, which means **carved in stone**. But turbo mode needs to **change** it while the game runs! So remove the word `final`:
 
 ```java
-import java.util.Scanner;
+private int stepSize;
+```
 
-public class Main {
+This is a great example of a real design decision: `final` protected us when the step size should never change. Now the rules of the game changed, so the code has to change, too.
 
-    public static void main(String[] args) {
-        System.out.println("Welcome to the Robot Arena!");
+Then give `Robot` a way to toggle turbo. One approach:
 
-        // TODO: create the Scanner and the Robot (name it whatever you like)
+```java
+private boolean turbo;
 
-        // TODO: the game loop
-        //   print: "f = forward | b = back | l = left | r = right  | x = exit"
-        //   read a line
-        //   if it's a direction: robot.move(input)
-        //   else if it's "x": print "Exiting arena", print the robot, break
-        //   else: print "Unknown command: " + input
-
-        // TODO: close the Scanner
+// Switches turbo mode on or off
+public void toggleTurbo() {
+    turbo = !turbo;
+    if (turbo) {
+        stepSize = 30;
+    } else {
+        stepSize = 10;
     }
 }
 
-class Robot {
-    // TODO: fields
-
-    // TODO: constructor
-
-    public void move(String key) {
-        // TODO: switch on key to change x or y by stepSize
-
-        // TODO: clamp x and y to the arena walls (0 to 100)
-
-        // TODO: print this robot
-    }
-
-    // TODO: toString()
+public boolean isTurbo() {
+    return turbo;
 }
 ```
 
-> 💡 **Hint for requirement 5:** inside a method, an object can print *itself* with `System.out.println(this);`. Java calls `toString()` for you.
+(`turbo = !turbo;` flips a boolean: `true` becomes `false`, and `false` becomes `true`. Like a light switch. 💡)
+
+### Hint 2: Keeping the robot in the arena
+
+The panel can tell you its size with `displayPanel.getWidth()` and `displayPanel.getHeight()`. Since the robot's `(x, y)` is the **center** of the box, the center must stay at least **half a box** away from each edge.
+
+Add a method to `Robot` that pushes it back inside if it went too far:
+
+```java
+// Pushes the robot back inside the arena if it went past an edge
+public void keepInside(int width, int height, int margin) {
+    if (x < margin) {
+        x = margin;
+    }
+    // TODO: the right edge (x can't be more than width - margin)
+    // TODO: the top edge
+    // TODO: the bottom edge
+}
+```
+
+Then call it in `keyPressed` **after** the `switch`:
+
+```java
+robot.keepInside(displayPanel.getWidth(), displayPanel.getHeight(), 20);
+```
+
+The `20` is half of the 40-pixel box. (If you made your box bigger in the last exercise, use half of *your* size.)
+
+### Hint 3: Only count real moves
+
+If you add `moveCount += 1;` at the bottom of `keyPressed`, then pressing T, the spacebar or *any* key would count as a move. Put the counting **inside** the move `case`s instead, or use a `boolean moved` variable that the move cases set to `true`.
 
 ---
 
 ## Test Your Program
 
-What to type, one per line: `f`, `f`, `f`, `r`, `r`, `r`, `jump`, `x`
+Run your program, click the window, then try each scenario **in order**:
 
-Expected output (with a robot named `Chompy`):
+| Scenario | Expected result |
+|---|---|
+| Just started | Bottom: `Robot at position (250, 250)`. Right: `Moves: 0`. Box is **blue**. |
+| Press **D** | `Robot at position (260, 250)`, `Moves: 1` |
+| Press **↑** | `Robot at position (260, 240)`, `Moves: 2` |
+| Press **Spacebar** | Nothing changes. Still `Moves: 2`. |
+| Press **T**, then **A** | Box turns **red**. `Robot at position (230, 240)`, `Moves: 3` |
+| Hold **A** down for a few seconds | The box slides left and **stops** at the edge. `x` stays at `20`. |
+| Press **T** again, then **S** | Box is **blue** again, and moves down by just 10. |
 
-```text
-Welcome to the Robot Arena!
-f = forward | b = back | l = left | r = right  | x = exit
-Chompy at (50, 30)
-f = forward | b = back | l = left | r = right  | x = exit
-Chompy at (50, 10)
-f = forward | b = back | l = left | r = right  | x = exit
-Bonk! Hit the wall
-Chompy at (50, 0)
-f = forward | b = back | l = left | r = right  | x = exit
-Chompy at (70, 0)
-f = forward | b = back | l = left | r = right  | x = exit
-Chompy at (90, 0)
-f = forward | b = back | l = left | r = right  | x = exit
-Bonk! Hit the wall
-Chompy at (100, 0)
-f = forward | b = back | l = left | r = right  | x = exit
-Unknown command: jump
-f = forward | b = back | l = left | r = right  | x = exit
-Exiting arena
-Chompy at (100, 0)
-```
-
-Then run it again and check each of these scenarios:
-
-| Scenario | What to type | Expected result |
-|---|---|---|
-| One step up | `f`, `x` | `Chompy at (50, 30)` |
-| Hit the left wall | `l`, `l`, `l`, `x` | Third move prints `Bonk! Hit the wall` and `Chompy at (0, 50)` |
-| Hit the bottom wall | `b`, `b`, `b`, `x` | Third move prints `Bonk! Hit the wall` and `Chompy at (50, 100)` |
-| Keep pushing a wall | `l`, `l`, `l`, `l`, `x` | Fourth move bonks **again** and stays at `(0, 50)` |
-| Silly input | `pizza`, `x` | `Unknown command: pizza`, and the robot doesn't move |
-| Quit right away | `x` | `Exiting arena` then `Chompy at (50, 50)` |
-
-Paste your finished code and output into your lesson doc under **Module 4: Challenge**.
+Paste your finished code into your doc under **Module 4: Boss Level**, along with a screenshot of your robot parked in a corner.
 
 ---
 
-## ⭐ Challenge (Optional)
+## ⭐ Bonus Rounds (Optional)
 
-1. **Move counter.** Count only the moves that **didn't** bonk. Print `Good moves: N` when the game ends.
-2. **Treasure!** 💎 Put a treasure at `(90, 10)`. If the robot lands exactly on it, print `You found the treasure!` and end the game.
-3. **Uppercase commands.** Make `F`, `B`, `L` and `R` work too, using either `.equalsIgnoreCase()` or `switch` fall-through.
-4. **No magic numbers.** Instead of typing `100` in four places, add a `private final int arenaSize = 100;` field and use it. Why is that better?
+1. **🎯 Goal target.** Draw a small green square somewhere in the arena. When the robot touches it, print `GOAL!` to the console, add 1 to a score label, and move the target to a new random spot. Hint: `(int) (Math.random() * 400)` gives you a random whole number from 0 to 399. To check whether they're touching, see if the distance between their centers is less than 30 in **both** x and y. (`Math.abs` turns a negative number positive.)
+2. **⏳ Out of energy.** Give the robot a `private int energy` field that starts at 100. Each move costs 1 energy, turbo moves cost 3, and at 0 energy the robot stops moving and the label says `Out of energy! Press R to recharge.`
+3. **🚪 Escape hatch.** Pressing **Esc** closes the game. Hint: `System.exit(0);`
+4. **🤖 Face swap.** Swap in Step 4's fancy smiley robot from the "Peek" section of the Drawing lesson.
 
 ---
 
-🎓 **Module 4 complete!** Your robot can hear, decide and play forever. But it's still trapped in a world of text. In Module 5, it gets a **real window**, and you'll drive it with the **arrow keys**. 🕹️
+🏁 **Modules 3 and 4 complete!** You started with a robot that only printed its position, and now you have a working arcade game: a class you designed, a name tag from `toString()`, a game loop that listens to the player, key events, a window and graphics. Look at how much of it maps straight onto robot code:
+
+| In your game | In robot code |
+|---|---|
+| `Main`'s constructor builds the robot and wires up the keys | `RobotContainer`'s constructor builds subsystems and binds buttons |
+| `keyPressed` runs when a key goes down | A command runs when `controller.x().onTrue(...)` fires |
+| `@Override public String toString()` | `@Override public void periodic()` |
+| `new JPanel() { ... }` | `new ArmIO() {}` |
+| `keepInside` clamps the robot to the arena | Soft limits keep a mechanism inside its safe range |
+
+The robot in the shop is just a much, *much* bigger version of the box you just drove around. 🤖🏆

@@ -1,0 +1,220 @@
+---
+title: "Java: Scanner and Comparing Strings"
+---
+
+## Giving Your Robot Ears 👂
+
+⏱ **About 15 minutes**
+
+### What you'll learn
+
+- How a `Scanner` listens to the keyboard
+- How `nextLine()` pauses your program until the user presses Enter
+- Why we `close()` the Scanner when we're done
+- Why Strings are compared with `.equals()` and **not** `==`
+
+📚 Extra reading: [W3Schools: Java User Input (Scanner)](https://www.w3schools.com/java/java_user_input.asp) and [W3Schools: String equals()](https://www.w3schools.com/java/ref_string_equals.asp)
+
+---
+
+## The Microphone Analogy 🎤
+
+Back in the W3Schools **Packages/API** lesson, you saw this line as an example of an import:
+
+```java
+import java.util.Scanner;
+```
+
+Now we're going to actually *use* it. A `Scanner` is like a **microphone** plugged into your keyboard. Once you set it up, you can ask it, "What did the user just say?"
+
+```java
+Scanner scanner = new Scanner(System.in);
+```
+
+This is the same pattern as `new TalonFX(motorId)`: build an object, and hand its constructor what it needs. Here, the constructor needs to know **where to listen**.
+
+`System.out` is where your program **talks** (you've used it in every `println`). `System.in` is where your program **listens**. Out = mouth 👄, in = ears 👂.
+
+---
+
+## Listening: `nextLine()`
+
+```java
+String input = scanner.nextLine();
+```
+
+`nextLine()` is a method that **returns** a `String`. Here's what happens when Java reaches this line:
+
+1. The program **pauses** and waits. ⏸️
+2. The user types something and presses **Enter**.
+3. Everything they typed on that line comes back as a `String`, which gets stored in `input`.
+
+Your program will wait *forever* for the user to press Enter. It's very patient. 🐢
+
+> 💡 **Typing input in Programiz:** When your program is waiting for input, click inside the **output panel on the right**, type your answer, and press **Enter**. If nothing seems to happen after you press Run, the program is probably waiting for you!
+
+> 💡 **Reading expected output in this module:** Each exercise lists **what to type**, then the **expected output**. The expected output only shows what the *program* prints. In Programiz, the letters you type will *also* appear on screen between those lines. That's normal.
+
+---
+
+## Turning Off the Faucet: `close()`
+
+```java
+scanner.close();
+```
+
+When you're done listening, `close()` the Scanner. Think of it like turning off the faucet when you're done washing your hands. 🚰 The program usually works without it, but leaving things running is sloppy, and VS Code will warn you about a "resource leak."
+
+> ⚠️ Only close the Scanner when you're **completely** done reading input. After `close()`, you can't read anything else.
+
+---
+
+## `.equals()` vs `==`: The Twin Problem 👯
+
+Now that the player can type commands, we need to check what they typed. For `int`, `double` and `boolean`, `==` works great:
+
+```java
+if (score == 10) { ... }
+```
+
+But Strings are **objects**, and for objects, `==` asks the wrong question. Imagine two identical twins:
+
+- `.equals()` asks: "Do these two **look the same**?" (Same letters?) 👍
+- `==` asks: "Are these the **exact same person**?" (The same object in memory?) 🤔
+
+Two Strings can have the exact same letters but be **different objects**. Text that comes from a Scanner is *always* a brand-new object. So `==` says `false` even though they look identical!
+
+```java
+String input = scanner.nextLine();   // user types: f
+
+input == "f"        // ❌ false! Different objects.
+input.equals("f")   // ✅ true. Same letters.
+```
+
+This is why the Module 2 intake code you looked at says:
+
+```java
+if (!currentState.equals(targetState)) {
+```
+
+It's asking, "Is the state we *want* different from the state we're *in*?" Comparing objects by their contents is a job for `.equals()`.
+
+**Rule of thumb:** compare Strings (and other objects) with `.equals()`. Always. No exceptions. Tattoo it on your arm. 💪
+
+> 💡 `.equalsIgnoreCase()` works just like `.equals()`, but treats `F` and `f` as the same.
+
+---
+
+## 🔮 Predict the Output
+
+The user types `Chompy` and presses Enter. What prints?
+
+```java
+import java.util.Scanner;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("What is your robot's name?");
+        String name = scanner.nextLine();
+
+        System.out.println(name + " says hi!");
+        System.out.println(name.length() + " letters long");
+        System.out.println(name == "Chompy");
+        System.out.println(name.equals("Chompy"));
+        System.out.println(name.equals("chompy"));
+        System.out.println(name.equalsIgnoreCase("chompy"));
+
+        scanner.close();
+    }
+}
+```
+
+Answer:
+
+```text
+What is your robot's name?
+Chompy says hi!
+6 letters long
+false
+true
+false
+true
+```
+
+The `==` check is `false` because the typed `Chompy` and the `"Chompy"` in the code are two different objects, even though they have the same letters.
+
+---
+
+## 🙈 Common Oopsies
+
+- **Forgetting the import.** Without `import java.util.Scanner;`, Java says `cannot find symbol: class Scanner`.
+- **Making a new Scanner every time you read.** Create **one** Scanner and reuse it. One microphone is plenty.
+- **Using `scanner` after `close()`.** You'll get an error. The faucet is off!
+- **Clicking Run and wondering why nothing happens.** The program is waiting for you to type in the output panel.
+- **Using `==` on Strings.** Use `.equals()`. (Yes, we're saying it again.)
+- **Writing `input.equals("f" || "b")`.** You can't OR two Strings together. Write out each check: `input.equals("f") || input.equals("b")`.
+
+---
+
+## 🛠 Exercise: The Command Bouncer 🚪🕶️
+
+Start with this code:
+
+```java
+import java.util.Scanner;
+
+public class Main {
+
+    public static void main(String[] args) {
+        // TODO: create a Scanner that reads from System.in
+
+        System.out.println("What is your robot's name?");
+        // TODO: read the name, then build a Robot with it
+
+        System.out.println("f = forward | b = back | l = left | r = right  | x = exit");
+        // TODO: read a command
+
+        // TODO: if the command is f, b, l or r: call robot.move(command)
+        // TODO: else if the command is x: print "Exiting program"
+        // TODO: else: print "Unknown command: " followed by the command
+
+        // TODO: close the Scanner
+    }
+}
+
+class Robot {
+    private String name;
+
+    public Robot(String name) {
+        this.name = name;
+    }
+
+    public void move(String key) {
+        System.out.println(" ===== " + name + " is moving " + key + " =====");
+    }
+}
+```
+
+(This `Robot` is simplified so we can focus on input. The full robot comes back in the next lesson.)
+
+Run it **three times**, typing `Chompy` for the name each time and then a different command:
+
+| Command to type | Expected last line of output |
+|---|---|
+| `f` | ` ===== Chompy is moving f =====` |
+| `x` | `Exiting program` |
+| `banana` | `Unknown command: banana` |
+
+Paste your finished code into your doc under **Module 3: Scanner**.
+
+### ⭐ Stretch
+
+1. Users sometimes type `F` instead of `f`. Use `.equalsIgnoreCase()` so both work.
+2. Ask for a team number too. `nextLine()` always gives you a `String`, even if the user typed a number. Look up `Integer.parseInt()` on W3Schools, turn the team number into an `int`, and print the team number **plus 1**. (`"201" + 1` would give you `2011`. Why?)
+
+---
+
+**Next up:** right now the robot listens **once** and then the program ends. Let's make it listen **forever**. ➡️

@@ -1,39 +1,51 @@
 ---
-title: "Module 3: Meet Your Robot"
+title: "Module 3: The Robot Game"
 ---
 
-## Welcome to the Robot Garage 🤖
+## Time to Build a Game 🎮🤖
 
-⏱ **About 5 minutes**
+⏱ **About 15 minutes**
 
-In Module 1 you learned the building blocks: variables, types, operators, `if`, `switch` and loops. Now we use them to **build something**: a little robot you can drive around a screen with your arrow keys.
+Look how far you've come. In the Java Classes projects you wrapped a Kraken in a `MotorSubsystem`, built an `ArmSubsystem` with enums, getters and commands, and then split it into IO layers with an interface. That is real robot code, and it's genuinely hard.
 
-We'll build it the way a video game character levels up. Each level unlocks a new ability:
+It's also hard to *practice*. Every test needs a robot, a fresh battery (remember the 5-minute rule!) and a free mechanism. So for the next two modules we're stepping away from the hardware and building something you can run anywhere, on any computer: **a little robot you drive around a screen with your arrow keys.**
 
-| Level | What the robot can do | Where you learn it |
+You already know how to write the classes. This time, the new stuff is everything *around* the classes: reading input, reacting to key presses, and drawing to the screen. Along the way you'll finally get the full story on a few things you've already seen in robot code without much explanation:
+
+| You've seen this in robot code... | ...and you'll learn it here |
+|---|---|
+| `@Override` above `periodic()` in every subsystem | What `@Override` really does, and the `Object` class every class secretly extends (Module 3) |
+| `currentState.equals(targetState)` in the Module 2 intake code | Why Strings and other objects get compared with `.equals()` and not `==` (Module 3) |
+| `controller.x().onTrue(...)` in `RobotContainer` | **Event-driven programming**: "don't call us, we'll call you" (Module 4) |
+| `new ArmIO() {}` in your IO project | **Anonymous classes**: a one-off class with no name (Module 4) |
+
+---
+
+## The Game, Level by Level
+
+The robot game is built in **steps**, like a video game character leveling up. Each step unlocks a new ability:
+
+| Step | What the robot can do | Where you learn it |
 |---|---|---|
-| 🥚 Level 0 | Exist. That's it. It just says hi. | Module 3 |
-| 🐣 Level 1 | Has a blueprint and can be "born" | Module 3 |
-| 🐥 Level 2 | Has skills (methods) you can trigger | Module 3 |
-| 🐔 Level 3 | Remembers where it is (fields) | Module 3 |
-| 🎮 Level 4 | Listens to you type commands in a game loop | Module 4 |
-| 🕹️ Level 5 | Lives in a real window and moves with arrow keys | Module 5 |
+| 🥚 Step 0 – 1 | Exists, and says hi when it's built | You already know this! (Java Classes) |
+| 🐣 Warm-up | Remembers its position and can move | This page |
+| 🐥 Step 2 | Listens to you type commands in a game loop | Module 3 |
+| 🎮 Step 3 | Reacts to the arrow keys in a real window | Module 4 |
+| 🕹️ Step 4 | Is drawn on screen and moves as you drive | Module 4 |
 
-By the end of Module 5 you will have written every line of a small Java game. That's a big deal, so let's go!
+By the end of Module 4 you will have written every line of a small Java game.
 
 ---
 
 ## Where We Write Code
 
-For Modules 3 and 4 we'll use the same online compiler as Module 1:
+For Module 3 we're going back to the online compiler from Module 1:
 
 👉 **[Programiz Java Online Compiler](https://www.programiz.com/java-programming/online-compiler/)**
 
-No installing, no setup. Paste your code, press **Run**, and see the output on the right.
+### One file, more than one class
 
-### One file, two classes
-
-In a "real" Java project, like our FRC robot code, every `public class` lives in **its own file**: `Main.java`, `Robot.java`, and so on. Think of it like each student getting their own locker.
+In your robot project, every `public class` lives in **its own file**: `RobotContainer.java`, `ArmSubsystem.java`, and so on. Think of it like each student getting their own locker.
 
 Programiz only gives us **one file** (one locker). That's fine! We'll put `Main` at the top and put `Robot` underneath it, **without** the word `public`:
 
@@ -51,33 +63,35 @@ class Robot {
 
 Java is happy with that because only **one** class in the file is `public`, and it's the one that matches the file name (`Main`).
 
-> 💡 **Remember:** When you see `Main.java` and `Robot.java` as separate files in this guide, that's how the real project is organized. In Programiz, just stack them in one file like above.
+> 💡 **Remember:** The real game in our `Step` folders has `Main.java` and `Robot.java` as separate files, just like your robot project. In Programiz, just stack them in one file like above.
 
 ---
 
-## The Front Door: `main`
+## 🛠 Warm-up: Build the Robot
 
-Every Java program needs a place to start. That place is:
+You already know every piece of this from the Java Classes projects, so this is a quick warm-up, not a lesson. Write a `Robot` class underneath `Main` that has:
 
-```java
-public static void main(String[] args) {
-```
+1. `private` `int` fields `x` and `y`, and a `private final int stepSize`.
+2. A constructor that starts the robot at `(250, 250)` with a `stepSize` of `10`.
+3. Four methods, `moveUp()`, `moveDown()`, `moveLeft()` and `moveRight()`. Each one changes `x` or `y` by `stepSize`, then prints the new position like `Moving UP - New position: (250, 240)`.
+4. Getters `getX()` and `getY()`.
 
-Think of `main` as the **front door** of your program. When you press Run, Java walks in through this door and runs the lines inside it from top to bottom. Without a front door, Java just stands on the porch confused. 🚪
+> ⚠️ **Heads up:** moving **up** makes `y` **smaller**. That's not a typo. On a computer screen, `y` counts *down* from the top, like line numbers on a page. You'll see why in Module 4 when the robot gets a window.
 
-You don't need to understand `public static void` or `String[] args` yet. For now, read the whole line as "**start here**."
-
----
-
-## 🛠 Exercise: Turn the Key
-
-Paste this code (our **Step 0**) into Programiz and press **Run**:
+Use this `main` to test it:
 
 ```java
 public class Main {
 
     public static void main(String[] args) {
         System.out.println("Program started!");
+
+        Robot robot = new Robot();
+        robot.moveRight();
+        robot.moveRight();
+        robot.moveUp();
+
+        System.out.println("x is " + robot.getX());
     }
 }
 ```
@@ -86,14 +100,65 @@ Expected output:
 
 ```text
 Program started!
+Moving RIGHT - New position: (260, 250)
+Moving RIGHT - New position: (270, 250)
+Moving UP - New position: (270, 240)
+x is 270
 ```
 
-🎉 Your robot's garage is open. It's empty, but it's open.
+<details>
+<summary>Stuck? Click to see one solution.</summary>
+
+```java
+class Robot {
+    private int x;
+    private int y;
+    private final int stepSize;
+
+    public Robot() {
+        x = 250;
+        y = 250;
+        stepSize = 10;
+    }
+
+    public void moveUp() {
+        y -= stepSize;
+        System.out.println("Moving UP - New position: (" + x + ", " + y + ")");
+    }
+
+    public void moveDown() {
+        y += stepSize;
+        System.out.println("Moving DOWN - New position: (" + x + ", " + y + ")");
+    }
+
+    public void moveLeft() {
+        x -= stepSize;
+        System.out.println("Moving LEFT - New position: (" + x + ", " + y + ")");
+    }
+
+    public void moveRight() {
+        x += stepSize;
+        System.out.println("Moving RIGHT - New position: (" + x + ", " + y + ")");
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+}
+```
+
+</details>
+
+This is the robot from **Step 4** of the game, and you'll keep using it all the way to the end of Module 4. Paste your finished code into your doc under **Module 3: Warm-up**.
 
 ### ⭐ Stretch
 
-Add a second `println` that prints your team number and your robot's name. (Every great robot needs a great name. "Sir Beeps-a-Lot" is taken.)
+Build a **second** robot in `main` and move it differently. Print both robots' `x` values to prove that each object has its own fields.
 
 ---
 
-**Next up:** we design the robot's blueprint. ➡️
+**Next up:** printing `"x is " + robot.getX()` works, but wouldn't it be nicer to just print the robot itself? ➡️

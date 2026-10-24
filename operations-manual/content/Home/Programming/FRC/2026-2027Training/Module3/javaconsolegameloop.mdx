@@ -1,0 +1,290 @@
+---
+title: "Java: The Console Game Loop"
+---
+
+## The Arcade Machine 🕹️
+
+⏱ **About 15 minutes**
+
+### What you'll learn
+
+- How a **game loop** that waits for input differs from the robot loop you already wrote
+- How every piece of **Step 2** of the game fits together
+- What switch **fall-through** is, and how to use it on purpose
+- Why `break` inside a `switch` won't get you out of a loop
+
+📚 Extra reading: [W3Schools: Java Switch](https://www.w3schools.com/java/java_switch.asp) and [W3Schools: Java Break and Continue](https://www.w3schools.com/java/java_break.asp)
+
+---
+
+## Two Kinds of Loops
+
+An arcade machine doesn't play **one** game and then shut off forever. It runs a loop: wait for a player to press a button, react to it, go back and wait again. Almost every video game works this way. It's called a **game loop**: *listen → react → repeat*.
+
+You already wrote a loop like this in the Module 2 elevator exercise:
+
+```java
+while (true) {
+    // update limit switches, move the elevator, count loops...
+}
+```
+
+But there's one big difference. The elevator loop **never stops to wait**. It spins as fast as it can, checking sensors every lap, just like the real robot's loop runs every 20 ms whether the driver touches anything or not.
+
+Our game loop is different, because of `nextLine()`:
+
+```java
+while (true) {
+    String input = scanner.nextLine();   // ⏸️ the whole loop freezes here...
+    // ...until the player presses Enter
+}
+```
+
+Each lap **pauses** until the player types something. That's perfect for a text game, but it would be a disaster on a robot: if the robot loop waited for someone to press Enter, nothing else (not the drivetrain, not the safety checks) would run in the meantime. Keep that in mind. It's exactly the problem Module 4 solves.
+
+---
+
+## The Real Code (Step 2)
+
+Here's **all** of Step 2, combined into one file for Programiz. You know every single piece!
+
+```java
+import java.util.Scanner;
+
+public class Main {
+
+    public static void main(String[] args) {
+        System.out.println("Program started!");
+
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Enter a direction:");
+        Robot robot = new Robot();
+
+        while (true) {
+            System.out.println("f = forward | b = back | l = left | r = right  | x = exit");
+            String input = scanner.nextLine();
+
+            if (input.equals("f") || input.equals("b") || input.equals("l") || input.equals("r")) {
+                robot.move(input);
+            }
+            else if (input.equals("x")) {
+                System.out.println("Exiting program");
+                break;
+            }
+        }
+
+        scanner.close();
+    }
+}
+
+class Robot {
+
+    public void move(String key) {
+        System.out.print(" ===== Robot is moving ");
+
+        switch (key) {
+            case "f":
+                System.out.println("Forward =====");
+                break;
+            case "b":
+                System.out.println("Back =====");
+                break;
+            case "l":
+                System.out.println("Left =====");
+                break;
+            case "r":
+                System.out.println("Right =====");
+                break;
+        }
+    }
+
+}
+```
+
+Here's what it looks like when you play it. The lines that are just `f`, `l` and `x` are what the player typed:
+
+```text
+Program started!
+Enter a direction:
+f = forward | b = back | l = left | r = right  | x = exit
+f
+ ===== Robot is moving Forward =====
+f = forward | b = back | l = left | r = right  | x = exit
+l
+ ===== Robot is moving Left =====
+f = forward | b = back | l = left | r = right  | x = exit
+x
+Exiting program
+```
+
+### Walkthrough 🚶
+
+| Step | What happens | You learned it in |
+|---|---|---|
+| 1 | `import java.util.Scanner;` borrows the Scanner from Java's library | W3Schools Packages/API |
+| 2 | Plug in the microphone: `new Scanner(System.in)` | Scanner lesson |
+| 3 | Build **one** robot with `new Robot()`, **before** the loop | Java Classes |
+| 4 | Start the game loop with `while (true)` | Module 1, Module 2 |
+| 5 | Print the menu, then **wait** for the player with `nextLine()` | Scanner lesson |
+| 6 | If it's a direction (checked with `.equals()` and OR), press the robot's `move` button | Module 1, Scanner lesson |
+| 7 | The robot's `switch` picks the right message | Module 1 |
+| 8 | If it's `x`, say goodbye and `break` out of the loop | Module 1 |
+| 9 | Anything else? Ignore it, and the loop goes back to step 5 | Module 1 |
+| 10 | After the loop: `scanner.close()` turns off the faucet | Scanner lesson |
+
+> 💡 **Why is the robot built *before* the loop?** If `new Robot()` were inside the loop, you'd build a brand-new robot every turn, and its fields would reset every time. In your robot project, `RobotContainer` builds each subsystem **once** for the same reason.
+
+> 💡 **Why is `String input` *inside* the loop?** Each turn needs a fresh answer from the player, so we read a new line every time around.
+
+> 💡 **Why `print` and not `println`?** The `print` in `move` leaves the cursor on the same line, so the `println` in the `case` finishes the sentence: ` ===== Robot is moving Forward =====`.
+
+---
+
+## Why Not Check for `x` in a `switch`? 🤔
+
+That long OR chain is a little clunky. Why doesn't Step 2 just use a `switch` in `main` and add a `case "x":` with a `break`?
+
+Because **`break` inside a `switch` only leaves the `switch`**, not the loop around it:
+
+```java
+while (true) {
+    String input = scanner.nextLine();
+    switch (input) {
+        case "x":
+            System.out.println("Exiting program");
+            break;   // ⚠️ leaves the switch... and the loop keeps going!
+    }
+}
+```
+
+The program prints `Exiting program`... and then asks for another command. Forever. 😱 Step 2 avoids that trap by checking for `x` with an `if`, where `break` exits the loop like you'd expect.
+
+---
+
+## Fall-Through: Forgetting the Brakes 💥
+
+Here's another `switch` surprise. If you **forget** `break` at the end of a `case`, Java doesn't stop. It keeps rolling straight into the **next** case's code, without even checking its label! This is called **fall-through**.
+
+```java
+switch (key) {
+    case "f":
+        System.out.println("Forward");
+    case "b":
+        System.out.println("Back");
+        break;
+}
+```
+
+If `key` is `"f"`, this prints:
+
+```text
+Forward
+Back
+```
+
+Your robot just drove forward *and* backward. 🤖💫 **Always end each case with `break;`** unless you *want* fall-through.
+
+### Fall-through on purpose: stacking cases
+
+Sometimes fall-through is handy. If several cases should do the **same** thing, stack their labels:
+
+```java
+switch (key) {
+    case "f":
+    case "F":
+        System.out.println("Forward");
+        break;
+}
+```
+
+Now both `f` and `F` go forward. You'll use this trick again in Module 4 to support both arrow keys **and** WASD.
+
+---
+
+## 🔮 Predict the Output
+
+```java
+public class Main {
+
+    public static void main(String[] args) {
+        String key = "l";
+
+        switch (key) {
+            case "f":
+                System.out.println("Forward");
+                break;
+            case "l":
+                System.out.println("Left");
+            case "r":
+                System.out.println("Right");
+                break;
+            default:
+                System.out.println("Huh?");
+                break;
+        }
+    }
+}
+```
+
+Answer:
+
+```text
+Left
+Right
+```
+
+Case `"l"` is missing its `break`, so it falls through into case `"r"`. It stops at `"r"`'s `break`, so `default` never runs.
+
+---
+
+## 🙈 Common Oopsies
+
+- **A `while (true)` with no `break`.** The program never ends! In Programiz, press **Stop** to escape.
+- **Expecting `break` in a `switch` to exit the loop.** It only exits the `switch`.
+- **Forgetting `break` at the end of a `case`.** The #1 switch bug.
+- **Building the robot (or the Scanner) inside the loop.** You get a brand-new one every lap, and the old one's fields are lost.
+- **Creating a counter inside the loop.** `int moves = 0;` inside the loop resets it every lap, so it's never more than 1.
+- **Closing the Scanner inside the loop.** The next `nextLine()` crashes. Close it **after** the loop.
+
+---
+
+## 🛠 Exercise: Keeping Score
+
+Start with the full Step 2 code above, then:
+
+1. Add an `int moves` counter that starts at `0`.
+2. Each time the robot actually moves, add 1 to `moves`.
+3. Add an `else` that prints `Unknown command: ` followed by the input. Unknown commands should **not** count as moves.
+4. When the player types `x`, print `Total moves: ` and the count **after** `Exiting program`.
+
+What to type: `f`, `l`, `banana`, `f`, `x`
+
+Expected output:
+
+```text
+Program started!
+Enter a direction:
+f = forward | b = back | l = left | r = right  | x = exit
+ ===== Robot is moving Forward =====
+f = forward | b = back | l = left | r = right  | x = exit
+ ===== Robot is moving Left =====
+f = forward | b = back | l = left | r = right  | x = exit
+Unknown command: banana
+f = forward | b = back | l = left | r = right  | x = exit
+ ===== Robot is moving Forward =====
+f = forward | b = back | l = left | r = right  | x = exit
+Exiting program
+Total moves: 3
+```
+
+Paste your finished code into your doc under **Module 3: Game Loop**.
+
+### ⭐ Stretch
+
+1. Use **stacked cases** in `move` so that uppercase `F`, `B`, `L` and `R` print the same messages as lowercase. (You'll also need to let them through the `if` in `main`. `.equalsIgnoreCase()` can help.)
+2. Add a **move limit**: after 5 moves, print `Out of moves! Game over.` and end the game automatically, even if the player didn't type `x`. (Hint: you can have more than one `break` in a loop.)
+
+---
+
+**Next up:** you've got all the pieces. Time to build an arena! ➡️

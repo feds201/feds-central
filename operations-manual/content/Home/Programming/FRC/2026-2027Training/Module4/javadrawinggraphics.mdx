@@ -264,9 +264,17 @@ A normal `JPanel` only knows how to paint its background. We need a panel that *
 
 So instead, we use an **anonymous inner class**. It's like ordering a **custom cake** 🎂: "I'd like your regular JPanel... but with **these changes**." The curly braces right after `new JPanel()` hold the changes. It's *anonymous* because it never gets a class name. We make it once, right here, and that's that.
 
-The change we make is **overriding** `paintComponent`. That's the method Java calls whenever the panel needs to be drawn. (Same `@Override` as `toString()` in Module 3 and `keyPressed` in the last lesson!) Our version does two things:
+> 💡 **You've written one of these before!** Remember this line from your IO project?
+>
+> ```java
+> arm = new Arm(new ArmIO() {});
+> ```
+>
+> `new ArmIO() {}` is an anonymous class, too: "a one-off class that implements `ArmIO`, with **no changes**." The braces are empty because every `ArmIO` method already has a `default` body. Here, our braces aren't empty: we're changing how the panel paints.
 
-1. `super.paintComponent(g);` runs the **original** JPanel painting first. `super` means "**the version from the class I'm based on**." That paints the white background, which **wipes the old drawing** like erasing a whiteboard. Without it, every old box would stay on screen, leaving a trail. 🐌
+The change we make is **overriding** `paintComponent`. That's the method Java calls whenever the panel needs to be drawn. (Same `@Override` as `toString()` in Module 3 and `keyPressed` in the KeyListener lesson!) Our version does two things:
+
+1. `super.paintComponent(g);` runs the **original** JPanel painting first. You know `this` means "me." `super` means "**the version from the class I'm based on**," in this case plain old `JPanel`. That paints the white background, which **wipes the old drawing** like erasing a whiteboard. Without it, every old box would stay on screen, leaving a trail. 🐌
 2. `drawRobot(g);` then draws the robot fresh, in its current spot.
 
 > 💡 You never call `paintComponent` yourself. Remember: "**Don't call us, we'll call you.**" Java calls it when the window first appears, when it's resized, and when you ask for a repaint.
@@ -277,7 +285,7 @@ The change we make is **overriding** `paintComponent`. That's the method Java ca
 displayPanel.repaint();
 ```
 
-When you press a key, the robot's `x` and `y` change in its backpack, but the screen doesn't know that! `repaint()` tells Java, "**This panel is out of date. Please redraw it.**" Java then calls `paintComponent`, which wipes the panel and draws the box in its new spot.
+When you press a key, the robot's `x` and `y` fields change, but the screen doesn't know that! `repaint()` tells Java, "**This panel is out of date. Please redraw it.**" Java then calls `paintComponent`, which wipes the panel and draws the box in its new spot.
 
 It's like a **flipbook**: each key press draws a new page with the box in a slightly different place. Flip fast enough, and it looks like it's moving. That's how every video game and cartoon works!
 
@@ -308,7 +316,7 @@ g2d.fillPolygon(xPoints, yPoints, 3);
 
 A few new ideas are hiding in there. You don't need them yet, but here's a quick tour:
 
-- **`(Graphics2D) g` is a cast.** The paintbrush Java gives you is secretly a fancier `Graphics2D` brush. The cast is like **putting on special glasses** 🥽 so you can see and use its extra features, like `setStroke` (line thickness). You did casts with numbers in Module 1, for example `(int) 3.7`.
+- **`(Graphics2D) g` is a cast.** The paintbrush Java gives you is secretly a fancier `Graphics2D` brush. (Polymorphism again: `Graphics2D` extends `Graphics`, so a `Graphics2D` can be handed around as a plain `Graphics`.) The cast is like **putting on special glasses** 🥽 so you can see and use its extra features, like `setStroke` (line thickness). You did casts with numbers in Module 1, for example `(int) 3.7`.
 - **Antialiasing** smooths out jagged, pixelly edges on curves.
 - **`int[]` is an array**: one variable that holds a whole **list** of values, like an egg carton 🥚 with numbered slots. `xPoints` holds the 3 x-values of the triangle's corners, and `yPoints` holds the 3 y-values. `fillPolygon` connects the dots.
 - **`fillOval` and `drawArc`** draw circles and curved slices of circles (the smile).
@@ -356,7 +364,7 @@ Expected result: a big box in your color with a black border on a light gray bac
 Robot at position (275, 250)
 ```
 
-Paste your finished `drawRobot` method and `Robot` constructor into your lesson doc under **Module 5: Drawing**.
+Paste your finished `drawRobot` method and `Robot` constructor into your doc under **Module 4: Drawing**.
 
 ### ⭐ Stretch
 
@@ -364,4 +372,4 @@ Give your box robot a face! Use two small `fillOval`s for eyes (in white, with s
 
 ---
 
-**Next up:** the Boss Level. Everything you've learned in Modules 3, 4 and 5, all at once. ➡️
+**Next up:** the Boss Level. Everything you've learned in Modules 3 and 4, all at once. ➡️

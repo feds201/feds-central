@@ -1,8 +1,7 @@
 export default {
-    module4intro : 'Module 4: Your Robot Gets Ears',
-    javascannerandimports : 'Java: Imports and Scanner',
-    javaconditionals : 'Java: If, Else If, Else and Logic',
-    javaswitch : 'Java: Switch Statements',
-    javagameloop : 'Java: While Loops and the Game Loop',
-    module4challenge : 'Challenge: Console Robot Arena'
+    module4intro : 'Module 4: From Text to Video Game',
+    javakeylistener : 'Java: KeyListener and Key Events',
+    javaswingwindows : 'Java: Building a Window with Swing',
+    javadrawinggraphics : 'Java: Drawing with Graphics',
+    module4challenge : 'Boss Level: Robot Arena Deluxe'
 }
