@@ -1,5 +1,5 @@
 export default {
-  index: 'Programming',
+  index: 'Introduction',
   FRC: 'Robot Programming',
   Software: 'Non-Robot Programming'
 }
