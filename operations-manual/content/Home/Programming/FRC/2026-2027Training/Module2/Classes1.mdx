@@ -1,0 +1,195 @@
+---
+title: Java Methods
+---
+
+## Classes Project: Basic Motor Subsystem
+
+Complete the W3Schools **Classes** section through **Java `this` keyword**. Be sure to complete the coding challenges and send your finished code to your programming lead on Discord. Once you have finished, return here to complete your first robotics code project.
+
+For this project, you will be using **WPILib VS Code**. You should have already installed and configured it earlier in the training. If you do not remember how to set it up, revisit the WPILib installation lesson before continuing.
+
+Open your `ProgrammingTrainingSandbox` project.
+
+### Installing Vendor Dependencies
+
+The first skill you will learn is how to install a **vendordep** (vendor dependency). Vendor dependencies allow us to use hardware and libraries created by companies outside of WPILib.
+
+To learn more, read the FIRST documentation on 3rd Party Libraries.
+
+Install the following vendor dependencies into your project:
+
+- CTRE Phoenix 6 (Replay)
+- AdvantageKit
+
+---
+
+## Project: Kraken Motor Subsystem
+
+> **Note:** For this project, if you ever get red squiggles (especially under class names), you can likely fix them by hovering over the text, clicking **Quick Fix**, and picking the most relevant option. If you need help, ask the FEDS bot!
+
+Now that you understand the basics of Java classes, you are ready to build your first robot subsystem.
+
+In this activity, you will practice using:
+
+- Class variables
+- Creating a class
+- Constructors
+- Creating class objects
+- Writing class methods
+- Method parameters
+- Method return types
+
+### Step 1: Create a `MotorSubsystem` Class
+
+Create a new class named `MotorSubsystem`.
+
+Navigate to `src/main/java/frc/robot/` by right-clicking the `java/frc/robot` folder. Near the bottom of the dropdown menu, select **Create New Class/Command**, then select **Subsystem** from the dropdown. Name it `MotorSubsystem`.
+
+This class will represent a single Kraken X60 motor connected through a TalonFX motor controller.
+
+---
+
+### Step 2: Store the Motor ID
+
+Instead of writing the motor ID directly into the TalonFX constructor, create a separate class variable to hold it.
+
+1. Create an `int` variable that stores the motor ID with a value of **10**.
+2. Pass that variable into the TalonFX constructor when creating the motor object.
+
+This is good programming practice because the motor ID only exists in one place. If it ever changes, you only need to update a single line of code.
+
+---
+
+### Step 3: Create the TalonFX Object
+
+Create a class variable that stores a `TalonFX` object.
+
+**Note:** When you type `TalonFX` with the vendordep installed, you should get a pop-up for a TalonFX object. Press **Enter** so that the class is imported into your project. This allows you to use it.
+
+Initialize the motor inside your constructor using the motor ID variable you created in the previous step.
+
+At this point, your subsystem should own one TalonFX motor representing a Kraken X60.
+
+---
+
+### Step 4: Create a Method to Control the Motor
+
+Create a method named `setPower`.
+
+The method should:
+
+- Accept one `double` parameter representing motor output.
+- Call the TalonFX's `set()` method using the parameter you received.
+
+Your subsystem should now allow other code to control the motor without accessing the TalonFX directly.
+
+---
+
+### Step 5: Create and Use Your Subsystem Object
+
+In a real robot project, subsystems are not controlled directly from the class where they are created. Instead, we create an object of each subsystem and allow other parts of the robot code to interact with that object.
+
+Open your `RobotContainer` class.
+
+Create a new class variable that stores your `MotorSubsystem` object.
+
+```java
+private final MotorSubsystem motorSubsystem;
+```
+
+Then, inside the `RobotContainer` constructor, create the object:
+
+```java
+motorSubsystem = new MotorSubsystem();
+```
+
+Your `RobotContainer` now owns an instance of your motor subsystem, which means other commands and controls can use it.
+
+---
+
+### Step 6: Create a Dashboard Button to Run the Motor
+
+Now you will create a simple command that allows you to test your motor subsystem.
+
+Inside the `RobotContainer` constructor, add the following code:
+
+```java
+SmartDashboard.putData(
+    "Run Motor",
+    new InstantCommand(() -> motorSubsystem.setPower(0.1))
+        .andThen(new WaitCommand(1))
+        .andThen(() -> motorSubsystem.setPower(0))
+);
+```
+
+This creates a button on the SmartDashboard called **Run Motor**.
+
+When the button is pressed:
+
+1. The motor will run at 10% power.
+2. The robot will wait for 1 second.
+3. The motor will stop.
+
+Notice that we are not directly controlling the TalonFX from `RobotContainer`. Instead, we are calling a method from our subsystem. This keeps hardware control organized and follows the design patterns used in FRC programming.
+
+---
+
+### Step 7: Test Your Subsystem
+
+Deploy your code to the robot.
+
+Open SmartDashboard and find the **Run Motor** button.
+
+When you press it, your Kraken X60 should:
+
+- Start spinning at 10% power.
+- Run for one second.
+- Stop automatically.
+
+If it does not work, check:
+
+- Your CAN ID matches the motor configuration.
+- Your TalonFX object was created correctly.
+- Your subsystem object was initialized in `RobotContainer`.
+- Your command is calling the correct subsystem method.
+
+---
+
+### Extra Challenge: Logging with AdvantageKit
+
+Now that your subsystem is working, add logging so you can view motor data later.
+
+Inside your `MotorSubsystem`, create a method called `log()`.
+
+Use AdvantageKit's `Logger` class to record the motor position.
+
+The Phoenix 6 syntax for reading the motor position is:
+
+```java
+motor.getPosition().getValueAsDouble()
+```
+
+Record this value in `periodic()` using:
+
+```java
+Logger.recordOutput(
+    "MotorSubsystem/Position",
+    motor.getPosition().getValueAsDouble()
+);
+```
+
+Your subsystem can now report important information about the motor while the robot is running.
+
+This is the same process used on competition robots to monitor sensors, motors, and other hardware during testing and matches.
+
+---
+
+### Reflection
+
+After completing this project, you should understand:
+
+- Why robot hardware is wrapped inside subsystem classes.
+- Why constants such as CAN IDs should be stored separately instead of hardcoded.
+- How constructors initialize hardware.
+- How methods allow other code to safely interact with a subsystem.
+- How AdvantageKit records values for debugging.
