@@ -1,0 +1,88 @@
+# Lesson 3
+
+## 🎯 Goal
+
+Use **branches**: switch between them, push one, merge one, and learn the **Pull First** rule.
+
+> A **branch** is your own copy of the project where you can try things without touching anyone else's work. `nonRobot-module-2` is our shared starting point. **Your own branch is `training-yourname`**, the one you made in Lesson 2.
+
+# ⚠️ The Pull First Rule
+
+**You MUST pull before you start coding. Every time.**
+
+While you were away, someone may have fixed or updated something. If you start coding on old code, your work is built on a stale copy and things break later.
+
+**Do this at the start of every coding session:**
+
+1. Click the **branch name** (top-left of the window, or bottom-right on older versions) and under **Local** choose **`nonRobot-module-2`** → **Checkout**.
+2. Click **Git → Update Project...** (or press `Ctrl + T`, Mac `Cmd + T`). If it asks **Merge or Rebase**, choose **Merge**. Click **OK**. *(You just pulled!)*
+3. Switch back to **your own branch**, `training-yourname`.
+4. Click the branch name, click **`nonRobot-module-2`** in the list, and choose **Merge 'nonRobot-module-2' into 'training-yourname'**.
+
+Now you're ready to code.
+
+> **Why step 4?** Pulling only updates `nonRobot-module-2`. Your own branch is a separate copy, so it doesn't update by itself until you merge.
+
+# Task 1: Where am I?
+
+1. Click the **branch name**. A list pops up with **Local** and **Remote** sections.
+2. Look at both sections. In your doc, **guess** what the difference is.
+
+✅ **Checkpoint:** you can find `training-yourname` and `nonRobot-module-2` in the list.
+
+# Task 2: Pull first (do it now)
+
+Follow **The Pull First Rule** above, **all four steps**.
+
+✅ **Checkpoint:** you ended on `training-yourname`, and the merge in step 4 finished. Write in your doc what the pull in step 2 said (it's often "All files are up-to-date", and that's fine).
+
+> **If Git ever says CONFLICT:** don't panic, and don't click anything. Two people changed the same line and Git needs a human to choose. **Stop and ask David.**
+
+# Task 3: Watch a file disappear 
+
+1. On `training-yourname`, open the **Project** panel and go to `lib` → `Training`.
+2. Right-click `Training` → **New → File**, and make `yourname-demo.txt` with one line of text. Click **Add** if it asks about Git.
+3. Open the **Commit** window, check your file, write a message, and click **Commit**.
+4. Switch to `nonRobot-module-2` (branch name → pick it → **Checkout**).
+5. **Look in `lib/Training` now.** Where did your file go?
+6. Switch back to `training-yourname` and watch it return.
+
+✅ **Checkpoint:** you can explain, in one sentence, why the file disappeared. (It isn't deleted. It only lives on your branch.)
+
+# Task 4: Push your branch
+
+1. **Git → Push...** (`Ctrl + Shift + K`, Mac `Cmd + Shift + K`).
+2. Click **Push**.
+
+✅ **Checkpoint:** open `feds-central` on GitHub, pick `training-yourname` in the branch dropdown, and find `yourname-demo.txt` in `lib/Training`.
+
+# Task 5: Merge
+
+**Merging** means combining one branch into another. You always stand on the branch that **receives** the changes. (You already did this in step 4 of the Pull First Rule. Now you'll do it on purpose.)
+
+1. While on `training-yourname`, make a new branch from it: branch name → **New Branch...** → `training-yourname-extra`.
+2. On `training-yourname-extra`, make a file `lib/Training/yourname-extra.txt` and **commit** it.
+3. Switch back to `training-yourname`. **Look in `lib/Training`.** Is `yourname-extra.txt` there?
+4. Click the branch name, click **`training-yourname-extra`** in the list, and choose **Merge 'training-yourname-extra' into 'training-yourname'**.
+5. Look in `lib/Training` again.
+
+✅ **Checkpoint:** `yourname-extra.txt` was **missing** at step 3 and **there** at step 5.
+
+# Cheat sheet
+
+| I want to... | In Android Studio | Terminal (if you ever need it) |
+| --- | --- | --- |
+| **See** my branches | Click the branch name | `git branch` |
+| **Make** a branch | Branch name → **New Branch...** | `git checkout -b name` |
+| **Switch** to a branch | Branch name → pick it → **Checkout** | `git checkout name` |
+| **Pull** new changes | **Git → Update Project...** (`Ctrl/Cmd + T`) | `git pull` |
+| **Push** my branch | **Git → Push...** | `git push` |
+| **Merge** a branch into the one I'm on | Branch name → pick it → **Merge into current** | `git merge name` |
+
+## To complete this lesson
+
+Paste into this lesson's tab in your training doc (**text only**):
+
+1. **Your branch name or link** (`training-yourname`)
+2. Your guess about Local vs Remote (Task 1), and what it said when you pulled (Task 2)
+3. Two sentences: what's the difference between **push** and **pull**?

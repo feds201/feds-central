@@ -1,0 +1,93 @@
+# Lesson 5
+
+## 🎯 Goal
+
+Make **three small fixes** in the real app. Most real programming is small edits, and now you can find any file in seconds.
+
+# Your fix routine
+
+Every fix follows the same 5 steps:
+
+1. **Find** it (Lesson 5)
+2. **Change** one thing
+3. **Hot Reload** (Run panel)
+4. **Look** at the app. Did it change like you expected?
+5. **Commit** it
+
+> **Hot Reload** applies your change and keeps the app's current state. **Hot Restart** starts the app over. If you changed something and *nothing happened*, try a hot restart before you panic.
+
+# Task 0: Branch
+
+```
+git checkout training
+git pull
+git checkout -b training-yourname
+```
+
+Run the app.
+
+# Fix 1: Change a number in a variable
+
+**The symptom:** the bottom area of the **home screen** (the panel that holds the buttons) should be a little taller.
+
+**Find it:** the code that sets its height is in `home_page.dart`. Search for `50.0`.
+
+1. Change `50.0` to `55.0`. Hot reload. ✅ **Checkpoint:** the panel is taller.
+2. **Predict:** what happens if you change it to `40.0`? Try it.
+3. You'll probably see **yellow-and-black stripes**. That's an **overflow**: the content doesn't fit in its box. Change it back to `55.0`.
+
+# Fix 2: Change a color 
+
+**The symptom:** on the **Auton** screen, the **Passing** counter should be **green**, not amber.
+
+**Find it:** search for `Passing`. It shows up in **more than one file**, but only one is the Auton screen. Which one is it? (Check Lesson 5 if you're stuck.)
+
+1. In that spot, change `Colors.amber` to `Colors.green`.
+2. Hot reload. Go to the Auton screen. ✅ **Checkpoint:** the Passing counter is green. The **Total Shooting Cycles** counter right above it is still amber.
+
+# Fix 3: Change some text 
+
+**The symptom:** on the **Auton** screen, **Total Shooting Cycles** should say **Auton Shooting Cycles**.
+
+**Find it:** search for the exact text, like you did in Lesson 5.
+
+✅ **Checkpoint:** the Auton screen shows the new words. Commit it.
+
+# Round 2: No hints
+
+For each one, find it yourself and fix it. Commit each fix separately.
+
+1. The orange **Training** button on the home screen should say **Training Zone**.
+2. That same button should be **green** instead of orange. (Its border and text too.)
+
+✅ **Checkpoint:** both  show up in the running app.
+
+# Round 3: Red squiggles
+
+Open **DartPad** (from Module 1) and paste this:
+
+```dart
+void main() {
+  int teamNumber = 201
+  String teamName = "FEDS";
+  int year = "2026";
+  print("Team $teamNumber $teamName"):
+  print(yeer);
+}
+```
+
+It has **4 bugs**. Fix them **one at a time**, and run after each. Read each error message. It tells you the line.
+
+✅ **Checkpoint:** it prints the team number and name, then the year.
+
+# Last Step
+
+commit your changes!
+
+## To complete this lesson
+
+Paste into this lesson's tab in your training doc (**text, no screenshots**):
+
+1. The three lines you changed in Fixes 1 to 3 (as text, before and after)
+2. Your fixed code from Round 3
+3. One sentence: when do you need a hot **restart** instead of a hot **reload**?

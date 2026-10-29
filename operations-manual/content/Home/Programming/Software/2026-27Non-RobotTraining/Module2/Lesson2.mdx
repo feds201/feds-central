@@ -1,0 +1,92 @@
+# Lesson 2
+
+## 🎯 Goal
+
+Save your work with **commits** and send it to GitHub, all from inside Android Studio. No terminal needed.
+
+> **Think online shopping 🛒:** *selecting files* = put them in the cart. **Commit** = check out (a saved checkpoint with a message). **Push** = ship it to GitHub.
+
+# Task 1: Make your own branch
+
+You never save work directly on `nonRobot-module-2`. You make your own **branch** (a copy where you can work safely). Lesson 3 explains branches properly.
+
+1. Click the **branch name** in Android Studio. It's in the top-left of the window, next to the project name. (On older versions it's at the **bottom-right** corner and says `Git:`.)
+2. Click **New Branch...**
+3. Name it `training-yourname` (use your real name) and click **Create**.
+
+✅ **Checkpoint:** the branch name at the top now says `training-yourname`.
+
+# Task 2: Make a file
+
+1. In the **Project** panel, open the folder `Training`.
+2. Right-click `Training` → **New → File**. Name it `yourname.txt`.
+3. If Android Studio asks **"Add file to Git?"**, click **Add**.
+4. Write **3 lines** in the file: your name, why you joined FEDS, and one thing you want to learn.
+
+# Task 3: Meet the Commit window
+
+1. Open the **Commit** window on the left side. (Click **Commit** in the left toolbar, or press `Alt + 0`. Mac: `Cmd + 0`.)
+2. Look for your file. It's either under **Changes** or under **Unversioned Files**. Your file is **new**, so Git hasn't seen it before.
+3. Click the **checkbox** next to your file. That puts it in the cart 🛒
+4. **Right-click** your file and choose **Show Diff** (`Ctrl + D`, Mac `Cmd + D`). What do you see?
+
+✅ **Checkpoint:** your file is checked, and you can explain what the colors in the diff mean. 🟩 green = added, 🟥 red = removed.
+
+# Task 4: Your first commit
+
+1. In the **message box** at the bottom of the Commit window, type a message that says what you did, like: `Add practice file for yourname`
+2. Click **Commit**.
+
+✅ **Checkpoint:** the file disappears from the Commit window. That means it's saved! To see your commit, open the **Git** tool window (`Alt + 9`, Mac `Cmd + 9`) and click the **Log** tab. Your commit is at the top.
+
+# Task 5: Three commits
+
+Real commits are **small**. Make **two more**, one at a time:
+
+1. Add a fourth line to your file. Open the Commit window and look at the diff **before** you commit. What's green?
+2. Commit it with a message that says what you changed.
+3. Do one more edit and commit that too.
+
+**Only check the files you mean to commit.** If other files show up in the list that you didn't change, **leave them unchecked** and ask David.
+
+✅ **Checkpoint:** the Log tab shows **3 commits** from you.
+
+## Write good messages
+
+- ❌ `stuff`, `fix`, `asdf`
+- ✅ `Add practice file for david`
+- ✅ `Change Passing counter color to green`
+
+**Mini task:** write a good message for each of these (in your doc):
+1. You made the home screen button say "Training Zone".
+2. You deleted a line that printed debug text.
+3. You made a counter stop at zero.
+
+# Task 6: Push it to GitHub
+
+Right now your commits only live on **your computer**. To send them:
+
+1. Click **Git → Push...** in the menu (or press `Ctrl + Shift + K`, Mac `Cmd + Shift + K`).
+2. You'll see your 3 commits listed. Click **Push**.
+3. If a **sign-in** window pops up, choose **Log in via GitHub**, sign in, and approve it.
+
+> **Tip:** the Commit window's **Commit** button has an arrow next to it with **Commit and Push...**. That does both steps at once.
+
+✅ **Checkpoint:** open the `feds-central` repo on GitHub. Click the branch dropdown, choose `training-youname`, and find your file in `scouting/android/lib/Training`.
+
+**Push rejected?** Someone else changed the branch first. Click **Git → Update Project...** (or **Pull**), then push again.
+
+# Task 7: Secrets
+
+Some things must **never** be committed: passwords, private keys, API tokens. Once they're on GitHub they're very hard to take back.
+
+1. Press `Ctrl + Shift + F` (Mac: `Cmd + Shift + F`) and search for `defaultApiKey`.
+2. Open the file it finds and read the **comment** above it.
+3. In your doc, answer: **why is this one OK to commit?** What kind of key would **not** be OK?
+
+## To complete this lesson
+
+Paste into this lesson's tab in your training doc (**text only**):
+
+1. **Your branch name or link** (`training-yourname`)
+2. Your answer to Task 7

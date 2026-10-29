@@ -1,0 +1,98 @@
+# Lesson 9
+
+## 🎯 Goal
+
+Build a **new custom button component** from a request card, and show it off.
+
+This is how real programming works: **someone has a need, and you build it.**
+
+# Start here
+
+Do **The Pull First Rule** from Lesson 3.
+
+# How the team builds components
+
+Open `lib/components/` and look at `Button.dart`, `CheckBox.dart`, and `CounterShelf.dart`. Our components are **builder functions** that start with `build`: `buildButton(...)`, `buildCheckBox(...)`. Each one takes a few arguments and **returns a Widget**.
+
+Look closely at `buildCheckBox` in `CheckBox.dart`. Can you tell what each of its arguments is for? Notice how it **tells the page** when it's tapped (through `onChanged`), but **doesn't remember anything itself**. The page keeps the state.
+
+# Task 1: Warm-up: write your first component
+
+Make a new file **`lib/components/YesNoToggle.dart`** and paste this. **Fill in the two blanks** (`____`):
+
+```dart
+import 'package:flutter/material.dart';
+
+Widget buildYesNoToggle(String title, bool value, Function(bool) onChanged) {
+  return Padding(
+    padding: const EdgeInsets.all(8.0),
+    child: ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: ____ ? Colors.green : Colors.red,
+        foregroundColor: Colors.white,
+      ),
+      onPressed: () {
+        onChanged(____);
+      },
+      child: Text('$title: ${value ? 'YES' : 'NO'}'),
+    ),
+  );
+}
+```
+
+**What it should do:** it's **green** and says `YES` when `value` is true, and **red** and says `NO` when false. Tapping it tells the page the **opposite** value.
+
+Now **use it** on your Training Page under the heading **`LESSON 11: CAPSTONE`**. You'll need to:
+
+1. Add `import 'package:scout_ops_android/components/YesNoToggle.dart';` at the top of `TrainingPage.dart`.
+2. Add a variable like `bool leftZone = false;`.
+3. Call `buildYesNoToggle('Left zone', leftZone, (bool value) { ... })`, and use `setState` inside so the page remembers the new value.
+
+✅ **Checkpoint:** tapping it flips between green **YES** and red **NO**.
+
+
+# Task 2: Your request card
+
+| Part | What it tells you |
+| --- | --- |
+| **buildFoulsCounter** |
+| **Displays a team's foul count with buttons to increase or decrease it.**
+| **int fouls and Function(int) onChanged** |
+| **The count must stay between 0 and 10. The minus button cannot go below 0, and the plus button cannot go above 10.**
+| **Display Fouls: X, where X is the current count. Use a red minus button, a blue plus button, and a clearly visible count.**
+
+# Task 3: Build it
+
+1. **Read the card.** Ask questions *now*.
+2. **Make a new file** in `lib/components/`, named after your component.
+3. **Write the function.** Copy the *style* from your warm-up (`build...`, takes a value and an `onChanged`, returns a Widget).
+4. **Use it** on your Training Page under **`LESSON 9: CAPSTONE`**.
+5. **Test the edges.** Tap it 50 times. Test the minimum and the maximum.
+6. **Fix bugs** with the Debug Checklist from Lesson 10.
+7. **Commit in small steps**, then **push** with **Git → Push...**
+
+**Stuck?** Use your checklist. Search the exact error. **15 minutes?** Ask a veteran member or David, and tell them what you tried.
+
+# The walkthrough
+
+When you're finished, David will ask you to **walk through your code** for about two minutes. You explain what each part does, and then make a **small live change** (like changing a color or a limit).
+
+If you wrote it, this part is easy, and kind of fun. 
+
+# What we'll check
+
+- ✅ It does **exactly** what the card says
+- ✅ It works at the **edges** (min and max)
+- ✅ It follows the team's style (a `build...` function, in its own file in `lib/components/`)
+- ✅ Your commits are **small** and say what you did
+- ✅ You can **explain it live**
+
+# 🎉 Congrats!
+
+Finishing this means you completed **Module 2 of Non-Robot Programming!**
+
+You can now set up the tools, use Git, find code, fix problems, build components, debug, and ship your work. That is exactly what programmers on our team do.
+
+## To complete this lesson
+
+Paste your branch name or link (`training-yourname`) into this lesson's tab in your training doc. David will review your branch and do the walkthrough with you.
