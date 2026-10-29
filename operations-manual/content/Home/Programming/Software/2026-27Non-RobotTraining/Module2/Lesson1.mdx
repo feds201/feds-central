@@ -1,0 +1,117 @@
+# Lesson 1
+
+## 🎯 Goal
+
+Get the **real FEDS scouting app** running on a virtual Android device, then find **your Training Page** inside it.
+
+**Rules for Module 2:** you learn by *doing*. Each lesson is a list of tasks. Do them in order. Every task has a ✅ checkpoint, so you always know if it worked.
+
+> **Tools you're installing:** **Git** saves your work. **Android Studio** is where you write code. **Flutter** turns our Dart code into an app (Dart comes inside it).
+
+# Before you start
+
+**Make sure to make a separate google doc and share it to feds.programming@gmail.com**
+
+
+# Task 1: Install Git
+
+- **Windows:** download from [git-scm.com](https://git-scm.com/downloads) and use the default options.
+
+✅ **Checkpoint:** this prints a version number:
+
+```
+git --version
+```
+
+# Task 2: Install Android Studio
+
+1. Download it from [developer.android.com/studio](https://developer.android.com/studio) and install it.
+2. Open it. In the setup wizard choose **Standard**, accept the licenses, and wait for the downloads ☕
+
+# Task 3: Add the Flutter plugin
+
+1. Open **Plugins**. Windows: **File → Settings → Plugins**.
+2. In the **Marketplace** tab, search **Flutter** and click **Install**. Say **Yes** to also install **Dart**.
+3. Click **Restart IDE**.
+
+# Task 4: Install the Flutter SDK
+
+1. Go to [docs.flutter.dev/get-started/install](https://docs.flutter.dev/get-started/install), pick your OS, and choose **Android**.
+2. Download the SDK and unzip it to a **simple** folder with no spaces:
+   - Windows: `C:\dev\flutter`
+3. Add Flutter to your **PATH** so the terminal can find it:
+   - **Windows:** Start menu → **Edit environment variables for your account** → select **Path** → **Edit** → **New** → `C:\dev\flutter\bin`
+
+```
+echo 'export PATH="$PATH:$HOME/dev/flutter/bin"' >> ~/.zshrc
+```
+
+> If the official page disagrees with this lesson, **the official page wins.** Tell David so we can fix the lesson.
+
+✅ **Checkpoint:** open a **new** terminal. This prints a version number:
+
+```
+flutter --version
+```
+
+Our app needs **Flutter 3.22 or newer** (it requires Dart 3.4.3+). The latest stable download is fine.
+
+# Task 5: Run the doctor
+
+```
+flutter doctor --android-licenses
+```
+
+Type `y` every time it asks. Then:
+
+```
+flutter doctor
+```
+
+✅ **Checkpoint:** these three lines show **[✓]**: **Flutter**, **Android toolchain**, **Android Studio**. Warnings about Chrome, Visual Studio, or Xcode are fine. "Connected device" turns ✓ after Task 6.
+
+**Stuck?** If you see "cmdline-tools component is missing": Android Studio → **Settings → Languages & Frameworks → Android SDK → SDK Tools** → check **Android SDK Command-line Tools** → **Apply**.
+
+# Task 6: Get the real code
+
+The team keeps many projects in one repo called **feds-central**. The scouting app is the `scouting/android` folder inside it. In a terminal:
+
+```
+git clone https://github.com/feds201/feds-central.git
+cd feds-central
+git checkout non-robot-training
+```
+
+The `non-robot-training` branch has your Training Page already in it. (What's a branch? That's Lesson 3.)
+
+✅ **Checkpoint:** run `git branch`. The line with `*` says `training`.
+
+# Task 8: Open and run the app
+
+1. Android Studio → **File → Open** → choose **`feds-central/scouting/android`** (only this folder!). Click **Trust Project**.
+2. When a banner offers **Pub get**, click it. (Or run `flutter pub get` in the terminal.)
+4. Find the run button at the top and run your code!
+
+The **first build is slow** (several minutes). Go get water.
+
+✅ **Checkpoint:** the FEDS scouting app opens on your emulator.
+
+# Task 9: Find your page
+
+1. Tap each of the buttons on the home screen. Write down the **names of all the buttons** you see.
+2. Find the **orange Training** button and tap it.
+
+✅ **Checkpoint:** a page titled **Training Page** says **Hello, FEDS!** This is the page you'll build in this module.
+
+# If something goes wrong
+
+- **`flutter` is not recognized:** your PATH is wrong, or you didn't open a *new* terminal. Redo Task 4, step 3.
+- **Build errors:** check your internet, and run again. Same error twice? Copy the **text** and ask.
+
+## 📝 Hand in
+
+Paste into this lesson's tab in your training doc (**text, no screenshots**):
+
+1. The output of `flutter doctor`
+2. The names of all the buttons on the home screen
+3. The result of `git branch`

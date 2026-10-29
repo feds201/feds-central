@@ -1,0 +1,79 @@
+# Lesson 4
+
+## 🎯 Goal
+
+Find anything in the scouting app **fast**. A good programmer isn't someone who knows every file. It's someone who can find the right one in seconds.
+
+> The app has **61 Dart files** under `lib/`. You'll never memorize them. You'll *search*.
+
+# Task 1: Learn the shortcuts (use every one!)
+
+Open the app in Android Studio and try each shortcut **once**, right now. Tick them off as you go.
+
+| I want to... | Windows | Mac |
+| --- | --- | --- |
+| Search **everything** | `Shift` twice | `Shift` twice |
+| Open a **file by name** | `Ctrl + Shift + N` | `Cmd + Shift + O` |
+| Search **text in all files** | `Ctrl + Shift + F` | `Cmd + Shift + F` |
+| Search text in **this file** | `Ctrl + F` | `Cmd + F` |
+| **Jump to where something is defined** | `Ctrl + click` the name | `Cmd + click` the name |
+| Go **back** | `Ctrl + Alt + ←` | `Cmd + [` |
+| **Find usages** (who calls this?) | `Alt + F7` | `Option + F7` |
+| Show / hide **Project panel** | `Alt + 1` | `Cmd + 1` |
+
+# Task 2: The map
+
+Open these in the Project panel and write one sentence about **what you think each holds**, based only on the file names:
+
+- `lib/main.dart`
+- `lib/home_page.dart`
+- `lib/components/`
+- `lib/Match_Pages/match/`
+- `lib/services/DataBase.dart`
+- `pubspec.yaml`
+
+(You'll see later how close you were.)
+
+# Task 3: Start from what you can see
+
+This is the most useful trick in the lesson. You can't know a file name. But you can **see the screen**.
+
+1. Run the app. Tap **Match Scouting** and pick any match. You land on the **Auton** screen.
+2. Pick **any word on the screen** (a title or label).
+3. Press `Ctrl + Shift + F` (or `Cmd + Shift + F`) and search for **exactly that text**.
+
+✅ **Checkpoint:** the results show the **file and line** that puts that text on the screen. Do this with **two** different words.
+
+# Task 4: Scavenger hunt
+
+Answer each with a **file path** (like `lib/something/File.dart`) and a **line number** if asked. Use the search tools. Don't just browse folders!
+
+1. Which file holds `void main()`, the start of the whole app? (What line?)
+2. What is the app's `name:` in `pubspec.yaml`?
+3. Which **folder** holds `Auton.dart`, `TeleOperated.dart`, and `EndGame.dart`?
+4. The Auton screen has a counter titled **Total Shooting Cycles**. Which file and line makes it?
+5. The bottom bar of the match screen has a tab labeled **Teleop**. Which file and line defines that label?
+6. The home screen has a **Pit Checklist** button. Which **page class** does it open, and in which file is that class?
+7. Which file **defines** the function `buildCounterFull`? (What line?)
+8. Which file **defines** `buildCheckBoxFull`?
+9. Use **Find Usages** on `buildCheckBoxFull`. Which files **use** it? (Ignore the one that defines it and anything in `lib/Training`.)
+10. Which file contains `class MatchRecord`? (What line?)
+11. How many `.dart` files are directly inside or below `lib/components/`?
+12. Which line of `home_page.dart` shows the text `Training`, and what **page** does that button open?
+
+✅ **Checkpoint:** all 12 answered. Ask David to check you if you want!
+
+# Task 5: Follow the trail
+
+1. In `home_page.dart`, find the **Match Scouting** button and `Ctrl + click` (or `Cmd + click`) `MatchPage`.
+2. In that file, find where it opens the next screen. Keep following the trail until you reach `Auton.dart`.
+3. Write down the **chain of files** you followed, like `home_page.dart → ... → Auton.dart`.
+
+## 📝 Hand in
+
+Paste into this lesson's tab in your training doc (**text, no screenshots**):
+
+1. Your answers to all 12 questions
+2. Your chain of files from Task 5
+3. Your one-sentence guesses from Task 2, plus what turned out to be **wrong**
+4. Which shortcut did you use the most?

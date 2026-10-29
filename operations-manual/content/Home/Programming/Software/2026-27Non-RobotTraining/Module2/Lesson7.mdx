@@ -1,0 +1,111 @@
+# Lesson 7
+
+## 🎯 Goal
+
+Build **counters** on your Training Page and make them behave. Counters are everywhere in scouting: shots, passes, fouls.
+
+# Start here
+
+1. Do **The Pull First Rule** from Lesson 3.
+2. Open `lib/Training/TrainingPage.dart` and find the heading **`LESSON 7: COUNTERS`**. Your code goes under it.
+3. New variables go under **`YOUR VARIABLES`**.
+
+# Task 1: Your first counter
+
+The team's counter is **`buildCounterFull`**. Open **`Auton.dart`** and look at how **Passing** uses it. Now add a variable:
+
+```dart
+int cycles = 0;
+```
+
+Then add this under the Lesson 7 heading, and **fill in the three blanks** (`____`):
+
+```dart
+buildCounterFull('Cycles', ____, (int value) {
+  ____(() {
+    cycles = ____;
+  });
+}, color: Colors.amber),
+```
+
+Hot **restart** (you added a variable).
+
+✅ **Checkpoint:** the `+` and `−` change the number.
+
+# Task 2: Make it behave
+
+1. Tap **−** until the number goes **below zero**. Cycles can't be negative!
+2. Open `CounterShelf.dart` and look at `buildCounterFull`. Does the component stop the number from going negative? (Take a look, then decide whose job it is.)
+3. Fix it **in your callback**: `cycles` should only change when the new value is between **0 and 10**.
+
+<details>
+<summary>Stuck? Open the hint</summary>
+
+Put an `if` **inside** `setState`. `&&` means **AND**:
+
+```dart
+setState(() {
+  if (value >= 0 && value <= 10) {
+    cycles = value;
+  }
+});
+```
+
+</details>
+
+✅ **Checkpoint:** you can't go below 0 or above 10.
+
+# Task 3: Two more counters
+
+Add **two more** counters, each with its **own variable** and its **own limits**:
+
+| Title | Variable | Min | Max |
+| --- | --- | --- | --- |
+| **Passing** | `passing` | 0 | 20 |
+| **Fouls** | `fouls` | 0 | 6 |
+
+Give each a different `color:`.
+
+✅ **Checkpoint:** all three counters work on their own and respect their limits.
+
+# Task 4: A score
+
+Write a **function** that works out a score. Put it with your variables (above `build`):
+
+```dart
+int totalPoints() {
+  // your code here
+}
+```
+
+- each **cycle** is worth **4** points
+- each **pass** is worth **1** point
+- each **foul** costs **2** points
+
+Show it on the page with a `Text`, like `Score: 15`.
+
+✅ **Checkpoint:** with Cycles = 3, Passing = 5, Fouls = 1, it shows **15**. The number changes **every time** you tap.
+
+# Task 5: A goal
+
+1. Add `final int cycleGoal = 5;` to your variables.
+2. Show a `Text` under your counters:
+   - when `cycles` is **at least** `cycleGoal`: **Goal reached!** in **green**
+   - otherwise: **N to go** in **orange** (where N is how many cycles are left)
+
+Use `style: TextStyle(color: Colors.green)` to set the color.
+
+✅ **Checkpoint:** at 4 cycles it says `1 to go`. At 5 it says `Goal reached!`.
+
+# Challenge
+
+- Add a **Reset** button that sets all three counters back to 0.
+- Show **Too many fouls!** in red when `fouls` is more than 3.
+
+# Ship it
+
+Click **Git → Push...** and push your branch.
+
+## 📝 Hand in
+
+Your **branch name or link** (`training-yourname`).

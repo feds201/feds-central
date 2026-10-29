@@ -1,0 +1,11 @@
+export default {
+    Lesson1: 'Lesson 1',
+    Lesson2: 'Lesson 2',
+    Lesson3: 'Lesson 3',
+    Lesson4: 'Lesson 4',
+    Lesson5: 'Lesson 5',
+    Lesson6: 'Lesson 6',
+    Lesson7: 'Lesson 7',
+    Lesson8: 'Lesson 8',
+    Lesson9: 'Lesson 9',
+}

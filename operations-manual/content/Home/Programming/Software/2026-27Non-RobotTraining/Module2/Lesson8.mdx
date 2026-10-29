@@ -1,0 +1,115 @@
+# Lesson 8
+
+## 🎯 Goal
+
+Learn a **system** for fixing bugs, use it on a page full of them, then turn your own checklist into a **real checklist in your app**.
+
+Everybody's code breaks. Good programmers just have a plan.
+
+# The Debug Checklist ✅
+
+Go in order.
+
+1. **Expected vs. happened.** What did you *want*? What *actually* happened?
+2. **Read the error.** Start at the top. Click the blue file link.
+3. **Red squiggles?** Hover over them and fix those first.
+4. **What did I change last?** Open the **Commit** window, right-click your file, and choose **Show Diff**. The bug is usually in what's green or red.
+5. **Check the usual suspects:** `;` · matching `()` and `{}` · quotes · spelling and CAPITALS · did I forget `setState`? · did I forget the `$`?
+6. **Print it.** `print('cycles is $cycles');` shows up in the **Run** panel.
+7. **Make it smaller.** Comment out code (`Ctrl + /`, Mac `Cmd + /`) until the bug disappears.
+8. **Hot restart.** Still weird? Stop the app and run it again.
+9. **15-minute rule.** Stuck for 15 minutes? **Ask.** Say what you expected, what happened, and what you tried.
+
+# Start here
+
+Do **The Pull First Rule** from Lesson 3.
+
+# Task 1: Break it on purpose
+
+The best way to learn errors is to cause them. On your Training Page, do each of these **one at a time**:
+
+| # | Break it by... | Then |
+| --- | --- | --- |
+| 1 | Deleting one `;` from a line | Find the red squiggle |
+| 2 | Spelling `setState` as `setstate` | Read the error message |
+| 3 | Deleting a `)` | Count how many red errors appear |
+| 4 | Writing `onPressed: myFunction()` instead of `onPressed: myFunction` (use any button with a named function, or make a tiny one) | Read the error message |
+
+For each one: **read the error out loud in plain English** (to a neighbor or to yourself), then **undo** it with `Ctrl + Z` (Mac `Cmd + Z`). **Don't commit these.**
+
+✅ **Checkpoint:** your page runs again with no red errors.
+
+# Task 2: Bug Hunt
+
+On your Training Page, tap **Open Bug Hunt (Lesson 10)** at the bottom. This page **runs**, but it has **5 bugs**.
+
+**The symptoms** (what you'll see):
+
+1. Tapping **+** on Cycles seems to do nothing, until you tap something else
+2. The text says `Climbed: climbed` instead of `Climbed: true` or `false`
+3. The counters go **below zero**
+4. Adding **fouls** makes the score go **up**
+5. `Goal reached!` shows up at **6** cycles instead of **5**
+
+Open **`lib/Training/BugHuntPage.dart`**. Use the checklist to find **the cause** of each symptom and **fix it**.
+
+```
+Bug hunt: add setState to Cycles counter
+```
+
+<details>
+<summary>Need a nudge? (don't open until you've tried)</summary>
+
+1. Look at the **Cycles** callback and compare it to the **Fouls** one right below it. What's different?
+2. Look at that line carefully. What's missing in the text?
+3. Look at how you stopped negatives in Lesson 8.
+4. Look at `totalScore()`. What should happen to `fouls`?
+5. Look at the comparison in `goalMessage()`. Is it `>` or `>=`?
+
+</details>
+
+✅ **Checkpoint:** all 5 symptoms are gone. Test it by tapping things in a **different order**. A bug you can't see is one you didn't test.
+
+# Task 3: Make a checklist in your app
+
+Now turn the checklist into **real code**. On your Training Page, under the heading **`LESSON 10: CHECKLIST`**, make a checklist of **5 debug steps** (use your own words!).
+
+1. Give each step its **own `bool` variable**, starting `false`.
+2. Show each one with **`buildCheckBox`**, like this:
+
+```dart
+buildCheckBox('Read the error', readError, (bool value) {
+  setState(() {
+    readError = value;
+  });
+}),
+```
+
+3. Write a function that counts the steps **not done yet**:
+
+```dart
+int stepsLeft() {
+  int left = 0;
+  if (!readError) {
+    left++;
+  }
+  // one more "if" for each of your other steps
+  return left;
+}
+```
+
+(`!` means NOT. `!readError` means "readError is false".)
+
+4. Under the checklist, show a `Text`:
+   - **All steps done!** in **green** when `stepsLeft()` is `0`
+   - **N steps left** in **orange** otherwise
+
+✅ **Checkpoint:** you can't see `All steps done!` until **all 5** boxes are ticked.
+
+# Ship it
+
+Click **Git → Push...** and push your branch.
+
+## 📝 Hand in
+
+Your **branch name or link** (`training-yourname`).
