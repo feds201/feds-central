@@ -14,6 +14,7 @@ import 'components/Animator/GridPainter.dart';
 import 'components/Button.dart';
 import 'components/nav.dart';
 import 'main.dart';
+import 'Training/TrainingPage.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -173,6 +174,25 @@ class _HomePageState extends State<HomePage>
               context,
               MaterialPageRoute(
                   builder: (context) => const PitCheckListPage(),
+                  fullscreenDialog: true));
+        },
+      ),
+      const SizedBox(height: 12),
+      buildButton(
+        context: context,
+        text: 'Training',
+        color: islightmode()
+            ? Colors.orange.shade100
+            : Colors.deepOrange.shade900,
+        borderColor: Colors.orange,
+        icon: Icons.school_outlined,
+        textColor: Colors.orange,
+        iconColor: Colors.orange,
+        onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const TrainingPage(),
                   fullscreenDialog: true));
         },
       ),
