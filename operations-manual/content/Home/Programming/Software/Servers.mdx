@@ -1,0 +1,88 @@
+# Servers
+
+This page explains the servers and online services that FRC Team 201 uses to run our non-robot software, such as the [Returnables Website](/Home/Programming/Software/Returnables). It is meant to give new programmers a map of what each service does, how they connect, and where to log in to look at them.
+
+## Getting Access
+
+Most of these sites need a login. If you want an account, ask a **programming lead** or a **mentor**. You can also search the **Business Drive** for the **student version of the team account passwords sheet**.
+
+Please do not share these logins outside the team, and do not change settings unless you know what you are doing. A wrong change can take our websites offline.
+
+## How It All Fits Together
+
+When someone visits one of our websites, the request usually travels like this:
+
+1. The domain name (for example `feds201.com`) is managed in **Squarespace**.
+2. The domain points to one of our **Linode** servers, or to a site hosted on **Vercel**.
+3. On our servers, **Nginx Proxy Manager** receives the request and sends it to the right app.
+4. The apps themselves (like **n8n**) run in **Docker** containers that we manage with **Portainer**.
+
+The sections below follow that order.
+
+## 1. Squarespace (Domain)
+
+**Link:** [squarespace.com](https://www.squarespace.com/)
+
+Squarespace is where our domain, **feds201.com**, is registered and managed. This is where DNS records live. DNS records tell the internet which server or service a name like `n8n.dev.feds201.com` should point to.
+
+You will mostly come here to:
+
+- Renew the domain
+- Add or change DNS records (for example, when a new subdomain is created)
+
+## 2. Linode (Servers)
+
+**Link:** [cloud.linode.com/linodes](https://cloud.linode.com/linodes)
+
+Linode (now part of Akamai) is a cloud hosting company. It rents us virtual computers that run 24/7 in a data center. We use these instead of a computer at the shop so our tools stay online all the time.
+
+We currently have **2 servers**:
+
+| Server | Description |
+| --- | --- |
+| **Main_Server** | Our primary server |
+| **second_server** | Our secondary server |
+
+From the Linode dashboard you can see whether a server is running, check its resource usage, and reboot it if something is stuck.
+
+## 3. Portainer (Docker Management)
+
+**Link:** [portainer.feds201.com](https://portainer.feds201.com/)
+
+Our apps run inside **Docker containers**. A container is a packaged app that includes everything it needs to run, so it behaves the same everywhere.
+
+**Portainer** is a web dashboard for Docker. Instead of typing commands into a server, you can use Portainer to:
+
+- See which containers are running on each of our 2 servers
+- Start, stop, and restart containers
+- View container logs when something is broken
+- Manage stacks (groups of containers defined together)
+
+## 4. Nginx Proxy Manager (Reverse Proxy)
+
+**Link:** [nginx1.dev.feds201.com](https://nginx1.dev.feds201.com/)
+
+Nginx Proxy Manager is a **reverse proxy** with a simple web interface. One server can run many apps, so the proxy acts like a receptionist. It looks at the address the visitor typed and sends them to the correct app.
+
+It also handles **SSL certificates**, which give our sites the padlock and `https://`.
+
+You will come here to:
+
+- Add a new subdomain and point it to an app
+- Check or renew SSL certificates
+
+## 5. n8n (Automation)
+
+**Link:** [n8n.dev.feds201.com](https://n8n.dev.feds201.com/)
+
+n8n is a workflow automation tool. You build workflows by connecting blocks together, and they run automatically when something happens (like a form submission) or on a schedule.
+
+This is where you can view and edit our workflows, including the ones behind the [Returnables Website](/Home/Programming/Software/Returnables).
+
+## 6. Vercel (Website Hosting)
+
+**Link:** [vercel.com](https://vercel.com/)
+
+Vercel is a hosting platform for websites. It connects to a GitHub repository and automatically rebuilds and publishes the site every time new code is pushed. We use it for sites that do not need to run on our own servers.
+
+From the Vercel dashboard you can see which sites we host, check deployment history, and look at build logs if a deploy fails.
