@@ -29,7 +29,36 @@ void main() {
 
 The program will print the number `11` since `4 + 7` is `11`.
 
-It works the same way for all the other basic operations.
+It works the same way for `-` and `*`.
+
+However, division is a little different.
+
+Division in Dart will always return a `double` value, even if the result is a whole number.
+
+try this code:
+
+```dart
+void main() {
+  int number = 4 / 2;
+  print(number);
+}
+```
+Even though `4 / 2` is `2`, the program will think the value is `2.0` since division always returns a `double` value.
+
+Then, how do you get a whole number from division? 
+
+You will use whole number division, which is done with the `~/` operator.
+
+try this code:
+
+```dart
+void main() {
+  int number = 4 ~/ 2;
+  print(number);
+}
+```
+
+This time, the program will print `2` since we used whole number division.
 
 ## Using `++` and `--`
 
