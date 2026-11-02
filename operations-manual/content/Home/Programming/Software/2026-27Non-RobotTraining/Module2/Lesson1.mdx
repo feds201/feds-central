@@ -51,23 +51,7 @@ flutter --version
 
 Our app needs **Flutter 3.22 or newer** (it requires Dart 3.4.3+). The latest stable download is fine.
 
-# Task 5: Run the doctor
-
-```
-flutter doctor --android-licenses
-```
-
-Type `y` every time it asks. Then:
-
-```
-flutter doctor
-```
-
-✅ **Checkpoint:** these three lines show **[✓]**: **Flutter**, **Android toolchain**, **Android Studio**. Warnings about Chrome, Visual Studio, or Xcode are fine. "Connected device" turns ✓ after Task 6.
-
-**Stuck?** If you see "cmdline-tools component is missing": Android Studio → **Settings → Languages & Frameworks → Android SDK → SDK Tools** → check **Android SDK Command-line Tools** → **Apply**.
-
-# Task 6: Get the real code
+# Task 5: Get the real code
 
 The team keeps many projects in one repo called **feds-central**. The scouting app is the `scouting/android` folder inside it. In a terminal:
 
@@ -81,17 +65,17 @@ The `nonRobot-module-2` branch has your Training Page already in it. (What's a b
 
 ✅ **Checkpoint:** run `git branch`. The line with `*` says `nonRobot-module-2`.
 
-# Task 8: Open and run the app
+# Task 6: Open and run the app
 
 1. Android Studio → **File → Open** → choose **`feds-central/scouting/android`** (only this folder!). Click **Trust Project**.
 2. When a banner offers **Pub get**, click it. (Or run `flutter pub get` in the terminal.)
-4. Find the run button at the top and run your code!
+3. Find the run button at the top and run your code on either Chrome or Edge!
 
 The **first build is slow** (several minutes). Go get water.
 
-✅ **Checkpoint:** the FEDS scouting app opens on your emulator.
+✅ **Checkpoint:** the FEDS scouting app opens on your selected browser.
 
-# Task 9: Find your page
+# Task 7: Find your page
 
 1. Tap each of the buttons on the home screen. Write down the **names of all the buttons** you see.
 2. Find the **orange Training** button and tap it.
