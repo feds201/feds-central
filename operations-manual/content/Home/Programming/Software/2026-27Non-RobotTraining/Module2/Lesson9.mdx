@@ -42,11 +42,11 @@ Widget buildYesNoToggle(String title, bool value, Function(bool) onChanged) {
 
 **What it should do:** it's **green** and says `YES` when `value` is true, and **red** and says `NO` when false. Tapping it tells the page the **opposite** value.
 
-Now **use it** on your Training Page under the heading **`LESSON 11: CAPSTONE`**. You'll need to:
+Now **use it** on your Training Page under the heading **`LESSON 9: CAPSTONE`**. You'll need to:
 
 1. Add `import 'package:scout_ops_android/components/YesNoToggle.dart';` at the top of `TrainingPage.dart`.
-2. Add a variable like `bool leftZone = false;`.
-3. Call `buildYesNoToggle('Left zone', leftZone, (bool value) { ... })`, and use `setState` inside so the page remembers the new value.
+2. Add a variable like `bool capstoneZone = false;`.
+3. Call `buildYesNoToggle('Left zone', capstoneZone, (bool value) { ... })`, and use `setState` inside so the page remembers the new value.
 
 ✅ **Checkpoint:** tapping it flips between green **YES** and red **NO**.
 
@@ -68,7 +68,7 @@ Now **use it** on your Training Page under the heading **`LESSON 11: CAPSTONE`**
 3. **Write the function.** Copy the *style* from your warm-up (`build...`, takes a value and an `onChanged`, returns a Widget).
 4. **Use it** on your Training Page under **`LESSON 9: CAPSTONE`**.
 5. **Test the edges.** Tap it 50 times. Test the minimum and the maximum.
-6. **Fix bugs** with the Debug Checklist from Lesson 10.
+6. **Fix bugs** with the Debug Checklist from Lesson 8.
 7. **Commit in small steps**, then **push** with **Git → Push...**
 
 **Stuck?** Use your checklist. Search the exact error. **15 minutes?** Ask a veteran member or David, and tell them what you tried.
