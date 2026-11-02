@@ -1,3 +1,5 @@
+import { Callout } from 'nextra/components';
+
 # Lesson 3
 
 ## Recap
@@ -52,6 +54,57 @@ Watch this video to understand more about servers and Docker:
 
 https://youtu.be/aDfF_7PsEo4?si=xmTMm8RyA0wV96fm
 
+## Try It Yourself!
+ 
+Now that you’ve watched the video, let’s run a real container on one of our real servers.
+ 
+### Before You Begin
+ 
+1. Go to **[portainer.feds201.com](https://portainer.feds201.com/)**.
+2. You need a login. Ask a **programming lead** or **mentor**, or look in the **Business Drive** for the student version of the team account passwords sheet.
+3. Once you are logged in, select the **second_server** environment. **Only work on second_server.**
+<Callout type="warning">
+**Do not touch anything else in Portainer.** The containers you see there keep our team's websites and tools running. Only create, stop, and remove the container that **you** create in this activity. If you are unsure about something, stop and ask a programming lead or mentor.
+</Callout>
+### Step 1: Explore Docker Hub
+ 
+**[Docker Hub](https://hub.docker.com/)** is a giant public library of images. It is like an app store for containers. Companies and developers upload images there, and anyone can download (“pull”) them.
+ 
+Spend a few minutes browsing:
+ 
+- Search for an app you have heard of, like `nginx`, `python`, or `minecraft`.
+- Look for the **Docker Official Image** and **Verified Publisher** badges. These mean the image comes from a trusted source.
+- Open a few and read the overview page. Most explain what the image does and how to run it.
+### Step 2: Create Your Container
+ 
+1. In Portainer, click **Containers** in the left menu, then **Add container**.
+2. **Name:** type `yourname-welcome` (for example, `david-welcome`). Using your own name keeps your container from getting mixed up with someone else’s.
+3. **Image:** type `docker/welcome-to-docker`. This is a tiny official image from Docker made for beginners.
+4. Scroll down to **Network ports configuration** and turn on **Publish all exposed network ports to random host ports**.
+   - The app listens on port 80 *inside* the container. This setting tells Docker to pick a free port on the server and connect it to the container for you. That way you never collide with someone else’s container.
+5. Click **Deploy the container**.
+### Step 3: See It Running
+ 
+1. Go back to the **Containers** list and find your container. Its status should be **running**.
+2. Look at the **Published Ports** column. You will see a link with a long random port number. Click it.
+3. A new tab should open with a **“Welcome to Docker”** page. That page is being served by your container, on our server.
+Click your container’s name and check out **Logs** and **Stats** to see what your container is doing.
+ 
+### Step 4: Clean Up (Required!)
+ 
+Do not leave your container running. Every running container uses the server’s resources.
+ 
+1. Go back to the **Containers** list.
+2. Check the box next to **your container only**.
+3. Click **Kill** (or **Stop**). The status will change to **exited**.
+   - Kill only stops it. The container still exists, so you are not done yet.
+4. Make sure your container is still the only one checked, then click **Remove**.
+5. Portainer will show a confirmation box. It may include an option to remove non-persistent data (usually worded as “Automatically remove non-persistent volumes”). **Do NOT select this option. Leave it unchecked.**
+6. Confirm the removal.
+7. Check that your container is **gone** from the list. If it is still there, ask a programming lead or mentor.
+<Callout type="info">
+You can also delete the image from the **Images** page, but you don’t need to. Please leave it alone.
+</Callout>
 
 ## Learn more about it
 
