@@ -47,6 +47,8 @@ class _TrainingPageState extends State<TrainingPage> {
 
             // ===== LESSON 7: COUNTERS =====
 
+            // ===== LESSON 8: CHECKLIST =====
+
             // ===== LESSON 9: CAPSTONE =====
 
             // ----- Lesson 8 button. Do not delete. -----
@@ -58,7 +60,7 @@ class _TrainingPageState extends State<TrainingPage> {
                   MaterialPageRoute(builder: (context) => const BugHuntPage()),
                 );
               },
-              child: const Text('Open Bug Hunt (Lesson 10)'),
+              child: const Text('Open Bug Hunt (Lesson 8)'),
             ),
             const SizedBox(height: 32),
           ],
