@@ -2,7 +2,7 @@
 
 ## 🎯 Goal
 
-Get the **real FEDS scouting app** running on a virtual Android device, then find **your Training Page** inside it.
+Get the **real FEDS scouting app** running in your browser, then find **your Training Page** inside it.
 
 **Rules for Module 2:** you learn by *doing*. Each lesson is a list of tasks. Do them in order. Every task has a ✅ checkpoint, so you always know if it worked.
 
@@ -11,6 +11,7 @@ Get the **real FEDS scouting app** running on a virtual Android device, then fin
 # Task 1: Install Git
 
 - **Windows:** download from [git-scm.com](https://git-scm.com/downloads) and use the default options.
+- **Mac:** open **Terminal** and run `git --version`. If Git isn't installed, macOS offers to install the **Command Line Tools**. Click **Install**.
 
 ✅ **Checkpoint:** this prints a version number:
 
@@ -25,7 +26,7 @@ git --version
 
 # Task 3: Add the Flutter plugin
 
-1. Open **Plugins**. Windows: **File → Settings → Plugins**.
+1. Open **Plugins**. Windows: **File → Settings → Plugins**. Mac: **Android Studio → Settings → Plugins** (`Cmd + ,`).
 2. In the **Marketplace** tab, search **Flutter** and click **Install**. Say **Yes** to also install **Dart**.
 3. Click **Restart IDE**.
 
@@ -34,8 +35,10 @@ git --version
 1. Go to [docs.flutter.dev/get-started/install](https://docs.flutter.dev/get-started/install), pick your OS, and choose **Android**.
 2. Download the SDK and unzip it to a **simple** folder with no spaces:
    - Windows: `C:\dev\flutter`
+   - Mac: `~/dev/flutter`
 3. Add Flutter to your **PATH** so the terminal can find it:
    - **Windows:** Start menu → **Edit environment variables for your account** → select **Path** → **Edit** → **New** → `C:\dev\flutter\bin`
+   - **Mac:** run this in Terminal:
 
 ```
 echo 'export PATH="$PATH:$HOME/dev/flutter/bin"' >> ~/.zshrc
@@ -50,6 +53,8 @@ flutter --version
 ```
 
 Our app needs **Flutter 3.22 or newer** (it requires Dart 3.4.3+). The latest stable download is fine.
+
+Then run `flutter doctor`. You'll paste its output at the end of this lesson.
 
 # Task 5: Get the real code
 
