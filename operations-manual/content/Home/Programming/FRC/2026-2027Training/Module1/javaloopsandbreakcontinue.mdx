@@ -90,6 +90,24 @@ If the button isn't pressed, the motors should not run **unless another command 
 
 You'll need to decide what conditional structure makes sense here.
 
+### Display the Motor Speed
+
+After setting the motor outputs, print the motor speed as a percentage.
+
+Use an explicit cast to convert the calculated percentage to an integer:
+
+```java
+System.out.println("Motor Speed: " + (int)(motorSpeed * 100) + "%");
+```
+
+For example, if `motorSpeed` is `0.75`, the output should be:
+
+```text
+Motor Speed: 75%
+```
+
+Print this line whenever the intake or outtake button is pressed.
+
 ---
 
 ## 3. Program the Outtake
@@ -119,6 +137,38 @@ What happens if **both** `intakeButton` and `outtakeButton` are pressed?
 Your program should choose **one behavior** rather than trying to run the motors in both directions.
 
 Decide which command should have priority and implement it using `if`, `else if`, and `else`.
+
+---
+
+## 3.5. Use a Switch Statement
+
+In addition to your `if`, `else if`, and `else` statements, use a `switch` statement to determine the robot's current operating mode.
+
+Create an integer variable:
+
+```java
+int operatingMode = 0;
+```
+
+Use the following modes:
+
+| Mode | Behavior |
+|---:|---|
+| 0 | Idle |
+| 1 | Intake |
+| 2 | Outtake |
+
+Use a `switch` statement to print the current operating mode:
+
+```text
+Mode: Idle
+Mode: Intake
+Mode: Outtake
+```
+
+You may determine the operating mode using the operator buttons.
+
+This statement should be used somewhere in your completed program.
 
 ---
 
@@ -156,7 +206,7 @@ Think carefully about the order of your conditions.
 
 ---
 
-## 5. Add a Motor Safety Limit
+**## 5. Add a Motor Safety Limit**
 
 Real robot code shouldn't blindly trust its inputs.
 
@@ -178,13 +228,21 @@ WARNING: MOTOR SPEED LIMITED
 
 and adjust the speed to the maximum allowed value.
 
-You should also consider what should happen if the speed is **negative**.
+**Important:** Motor speed must always be between `0.0` and `1.0`.
+
+- If `motorSpeed` is greater than `1.0`, set it to `1.0`.
+- If `motorSpeed` is less than `0.0`, set it to `0.0`.
+- Otherwise, leave it unchanged.
+
+This safety check should happen before calculating motor outputs.
 
 ---
 
 ## 6. Simulate Collecting a Game Piece
 
 Now use a loop to simulate the intake collecting a game piece.
+
+**Only run this simulation when the intake button is pressed and the robot does not already have a game piece.**
 
 Start with:
 
@@ -212,6 +270,9 @@ You will need to:
 * Use a comparison
 * Change the distance each iteration
 * Stop the loop when the piece reaches the robot
+* Print the distance each iteration
+
+**Test A should include the distance simulation output.**
 
 ---
 
@@ -231,6 +292,13 @@ double motorSpeed = 0.75;
 **Expected:**
 
 ```text
+Distance to piece: 5
+Distance to piece: 4
+Distance to piece: 3
+Distance to piece: 2
+Distance to piece: 1
+Distance to piece: 0
+GAME PIECE COLLECTED
 Intake Motor: 0.75
 Indexer Motor: 0.75
 Motor Speed: 75%
@@ -254,6 +322,7 @@ GAME PIECE DETECTED
 INDEXER STOPPED
 Intake Motor: 0.75
 Indexer Motor: 0.0
+Motor Speed: 75%
 ```
 
 ---
@@ -291,6 +360,24 @@ double motorSpeed = 0.75;
 ```text
 Intake Motor: 0.0
 Indexer Motor: 0.0
+```
+
+---
+
+
+## Test E — Motor Speed Limit
+
+```java
+double motorSpeed = 1.25;
+```
+
+Expected:
+
+```text
+WARNING: MOTOR SPEED LIMITED
+Intake Motor: 1.0
+Indexer Motor: 1.0
+Motor Speed: 100%
 ```
 
 ---
