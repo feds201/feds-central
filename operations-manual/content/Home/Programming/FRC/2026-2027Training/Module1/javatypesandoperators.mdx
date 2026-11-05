@@ -30,7 +30,7 @@ Your program must:
 * Store the amount of power being used by the robot in a variable.
 * Calculate the voltage lost from usage.
 * Calculate the remaining battery voltage.
-* Print the final battery voltage.
+* Print your starting voltage, motor usage, voltage lost, and remaining voltage.
 
 ---
 
@@ -69,7 +69,7 @@ Represent motor usage as a percentage from 0 to 100.
 Example:
 
 ```java
-double motorUsage = 75;
+int motorUsage = 75;
 ```
 
 ---
@@ -122,7 +122,10 @@ Your program should print:
 Example:
 
 ```java
-System.out.println("Remaining Voltage: " + remainingVoltage);
+System.out.println("Starting Voltage: " + startingVoltage + "V");
+System.out.println("Motor Usage: " + motorUsage + "%");
+System.out.println("Voltage Lost: " + voltageLoss + "V");
+System.out.println("Remaining Voltage: " + remainingVoltage + "V");
 ```
 
 ---
@@ -130,6 +133,8 @@ System.out.println("Remaining Voltage: " + remainingVoltage);
 ## Challenge 1
 
 Add a battery warning system.
+* Note: These challenges use if / else statements, something you probably haven't learned yet. If you're super up for it, 
+figure out how they work on your own to complete the challenge! If not, you can skip this challenge and come back to it later.
 
 If the battery voltage is below **11 volts**, print:
 
