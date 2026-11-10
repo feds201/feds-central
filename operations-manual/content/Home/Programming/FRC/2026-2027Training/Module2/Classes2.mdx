@@ -17,7 +17,7 @@ This project will combine your Java knowledge with real robot programming concep
 - 1 CTRE Kraken X60 motor (TalonFX)
 - 1 CTRE CANcoder absolute encoder
 - CTRE Phoenix 6 configuration
-- Motion Magic position control
+- Standard PositionVoltage Control
 - AdvantageKit logging
 - WPILib Commands
 
@@ -144,7 +144,7 @@ Use CTRE documentation to learn:
 
 - How Slot0 gains work.
 - What gravity compensation does.
-- How Motion Magic works.
+- How PositionVoltage control mode works.
 - How control requests are used.
 
 ---
@@ -163,7 +163,7 @@ Use CTRE documentation to learn how to:
 
 Your goal is:
 
-**CANcoder → TalonFX → Motion Magic Position Control**
+**CANcoder → TalonFX →  Position Voltage Control**
 
 The motor controller should control the arm using the absolute encoder position.
 
@@ -226,6 +226,9 @@ Deploying incorrect values could cause some stuff to not work right, or to break
 
 Use AdvantageKit's `@Logged` annotation.
 
+> Note: Our real robot code will use a different method for logging called IO, which you will learn more about later. For now, AdvantageKit is an easier
+way to learn how to log data.
+
 Your subsystem should contain getter methods for:
 
 - Stator current (amps)
@@ -260,7 +263,7 @@ This method should:
 2. Create the correct CTRE control request.
 3. Apply it to the motor.
 
-Use CTRE documentation to learn how PositionOut control requests work. Or, ask FEDSbot.
+Use CTRE documentation to learn how PositionVoltage control requests work. Or, ask FEDSbot.
 
 Your subsystem should also have:
 
@@ -355,7 +358,7 @@ When finished:
 
 - Your arm should initialize correctly.
 - Your Kraken should use the CANcoder for position.
-- Your arm should move using Motion Magic.
+- Your arm should move using  Position Voltage.
 - Your positions should be controlled through an enum.
 - Your data should be logged through AdvantageKit.
 - Your RobotContainer should control the mechanism through commands.
@@ -368,7 +371,8 @@ This is the structure used by real FRC robot code.
 
 ## Checkpoint Questions
 
-At this point, you might not know the answer to all of these questions yet, and that's okay! Do some research across CTRE docs, WPILib docs, and Fedsbot to get the answers.
+At this point, you might not know the answer to all of these questions yet, and that's okay! Do some research across CTRE docs, WPILib docs, and Fedsbot 
+to get the answers. You'll be asked to write your answers in your training doc, no need to write an essay, but make sure you answer the question well!
 
 1. What is the multiplier on kG for an arm to get effective gravity constant?
 2. What is the best way to tune kS and kG on an arm?
@@ -389,3 +393,8 @@ With some help, you will:
 - Tune kP, kS, and kG for an arm subsystem.
 - Test your code states.
 - Make a real mechanism work.
+
+## To Complete This Lesson
+
+Paste your ArmSubsystem.java code into this lesson's tab in your training doc. Code goes in as text, **no screenshots**. Underneath, put your answers to 
+the checkpoint questions. Finally, you will need a lead sign-off to complete this lesson.
