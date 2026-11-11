@@ -33,7 +33,7 @@ export function createDiscordBot(token: string): Client {
     partials: [Partials.Channel],         // Required to receive DM events
   });
 
-  client.on('ready', () => {
+  client.on('clientReady', () => {
     console.log(`Discord bot logged in as ${client.user!.tag}`);
   });
 
