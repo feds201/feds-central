@@ -1,6 +1,6 @@
 #!/sbin/openrc-run
 
-name="Fedsbot"
+name="fedsbot"
 description="FEDS FRC Team 201 AI Discord Bot"
 
 command="/root/feds-central/fedsbot/node_modules/.bin/tsx"

@@ -1,4 +1,4 @@
-# Fedsbot
+# fedsbot
 
 AI assistant Discord bot for The FEDS (FRC Team 201). Uses the Claude Agent SDK to answer student questions about the robot, game rules, and codebase in Discord threads.
 

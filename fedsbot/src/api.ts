@@ -54,7 +54,7 @@ export function createServer(port: number, webhookSecret: string, apiKey: string
           ).toString().trim();
 
           if (changedFiles) {
-            console.log('Fedsbot files changed, reinstalling and restarting...');
+            console.log('fedsbot files changed, reinstalling and restarting...');
             execSync('npm install', { cwd: 'fedsbot' });
             // Restart in background — this process will be killed by the restart
             spawn('sh', ['-c', 'sleep 1 && rc-service fedsbot restart'], {
