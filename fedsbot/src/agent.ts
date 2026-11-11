@@ -50,18 +50,30 @@ function getSessionOptions(resume?: string): Options {
     // `tools` restricts which tools the agent can use
     tools: ['Read', 'Glob', 'Grep', 'WebSearch', 'WebFetch', 'Bash', 'Agent'],
     // `allowedTools` auto-approves them so they don't hang waiting for permission
-    // (Agent is gated by canUseTool below: Explore subagents only)
+    // (Agent is gated by the PreToolUse hook below: Explore subagents only)
     allowedTools: ['Read', 'Glob', 'Grep', 'WebSearch', 'WebFetch', 'Bash'],
     permissionMode: 'acceptEdits',
     // Don't load filesystem settings (user/project/CLAUDE.md); prompts are passed explicitly above
     settingSources: [],
     maxTurns: 15,
     resume,
-    canUseTool: async (toolName, input) => {
-      if (toolName === 'Agent' && input.subagent_type !== 'Explore') {
-        return { behavior: 'deny', message: 'Only Explore subagents are allowed' };
-      }
-      return { behavior: 'allow', updatedInput: input };
+    // Gate subagents with a PreToolUse hook (canUseTool isn't consulted for the Agent tool):
+    // Explore only, always in the foreground (the SDK defaults to background, which would end the
+    // turn before the answer is ready), and never in a worktree or remote environment.
+    hooks: {
+      PreToolUse: [{
+        matcher: 'Agent',
+        hooks: [async (hookInput) => {
+          const input = (hookInput as { tool_input?: Record<string, unknown> }).tool_input ?? {};
+          if (input.subagent_type !== 'Explore') {
+            return { hookSpecificOutput: { hookEventName: 'PreToolUse', permissionDecision: 'deny',
+              permissionDecisionReason: 'Only Explore subagents are allowed' } };
+          }
+          const { isolation: _isolation, ...rest } = input;
+          return { hookSpecificOutput: { hookEventName: 'PreToolUse', permissionDecision: 'allow',
+            updatedInput: { ...rest, run_in_background: false } } };
+        }],
+      }],
     },
   };
 }
