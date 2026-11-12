@@ -1,8 +1,4 @@
-import {
-  SDKSystemMessage,
-  unstable_v2_createSession,
-  unstable_v2_resumeSession,
-} from '@anthropic-ai/claude-agent-sdk';
+import { EffortLevel, Options, query, SDKMessage } from '@anthropic-ai/claude-agent-sdk';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -13,14 +9,19 @@ const repoRoot = path.resolve(__dirname, '..', '..');
 // Clear NODE_OPTIONS so tsx hooks don't leak into the SDK subprocess
 delete process.env.NODE_OPTIONS;
 
-// V2 SDK ignores the cwd option, so chdir to repo root instead
+// Run the agent from the repo root so its tools see the whole monorepo
 process.chdir(repoRoot);
 console.log(`[agent] Working directory set to: ${process.cwd()}`);
 
+// Optional overrides, used for local experiments (unset in production)
+const promptDir = process.env.FEDSBOT_PROMPT_DIR ?? path.join(__dirname, '..');
+const modelOverride = process.env.FEDSBOT_MODEL;
+const effortOverride = process.env.FEDSBOT_EFFORT as EffortLevel | undefined;
+
 const claudeMd = fs.readFileSync(path.join(repoRoot, 'CLAUDE.md'), 'utf8');
-const generalFedsbotPrompt = fs.readFileSync(path.join(__dirname, '..', 'system-prompt-general.md'), 'utf8');
-const discordPrompt = fs.readFileSync(path.join(__dirname, '..', 'system-prompt-discord.md'), 'utf8');
-const chatPrompt = fs.readFileSync(path.join(__dirname, '..', 'system-prompt-chat.md'), 'utf8');
+const generalFedsbotPrompt = fs.readFileSync(path.join(promptDir, 'system-prompt-general.md'), 'utf8');
+const discordPrompt = fs.readFileSync(path.join(promptDir, 'system-prompt-discord.md'), 'utf8');
+const chatPrompt = fs.readFileSync(path.join(promptDir, 'system-prompt-chat.md'), 'utf8');
 
 export type UIType = 'discord' | 'chat';
 
@@ -41,77 +42,44 @@ ${ui === 'chat' ? chatPrompt : discordPrompt}
 `;
 }
 
-function getSessionOptions() {
+function getSessionOptions(resume?: string): Options {
   return {
-    model: 'claude-sonnet-5',
+    // Alias: always the latest Sonnet the installed SDK knows about
+    model: modelOverride ?? 'sonnet',
+    ...(effortOverride ? { effort: effortOverride } : {}),
     // `tools` restricts which tools the agent can use
-    tools: ['Read', 'Glob', 'Grep', 'WebSearch', 'WebFetch', 'Bash', 'Task'],
+    tools: ['Read', 'Glob', 'Grep', 'WebSearch', 'WebFetch', 'Bash', 'Agent'],
     // `allowedTools` auto-approves them so they don't hang waiting for permission
+    // (Agent is gated by the PreToolUse hook below: Explore subagents only)
     allowedTools: ['Read', 'Glob', 'Grep', 'WebSearch', 'WebFetch', 'Bash'],
-    // Only allow Task for Explore subagents
-    // bypassPermissions is broken in V2: https://github.com/anthropics/claude-code/issues/14279
-    permissionMode: 'acceptEdits' as const,
-    // Do not use `settingSources: ['project']` as it results in systemPrompt being ignored!
+    permissionMode: 'acceptEdits',
+    // Don't load filesystem settings (user/project/CLAUDE.md); prompts are passed explicitly above
+    settingSources: [],
     maxTurns: 15,
-    canUseTool: async (toolName: string, input: Record<string, unknown>) => {
-      if (toolName === 'Task' && input.subagent_type !== 'Explore') {
-        return { behavior: 'deny' as const, message: 'Only Explore subagents are allowed' };
-      }
-      return { behavior: 'allow' as const, updatedInput: input };
+    resume,
+    // Gate subagents with a PreToolUse hook (canUseTool isn't consulted for the Agent tool):
+    // Explore only, always in the foreground (the SDK defaults to background, which would end the
+    // turn before the answer is ready), and never in a worktree or remote environment.
+    hooks: {
+      PreToolUse: [{
+        matcher: 'Agent',
+        hooks: [async (hookInput) => {
+          const input = (hookInput as { tool_input?: Record<string, unknown> }).tool_input ?? {};
+          if (input.subagent_type !== 'Explore') {
+            return { hookSpecificOutput: { hookEventName: 'PreToolUse', permissionDecision: 'deny',
+              permissionDecisionReason: 'Only Explore subagents are allowed' } };
+          }
+          const { isolation: _isolation, ...rest } = input;
+          return { hookSpecificOutput: { hookEventName: 'PreToolUse', permissionDecision: 'allow',
+            updatedInput: { ...rest, run_in_background: false } } };
+        }],
+      }],
     },
   };
 }
 
-interface AgentResult {
-  sessionId: string;
-  responseText: string;
-}
-
-export async function createAgentSession(message: string, ui: UIType = 'discord'): Promise<AgentResult> {
-  const session = unstable_v2_createSession(getSessionOptions());
-  try {
-    await session.send(getInitMessagePrefix(ui) + message);
-
-    let responseText = '';
-    let sessionId = '';
-    for await (const msg of session.stream()) {
-      sessionId = msg.session_id ?? sessionId;
-      if (msg.type === 'result') {
-        // V2 result messages have .result (final text) and .is_error
-        const result = msg as any;
-        responseText = result.is_error
-          ? 'Sorry, I encountered an error processing your question.'
-          : (result.result ?? '');
-        break;
-      }
-    }
-    return { sessionId, responseText };
-  } finally {
-    session.close();
-  }
-}
-
-export async function resumeAgentSession(
-  sessionId: string,
-  message: string
-): Promise<string> {
-  const session = unstable_v2_resumeSession(sessionId, getSessionOptions());
-  try {
-    await session.send(message);
-    let responseText = '';
-    for await (const msg of session.stream()) {
-      if (msg.type === 'result') {
-        const result = msg as any;
-        responseText = result.is_error
-          ? 'Sorry, I encountered an error processing your question.'
-          : (result.result ?? '');
-        break;
-      }
-    }
-    return responseText;
-  } finally {
-    session.close();
-  }
+function runAgent(prompt: string, resume?: string): AsyncIterable<SDKMessage> {
+  return query({ prompt, options: getSessionOptions(resume) });
 }
 
 // --- Streaming variants (for web chat SSE) ---
@@ -185,15 +153,11 @@ export async function* streamAgentSession(
 ): AsyncGenerator<StreamEvent> {
   console.log(`[agent] Creating session... (API key in env: ${!!process.env.ANTHROPIC_API_KEY})`);
   const opts = getSessionOptions();
-  console.log(`[agent] Options: model=${opts.model}, tools=${opts.tools}, permissionMode=${opts.permissionMode}`);
-  const session = unstable_v2_createSession(opts);
+  console.log(`[agent] Options: model=${opts.model}, effort=${opts.effort ?? 'default'}, tools=${opts.tools}, permissionMode=${opts.permissionMode}`);
   try {
-    console.log('[agent] Sending message...');
-    await session.send(getInitMessagePrefix(ui) + message);
-    console.log('[agent] Message sent, streaming response...');
     let sessionId = '';
     let sessionEmitted = false;
-    for await (const msg of session.stream()) {
+    for await (const msg of runAgent(getInitMessagePrefix(ui) + message)) {
       sessionId = (msg as any).session_id ?? sessionId;
 
       if (sessionId && !sessionEmitted) {
@@ -206,7 +170,8 @@ export async function* streamAgentSession(
       if ((msg as any).type === 'result') {
         const r = msg as any;
         if (r.is_error) {
-          yield { type: 'error', message: r.errors?.join('; ') ?? 'Agent encountered an error.' };
+          // API errors (e.g. 529 overloaded) put their text in `result`, other failures in `errors`
+          yield { type: 'error', message: (r.errors?.length ? r.errors.join('; ') : r.result) || 'Agent encountered an error.' };
         } else if (r.result) {
           yield { type: 'result', text: r.result };
         }
@@ -219,8 +184,7 @@ export async function* streamAgentSession(
     console.error('[agent] Error stack:', err.stack);
     yield { type: 'error', message: err.message ?? 'Unknown error' };
   } finally {
-    console.log('[agent] Closing session');
-    session.close();
+    console.log('[agent] Session finished');
   }
 }
 
@@ -228,11 +192,9 @@ export async function* streamResumeAgentSession(
   sessionId: string,
   message: string
 ): AsyncGenerator<StreamEvent> {
-  const session = unstable_v2_resumeSession(sessionId, getSessionOptions());
   try {
-    await session.send(message);
     let currentSessionId = sessionId;
-    for await (const msg of session.stream()) {
+    for await (const msg of runAgent(message, sessionId)) {
       currentSessionId = (msg as any).session_id ?? currentSessionId;
 
       yield* handleStreamMessage(msg);
@@ -240,7 +202,8 @@ export async function* streamResumeAgentSession(
       if ((msg as any).type === 'result') {
         const r = msg as any;
         if (r.is_error) {
-          yield { type: 'error', message: r.errors?.join('; ') ?? 'Agent encountered an error.' };
+          // API errors (e.g. 529 overloaded) put their text in `result`, other failures in `errors`
+          yield { type: 'error', message: (r.errors?.length ? r.errors.join('; ') : r.result) || 'Agent encountered an error.' };
         } else if (r.result) {
           yield { type: 'result', text: r.result };
         }
@@ -250,7 +213,5 @@ export async function* streamResumeAgentSession(
     }
   } catch (err: any) {
     yield { type: 'error', message: err.message ?? 'Unknown error' };
-  } finally {
-    session.close();
   }
 }

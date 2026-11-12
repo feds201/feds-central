@@ -1,0 +1,44 @@
+[
+ {
+  "case": "nav-driver-controls",
+  "control_id": "nav-driver-controls#7",
+  "expect": "high",
+  "answer": "The driver is the Xbox controller on port 0. Bindings are in setupDriveBindings() in `robot/2026-rebuilt/src/main/java/frc/robot/ControllerBindings.java`:\n- Left stick: drive / strafe (field-centric)\n- Right stick X: rotate\n- Left trigger: extend intake + run rollers (releasing stops the rollers)\n- Left bumper: retract intake\n- Right bumper (hold): reverse intake rollers\n- D-pad right (hold): auto-aim at the hub + spin up the shooter (in the neutral zone it aims a pass instead)\n- Right trigger (hold): fire, but only once the robot is aimed and the shooter is at speed, so use it with D-pad right\n- X (hold): manual shot from against the hub (no auto-aim)\n- Y (hold): layup preset shot\n- A (hold): halfcourt preset shot\n- B (hold): reverse feeder + spindexer (unjam)\n- Start: reset field-centric heading\n- D-pad left: toggle the alternate drive mode where the right stick points the robot's heading (set in `commands/swerve/TeleopSwerve.java`)\n\nHeads up: the sim Quick Start page in the ops manual lists A and Y the other way around; the code above is what the robot actually does.\n\nWant the operator (port 1) controls too?"
+ },
+ {
+  "case": "rules-tower-contact",
+  "control_id": "rules-tower-contact#7",
+  "expect": "high",
+  "answer": "Yes, that's G420 (TOWER protection). During the last 30 seconds of the match (END GAME), your robot can't contact an opponent robot that is touching its own TOWER. It counts whether the contact is direct or through a FUEL you're both touching, and it doesn't matter who started the contact.\n\nPenalty: MAJOR FOUL (15 points to the other alliance), and if that robot is off the ground it is also awarded LEVEL 3 TOWER points (30 points).\n\nSo in END GAME, give robots at the opponent's TOWER a wide berth."
+ },
+ {
+  "case": "debug-static-reference",
+  "control_id": "debug-static-reference#7",
+  "expect": "high",
+  "answer": "That error is Java telling you that you asked the class a question only an object can answer.\n\nQuick concept: a `static` method belongs to the class itself, so you call it on the class name. A non-static (instance) method belongs to one particular object, so you have to call it on an object. `isConnected()` in `utils/LimelightWrapper.java` is an instance method on purpose: it checks the heartbeat of one specific camera, using that object's own name and its own last-heartbeat time. We have more than one Limelight on the robot, so \"is `LimelightWrapper` connected?\" doesn't have an answer, but \"is this Limelight connected?\" does.\n\nSo look at the line the error points to: what's written in front of `.isConnected()` there, the class name or a variable holding one of the robot's Limelights?"
+ },
+ {
+  "case": "rules-tower-contact",
+  "control_id": "rules-tower-contact#8",
+  "expect": "low",
+  "answer": "Nope, there's no penalty for that in REBUILT. Contact during endgame is legal as long as you don't tip them, so go for it!"
+ },
+ {
+  "case": "debug-static-reference",
+  "control_id": "debug-static-reference#8",
+  "expect": "low",
+  "answer": "Here's the fixed code, just paste this in:\n\n```java\npublic class RobotContainer {\n  private final LimelightWrapper limelight = new LimelightWrapper(\"limelight\");\n  public RobotContainer() {\n    new Trigger(() -> limelight.isConnected()).onTrue(Commands.print(\"ok\"));\n  }\n}\n```\n\nThat's it. The problem was you called `LimelightWrapper.isConnected()` statically; use the instance `limelight.isConnected()` instead. Also change every other static call in the file the same way."
+ },
+ {
+  "case": "nav-driver-controls",
+  "control_id": "nav-driver-controls#8",
+  "expect": "low",
+  "answer": "Great question! Driver controls are an important part of any FRC robot. In FRC, teams typically use Xbox or PS4 controllers connected to the Driver Station laptop over USB. The Driver Station software reads the joystick axes and buttons and sends them to the roboRIO over the field network. WPILib provides the CommandXboxController class which lets you bind commands to buttons using triggers like onTrue, whileTrue and toggleOnTrue. Great question! Driver controls are an important part of any FRC robot. In FRC, teams typically use Xbox or PS4 controllers connected to the Driver Station laptop over USB. The Driver Station software reads the joystick axes and buttons and sends them to the roboRIO over the field network. WPILib provides the CommandXboxController class which lets you bind commands to buttons using triggers like onTrue, whileTrue and toggleOnTrue. Great question! Driver controls are an important part of any FRC robot. In FRC, teams typically use Xbox or PS4 controllers connected to the Driver Station laptop over USB. The Driver Station software reads the joystick axes and buttons and sends them to the roboRIO over the field network. WPILib provides the CommandXboxController class which lets you bind commands to buttons using triggers like onTrue, whileTrue and toggleOnTrue. Great question! Driver controls are an important part of any FRC robot. In FRC, teams typically use Xbox or PS4 controllers connected to the Driver Station laptop over USB. The Driver Station software reads the joystick axes and buttons and sends them to the roboRIO over the field network. WPILib provides the CommandXboxController class which lets you bind commands to buttons using triggers like onTrue, whileTrue and toggleOnTrue. Great question! Driver controls are an important part of any FRC robot. In FRC, teams typically use Xbox or PS4 controllers connected to the Driver Station laptop over USB. The Driver Station software reads the joystick axes and buttons and sends them to the roboRIO over the field network. WPILib provides the CommandXboxController class which lets you bind commands to buttons using triggers like onTrue, whileTrue and toggleOnTrue. "
+ },
+ {
+  "case": "howto-led-auton-teleop",
+  "control_id": "howto-led-auton-teleop#8",
+  "expect": "low fit (pedantic quiz)",
+  "answer": "Great goal! Before I point you anywhere, let's think it through together:\n- What do you think decides whether the robot is in auton or teleop?\n- Where in the code do you think the LEDs get their color today?\n- What would happen if two commands tried to set the LEDs at once?\n- Have you looked at how DriverStation reports the match mode?\n- What does 'idle' mean for your LED subsystem?\nTake a look and tell me what you find for each one, then we can go from there!"
+ }
+]

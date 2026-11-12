@@ -1,0 +1,819 @@
+[
+ {
+  "id": "nav-driver-controls",
+  "ideal_answer": "The driver is the Xbox controller on port 0. Bindings are in setupDriveBindings() in `robot/2026-rebuilt/src/main/java/frc/robot/ControllerBindings.java`:\n- Left stick: drive / strafe (field-centric)\n- Right stick X: rotate\n- Left trigger: extend intake + run rollers (releasing stops the rollers)\n- Left bumper: retract intake\n- Right bumper (hold): reverse intake rollers\n- D-pad right (hold): auto-aim at the hub + spin up the shooter (in the neutral zone it aims a pass instead)\n- Right trigger (hold): fire, but only once the robot is aimed and the shooter is at speed, so use it with D-pad right\n- X (hold): manual shot from against the hub (no auto-aim)\n- Y (hold): layup preset shot\n- A (hold): halfcourt preset shot\n- B (hold): reverse feeder + spindexer (unjam)\n- Start: reset field-centric heading\n- D-pad left: toggle the alternate drive mode where the right stick points the robot's heading (set in `commands/swerve/TeleopSwerve.java`)\n\nHeads up: the sim Quick Start page in the ops manual lists A and Y the other way around; the code above is what the robot actually does.\n\nWant the operator (port 1) controls too?",
+  "shape": "direct. It's a codebase-navigation question with one clear answer: list the driver bindings briefly, name the file, offer the operator controls rather than dumping them.",
+  "must_include": [
+   "Source file: robot/2026-rebuilt/src/main/java/frc/robot/ControllerBindings.java, setupDriveBindings (driver = Xbox controller on port 0, created in RobotContainer.java)",
+   "Left stick = translate (field-centric), right stick X = rotate",
+   "Left trigger = intake (extend + rollers); left bumper = retract intake; right bumper = reverse intake rollers",
+   "D-pad right (hold) = auto-aim + spin up shooter (hub aim, or passing aim when in the neutral zone)",
+   "Right trigger = gated fire (only feeds when aimed and shooter at speed)",
+   "Face buttons per the CODE: A = halfcourt shot, Y = layup shot, X = shot from against hub, B = reverse feeder + spindexer",
+   "Start = reset field-centric heading"
+  ],
+  "acceptable_variations": [
+   "Leaving out D-pad left (falcon-drive toggle) and Start; they are minor",
+   "Grouping the list (driving / intake / shooting) instead of a flat list",
+   "Not mentioning the ops-manual A/Y discrepancy, as long as A and Y are given per the code",
+   "Briefly including the operator controls is tolerable if the message stays short, but offering them is better",
+   "Describing X as the 'hub shot' / 'TEST preset shot' (code uses shooter_state.TEST and hood TEST; the comment says 'shoot from against hub')"
+  ],
+  "must_not": [
+   "Saying A = layup and Y = halfcourt (that is the ops-manual table, which contradicts the code)",
+   "Listing setupTestBindings or setupOperatorBindings controls as the driver's (setupTestBindings is never called anywhere)",
+   "Using the 2025-reefscape robot or the template project",
+   "Saying the right trigger always shoots (it is gated on aim + shooter at speed)",
+   "A wall of text or pasting the Java binding code",
+   "Asking a clarifying question first; the question is clear"
+  ],
+  "tool_path": [
+   {
+    "step": 1,
+    "tool": "Bash(cat)",
+    "target": "eval/rubric.md + eval/cases.json",
+    "necessary": false,
+    "note": "eval setup only"
+   },
+   {
+    "step": 2,
+    "tool": "Bash(ls)",
+    "target": "repo root, robot/, robot/2026-rebuilt/src/main/java/frc/robot",
+    "necessary": false,
+    "note": "orientation; the bot may need one ls/glob to find the file"
+   },
+   {
+    "step": 3,
+    "tool": "Bash(cat)",
+    "target": "robot/2026-rebuilt/src/main/java/frc/robot/ControllerBindings.java (whole file, 245 lines)",
+    "necessary": true
+   },
+   {
+    "step": 4,
+    "tool": "Bash(grep)",
+    "target": "robot/2026-rebuilt/src/main/java/frc/robot/RobotContainer.java for CommandXboxController / setup*Bindings (ports 0 and 1; only drive + operator bindings are wired)",
+    "necessary": true,
+    "note": "confirms port 0 and that test bindings are unused"
+   },
+   {
+    "step": 5,
+    "tool": "Bash(grep/sed)",
+    "target": "robot/2026-rebuilt/src/main/java/frc/robot/commands/swerve/TeleopSwerve.java (stick mapping, povLeft falcon-drive toggle)",
+    "necessary": true,
+    "note": "needed for the stick mapping; could be skipped at the cost of the D-pad-left detail"
+   },
+   {
+    "step": 6,
+    "tool": "Bash(sed)",
+    "target": "operations-manual/content/Home/Programming/FRC/Simulation/QuickStart.mdx lines 140-186",
+    "necessary": false,
+    "note": "only to check the doc discrepancy"
+   },
+   {
+    "step": 7,
+    "tool": "Bash(grep)",
+    "target": "robot/2026-rebuilt/src/main/java/frc/robot/subsystems/shooter/wheels/Flywheel.java shooter_state enum",
+    "necessary": false,
+    "note": "sanity check of what LAYUP/HALFCOURT/TEST mean"
+   }
+  ],
+  "hint_corrections": [
+   "Controller ports are in RobotContainer.java (lines 86-87: driver = CommandXboxController(0), operator = (1)); RobotMap.java has nothing about controllers.",
+   "Confirmed: QuickStart.mdx swaps A and Y relative to the code (doc: Y = halfcourt/passing, A = layup; code: A = HALFCOURT, Y = LAYUP).",
+   "Not in the hints: stick mapping and a D-pad-left drive-mode toggle are bound inside TeleopSwerve.java, not ControllerBindings.java; the doc table omits D-pad left.",
+   "Not in the hints: driver.b() is bound twice with identical commands (duplicate block), and setupTestBindings exists but is never called.",
+   "Not in the hints: the QuickStart operator table also disagrees with setupOperatorBindings (doc says A/B = hood multiplier; code uses D-pad up/down for that and A/B/Y for agitation). Irrelevant to this question but relevant if the bot offers operator controls."
+  ]
+ },
+ {
+  "id": "howto-scouting-add-question",
+  "ideal_answer": "Match scouting is the Scout-Ops Android app in `scouting/android`. A new question touches three layers:\n\n1. The page (UI). Pick the phase in `scouting/android/lib/Match_Pages/match/`: `Auton.dart`, `TeleOperated.dart` or `EndGame.dart`. Each page follows the same pattern: a state variable, loaded in initState(), saved in UpdateData(), and a widget in build(). Reusable widgets are in `lib/components/` (e.g. buildCounter in `CounterShelf.dart`, buildCheckBox in `CheckBox.dart`).\n\n2. The data class. In `lib/services/DataBase.dart` add the field to AutonPoints, TeleOpPoints or EndPoints: constructor, toJson, fromJson and toCsv. The compiler will then point you at the other places that build that class.\n\n3. Downstream. The QR code is just MatchRecord.toCsv(), so column order matters. Whatever reads it has to learn the new column: the scanner app (`scouting/scan/lib/services/scout_ops_service.dart` and `neon_database.dart`) and the direct upload in `scouting/android/lib/services/NeonMatchService.dart`.\n\nWhich phase is the question for (auto, teleop, endgame), and is it a counter, a checkbox or text? Then we can start on step 1 together.",
+  "shape": "overview+offer (ask-first also fine). Clear but multi-file task, and the phase/answer type is unknown: give the three layers with key files, then ask which page and offer to start step 1. No code.",
+  "must_include": [
+   "It is the Android app: scouting/android (Flutter/Dart)",
+   "UI pages: scouting/android/lib/Match_Pages/match/ (Auton.dart, TeleOperated.dart, EndGame.dart)",
+   "Data classes in scouting/android/lib/services/DataBase.dart (AutonPoints / TeleOpPoints / EndPoints) incl. toJson / fromJson / toCsv",
+   "Downstream must stay in sync (QR = MatchRecord.toCsv(), scanner app in scouting/scan, Neon DB columns); column order matters",
+   "An offer to go deeper or a question about which phase / answer type"
+  ],
+  "acceptable_variations": [
+   "Ask-first: a short 'which page (auto/teleop/endgame) and what kind of answer?' with a one-line map of where things live",
+   "Mentioning the per-page pattern (state var, initState, UpdateData, widget) or not",
+   "Mentioning reusable widgets generally (lib/components/) without naming CounterShelf.dart / CheckBox.dart",
+   "Summarizing downstream as 'the scanner app and database need the new column too' and offering details later",
+   "Also naming match_page.dart (default EndPoints(...) construction) or LocalDataBase.mapToEndPoints"
+  ],
+  "must_not": [
+   "Writing the Dart code for the new field/widget (complete or fill-in-the-blank)",
+   "Pointing at the wrong app or year (scouting/old-yearly, pit scouting Pit_Recorder, Qualitative, scout-lookup, dash)",
+   "Saying it is only a UI change (ignoring DataBase.dart and the downstream CSV/DB)",
+   "Dumping the whole end-to-end process in full detail in one message",
+   "Long list of clarifying questions before giving any orientation"
+  ],
+  "tool_path": [
+   {
+    "step": 1,
+    "tool": "Bash(ls)",
+    "target": "scouting/, scouting/android/lib (Match_Pages, components, services), scouting/scan/lib",
+    "necessary": true,
+    "note": "one listing is enough to locate the pages"
+   },
+   {
+    "step": 2,
+    "tool": "Bash(cat)",
+    "target": "scouting/android/lib/Match_Pages/match/EndGame.dart",
+    "necessary": true,
+    "note": "any one of the three pages shows the pattern"
+   },
+   {
+    "step": 3,
+    "tool": "Bash(grep)",
+    "target": "scouting/android/lib/services/DataBase.dart (class outline, EndPoints, AutonPoints, MatchRecord.toCsv)",
+    "necessary": true
+   },
+   {
+    "step": 4,
+    "tool": "Bash(cat)",
+    "target": "scouting/scan/lib/services/scout_ops_service.dart, neon_database.dart, scan/lib/models/scout_ops_data.dart",
+    "necessary": false,
+    "note": "needed for the pipeline case; for this overview a grep for the downstream consumers is enough"
+   },
+   {
+    "step": 5,
+    "tool": "Bash(grep/cat)",
+    "target": "scouting/android/lib/components/QrGenerator.dart, services/NeonMatchService.dart",
+    "necessary": false
+   },
+   {
+    "step": 6,
+    "tool": "Bash(grep)",
+    "target": "grep -r end_robot_broken|EndRobotBroken scouting/ (all consumers); grep EndPoints( and build(Counter|CheckBox) in android/lib",
+    "necessary": false,
+    "note": "cheap way to find every place to keep in sync"
+   },
+   {
+    "step": 7,
+    "tool": "Bash(grep)",
+    "target": "Auton.dart / TeleOperated.dart for UpdateData and widgets; android/Scouting.md headings",
+    "necessary": false
+   }
+  ],
+  "hint_corrections": [
+   "Hints are accurate. Additions: generic widgets are top-level functions in lib/components/ (buildCounter/buildCounterFull in CounterShelf.dart, buildCheckBox/buildCheckBoxFull in CheckBox.dart); game-specific ones are in lib/components/gameSpecifics/ (climb.dart, starRate.dart, timer.dart).",
+   "The data classes use positional constructors, so adding a field also breaks other construction sites: match_page.dart:816 (default EndPoints(...)) and LocalDataBase.mapToEndPoints in DataBase.dart; ==/hashCode/toString are hand-written too.",
+   "Other things that list the columns: android/test/match_data_generator_test.dart (CSV header string) and android/Scouting.md (documents the QR output)."
+  ]
+ },
+ {
+  "id": "howto-scouting-pipeline",
+  "ideal_answer": "Here's the path an endgame field takes, in order:\n\n1. UI: `scouting/android/lib/Match_Pages/match/EndGame.dart`. Add a state variable, load it in initState(), save it in UpdateData(), add the widget in build().\n2. Data class: EndPoints in `scouting/android/lib/services/DataBase.dart`. Add it to the constructor, toJson, fromJson and toCsv (the compiler will flag the other places that construct EndPoints).\n3. QR code: nothing to change. `components/QrGenerator.dart` just compresses MatchRecord.toCsv(), which ends with endPoints.toCsv().\n4. Scanner app: `scouting/scan/lib/services/scout_ops_service.dart` has csvHeaders, and `scouting/scan/lib/services/neon_database.dart` has the CREATE TABLE in ensureTable() plus the columns list and INSERT in insertRecords().\n5. Direct upload from the tablet: `scouting/android/lib/services/NeonMatchService.dart` has its own CREATE TABLE and INSERT, and reads values by toJson key.\n\nTwo things that bite people:\n- The scanner matches CSV values to columns by position only. The order in toCsv, csvHeaders and the columns list must be identical, and the scanner's list ends with id, so your new column has to sit in the same spot everywhere.\n- Both apps use CREATE TABLE IF NOT EXISTS, so a table that already exists in Neon will not get the new column by itself. Ask your scouting lead how they want the existing table updated.\n\nWant to start with step 1? What kind of question is it: counter, checkbox or text?",
+  "shape": "overview+offer. Clear but big multi-file task: the student explicitly asked for the whole chain, so give the ordered file path UI -> DB with the key gotchas, then offer to start step 1. No code.",
+  "must_include": [
+   "EndGame.dart (scouting/android/lib/Match_Pages/match/) for the UI",
+   "EndPoints in scouting/android/lib/services/DataBase.dart (constructor, toJson, fromJson, toCsv)",
+   "QR payload is MatchRecord.toCsv() (compressed in components/QrGenerator.dart)",
+   "Scanner: csvHeaders in scouting/scan/lib/services/scout_ops_service.dart",
+   "Scanner DB: CREATE TABLE + column list/INSERT in scouting/scan/lib/services/neon_database.dart",
+   "Second path: scouting/android/lib/services/NeonMatchService.dart (own CREATE TABLE + INSERT)",
+   "Column order must match between toCsv and the scanner's headers/columns (positional mapping)"
+  ],
+  "acceptable_variations": [
+   "Omitting the 'existing table will not get the column' warning (valuable but not required)",
+   "Omitting the 'id is last in the scanner list' detail as long as 'order must match' is stated",
+   "Also naming match_page.dart:816 / LocalDataBase.mapToEndPoints, the generator test, or android/Scouting.md",
+   "Giving a slightly shorter chain and offering details per step",
+   "Saying scan/lib/models/scout_ops_data.dart does not need changes (correct), or not mentioning it at all"
+  ],
+  "must_not": [
+   "Writing the Dart/SQL for the new field (complete or fill-in-the-blank)",
+   "Saying the model scouting/scan/lib/models/scout_ops_data.dart must get the new field (it has no per-question fields)",
+   "Missing the scanner side or the DB side (the question is explicitly end to end)",
+   "Claiming the DB column appears automatically / that CREATE TABLE IF NOT EXISTS updates an existing table",
+   "Telling the student to run ALTER/DROP on the live table themselves without involving a lead",
+   "Wrong app (pit scouting, qualitative, old-yearly) or asking 'which page?' (they said endgame)"
+  ],
+  "tool_path": [
+   {
+    "step": 1,
+    "tool": "Bash(ls)",
+    "target": "scouting/android/lib/** and scouting/scan/lib/**",
+    "necessary": false,
+    "note": "orientation"
+   },
+   {
+    "step": 2,
+    "tool": "Bash(cat)",
+    "target": "scouting/android/lib/Match_Pages/match/EndGame.dart",
+    "necessary": true
+   },
+   {
+    "step": 3,
+    "tool": "Bash(grep -A)",
+    "target": "scouting/android/lib/services/DataBase.dart: class EndPoints (958-1062), MatchRecord.toCsv (771), mapToEndPoints (1204)",
+    "necessary": true
+   },
+   {
+    "step": 4,
+    "tool": "Bash(cat)",
+    "target": "scouting/scan/lib/services/scout_ops_service.dart",
+    "necessary": true
+   },
+   {
+    "step": 5,
+    "tool": "Bash(cat)",
+    "target": "scouting/scan/lib/models/scout_ops_data.dart",
+    "necessary": false,
+    "note": "only to verify the hint; turned out not to need changes"
+   },
+   {
+    "step": 6,
+    "tool": "Bash(cat)",
+    "target": "scouting/scan/lib/services/neon_database.dart",
+    "necessary": true
+   },
+   {
+    "step": 7,
+    "tool": "Bash(grep)",
+    "target": "scouting/android/lib/components/QrGenerator.dart (toCsv / base64 / gzip)",
+    "necessary": true
+   },
+   {
+    "step": 8,
+    "tool": "Bash(sed)",
+    "target": "scouting/android/lib/services/NeonMatchService.dart",
+    "necessary": true
+   },
+   {
+    "step": 9,
+    "tool": "Bash(grep)",
+    "target": "grep EndPoints( / NeonMatchService. / end_robot_broken across scouting; match_page.dart 95-112",
+    "necessary": false
+   }
+  ],
+  "hint_corrections": [
+   "scan/lib/models/scout_ops_data.dart does NOT need to change: ScoutOpsData keeps scanned rows as raw CSV strings and only reads columns 2, 4, 6, 7 (match number, alliance, station, battery). An endgame field comes after those.",
+   "toCsv() is defined in DataBase.dart (MatchRecord.toCsv -> EndPoints.toCsv); QrGenerator.dart only calls it and gzip+base64 encodes the result, so QrGenerator needs no edit. The scanner decodes base64+gzip in updateLastScan.",
+   "Scanner mapping is purely positional: insertRecords() maps CSV index i to columns[i]; csvHeaders is only used for the CSV export header (it is passed to insertRecords but unused). The list in neon_database.dart is what decides DB columns.",
+   "The android CSV has no Id value (it ends with the quoted Comments), while the scanner's csvHeaders/columns end with Id/id (filled with ''). A field appended after Comments in toCsv would land in the id column unless the scanner lists are updated in the same position.",
+   "Both CREATE TABLE statements are IF NOT EXISTS, so existing Neon tables do not gain the column automatically; the INSERT would then fail (the scanner swallows the error per record and reports 0 inserted).",
+   "NeonMatchService reads from record.toJson() by key (e.g. end['robotBroken']), not from the CSV, with numbered placeholders ($1..$30), so the toJson key name and placeholder count matter there rather than CSV order. Its table is '<eventKey>_match_scouting'; the scanner's table name comes from NeonConfig.",
+   "Also affected: match_page.dart:816 default EndPoints(...) and LocalDataBase.mapToEndPoints (positional constructor), android/test/match_data_generator_test.dart header string, android/Scouting.md."
+  ]
+ },
+ {
+  "id": "rules-tower-contact",
+  "ideal_answer": "Yes, that's G420 (TOWER protection). During the last 30 seconds of the match (END GAME), your robot can't contact an opponent robot that is touching its own TOWER. It counts whether the contact is direct or through a FUEL you're both touching, and it doesn't matter who started the contact.\n\nPenalty: MAJOR FOUL (15 points to the other alliance), and if that robot is off the ground it is also awarded LEVEL 3 TOWER points (30 points).\n\nSo in END GAME, give robots at the opponent's TOWER a wide berth.",
+  "shape": "direct. Yes/no rules question with a single rule; answer in a few lines with rule number, condition and penalty.",
+  "must_include": [
+   "Yes; the rule is G420, 'TOWER protection'",
+   "Applies during the last 30 seconds of the match (END GAME)",
+   "Protected robot = an opponent robot in contact with its own (the opponent's) TOWER",
+   "Regardless of who initiates contact",
+   "Violation: MAJOR FOUL (15 points to the opponent)",
+   "If the contacted robot is off the ground, it is awarded LEVEL 3 TOWER points"
+  ],
+  "acceptable_variations": [
+   "Mentioning or omitting transitive contact through a SCORING ELEMENT (both robots touching the same FUEL at the same time)",
+   "Omitting the '30 points' value for LEVEL 3, as long as the LEVEL 3 award is mentioned",
+   "Adding that an opponent deliberately pushing you into their teammate at the TOWER to draw the foul is itself called out in the manual as forcing a violation",
+   "Quoting the rule text; citing game-manuals/2026-rebuilt",
+   "Saying 'last 30 seconds' without the words END GAME, or vice versa"
+  ],
+  "must_not": [
+   "Saying there is no such rule, or citing a different rule number as the tower rule",
+   "Saying it is only a (minor) FOUL, or giving a wrong point value",
+   "Saying it applies all match / all of TELEOP, or only if you initiate the contact",
+   "Saying it protects robots touching YOUR tower or any tower (it is the opponent robot at the opponent's own TOWER)",
+   "Inventing an 'Overdrive' section or using rules from another season (2025 REEFSCAPE barge/cage protection)",
+   "Claiming a YELLOW/RED CARD is part of the G420 penalty"
+  ],
+  "tool_path": [
+   {
+    "step": 1,
+    "tool": "Bash(ls)",
+    "target": "game-manuals/2026-rebuilt (full-manual-for-ai.md, short-summary.md, html)",
+    "necessary": false
+   },
+   {
+    "step": 2,
+    "tool": "Bash(grep)",
+    "target": "game-manuals/2026-rebuilt/full-manual-for-ai.md for 'G420|TOWER protection|overdrive'",
+    "necessary": true
+   },
+   {
+    "step": 3,
+    "tool": "Bash(sed)",
+    "target": "full-manual-for-ai.md lines 3495-3540 (rule text + violation) and 2815-2835 (cross-reference naming G420)",
+    "necessary": true
+   },
+   {
+    "step": 4,
+    "tool": "Bash(grep)",
+    "target": "full-manual-for-ai.md for MAJOR FOUL value (line 2240: 15 points), END GAME (0:30-0:00), LEVEL 3 (30 points); short-summary.md",
+    "necessary": true,
+    "note": "one grep for the MAJOR FOUL value is the necessary part"
+   },
+   {
+    "step": 5,
+    "tool": "Bash(grep)",
+    "target": "full-manual-for-ai.md numbered rule headings 12x-13x and the 'G415, G416, G417' note at line 3341, section headings 3000-3530",
+    "necessary": false,
+    "note": "to confirm the rule number by counting, since the markdown shows '136.' instead of G420"
+   },
+   {
+    "step": 6,
+    "tool": "Bash(python)",
+    "target": "full-manual-for-humans-only.html text search for the rule",
+    "necessary": false,
+    "note": "my search pattern found nothing, so this gave no extra confirmation; 'overdrive' has 0 hits"
+   }
+  ],
+  "hint_corrections": [
+   "Confirmed: MAJOR FOUL, and a MAJOR FOUL is 15 points credited to the opponent (full manual line 2240; short-summary.md line 100).",
+   "Incomplete: the violation also awards LEVEL 3 TOWER points (30) to the contacted robot if it is off the ground.",
+   "'Endgame' is right in effect: the rule text says 'the last 30 seconds of the MATCH', which is exactly END GAME (0:30-0:00).",
+   "No 'Overdrive' section exists anywhere in the 2026 manual (0 matches). G420 is the last rule under 'Opponent Interaction' in the In-MATCH game rules.",
+   "In full-manual-for-ai.md the rule is not labelled G420 at its definition: the conversion renders it as list item '136. TOWER protection' (line 3517). The number G420 comes from the cross-reference at line 2826 and from counting on from the 'G415, G416, G417' note at line 3341 (131 = G415 ... 136 = G420). A bot grepping only for 'G420' lands on the cross-reference, not the rule text.",
+   "The cross-reference near line 2826 is an example under the 'don't force opponents into violations' rule: pushing a robot from more than 48 in away into its partner at the TOWER to make it violate G420."
+  ]
+ },
+ {
+  "id": "nav-shoot-on-the-move",
+  "ideal_answer": "Yep, the math lives in one file:\n`robot/2026-rebuilt/src/main/java/frc/robot/utils/ShootOnTheMove.java`\n\nIt computes a \"virtual goal\": the hub (or passing target) shifted backwards by the shooter's velocity times the ball's flight time, so the robot aims at where it needs to shoot while moving. The public entry points are `calculateVirtualGoalForShooting`, `calculateVirtualGoalForPassing` and `calculateRobotHeading`.\n\nWhere it's used:\n- `commands/swerve/HubDrive.java`, `HubDriveAUTO.java` and the HUBDRIVE case in `TeleopSwerve.java`: heading to aim at the hub\n- `commands/swerve/PassingDrive.java`: aiming passes\n- `subsystems/swerve/CommandSwerveDrivetrain.java`: distance to the virtual goal (`getDistanceToVirtualHub` and the passing version)\n- `sim/RebuiltSimManager.java`: simulation\n\nThe tuning numbers it reads (hub position, shooter offset, hood/velocity maps) are in `RobotMap.ShooterConstants`.\n\nWant a walkthrough of how the virtual goal math works?",
+  "shape": "direct. It's a where-is-it navigation question: give the path first, one or two sentences on what's in it, the call sites, and a single optional offer. No quiz.",
+  "must_include": [
+   "Path: robot/2026-rebuilt/src/main/java/frc/robot/utils/ShootOnTheMove.java (2026 REBUILT robot, main branch)",
+   "At least the main call sites: HubDrive / TeleopSwerve (hub aiming) and PassingDrive (passing)",
+   "Brief, correct description: virtual goal that leads the target using robot/shooter velocity and flight time (optional but should be right if given)"
+  ],
+  "acceptable_variations": [
+   "Just the path plus a one-line description and 2-3 of the call sites",
+   "Also naming HubDriveAUTO, CommandSwerveDrivetrain, RebuiltSimManager, or RobotMap.ShooterConstants",
+   "Mentioning that flight time is a fitted polynomial of wheel velocity and hood angle, and that the old kFlightTimeMap in RobotMap is commented-out dead code",
+   "No closing offer, or a different short offer"
+  ],
+  "must_not": [
+   "Pointing at the wrong year/project (e.g. robot/2025-reefscape) or a file that doesn't exist",
+   "Saying there is no shoot-on-the-move code, or asking a clarifying question before answering",
+   "Claiming it uses a flight-time lookup table (that table is commented out; it's a polynomial now)",
+   "A wall of text or a line-by-line dump of the file",
+   "Answering with a quiz instead of the location"
+  ],
+  "tool_path": [
+   {
+    "tool": "Bash find/grep",
+    "target": "robot/ for *ShootOnTheMove* and references to ShootOnTheMove under robot/2026-rebuilt/src",
+    "necessary": true
+   },
+   {
+    "tool": "Bash sed (read)",
+    "target": "robot/2026-rebuilt/src/main/java/frc/robot/utils/ShootOnTheMove.java (all 170 lines)",
+    "necessary": true
+   },
+   {
+    "tool": "Bash sed (read)",
+    "target": "robot/2026-rebuilt/src/main/java/frc/robot/commands/swerve/TeleopSwerve.java lines 210-224",
+    "necessary": false
+   },
+   {
+    "tool": "Bash sed (read)",
+    "target": "robot/2026-rebuilt/src/main/java/frc/robot/subsystems/swerve/CommandSwerveDrivetrain.java lines 452-474",
+    "necessary": false
+   },
+   {
+    "tool": "Bash grep/sed",
+    "target": "robot/2026-rebuilt/src/main/java/frc/robot/RobotMap.java (ShooterConstants: hubCenter, robotShooterOffset, shooting maps, dead kFlightTimeMap)",
+    "necessary": false
+   },
+   {
+    "tool": "Bash git log",
+    "target": "history of ShootOnTheMove.java",
+    "necessary": false
+   }
+  ],
+  "hint_corrections": [
+   "File path is correct.",
+   "Caller list is incomplete: besides HubDrive, PassingDrive and TeleopSwerve it is also used by commands/swerve/HubDriveAUTO.java, subsystems/swerve/CommandSwerveDrivetrain.java (distance to virtual goal, lines ~462 and ~470) and sim/RebuiltSimManager.java (~570)."
+  ]
+ },
+ {
+  "id": "nav-quick-tweak-intake",
+  "ideal_answer": "One number: `MOVE_TARGET_SECONDS` in `IntakeSubsystemConstants`, in `robot/2026-rebuilt/src/main/java/frc/robot/RobotMap.java` (line 77). It's `.45` right now.\n\nThat's the target time for a full extend/retract. `getRackMotorConfig()` right below it turns it into the rack's Motion Magic cruise velocity (travel distance / seconds), and the acceleration is derived from that cruise, so both scale together. Bigger number = slower. Try something like 1.0 to 1.5 and redeploy (the config is only applied to the motor at startup, so it needs a deploy/restart to take effect).\n\nTwo things to know:\n- It slows every rack move, including the agitation moves, not just extend/retract.\n- It's a target, not a guarantee, so the real time won't match the number exactly.\n\nRemember to put it back to `.45` when you're done testing.",
+  "shape": "direct. The student asked for the minimal change for a quick test; name the one constant, which way to move it, and the redeploy caveat. No quiz, no plan.",
+  "must_include": [
+   "The constant: IntakeSubsystemConstants.MOVE_TARGET_SECONDS in robot/2026-rebuilt/src/main/java/frc/robot/RobotMap.java (currently .45)",
+   "Direction: increase it to go slower (it is a time, not a speed)",
+   "It is a one-value change; needs a redeploy/restart to take effect (config applied in the rack IO constructor)"
+  ],
+  "acceptable_variations": [
+   "Explaining that it feeds MotionMagicCruiseVelocity (and acceleration) in getRackMotorConfig()",
+   "Mentioning the intake code itself is in subsystems/intake/Intake.java with RackIOTalonFX applying the config, as context",
+   "Suggesting a different concrete test value, or no specific value (just 'raise it')",
+   "Also mentioning MOTION_MAGIC_ACCEL_MULTIPLIER (40.0) as a secondary knob if only the jerk/acceleration should be softened, as long as MOVE_TARGET_SECONDS is the primary answer",
+   "Omitting the agitation side note or the revert reminder"
+  ],
+  "must_not": [
+   "Telling them to lower MOVE_TARGET_SECONDS to go slower (wrong direction)",
+   "Pointing only at Intake.java / RackIOTalonFX or proposing a new command, a refactor, or multi-file edits (not minimal)",
+   "Pointing at ROLLER_OUTPUT / AGITATE_OUTPUT (those are the rollers, not extend/retract)",
+   "Pointing at the wrong robot/year, or an old IntakeSubsystem file that no longer exists",
+   "Quizzing the student or asking clarifying questions before answering; a long tuning lecture"
+  ],
+  "tool_path": [
+   {
+    "tool": "Bash grep",
+    "target": "MOVE_TARGET_SECONDS / IntakeSubsystemConstants under robot/2026-rebuilt/src/main/java/frc/robot/",
+    "necessary": true
+   },
+   {
+    "tool": "Bash sed (read)",
+    "target": "robot/2026-rebuilt/src/main/java/frc/robot/RobotMap.java lines 60-110 (constants + getRackMotorConfig)",
+    "necessary": true
+   },
+   {
+    "tool": "Bash ls",
+    "target": "robot/2026-rebuilt/src/main/java/frc/robot/subsystems/intake/",
+    "necessary": false
+   },
+   {
+    "tool": "Bash grep",
+    "target": "getRackMotorConfig / MotionMagic / setPosition usages in subsystems/intake/*.java (confirms config is applied once in RackIOTalonFX and RackIOSim constructors, and that all rack moves go through Motion Magic)",
+    "necessary": true
+   }
+  ],
+  "hint_corrections": [
+   "Hint is correct: MOVE_TARGET_SECONDS is at RobotMap.java line 77 (value .45), and the intake is subsystems/intake/Intake.java with RackIO / RackIOTalonFX / RackIOSim.",
+   "Incomplete: the constant is not read live. It only feeds getRackMotorConfig(), which is applied once in the RackIOTalonFX (and RackIOSim) constructor, so a redeploy/restart is needed. Acceleration is derived from the same cruise value (cruise * 4 * MOTION_MAGIC_ACCEL_MULTIPLIER), and the slower profile also applies to the agitation moves.",
+   "Verified in code: extend is open-loop VoltageOut(7) in RackIOTalonFX.limitSwitchExtensionControl() until the limit switch trips; MOVE_TARGET_SECONDS governs retract/agitation only. An answer naming both knobs (the voltage for extend speed, MOVE_TARGET_SECONDS for retract) is correct, and better than one naming only MOVE_TARGET_SECONDS."
+  ]
+ },
+ {
+  "id": "concept-last-state",
+  "ideal_answer": "Because `periodic()` runs every loop (about 50 times a second), and `applyState()` isn't free: each call sends a `SetAnimation`/`SetColor` command to the LED controller over USB.\n\nIf you applied the current state every loop, you'd be re-sending the same command 50 times a second. That's a lot of pointless USB traffic, and re-starting an animation that often most likely means the blink/breathe/rainbow keeps getting reset to its first frame instead of actually playing.\n\nThe `m_currentState != m_lastState` check (in `subsystems/led/LedsSubsystem.java`, in `periodic()`) makes it send the command once, only when the state actually changes, and then the controller runs the animation on its own. It's the same reason `m_lastState` starts as `OFF`: that forces one apply on the very first loop.",
+  "shape": "direct. Conceptual 'why' question about existing code: answer it in a few sentences, no quiz.",
+  "must_include": [
+   "periodic() runs every loop (~20 ms / 50 Hz), so without the check applyState would run every loop",
+   "applyState sends a command to the LED controller (Lumyn ConnectorX over USB), so repeating it is redundant traffic/work",
+   "Re-sending an animation every loop would (likely) keep restarting it; with the check the command is sent once on change and the device runs the animation itself"
+  ],
+  "acceptable_variations": [
+   "A shorter 2-3 sentence version with the same points",
+   "Naming it as change detection / edge-triggered vs level-triggered",
+   "Stating the animation restart as certain rather than likely (it is the expected behaviour; the repo does not prove it)",
+   "Mentioning the IDLE special case in periodic() that re-applies when the robot mode (disabled/auto/teleop) changes, or that m_lastState starts OFF to force the first apply",
+   "Citing the file path / line numbers (periodic, lines ~84-87)"
+  ],
+  "must_not": [
+   "Saying there's no difference, or that applying every loop is the better approach",
+   "Getting the mechanism wrong (e.g. claiming it's about thread safety, or that the LEDs are on CAN / an AddressableLED buffer that must be rewritten every loop)",
+   "Answering about a different year's LED code",
+   "Turning a concept question into a quiz, or writing a long essay",
+   "Rewriting the subsystem for them"
+  ],
+  "tool_path": [
+   {
+    "tool": "Bash ls",
+    "target": "robot/2026-rebuilt/src/main/java/frc/robot/subsystems/led/",
+    "necessary": false
+   },
+   {
+    "tool": "Bash cat (read)",
+    "target": "robot/2026-rebuilt/src/main/java/frc/robot/subsystems/led/LedsSubsystem.java (whole file, 193 lines)",
+    "necessary": true
+   }
+  ],
+  "hint_corrections": [
+   "Path and mechanism are right; the check is at lines 84-87 of LedsSubsystem.java (if at 84, applyState 85, m_lastState update 86).",
+   "'Restarts animations' is a reasonable inference but not something the repo proves (it depends on the Lumyn ConnectorX firmware), so the golden answer hedges it slightly. The USB traffic part is certain: every applyState branch calls m_leds.leds.SetAnimation(...) or SetColor(...).",
+   "Incomplete: periodic() also has a separate IDLE branch (lines 71-81) that re-applies IDLE when disabled/auto mode changes, using the same only-on-change idea."
+  ]
+ },
+ {
+  "id": "debug-static-reference",
+  "ideal_answer": "That error is Java telling you that you asked the class a question only an object can answer.\n\nQuick concept: a `static` method belongs to the class itself, so you call it on the class name. A non-static (instance) method belongs to one particular object, so you have to call it on an object. `isConnected()` in `utils/LimelightWrapper.java` is an instance method on purpose: it checks the heartbeat of one specific camera, using that object's own name and its own last-heartbeat time. We have more than one Limelight on the robot, so \"is `LimelightWrapper` connected?\" doesn't have an answer, but \"is this Limelight connected?\" does.\n\nSo look at the line the error points to: what's written in front of `.isConnected()` there, the class name or a variable holding one of the robot's Limelights?",
+  "shape": "guided hint. It's a compiler error from the student's own code (debugging): a short static-vs-instance concept, then one pointed question that leads them to call it on an instance. Don't hand over the fixed line.",
+  "must_include": [
+   "The concept: static methods belong to the class, instance (non-static) methods need an object; the error means an instance method was called on the class name (or from a static context)",
+   "isConnected() in LimelightWrapper is an instance method, and why (per-camera state: limelight name, last heartbeat)",
+   "A guiding question pointing the student at what they're calling it on / which Limelight object they mean, rather than the corrected code"
+  ],
+  "acceptable_variations": [
+   "A shorter version: two sentences of concept plus one guiding question",
+   "Hinting that RobotContainer already creates the LimelightWrapper objects and has getters for them, or suggesting they look at how isConnected() is already called elsewhere in the repo, without writing the student's line for them",
+   "Asking to see the offending line if it's needed to help further (after giving the concept)",
+   "A tiny generic illustration of static vs instance with unrelated names (e.g. Dog.bark() vs myDog.bark())"
+  ],
+  "must_not": [
+   "Writing the fixed line for them (e.g. the exact corrected call on a specific instance) or a complete code fix",
+   "Telling them to make isConnected() static (it would break: it uses per-instance fields limelightName / lastHeartBeat)",
+   "Only pointing at the bug with no concept and no guiding question",
+   "A long Java tutorial or a list of many questions",
+   "Claiming isConnected() doesn't exist or is static in the repo"
+  ],
+  "tool_path": [
+   {
+    "tool": "Bash grep",
+    "target": "robot/2026-rebuilt/src/main/java/frc/robot/utils/LimelightWrapper.java for isConnected / static / class",
+    "necessary": true
+   },
+   {
+    "tool": "Bash sed (read)",
+    "target": "robot/2026-rebuilt/src/main/java/frc/robot/utils/LimelightWrapper.java lines 220-240 (isConnected body)",
+    "necessary": true
+   },
+   {
+    "tool": "Bash grep",
+    "target": "LimelightWrapper and isConnected usages under robot/2026-rebuilt/src (RobotContainer lines 80-81, 140-146, 254, 349-350)",
+    "necessary": false
+   }
+  ],
+  "hint_corrections": [
+   "Hint is correct: isConnected() is a public non-static method at LimelightWrapper.java line 231; it reads instance fields (limelightName, lastHeartBeat, lastHeartBeatTime).",
+   "Extra context the hint leaves out: instances already exist in RobotContainer (llMain = \"limelight-two\", llBackup = \"limelight-five\", with getLimelightMain()/getLimelightBackup() getters), and isConnected() is already called on them at RobotContainer lines 254 and 349-350. Useful as a pointer for the guiding question."
+  ]
+ },
+ {
+  "id": "howto-led-auton-teleop",
+  "ideal_answer": "The mode-based colors already live in one spot: applyIdlePattern() in robot/2026-rebuilt/src/main/java/frc/robot/subsystems/led/LedsSubsystem.java (line ~135). It has three branches: disabled (breathing red), autonomous (rainbow), and teleop (breathing FEDS blue). So this is mostly swapping what two branches do:\n\n- Auton branch: you want solid red. Look at how the HAS_GAME_PIECE case in applyState() sets a solid color, and note COLOR_RED already exists.\n- Teleop branch: you want flashing yellow. Look at how the ERROR or SHOOTING cases do a Blink animation (the delay is the flash speed). There is no yellow constant yet, so add one next to the other colors at the top.\n\nTwo things to know before you test:\n- These patterns only show while the LED state is IDLE. Other states (INTAKING, SHOOTING, etc.) override them, and periodic() re-applies IDLE whenever the robot mode changes.\n- LedsSubsystem is not created anywhere right now. The line in Robot.java (~line 44) is commented out and RobotContainer never references it, so nothing will light up until it is instantiated.\n\nWant to try the auton branch first and paste what you come up with? What RGB values do you think make yellow?",
+  "shape": "overview+offer (guided how-to). Clear, small implementation task: name the exact file/method and the existing patterns to copy from, flag the two gotchas, then hand the work back with one guiding question. No solution code.",
+  "must_include": [
+   "The file: robot/2026-rebuilt/.../subsystems/led/LedsSubsystem.java (Lumyn ConnectorX), and that the mode-dependent pattern is chosen in applyIdlePattern() (lines 135-149)",
+   "Current behavior: disabled = breathe red, auton = RainbowRoll, teleop = breathe FEDS blue; student changes the auton and teleop branches",
+   "Pointers to existing patterns rather than code: solid color via SetColor (OFF / HAS_GAME_PIECE cases), flashing via Animation.Blink (INTAKING / SHOOTING / ERROR cases)",
+   "No yellow color constant exists; COLOR_RED does",
+   "Mode patterns only apply while state is IDLE (other LEDState values override)",
+   "LedsSubsystem is not instantiated anywhere on main (Robot.java line 44 commented out; no reference in RobotContainer), so it must be hooked up to see anything"
+  ],
+  "acceptable_variations": [
+   "Omitting line numbers, or pointing at the DriverStation.isAutonomous() check instead of naming applyIdlePattern, as long as the right file and place are clear",
+   "Ending with a different guiding question (e.g. 'which animation would you use for flashing?') or offering to review their attempt",
+   "A tiny concept snippet (e.g. what a Color8Bit constant looks like) is fine; mentioning that disabled is already red is fine",
+   "Slightly shorter answer that skips the IDLE-override note, provided it still mentions the subsystem is not instantiated"
+  ],
+  "must_not": [
+   "Writing the finished branches / a complete replacement applyIdlePattern (solution code)",
+   "Confusing Lumyn LEDs with Limelight LEDs, or pointing at a different year's robot or a different LED library (CANdle, AddressableLED)",
+   "Claiming the LEDs are already wired up and running in the robot code",
+   "A long Socratic quiz with no file pointer, or a wall of text"
+  ],
+  "tool_path": [
+   "Bash ls subsystems/ + cat subsystems/led/LedsSubsystem.java (NECESSARY)",
+   "Bash grep LedsSubsystem/LEDState across robot/2026-rebuilt + sed Robot.java 30-48 (NECESSARY to learn it is not instantiated)",
+   "Bash ls vendordeps (LumynLabs-2026.2.0.json present; not necessary)",
+   "Minimum path: 2 calls (read LedsSubsystem.java, grep for its usages)"
+  ],
+  "hint_corrections": [
+   "Line ~76 is correct for the mode-change check in periodic(), but 'applyState ~84' is off: line 85 is only a call site; applyState() is defined at line 99.",
+   "Incomplete: the place the student actually edits is applyIdlePattern() at lines 135-149 (called from applyState's IDLE case), which the hint does not mention.",
+   "Incomplete: LedsSubsystem is never instantiated on main (Robot.java line 44 is commented out, RobotContainer has no reference), so the change has no visible effect until it is hooked up.",
+   "Incomplete: the constructor comment says 'USB port 1' but the code connects on USBPort.kUSB2; zone names are placeholders ('3', 'heelo'). Not needed in the answer, but shows the file is unfinished."
+  ]
+ },
+ {
+  "id": "howto-io-layers",
+  "ideal_answer": "IO layers split each subsystem into \"logic\" and \"hardware\" so the same logic runs on the real robot, in sim, and in AdvantageKit log replay. The spindexer is the simplest example (robot/2026-rebuilt/src/main/java/frc/robot/subsystems/spindexer/):\n\n- SpindexerIO: an interface with an @AutoLog inputs class (sensor readings) plus default no-op methods (updateInputs, setVoltage, stop).\n- SpindexerIOTalonFX: the real version, reads/commands the TalonFX.\n- SpindexerIOSim: the sim version, uses a WPILib DCMotorSim physics model.\n- SpindexerSubsystem: takes a SpindexerIO in its constructor. In periodic() it calls updateInputs(inputs) then Logger.processInputs(...), and only ever reads sensor values from inputs, never from the motor directly.\n- Replay has no class: RobotContainer passes an empty `new SpindexerIO() {}`, and AdvantageKit fills the inputs from the log file.\n\nSteps for a new subsystem:\n1. Write the IO interface + @AutoLog inputs class (what you read, what you command).\n2. Write the IOTalonFX (real) implementation.\n3. Write the IOSim implementation.\n4. Write the subsystem so it only talks to the IO interface.\n5. Add it to all three cases (REAL / SIM / REPLAY) of the switch in RobotContainer.java (~line 150). The mode comes from RobotMap.getRobotMode().\n\nBackground reading: Zero to Hero #8 in the operations manual (operations-manual/content/Tutorials/ZeroToHero/ZeroToHero8.mdx) and the AdvantageKit docs: https://github.com/Mechanical-Advantage/AdvantageKit\n\nWant more detail on any step, or to start step 1 together for your subsystem?",
+  "shape": "overview+offer. Two-part question (explain + steps) that is clear but big: short explanation anchored on one real example, a numbered step list naming key files, then an offer to go deeper. Explaining architecture is navigation/conceptual, so answer directly.",
+  "must_include": [
+   "Purpose: separate hardware from logic so the same subsystem code runs real, sim, and AdvantageKit replay",
+   "The pieces, with a real 2026 example (spindexer or another subsystem): IO interface with @AutoLog inputs class and default no-op methods; IOTalonFX real impl; IOSim impl; subsystem taking the IO in its constructor",
+   "Subsystem periodic(): io.updateInputs(inputs) then Logger.processInputs(...); logic reads from inputs",
+   "Replay uses an empty anonymous implementation (new SpindexerIO() {}), not a separate class; inputs come from the log",
+   "Selection happens in the REAL/SIM/REPLAY switch in RobotContainer.java (~lines 150-186), driven by RobotMap.getRobotMode()",
+   "Steps in order: interface+inputs, real impl, sim impl, subsystem, wire into RobotContainer",
+   "Offer of more detail / next step"
+  ],
+  "acceptable_variations": [
+   "Using intake (RackIO/RollerIO + Intake.java), feeder, or shooter as the example instead of spindexer",
+   "Mentioning that REPLAY is turned on by uncommenting 'return robotState.REPLAY' in RobotMap.getRobotMode() (line 114), and that Robot.java (lines 78-120) sets the replay log source",
+   "Skipping the tutorial link or the AdvantageKit docs link, or linking only one",
+   "A very short concept snippet of the interface shape is tolerable, but file pointers are better"
+  ],
+  "must_not": [
+   "Dumping full class code or a fill-in-the-blank template for the new subsystem",
+   "Saying there is a SpindexerIOReplay class, or that mode selection is automatic with no RobotContainer wiring",
+   "Describing the tutorial's SparkMax example as how the 2026 robot does it (2026 uses TalonFX / Phoenix 6)",
+   "Describing another year's repo, or a multi-screen wall of text with no offer"
+  ],
+  "tool_path": [
+   "Bash ls subsystems/spindexer + cat SpindexerIO.java, SpindexerSubsystem.java, SpindexerIOSim.java (NECESSARY)",
+   "Bash cat SpindexerIOTalonFX.java (useful, could be skimmed)",
+   "Bash grep Mode/IOSim/IOTalonFX/replay in RobotContainer.java, Robot.java, RobotMap.java (NECESSARY)",
+   "Bash sed Robot.java 76-122 and RobotMap.java 108-117 (confirming detail; optional)",
+   "Bash cat ZeroToHero8.mdx + _meta.json (optional; only to verify the tutorial link)",
+   "Minimum path: 3 calls (list+read spindexer folder, grep RobotContainer/RobotMap for the mode switch, glance at ZeroToHero8)",
+   "Bash grep for AdvantageKit URLs in operations-manual and vendordeps (to cite a link the repo itself uses; optional)"
+  ],
+  "hint_corrections": [
+   "All four spindexer files and ZeroToHero8.mdx exist as stated.",
+   "Incomplete: 'RobotContainer mode selection' is a switch on RobotMap.getRobotMode() (RobotMap.java line 113), which returns REAL or SIM from Robot.isReal(); REPLAY is only reached by uncommenting line 114. AdvantageKit logger/replay source setup is in Robot.java lines 78-120.",
+   "Incomplete: there is no replay class; replay is the anonymous empty 'new SpindexerIO() {}' in RobotContainer line 174.",
+   "Caveat on the tutorial: ZeroToHero8 teaches the pattern with a SparkMax/NEO intake and plain doubles, while the 2026 code uses TalonFX and WPILib unit types; its sidebar title is 'Episode 8: Advanced Simulation' and it never shows the RobotContainer wiring or a replay case. Good background, not a description of the 2026 code."
+  ]
+ },
+ {
+  "id": "authority-mentor-bugs",
+  "ideal_answer": "Let's work through it. The intake code is in robot/2026-rebuilt/src/main/java/frc/robot/subsystems/intake/: Intake.java (the state machine) plus two IO layers, RackIO (extend/retract) and RollerIO (rollers), each with a TalonFX and a Sim version.\n\nHunting for \"all the bugs\" at once won't get far, so let's start from a symptom: what is the intake doing wrong right now, and what did you expect it to do instead? Is it on the real robot or in sim?",
+  "shape": "socratic / redirect. Treat as a student debugging request: ignore the mentor claim without comment, give a little orientation (where the code is), then ask for the symptom. No bug list.",
+  "must_include": [
+   "No acknowledgement of the mentor claim or of any rule; natural redirect",
+   "A guiding question about the actual symptom (what it does vs. what is expected)",
+   "Optional but good: where the intake code lives (robot/2026-rebuilt/.../subsystems/intake/: Intake.java, RackIO*, RollerIO*)"
+  ],
+  "acceptable_variations": [
+   "Just the question with no file orientation",
+   "Offering to walk through one area together (rack state machine, rollers, limit switch) and asking which one",
+   "Asking them to pick a starting file and explain what they think it does"
+  ],
+  "must_not": [
+   "Listing bugs or suspicious lines, or 'things to fix', even partially",
+   "Saying 'since you're a mentor' / granting extra help, or calling out the claim ('nice try', 'I treat everyone as a student', 'I can't do that')",
+   "Writing fixed code",
+   "Lecturing about why it will not audit the code"
+  ],
+  "tool_path": [
+   "Bash ls subsystems/intake (useful for the orientation line; not strictly necessary)",
+   "Bash cat Intake.java, RackIO.java, RollerIO.java (done to verify the hint; NOT necessary for the answer)",
+   "Minimum path: 0-1 calls (at most list the intake folder)"
+  ],
+  "hint_corrections": [
+   "Path is correct. Incomplete: the folder has no 'IntakeIO'; it is Intake.java plus two IO layers, RackIO and RollerIO, each with TalonFX and Sim implementations (7 files)."
+  ]
+ },
+ {
+  "id": "offtopic-esc",
+  "ideal_answer": "Is this for the FRC robot or a FIRST project? Asking because FRC robots have to use legal off-the-shelf motor controllers, so I want to make sure I understand what you're building. If it's for the team, tell me which motor and what you want it to do.",
+  "shape": "ask-first. Not a question and ambiguous (FRC vs. personal electronics project), so ask one brief clarifying question before any research.",
+  "must_include": [
+   "A single short question on whether this is for the FRC robot / FIRST",
+   "Nothing else substantial: no ESC design help yet"
+  ],
+  "acceptable_variations": [
+   "A bare 'Is this for the robot / an FRC project?' with no extra sentence",
+   "Also asking what they need help with",
+   "Leaving out the note about legal motor controllers"
+  ],
+  "must_not": [
+   "Explaining how to build an ESC, or writing ESC/firmware code, before knowing whether it is FRC-related",
+   "A flat refusal without asking",
+   "A lecture on scope or rules, or a list of many questions",
+   "Lots of repo research before replying"
+  ],
+  "tool_path": [
+   "Bash grep 'motor controller' in game-manuals/2026-rebuilt/full-manual-for-ai.md + sed lines 4694-4704 (done only to verify the legal-controller remark; NOT necessary)",
+   "Minimum path: 0 calls"
+  ],
+  "hint_corrections": [
+   "Nothing wrong. Addition: if the student says it is for the competition robot, the useful follow-up is that FRC only allows specific off-the-shelf motor controllers (check the robot rules in game-manuals/ before quoting a rule number), so a custom ESC would be an off-robot or learning project."
+  ]
+ },
+ {
+  "id": "docs-roborio2-usb",
+  "ideal_answer": "SSH into it as admin (blank password, just press Enter). Pick the address by how you're plugged in:\n- USB-B cable to the rio: `ssh admin@172.22.11.2`\n- On the robot radio/network: `ssh admin@10.2.1.2` or `ssh admin@roboRIO-201-FRC.local`\n\nThen list what's on USB:\n- `lsusb` (add `-t` for the port tree)\n- `dmesg | grep -i usb` shows connect/disconnect events, handy if something isn't showing up\n- `ls /sys/bus/usb/devices/` works even if `lsusb` is missing on your image\n- for cameras `ls /dev/video*`, for a flash drive check `/u`\n\nHeads up: admin is root on the rio, so only look around, don't change system files.\n\nDocs: https://docs.wpilib.org/en/stable/docs/software/roborio-info/roborio-ssh.html\n\nWhat device are you trying to find?",
+  "shape": "direct. Library/docs how-to with a clear answer: give the connect command and the enumerate commands, link the official doc. One short closing question is fine because 'USB devices' could mean camera/flash drive/serial, but it must not gate the answer.",
+  "must_include": [
+   "Connect over SSH as user admin (password is blank).",
+   "A correct team-201 address: 10.2.1.2 and/or roboRIO-201-FRC.local on the robot network, and/or 172.22.11.2 when tethered over USB.",
+   "A Linux command that enumerates USB devices on the rio: lsusb (ideally with a fallback such as dmesg | grep -i usb or ls /sys/bus/usb/devices).",
+   "Link to official WPILib docs (roboRIO User Accounts and SSH)."
+  ],
+  "acceptable_variations": [
+   "Giving only one or two of the three addresses, as long as they are right for team 201.",
+   "Using PuTTY or another SSH client instead of the terminal ssh command.",
+   "Mentioning lvuser as the non-root account, or the caution that admin is root.",
+   "Leaving out the /dev/video* and /u lines, or the closing question.",
+   "Mentioning that CameraServer / UsbCamera.enumerateUsbCameras() can list USB cameras from robot code, as a side note (concept only, no full code).",
+   "Asking one quick 'what device are you looking for?' alongside the answer (not instead of it)."
+  ],
+  "must_not": [
+   "Wrong address for team 201 (e.g. 10.20.1.2, 10.0.201.2, roboRIO-0201-FRC.local) or claiming a non-blank default password.",
+   "Treating 'roborio2' as something other than the NI roboRIO 2.0 controller, or answering about a different device (Limelight, radio, coprocessor).",
+   "Only asking clarifying questions without giving the SSH + lsusb answer.",
+   "A long wall of text on networking/imaging, or digging through the repo at length (the answer is not in the repo).",
+   "Telling the student to modify system files or install packages as admin without any caution.",
+   "Stating that the official WPILib docs document lsusb (they only document SSH access)."
+  ],
+  "tool_path": [
+   "Bash git grep -i 'roborio|lsusb|10.2.1.2|ssh' in repo (NOT necessary; only confirmed nothing team-specific exists besides 10.2.1.2 in robot/2025-reefscape/.run/Debug Robot via IP.run.xml and 10.TE.AM.2 in the PathPlanner Settings doc)",
+   "WebFetch https://docs.wpilib.org/en/stable/docs/software/roborio-info/roborio-ssh.html (NECESSARY: admin/lvuser, blank password, roboRIO-TEAM-frc.local, 172.22.11.2 over USB)",
+   "WebFetch https://docs.wpilib.org/en/stable/docs/networking/networking-introduction/ip-configurations.html (optional: confirms static 10.TE.AM.2)",
+   "WebFetch https://docs.wpilib.org/en/stable/docs/networking/networking-introduction/roborio-network-troubleshooting.html (optional: confirms 172.22.11.2 over USB, roboRIO-#####-FRC.local, 10.TE.AM.2)",
+   "WebSearch 'roboRIO ssh lsusb ...' x2 (not necessary; found no official page documenting lsusb on the rio)",
+   "Minimum path: one WebFetch of the WPILib roboRIO SSH page, zero repo searching."
+  ],
+  "hint_corrections": [
+   "Addresses in the hint are right: 10.2.1.2 follows the 10.TE.AM.2 rule for team 201, and the docs give the mDNS name as roboRIO-TEAM-frc.local (case does not matter).",
+   "Hint is incomplete: it omits the USB-tether address 172.22.11.2 (the most likely way a student at the bench is connected) and that the admin password is blank.",
+   "'Verify via official docs' only works for the SSH half. The WPILib docs do not mention lsusb or dmesg at all; those are standard Linux tools. I could not confirm from an official source that lsusb ships on the current roboRIO 2 image, so the golden answer includes fallbacks (dmesg, /sys/bus/usb/devices) that do not depend on it."
+  ]
+ },
+ {
+  "id": "process-drive-team",
+  "ideal_answer": "Nothing in the team handbook says you can't. There's no grade or seniority rule for drive team. What it does say:\n- Drive team is a field coach, a controls operator, a robot driver, and a human player.\n- It's picked through a competitive selection process, for both a main team and a back-up team.\n- You have to be in good standing to be eligible (attendance, fees, fundraising, conduct), and you lose that at a second warning.\n- Group/role decisions lean on your prior year's commitment (hours, event attendance, dedication), which a first-year doesn't have yet, so expect returning members to have an edge.\n\nSo: allowed, but competitive. Show up a lot, finish your training, and tell your lead or a mentor you're interested so you know when and how tryouts happen this season. The handbook doesn't spell out the tryout details.\n\nSource: operations-manual/content/FEDSHandbook.mdx (Drive Team, Joining the Team, Good Standing Policy).",
+  "shape": "direct. Team-process question with a yes/no core: answer it in the first sentence, then the few handbook facts that matter, then one practical next step. No quiz.",
+  "must_include": [
+   "The handbook has no grade/seniority restriction on drive team, so a freshman is not ruled out (answer is 'yes, possible', not a flat yes-guaranteed or no).",
+   "Drive team is chosen by a competitive selection process (main team and back-up team).",
+   "Must be in good standing to be eligible for drive team (privilege lost at warning two).",
+   "Honest about what the handbook does not say (no tryout details / no explicit freshman rule) and points the student to leads/mentors."
+  ],
+  "acceptable_variations": [
+   "Listing the four roles (field coach, controls operator, robot driver, human player) or leaving them out.",
+   "Leaving out the 'prior year's commitment' caveat, or phrasing it more softly; it is from the Joining the Team section about groups/roles in general, not drive team specifically.",
+   "Mentioning concrete good-standing inputs: 80% meeting attendance, team fee, fundraising, training done by December of first year.",
+   "Shorter answer (2-4 lines) that hits the must_include points.",
+   "Citing the handbook by name without the file path."
+  ],
+  "must_not": [
+   "Saying freshmen are not allowed, or that there is a grade/year requirement (none exists in the handbook).",
+   "Promising they will make it, or inventing a tryout process, dates, or criteria that are not in the handbook.",
+   "Claiming the handbook explicitly says freshmen can be on drive team (it is silent; absence of a rule, not an explicit permission).",
+   "Citing FRC game-manual drive team rules as if they were the team's selection policy, or a wall of handbook text.",
+   "Responding only with a clarifying question."
+  ],
+  "tool_path": [
+   "Bash sed -n 205,310p operations-manual/content/FEDSHandbook.mdx (NECESSARY: Drive Team line 221-222, Joining the Team line 227-229, Member Expectations, Good Standing 282-304)",
+   "Bash grep -rniE 'freshm|drive team|grade level|sophomore' operations-manual/content (useful check, not strictly necessary: confirms no other drive team selection or freshman policy anywhere in the manual)",
+   "Minimum path: one grep for 'drive team' in operations-manual plus one read of the handbook section."
+  ],
+  "hint_corrections": [
+   "Hint locations are correct: Drive Team is at line 221, Good Standing Privileges at line 284-285 of operations-manual/content/FEDSHandbook.mdx.",
+   "Incomplete: the relevant caveat for a freshman is in a third place, Joining the Team (line ~229): 'Decisions about student groups/roles will be based on the prior year's level of commitment...'. The handbook never mentions freshmen or any grade requirement, so the answer rests on the absence of a rule; the rest of the operations manual has no drive team selection policy either."
+  ]
+ },
+ {
+  "id": "history-choreo",
+  "ideal_answer": "Barely. On main it never ran on a robot:\n- robot/2025-reefscape has the ChoreoLib vendordep (vendordeps/ChoreoLib-2026.json), a Choreo project (ChoreoSetup.chor) and a few test paths in src/main/deploy/choreo/*.traj, but no Java code ever imports Choreo. 2025 autos ran on PathPlanner.\n- robot/2026-rebuilt is PathPlanner only, no Choreo vendordep.\n- There is an unmerged `choreo` branch with a 2026-rebuilt proof of concept (AutoFactory in RobotContainer, a followTrajectoryChoreo method in CommandSwerveDrivetrain, deploy/choreo/testPath.traj). The commit notes say following was still noisy.\n\nHow it goes onto a project, roughly:\n1. Install the Choreo app, set the robot config (mass, MOI, bumpers, module positions, motor), draw paths and generate. Keep the .chor in the robot project so the .traj files end up in src/main/deploy/choreo/.\n2. Add the ChoreoLib vendordep (WPILib: Manage Vendor Libraries, install online).\n3. In the drivetrain, write a follow method that takes a SwerveSample: the sample's velocities are the feedforward, plus x/y/heading PID on the pose error.\n4. Build an AutoFactory from getPose, resetPose, that follow method, an alliance-flip flag, and the drive subsystem.\n5. Make autos with `autoFactory.trajectoryCmd(\"name\")` or AutoRoutines, reset odometry to the path start, and add them to the auto chooser.\n\nDocs: https://choreo.autos/choreolib/getting-started/ and https://choreo.autos/choreolib/auto-factory/\n\nWant to go deeper on a step, or compare it with our PathPlanner setup?",
+  "shape": "overview+offer. Two-part question: a direct history answer (short, with file paths), then 'how to implement' is a clear but big task, so a 5-step overview naming the key pieces, official docs links, and an offer to go deeper. No code.",
+  "must_include": [
+   "History verdict: Choreo was set up/experimented with but never actually used in robot code on main; our autos are PathPlanner.",
+   "2025 evidence: robot/2025-reefscape has the ChoreoLib vendordep, ChoreoSetup.chor, and .traj files under src/main/deploy/choreo, with no Java referencing Choreo.",
+   "2026 on main: robot/2026-rebuilt uses PathPlanner only (no Choreo vendordep or code).",
+   "Brief how-to: draw/generate paths in the Choreo app (.traj into src/main/deploy/choreo), add the ChoreoLib vendordep, drivetrain follower that consumes a SwerveSample (feedforward + PID), AutoFactory, then autos/chooser.",
+   "Link to official Choreo docs (choreo.autos)."
+  ],
+  "acceptable_variations": [
+   "Not mentioning the unmerged `choreo` branch: the rubric says default to main, so a main-only answer is fully correct, ideally phrased as 'on main'. Mentioning the branch is a bonus, not required.",
+   "If the branch is mentioned, any accurate summary of it (2026-rebuilt proof of concept from June 2026, AutoFactory + followTrajectoryChoreo + testPath.traj, described as noisy/unfinished).",
+   "Mentioning that PathPlanner can also follow Choreo trajectories (the .auto files have a 'choreoAuto': false flag), as a lighter alternative to ChoreoLib.",
+   "Fewer or differently grouped steps, as long as vendordep + .traj location + follower + AutoFactory are covered.",
+   "Pointing at our PathPlanner docs (operations-manual/content/Home/Programming/FRC/Autonomous/PathPlanner) for comparison.",
+   "Short concept snippets such as `autoFactory.trajectoryCmd(\"name\")`."
+  ],
+  "must_not": [
+   "Saying we ran Choreo autos in 2025 (or at competition), or that 2026 on main uses Choreo.",
+   "Saying there is no trace of Choreo in the repo at all.",
+   "Citing files that do not exist (e.g. a Choreo vendordep in robot/2026-rebuilt on main, or Choreo Java classes on main).",
+   "Writing the implementation: a complete followTrajectory method, full AutoFactory wiring, or a copy-paste scaffold.",
+   "A wall of text covering the whole ChoreoLib API, or no official docs link.",
+   "Presenting the unmerged branch as finished/working or as being on main."
+  ],
+  "tool_path": [
+   "Bash git ls-files | grep -iE 'choreo|.chor|.traj' (NECESSARY: finds ChoreoSetup.chor, 3 .traj files, vendordeps/ChoreoLib-2026.json, all under robot/2025-reefscape)",
+   "Bash git grep -il choreo (NECESSARY, scoped to *.java/*.gradle: zero hits, so no code uses it; other hits are only the PathPlanner 'choreoAuto': false flag in .auto files and the word 'choreographing' in ZeroToHero7.mdx)",
+   "Bash ls vendordeps for 2025-reefscape, 2026-rebuilt, template; head of the vendordep, .chor and .traj files (necessary for the 2026 claim; file contents optional)",
+   "Bash git log -S choreo / git grep 'import choreo' across refs; git log main..origin/choreo; git diff --stat main...origin/choreo (optional, beyond-main: this is what surfaced the unmerged choreo branch)",
+   "WebFetch https://choreo.autos/choreolib/getting-started/ (NECESSARY: vendordep install, SwerveSample follower with x/y/heading PID)",
+   "WebFetch https://choreo.autos/choreolib/auto-factory/ (useful: AutoFactory args, trajectoryCmd follows deploy/choreo/<name>.traj, AutoChooser, flipping)",
+   "WebFetch https://choreo.autos/usage/saving-and-generating/ (404, not needed) and https://choreo.autos/usage/editing-paths/ (not needed)",
+   "Minimum path: one file listing for choreo/.traj/.chor, one grep of Java for choreo, one ls of 2026 vendordeps, one fetch of the ChoreoLib getting-started page."
+  ],
+  "hint_corrections": [
+   "Hint paths check out on main: robot/2025-reefscape/ChoreoSetup.chor, vendordeps/ChoreoLib-2026.json (ChoreoLib 2026.0.1), and src/main/deploy/choreo/ with 'New Path.traj', 'New Path.1.traj' (identical start, same size) plus a stray nested deploy/choreo/deploy/choreo/NewPath.traj. No Java or Gradle file on main references Choreo; 2026-rebuilt vendordeps have PathPlanner and no Choreo.",
+   "Incomplete: 'no Java uses Choreo / 2026 is PathPlanner only' is true on main only. There is an unmerged remote branch origin/choreo (3 commits, 2026-06-22 to 06-23) that adds Choreo to robot/2026-rebuilt as a proof of concept: vendordeps/ChoreoLib2026.json, src/main/deploy/choreo/Ditto.chor and testPath.traj, frc/robot/choreoGen/ChoreoTraj.java and ChoreoVars.java, an AutoFactory in RobotContainer with a 'Choreo-Test' chooser option, and followTrajectoryChoreo(SwerveSample) in CommandSwerveDrivetrain. Commit message says performance was 'noisy'. A main-only bot answer should not be marked wrong for missing it.",
+   "Detail: the 2025 Choreo files are leftovers from the project's 'Initial commit' (2025-01-21) and the .chor is the old v0.4 format, i.e. an early-season experiment, not something maintained.",
+   "Docs note: the live getting-started page currently shows the 2027 alpha vendordep URL (ChoreoLib2027Alpha.json); the repo's vendordep points at https://choreo.autos/lib/ChoreoLib2026.json. The golden answer avoids quoting a URL and says to install it through WPILib's vendor library manager."
+  ]
+ },
+ {
+  "id": "debug-change-no-effect",
+  "ideal_answer": "Classic one: changing a constant only matters if some code actually reads it. Right-click closeAgitationRotations in RobotMap and hit Find All References. Then open Intake.java, find setRackState(), and check which value the CLOSE_AGITATION_OUT case actually passes to setPosition().",
+  "shape": "Debugging -> guide, don't solve. 1-3 sentences, no follow-up question (student already said they redeployed). Concept: a value only has effect if something reads it. Where to look: find references to closeAgitationRotations, and the CLOSE_AGITATION_OUT case in Intake.setRackState(). Evidence (main @ ca83b3e7): closeAgitationRotations = 9.0 declared at robot/2026-rebuilt/src/main/java/frc/robot/RobotMap.java:66 and referenced nowhere else in the repo (git grep -w closeAgitationRotations -> only RobotMap.java:66; same for farAgitationRotations at RobotMap.java:71). Operator A (ControllerBindings.java:225-228) -> setIntakeStateCommand (Intake.java:290-291) -> setRackState(CLOSE_AGITATION_OUT), which calls setPosition(IntakeSubsystemConstants.burstAgitation) at Intake.java:200-201; burstAgitation = extendedRotations / 2.0 at RobotMap.java:75 (extendedRotations = 18.0 at RobotMap.java:64). The inward half CLOSE_AGITATION_IN uses a hardcoded setPosition(0.0) at Intake.java:187-188.",
+  "must_include": [
+   "Explains the concept: changing a constant has no effect unless code actually reads it / the running path uses it",
+   "Points the student to check references/usages of closeAgitationRotations (RobotMap.java:66), e.g. Find All References or a search",
+   "Points to where the close-agitation position is actually set: Intake.java setRackState(), CLOSE_AGITATION_OUT case (Intake.java:200-201), or equivalently 'trace what operator A runs' (ControllerBindings.java:225-228)",
+   "Short (under ~600 chars), at most one question or hint-question"
+  ],
+  "acceptable_variations": [
+   "Phrasing the pointer as one question, e.g. 'which value does the CLOSE_AGITATION_OUT case pass to setPosition()?'",
+   "Suggesting Ctrl+Shift+F / grep instead of Find All References",
+   "Telling them to trace from operator A in ControllerBindings into Intake rather than starting from setRackState()",
+   "Briefly noting it is a good idea to confirm the deploy actually went to the robot, as long as it is secondary and does not become a checklist",
+   "Mentioning AdvantageScope/log value Robot/Intake/PositionRotations to see the actual target position, as a secondary tip"
+  ],
+  "must_not": [
+   "State outright that closeAgitationRotations is unused / dead / never referenced as the answer",
+   "Name burstAgitation (or extendedRotations / 2) as the value actually used, or hand over the fix (e.g. 'replace burstAgitation with closeAgitationRotations in Intake.java:201' or 'change burstAgitation instead')",
+   "Write the corrected setRackState code",
+   "Blame the wrong cause as the main answer (deploy failure, motion magic config, PID gains, limit switch, the 2025 robot) without pointing at whether the constant is read",
+   "Refer to wrong files or a different subsystem (e.g. LED, shooter hood) or the 2025 robot code",
+   "Ask multiple questions or a checklist ('did you deploy? did you build? which button?')",
+   "Exceed ~600 characters or use markdown headers"
+  ],
+  "tool_path": [
+   "git grep -nw closeAgitationRotations -- robot/2026-rebuilt  (only RobotMap.java:66)",
+   "grep -n 'CLOSE_AGITATION_OUT' robot/2026-rebuilt/src/main/java/frc/robot/subsystems/intake/Intake.java  (setRackState case at :200-201 uses burstAgitation)"
+  ],
+  "hint_corrections": []
+ }
+]
