@@ -170,7 +170,8 @@ export async function* streamAgentSession(
       if ((msg as any).type === 'result') {
         const r = msg as any;
         if (r.is_error) {
-          yield { type: 'error', message: r.errors?.join('; ') ?? 'Agent encountered an error.' };
+          // API errors (e.g. 529 overloaded) put their text in `result`, other failures in `errors`
+          yield { type: 'error', message: (r.errors?.length ? r.errors.join('; ') : r.result) || 'Agent encountered an error.' };
         } else if (r.result) {
           yield { type: 'result', text: r.result };
         }
@@ -201,7 +202,8 @@ export async function* streamResumeAgentSession(
       if ((msg as any).type === 'result') {
         const r = msg as any;
         if (r.is_error) {
-          yield { type: 'error', message: r.errors?.join('; ') ?? 'Agent encountered an error.' };
+          // API errors (e.g. 529 overloaded) put their text in `result`, other failures in `errors`
+          yield { type: 'error', message: (r.errors?.length ? r.errors.join('; ') : r.result) || 'Agent encountered an error.' };
         } else if (r.result) {
           yield { type: 'result', text: r.result };
         }
