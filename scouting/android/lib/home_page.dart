@@ -182,12 +182,12 @@ class _HomePageState extends State<HomePage>
         context: context,
         text: 'Training',
         color: islightmode()
-            ? Colors.orange.shade100
-            : Colors.deepOrange.shade900,
-        borderColor: Colors.orange,
+            ? Colors.green.shade100
+            : Colors.green.shade900,
+        borderColor: Colors.green,
         icon: Icons.school_outlined,
-        textColor: Colors.orange,
-        iconColor: Colors.orange,
+        textColor: Colors.green,
+        iconColor: Colors.green,
         onPressed: () {
           Navigator.push(
               context,
