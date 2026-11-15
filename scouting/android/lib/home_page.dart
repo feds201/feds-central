@@ -180,7 +180,7 @@ class _HomePageState extends State<HomePage>
       const SizedBox(height: 12),
       buildButton(
         context: context,
-        text: 'Training',
+        text: 'Training Zone',
         color: islightmode()
             ? Colors.green.shade100
             : Colors.green.shade900,

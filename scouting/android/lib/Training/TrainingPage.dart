@@ -28,6 +28,7 @@ class TrainingPage extends StatefulWidget {
 
 class _TrainingPageState extends State<TrainingPage> {
   // ===== YOUR VARIABLES =====
+  bool climbed = false;
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +45,11 @@ class _TrainingPageState extends State<TrainingPage> {
             const SizedBox(height: 16),
 
             // ===== LESSON 6: TRUE / FALSE =====
-
+            buildCheckBoxFull('Climbed?', climbed, (bool value) {
+              setState(() {
+                climbed = value;
+              });
+            }),
             // ===== LESSON 7: COUNTERS =====
 
             // ===== LESSON 8: CHECKLIST =====
