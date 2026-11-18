@@ -29,7 +29,9 @@ class TrainingPage extends StatefulWidget {
 class _TrainingPageState extends State<TrainingPage> {
   // ===== YOUR VARIABLES =====
   bool climbed = false;
-
+  bool defense = false;
+  bool leftZone = false;
+  int count = 0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,8 +50,60 @@ class _TrainingPageState extends State<TrainingPage> {
             buildCheckBoxFull('Climbed?', climbed, (bool value) {
               setState(() {
                 climbed = value;
+                countYes(climbed);
               });
             }),
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            minimumSize:
+            Size(MediaQuery.of(context).size.width, 50),
+            foregroundColor: Colors.white,
+            backgroundColor: defense ? Colors.green : Colors.redAccent,
+            shape: BeveledRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+              side: BorderSide(
+                color: Colors.blue,
+                width: 3,
+              ),
+            ),
+          ),
+          onPressed: () => setState(() {
+            defense = !defense;
+            countYes(defense);// Flips true to false, or false to true
+          }),
+          child: Text(defense ? 'Defense: YES' : 'Defense: NO'),
+        ),
+
+            buildCheckBoxFull('leftZone?????', leftZone, (bool value) {
+              setState(() {
+                leftZone = value;
+                countYes(leftZone);
+              });
+            }),
+
+            Text('Yes answers: ${count}'),
+
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                minimumSize:
+                Size(MediaQuery.of(context).size.width / 2, 50),
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.orange,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  side: BorderSide(
+                    color: Colors.blue,
+                    width: 3,
+                  ),
+                ),
+              ),
+              onPressed: () => setState(() {
+                climbed = false;
+                defense = false;
+                leftZone = false;
+              }),
+              child: Text('RESET'),
+            ),
             // ===== LESSON 7: COUNTERS =====
 
             // ===== LESSON 8: CHECKLIST =====
@@ -72,5 +126,12 @@ class _TrainingPageState extends State<TrainingPage> {
         ),
       ),
     );
+  }
+
+  int countYes(bool sool) {
+    if (sool){
+      count++;
+    }
+    return count;
   }
 }
