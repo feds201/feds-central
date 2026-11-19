@@ -169,13 +169,13 @@ public class ControllerBindings {
             shooterWheels.setStateCommand(shooter_state.IDLE)));
 
     // Button to fire, if swerve is aimed and shooter is at speed.
-    driver.rightTrigger().and(HubDrive::pidAtSetpoint).and(shooterWheels::atSetpoint)
-        .whileTrue(Commands.sequence(feederSubsystem.setStateCommand(feeder_state.PRUN),
-            spinDexer.setStateCommand(spindexer_state.RUN),
-            intakeSubsystem.setRollerStateCommand(RollerState.AGITATEON)))
-        .onFalse(Commands.sequence(feederSubsystem.setStateCommand(feeder_state.STOP),
-            spinDexer.setStateCommand(spindexer_state.STOP),
-            intakeSubsystem.setRollerStateCommand(RollerState.OFF)));
+    // driver.rightTrigger().and(HubDrive::pidAtSetpoint).and(shooterWheels::atSetpoint)
+    //     .whileTrue(Commands.sequence(feederSubsystem.setStateCommand(feeder_state.PRUN),
+    //         spinDexer.setStateCommand(spindexer_state.RUN),
+    //         intakeSubsystem.setRollerStateCommand(RollerState.AGITATEON)))
+    //     .onFalse(Commands.sequence(feederSubsystem.setStateCommand(feeder_state.STOP),
+    //         spinDexer.setStateCommand(spindexer_state.STOP),
+    //         intakeSubsystem.setRollerStateCommand(RollerState.OFF)));
 
     driver.rightTrigger().and(PassingDrive::pidAtSetpoint)
         .whileTrue(Commands.sequence(feederSubsystem.setStateCommand(feeder_state.PRUN),
@@ -184,6 +184,8 @@ public class ControllerBindings {
         // intakeSubsystem.agitateWhileHeldRotations(15.0)
         )).onFalse(Commands.sequence(feederSubsystem.setStateCommand(feeder_state.STOP),
             spinDexer.setStateCommand(spindexer_state.STOP)));
+
+    driver.x().whileTrue(Commands.run(() -> shooterWheels.setState(shooter_state.IDLE)));
   }
 
   public void setupOperatorBindings(CommandXboxController operator) {
