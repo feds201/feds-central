@@ -147,7 +147,7 @@ class AutonState extends State<Auton> {
 
 // Total Shooting Cycles counter
           buildCounterFull(
-            "Auton Shooting Cycles",
+            "Total Shooting Cycles",
             amount,
             (int value) {
               setState(() {
@@ -155,7 +155,7 @@ class AutonState extends State<Auton> {
               });
               UpdateData();
             },
-            color: Colors.green,
+            color: Colors.amber,
           ),
           SizedBox(
             height: 8,
