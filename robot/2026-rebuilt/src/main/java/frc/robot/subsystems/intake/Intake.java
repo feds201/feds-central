@@ -152,7 +152,7 @@ public class Intake extends SubsystemBase {
         break;
     }
 
-    Logger.recordOutput("Robot/Intake/State", currentRollerState.toString());
+    Logger.recordOutput("Robot/Intake/State", currentState.toString());
     Logger.recordOutput("Robot/Intake/Extended", currentState != IntakeState.DEFAULT);
     Logger.recordOutput("Robot/Intake/ExtensionPct", Math.round(100.0
         * rackInputs.rackMotorPosition.in(Rotations) / IntakeSubsystemConstants.extendedRotations));
