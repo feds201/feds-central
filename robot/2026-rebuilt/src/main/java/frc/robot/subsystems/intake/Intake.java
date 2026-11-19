@@ -146,16 +146,13 @@ public class Intake extends SubsystemBase {
       case AGITATEON:
         rollerIO.set(IntakeSubsystemConstants.AGITATE_OUTPUT);
         break;
-      case REVERSE:
-        rollerIO.set(-IntakeSubsystemConstants.ROLLER_OUTPUT);
-        break;
       case OFF:
       default:
         rollerIO.stop();
         break;
     }
 
-    Logger.recordOutput("Robot/Intake/State", currentState.toString());
+    Logger.recordOutput("Robot/Intake/State", currentRollerState.toString());
     Logger.recordOutput("Robot/Intake/Extended", currentState != IntakeState.DEFAULT);
     Logger.recordOutput("Robot/Intake/ExtensionPct", Math.round(100.0
         * rackInputs.rackMotorPosition.in(Rotations) / IntakeSubsystemConstants.extendedRotations));
@@ -171,14 +168,15 @@ public class Intake extends SubsystemBase {
 
   public void setRackState(IntakeState targetState) {
     if (!currentState.equals(targetState)) {
-      timer.reset();
-      timer.stop();
-      timer.start();
+      return;
     }
+    timer.reset();
+    timer.stop();
+    timer.start();
     this.currentState = targetState;
     switch (targetState) {
       case DEFAULT -> {
-        setPosition(IntakeSubsystemConstants.retractedRotations);
+        rackIO.stop();
       }
       case EXTENDED -> {
         rackIO.limitSwitchExtensionControl();
@@ -189,7 +187,7 @@ public class Intake extends SubsystemBase {
       }
       case INTAKING -> {
         rackIO.limitSwitchExtensionControl();
-        setRollerState(RollerState.ON);
+        setRollerState(RollerState.OFF);
       }
       case AGITATE_IN -> {
         setPosition(IntakeSubsystemConstants.retractedRotations);
