@@ -200,9 +200,14 @@ public class RobotContainer extends ControllerBindings {
     // Set up auto chooser
     autoChooser = AutoBuilder.buildAutoChooser();
 
-    // Mirrored autons
-    // autoChooser.addOption("Your-Auton-Name-Here-Mirrored",
-    // new PathPlannerAuto("Your-Auton-Name-Here", true));
+    try {
+      // Mirrored autons
+      // autoChooser.addOption("Your-Auton-Name-Here-Mirrored",
+      // new PathPlannerAuto("Your-Auton-Name-Here", true));
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
 
     SmartDashboard.putData("Auto Chooser", autoChooser);
   }
