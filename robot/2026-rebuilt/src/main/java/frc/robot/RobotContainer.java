@@ -200,35 +200,9 @@ public class RobotContainer extends ControllerBindings {
     // Set up auto chooser
     autoChooser = AutoBuilder.buildAutoChooser();
 
-    try {
-      // Ball tracking autos
-      registBallTrackingAuto("Dev-FD-RightMidFieldDoublepass",
-          "Internal-FD-RightMidFieldDoublepass-Part1",
-          List.of("Internal-FD-RightMidFieldDoublepass-Part2",
-              "Internal-FD-RightMidFieldDoublepass-Part3"));
-      registBallTrackingAuto("Dev-FD-MidIntakeToLeftBump", "Internal-FD-MidIntakeToLeftBump-Part1",
-          List.of("Internal-FD-MidIntakeToLeftBump-Part2"));
-      registBallTrackingAuto("Dev-FD-RightSneakDoublepass",
-          "Internal-FD-RightSneakDoublepass-Part1", List.of(
-              "Internal-FD-RightSneakDoublepass-Part2", "Internal-FD-RightSneakDoublepass-Part3"));
-
-      // Mirrored autons
-      autoChooser.addOption("Comp-LeftMidfieldDoublePass",
-          new PathPlannerAuto("Comp-RightMidfieldDoublepass", true));
-      autoChooser.addOption("Dev-MidIntakeToRightBump",
-          new PathPlannerAuto("Comp-MidIntakeToLeftBump", true)); // TESTING - DO NOT USE
-
-      autoChooser.addOption("Comp-LeftSotmMidfieldDoublepass",
-          new PathPlannerAuto("Comp-RightSotmMidfieldDoublepass", true));
-
-      autoChooser.addOption("Comp-GearheadsLeft", new PathPlannerAuto("Comp-GearheadsRight", true));
-
-
-
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-
+    // Mirrored autons
+    // autoChooser.addOption("Your-Auton-Name-Here-Mirrored",
+    // new PathPlannerAuto("Your-Auton-Name-Here", true));
 
     SmartDashboard.putData("Auto Chooser", autoChooser);
   }
