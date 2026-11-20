@@ -29,7 +29,24 @@ class TrainingPage extends StatefulWidget {
 class _TrainingPageState extends State<TrainingPage> {
   // ===== YOUR VARIABLES =====
   bool climbed = false;
+  bool defense = false;
+  bool leftZone = false;
+  int yesCount = 0;
+  bool isTrue = false;
 
+  int countYes() {
+    int isClimbed = climbed ? 1 : 0;
+    int isDefense = defense ? 1 : 0;
+    int isLeft = leftZone ? 1 : 0;
+    yesCount = isClimbed + isDefense + isLeft;
+    if(yesCount == 3){
+     isTrue = true;
+    }
+    else{
+      isTrue = false;
+    }
+    return yesCount;
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,7 +67,44 @@ class _TrainingPageState extends State<TrainingPage> {
                 climbed = value;
               });
             }),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: defense ? Colors.green : Colors.red,
+              ),
+              onPressed: () {
+                setState(() {
+                  defense = !defense;
+                });
+              },
+              child: Text(defense ? 'Defense: YES' : 'Defense: NO'),
+            ),
+            const SizedBox(height: 16),
+            buildCheckBoxFull('Left starting zone??', leftZone, (bool value) {
+              setState(() {
+                leftZone = value;
+              });
+            }),
+            const SizedBox(height: 16),
+            Text('Yes answers: '+ countYes().toString()),
+            const SizedBox(height: 10),
+            isTrue ? Text('ya hoo lets gooo u got All three!') : Text(''),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: defense ? Colors.red.shade300 : Colors.red,
+              ),
+              onPressed: () {
+                setState(() {
+                  climbed = false;
+                  defense = false;
+                  leftZone = false;
+                });
+              },
+              child: Text('Reset'),
+            ),
             // ===== LESSON 7: COUNTERS =====
+
 
             // ===== LESSON 8: CHECKLIST =====
 
