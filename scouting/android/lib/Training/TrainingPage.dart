@@ -50,7 +50,7 @@ class _TrainingPageState extends State<TrainingPage> {
             buildCheckBoxFull('Climbed?', climbed, (bool value) {
               setState(() {
                 climbed = value;
-                countYes(climbed);
+                countYes();
               });
             }),
         ElevatedButton(
@@ -69,7 +69,7 @@ class _TrainingPageState extends State<TrainingPage> {
           ),
           onPressed: () => setState(() {
             defense = !defense;
-            countYes(defense);// Flips true to false, or false to true
+            countYes();
           }),
           child: Text(defense ? 'Defense: YES' : 'Defense: NO'),
         ),
@@ -77,7 +77,7 @@ class _TrainingPageState extends State<TrainingPage> {
             buildCheckBoxFull('leftZone?????', leftZone, (bool value) {
               setState(() {
                 leftZone = value;
-                countYes(leftZone);
+                countYes();
               });
             }),
 
@@ -128,10 +128,13 @@ class _TrainingPageState extends State<TrainingPage> {
     );
   }
 
-  int countYes(bool sool) {
-    if (sool){
+  int countYes() {
+    if (defense)
       count++;
-    }
+    if (climbed)
+      count++;
+    if (leftZone)
+      count++;
     return count;
   }
 }
