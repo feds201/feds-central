@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotMap;
 import frc.robot.RobotMap.IntakeSubsystemConstants;
 
 public class Intake extends SubsystemBase {
@@ -146,6 +147,9 @@ public class Intake extends SubsystemBase {
       case AGITATEON:
         rollerIO.set(IntakeSubsystemConstants.AGITATE_OUTPUT);
         break;
+      case REVERSE:
+        rollerIO.set(-IntakeSubsystemConstants.ROLLER_OUTPUT);
+        break;
       case OFF:
       default:
         rollerIO.stop();
@@ -167,7 +171,7 @@ public class Intake extends SubsystemBase {
   }
 
   public void setRackState(IntakeState targetState) {
-    if (!currentState.equals(targetState)) {
+    if (currentState.equals(targetState)) {
       return;
     }
     timer.reset();
@@ -176,7 +180,7 @@ public class Intake extends SubsystemBase {
     this.currentState = targetState;
     switch (targetState) {
       case DEFAULT -> {
-        rackIO.stop();
+        rackIO.setPosition(Rotations.of(RobotMap.IntakeSubsystemConstants.retractedRotations));
       }
       case EXTENDED -> {
         rackIO.limitSwitchExtensionControl();
@@ -187,7 +191,7 @@ public class Intake extends SubsystemBase {
       }
       case INTAKING -> {
         rackIO.limitSwitchExtensionControl();
-        setRollerState(RollerState.OFF);
+        setRollerState(RollerState.ON);
       }
       case AGITATE_IN -> {
         setPosition(IntakeSubsystemConstants.retractedRotations);

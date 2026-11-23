@@ -58,17 +58,24 @@ public class RollerIOTalonFX implements RollerIO {
 
   @Override
   public void updateInputs(RollerIOInputs inputs) {
+    BaseStatusSignal.refreshAll(rollerMotorAppliedVoltage, rollerMotorCurrent, rollerMotorPosition,
+        rollerMotorTemp, rollerMotorVelocity);
 
+    inputs.rollerMotorAppliedVoltage = rollerMotorAppliedVoltage.getValue();
+    inputs.rollerMotorCurrent = rollerMotorCurrent.getValue();
+    inputs.rollerMotorPosition = rollerMotorPosition.getValue();
+    inputs.rollerMotorVelocity = rollerMotorVelocity.getValue();
+    inputs.rollerMotorTemp = rollerMotorTemp.getValue();
   }
 
   @Override
   public void set(double percent) {
-
+    rollerMotorLeader.set(percent);
   }
 
   @Override
   public void stop() {
-
+    rollerMotorLeader.set(0);
   }
 
   // TODO: implement sysid routine for roller
