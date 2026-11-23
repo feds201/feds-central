@@ -1,0 +1,150 @@
+---
+Title: Limelight Vision Intro
+---
+
+Welcome to the last lesson of Module Two! That section is none other than vision. Vision is an interesting topic because, more importantly than knowing how to do a specific thing, is knowing how to get data from the camera.
+
+For the sake of learning, you're going to go through the full process! This includes:
+
+- Connecting a camera to the robot
+- Updating the firmware
+- Running a camera calibration and applying it
+- Tuning an AprilTag pipeline
+- Tuning a color pipeline (optional)
+- Integrating your vision measurements into a pose estimator
+
+To complete this activity, you're going to need to know what a Limelight actually is.
+
+### Getting Started
+
+First, download Limelight Hardware Manager (if you don't already have it) from here: [Downloads | Limelight Documentation](https://docs.limelightvision.io/docs/resources/downloads).
+
+You're going to clone the FEDS Central repository into VS Code, then navigate through the robot folder to `2026-rebuilt`. In this project, you'll see a few files that are mentioned later in this tutorial.
+
+That is the code side of our current vision system. While it's not completely important to understand everything about those files right now, it is important to understand that there are a few key pieces you'll need to change depending on your specific Limelight configuration!
+
+You're also going to need to install a new vendordep. It's called YALL, and it's from the YASS software suite. Try to find the link on your own online. (If you can't, look here: [Yet-Another-Software-Suite/YALL: YALL is an improved version of the LimelightHelpers script released by LimelightVision.](https://github.com/Yet-Another-Software-Suite/YALL))
+
+It may already be downloaded on your computer, depending on what was cloned from FEDS Central. If you see it already in the `2026-rebuilt/vendordeps` folder, you're good to go!
+
+### Understanding Our Vision System
+
+It's important to understand that our vision system has two main parts:
+
+**Limelight side:**
+
+- The Limelight has an internal computer that does the majority of the computer vision processing. It finds specific data about what you've configured it to see (AprilTag positions, object detections, etc.). It then transmits that data to the rest of our robot for processing.
+
+**RoboRIO / system core side:**
+
+- Once we have the data from AprilTags, we do some filtering and manipulation of that data to get an accurate position of our robot. We then feed that information back into our code to help with tasks like aiming and autonomous routines.
+
+### Understanding the Code
+
+Next, follow the rest of this tutorial, which was mainly written by FEDSbot and slightly edited by me.
+
+While you go through this, you really should have the 2026 repository open so you know what FEDSbot is talking about. If you have it open but don't know what it's talking about, message FEDSbot with follow-up questions about the specific section.
+
+You should have to ask those follow-up questions, because this is not a thorough explanation!
+
+**Point-outs of the main vision files within the robot project:**
+
+#### Main vision files (`utils/`)
+
+- `LimelightWrapper.java` is the team's wrapper. It has `updateLocalizationLimelight(drivetrain)`, which feeds pose estimates to the drivetrain.
+- `LimelightPoseEstimate.java` holds a pose estimate.
+- `LimelightHelpers.java` is the vendor helper library.
+
+#### Related files
+
+- `RobotMap.java` has `VisionConstants` (line 31).
+- `subsystems/swerve/CommandSwerveDrivetrain.java` has `addVisionMeasurement(...)` (lines ~379 and 397). It passes the pose to the Kalman filter.
+- `commands/swerve/BallTracking.java` does vision-based ball tracking.
+- `sim/RebuiltSimManager.java` has the vision simulation.
+
+#### `RobotContainer.java`
+
+- Lines 80–81 construct the wrappers: `llMain = new LimelightWrapper("limelight-two", true)` and `llBackup = new LimelightWrapper("limelight-five", true)`.
+- Lines 140–144 are the getters `getLimelightBackup()` and `getLimelightMain()`.
+- Lines ~255–265 call `llMain.updateLocalizationLimelight(drivetrain)` or the backup version. They also set the "Active Limelight" SmartDashboard entry to MAIN or BACKUP.
+- Line ~343 sets up the "Limelight Health" Shuffleboard layout, and line 348 defines `limelightConnection()`.
+
+#### `Robot.java`
+
+- Lines 170–173 log both Limelights through `Epilogue.limelightWrapperLogger.update(...)`, using the getters above.
+- Line 181 calls `m_robotContainer.limelightConnection()`.
+
+To follow the pose flow, start at `RobotContainer` line ~255 and read `updateLocalizationLimelight` in `LimelightWrapper`.
+
+### Things You'll Need to Change Depending on Your Limelight Configuration
+
+Most of this won't apply to this lesson, but it's good to know what you'll actually need to change later!
+
+#### `RobotContainer.java`, lines 80–81 (the main place)
+
+`new LimelightWrapper("limelight-two", true)` and `new LimelightWrapper("limelight-five", true)`.
+
+- The first argument is the hostname set in the Limelight's web UI. It has to match exactly, or NetworkTables reads will come back empty.
+- The second argument, `isLL4`, should be `true` for an LL4 and `false` for an LL3 or LL3G.
+- `isLL4` changes behavior in `LimelightWrapper`. The MT1 yaw measurement is only added when it's `true` (the `if (isLL4)` block in `updateLocalizationLimelight`). Some of the vision weighting also depends on it.
+
+#### `RobotContainer.updateLocalization()`, lines ~253–267
+
+- The pipeline indexes are hardcoded: pipeline 1 is the viewfinder, and pipeline 0 is the AprilTag pipeline.
+- A replacement Limelight needs the same pipelines in those slots. Flash or copy the configuration onto it.
+- The code calls `llMain` the main Limelight and `llBackup` the backup. If you swap which physical unit plays which role, change the names in the constructors (lines 80–81).
+
+#### Settings That Live on the Limelight, Not in Code
+
+- The camera pose relative to the robot (forward, side, up, roll, pitch, yaw) is set in the Limelight web UI. MegaTag needs it to be correct. A new mount or unit means remeasuring and re-entering it.
+- The simulation has its own copy of the camera pose (see below).
+
+#### `sim/RebuiltSimManager.java`, lines ~404–415 (simulation only)
+
+- `CameraConfig("limelight-two", LimelightType.LL4, llMainMount)` and the same for `"limelight-five"`.
+- Update the name, the `LimelightType` (LL3 or LL4), and the `Transform3d` mount pose. This keeps the simulation matching the real robot.
+- Line 223 has `FUEL_LL_NAME = "limelight-one"` for the fuel camera, with type LL3.
+
+---
+
+If you do all this correctly, you'll be mostly set to get started.
+
+The code above assumes you'll be using two Limelights. How do you change it so it works with only one? I want you to figure it out, because at the moment, only one Limelight works on Ditto.
+
+If you're confused, ask FEDSbot.
+
+For the rest of this lesson, you'll be working on the robot itself. When you're ready for that (you should have a basic understanding of our Limelight system from the previous explanations and any answers you've found on your own), ask a programming lead for the next steps!
+
+### Part 2: Robot-Side Lesson
+
+#### Configure and Calibrate Your Limelight
+
+The Limelight you were given on the test chassis probably already has all of these things done. But I want you to do them again so you know how to do it yourself.
+
+Simply follow the quick-start guide in the documentation. I've linked the LL4 quick start, but if you're using an LL3, follow that guide instead:
+
+[Limelight 4 Quick-Start | Limelight Documentation](https://docs.limelightvision.io/docs/docs-limelight/getting-started/limelight-4)
+
+Once that's all done, it's time to configure the pipelines. If you're doing AprilTags, read through the AprilTag pipeline documentation in the Limelight docs.
+
+You want to be able to:
+
+- See AprilTag recognition in the camera stream from at least 10 feet away.
+- View where the robot thinks it is using MT1 when it sees two tags. Make sure it's close to where you actually are. If it's not, try to figure out why. If you can't, a more experienced programmer probably can.
+
+**Hint:** Set the mode to dark mode, lower the sensor gain to one, keep the blue balance around the middle and the red balance a little higher than the middle, and keep everything else the same. Exposure is the only value you should need to play with if these other settings are configured as above!
+
+### Optional: Color Pipeline
+
+Do you have an LL3? In this case, you can optionally configure a color pipeline as well. You're going to make a new pipeline and detect a color with it.
+
+1. Click **Enable user pipeline switching** in the Limelight dashboard.
+2. Switch to a new pipeline.
+3. Enable **Color / Retroreflective** as the pipeline type.
+4. Select an object of your choice to track! I would recommend a colorful game piece from a past year.
+5. Follow [Color Thresholding | Limelight Documentation](https://docs.limelightvision.io/docs/docs-limelight/pipeline-retro/color-filtering) to threshold and track your specific color. Look through the rest of the pages in this section as well, as they'll teach you how to be more specific in how you track colors!
+6. Retrieve `tx` and `ty` from your Limelight. This can be done in code through the `LimelightWrapper` object we use to represent Limelight hardware. Then, log those values with AdvantageKit.
+
+## To Complete This Lesson
+
+Show your fully configured, detecting limelight to your Robot Programming Lead. If you have a color pipeline, show that as well. If you don't have a color pipeline, that's fine! You can still complete this lesson with a lead signoff.
