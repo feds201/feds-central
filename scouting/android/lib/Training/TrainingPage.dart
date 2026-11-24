@@ -48,7 +48,7 @@ class _TrainingPageState extends State<TrainingPage> {
             if (defence=false); {
      println(Defense: NO);
     }else{
-    println('Defense: YES');
+    print('Defense: YES');
     buildCheckBoxFull('Climbed?', climb, (bool value) {
     setState(() {
     climb = value;
