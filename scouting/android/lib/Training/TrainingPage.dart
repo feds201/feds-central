@@ -32,6 +32,13 @@ class _TrainingPageState extends State<TrainingPage> {
   bool defense = false;
   bool leftZone = false;
   int count = 0;
+  int cycles = 0;
+  int passing = 0;
+  int fouls = 0;
+  final int cycleGoal = 5;
+  int totalPoints() {
+    return (cycles * 4) + passing + (-fouls * 2);
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -105,8 +112,29 @@ class _TrainingPageState extends State<TrainingPage> {
               child: Text('RESET'),
             ),
             // ===== LESSON 7: COUNTERS =====
-
-            // ===== LESSON 8: CHECKLIST =====
+            buildCounterFull('Cycles', cycles, (int value) {
+              setState(() {
+                if (value >= 0 && value <= 10) {
+                  cycles = value;
+                }
+              });
+            }, color: Colors.amber),
+            Text((cycles >= cycleGoal) ? 'Goal reached!'  : '${cycleGoal - cycles} to go', style: (cycles >= cycleGoal) ? TextStyle(color: Colors.green) : TextStyle(color: Colors.orange) ),
+            buildCounterFull('Passing', passing, (int value) {
+              setState(() {
+                if (value >= 0 && value <= 20) {
+                  passing = value;
+                }
+              });
+            }, color: Colors.blue),
+            buildCounterFull('Fouls', fouls, (int value) {
+              setState(() {
+                if (value >= 0 && value <= 6) {
+                  fouls = value;
+                }
+              });
+            }, color: Colors.red),
+            Text('Yes answers: ${totalPoints()}'),    // ===== LESSON 8: CHECKLIST =====
 
             // ===== LESSON 9: CAPSTONE =====
 
