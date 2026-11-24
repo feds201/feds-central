@@ -134,7 +134,7 @@ You want to be able to:
 
 **Hint:** Set the mode to dark mode, lower the sensor gain to one, keep the blue balance around the middle and the red balance a little higher than the middle, and keep everything else the same. Exposure is the only value you should need to play with if these other settings are configured as above!
 
-### Optional: Color Pipeline
+## Bonus challenge: color pipeline
 
 Do you have an LL3? In this case, you can optionally configure a color pipeline as well. You're going to make a new pipeline and detect a color with it.
 
@@ -145,6 +145,14 @@ Do you have an LL3? In this case, you can optionally configure a color pipeline 
 5. Follow [Color Thresholding | Limelight Documentation](https://docs.limelightvision.io/docs/docs-limelight/pipeline-retro/color-filtering) to threshold and track your specific color. Look through the rest of the pages in this section as well, as they'll teach you how to be more specific in how you track colors!
 6. Retrieve `tx` and `ty` from your Limelight. This can be done in code through the `LimelightWrapper` object we use to represent Limelight hardware. Then, log those values with AdvantageKit.
 
-## To Complete This Lesson
+## To complete this lesson
 
-Show your fully configured, detecting limelight to your Robot Programming Lead. If you have a color pipeline, show that as well. If you don't have a color pipeline, that's fine! You can still complete this lesson with a lead signoff.
+Show a student lead:
+
+- Your Limelight detecting AprilTags from at least 10 feet away.
+- The MT1 pose with two tags in view, close to where the robot actually is.
+- How you'd change the code to work with only one Limelight.
+
+Nothing to paste in your training doc.
+
+**Bonus challenge:** color pipeline. If you try it, show the lead your pipeline tracking your object and your logged `tx` and `ty` values too.
