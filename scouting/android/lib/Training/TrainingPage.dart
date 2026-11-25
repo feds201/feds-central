@@ -28,9 +28,31 @@ class TrainingPage extends StatefulWidget {
 
 class _TrainingPageState extends State<TrainingPage> {
   // ===== YOUR VARIABLES =====
+  bool LeftStartingZone= true;
   bool climb= false;
-  bool defence = false;
+  bool defense = false;
+  int countYes() {
+    int count = 0;
+    // if (LeftStartingZone== true){
+    //
+    if(LeftStartingZone == true) {
+    count++;
+
+    }
+    if (climb==true) {
+      count ++;
+
+    }
+    if (defense==true){
+      count ++;
+    }
+return(count);
+    }
+
+
+
   @override
+
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Training Page')),
@@ -45,17 +67,33 @@ class _TrainingPageState extends State<TrainingPage> {
             const SizedBox(height: 16),
 
             // ===== LESSON 6: TRUE / FALSE =====
-            if (defence=false); {
-     println(Defense: NO);
-    }else{
-    print('Defense: YES');
-    buildCheckBoxFull('Climbed?', climb, (bool value) {
-    setState(() {
-    climb = value;
-    });
-    }),
-    }
-    }
+
+
+
+
+            buildCheckBoxFull('climb', climb, (bool value) {
+              setState(() {
+                climb = value;
+              });
+            }),
+
+            buildCheckBoxFull('defense', defense, (bool value) {
+              setState(() {
+                defense = value;
+
+
+
+
+              });
+            }),
+            buildCheckBoxFull('LeftStartingZone', LeftStartingZone, (bool value){
+            setState(() {
+              LeftStartingZone=value;
+            });
+            }),
+      Text("Yes answers: " + countYes().toString()),
+
+
       // ===== LESSON 7: COUNTERS =====
 
             // ===== LESSON 8: CHECKLIST =====
