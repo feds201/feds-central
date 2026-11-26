@@ -30,11 +30,11 @@ class _BugHuntPageState extends State<BugHuntPage> {
     if (climbed) {
       climbPoints = 10;
     }
-    return cycles * 4 + climbPoints + fouls * 2;
+    return cycles * 4 + climbPoints - fouls * 2;
   }
 
   String goalMessage() {
-    if (cycles > cycleGoal) {
+    if (cycles >= cycleGoal) {
       return 'Goal reached!';
     } else {
       return 'Keep going...';
@@ -50,12 +50,18 @@ class _BugHuntPageState extends State<BugHuntPage> {
           children: [
             const SizedBox(height: 16),
             buildCounterFull('Cycles', cycles, (int value) {
-              cycles = value;
+              setState(() {
+                if (value >= 0 && value <= 10) {
+                  cycles = value;
+                }
+              });
             }, color: Colors.amber),
             const SizedBox(height: 8),
             buildCounterFull('Fouls', fouls, (int value) {
               setState(() {
-                fouls = value;
+                if (value >= 0 && value <= 6) {
+                  fouls = value;
+                }
               });
             }, color: Colors.red),
             const SizedBox(height: 8),
@@ -65,7 +71,7 @@ class _BugHuntPageState extends State<BugHuntPage> {
               });
             }),
             const SizedBox(height: 16),
-            const Text('Climbed: climbed', style: TextStyle(fontSize: 20)),
+            Text('Climbed: ${climbed}', style: const TextStyle(fontSize: 20)),
             const SizedBox(height: 8),
             Text('Score: ${totalScore()}', style: const TextStyle(fontSize: 20)),
             const SizedBox(height: 8),

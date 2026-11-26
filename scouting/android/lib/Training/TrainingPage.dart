@@ -39,6 +39,11 @@ class _TrainingPageState extends State<TrainingPage> {
   int totalPoints() {
     return (cycles * 4) + passing + (-fouls * 2);
   }
+  bool cyclescheck = true;
+  bool climbedcheck = true;
+  bool counterscheck = true;
+  bool foulcheck = true;
+  bool goalcheck = true;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -134,8 +139,34 @@ class _TrainingPageState extends State<TrainingPage> {
                 }
               });
             }, color: Colors.red),
-            Text('Yes answers: ${totalPoints()}'),    // ===== LESSON 8: CHECKLIST =====
-
+            Text('Yes answers: ${totalPoints()}'),
+            // ===== LESSON 8: CHECKLIST =====
+            buildCheckBox('cycles work', cyclescheck, (bool value) {
+              setState(() {
+                cyclescheck = value;
+              });
+            }),
+            buildCheckBox('climbed work', climbedcheck, (bool value) {
+              setState(() {
+                climbedcheck = value;
+              });
+            }),
+            buildCheckBox('counters work', counterscheck, (bool value) {
+              setState(() {
+                counterscheck = value;
+              });
+            }),
+            buildCheckBox('foul work', foulcheck, (bool value) {
+              setState(() {
+                foulcheck = value;
+              });
+            }),
+            buildCheckBox('goal work', goalcheck, (bool value) {
+              setState(() {
+                goalcheck = value;
+              });
+            }),
+            Text((stepsLeft() <= 0) ? 'All steps done!'  : '${stepsLeft()} to go', style: (stepsLeft() <= 0) ? TextStyle(color: Colors.green) : TextStyle(color: Colors.orange) ),
             // ===== LESSON 9: CAPSTONE =====
 
             // ----- Lesson 8 button. Do not delete. -----
@@ -164,5 +195,26 @@ class _TrainingPageState extends State<TrainingPage> {
     if (leftZone)
       count++;
     return count;
+  }
+
+  int stepsLeft() {
+    int left = 0;
+    if (!cyclescheck) {
+      left++;
+    }
+    if (!climbedcheck) {
+      left++;
+    }
+    if (!counterscheck) {
+      left++;
+    }
+    if (!foulcheck) {
+      left++;
+    }
+    if (!goalcheck) {
+      left++;
+    }
+    // one more "if" for each of your other steps
+    return left;
   }
 }

@@ -17,6 +17,12 @@ analyzer:
     library_private_types_in_public_api: ignore
     non_constant_identifier_names: ignore
     prefer_interpolation_to_compose_strings: ignore
+  exclude:
+    - build/**
+    - android/**
+    - web/**
+    - windows/**
+    - linux/**
 # include: package:flutter_lints/flutter.yaml
 
 linter:
