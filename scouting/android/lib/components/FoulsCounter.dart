@@ -22,7 +22,7 @@ Widget buildFoulsCounter(String title, int fouls, Function(int) onChanged){
                   borderType: BorderType.RRect,
                   radius: const Radius.circular(12),
                   padding: const EdgeInsets.all(6),
-                  color: const Color.fromARGB(255, 34, 34, 34),
+                  color: const Color.fromARGB(255, 255, 255, 255),
                   dashPattern: const [8, 4],
                   strokeWidth: 2,
                   child: Container(
@@ -37,12 +37,12 @@ Widget buildFoulsCounter(String title, int fouls, Function(int) onChanged){
                       children: [
                         GestureDetector(
                           onTap: () {
-                            if (fouls >= 0 && fouls <= 20)
+                            if (fouls >= 0 && fouls <= 10)
                               onChanged(fouls - 1);
                           },
                           child: Icon(
                             Icons.remove,
-                            color: const Color.fromARGB(255, 34, 34, 34),
+                            color: const Color.fromARGB(255, 255, 255, 255),
                             size: 40,
                           ),
                         ),
@@ -51,17 +51,17 @@ Widget buildFoulsCounter(String title, int fouls, Function(int) onChanged){
                           style: TextStyle(
                             fontSize: 40,
                             fontWeight: FontWeight.bold,
-                            color: const Color.fromARGB(255, 34, 34, 34),
+                            color: const Color.fromARGB(255, 255, 255, 255),
                           ),
                         ),
                         GestureDetector(
                           onTap: () {
-                            if (fouls >= 0 && fouls <= 20)
+                            if (fouls >= 0 && fouls <= 10)
                               onChanged(fouls + 1);
                           },
                           child: Icon(
                             Icons.add,
-                            color: const Color.fromARGB(255, 34, 34, 34),
+                            color: const Color.fromARGB(255, 255, 255, 255),
                             size: 40,
                           ),
                         ),
@@ -75,7 +75,7 @@ Widget buildFoulsCounter(String title, int fouls, Function(int) onChanged){
                   style: TextStyle(
                     fontSize: 24,
                     fontStyle: FontStyle.italic,
-                    color: const Color.fromARGB(255, 34, 34, 34),
+                    color: const Color.fromARGB(255, 255, 255, 255),
                   ),
                 ),
               ],
