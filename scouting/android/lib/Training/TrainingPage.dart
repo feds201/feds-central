@@ -16,6 +16,7 @@
 import 'package:flutter/material.dart';
 import 'package:scout_ops_android/components/CheckBox.dart';
 import 'package:scout_ops_android/components/CounterShelf.dart';
+import 'package:scout_ops_android/components/YesNoToggle.dart';
 
 import 'BugHuntPage.dart';
 
@@ -39,11 +40,12 @@ class _TrainingPageState extends State<TrainingPage> {
   int totalPoints() {
     return (cycles * 4) + passing + (-fouls * 2);
   }
-  bool cyclescheck = true;
-  bool climbedcheck = true;
-  bool counterscheck = true;
-  bool foulcheck = true;
-  bool goalcheck = true;
+  bool cyclescheck = false;
+  bool climbedcheck = false;
+  bool counterscheck = false;
+  bool foulcheck = false;
+  bool goalcheck = false;
+  bool capstoneZone = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -168,7 +170,11 @@ class _TrainingPageState extends State<TrainingPage> {
             }),
             Text((stepsLeft() <= 0) ? 'All steps done!'  : '${stepsLeft()} to go', style: (stepsLeft() <= 0) ? TextStyle(color: Colors.green) : TextStyle(color: Colors.orange) ),
             // ===== LESSON 9: CAPSTONE =====
-
+            buildYesNoToggle('Left zone', capstoneZone, (bool value) {
+              setState(() {
+                capstoneZone = value;
+              });
+            }),
             // ----- Lesson 8 button. Do not delete. -----
             const SizedBox(height: 32),
             ElevatedButton(
