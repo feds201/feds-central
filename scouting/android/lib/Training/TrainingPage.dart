@@ -16,6 +16,7 @@
 import 'package:flutter/material.dart';
 import 'package:scout_ops_android/components/CheckBox.dart';
 import 'package:scout_ops_android/components/CounterShelf.dart';
+import 'package:scout_ops_android/components/FoulsCounter.dart';
 import 'package:scout_ops_android/components/YesNoToggle.dart';
 
 import 'BugHuntPage.dart';
@@ -46,6 +47,7 @@ class _TrainingPageState extends State<TrainingPage> {
   bool foulcheck = false;
   bool goalcheck = false;
   bool capstoneZone = false;
+  int morefouls = 0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -173,6 +175,13 @@ class _TrainingPageState extends State<TrainingPage> {
             buildYesNoToggle('Left zone', capstoneZone, (bool value) {
               setState(() {
                 capstoneZone = value;
+              });
+            }),
+            buildFoulsCounter("epic foul title",morefouls, (int value){
+              setState(() {
+                if(value >= 0 && value <= 10) {
+                  morefouls = value;
+                }
               });
             }),
             // ----- Lesson 8 button. Do not delete. -----

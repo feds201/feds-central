@@ -36,10 +36,10 @@ Widget buildFoulsCounter(String title, int fouls, Function(int) onChanged){
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         GestureDetector(
-                          onTap: () {
-                            if (fouls >= 0 && fouls <= 10)
-                              onChanged(fouls - 1);
-                          },
+                          onTap: ()
+                    {
+                    onChanged(fouls - 1);
+                    },
                           child: Icon(
                             Icons.remove,
                             color: const Color.fromARGB(255, 255, 255, 255),
@@ -56,8 +56,7 @@ Widget buildFoulsCounter(String title, int fouls, Function(int) onChanged){
                         ),
                         GestureDetector(
                           onTap: () {
-                            if (fouls >= 0 && fouls <= 10)
-                              onChanged(fouls + 1);
+                            onChanged(fouls + 1);
                           },
                           child: Icon(
                             Icons.add,
