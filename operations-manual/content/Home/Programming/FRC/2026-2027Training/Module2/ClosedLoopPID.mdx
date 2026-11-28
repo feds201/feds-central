@@ -1,0 +1,336 @@
+---
+title: Closed Loop PID Control
+---
+
+## Motor Control and Mechanism Design
+
+## Lesson Goals
+
+By the end of this lesson, students should be able to:
+
+- Understand proportional control (P) and why integral (I) and derivative (D) are often unnecessary for typical FRC mechanisms.
+- Understand the purpose of the static friction constant (`kS`) and gravity constant (`kG`).
+- Understand the role of the velocity constant (`kV`) in mechanisms where velocity is important.
+- Understand how a control loop can regulate both velocity and position.
+- Understand the difference between voltage and current.
+  - Voltage is related to motor speed.
+  - Current is related to motor torque.
+  - Both are important for motor performance.
+- Understand the difference between stator current and supply current.
+- Understand the importance of stator and supply current limits.
+- Understand the mechanical, electrical, and programming considerations involved in designing an FRC mechanism.
+
+---
+
+## 1. Open-Loop vs. Closed-Loop Control
+
+Before learning how to tune a motor, it is important to understand the difference between open-loop and closed-loop control.
+
+### Open-Loop Control
+
+Open-loop control means that a motor is given a command without using sensor feedback to correct its behavior.
+
+For example:
+
+```java
+m_motor.setControl(new VoltageOut(6.0));
+```
+
+This tells the motor to apply 6 volts. However, the motor does not know whether it has reached a desired position or velocity.
+
+### Closed-Loop Control
+
+Closed-loop control uses sensor feedback to compare the actual state of a mechanism with its desired state.
+
+For example, imagine a flywheel that needs to spin at 50 rotations per second.
+
+- Target velocity: 50 rps
+- Actual velocity: 35 rps
+- Error: 15 rps
+
+The controller uses this error to determine how much additional output the motor needs.
+
+Once the flywheel reaches 50 rps, the controller adjusts its output to maintain that velocity despite changes in battery voltage or external load.
+
+### Position vs. Velocity Control
+
+A control loop can regulate different properties of a mechanism.
+
+- **Position control:** Attempts to reach and maintain a desired position.
+- **Velocity control:** Attempts to reach and maintain a desired velocity.
+
+For example:
+
+- An elevator generally uses position control.
+- A flywheel generally uses velocity control.
+- An intake roller may use open-loop control or velocity control, depending on its requirements.
+
+The important distinction is that closed-loop control allows the motor controller to adjust its output based on feedback rather than simply applying a fixed output.
+
+### CTRE Reading
+
+[CTRE Phoenix 6: Closed-Loop Control](https://v6.docs.ctr-electronics.com/en/stable/docs/api-reference/device-specific/talonfx/closed-loop-requests.html)
+
+---
+
+## 2. Understanding PID
+
+PID stands for:
+
+- Proportional
+- Integral
+- Derivative
+
+A PID controller calculates its response based on the error between the target and actual value.
+
+### Proportional (P)
+
+Proportional control responds to the current error.
+
+A larger error results in a larger correction.
+
+For example, if an elevator is 10 rotations below its target, a proportional controller will apply more output than if it were only 1 rotation below its target.
+
+Why do we usually use P?
+
+- It is straightforward to tune.
+- It responds directly to the error.
+- It is often enough to get a mechanism to a target position.
+- It can make a mechanism respond quickly.
+
+Too much P can cause oscillation, overshoot, or instability.
+
+### Integral (I)
+
+Integral control responds to accumulated error over time.
+
+If a mechanism consistently falls short of its target, I can gradually increase the output until the remaining error is eliminated.
+
+Why do we often avoid I in FRC mechanisms?
+
+- It can cause overshoot.
+- It can accumulate error while a mechanism is physically unable to move.
+- It can make tuning more difficult.
+- Many mechanisms can reach their target with P and feedforward alone.
+
+However, I is not inherently bad. It can be useful when a mechanism has persistent error that P and feedforward cannot correct.
+
+### Derivative (D)
+
+Derivative control responds to how quickly the error is changing.
+
+It can act as damping, helping reduce overshoot.
+
+Why do we often avoid D?
+
+- Sensor noise can produce undesirable output.
+- It can cause jitter.
+- It adds another parameter to tune.
+- Many FRC mechanisms can achieve acceptable performance without it.
+
+D can still be useful when a mechanism has significant overshoot or oscillation that needs damping.
+
+**Takeaway:** P is commonly the starting point. I and D are not universally unnecessary; they should be used when the mechanism benefits from them.
+
+### CTRE Reading
+
+[CTRE Phoenix 6: Manual PID Tuning](https://v6.docs.ctr-electronics.com/en/stable/docs/api-reference/device-specific/talonfx/manual-pid-tuning.html)
+
+---
+
+## 3. Feedforward: kS, kG, and kV
+
+PID reacts to error. Feedforward anticipates the output needed based on the desired motion and the mechanism's physical characteristics.
+
+This is particularly useful for FRC mechanisms.
+
+### kS — Static Friction Constant
+
+`kS` is the output needed to overcome static friction and get a mechanism moving.
+
+For example, a motor may need a small voltage before an elevator begins moving. Once the elevator is moving, that initial resistance is no longer the same.
+
+- Too little `kS`: The mechanism struggles to start moving.
+- Too much `kS`: The mechanism may jerk when starting.
+
+### kG — Gravity Constant
+
+`kG` is the output needed to counteract gravity.
+
+This is especially important for elevators and arms.
+
+An elevator must continuously apply force to prevent itself from falling. An arm must continuously produce torque to hold its position against gravity.
+
+`kG` provides that compensation.
+
+- Elevator: Gravity compensation is generally constant.
+- Arm: Gravity compensation changes with the arm's angle.
+
+Without `kG`, the PID controller must generate error before it applies the additional output needed to hold the mechanism.
+
+### kV — Velocity Constant
+
+`kV` represents the output needed per unit of target velocity.
+
+This is particularly important when velocity matters, such as:
+
+- Flywheels
+- Rollers
+- Conveyors
+- Drivetrains
+
+For a flywheel, the motor needs a certain amount of voltage to maintain a given speed. `kV` estimates that required voltage based on the target speed.
+
+The higher the target velocity, the higher the expected output.
+
+### CTRE Reading
+
+[CTRE Phoenix 6: Closed-Loop Control](https://v6.docs.ctr-electronics.com/en/stable/docs/api-reference/device-specific/talonfx/closed-loop-requests.html)
+
+---
+
+## 4. Voltage, Current, Speed, and Torque
+
+This is one of the most important foundational concepts for mechanism design.
+
+A useful simplified mental model is:
+
+- **Voltage (V):** Related to motor speed.
+- **Current (A):** Related to motor torque.
+
+These are simplifications, but they are useful for understanding motor behavior.
+
+### Voltage
+
+Voltage is the electrical potential applied to the motor.
+
+Increasing voltage generally increases the motor's achievable speed and its ability to accelerate, assuming the load and other conditions remain the same.
+
+However, voltage does not directly equal speed. Actual speed also depends on the load, motor characteristics, and back-EMF.
+
+### Current
+
+Current is closely related to torque.
+
+When a motor needs to produce more torque, it generally draws more current.
+
+For example:
+
+- A motor spinning freely draws relatively little current.
+- A motor accelerating a heavy elevator draws more current.
+- A motor trying to move an elevator that is physically stuck may draw a very large amount of current.
+
+This is why current is so important for mechanism design.
+
+### Stator Current vs. Supply Current
+
+These two current measurements represent different parts of the electrical system.
+
+| Type | What it measures | Why it matters |
+|---|---|---|
+| Stator Current | Current flowing through the motor's phases | Related to torque and motor heating |
+| Supply Current | Current drawn from the battery bus | Related to battery loading, brownouts, and breaker concerns |
+
+The motor controller switches and regulates the power delivered to the motor. Therefore, supply current can be substantially lower than stator current.
+
+If the battery supplies 12 V and the motor is receiving 6 V, an 80 A stator current corresponds to roughly 40 A of supply current.
+
+This is why **stator current is not the same thing as battery current**.
+
+### CTRE Reading
+
+[CTRE Phoenix 6: Improving Performance with Current Limits](https://v6.docs.ctr-electronics.com/en/stable/docs/hardware-reference/talonfx/improving-performance-with-current-limits.html)
+
+---
+
+## 5. Current Limits
+
+CTRE provides two types of current limits.
+
+### Stator Current Limit
+
+A stator current limit restricts current flowing through the motor's phases.
+
+It can help:
+
+- Limit motor torque.
+- Prevent motor overheating.
+- Protect mechanisms from excessive force.
+- Reduce the risk of damage during a mechanism jam.
+
+### Supply Current Limit
+
+A supply current limit restricts current drawn from the battery bus.
+
+It can help:
+
+- Prevent excessive battery loading.
+- Reduce the risk of robot brownouts.
+- Protect the robot's electrical system.
+
+A stator limit can also help prevent brownouts because it limits motor current demand, but it is not a complete substitute for supply current limits.
+
+One important consideration is that a current limit set too low can negatively impact acceleration and mechanism performance.
+
+**Important:** CTRE's current-limit calculator considers supply current draw. Stator current and supply current should not be treated as interchangeable when selecting limits.
+
+### CTRE Reading
+
+[CTRE Phoenix 6: Improving Performance with Current Limits](https://v6.docs.ctr-electronics.com/en/stable/docs/hardware-reference/talonfx/improving-performance-with-current-limits.html)
+
+---
+
+## 6. Designing an FRC Mechanism
+
+Before programming a mechanism, you should be able to answer the following questions.
+
+### Mechanical Considerations
+
+- What is the mechanism's purpose?
+- What is the required range of motion?
+- What is the maximum load?
+- What is the mechanism's mass and inertia?
+- What gear ratio is needed?
+- How much torque is required?
+- Is gravity acting on the mechanism?
+- Are there hard stops?
+- What happens if the mechanism jams?
+- Is the mechanism structurally capable of handling the load?
+
+### Electrical Considerations
+
+- Which motor should be used?
+- How many motors are required?
+- What is the expected current draw?
+- What stator current limit is appropriate?
+- What supply current limit is appropriate?
+- Could the mechanism cause a robot brownout?
+- How will the mechanism affect the other mechanisms on the robot?
+
+### Programming Considerations
+
+- Does the mechanism need position control, velocity control, or open-loop control?
+- What sensor will provide feedback?
+- Does the mechanism need PID?
+- Does it need `kS`, `kG`, or `kV`?
+- What are the appropriate Motion Magic constraints, if applicable?
+- What happens when the sensor disconnects?
+- What happens when the mechanism reaches its limit?
+- What should the mechanism do when disabled?
+
+The main lesson here is that **mechanism programming is not just writing commands to a motor. It is understanding how software interacts with a physical system.**
+
+---
+
+## Additional Resources
+
+- [CTRE Phoenix 6 Documentation](https://v6.docs.ctr-electronics.com/en/stable/)
+- [CTRE Phoenix 6: Closed-Loop Control](https://v6.docs.ctr-electronics.com/en/stable/docs/api-reference/device-specific/talonfx/closed-loop-requests.html)
+- [CTRE Phoenix 6: Manual PID Tuning](https://v6.docs.ctr-electronics.com/en/stable/docs/api-reference/device-specific/talonfx/manual-pid-tuning.html)
+- [CTRE Phoenix 6: Control Requests](https://v6.docs.ctr-electronics.com/en/stable/docs/api-reference/api-usage/control-requests.html)
+- [CTRE Phoenix 6: Improving Performance with Current Limits](https://v6.docs.ctr-electronics.com/en/stable/docs/hardware-reference/talonfx/improving-performance-with-current-limits.html)
+
+
+## To Complete This Lesson
+
+Nothing to turn in, Read it and make sure you have the material in this section pretty solid! After that, you're ready to move on.

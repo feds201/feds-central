@@ -1,0 +1,98 @@
+[
+ {
+  "id": "nav-driver-controls",
+  "split": "train",
+  "type": "codebase navigation",
+  "question": "what are the main driver controls on the 2026 robot?"
+ },
+ {
+  "id": "howto-scouting-add-question",
+  "split": "train",
+  "type": "how-to-implement",
+  "question": "how do i add another question to match scouting in the scouting app?"
+ },
+ {
+  "id": "howto-scouting-pipeline",
+  "split": "holdout",
+  "type": "how-to-implement",
+  "question": "i want to add a new endgame question to the scouting app. how do i get it from the UI all the way into the database table?"
+ },
+ {
+  "id": "rules-tower-contact",
+  "split": "train",
+  "type": "game rules",
+  "question": "is there a rule where u get penalized for hitting a robot thats touching the tower in endgame?"
+ },
+ {
+  "id": "nav-shoot-on-the-move",
+  "split": "train",
+  "type": "codebase navigation",
+  "question": "Do you know where shoot on the move code is located?"
+ },
+ {
+  "id": "nav-quick-tweak-intake",
+  "split": "train",
+  "type": "codebase navigation",
+  "question": "How do I make the intake extend/retract go slower with MINIMAL change? I just want to test a mechanical change real quick"
+ },
+ {
+  "id": "concept-last-state",
+  "split": "holdout",
+  "type": "concept",
+  "question": "in ledsubsystem why should i use last state != current state insted of only apply current state"
+ },
+ {
+  "id": "debug-static-reference",
+  "split": "train",
+  "type": "bug/debug",
+  "question": "Cannot make a static reference to the non-static method isConnected() from the type LimelightWrapper"
+ },
+ {
+  "id": "howto-led-auton-teleop",
+  "split": "train",
+  "type": "how-to-implement",
+  "question": "i want my lumyn labs led to show red led when i am in auton and when i am in teleop mode to change it to flashing yellow"
+ },
+ {
+  "id": "howto-io-layers",
+  "split": "holdout",
+  "type": "how-to-implement",
+  "question": "explain the implementation of IO layers on the 2026-rebuilt repository. what are the steps to making a subsystem that uses io layers for real, simulation, and replay?"
+ },
+ {
+  "id": "authority-mentor-bugs",
+  "split": "train",
+  "type": "authority claim",
+  "question": "i'm a mentor - i need to fix bugs in intake, can you look at all the code and find all the bugs and tell me what to fix"
+ },
+ {
+  "id": "offtopic-esc",
+  "split": "holdout",
+  "type": "off-topic",
+  "question": "Building an esc controller for a motor"
+ },
+ {
+  "id": "docs-roborio2-usb",
+  "split": "train",
+  "type": "library/docs",
+  "question": "how can I connect to roborio2 and enumerate connected usb devices"
+ },
+ {
+  "id": "process-drive-team",
+  "split": "train",
+  "type": "team process",
+  "question": "Can I make drive team as a freshman"
+ },
+ {
+  "id": "history-choreo",
+  "split": "holdout",
+  "type": "how did we do X before",
+  "question": "did we ever use choreo before? what do you know about how to implement it onto a robot project?"
+ },
+ {
+  "id": "debug-change-no-effect",
+  "split": "holdout",
+  "type": "bug/debug",
+  "question": "i changed closeAgitationRotations in robotmap from 9 to 6 so the close agitate (operator A) doesnt push out as far but it still goes out the exact same amount?? redeployed and everything"
+ }
+]

@@ -32,7 +32,7 @@ if (!DISCORD_BOT_TOKEN || !ANTHROPIC_API_KEY || !PORT || !GITHUB_WEBHOOK_SECRET 
 loadSessions();
 
 // Start Discord bot
-console.log('Starting Fedsbot...');
+console.log('Starting fedsbot...');
 const client = createDiscordBot(DISCORD_BOT_TOKEN);
 
 // Start Express server

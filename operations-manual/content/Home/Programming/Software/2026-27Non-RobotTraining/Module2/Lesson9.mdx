@@ -42,17 +42,26 @@ Widget buildYesNoToggle(String title, bool value, Function(bool) onChanged) {
 
 **What it should do:** it's **green** and says `YES` when `value` is true, and **red** and says `NO` when false. Tapping it tells the page the **opposite** value.
 
+<<<<<<< HEAD
 Now **use it** on your Training Page under the heading **`LESSON 11: CAPSTONE`**. You'll need to:
 
 1. Add `import 'package:scout_ops_android/components/YesNoToggle.dart';` at the top of `TrainingPage.dart`.
 2. Add a variable like `bool leftZone = false;`.
 3. Call `buildYesNoToggle('Left zone', leftZone, (bool value) { ... })`, and use `setState` inside so the page remembers the new value.
+=======
+Now **use it** on your Training Page under the heading **`LESSON 9: CAPSTONE`**. You'll need to:
+
+1. Add `import 'package:scout_ops_android/components/YesNoToggle.dart';` at the top of `TrainingPage.dart`.
+2. Add a variable like `bool capstoneZone = false;`.
+3. Call `buildYesNoToggle('Left zone', capstoneZone, (bool value) { ... })`, and use `setState` inside so the page remembers the new value.
+>>>>>>> origin/main
 
 ✅ **Checkpoint:** tapping it flips between green **YES** and red **NO**.
 
 
 # Task 2: Your request card
 
+<<<<<<< HEAD
 | Part | What it tells you |
 | --- | --- |
 | **buildFoulsCounter** |
@@ -60,6 +69,15 @@ Now **use it** on your Training Page under the heading **`LESSON 11: CAPSTONE`**
 | **int fouls and Function(int) onChanged** |
 | **The count must stay between 0 and 10. The minus button cannot go below 0, and the plus button cannot go above 10.**
 | **Display Fouls: X, where X is the current count. Use a red minus button, a blue plus button, and a clearly visible count.**
+=======
+| Part | What it says |
+| --- | --- |
+| **Name** | `buildFoulsCounter` |
+| **What it does** | Displays a team's foul count with buttons to increase or decrease it. |
+| **Arguments** | `int fouls` and `Function(int) onChanged` |
+| **Rules** | The count must stay between 0 and 10. The minus button cannot go below 0, and the plus button cannot go above 10. |
+| **Looks** | Display `Fouls: X`, where X is the current count. Use a red minus button, a blue plus button, and a clearly visible count. |
+>>>>>>> origin/main
 
 # Task 3: Build it
 
@@ -68,7 +86,11 @@ Now **use it** on your Training Page under the heading **`LESSON 11: CAPSTONE`**
 3. **Write the function.** Copy the *style* from your warm-up (`build...`, takes a value and an `onChanged`, returns a Widget).
 4. **Use it** on your Training Page under **`LESSON 9: CAPSTONE`**.
 5. **Test the edges.** Tap it 50 times. Test the minimum and the maximum.
+<<<<<<< HEAD
 6. **Fix bugs** with the Debug Checklist from Lesson 10.
+=======
+6. **Fix bugs** with the Debug Checklist from Lesson 8.
+>>>>>>> origin/main
 7. **Commit in small steps**, then **push** with **Git → Push...**
 
 **Stuck?** Use your checklist. Search the exact error. **15 minutes?** Ask a veteran member or David, and tell them what you tried.
@@ -93,6 +115,12 @@ Finishing this means you completed **Module 2 of Non-Robot Programming!**
 
 You can now set up the tools, use Git, find code, fix problems, build components, debug, and ship your work. That is exactly what programmers on our team do.
 
+<<<<<<< HEAD
 ## 📝 Hand in
 
 Your **branch name or link** (`training-yourname`). David will review your branch and do the walkthrough with you.
+=======
+## To complete this lesson
+
+Paste your branch name or link (`training-yourname`) into this lesson's tab in your training doc. David will review your branch and do the walkthrough with you.
+>>>>>>> origin/main

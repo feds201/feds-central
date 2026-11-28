@@ -1,4 +1,4 @@
-# Fedsbot
+# fedsbot
 
 AI assistant Discord bot for The FEDS (FRC Team 201). Uses the Claude Agent SDK to answer student questions about the robot, game rules, and codebase in Discord threads.
 
@@ -16,7 +16,7 @@ AI assistant Discord bot for The FEDS (FRC Team 201). Uses the Claude Agent SDK 
 3. Follow-ups continue the same session; a 30-minute gap starts a new conversation
 
 ### Web Chat API
-- `POST /api/chat` — SSE endpoint used by the dev dashboard
+- `POST /api/chat` — SSE endpoint for web chat clients
 - Authenticated via `X-API-Key` header
 - Supports session resumption via `sessionId` in the request body
 
@@ -24,6 +24,16 @@ AI assistant Discord bot for The FEDS (FRC Team 201). Uses the Claude Agent SDK 
 - `POST /webhook/github` — receives GitHub push events
 - On push to `main`: pulls latest code, and if `fedsbot/` files changed, runs `npm install` and restarts the service
 - Verified via HMAC-SHA256 signature
+
+### How the agent is configured
+All of it is in `src/agent.ts`:
+- **Model:** the `sonnet` alias, so the bot always runs the latest Sonnet the installed SDK knows about. Bump `@anthropic-ai/claude-agent-sdk` to pick up a newer one.
+- **Prompt:** each session starts with the repo's `CLAUDE.md`, then `system-prompt-general.md`, then `system-prompt-discord.md` (Discord) or `system-prompt-chat.md` (web chat), then the user's message. Filesystem settings and other `CLAUDE.md` files are not loaded.
+- **Tools:** Read, Glob, Grep, WebSearch, WebFetch, Bash, and Agent. A PreToolUse hook allows only Explore subagents and keeps them in the foreground, so the reply waits for their result.
+- **Limits:** 15 turns per session.
+- **Working directory:** the repo root, so the bot can read the whole monorepo. The repo's `.ignore` keeps its search tools (Grep, Glob) out of `fedsbot/evals/`, the eval answer keys. It's not a hard block: Bash or git history could still reach them, but that takes deliberate digging.
+
+Before changing the prompt or any of the above, run the evals (below) and compare.
 
 ## Setup
 
@@ -123,6 +133,34 @@ Configure at: https://github.com/feds201/feds-central/settings/hooks/595491205
 ## Environment Variables
 
 See `.env.example` for the full list with descriptions.
+
+## Evals
+
+`evals/` measures how well the bot answers: 16 real student questions (from Discord history), each with a verified reference answer, scored by an Opus judge. Latest numbers: [`evals/RESULTS.md`](evals/RESULTS.md).
+
+### Run
+Needs a Claude login (`claude` CLI signed in) or `ANTHROPIC_API_KEY` exported in your shell (the eval doesn't read `.env`), plus `npm install`.
+```bash
+npm run eval -- run my-try                                  # the bot as it is in your working tree
+npm run eval -- run my-prompt --prompt-dir path/to/prompts  # a folder with system-prompt-{general,discord,chat}.md
+npm run eval -- run on-opus --model opus                    # also --effort low|medium|high
+npm run eval -- run original --ref 8ce7b873                 # the bot as of any commit
+npm run eval -- compare e1 my-try                           # table of saved results
+```
+Each `run` does 2 runs per case (`--reps`), then judges and prints correctness, fit, first-try rate, latency, tool calls and cost. Results go to `evals/results/<name>/` (gitignored). A full run costs about $1-2 for the bot plus about $0.75 for the judge, at API prices. `--max-usd` (default 10) stops a run early. `--cases a,b` runs only some cases; a run that stops resumes where it left off.
+
+### How it works
+- The bot runs in a temporary copy of the repo's files without `fedsbot/evals/` and without `.git`, with repo paths removed from its environment, so it can't read the answers, even through git history. (Only listing every running process on the machine would still show the real repo's path.) The copy is HEAD plus your working-tree `fedsbot/` (uncommitted changes elsewhere aren't included); `--ref` uses that commit's files as is. Copies live in `$TMPDIR/fedsbot-eval/`, and each run deletes any left behind by a run that died.
+- A run that dies (rate limit, overload, network) isn't saved, so rerunning the same command retries it. A run that finishes without a good answer (e.g. it hit the turn limit) is saved and scored as a failure.
+- Rerunning a name is refused if the settings, `src/agent.ts`, the prompts, the repo's `CLAUDE.md` or `package-lock.json` changed, so one name never mixes two versions of the bot.
+- The judge gets `rubric.md`, `goldens.json` and the answers, shuffled under opaque ids with the planted answers from `controls.json` (reference answers that must score high, bad ones that must fail). If a control scores wrong, the run prints a warning; judge again before trusting it.
+- Fit means the answer's shape and coaching: direct answers for direct questions, a plan for build tasks, one hint for bugs, no solution code, at most two questions. See `rubric.md`.
+- Compare numbers from the same judge only. Differences under about 0.2 are noise.
+
+### Add or change a case
+1. Add the question to `cases.json` (`split`: `train` while tuning, `holdout` to check you're not overfitting).
+2. Add its entry to `goldens.json`: `ideal_answer`, `shape`, `must_include`, `must_not`, with file paths and line numbers checked against the code.
+3. Goldens go stale when the robot code changes. Re-check the ones that cite changed files.
 
 ## Troubleshooting
 

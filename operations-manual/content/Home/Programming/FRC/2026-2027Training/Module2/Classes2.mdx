@@ -1,0 +1,400 @@
+---
+Title: Java Classes Lesson 2
+---
+
+Continue the Java Classes course, starting at **Java Modifiers**. Don't worry too much about `protected`, `volatile`, `synchronized`, `transient`, or `abstract`. Continue through the course until **Polymorphism**. Make sure you pay extra attention to **Encapsulation** and **Polymorphism**. Then, also read through the **Enums** instruction.
+
+This is getting to the most complex, and also most important, concepts in FRC programming. Once you master these, programming a robot becomes very manageable.
+
+---
+
+## Project 2: Arm Mechanism Subsystem
+
+In this project, you will create a complete FRC robot mechanism: an arm subsystem.
+
+This project will combine your Java knowledge with real robot programming concepts. You will create a subsystem that controls an arm using:
+
+- 1 CTRE Kraken X60 motor (TalonFX)
+- 1 CTRE CANcoder absolute encoder
+- CTRE Phoenix 6 configuration
+- Standard PositionVoltage Control
+- AdvantageKit logging
+- WPILib Commands
+
+Unlike the previous project, this mechanism will use more advanced object-oriented programming concepts.
+
+### You Will Practice
+
+- Extending classes through inheritance
+- Using packages
+- Encapsulation with private variables and getter methods
+- Enums with constructors
+- Lambda expressions
+- Returning commands from methods
+- Hardware configuration
+
+---
+
+## Step 1: Create Your Subsystem
+
+Create a new subsystem class called:
+
+`ArmSubsystem`
+
+Use the WPILib VS Code tools to create this class.
+
+To create a new subsystem:
+
+1. Right-click the folder where you want the class.
+2. Select the WPILib option to create a new subsystem.
+3. Follow the prompts.
+
+Notice that VS Code automatically creates:
+
+- The package declaration at the top of the file.
+- The correct imports.
+- The class structure.
+
+The package declaration is the first line of the file:
+
+```java
+package frc.robot.subsystems;
+```
+
+Packages organize your code into different folders. As your robot becomes larger, packages prevent your project from becoming difficult to manage.
+
+Your subsystem should extend:
+
+`SubsystemBase`
+
+This is an example of inheritance.
+
+Your class is inheriting functionality from WPILib's `SubsystemBase` class. This gives your subsystem access to features that all robot subsystems need.
+
+---
+
+## Step 2: Create Your Hardware Objects
+
+Your arm will use:
+
+- A Kraken X60 controlled by a TalonFX
+- A CANcoder absolute encoder
+
+Create private class variables for both devices.
+
+Your constructor should:
+
+1. Create the TalonFX object.
+2. Create the CANcoder object.
+3. Apply configuration to both devices.
+
+Use the CTRE Phoenix 6 documentation to learn:
+
+- How to create a TalonFX.
+- How to create a CANcoder.
+- How configuration objects work.
+- How to apply configurations.
+
+**CTRE Documentation:**
+
+https://v6.docs.ctr-electronics.com/
+
+---
+
+## Step 3: Configure the CANcoder
+
+The CANcoder needs to be configured so that the motor can correctly understand the arm position.
+
+Create a CANcoder configuration object called `eConfig`.
+
+Configure:
+
+```java
+eConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = -0.25;
+```
+
+This configures where the encoder's absolute position wraps around.
+
+Use the CTRE documentation to understand what this setting does. Or, ask FEDSbot.
+
+---
+
+## Step 4: Configure the TalonFX
+
+Create a TalonFX configuration object called `tConfig`.
+
+Configure your motor using the following values:
+
+```java
+tConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+
+tConfig.Slot0.kP = 0.0;
+tConfig.Slot0.kD = 0.0;
+tConfig.Slot0.kG = 0.0;
+tConfig.Slot0.kS = 0.0;
+
+tConfig.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
+
+tConfig.CurrentLimits.StatorCurrentLimit = 40;
+```
+
+Some of these values will need to be tuned later.
+
+Use CTRE documentation to learn:
+
+- How Slot0 gains work.
+- What gravity compensation does.
+- How PositionVoltage control mode works.
+- How control requests are used.
+
+---
+
+## Step 5: Use the CANcoder as the Motor's External Encoder
+
+The TalonFX should not use its built-in motor encoder for arm position.
+
+Instead, configure it to use the CANcoder.
+
+Use CTRE documentation to learn how to:
+
+- Configure the feedback sensor.
+- Set the CANcoder as the external position source.
+- Configure remote sensor IDs.
+
+Your goal is:
+
+**CANcoder → TalonFX →  Position Voltage Control**
+
+The motor controller should control the arm using the absolute encoder position.
+
+---
+
+## Step 6: Create Arm State Enum
+
+Your arm has three positions:
+
+- `FORWARD`
+- `UP`
+- `BACKWARD`
+
+Create an enum inside your subsystem:
+
+```java
+public enum ArmState {
+
+}
+```
+
+Each state should store an angle.
+
+Your enum constructor should accept a rotation angle using WPILib Units.
+
+Example concept:
+
+```java
+private final Angle angle;
+
+ArmState(Angle angle){
+    this.angle = angle;
+}
+```
+
+WPILib uses `Angle` to represent angles.
+
+You can create rotations using:
+
+```java
+Rotations.of(0.5)
+```
+
+### Your Job
+
+1. Move the arm manually.
+2. Read the CANcoder position.
+3. Record the correct values.
+4. Use those values for your enum states.
+
+The arm should have approximately 180 degrees of movement.
+
+**IMPORTANT:** Don't deploy this code to a robot (which you will do later) until you have measured correct angles for each of your states. These will not be predetermined; you'll measure them on a real robot.
+
+Deploying incorrect values could cause some stuff to not work right, or to break. Be careful, and ask a lead if you're not sure about something!
+
+---
+
+## Step 7: Create Logging Getter Methods
+
+Use AdvantageKit's `@Logged` annotation.
+
+> Note: Our real robot code will use a different method for logging called IO, which you will learn more about later. For now, AdvantageKit is an easier
+way to learn how to log data.
+
+Your subsystem should contain getter methods for:
+
+- Stator current (amps)
+- Voltage
+- Position (rotations)
+- Velocity (rotations per second)
+- Acceleration (rotations per second squared)
+- Motor temperature (Fahrenheit)
+
+Example:
+
+```java
+@Logged
+public double getPosition(){
+    return motor.getPosition().getValueAsDouble();
+}
+```
+
+AdvantageKit will automatically record these values.
+
+This allows you to inspect your subsystem data later in AdvantageScope.
+
+---
+
+## Step 8: Create Arm Control Methods
+
+Create a method to control the motor position.
+
+This method should:
+
+1. Accept a position (using WPILib `Angle`).
+2. Create the correct CTRE control request.
+3. Apply it to the motor.
+
+Use CTRE documentation to learn how PositionVoltage control requests work. Or, ask FEDSbot.
+
+Your subsystem should also have:
+
+```java
+public void setState(ArmState state)
+```
+
+This method should:
+
+1. Take an `ArmState`.
+2. Extract its stored angle.
+3. Move the arm to that position.
+
+---
+
+## Step 9: Create Commands For Each Arm Position
+
+Instead of creating commands everywhere, your subsystem can return commands.
+
+Create methods like:
+
+```java
+public Command setStateCommand(ArmState state)
+```
+
+Inside the method, return:
+
+```java
+return new InstantCommand(() -> setState(state));
+```
+
+The `()->` is called a lambda expression.
+
+A lambda is a short way of creating a function without naming it.
+
+This:
+
+```java
+() -> setState(ArmState.FORWARD)
+```
+
+means:
+
+"When this command runs, call `setState()` with `ArmState.FORWARD`."
+
+You will see lambdas throughout FRC programming, especially when creating commands, callbacks, and event handlers.
+
+---
+
+## Step 10: Connect Your Arm To RobotContainer
+
+Open:
+
+`RobotContainer.java`
+
+Create your subsystem object:
+
+```java
+private final ArmSubsystem armSubsystem = new ArmSubsystem();
+```
+
+Then create an Xbox controller:
+
+```java
+private final CommandXboxController controller =
+    new CommandXboxController(0);
+```
+
+### Bind Your Commands
+
+| Controller Button | Arm Position |
+|---|---|
+| X | Forward |
+| Y | Up |
+| A | Backward |
+
+Your bindings should call:
+
+```java
+armSubsystem.setStateCommand(ArmState.FORWARD)
+armSubsystem.setStateCommand(ArmState.UP)
+armSubsystem.setStateCommand(ArmState.BACKWARD)
+```
+
+If you have questions about command bindings or Xbox controllers, ask FEDSBot for help.
+
+---
+
+## Final Goal
+
+When finished:
+
+- Your arm should initialize correctly.
+- Your Kraken should use the CANcoder for position.
+- Your arm should move using  Position Voltage.
+- Your positions should be controlled through an enum.
+- Your data should be logged through AdvantageKit.
+- Your RobotContainer should control the mechanism through commands.
+
+This is the structure used by real FRC robot code.
+
+**When you're done with this section, paste your subsystem file into your doc to get credit for this lesson. Ensure you have completed all code instructions, and that your code properly gives "build successful" when you build your code.**
+
+---
+
+## Checkpoint Questions
+
+At this point, you might not know the answer to all of these questions yet, and that's okay! Do some research across CTRE docs, WPILib docs, and Fedsbot 
+to get the answers. You'll be asked to write your answers in your training doc, no need to write an essay, but make sure you answer the question well!
+
+1. What is the multiplier on kG for an arm to get effective gravity constant?
+2. What is the best way to tune kS and kG on an arm?
+3. Explain a method to tune your P gain on a mechanism, starting from P = 0.
+4. What are signs that kG is too high? Too low?
+5. What are signs that your P gain is too high? Too low?
+
+---
+
+## Talk To Your Lead
+
+If your code builds, ask your lead to approve it for you. If it looks up to scope, you will go with them to work on it on a real robot.
+
+With some help, you will:
+
+- Deploy your initial code.
+- Read motor and encoder values from Phoenix Tuner.
+- Tune kP, kS, and kG for an arm subsystem.
+- Test your code states.
+- Make a real mechanism work.
+
+## To Complete This Lesson
+
+Paste your ArmSubsystem.java code into this lesson's tab in your training doc. Code goes in as text, **no screenshots**. Underneath, put your answers to 
+the checkpoint questions. Finally, you will need a lead sign-off to complete this lesson.
